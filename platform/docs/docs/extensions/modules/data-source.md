@@ -1,5 +1,8 @@
+---
+sidebar_position: 3
+sidebar_label: Data Source
+---
 # Module: Data Source
-
 
 
 ## Overview
@@ -57,9 +60,7 @@ You need to make sure, you implement the following functions for the data source
 
 
 
-```js
-// platform/core/src/DataSources/IWebApiDataSource.js
-
+```js title="platform/core/src/DataSources/IWebApiDataSource.js"
 function create({
   query,
   retrieve,

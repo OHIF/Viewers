@@ -1,9 +1,8 @@
+---
+sidebar_position: 7
+sidebar_label: Layout Template
+---
 # Module: Layout Template
-
-- [Module: Layout Template](#module-layout-template)
-  - [Overview](#overview)
-  - [Overview Video](#overview-video)
-
 
 ## Overview
 `LayoutTemplates` are a new concept in v3 that modes use to control the layout of a route.
@@ -34,8 +33,7 @@ LayoutTemplate leverages extensionManager to grab typed extension module entries
 
 A simplified code for `Default extention`'s layout template is:
 
-```jsx
-// extensions/default/src/ViewerLayout/index.jsx
+```jsx title="extensions/default/src/ViewerLayout/index.jsx"
 import React from 'react'
 import { SidePanel } from '@ohif/ui'
 
@@ -133,4 +131,6 @@ function ViewerLayout({
 
 ## Overview Video
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/545993263?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Viewer-layout"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/545993263?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>

@@ -1,15 +1,9 @@
+---
+sidebar_position: 1
+sidebar_label: Introduction
+---
 # Modes
 
-- [Modes](#modes)
-  - [Overview](#overview)
-  - [Anatomy](#anatomy)
-    - [Consuming Extensions](#consuming-extensions)
-    - [routes](#routes)
-    - [extensions](#extensions)
-    - [hangingProtocols](#hangingprotocols)
-    - [sopClassHandlers](#sopclasshandlers)
-    - [hotkeys](#hotkeys)
-  - [Registration](#registration)
 
 ## Overview
 A mode can be thought of as a viewer app configured to perform a specific task,
@@ -55,9 +49,7 @@ Mode's config is actually a function that return a config object with certain pr
 
 
 
-```js
-// modes/example/src/index.js
-
+```js title="modes/example/src/index.js"
 export default function mode() {
   return {
     id: '',
@@ -81,7 +73,101 @@ export default function mode() {
 }
 ```
 
-{% include "./_anatomy.md" %}
+<table>
+  <thead>
+    <tr>
+      <th align="left">Property</th>
+      <th align="left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="left">
+          id
+      </td>
+      <td align="left">unique mode id used to refer to the mode</td>
+    </tr>
+    <tr>
+      <td align="left">
+          displayName
+      </td>
+      <td align="left">actual name of the mode being displayed for each study in the study summary panel</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./lifeCycle.md#onModeEnter">
+          onModeEnter
+        </a>
+      </td>
+      <td align="left">hook is called when the mode is entered by the specified route</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./lifeCycle.md#onModeExit">
+          onModeExit
+        </a>
+      </td>
+      <td align="left">hook is called when the mode exited</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="">
+          validationTags
+        </a>
+      </td>
+      <td align="left">validationTags</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="">
+          isValidMode
+        </a>
+      </td>
+      <td align="left">Checks if the mode is valid for a study</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="">
+          routes
+        </a>
+      </td>
+      <td align="left">route config which defines the route address, and the layout for it</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./index.md#consuming-extensions">
+          extensions
+        </a>
+      </td>
+      <td align="left">extensions needed by the mode</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="">
+          hanging protocol
+        </a>
+      </td>
+      <td align="left">list of hanging protocols that the mode should have access to</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="">
+          sopClassHandlers
+        </a>
+      </td>
+      <td align="left">list of SOPClass modules needed by the mode </td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="">
+          hotkeys
+        </a>
+      </td>
+      <td align="left">hotkeys</td>
+    </tr>
+
+  </tbody>
+</table>
 
 
 
@@ -96,9 +182,7 @@ For instance, if a mode requires the left panel with name of `AIPanel` that is a
 In the background `OHIF` will handle grabbing the correct panel via `ExtensionManager`.
 
 
-```js
-// extensions/myAIExtension/getPanelModule.js
-
+```js title="extensions/myAIExtension/getPanelModule.js"
 import PanelAI from './PanelAI.js';
 
 
@@ -127,7 +211,6 @@ function getPanelModule({
     },
   ];
 }
-
 ```
 
 
@@ -194,15 +277,13 @@ export default function mode({ modeConfiguration }) {
 }
 ```
 
-### routes
+### Routes
 routes config is an array of route settings, and the overall look and behavior of the viewer at the designated route is  defined by the `layoutTemplate` and `init` functions for the route. We will learn more about each of the above properties inside the [route documentation](./routes.md)
 
-### extensions
+### Extensions
 Currently `extensions` property in the mode config is used to add *contextModule* of the mentioned extensions to the list of contexts and  provide them through out the app. Since extensions are registered by the ExtensionManager, modes have access to the them even if they have not been referred in the mode config file inside *extensions* property. [Read more about extension registration](../extensions/index.md#registering-an-extension)
 
-```js
-// platform/viewer/src/routes/Mode/Mode.jsx
-
+```js title="platform/viewer/src/routes/Mode/Mode.jsx"
 const { extensions } = mode;
 
 extensions.forEach(extensionId => {
@@ -216,13 +297,11 @@ extensions.forEach(extensionId => {
 });
 ```
 
-### hangingProtocols
+### HangingProtocols
 Currently, you can pass your defined hanging protocols inside the `hangingProtocols` property of
 the mode's config. This will get used inside the `Mode.jsx` to configure the `HangingProtocolService`.
 
-```js
-// platform/viewer/src/routes/Mode/Mode.jsx
-
+```js title="platform/viewer/src/routes/Mode/Mode.jsx"
 const { hangingProtocols } = mode;
 
 hangingProtocols.forEach(extentionProtocols => {
@@ -231,20 +310,18 @@ hangingProtocols.forEach(extentionProtocols => {
 });
 ```
 
-### sopClassHandlers
+### SopClassHandlers
 Mode's configuration also accepts the `sopClassHandler` modules that have been added by the extensions.
 This information will get used inside the `Mode.jsx` to initialize the `DisplaySetService` with the provided
 SOPClass modules which handles creation of the displaySets.
 
-```js
-// platform/viewer/src/routes/Mode/Mode.jsx
-
+```js title="platform/viewer/src/routes/Mode/Mode.jsx"
 const { sopClassHandlers } = mode;
 
 DisplaySetService.init(extensionManager, sopClassHandlers);
 ```
 
-### hotkeys
+### Hotkeys
 `hotkeys` is another property in the configuration of a mode that can be defined to add the specific hotkeys to the viewer at all routes.
 
 ```js
@@ -281,9 +358,7 @@ export default function mode() {
 ```
 
 
-```js
-// platform/viewer/src/routes/Mode/Mode.jsx
-
+```js title="platform/viewer/src/routes/Mode/Mode.jsx"
 hotkeysManager.setDefaultHotKeys(hotkeys);
 hotkeysManager.setHotkeys(hotkeys);
 ```
@@ -299,9 +374,7 @@ hotkeysManager.setHotkeys(hotkeys);
 Upon release modes will also be plugged into the app via configuration, but this is still an area which is under development/discussion, and they are currently pulled from the `window` in beta.
 
 
-```js
-// modes/longitudinal/src/index.js
-
+```js title="modes/longitudinal/src/index.js"
 export default function mode() {
   return {
     id: 'viewer',
@@ -325,14 +398,11 @@ export default function mode() {
 }
 
 window.longitudinalMode = mode({});
-
 ```
 
 and inside `@ohif/viwer` we have:
 
-```js
-// platform/viewer/src/appInit.js
-
+```js title="platform/viewer/src/appInit.js"
 if (!appConfig.modes.length) {
     appConfig.modes.push(window.longitudinalMode);
     // appConfig.modes.push(window.segmentationMode);

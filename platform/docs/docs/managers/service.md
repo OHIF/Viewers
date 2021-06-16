@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+sidebar_label: Service Manager
+---
 # Services Manager
 
 ## Overview
@@ -39,9 +43,7 @@ export default class ServicesManager {
 ## Default Registered Services
 By default, `OHIF-v3` registers the following services in the `appInit`.
 
-```js
-// platform/viewer/src/appInit.js
-
+```js title="platform/viewer/src/appInit.js"
 servicesManager.registerServices([
     UINotificationService,
     UIModalService,
@@ -64,9 +66,7 @@ find out that services need to be exported as an object with `name` and `create`
 
 For instance, `ToolbarService` is exported as:
 
-```js
-// platform/core/src/services/ToolBarService/index.js
-
+```js title="platform/core/src/services/ToolBarService/index.js"
 import ToolBarService from './ToolBarService';
 
 export default {
@@ -112,9 +112,7 @@ function PanelMeasurementTableTracking({ servicesManager }) {
 ## Registering Custom Services
 You might need to write you own custom service in an extension. `preRegistration` hook inside your extension is the place for registering your custom service.
 
-```js
-// extensions/customExtension/src/index.js
-
+```js title="extensions/customExtension/src/index.js"
 import WrappedBackEndService from './services/backEndService'
 
 export default {
@@ -129,8 +127,7 @@ export default {
 and the logic for your service shall be
 
 
-```js
-// extensions/customExtension/src/services/backEndService/index.js
+```js title="extensions/customExtension/src/services/backEndService/index.js"
 import backEndService from './backEndService';
 
 export default function WrappedBackEndService(serviceManager) {

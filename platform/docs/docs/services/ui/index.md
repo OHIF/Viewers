@@ -1,7 +1,10 @@
-# UI Services
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
+# Overview
 
 
-## Overview
 
 
 <!-- - Consistent look & feel
@@ -61,9 +64,7 @@ The `ServicesManager` is:
 **There are several context providers that wraps the application routes. This
 makes the context values exposed in the app, and service's `setImplementation` can get run to override the implementation of the service.**
 
-```js
-// platform/viewer/src/App.jsx
-
+```js title="platform/viewer/src/App.jsx"
 function App({ config, defaultExtensions }) {
   /**...**/
   /**...**/
@@ -91,9 +92,7 @@ function App({ config, defaultExtensions }) {
 
 For instance `UIModalService` has the following Public API:
 
-```js
-// platform/core/src/services/UIModalService/index.js
-
+```js title="platform/core/src/services/UIModalService/index.js"
 const publicAPI = {
   name,
   hide: _hide,
@@ -121,9 +120,7 @@ export default {
 
 `UIModalService` implementation can be set (override) in its context provider. For instance in `ModalProvider` we have:
 
-```js
-// platform/ui/src/contextProviders/ModalProvider.jsx
-
+```js title="platform/ui/src/contextProviders/ModalProvider.jsx"
 import { Modal } from '@ohif/ui'
 
 const ModalContext = createContext(null)
@@ -194,9 +191,7 @@ Therefore, anywhere in the app that we have access to react context we can use i
 A `simplified` code for our worklist is:
 
 
-```js
-// platform/viewer/src/routes/WorkList/WorkList.jsx
-
+```js title="platform/viewer/src/routes/WorkList/WorkList.jsx"
 import { useModal, Header } from '@ohif/ui'
 
 function WorkList({

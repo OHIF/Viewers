@@ -1,10 +1,9 @@
+---
+sidebar_position: 2
+sidebar_label: Life Cycle
+---
 # Mode: LifeCycle
 
-
-- [Mode: LifeCycle](#mode-lifecycle)
-  - [Overview](#overview)
-  - [onModeEnter](#onmodeenter)
-  - [onModeExit](#onmodeexit)
 
 ## Overview
 Currently there are two hooks that are called for modes.

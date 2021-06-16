@@ -17,8 +17,7 @@ sidebar_position: 1
 > ATTENTION! You are looking at the docs for the `OHIF-v3` Viewer (third time is always a charm). If you're looking for the our `OHIF-v2` (React stable version) or OHIF-v1 (deprecated `Meteor` version) select it's version from the dropdown box in the top left corner
 > of this page.
 
-&nbsp;
-# Introduction
+
 
 The [Open Health Imaging Foundation][ohif-org] (OHIF) Viewer is an open source,
 web-based, medical imaging viewer. It can be configured to connect to Image
@@ -100,13 +99,13 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     </tr>
     <tr>
         <td align="left">Internationalization</td>
-        <td align="center">🔜</td>
-        <td align="center">Not Started</td>
+        <td align="center">✅</td>
+        <td align="center"></td>
     </tr>
     <tr>
         <td align="left">Drag/drop DICOM data into the viewer (see https://viewer.ohif.org/local)</td>
-        <td align="center">🔜</td>
-        <td align="center">Not Started</td>
+        <td align="center">✅</td>
+        <td align="center"></td>
     </tr>
     <tr>
         <td align="left">IHE Invoke Image Display - Standard-compliant launching of the viewer (e.g. from PACS or RIS)</td>
@@ -121,7 +120,7 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     <tr>
         <td align="left">DICOM Whole-slide imaging viewport</td>
         <td align="center">🔜</td>
-        <td align="center">Not Started</td>
+        <td align="center">In Progress</td>
     </tr>
     <tr>
         <td align="left">Displaying non-renderable DICOM as HTML</td>
@@ -140,8 +139,8 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     </tr>
     <tr>
         <td align="left">White-labelling: Easily replace the OHIF Logo with your logo</td>
-        <td align="center">🔜</td>
-        <td align="center">Not Started</td>
+        <td align="center">✅</td>
+        <td align="center"></td>
     </tr>
     <tr>
         <td align="left">DICOM upload to PACS</td>

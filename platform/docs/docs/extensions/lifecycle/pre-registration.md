@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+sidebar_label: Pre Registration
+---
 # Lifecylce Hook: preRegistration
 
 If an extension defines the `preRegistration` lifecycle hook, it is called
@@ -18,7 +22,6 @@ available in the app. We will talk more in details for creating a new service fo
 `OHIF-v3`.
 
 ```js
-
 // new service inside new extension
 import MyNewService from './MyNewService';
 

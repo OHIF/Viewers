@@ -1,8 +1,11 @@
-# Services (default)
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
+# Overview
 
 
 
-## Overview
 Data services are the first category of services which deal with handling non-ui related state
 Each services have their own internal state which they handle.
 

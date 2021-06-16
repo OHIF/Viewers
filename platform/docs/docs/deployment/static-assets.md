@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Deploy Static Assets
 
 > WARNING! All of these solutions stand-up a publicly accessible web viewer. Do
@@ -27,7 +31,7 @@ _Advanced_
 
 - [Deploy Static Assets](#deploy-static-assets)
   - [Drag-n-drop](#drag-n-drop)
-    - [Netlify: Drop](#netlify-drop)
+    - [Netlify Drop](#netlify-drop)
   - [Easy](#easy)
     - [Surge.sh](#surgesh)
     - [GitHub Pages](#github-pages)
@@ -38,9 +42,12 @@ _Advanced_
 
 ## Drag-n-drop
 
-### Netlify: Drop
+### Netlify Drop
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/551957463?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Netlify Drop"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/551957463?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 
 _GIF demonstrating deployment with Netlify Drop_
@@ -70,7 +77,7 @@ Learn more about [Netlify on their website](https://www.netlify.com/)
 > publishing. Publish HTML, CSS, and JS for free, without leaving the command
 > line.
 
-![surge.sh deploy example](../../assets/img/surge-deploy.gif)
+![surge.sh deploy example](../assets/img/surge-deploy.gif)
 
 _GIF demonstrating deployment with surge_
 

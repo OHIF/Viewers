@@ -8,7 +8,12 @@ it into an existing web application. It allows us to forego a "build step", and
 add a powerful medical imaging viewer to an existing web page using only a few
 include tags. Here's how it works:
 
-{% include "./../_embedded-viewer-diagram.md" %}
+
+
+![embeddedViewer](../../assets/img/embedded-viewer-diagram.png)
+
+
+
 
 1. Create a new web page or template that includes the following external
    dependencies:

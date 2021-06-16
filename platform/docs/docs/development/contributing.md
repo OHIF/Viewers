@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+sidebar_label: Contributing
+---
 # Contributing
 
 ## How can I help?
@@ -34,9 +38,7 @@ dependencies:
 
 On your local file system:
 
-```bash
-# code/my-projects/
-.
+```bash title="/my-projects/"
 ├── cornerstonejs/cornerstone-tools
 └── ohif/viewers
 ```
@@ -57,12 +59,11 @@ On your local file system:
 As you make changed to `cornerstone-tools`, and it's output is rebuilt, you
 should see the following behavior:
 
-<div style="text-align: center;">
-  <a href="/assets/img/cornerstone-tools-link.gif">
-    <img src="/assets/img/cornerstone-tools-link.gif" alt="Example of linked cornerstone-tools package" style="margin: 0 auto; max-width: 500px;" />
-  </a>
-  <div><i>example of linked cornerstone-tools package</i></div>
-</div>
+
+
+![tools](..//assets/img/cornerstone-tools-link.gif)
+
+
 
 If you wish to stop using your local package, run the following commands in the
 `ohif/viewers` repository root:

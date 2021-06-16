@@ -1,10 +1,7 @@
-# Viewer
-- [Viewer](./index.md)
-  - [Overview](./index.md#overview)
-  - [Study Panel](./studyPanel/study-panel.md)
-  - [Measurement Panel](./measurementPanel/measurement-panel.md)
-  - [Toolbar](./toolbar/toolbar.md)
-  - [HotKeys](./hotkeys/hotkeys.md)
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
 
 
 # Overview

@@ -1,7 +1,11 @@
+---
+sidebar_position: 6
+sidebar_label: Panel
+---
 # Module: Panel
 
 ## Overview
-UI that is intended to be displayed within a panel. The default LayoutTemplate has panels on the left and right sides, however one could make a template with panels at the top or bottom and make extensions with panels intended for such slots.
+The default LayoutTemplate has panels on the left and right sides, however one could make a template with panels at the top or bottom and make extensions with panels intended for such slots.
 
 
 An extension can register a Panel Module by defining a `getPanelModule` method.
@@ -10,18 +14,19 @@ that can be used by the consuming application. `components` are React Components
 that can be displayed in the consuming application's "Panel" Component.
 
 
-<!-- <center><i>A panel extension example</i></center> -->
 
-The `menuOptions`'s `target` key points to a registered `components`'s `id`. A
+![panel-module-v3](../../assets/img/panel-module-v3.png)
+
+
+
+The `menuOptions`'s `target` key, points to a registered `components`'s `id`. A
 `defaultContext` is applied to all `menuOption`s; however, each `menuOption` can
-optional provide it's own `context` value.
+optionally provide it's own `context` value.
 
 The `getPanelModule` receives an object containing the `ExtensionManager`'s
 associated `ServicesManager` and `CommandsManager`.
 
-![panel-module-v3](../../assets/img/panel-module-v3.png)
-
-```js
+```jsx
 import PanelMeasurementTable from './PanelMeasurementTable.js';
 
 
@@ -96,6 +101,4 @@ export default function mode({ modeConfiguration }) {
     ],
   };
 }
-
-
 ```

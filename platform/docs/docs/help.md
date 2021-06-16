@@ -1,3 +1,6 @@
+---
+sidebar_position: 15
+---
 # Help
 
 We all need a little help sometimes. Don't let a few roadblocks stand in the way

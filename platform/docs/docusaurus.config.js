@@ -45,13 +45,13 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 (module.exports = {
-  title: 'Docusaurus',
+  title: 'OHIF',
   tagline: 'Build optimized websites quickly, focus on your content',
   organizationName: 'facebook',
-  projectName: 'docusaurus',
+  projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
-  url: 'https://docusaurus.io',
+  url: 'https://ohif.org',
   i18n: {
     defaultLocale: 'en',
     locales: isDeployPreview

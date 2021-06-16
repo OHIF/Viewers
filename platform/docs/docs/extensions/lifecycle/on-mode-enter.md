@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+sidebar_label: Mode Enter
+---
 # Lifecycle Hook: onModeEnter
 
 If an extension defines the `onModeEnter` lifecycle hook, it is called

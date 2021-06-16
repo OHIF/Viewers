@@ -1,4 +1,8 @@
-# Lifecylce Hook: onModeExit
+---
+sidebar_position: 3
+sidebar_label: Mode Exit
+---
+# Lifecycle Hook: onModeExit
 
 If an extension defines the `onModeExit` lifecycle hook, it is called when navigating
 away from a mode. This hook can be used to clean up data tasks such as unregistering services,

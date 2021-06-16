@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+sidebar_label: Internationalization
+---
 # Viewer: Internationalization
 
 OHIF supports internationalization using [i18next](https://www.i18next.com/)
@@ -102,7 +106,7 @@ all.
 But, if you need to use it completely outside of OHIF viewer, you can set the
 I18nextProvider this way:
 
-```js
+```jsx
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import App from './App';
@@ -132,7 +136,7 @@ console.log(T('$t(Common:Play) my translated text'));
 
 ---
 
-# Main Concepts While Translating
+## Main Concepts While Translating
 
 ## Namespaces
 

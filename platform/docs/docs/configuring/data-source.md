@@ -1,13 +1,11 @@
-## Set up a local DICOM server
+---
+sidebar_position: 2
+sidebar_label: Data Source
+---
 
-- [Set up a local DICOM server](#set-up-a-local-dicom-server)
-  - [Requirements](#requirements)
-- [Open Source DICOM Image Archives](#open-source-dicom-image-archives)
-  - [Running Orthanc](#running-orthanc)
-    - [Orthanc: Learn More](#orthanc-learn-more)
-    - [Connecting to Orthanc](#connecting-to-orthanc)
-    - [Configuration: Learn More](#configuration-learn-more)
-  - [Running DCM4CHEE](#running-dcm4chee)
+#  Data Source
+
+## Set up a local DICOM server
 
 
 ATTENTION! Already have a remote or local server? Skip to the
@@ -176,7 +174,10 @@ DCM4chee installation is out of scope for these tutorials and can be found [here
 
 An overview of steps for running OHIF Viewer using a local DCM4CHEE is shown below:
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/557570043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Local dcm4chee"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/557570043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 
 

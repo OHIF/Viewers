@@ -1,16 +1,11 @@
+---
+sidebar_position: 1
+sidebar_label: Toolbar
+---
 # Module: Toolbar
 
 An extension can register a Toolbar Module by defining a `getToolbarModule`
 method. `OHIF-v3`'s `default` extension (`"ohif.org.default"`) provides 5 main toolbar button types:
-
-- [Module: Toolbar](#module-toolbar)
-  - [Example Toolbar Module](#example-toolbar-module)
-  - [Toolbar buttons consumed in modes](#toolbar-buttons-consumed-in-modes)
-  - [Button Definitions](#button-definitions)
-  - [Nested Buttons](#nested-buttons)
-  - [Layout Template](#layout-template)
-  - [Custom Button](#custom-button)
-  - [Custom tool](#custom-tool)
 
 
 
@@ -150,9 +145,7 @@ You can see below how `longitudinal` mode is using the available toolbarModule t
 
 ![toolbarModule-nested-buttons](../../assets/img/toolbarModule-nested-buttons.png)
 
-```js
-// modes/longitudinal/src/toolbarButtons.js
-
+```js title="modes/longitudinal/src/toolbarButtons.js"
 {
   id: 'MeasurementTools',
   type: 'ohif.splitButton',
@@ -210,7 +203,13 @@ You can see below how `longitudinal` mode is using the available toolbarModule t
 }
 ```
 
-<div style="padding:62.5% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/547957214?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Toolbar"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/547957214?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+
 
 ## Layout Template
 Layout selector button and logic is also provided by the OHIF-v3 `default` extension.
@@ -224,8 +223,9 @@ To use it, you can just add the following definition to the list of `toolDefinit
 }
 ```
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/545993263?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Viewer-layout"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
-
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/545993263?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 ## Custom Button
 You can also create your own extension, and add your new custom tool appearance (e.g., split horizantlly instead of vertically for split tool).

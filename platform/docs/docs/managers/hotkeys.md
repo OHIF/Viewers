@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+sidebar_label: Hotkeys Manager
+---
 # Hotkeys Managers
 
 ## Overview

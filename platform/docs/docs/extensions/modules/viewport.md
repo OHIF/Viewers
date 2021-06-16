@@ -1,5 +1,8 @@
+---
+sidebar_position: 5
+sidebar_label: Viewport
+---
 # Module: Viewport
-
 
 ## Overview
 Viewports consume a displaySet and display/allow the user to interact with data. An extension can register a Viewport Module by defining a `getViewportModule`
@@ -18,7 +21,7 @@ add support for:
 The general pattern is that a mode can define which `Viewport` to use for which specific
 `SOPClassHandlerUID`, so if you want to fork just a single Viewport component for a specialized mode, this is possible.
 
-```JSX
+```jsx
 // displaySet, viewportIndex, dataSource
 const getViewportModule = () => {
   const wrappedViewport = props => {
@@ -44,7 +47,7 @@ a cornerstone viewport and and action bar on top of it.
 
 
 
-```JSX
+```jsx
 function TrackedCornerstoneViewport({
   children,
   dataSource,

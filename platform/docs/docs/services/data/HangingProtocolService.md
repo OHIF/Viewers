@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+sidebar_label: Hanging Protocol Service
+---
 # Hanging Protocol Service
 
 ## Overview

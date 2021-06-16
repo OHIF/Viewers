@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+sidebar_label: UI Dialog Service
+---
 # UI Dialog Service
 
 Dialogs have similar characteristics to that of Modals, but often with a

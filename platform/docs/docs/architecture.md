@@ -1,3 +1,8 @@
+---
+sidebar_position: 7
+sidebar_label: Architecture
+---
+
 # Architecture
 
 
@@ -9,17 +14,6 @@ In order to achieve a platform that can support various workflows and be extensi
 Below, we aim to demystify that complexity by providing insight into how `OHIF Platform` is
 architected, and the role each of it's dependent libraries plays.
 
-- [Architecture](#architecture)
-  - [Overview](#overview)
-  - [Extensions](#extensions)
-  - [Modes](#modes)
-  - [Platform](#platform)
-    - [`@ohif/viewer`](#ohifviewer)
-    - [`@ohif/core`](#ohifcore)
-    - [`@ohif/ui`](#ohifui)
-  - [Overview of the architecture](#overview-of-the-architecture)
-  - [Common Questions](#common-questions)
-
 
 
 ## Overview
@@ -30,7 +24,6 @@ single project, contains many projects. If you explore our project structure,
 you'll see the following:
 
 ```bash
-.
 │
 ├── extensions
 │   ├── _example             # Skeleton of example extension
@@ -80,12 +73,12 @@ in `OHIF-v3` and their api is expanded. In summary:
 
 OHIF team maintains several high value and commonly used functionalities in its
 own extensions. For a list of extensions maintained by OHIF,
-[check out this helpful table](../extensions/index.md#maintained-extensions).
+[check out this helpful table](./extensions/index.md#maintained-extensions).
 As an example `default` extension provides a default viewer layout,
 a study/series browser and a datasource that maps to a DICOMWeb compliant backend.
 
 
-[Click here to read more about extensions!](../extensions/index.md)
+[Click here to read more about extensions!](./extensions/index.md)
 
 
 
@@ -131,7 +124,7 @@ To summarize the difference between extensions and modes in `OHIF-v3` and extens
 > - In v2 extensions are “plugins” that add functionality to a core viewer.
 > - In v3 extensions are building blocks that a mode uses to build an entire viewer layout.
 
-[Click here to read more about modes!](../modes/index.md)
+[Click here to read more about modes!](./modes/index.md)
 
 
 
@@ -169,7 +162,7 @@ These components are presentational only, so you can reuse them with whatever lo
 OHIF-v3 architecture can be seen in the following figure. We will explore each
 piece in more detail.
 
-![mode-archs](../assets/img/mode-archs.png)
+![mode-archs](./assets/img/mode-archs.png)
 
 
 
@@ -206,7 +199,7 @@ your functionality in one of the modules of your new extension,  and let the mod
 [viewers-project]: https://github.com/OHIF/Viewers
 [viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
 [pwa]: https://developers.google.com/web/progressive-web-apps/
-[configuration]: ../configuring/index.md
+[configuration]: ./configuring/index.md
 [extensions]: ../extensions/index.md
 [core-github]: https://github.com/OHIF/viewers/platform/core
 [ui-github]: https://github.com/OHIF/Viewers/tree/master/platform/ui

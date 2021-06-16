@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+sidebar_label: Measurement Service
+---
 # Measurement Service
 
 
@@ -75,9 +79,7 @@ provide three mappers:
 - `toMeasurement`: a function that converts the tool data to OHIF internal representation of measurement data.
 
 
-```js
-// extensions/cornerstone/src/utils/measurementServiceMappings/Length.js
-
+```js title="extensions/cornerstone/src/utils/measurementServiceMappings/Length.js"
 function toMeasurement(
   csToolsAnnotation,
   DisplaySetService,

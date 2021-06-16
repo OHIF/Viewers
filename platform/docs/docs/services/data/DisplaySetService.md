@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+sidebar_label: DisplaySet Service
+---
 # DisplaySet Service
 
 
@@ -7,9 +11,7 @@
 > Based on the instanceMetadata's `SOPClassHandlerId`, the correct module from the registered extensions is found by `OHIF` and its `getDisplaySetsFromSeries` runs to create a DisplaySet for the Series.
 
 
-```js
-// platform/core/src/services/DisplaySetService/DisplaySetService.js
-
+```js title="platform/core/src/services/DisplaySetService/DisplaySetService.js"
 init(extensionManager, SOPClassHandlerIds) {
   this.extensionManager = extensionManager;
   this.SOPClassHandlerIds = SOPClassHandlerIds;
@@ -19,9 +21,7 @@ init(extensionManager, SOPClassHandlerIds) {
 
 in `Mode.jsx`
 
-```js
-// platform/viewer/src/routes/Mode/Mode.jsx
-
+```js title="platform/viewer/src/routes/Mode/Mode.jsx"
 export default function ModeRoute(/** ... **/) {
   /** ... **/
   const { DisplaySetService } = servicesManager.services

@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # PWA vs Packaged
 
 It's important to know that the OHIF Viewer project provides two different build
@@ -26,7 +30,7 @@ that subsequent requests are from the local file system instead of over the
 network.
 
 You can read more about this particular strategy in our
-[Build for Production Deployment Guide](./../deployment/recipes/build-for-production.md)
+[Build for Production Deployment Guide](./../deployment/build-for-production.md)
 
 ## Commonjs Bundle (Packaged Script)
 

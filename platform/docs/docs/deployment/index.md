@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
 # Deployment
 
 The OHIF Viewer can be embedded in other web applications via it's [packaged
@@ -139,7 +143,7 @@ The returned JSON object must contain a single root object with a 'studies' arra
 You can read more about using different data sources for mode's routes [here](../modes/routes.md#route-path)
 
 *Sample JSON format:*
-```JSON
+```json
 {
     "studies": [
       {

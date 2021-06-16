@@ -1,13 +1,9 @@
+---
+sidebar_position: 2
+sidebar_label: Commands
+---
 # Module: Commands
 
-
-
-- [Module: Commands](#module-commands)
-  - [Overview](#overview)
-  - [Command Definitions](#command-definitions)
-  - [Command Behavior](#command-behavior)
-  - [`CommandsManager` Public API](#commandsmanager-public-api)
-    - [Contexts](#contexts)
 
 ## Overview
 `CommandsModule` includes list of arbitrary functions. These may activate tools, communicate with a server, open a modal, etc.

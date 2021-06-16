@@ -1,9 +1,15 @@
-Module: Hanging Protocol
+---
+sidebar_position: 8
+sidebar_label: Hanging Protocol
+---
+# Module: Hanging Protocol
 
 ## Overview
 `hangingProtocolModule` provides the protocols for hanging the displaySets in the viewer.
 This module can be as simple as loading a list of pre-defined protocols, or it can be more complex
 and `fetch` the protocols from a server.
+
+You can read more about hanging protocols in HangingProtocolService.
 
 ```js
 const deafultProtocol = {

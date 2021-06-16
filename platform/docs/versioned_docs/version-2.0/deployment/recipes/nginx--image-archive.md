@@ -61,7 +61,6 @@ CORS][understanding-cors]
 
 This setup allows us to create a setup similar to the one pictured below:
 
-<!-- {% include "./../_nginx-image-archive-diagram.md" %} -->
 ![nginX](../../assets/img/nginx-image-archive.png)
 
 

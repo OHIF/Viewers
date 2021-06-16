@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+sidebar_label: DICOM Metadata Store
+---
 # DICOM Metadata Store
 
 
@@ -62,9 +66,7 @@ stored and in what format and hierarchy. `_model` is a private variable in the s
 which holds all the metadata for all studies, series, and instances, and it looks like:
 
 
-```js
-// platform/core/src/services/DicomMetadataStore/DicomMetadataStore.js
-
+```js title="platform/core/src/services/DicomMetadataStore/DicomMetadataStore.js"
 const _model = {
   studies: [
     {
@@ -107,5 +109,4 @@ const _model = {
     },
   ],
 }
-
 ```

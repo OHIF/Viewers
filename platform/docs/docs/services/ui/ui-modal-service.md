@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+sidebar_label: UI Modal Service
+---
 # UI Modal Service
 
 Modals have similar characteristics to that of Dialogs, but are often larger,
@@ -11,7 +15,10 @@ be centered, and not draggable. They're commonly used when:
 If you're curious about the DOs and DON'Ts of dialogs and modals, check out this
 article: ["Best Practices for Modals / Overlays / Dialog Windows"][ux-article]
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/549261451?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Viewer Modal"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/549261451?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 ## Interface
 

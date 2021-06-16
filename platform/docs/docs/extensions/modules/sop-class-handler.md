@@ -1,5 +1,8 @@
+---
+sidebar_position: 4
+sidebar_label: SOP Class Handler
+---
 # Module: SOP Class Handler
-
 
 ## Overview
 This module defines how a specific DICOM SOP class should be processed to make a displaySet, something that can be hung in a viewport. An extension can register a [SOP Class][sop-class-link] Handler Module by defining a `getSopClassHandlerModule` method. The [SOP Class][sop-class-link].

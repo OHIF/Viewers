@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+sidebar_label: Pub Sub
+---
 # Pub sub
 
 ## Overview
@@ -64,8 +68,7 @@ You need to be careful if you are adding custom subscriptions to the app. Each s
 
 Below, we can see `simplified` `Mode.jsx` and the corresponding `useEffect` where the unsubscription functions are executed upon destruction.
 
-```js
-// platform/viewer/src/routes/Mode/Mode.jsx
+```js title="platform/viewer/src/routes/Mode/Mode.jsx"
 export default function ModeRoute(/**..**/) {
   /**...**/
   useEffect(

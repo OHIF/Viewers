@@ -1,8 +1,9 @@
+---
+sidebar_position: 4
+sidebar_label: Validity
+---
 # Mode: Validity
 
-- [Mode: Validity](#mode-validity)
-  - [Overview](#overview)
-  - [isValidMode](#isvalidmode)
 
 ## Overview
 There are two mechanism for checking the validity of a mode for a study.

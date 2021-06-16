@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Nginx + Image Archive
 
 > DISCLAIMER! We make no claims or guarantees of this approach's security. If in
@@ -11,7 +15,7 @@ control.
 Do not use this recipe to host sensitive medical data on the open web. Depending
 on your company's policies, this may be an appropriate setup on an internal
 network when protected with a server's basic authentication. For a more robust
-setup, check out our [user account control recipe](./user-account-control.md)
+setup, check out our [user account control recipe](./user-account-control)
 that builds on the lessons learned here.
 
 ## Overview
@@ -58,7 +62,9 @@ CORS][understanding-cors]
 
 This setup allows us to create a setup similar to the one pictured below:
 
-{% include "./../_nginx-image-archive-diagram.md" %}
+
+![nginX](../assets/img/nginx-image-archive.png)
+
 
 - All web requests are routed through `nginx` on our `OpenResty` image
 - `/pacs` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints
@@ -89,7 +95,10 @@ in command prompt or terminal_
 You can see the overview of the mentioned steps:
 
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/554726410?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="NginX Deployment"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/554726410?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 <!-- ### Setup
 

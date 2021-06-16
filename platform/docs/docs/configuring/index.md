@@ -1,14 +1,9 @@
-# Configuring Data Source
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
 
-
-
-- [Configuring Data Source](#configuring-data-source)
-  - [Overview](#overview)
-  - [Configuration Files](#configuration-files)
-  - [Environment Variables](#environment-variables)
-
-
-## Overview
+# Overview
 
 After following the steps outlined in
 [Getting Started](./../development/getting-started.md), you'll notice that the
@@ -31,9 +26,8 @@ and registered extension's features, are configured using this file.
 
 The simplest way is to update the existing default config:
 
-> _/platform/viewer/public/config/default.js_
 
-```js
+```js title="platform/viewer/public/config/default.js"
 window.config = {
   routerBasename: '/',
   extensions: [],

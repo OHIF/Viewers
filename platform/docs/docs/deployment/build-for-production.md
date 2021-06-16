@@ -1,10 +1,9 @@
+---
+sidebar_position: 2
+---
+
 # Build for Production
 
-> If you've already followed the
-> ["Getting Started" Guide](/development/getting-started.md), you can skip ahead
-> to [Configuration](#configuration)
-
-## Overview
 
 ### Build Machine Requirements
 
@@ -33,7 +32,7 @@ _From .zip:_
 Open your terminal, and navigate to the directory containing the source files.
 Next run these commands:
 
-```js
+```bash
 // If you haven't already, enable yarn workspaces
 yarn config set workspaces-experimental true
 
@@ -47,8 +46,7 @@ yarn run build
 If everything worked as expected, you should have a new `dist/` directory in the
 project's folder. It should roughly resemble the following:
 
-```bash
-<root>platform/viewer/dist/
+```bash title="<root>platform/viewer/dist/"
 ├── app-config.js
 ├── app.bundle.js
 ├── app.css
@@ -73,7 +71,7 @@ and registered extension's features, are configured using this file.
 
 The easiest way to apply your own configuration is to modify the `default.js`
 file. For more advanced cofiguration options, check out our
-[configuration essentials guide](/configuring/index.md).
+[configuration essentials guide](../configuring/index.md).
 
 ## Next Steps
 
@@ -81,18 +79,18 @@ file. For more advanced cofiguration options, check out our
 
 _Drag-n-drop_
 
-- [Netlify: Drop](/deployment/recipes/static-assets.md#netlify-drop)
+- [Netlify: Drop](./static-assets#netlify-drop)
 
 _Easy_
 
-- [Surge.sh](/deployment/recipes/static-assets.md#surgesh)
-- [GitHub Pages](/deployment/recipes/static-assets.md#github-pages)
+- [Surge.sh](./static-assets#surgesh)
+- [GitHub Pages](./static-assets#github-pages)
 
 _Advanced_
 
-- [AWS S3 + Cloudfront](/deployment/recipes/static-assets.md#aws-s3--cloudfront)
-- [GCP + Cloudflare](/deployment/recipes/static-assets.md#gcp--cloudflare)
-- [Azure](/deployment/recipes/static-assets.md#azure)
+- [AWS S3 + Cloudfront](./static-assets#aws-s3--cloudfront)
+- [GCP + Cloudflare](./static-assets#gcp--cloudflare)
+- [Azure](./static-assets#azure)
 
 ### Testing Build Output Locally
 
@@ -100,7 +98,7 @@ A quick way to test your build output locally is to spin up a small webserver.
 You can do this by running the following commands in the `dist/` output
 directory:
 
-```js
+```bash
 // Install http-server as a globally available package
 yarn global add http-server
 
@@ -111,7 +109,10 @@ yarn global add http-server
 npx http-server ./dist
 ```
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/551957266?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="HTTP Server Deploy"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/551957266?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 ### Automating Builds and Deployments
 

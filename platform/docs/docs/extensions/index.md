@@ -1,7 +1,9 @@
-# Extensions
+---
+sidebar_position: 1
+sidebar_label: Introduction
+---
 
-
-## Overview
+# Introduction
 We have re-designed the architecture of the `OHIF-v3` to enable building applications
 that are easily extensible to various use cases (modes) that  behind the scene would utilize desired functionalities (extensions) to reach the goal of the use case.
 
@@ -70,7 +72,8 @@ A small number of powerful extensions for popular use cases are maintained by
 OHIF. They're co-located in the [`OHIF/Viewers`][viewers-repo] repository, in
 the top level [`extensions/`][ext-source] directory.
 
-<!-- <table>
+
+<table>
     <thead>
         <tr>
             <th>Extension</th>
@@ -102,6 +105,7 @@ the top level [`extensions/`][ext-source] directory.
             </td>
             <td>ViewportModule, CommandsModule</td>
         </tr>
+        <tr>
             <td>
                 <a href="https://www.npmjs.com/package/@ohif/extension-dicom-pdf">DICOM PDF</a>
             </td>
@@ -129,8 +133,7 @@ the top level [`extensions/`][ext-source] directory.
             <td> ContextModule,PanelModule,ViewportModule,CommandsModule</td>
         </tr>
     </tbody>
-</table> -->
-
+</table>
 
 ## Registering an Extension
 
@@ -158,7 +161,6 @@ import MySecondExtension from '@ohif/extension-second'
 
 const extensionConfig = {/* extension configuration */}
 
-// prettier-ignore
 const config = {
   routerBasename: '/',
   extensions: [
@@ -193,9 +195,9 @@ You can update the list of bundled extensions by:
 
 1. Having your `@ohif/viewer` project depend on the extension
 2. Importing and adding it to the list of extensions in the
-   `<repo-root>/platform/src/index.js` entrypoint:
+   entrypoint:
 
-  ```js
+  ```js title="<repo-root>/platform/src/index.js"
   import OHIFDefaultExtension from '@ohif/extension-default';
   import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
   import OHIFMeasurementTrackingExtension from '@ohif/extension-measurement-tracking';
@@ -242,10 +244,94 @@ Each module type has a special purpose, and is consumed by our viewer
 differently.
 
 
-{% include "./_modules.md" %}
+<table>
+  <thead>
+    <tr>
+      <th align="left" width="30%">
+        Types
+      </th>
+      <th align="left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="left">
+        <a href="./modules/layout-template.md">
+          LayoutTemplate (NEW)
+        </a>
+      </td>
+      <td align="left">Control Layout of a route</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/data-source.md">
+          DataSource (NEW)
+        </a>
+      </td>
+      <td align="left">Control the mapping from DICOM metadata to OHIF-metadata</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/sop-class-handler.md">
+          SOPClassHandler
+        </a>
+      </td>
+      <td align="left">Determines how retrieved study data is split into "DisplaySets"</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/panel.md">
+          Panel
+        </a>
+      </td>
+      <td align="left">Adds left or right hand side panels</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/viewport.md">
+          Viewport
+        </a>
+      </td>
+      <td align="left">Adds a component responsible for rendering a "DisplaySet"</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/commands.md">
+          Commands
+        </a>
+      </td>
+      <td align="left">Adds named commands, scoped to a context, to the CommandsManager</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/toolbar.md">
+          Toolbar
+        </a>
+      </td>
+      <td align="left">Adds buttons or custom components to the toolbar</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/context.md">
+          Context
+        </a>
+      </td>
+      <td align="left">Shared state for a workflow or set of extension module definitions</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/hpModule.md">
+          HangingProtocol
+        </a>
+      </td>
+      <td align="left">Adds hanging protocol rules</td>
+    </tr>
+  </tbody>
+</table>
 
 
-<figure style="text-align: center; font-style: italic;">Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</figure>
+<span style={{"textAlign": 'center', 'fontStyle': 'italic'}}>Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</span>
+
 
 
 

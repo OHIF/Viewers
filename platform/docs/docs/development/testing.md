@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+sidebar_label: Testing
+---
 # Running Tests for OHIF
 
 We introduce here various test types that is available
@@ -7,7 +11,7 @@ part of this page.
 
 ## Unit test
 To run the unit test:
-```
+```bash
 yarn run test:unit:ci
 ```
 
@@ -23,7 +27,7 @@ For running the OHIF e2e test you need to run the following steps:
 - Create a mini-pacs for OHIF to access the images for testing. We download
 and run our lightweight implementation which provides a collection of DICOM studies ([source code][mini-pacs]).
 
-  ```
+  ```bash
   docker run -p 5985:5985 -p 5984:5984 -e USE_POUCHDB=true -e DB_SERVER=http://0.0.0.0 ohif/viewer-testdata:0.1-test
   ```
 
@@ -33,7 +37,7 @@ and run our lightweight implementation which provides a collection of DICOM stud
 
 - Open a new terminal, navigate to the OHIF project, and run OHIF with the dicom-server config
 
-  ```
+  ```bash
   APP_CONFIG=config/dicomweb-server.js yarn start
   ```
 
@@ -43,7 +47,7 @@ and run our lightweight implementation which provides a collection of DICOM stud
 
 - Open a new terminal inside the OIHF project, and run the e2e cypress test
 
-  ```
+  ```bash
   yarn run test:e2e
   ```
 
@@ -63,7 +67,7 @@ and run our lightweight implementation which provides a collection of DICOM stud
 
 
 
-# Testing Philosiphy
+## Testing Philosiphy
 
 > Testing is an opinionated topic. Here is a rough overview of our testing
 > philosophy. See something you want to discuss or think should be changed? Open

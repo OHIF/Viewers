@@ -1,4 +1,15 @@
+---
+sidebar_position: 1
+sidebar_label: Config
+---
 # Viewer: Configuration
+
+The OHIF Viewing Platform strives to be highly configurable and extensible. This
+makes it easier for our community members to keep their "secret sauce" private,
+and incentives contributions back to the platform. The `@ohif/viewer` project
+of the platform is the lynchpin that combines everything to create our
+application.
+
 
 We maintain a number of common viewer application configurations at
 [`<root>/platform/viewer/public/configs`][config-dir].
@@ -6,7 +17,7 @@ We maintain a number of common viewer application configurations at
 You can take a look at how to use different configs in the [Environment Variables](../configuring/index.md#environment-variables)
 
 
-```js
+```js title="<root>/platform/viewer/public/configs"
 window.config = {
   routerBasename: '/',
   /**
