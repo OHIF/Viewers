@@ -224,11 +224,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     liveCodeBlock: {
       playgroundPosition: 'bottom',
     },
-    hideableSidebar: true,
+    hideableSidebar: false,
     colorMode: {
-      defaultMode: 'light',
+      defaultMode: 'dark',
       disableSwitch: false,
-      respectPrefersColorScheme: true,
+      // respectPrefersColorScheme: true,
     },
     // announcementBar: {
     //   id: 'v1-new-domain',
@@ -298,98 +298,71 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     },
     footer: {
       style: 'dark',
-      // links: [
-      //   {
-      //     title: 'Learn',
-      //     items: [
-      //       {
-      //         label: 'Introduction',
-      //         to: 'docs',
-      //       },
-      //       {
-      //         label: 'Installation',
-      //         to: 'docs/installation',
-      //       },
-      //       {
-      //         label: 'Migration from v1 to v2',
-      //         to: 'docs/migration',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     title: 'Community',
-      //     items: [
-      //       {
-      //         label: 'Stack Overflow',
-      //         href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-      //       },
-      //       {
-      //         label: 'Feedback',
-      //         to: 'feedback',
-      //       },
-      //       {
-      //         label: 'Discord',
-      //         href: 'https://discordapp.com/invite/docusaurus',
-      //       },
-      //       {
-      //         label: 'Help',
-      //         to: '/community/support',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     title: 'More',
-      //     items: [
-      //       {
-      //         label: 'Blog',
-      //         to: 'blog',
-      //       },
-      //       {
-      //         label: 'GitHub',
-      //         href: 'https://github.com/OHIF/Viewers',
-      //       },
-      //       {
-      //         label: 'Twitter',
-      //         href: 'https://twitter.com/docusaurus',
-      //       },
-      //       {
-      //         html: `
-      //           <a href="https://www.netlify.com" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-      //             <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
-      //           </a>
-      //         `,
-      //       },
-      //     ],
-      //   },
-      // {
-      //   title: 'Legal',
-      //   // Please do not remove the privacy and terms, it's a legal requirement.
-      //   items: [
-      //     {
-      //       label: 'Privacy',
-      //       href: 'https://opensource.facebook.com/legal/privacy/',
-      //     },
-      //     {
-      //       label: 'Terms',
-      //       href: 'https://opensource.facebook.com/legal/terms/',
-      //     },
-      //     {
-      //       label: 'Data Policy',
-      //       href: 'https://opensource.facebook.com/legal/data-policy/',
-      //     },
-      //     {
-      //       label: 'Cookie Policy',
-      //       href: 'https://opensource.facebook.com/legal/cookie-policy/',
-      //     },
-      //   ],
-      // },
-      // ],
+      links: [
+        {
+          title: 'Learn',
+          items: [
+            {
+              label: 'Introduction',
+              to: '/',
+            },
+            {
+              label: 'Installation',
+              to: 'development/getting-started',
+            },
+          ],
+        },
+        {
+          title: 'Community',
+          items: [
+            {
+              label: 'Feedback',
+              to: 'https://community.ohif.com/',
+            },
+            {
+              label: 'Discourse Forum',
+              href: 'https://community.ohif.com/',
+            },
+            {
+              label: 'Help',
+              to: '/help',
+            },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'GitHub',
+              href: 'https://github.com/OHIF/Viewers',
+            },
+            {
+              label: 'Twitter',
+              href: 'https://twitter.com/OHIFviewer',
+            },
+            {
+              html: `
+                <a href="https://viewer.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
+                  <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
+                </a>
+              `,
+            },
+          ],
+        },
+        {
+          title: 'Legal',
+          // Please do not remove the privacy and terms, it's a legal requirement.
+          items: [
+
+          ],
+        },
+      ],
       logo: {
         alt: 'OHIF ',
-        src: 'img/ohif.svg',
+        src: 'img/logo-ohif.svg',
         href: 'https://ohif.org',
       },
-      copyright: `Copyright © OHIF`,
+      copyright: `MIT © OHIF`,
     },
   },
 });

@@ -327,7 +327,59 @@ Run the project as following to get full debug information:
 REACT_APP_I18N_DEBUG=true yarn run dev
 ```
 
-### Contributing with new languages
+## Contributing with new languages
 
-Contributions of any kind are welcome! Please check the
-[instructions](../development/contributing.md).
+We have integrated `i18next` into the OHIF Viewer and hooked it up with Locize for translation management. Now we need your help to get the app translated into as many languages as possible, and ensure that we haven't missed pieces of the app that need translation. Locize has graciously offered to provide us with free usage of their product.
+
+Once each crowd-sourcing project is completed, we can approve it and merge the changes into the main project. At that point, the language will be immediately available on https://viewer.ohif.org/ for testing, and can be used in any OHIF project. We will support usage through both the Locize CDN and by copying the language directly into the `@ohif/i18n` package, so that end users can serve the content from their own domains.
+
+Here are a couple examples:
+
+Spanish:
+https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78?lng=es
+
+Chinese:
+https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78?lng=zh
+
+Portugese:
+https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78?lng=pt-BR
+
+Here are some links you can use to sign up to help translate. All you have to do is sign up, translate the strings, and click Save. On our side, we have a dashboard to see how many strings are translated and by whom.
+
+This is a pretty random set of languages, so please post below if you'd like a new language link to be added:
+
+Languages:
+
+[French](https://www.locize.io/register?invitation=Nj8jRPaFKYwtIfNZ6Y5GVOJOpeiXNAdVuSiOg9ceaiveP6uF6y1wVXM9lgfKoYZX)
+
+[German](https://www.locize.io/register?invitation=gChNiVi66YINTPpbKESVAVYPapwg3DkpvMSSomLTvVqBJTXrdmPvxi0WZYHER11q)
+
+[Dutch](https://www.locize.io/register?invitation=2PGe7I184aN0cazM4GXMhzeLtGTf9Zen5uyOEFhHQ8vYkfKHkgR0mJ8dwbNlIeCG)
+
+[Turkish](https://www.locize.io/register?invitation=NOMIXsfneqPbFDqjce5wI7Z6p2swXSjc0rHOH4KLcM6qXSNA4LGyJaLxS7nqWAe3)
+
+[Chinese](https://www.locize.io/register?invitation=lrcUbt7DvV4aJmQeEA4SMAj5xNWr3rltOcaZW1cFc6eod0nvzSPFU4V383tDHGGn)
+
+[Japanese](https://www.locize.io/register?invitation=AaRq2S22o5FsxArwgVuw1gZcQjoe2ffyxarqlAXOpN7JnR2sf2mfamc5qV6LG1Mn)
+
+[Arabic](https://www.locize.io/register?invitation=BiqI6fOm1sC84N3YJLbImXmaOCk8Hc3TMGpXg7NH2R0b0OKuPCp9wlCHLoqMRpfQ)
+
+[Hindi](https://www.locize.io/register?invitation=ph7JmOGTV95DF3EFaI1kvK5Hx98dV9w2wj9h9UhUCWnkBNAwWEdWMcyjnF94zkWb)
+
+[Malay](https://www.locize.io/register?invitation=HsV9F5mKZyeUZYrC3XFRzNI2l0EsIh6hK0MUIKP8IYZA3GxuzfgkvWBLCFwCpDik)
+
+[Russian](https://www.locize.io/register?invitation=da4V9Q8DVO3M1FIlvfT50ZiS8NDNgvC0dE5hHUEAp47FXy6pLXmf1cp2lgLBfLmb)
+
+[Swedish](https://www.locize.io/register?invitation=uR4kzBZC1vhJe6jyMwYXgGPj84QDMulQRlt2s6rONU6ljUh5dgwuUyhJEtZ4REA3)
+
+[Italian](https://www.locize.io/register?invitation=viAS1NC5q342OxtuIv3JFX9DJ3KoR4SmGoElkBlRMphsDKt4hy9bW8JfBjHlfnd7)
+
+[Spanish](https://www.locize.io/register?invitation=ZikXW3KI4w4eo5Cf6L1aQMWaR69XAQ0a9Va3NGorH7mAPvEPXp8w8NLkPNLs5nG8)
+
+[Ukrainian](https://www.locize.io/register?invitation=TY0s6onqH3Asl05Bh1qB44SNSABL2pTYoturwxAmcNKRnzBZFK7bGfn7kVi23Vpg)
+
+[Vietnamese](https://www.locize.io/register?invitation=eqfHDm0vaqxGfQ5TGt6SeV0dx9b2dCp1RrMRdIRavqzOCOAfD3IElzUsyIT689cK)
+
+[Portugese-Brazil](https://www.locize.io/register?invitation=Qc5Dq449xbblQqLTpWeMfsyFiu3gACcgpj0EIucQjjs9Ph9pzPLpq3MnZupF9t6N)
+
+Don't see your language in the above list? Add a request [here](https://github.com/OHIF/Viewers/issues/618) so that we can create the language for your translation contribution.
