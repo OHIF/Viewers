@@ -1,26 +1,60 @@
-import React from 'react';
-import { Route, Switch, withRouter } from 'react-router';
+import React, { useEffect } from 'react';
+import { Route, Routes, useLocation } from 'react-router';
 import CallbackPage from '../routes/CallbackPage';
-import { connect } from 'react-redux';
+import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
 
-function Authenticator({
-                         appRoutes,
+function SignInOrRedirect({ userManager, UserAuthenticationService }) {
+  debugger;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function signIn() {
+      const user = await userManager.getUser();
+      if (cancelled) {
+        return;
+      }
+
+      if (user) {
+        userManager.signinSilent().then(user => {
+          console.warn(user);
+
+          UserAuthenticationService.setUser(user);
+          debugger;
+        });
+      } else {
+        userManager.signinRedirect();
+      }
+    };
+
+    signIn();
+    return () => { cancelled = true; };
+  }, [userManager]);
+
+  return null;
+}
+
+function Authenticator({ children,
                          userManager,
                          user,
                          oidcAuthority,
-                         location,
-                         routerBasename}) {
+                         routerBasename,
+                         UserAuthenticationService
+                        }) {
   const userLoggedIn = userManager && user && !user.expired;
 
   if (userLoggedIn) {
-    return appRoutes;
+    return children;
   }
 
+  const location = useLocation();
   const { pathname, search } = location;
 
-  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname.replace(routerBasename,'')
-  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri).pathname.replace(routerBasename,'')
-  const post_logout_redirect_uri = new URL(userManager.settings._post_logout_redirect_uri).pathname.replace(routerBasename,'');
+  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname//.replace(routerBasename,'')
+  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri)//.pathname.replace(routerBasename,'')
+  const post_logout_redirect_uri = new URL(userManager.settings._post_logout_redirect_uri)//.pathname.replace(routerBasename,'');
+
+  // const pathnameRelative = pathname.replace(routerBasename,'');
 
   if (pathname !== redirect_uri) {
     sessionStorage.setItem(
@@ -30,16 +64,14 @@ function Authenticator({
   }
 
   return (
-    <Switch>
+    <Routes basename={routerBasename}>
       <Route
-        exact
         path={silent_refresh_uri}
         onEnter={window.location.reload}
       />
       <Route
-        exact
         path={post_logout_redirect_uri}
-        render={() => (
+        element={
           <SignoutCallbackComponent
             userManager={userManager}
             successCallback={() => console.log('Signout successful')}
@@ -48,15 +80,19 @@ function Authenticator({
               console.warn('Signout failed');
             }}
           />
-        )}
+        }
       />
       <Route
         path={redirect_uri}
-        render={() => <CallbackPage userManager={userManager} />}
+        element={<CallbackPage userManager={userManager} onRedirectSuccess={(user) => {
+          debugger;
+
+          UserAuthenticationService.setUser(user);
+        }}/>}
       />
       <Route
         path="/login"
-        component={() => {
+        render={() => {
           const queryParams = new URLSearchParams(location.search);
           const iss = queryParams.get('iss');
           const loginHint = queryParams.get('login_hint');
@@ -98,33 +134,11 @@ function Authenticator({
         }}
       />
       <Route
-        component={() => {
-          userManager.getUser().then(user => {
-            if (user) {
-              userManager.signinSilent();
-            } else {
-              userManager.signinRedirect();
-            }
-          });
-
-          return null;
-        }}
+        path="*"
+        children={<SignInOrRedirect userManager={userManager}/>}
       />
-    </Switch>
+    </Routes>
   );
 }
 
-const mapStateToProps = state => {
-  return {
-    user: state.user,
-  };
-};
-
-const ConnectedAuthenticator = connect(
-  mapStateToProps,
-  null
-)(Authenticator);
-
-const AuthenticatorWithRouter = withRouter(ConnectedAuthenticator);
-
-export default AuthenticatorWithRouter;
+export default Authenticator;

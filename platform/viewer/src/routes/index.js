@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
 import WorkList from './WorkList';
@@ -14,13 +14,11 @@ const bakedInRoutes = [
   // WORK LIST
   {
     path: '/',
-    exact: true,
     component: DataSourceWrapper,
     props: { children: WorkList },
   },
   {
     path: '/local',
-    exact: true,
     component: Local,
   },
   // NOT FOUND (404)
@@ -33,6 +31,7 @@ const createRoutes = ({
   extensionManager,
   servicesManager,
   hotkeysManager,
+  routerBasename,
 }) => {
   const routes =
     buildModeRoutes({
@@ -45,31 +44,37 @@ const createRoutes = ({
 
   const allRoutes = [...routes, ...bakedInRoutes];
 
+  debugger;
+
+  function DynamicRoute({ route, ...rest }) {
+    debugger;
+
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    return (
+      <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
+        <route.component
+          {...rest}
+          {...route.props}
+          route={route}
+          servicesManager={servicesManager}
+          hotkeysManager={hotkeysManager}
+        />
+      </ErrorBoundary>
+    );
+  }
+
   return (
-    <Switch>
+    <Routes basename={routerBasename}>
       {allRoutes.map((route, i) => {
         return (
           <Route
             key={i}
             path={route.path}
-            exact={route.exact}
-            strict={route.strict}
-            render={props => (
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
-                <route.component
-                  {...props}
-                  {...route.props}
-                  route={route}
-                  servicesManager={servicesManager}
-                  hotkeysManager={hotkeysManager}
-                />
-              </ErrorBoundary>
-            )}
+            children={<DynamicRoute route={route} />}
           />
         );
       })}
-    </Switch>
+    </Routes>
   );
 };
 

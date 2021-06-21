@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 // TODO: This may fail if package is split from PWA build
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
 
 function Header({ children, menuOptions, isReturnEnabled, isSticky, WhiteLabeling }) {
   const { t } = useTranslation('Header');
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
   const onReturnHandler = () => {
     if (isReturnEnabled) {
-      history.push('/');
+      navigate('/');
     }
   };
 

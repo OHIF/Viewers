@@ -75,11 +75,13 @@ export default class ExtensionManager {
       MeasurementService,
       ViewportGridService,
       HangingProtocolService,
+      UserAuthenticationService,
     } = _servicesManager.services;
 
     MeasurementService.clearMeasurements();
     ViewportGridService.reset();
     HangingProtocolService.reset();
+    UserAuthenticationService.reset();
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];

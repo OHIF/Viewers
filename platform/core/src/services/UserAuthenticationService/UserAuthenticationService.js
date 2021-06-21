@@ -15,7 +15,8 @@ const serviceImplementation = {
   _getState: () => console.warn('getState() NOT IMPLEMENTED'),
   _setUser: () => console.warn('_setUser() NOT IMPLEMENTED'),
   _getUser: () => console.warn('_setUser() NOT IMPLEMENTED'),
-  _getAuthorizationHeader: () => console.warn('_getAuthorizationHeader() NOT IMPLEMENTED'),
+  _getAuthorizationHeader: () =>
+    console.warn('_getAuthorizationHeader() NOT IMPLEMENTED'),
   _reset: () => console.warn('reset() NOT IMPLEMENTED'),
   _set: () => console.warn('set() NOT IMPLEMENTED'),
 };
@@ -25,6 +26,7 @@ function _getState() {
 }
 
 function _setUser(user) {
+  debugger;
   return serviceImplementation._setUser(user);
 }
 

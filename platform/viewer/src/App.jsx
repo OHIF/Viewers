@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import { OidcProvider, reducer as oidcReducer } from 'redux-oidc';
+import Compose from './routes/Mode/Compose.js';
 
 import {
   DialogProvider,
@@ -24,26 +22,15 @@ import {
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
-import history from './history'
-import UserManagerContext from './context/UserManagerContext';
 import getUserManagerForOpenIdConnectClient from './utils/getUserManagerForOpenIdConnectClient.js';
-import ReduxOIDCClientToUserAuthenticationService from './utils/ReduxOIDCClientToUserAuthenticationService.jsx';
 import Authenticator from './utils/Authenticator.jsx';
 
 // TODO: Temporarily for testing
 import '@ohif/mode-longitudinal';
 
-const store = createStore(oidcReducer);
-window.store = store;
-
-/**
- * ENV Variable to determine routing behavior
- */
-const OHIFRouter = BrowserRouter
-
 let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
-const initUserManager = (oidc, routerBasename, store) => {
+const initUserManager = (oidc, routerBasename) => {
   if (!oidc || !oidc.length) {
     return;
   }
@@ -70,10 +57,7 @@ const initUserManager = (oidc, routerBasename, store) => {
     ),
   });
 
-  return getUserManagerForOpenIdConnectClient(
-    store,
-    openIdConnectConfiguration
-  );
+  return getUserManagerForOpenIdConnectClient(openIdConnectConfiguration);
 }
 
 function App({ config, defaultExtensions }) {
@@ -88,7 +72,7 @@ function App({ config, defaultExtensions }) {
   // Set appConfig
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc } = appConfigState;
-  const userManager = initUserManager(oidc, routerBasename, store);
+  const userManager = initUserManager(oidc, routerBasename);
 
   // Use config to create routes
   const appRoutes = createRoutes({
@@ -97,86 +81,66 @@ function App({ config, defaultExtensions }) {
     extensionManager,
     servicesManager,
     hotkeysManager,
+    routerBasename,
   });
   const {
     UIDialogService,
     UIModalService,
     UINotificationService,
     UIViewportDialogService,
-    ViewportGridService, // TODO: Should this be a "UI" Service?
+    ViewportGridService,
     CineService,
     UserAuthenticationService,
   } = servicesManager.services;
 
-  // FIXME: We can no longer control browser history from outside of the component
-  // since we need to provide the basename. We need another component or solution
-  // since we cannot use the Router directly (it does not support basename)
-  // history={history}
+  const providers = [
+    [AppConfigProvider, { value: appConfigState }],
+    [I18nextProvider, { i18n }],
+    [ThemeWrapper],
+    // [UserAuthenticationProvider, { service: UserAuthenticationService}],
+    [ViewportGridProvider, {service: ViewportGridService}],
+    [ViewportDialogProvider, {service: UIViewportDialogService}],
+    [CineProvider, {service: CineService}],
+    [SnackbarProvider, {service: UINotificationService}],
+    [DialogProvider, {service: UIDialogService}],
+    [ModalProvider, {service: UIModalService, modal: Modal}],
+  ]
+  const CombinedProviders = ({ children }) =>
+    Compose({ components: providers, children });
+
+  let routes;
 
   if (userManager) {
-    return (
-      <AppConfigProvider value={appConfigState}>
-        <Provider store={store}>
-          <I18nextProvider i18n={i18n}>
-            <OidcProvider store={store} userManager={userManager}>
-              <UserManagerContext.Provider value={userManager}>
-                <OHIFRouter basename={routerBasename}>
-                  <ThemeWrapper>
-                    <UserAuthenticationProvider service={UserAuthenticationService}>
-                      <ReduxOIDCClientToUserAuthenticationService service={UserAuthenticationService}/>
-                        <ViewportGridProvider service={ViewportGridService}>
-                          <ViewportDialogProvider service={UIViewportDialogService}>
-                            <CineProvider service={CineService}>
-                              <SnackbarProvider service={UINotificationService}>
-                                <DialogProvider service={UIDialogService}>
-                                  <ModalProvider modal={Modal} service={UIModalService}>
-                                    <Authenticator
-                                      appRoutes={appRoutes}
-                                      userManager={userManager}
-                                      oidcAuthority={oidc[0].authority}
-                                      routerBasename={routerBasename}
-                                    />
-                                  </ModalProvider>
-                                </DialogProvider>
-                              </SnackbarProvider>
-                            </CineProvider>
-                          </ViewportDialogProvider>
-                      </ViewportGridProvider>
-                    </UserAuthenticationProvider>
-                  </ThemeWrapper>
-                </OHIFRouter>
-              </UserManagerContext.Provider>
-            </OidcProvider>
-          </I18nextProvider>
-        </Provider>
-      </AppConfigProvider>
-    )
+    const getAuthorizationHeader = (user) => {
+      return {
+        Authorization: `Bearer ${user.access_token}`
+      };
+    }
+
+    UserAuthenticationService.setServiceImplementation({
+      getAuthorizationHeader
+    });
+
+    routes = (<Authenticator
+                userManager={userManager}
+                oidcAuthority={oidc[0].authority}
+                routerBasename={routerBasename}
+                UserAuthenticationService={UserAuthenticationService}
+              >
+                {appRoutes}
+              </Authenticator>)
+  } else {
+    routes = appRoutes;
   }
 
   return (
-    <AppConfigProvider value={appConfigState}>
-      <I18nextProvider i18n={i18n}>
-        <OHIFRouter basename={routerBasename}>
-          <ThemeWrapper>
-            <UserAuthenticationProvider service={UserAuthenticationService}>
-              <ViewportGridProvider service={ViewportGridService}>
-                <ViewportDialogProvider service={UIViewportDialogService}>
-                  <CineProvider service={CineService}>
-                    <SnackbarProvider service={UINotificationService}>
-                      <DialogProvider service={UIDialogService}>
-                        <ModalProvider modal={Modal} service={UIModalService}>
-                          {appRoutes}
-                        </ModalProvider>
-                      </DialogProvider>
-                    </SnackbarProvider>
-                  </CineProvider>
-                </ViewportDialogProvider>
-              </ViewportGridProvider>
-            </UserAuthenticationProvider>
-          </ThemeWrapper>
-        </OHIFRouter>
-      </I18nextProvider>
-    </AppConfigProvider>
+    <CombinedProviders>
+      <BrowserRouter>
+        <UserAuthenticationProvider service={UserAuthenticationService}>
+          {routes}
+        </UserAuthenticationProvider>
+      </BrowserRouter>
+    </CombinedProviders>
   );
 }
 

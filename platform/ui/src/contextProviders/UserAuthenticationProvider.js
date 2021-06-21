@@ -15,6 +15,7 @@ export const UserAuthenticationContext = createContext(DEFAULT_STATE);
 
 export function UserAuthenticationProvider({ children, service }) {
   const userAuthenticationReducer = (state, action) => {
+    debugger;
     switch (action.type) {
       case 'SET_USER': {
         return {
@@ -61,7 +62,7 @@ export function UserAuthenticationProvider({ children, service }) {
   );
 
   const getUser = useCallback(() => userAuthenticationState.user, [
-    userAuthenticationState
+    userAuthenticationState,
   ]);
 
   const reset = useCallback(
@@ -124,6 +125,8 @@ export function UserAuthenticationProvider({ children, service }) {
   );
 }
 
+export default UserAuthenticationProvider;
+
 UserAuthenticationProvider.propTypes = {
   children: PropTypes.any,
   service: PropTypes.shape({
@@ -131,4 +134,5 @@ UserAuthenticationProvider.propTypes = {
   }).isRequired,
 };
 
-export const useUserAuthentication = () => useContext(UserAuthenticationContext);
+export const useUserAuthentication = () =>
+  useContext(UserAuthenticationContext);

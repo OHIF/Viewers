@@ -2,8 +2,6 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
 
-//import { initWebWorkers } from './utils/index.js';
-
 let initialized = false;
 
 function initWebWorkers() {
@@ -41,4 +39,3 @@ export default function initWADOImageLoader(UserAuthenticationService) {
 
   initWebWorkers();
 }
-

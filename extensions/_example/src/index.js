@@ -57,7 +57,7 @@ function ExampleContextProvider({ children }) {
   return (
     <ExampleContext.Provider value={{ example: 'value' }}>
       {children}
-    </TrackedMeasurementsContext.Provider>
+    </ExampleContext.Provider>
   );
 }
 
