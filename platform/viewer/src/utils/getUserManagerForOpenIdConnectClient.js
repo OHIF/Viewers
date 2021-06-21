@@ -1,12 +1,9 @@
-// https://github.com/maxmantz/redux-oidc/blob/master/docs/API.md
-import { loadUser, createUserManager } from 'redux-oidc';
+import { UserManager } from 'oidc-client';
 
 /**
- * Creates a userManager from oidcSettings;
- * loads the user into the provided redux store
+ * Creates a userManager from oidcSettings
  * LINK: https://github.com/IdentityModel/oidc-client-js/wiki#configuration
  *
- * @param {*} store
  * @param {Object} oidcSettings
  * @param {string} oidcSettings.authServerUrl,
  * @param {string} oidcSettings.clientId,
@@ -15,8 +12,8 @@ import { loadUser, createUserManager } from 'redux-oidc';
  * @param {string} oidcSettings.responseType,
  * @param {string} oidcSettings.extraQueryParams,
  */
-export default function getUserManagerForOpenIdConnectClient(store, oidcSettings) {
-  if (!store || !oidcSettings) {
+export default function getUserManagerForOpenIdConnectClient(oidcSettings) {
+  if (!oidcSettings) {
     return;
   }
 
@@ -28,9 +25,7 @@ export default function getUserManagerForOpenIdConnectClient(store, oidcSettings
     loadUserInfo: true,
   };
 
-  const userManager = createUserManager(settings);
-
-  loadUser(store, userManager);
+  const userManager = new UserManager(settings);
 
   return userManager;
 }

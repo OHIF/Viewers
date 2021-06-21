@@ -1,34 +1,22 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { CallbackComponent } from 'redux-oidc';
 
-class CallbackPage extends Component {
-  static propTypes = {
-    userManager: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
+function CallbackPage({ userManager, onRedirectSuccess }) {
+  const onRedirectError = error => {
+    throw new Error(error);
   };
 
-  render() {
-    return (
-      <CallbackComponent
-        userManager={this.props.userManager}
-        successCallback={() => {
-          const { pathname, search = '' } = JSON.parse(
-            sessionStorage.getItem('ohif-redirect-to')
-          );
+  userManager
+    .signinRedirectCallback()
+    .then(user => onRedirectSuccess(user))
+    .catch(error => onRedirectError(error));
 
-          this.props.history.push({ pathname, search });
-        }}
-        errorCallback={error => {
-          //this.props.history.push("/");
-          throw new Error(error);
-        }}
-      >
-        <div>Redirecting...</div>
-      </CallbackComponent>
-    );
-  }
+  // todo: add i18n (or return null?)
+  return <div>Redirecting...</div>;
 }
 
-export default withRouter(CallbackPage);
+CallbackPage.propTypes = {
+  userManager: PropTypes.object.isRequired,
+};
+
+export default CallbackPage;

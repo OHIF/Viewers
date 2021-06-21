@@ -7,7 +7,6 @@ import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-import { servicesManager } from '../../App';
 
 async function defaultRouteInit({
   servicesManager,
@@ -98,17 +97,6 @@ export default function ModeRoute({
   const dataSource = dataSources[0];
   // Only handling one route per mode for now
   const route = mode.routes[0];
-
-
-  // TODO: This is duplicated in DataSourceWrapper
-  /*UserAuthenticationService.setUser(props.user);
-  const getAuthorizationHeader = () => {
-    // TODO: This should probably work but it doesn't right now
-    //return UserAuthenticationService.getUser().access_token;
-    return {
-      Authorization: `Bearer ${props.user.access_token}`
-    };
-  }*/
 
   const layoutTemplateRouteData = route.layoutTemplate({ location });
   const layoutTemplateModuleEntry = extensionManager.getModuleEntry(

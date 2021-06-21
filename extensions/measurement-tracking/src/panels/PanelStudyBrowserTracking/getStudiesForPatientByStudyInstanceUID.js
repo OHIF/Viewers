@@ -18,7 +18,7 @@ async function getStudiesForPatientByStudyInstanceUID(
   // Naturalized DICOM JSON when returning. It makes things like this awkward (mrn)
   if (getStudyResult && getStudyResult.length && getStudyResult[0].mrn) {
     return dataSource.query.studies.search({
-      patientId: getStudyResult[0]['00100020'],
+      patientId: getStudyResult[0].mrn,
     });
   }
 }

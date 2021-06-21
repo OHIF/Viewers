@@ -80,10 +80,10 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
-          qidoDicomWebClient.headers = UserAuthenticationService.getAuthorizationHeader();
-          if (!qidoDicomWebClient.headers) {
-            console.warn('No UserAuthenticationService headers provided')
+        search: async function(origParams) {
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            qidoDicomWebClient.headers = headers;
           }
 
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
@@ -105,10 +105,10 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
-          qidoDicomWebClient.headers = UserAuthenticationService.getAuthorizationHeader();
-          if (!qidoDicomWebClient.headers) {
-            console.warn('No UserAuthenticationService headers provided')
+        search: async function(studyInstanceUid) {
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            qidoDicomWebClient.headers = headers;
           }
 
           const results = await seriesInStudy(
@@ -122,9 +122,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-          qidoDicomWebClient.headers = UserAuthenticationService.getAuthorizationHeader();
-          if (!qidoDicomWebClient.headers) {
-            return;
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            qidoDicomWebClient.headers = headers;
           }
 
           qidoSearch.call(
@@ -143,9 +143,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         // Conduct query, return a promise like others
         // Await this call and add to DicomMetadataStore after receiving result
         metadata: (queryParams, callback) => {
-          wadoDicomWebClient.headers = UserAuthenticationService.getAuthorizationHeader();
-          if (!wadoDicomWebClient.headers) {
-            return;
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            wadoDicomWebClient.headers = headers;
           }
 
           let { StudyInstanceUIDs } = urlUtil.parse(queryParams, true);
@@ -187,9 +187,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     },
     store: {
       dicom: async dataset => {
-        wadoDicomWebClient.headers = UserAuthenticationService.getAuthorizationHeader();
-        if (!wadoDicomWebClient.headers) {
-          return;
+        const headers = UserAuthenticationService.getAuthorizationHeader();
+        if (headers) {
+          wadoDicomWebClient.headers = headers;
         }
 
         const meta = {
@@ -224,9 +224,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       sortFunction,
       madeInClient = false,
     } = {}) => {
-      wadoDicomWebClient.headers = UserAuthenticationService.getAuthorizationHeader();
-      if (!wadoDicomWebClient.headers) {
-        return;
+      const headers = UserAuthenticationService.getAuthorizationHeader();
+      if (headers) {
+        wadoDicomWebClient.headers = headers;
       }
 
       if (!StudyInstanceUID) {

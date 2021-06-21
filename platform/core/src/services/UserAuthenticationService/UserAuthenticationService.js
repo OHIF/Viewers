@@ -6,6 +6,7 @@ const publicAPI = {
   setUser: _setUser,
   getUser: _getUser,
   getAuthorizationHeader: _getAuthorizationHeader,
+  handleUnauthenticated: _handleUnauthenticated,
   setServiceImplementation,
   reset: _reset,
   set: _set,
@@ -15,7 +16,10 @@ const serviceImplementation = {
   _getState: () => console.warn('getState() NOT IMPLEMENTED'),
   _setUser: () => console.warn('_setUser() NOT IMPLEMENTED'),
   _getUser: () => console.warn('_setUser() NOT IMPLEMENTED'),
-  _getAuthorizationHeader: () => console.warn('_getAuthorizationHeader() NOT IMPLEMENTED'),
+  _getAuthorizationHeader: () =>
+    console.warn('_getAuthorizationHeader() NOT IMPLEMENTED'),
+  _handleUnauthenticated: () =>
+    console.warn('_handleUnauthenticated() NOT IMPLEMENTED'),
   _reset: () => console.warn('reset() NOT IMPLEMENTED'),
   _set: () => console.warn('set() NOT IMPLEMENTED'),
 };
@@ -33,7 +37,13 @@ function _getUser() {
 }
 
 function _getAuthorizationHeader() {
-  return serviceImplementation._getAuthorizationHeader();
+  const user = serviceImplementation._getUser();
+
+  return serviceImplementation._getAuthorizationHeader(user);
+}
+
+function _handleUnauthenticated() {
+  return serviceImplementation._handleUnauthenticated();
 }
 
 function _set(state) {
@@ -49,6 +59,7 @@ function setServiceImplementation({
   setUser: setUserImplementation,
   getUser: getUserImplementation,
   getAuthorizationHeader: getAuthorizationHeaderImplementation,
+  handleUnauthenticated: handleUnauthenticatedImplementation,
   reset: resetImplementation,
   set: setImplementation,
 }) {
@@ -63,6 +74,9 @@ function setServiceImplementation({
   }
   if (getAuthorizationHeaderImplementation) {
     serviceImplementation._getAuthorizationHeader = getAuthorizationHeaderImplementation;
+  }
+  if (handleUnauthenticatedImplementation) {
+    serviceImplementation._handleUnauthenticated = handleUnauthenticatedImplementation;
   }
   if (resetImplementation) {
     serviceImplementation._reset = resetImplementation;

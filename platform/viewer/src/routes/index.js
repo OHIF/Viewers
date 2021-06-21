@@ -1,12 +1,14 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { ErrorBoundary } from '@ohif/ui';
+
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
 import WorkList from './WorkList';
 import Local from './Local';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
-import { ErrorBoundary } from '@ohif/ui';
+import PrivateRoute from './PrivateRoute';
 
 // TODO: Make these configurable
 // TODO: Include "routes" debug route if dev build
@@ -14,14 +16,13 @@ const bakedInRoutes = [
   // WORK LIST
   {
     path: '/',
-    exact: true,
-    component: DataSourceWrapper,
+    children: DataSourceWrapper,
+    private: true,
     props: { children: WorkList },
   },
   {
     path: '/local',
-    exact: true,
-    component: Local,
+    children: Local,
   },
   // NOT FOUND (404)
   { component: NotFound },
@@ -33,6 +34,7 @@ const createRoutes = ({
   extensionManager,
   servicesManager,
   hotkeysManager,
+  routerBasename,
 }) => {
   const routes =
     buildModeRoutes({
@@ -45,31 +47,44 @@ const createRoutes = ({
 
   const allRoutes = [...routes, ...bakedInRoutes];
 
+  function RouteWithErrorBoundary({ route, ...rest }) {
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    return (
+      <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
+        <route.children
+          {...rest}
+          {...route.props}
+          route={route}
+          servicesManager={servicesManager}
+          hotkeysManager={hotkeysManager}
+        />
+      </ErrorBoundary>
+    );
+  }
+
+  const { UserAuthenticationService } = servicesManager.services;
+
   return (
-    <Switch>
+    <Routes basename={routerBasename}>
       {allRoutes.map((route, i) => {
-        return (
+        return route.private === true ? (
+          <PrivateRoute
+            key={i}
+            path={route.path}
+            handleUnauthenticated={
+              UserAuthenticationService.handleUnauthenticated
+            }
+            element={<RouteWithErrorBoundary route={route} />}
+          />
+        ) : (
           <Route
             key={i}
             path={route.path}
-            exact={route.exact}
-            strict={route.strict}
-            render={props => (
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
-                <route.component
-                  {...props}
-                  {...route.props}
-                  route={route}
-                  servicesManager={servicesManager}
-                  hotkeysManager={hotkeysManager}
-                />
-              </ErrorBoundary>
-            )}
+            element={<RouteWithErrorBoundary route={route} />}
           />
         );
       })}
-    </Switch>
+    </Routes>
   );
 };
 

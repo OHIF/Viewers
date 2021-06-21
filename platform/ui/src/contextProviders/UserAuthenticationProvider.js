@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
   user: null,
+  enabled: false,
 };
 
 export const UserAuthenticationContext = createContext(DEFAULT_STATE);
@@ -61,7 +62,7 @@ export function UserAuthenticationProvider({ children, service }) {
   );
 
   const getUser = useCallback(() => userAuthenticationState.user, [
-    userAuthenticationState
+    userAuthenticationState,
   ]);
 
   const reset = useCallback(
@@ -93,26 +94,18 @@ export function UserAuthenticationProvider({ children, service }) {
         getState,
         setUser,
         getUser,
-        //getAuthorizationHeader,
         reset,
         set,
       });
     }
-  }, [
-    getState,
-    service,
-    setUser,
-    getUser,
-    //getAuthorizationHeader,
-    reset,
-    set,
-  ]);
+  }, [getState, service, setUser, getUser, reset, set]);
 
   const api = {
-    // getState,
+    getState,
     setUser,
     getUser,
-    //getAuthorizationHeader,
+    getAuthorizationHeader: service.getAuthorizationHeader,
+    handleUnauthenticated: service.handleUnauthenticated,
     reset,
     set,
   };
@@ -124,6 +117,11 @@ export function UserAuthenticationProvider({ children, service }) {
   );
 }
 
+export default UserAuthenticationProvider;
+
+const UserAuthenticationConsumer = UserAuthenticationContext.Consumer;
+export { UserAuthenticationConsumer };
+
 UserAuthenticationProvider.propTypes = {
   children: PropTypes.any,
   service: PropTypes.shape({
@@ -131,4 +129,5 @@ UserAuthenticationProvider.propTypes = {
   }).isRequired,
 };
 
-export const useUserAuthentication = () => useContext(UserAuthenticationContext);
+export const useUserAuthentication = () =>
+  useContext(UserAuthenticationContext);

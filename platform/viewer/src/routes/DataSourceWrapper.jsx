@@ -1,14 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import OHIF, { MODULE_TYPES, DICOMWeb } from '@ohif/core';
+import { MODULE_TYPES } from '@ohif/core';
 //
-import { useAppConfig } from '@state';
-import { extensionManager, servicesManager } from '../App.jsx';
-import { withRouter } from 'react-router';
-
-const { getAuthorizationHeader } = DICOMWeb;
+import { extensionManager } from '../App.jsx';
+import { useParams, useLocation } from 'react-router';
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -19,8 +15,10 @@ const { getAuthorizationHeader } = DICOMWeb;
  * @param {function} props.children - Layout Template React Component
  */
 function DataSourceWrapper(props) {
-  const [appConfig] = useAppConfig();
-  const { children: LayoutTemplate, history, ...rest } = props;
+  const { children: LayoutTemplate, ...rest } = props;
+  const params = useParams();
+  const location = useLocation();
+
   // TODO: Fetch by type, name, etc?
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
   // TODO: Good usecase for flatmap?
@@ -56,7 +54,7 @@ function DataSourceWrapper(props) {
 
   useEffect(() => {
     const queryFilterValues = _getQueryFilterValues(
-      history.location.search,
+      location.search,
       STUDIES_LIMIT
     );
 
@@ -99,14 +97,13 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history.location.search]);
+  }, [location, params]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?
   return (
     <LayoutTemplate
       {...rest}
-      history={history}
       data={data.studies}
       dataTotal={data.total}
       dataSource={dataSource}
