@@ -65,7 +65,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   },
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/docusaurus.ico',
+  favicon: 'img/favicon.ico',
   // customFields: {
   //   description:
   //     'An optimized site generator in React. Docusaurus helps you to move fast and write content. Build documentation websites, blogs, marketing pages, and more.',
@@ -257,11 +257,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
       contextualSearch: true,
     },
     navbar: {
-      hideOnScroll: true,
+      hideOnScroll: false,
       logo: {
         alt: 'OHIF Logo',
-        src: 'img/logo-ohif.svg',
-        srcDark: 'img/logo-ohif.svg',
+        src: 'img/ohif-logo-light.svg',
+        srcDark: 'img/ohif-logo.svg',
       },
       items: [
         {

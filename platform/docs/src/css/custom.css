@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
-
 /* stylelint-disable docusaurus/copyright-header */
 /**
  * Any CSS included here will be global. The classic template
@@ -10,26 +8,35 @@
 /* https://infima.dev/docs/utilities/colors */
 /* https://docs.theochu.com/docusaurus/styling/ */
 :root {
-  /*--ifm-color-primary: #25c2a0;
+  --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: rgb(33, 175, 144);
   --ifm-color-primary-darker: rgb(31, 165, 136);
   --ifm-color-primary-darkest: rgb(26, 136, 112);
   --ifm-color-primary-light: rgb(70, 203, 174);
   --ifm-color-primary-lighter: rgb(102, 212, 189);
-  --ifm-color-primary-lightest: rgb(146, 224, 208);*/
-  --ifm-color-primary: #1c296d;
-  --ifm-color-primary-dark: #192562;
-  --ifm-color-primary-darker: #18235d;
-  --ifm-color-primary-darkest: #141d4c;
-  --ifm-color-primary-light: #1f2d78;
-  --ifm-color-primary-lighter: #202f7d;
-  --ifm-color-primary-lightest: #24358e;
+  --ifm-color-primary-lightest: rgb(146, 224, 208);
+  --ifm-font-color-base: #474747;
+  --ifm-color-primary: #0151d9;
+  --ifm-color-primary-dark: #0149c3;
+  --ifm-color-primary-darker: #0145b8;
+  --ifm-color-primary-darkest: #013998;
+  --ifm-color-primary-light: #0159ef;
+  --ifm-color-primary-lighter: #015dfa;
+  --ifm-color-primary-lightest: #1d71fe;
+  --ifm-color-secondary: #e8f7f7;
   --ifm-code-font-size: 95%;
-  --ifm-background-color: #f5ffff;
-  --ifm-background-surface-color: #f5ffff;
-  --ifm-menu-color: #002e85;
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-menu-color: #1e427e;
+  --ifm-code-background: #e8f7f7;
+  --ifm-toc-border-color: #ffffff;
+  --ifm-footer-background-color: #000000;
+  --ifm-table-stripe-background: #f4fbfb;
+  --ifm-color-warning: #e9e489;
+  --ifm-alert-color: #333333;
 }
 html[data-theme="dark"] {
+  --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24"><path fill="rgba(0,0,0,0.4)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path></svg>');
   --ifm-color-primary: #5acce6;
   --ifm-color-primary-dark: #3ec3e2;
   --ifm-color-primary-darker: #30bfe0;
@@ -37,17 +44,34 @@ html[data-theme="dark"] {
   --ifm-color-primary-light: #76d5ea;
   --ifm-color-primary-lighter: #84d9ec;
   --ifm-color-primary-lightest: #ade6f3;
+  --ifm-font-color-base: #ffffff;
+  --ifm-color-secondary: #050719;
+  --ifm-blockquote-color: #7bb2ce;
   --ifm-background-color: #080b2b;
   --ifm-background-surface-color: #080b2b;
   --ifm-menu-color: #7bb2ce;
+  --ifm-toc-link-color: #7bb2ce;
+  --ifm-code-background: #1c296d;
+  --ifm-toc-border-color: #080b2b;
+  --ifm-menu-color-active: #ffffff;
+  --ifm-footer-background-color: #000000;
+  --ifm-table-stripe-background: #060920;
+  --ifm-color-warning: #f1c55a;
+  --ifm-alert-color: #000000;
 }
+
+/*
 .docusaurus-highlight-code-line {
   background-color: rgb(72, 77, 91);
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
 }
+*/
 
+/* Typography updates */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
 html {
   font-size: 18px;
@@ -67,16 +91,78 @@ h5 {
   font-family: "Inter", sans-serif;
 }
 
-.menu {
-  font-weight: 400;
-  font-size: 1.0rem;
+blockquote {
+  border-left: 3px solid #4042af;
 }
 
-.menu__list-item .menu__list{
+/* Remove navigation shadow */
+
+.navbar {
+  box-shadow: none;
+}
+
+/* Navigation color and type updates */
+
+.footer {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.footer a {
+  color: #7bb2ce;
+}
+
+.footer a:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.menu {
   font-weight: 400;
   font-size: 0.9rem;
 }
 
 .table-of-contents {
   font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.menu {
+  padding-top: 2rem !important;
+}
+
+.menu__link--active {
+  color: var(--ifm-menu-color-active);
+  font-weight: 600;
+}
+
+.table-of-contents__link:hover,
+.table-of-contents__link:hover code,
+.table-of-contents__link--active,
+.table-of-contents__link--active code {
+  color: var(--ifm-menu-color-active);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.badge--secondary {
+  --ifm-badge-background-color: var(--ifm-color-secondary);
+  --ifm-badge-border-color: var(--ifm-badge-background-color);
+  color: var(--ifm-color-primary);
+}
+
+/* Alerts */
+
+.alert--secondary {
+  --ifm-alert-background-color: var(--ifm-color-secondary);
+  --ifm-alert-color: var(--ifm-font-color-base);
+}
+
+.admonition-icon svg {
+  fill: #0151d9;
+}
+
+
+.table-of-contents__left-border {
+  border-left: #013998;
 }
