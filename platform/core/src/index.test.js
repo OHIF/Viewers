@@ -34,9 +34,10 @@ describe('Top level exports', () => {
       'ToolBarService',
       'ViewportGridService',
       'HangingProtocolService',
+      'UserAuthenticationService',
       'IWebApiDataSource',
       'DicomMetadataStore',
-      'pubSubServiceInterface'
+      'pubSubServiceInterface',
     ].sort();
 
     const exports = Object.keys(OHIF).sort();

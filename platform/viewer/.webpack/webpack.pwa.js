@@ -112,6 +112,10 @@ module.exports = (env, argv) => {
       historyApiFallback: {
         disableDotRule: true,
       },
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
     },
   });
 

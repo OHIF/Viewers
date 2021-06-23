@@ -38,7 +38,7 @@ const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
  * @param {bool} supportsReject - Whether the server supports reject calls (i.e. DCM4CHEE)
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  */
-function createDicomWebApi(dicomWebConfig) {
+function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   const {
     qidoRoot,
     wadoRoot,
@@ -46,15 +46,17 @@ function createDicomWebApi(dicomWebConfig) {
     supportsFuzzyMatching,
     supportsWildcard,
     supportsReject,
+    requestOptions,
   } = dicomWebConfig;
 
   const qidoConfig = {
     url: qidoRoot,
-    // headers: DICOMWeb.getAuthorizationHeader(server),
+    headers: UserAuthenticationService.getAuthorizationHeader(),
   };
 
   const wadoConfig = {
     url: wadoRoot,
+    headers: UserAuthenticationService.getAuthorizationHeader(),
   };
 
   // TODO -> Two clients sucks, but its better than 1000.
@@ -78,7 +80,12 @@ function createDicomWebApi(dicomWebConfig) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
+        search: async function(origParams) {
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            qidoDicomWebClient.headers = headers;
+          }
+
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching,
@@ -98,7 +105,12 @@ function createDicomWebApi(dicomWebConfig) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
+        search: async function(studyInstanceUid) {
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            qidoDicomWebClient.headers = headers;
+          }
+
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
@@ -109,14 +121,20 @@ function createDicomWebApi(dicomWebConfig) {
         // processResults: processResults.bind(),
       },
       instances: {
-        search: (studyInstanceUid, queryParameters) =>
+        search: (studyInstanceUid, queryParameters) => {
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            qidoDicomWebClient.headers = headers;
+          }
+
           qidoSearch.call(
             undefined,
             qidoDicomWebClient,
             studyInstanceUid,
             null,
             queryParameters
-          ),
+          );
+        },
       },
     },
     retrieve: {
@@ -125,6 +143,11 @@ function createDicomWebApi(dicomWebConfig) {
         // Conduct query, return a promise like others
         // Await this call and add to DicomMetadataStore after receiving result
         metadata: (queryParams, callback) => {
+          const headers = UserAuthenticationService.getAuthorizationHeader();
+          if (headers) {
+            wadoDicomWebClient.headers = headers;
+          }
+
           let { StudyInstanceUIDs } = urlUtil.parse(queryParams, true);
 
           StudyInstanceUIDs = urlUtil.paramString.parseParam(StudyInstanceUIDs);
@@ -164,6 +187,11 @@ function createDicomWebApi(dicomWebConfig) {
     },
     store: {
       dicom: async dataset => {
+        const headers = UserAuthenticationService.getAuthorizationHeader();
+        if (headers) {
+          wadoDicomWebClient.headers = headers;
+        }
+
         const meta = {
           FileMetaInformationVersion:
             dataset._meta.FileMetaInformationVersion.Value,
@@ -196,6 +224,11 @@ function createDicomWebApi(dicomWebConfig) {
       sortFunction,
       madeInClient = false,
     } = {}) => {
+      const headers = UserAuthenticationService.getAuthorizationHeader();
+      if (headers) {
+        wadoDicomWebClient.headers = headers;
+      }
+
       if (!StudyInstanceUID) {
         throw new Error(
           'Unable to query for SeriesMetadata without StudyInstanceUID'

@@ -439,7 +439,7 @@ class MetadataProvider {
 
   _getUIDsFromImageID(imageId) {
     if (imageId.includes('wadors:')) {
-      const strippedImageId = imageId.split('studies/')[1];
+      const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
 
       return {

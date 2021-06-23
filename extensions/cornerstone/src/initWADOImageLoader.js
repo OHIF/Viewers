@@ -2,17 +2,40 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
 
-//import { initWebWorkers } from './utils/index.js';
+let initialized = false;
 
-cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
-cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
+function initWebWorkers() {
+  const config = {
+    maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
+    startWebWorkersOnDemand: true,
+    taskConfiguration: {
+      decodeTask: {
+        initializeCodecsOnStartup: false,
+        usePDFJS: false,
+        strict: false,
+      },
+    },
+  };
 
-cornerstoneWADOImageLoader.configure({
-  beforeSend: function(xhr) {
-    /*const headers = OHIF.DICOMWeb.getAuthorizationHeader();
+  if (!initialized) {
+    cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+    initialized = true;
+  }
+}
 
-    if (headers.Authorization) {
-      xhr.setRequestHeader('Authorization', headers.Authorization);
-    }*/
-  },
-});
+export default function initWADOImageLoader(UserAuthenticationService) {
+  cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+  cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
+
+  cornerstoneWADOImageLoader.configure({
+    beforeSend: function(xhr) {
+      const headers = UserAuthenticationService.getAuthorizationHeader();
+
+      if (headers && headers.Authorization) {
+        xhr.setRequestHeader('Authorization', headers.Authorization);
+      }
+    },
+  });
+
+  initWebWorkers();
+}

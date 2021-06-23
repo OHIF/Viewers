@@ -2,7 +2,7 @@ export {
   default as DialogProvider,
   useDialog,
   withDialog,
-} from './DialogProvider'
+} from './DialogProvider';
 
 export { default as DragAndDropProvider } from './DragAndDropProvider';
 
@@ -19,17 +19,13 @@ export {
   useImageViewer,
 } from './ImageViewerProvider';
 
-export {
-  CineContext,
-  default as CineProvider,
-  useCine,
-} from './CineProvider';
+export { CineContext, default as CineProvider, useCine } from './CineProvider';
 
 export {
   default as SnackbarProvider,
   useSnackbar,
   withSnackbar,
-} from './SnackbarProvider'
+} from './SnackbarProvider';
 
 export {
   default as ViewportDialogProvider,
@@ -41,3 +37,9 @@ export {
   ViewportGridProvider,
   useViewportGrid,
 } from './ViewportGridProvider';
+
+export {
+  UserAuthenticationContext,
+  UserAuthenticationProvider,
+  useUserAuthentication,
+} from './UserAuthenticationProvider';

@@ -63,9 +63,8 @@ All use the `ACTIVE_VIEWPORT::CORNERSTONE` context.
 
 ## Viewport Module
 
-Our Viewport wraps [cornerstonejs/react-cornerstone-viewport][react-viewport]
-and is connected the redux store. This module is the most prone to change as we
-hammer out our Viewport interface.
+Our Viewport wraps [cornerstonejs/react-cornerstone-viewport][react-viewport].
+This module is the most prone to change as we hammer out our Viewport interface.
 
 ## Tool Configuration
 
@@ -87,10 +86,12 @@ Tools can be configured through extension configuration using the tools key:
 
 ## Annotate Tools Configuration
 
-*We currently support one property for annotation tools.*
+_We currently support one property for annotation tools._
 
 ### Hide handles
-This extension configuration allows you to toggle on/off handle rendering for all annotate tools:
+
+This extension configuration allows you to toggle on/off handle rendering for
+all annotate tools:
 
 ```js
   ...
@@ -119,3 +120,4 @@ This extension configuration allows you to toggle on/off handle rendering for al
 [cornerstone-tools]: https://github.com/cornerstonejs/cornerstoneTools
 [cornerstone]: https://github.com/cornerstonejs/cornerstone
 <!-- prettier-ignore-end -->
+```
