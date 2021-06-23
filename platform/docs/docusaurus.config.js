@@ -265,12 +265,15 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
       },
       items: [
         {
-          type: 'doc',
           position: 'left',
+          to: '/',
+          activeBaseRegex: '^(/next/|/)$',
           docId: 'Introduction',
-          label: 'Docs',
+          label: 'Docs & API',
         },
-        // {to: 'blog', label: 'Blog', position: 'left'},
+        { to: 'next/userManuals/index', label: 'User Manuals', position: 'left' },
+        { to: 'next/help', activeBaseRegex: '(^/help$)|(/next/help)', label: 'Help', position: 'right' },
+        { to: 'https://react.ohif.org/', label: 'UI Component Library', position: 'left' },
         // {to: 'showcase', label: 'Showcase', position: 'left'},
         // right
         {
