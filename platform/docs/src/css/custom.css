@@ -190,3 +190,7 @@ blockquote {
   flex-grow: 2;
   margin-right: 20%
 }
+
+.DocSearch {
+  display: none;
+}

@@ -248,14 +248,14 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     },
     image: 'img/docusaurus-soc.png',
     // metadatas: [{name: 'twitter:card', content: 'summary'}],
-    gtag: {
-      trackingID: 'UA-110573590-2',
-    },
-    algolia: {
-      apiKey: '47ecd3b21be71c5822571b9f59e52544',
-      indexName: 'docusaurus-2',
-      contextualSearch: true,
-    },
+    // gtag: {
+    //   trackingID: 'UA-110573590-2',
+    // },
+    // algolia: {
+    //   apiKey: '47ecd3b21be71c5822571b9f59e52544',
+    //   indexName: 'docusaurus-2',
+    //   contextualSearch: true,
+    // },
     navbar: {
       hideOnScroll: false,
       logo: {
