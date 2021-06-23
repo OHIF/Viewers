@@ -283,7 +283,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           position: 'right',
           dropdownItemsAfter: [
             {
-              to: 'https://github.com/OHIF/Viewers/issues/3526',
+              to: 'next/viewer/internationalization#contributing-with-new-languages',
               label: 'Help Us Translate',
             },
           ],
@@ -292,13 +292,26 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           href: 'https://github.com/OHIF/Viewers',
           position: 'right',
           className: 'header-github-link',
-          'aria-label': 'GitHub repository',
+          'aria-label': 'GitHub Repository'
         },
       ],
     },
     footer: {
+
       style: 'dark',
       links: [
+        {
+          title: 'Open Health Imaging Foundation',
+          items: [
+            {
+              html: `
+                <a href="https://viewer.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
+                  <img src= 'https://rally.partners.org/study/image/A3C43B37-4BE8-4950-AB00-42B19677D9D2' style="margin-right: 100px;" alt="MGH" />
+                </a>
+              `,
+            },
+          ],
+        },
         {
           title: 'Learn',
           items: [
@@ -320,7 +333,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
               to: 'https://community.ohif.com/',
             },
             {
-              label: 'Discourse Forum',
+              label: 'Discussion board',
               href: 'https://community.ohif.com/',
             },
             {
@@ -340,29 +353,22 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
               label: 'Twitter',
               href: 'https://twitter.com/OHIFviewer',
             },
-            {
-              html: `
-                <a href="https://viewer.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-                  <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
-                </a>
-              `,
-            },
-          ],
-        },
-        {
-          title: 'Legal',
-          // Please do not remove the privacy and terms, it's a legal requirement.
-          items: [
-
+            // {
+            //   html: `
+            //     <a href="https://viewer.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
+            //       <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
+            //     </a>
+            //   `,
+            // },
           ],
         },
       ],
       logo: {
         alt: 'OHIF ',
-        src: 'img/logo-ohif.svg',
+        src: 'img/ohif-logo.svg',
         href: 'https://ohif.org',
       },
-      copyright: `MIT © OHIF`,
+      copyright: `OHIF is open source software released under the MIT license.`,
     },
   },
 });
