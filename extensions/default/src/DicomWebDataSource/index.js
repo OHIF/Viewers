@@ -7,7 +7,7 @@ import {
   processSeriesResults,
 } from './qido.js';
 import dcm4cheeReject from './dcm4cheeReject';
-import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler } from '@ohif/core';
 
 import getImageId from './utils/getImageId';
 import dcmjs from 'dcmjs';
@@ -52,11 +52,14 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   const qidoConfig = {
     url: qidoRoot,
     headers: UserAuthenticationService.getAuthorizationHeader(),
+    errorInterceptor: errorHandler.getHTTPErrorHandler(),
+
   };
 
   const wadoConfig = {
     url: wadoRoot,
     headers: UserAuthenticationService.getAuthorizationHeader(),
+    errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
   // TODO -> Two clients sucks, but its better than 1000.
