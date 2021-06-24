@@ -264,16 +264,18 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         srcDark: 'img/ohif-logo.svg',
       },
       items: [
+        { href: 'https://ohif.org/get-started', label: 'Get Started', target: '_self', position: 'left' },
+        { href: 'https://ohif.org/examples', label: 'Examples', target: '_self', position: 'left' },
         {
           position: 'left',
           to: '/',
           activeBaseRegex: '^(/next/|/)$',
           docId: 'Introduction',
-          label: 'Docs & API',
+          label: 'Docs',
         },
-        { to: 'next/userManuals/index', label: 'User Manuals', position: 'left' },
+        { href: 'https://ohif.org/community', label: 'Community', target: '_self', position: 'left' },
         { to: 'next/help', activeBaseRegex: '(^/help$)|(/next/help)', label: 'Help', position: 'right' },
-        { to: 'https://react.ohif.org/', label: 'UI Component Library', position: 'left' },
+        // { to: 'https://react.ohif.org/', label: 'UI Component Library', position: 'left' },
         // {to: 'showcase', label: 'Showcase', position: 'left'},
         // right
         {
@@ -349,6 +351,10 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           title: 'More',
           items: [
             {
+              label: 'Donate',
+              href: 'https://google.com/',
+            },
+            {
               label: 'GitHub',
               href: 'https://github.com/OHIF/Viewers',
             },
@@ -366,11 +372,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           ],
         },
       ],
-      logo: {
-        alt: 'OHIF ',
-        src: 'img/ohif-logo.svg',
-        href: 'https://ohif.org',
-      },
+      // logo: {
+      //   alt: 'OHIF ',
+      //   src: 'img/ohif-logo.svg',
+      //   href: 'https://ohif.org',
+      // },
       copyright: `OHIF is open source software released under the MIT license.`,
     },
   },
