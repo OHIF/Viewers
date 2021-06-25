@@ -6,14 +6,6 @@ const Component = React.lazy(() => {
   return import('./DicomMicroscopyViewport');
 });
 
-const DicomMicroscopyViewport = props => {
-  return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <Component {...props} />
-    </React.Suspense>
-  );
-};
-
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -21,8 +13,14 @@ export default {
   id: 'microscopy',
   version,
 
-  getViewportModule() {
-    return DicomMicroscopyViewport;
+  getViewportModule({ servicesManager }) {
+    return props => {
+      return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <Component {...props} servicesManager={servicesManager} />
+        </React.Suspense>
+      );
+    };
   },
   getSopClassHandlerModule() {
     return DicomMicroscopySopClassHandler;

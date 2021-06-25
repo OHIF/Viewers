@@ -168,6 +168,16 @@ const getContentSequence = (data, level = 1) => {
   Object.keys(data).forEach(key => {
     const value = data[key];
 
+    if (key === '_meta') {
+      const HeaderDynamicLevel = `h3`;
+      root.push(<hr />);
+      root.push(
+        <HeaderDynamicLevel key="Metadata">
+          DICOM File Meta Information
+        </HeaderDynamicLevel>
+      );
+    }
+
     let content;
     if (value instanceof Object) {
       content = getContentSequence(value, level + 1);
@@ -215,6 +225,7 @@ class DicomHtmlViewport extends Component {
     const dicomData = DicomMessage.readFile(arrayBuffer);
     const dataset = DicomMetaDictionary.naturalizeDataset(dicomData.dict);
     dataset._meta = DicomMetaDictionary.namifyDataset(dicomData.meta);
+    dataset._meta = DicomMetaDictionary.naturalizeDataset(dataset._meta);
 
     const mainData = getMainData(dataset);
     const contentSequence = getContentSequence(dataset);

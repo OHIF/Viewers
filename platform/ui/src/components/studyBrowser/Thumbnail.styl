@@ -2,7 +2,14 @@
 
 :root {
   --series-count-background-color: #678696;
+  --active-color: #20A5D6;
 }
+
+.thumbnail.active
+  .alt-image-text
+    border-color: var(--active-color);
+    box-shadow: none
+    transition: var(--sidebar-transition);
 
 .thumbnail
   cursor: pointer
@@ -16,7 +23,7 @@
     justify-content: center;
     background-color: var(--primary-background-color);
     box-shadow: inset 0 0 0 1px var(--ui-border-color-dark);
-    border: 5px solid transparent;
+    border: 2px solid transparent;
     border-radius: 12px;
     height: 135px;
     margin: 0 auto;
@@ -77,6 +84,17 @@
           display: inline-block
           height: 11px
           width: 11px
+
+    .warning
+      margin: auto 0;
+      opacity: 1
+      color: #e29e4a;
+
+      svg
+        width: 16px;
+        height: 14px;
+        pointer-events: inherit;
+
 
     .value
       color: var(--text-secondary-color);

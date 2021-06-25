@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "2.12.0",
+  "version": "2.13.13",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -39,13 +39,14 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "ajv": "^6.10.0",
-    "dcmjs": "0.17.0",
-    "dicomweb-client": "^0.6.0",
+    "dcmjs": "0.18.8",
+    "dicomweb-client": "^0.8.1",
     "immer": "6.0.2",
     "isomorphic-base64": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.1",
     "mousetrap": "^1.6.3",
+    "retry": "^0.12.0",
     "validate.js": "^0.12.0"
   }
 }

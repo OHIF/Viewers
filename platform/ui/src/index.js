@@ -30,7 +30,7 @@ import {
   AboutContent,
   OHIFModal,
   ErrorBoundary,
-  ErrorPage
+  ErrorPage,
 } from './components';
 import { useDebounce, useMedia } from './hooks';
 
@@ -66,6 +66,9 @@ import {
   ModalConsumer,
   useModal,
   withModal,
+  LoggerProvider,
+  withLogger,
+  useLogger,
 } from './contextProviders';
 
 export {
@@ -127,11 +130,14 @@ export {
   useDialog,
   ErrorBoundary,
   ErrorPage,
+  LoggerProvider,
+  withLogger,
+  useLogger,
   // Hooks
   useDebounce,
   useMedia,
   // Utils
   ViewerbaseDragDropContext,
   asyncComponent,
-  retryImport
+  retryImport,
 };

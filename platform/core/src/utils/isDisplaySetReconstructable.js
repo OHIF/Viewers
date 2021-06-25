@@ -1,9 +1,14 @@
+import { ReconstructionIssues } from './../enums.js';
+
+
 /**
  * Checks if a series is reconstructable to a 3D volume.
  *
- * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
+ * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
+ *
+ * @returns {Object} value, reconstructionIssues.
  */
-export default function isDisplaySetReconstructable(instances) {
+function isDisplaySetReconstructable(instances) {
   if (!instances.length) {
     return { value: false };
   }
@@ -23,31 +28,45 @@ export default function isDisplaySetReconstructable(instances) {
   }
 
   if (isMultiframe) {
-    return processMultiframe(instances[0]);
+    return processMultiframe();
   } else {
     return processSingleframe(instances);
   }
 }
 
-function processMultiframe(instance) {
-  //TODO: deal with multriframe checks! return false for now as can't reconstruct.
-  return { value: false };
+/**
+ * Process reconstructable multiframes checks
+ * TODO: deal with multriframe checks! return false for now as can't reconstruct.
+ * *
+ * @returns {Object} value and reconstructionIssues.
+ */
+function processMultiframe() {
+  const reconstructionIssues = [ReconstructionIssues.MULTIFRAMES];
+  return { value: false, reconstructionIssues };
 }
 
+/**
+ * Process reconstructable single frame checks
+ *
+ * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
+ *
+ * @returns {Object} value and reconstructionIssues.
+ */
 function processSingleframe(instances) {
+  const n = instances.length;
   const firstImage = instances[0].getData().metadata;
   const firstImageRows = firstImage.Rows;
   const firstImageColumns = firstImage.Columns;
   const firstImageSamplesPerPixel = firstImage.SamplesPerPixel;
   const firstImageOrientationPatient = firstImage.ImageOrientationPatient;
-  const firstImagePositionPatient = firstImage.ImagePositionPatient;
 
+  const reconstructionIssues = [];
   // Can't reconstruct if we:
   // -- Have a different dimensions within a displaySet.
   // -- Have a different number of components within a displaySet.
   // -- Have different orientations within a displaySet.
-  for (let i = 1; i < instances.length; i++) {
-    const instance = instances[i].getData().metadata;
+  for (let ii = 1; ii < n; ++ii) {
+    const instance = instances[ii].getData().metadata;
     const {
       Rows,
       Columns,
@@ -55,67 +74,146 @@ function processSingleframe(instances) {
       ImageOrientationPatient,
     } = instance;
 
-    if (
-      Rows !== firstImageRows ||
-      Columns !== firstImageColumns ||
-      SamplesPerPixel !== firstImageSamplesPerPixel ||
-      !_isSameOrientation(ImageOrientationPatient, firstImageOrientationPatient)
-    ) {
-      return { value: false };
+    if (Rows !== firstImageRows || Columns !== firstImageColumns) {
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESDIMENSIONS);
+    } else if (SamplesPerPixel !== firstImageSamplesPerPixel) {
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESCOMPONENTS);
+    } else if (!_isSameArray(ImageOrientationPatient, firstImageOrientationPatient)) {
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESORIENTATION);
+    }
+
+    if (reconstructionIssues.length !== 0) {
+      break;
     }
   }
 
+  // check if dataset is 4D
+  if (_isDataset4D(instances)) {
+    reconstructionIssues.push(ReconstructionIssues.DATASET_4D);
+  }
+
+  return { value: reconstructionIssues.length === 0 ? true : false, reconstructionIssues };
+}
+
+/**
+ *  Check is the spacing is uniform.
+ *  The input metadata array has to be ordered by image position.
+ *
+ * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
+ * @param {boolean} is the dataset 4D.
+ *
+ * @returns {Object} isUniform, reconstructionIssues and missingFrames
+ */
+function isSpacingUniform(instances, datasetIs4D) {
+  const n = instances.length;
+  const firstImage = instances[0].getData().metadata;
+  const firstImagePositionPatient = firstImage.ImagePositionPatient;
+
+  const reconstructionIssues = [];
   let missingFrames = 0;
 
   // Check if frame spacing is approximately equal within a spacingTolerance.
   // If spacing is on a uniform grid but we are missing frames,
   // Allow reconstruction, but pass back the number of missing frames.
-  if (instances.length > 2) {
-    const lastIpp = instances[instances.length - 1].getData().metadata
+  if (n > 2) {
+    const lastIpp = instances[n - 1].getData().metadata
       .ImagePositionPatient;
 
     // We can't reconstruct if we are missing ImagePositionPatient values
-    if (!firstImagePositionPatient || !lastIpp) {
-      return { value: false };
-    }
+    if (firstImagePositionPatient && lastIpp) {
+      const averageSpacingBetweenFrames =
+        _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /
+        (n - 1);
 
-    const averageSpacingBetweenFrames =
-      _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /
-      (instances.length - 1);
+      let previousImagePositionPatient = firstImagePositionPatient;
 
-    let previousImagePositionPatient = firstImagePositionPatient;
+      for (let ii = 1; ii < n; ++ii) {
+        const instance = instances[ii].getData().metadata;
+        const { ImagePositionPatient } = instance;
 
-    for (let i = 1; i < instances.length; i++) {
-      const instance = instances[i].getData().metadata;
-      const { ImagePositionPatient } = instance;
+        const spacingBetweenFrames = _getPerpendicularDistance(
+          ImagePositionPatient,
+          previousImagePositionPatient
+        );
 
-      const spacingBetweenFrames = _getPerpendicularDistance(
-        ImagePositionPatient,
-        previousImagePositionPatient
-      );
-      const spacingIssue = _getSpacingIssue(
-        spacingBetweenFrames,
-        averageSpacingBetweenFrames
-      );
-
-      if (spacingIssue) {
-        const issue = spacingIssue.issue;
-
-        if (issue === reconstructionIssues.MISSING_FRAMES) {
-          missingFrames += spacingIssue.missingFrames;
-        } else if (issue === reconstructionIssues.IRREGULAR_SPACING) {
-          return { value: false };
+        if (datasetIs4D && spacingBetweenFrames < 1.e-3) {
+          // the dataset is 4D, if the distance is zero, means that we are
+          // checking the 4th dimension. Do not return, since we want still to
+          // check the 3rd dimension spacing.
+          continue;
         }
-      }
 
-      previousImagePositionPatient = ImagePositionPatient;
+        const spacingIssue = _getSpacingIssue(
+          spacingBetweenFrames,
+          averageSpacingBetweenFrames
+        );
+
+        if (spacingIssue) {
+          const issue = spacingIssue.issue;
+
+          if (issue === ReconstructionIssues.MISSING_FRAMES) {
+            missingFrames += spacingIssue.missingFrames;
+          } else if (issue === ReconstructionIssues.IRREGULAR_SPACING) {
+            reconstructionIssues.push(issue);
+            break;
+          }
+        }
+
+        previousImagePositionPatient = ImagePositionPatient;
+      }
     }
   }
 
-  return { value: true, missingFrames };
+  return { isUniform: reconstructionIssues.length === 0 ? true : false, missingFrames, reconstructionIssues };
 }
 
-function _isSameOrientation(iop1, iop2) {
+
+/**
+ *  Check if 4D dataset.
+ *
+ *  Assuming that slices at different time have the same position, here we just check if
+ *  there are multiple slices for the same ImagePositionPatient and disable MPR.
+ *
+ *  A better heuristic would be checking 4D tags, e.g. the presence of multiple TemporalPositionIdentifier values.
+ *  However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.
+ *
+ * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
+ *
+ * @returns {boolean} dataset4D value.
+ */
+ function _isDataset4D(instances) {
+  const n = instances.length;
+  for (let ii = 0; ii < n; ++ii) {
+    const instanceMetadataControl = instances[ii].getData().metadata;
+    if (
+      !instanceMetadataControl ||
+      instanceMetadataControl === undefined ||
+      !instanceMetadataControl.ImagePositionPatient ||
+      instanceMetadataControl.ImagePositionPatient === undefined
+    ) {
+      continue;
+    }
+    for (let jj = ii + 1; jj < n; ++jj) {
+      const instanceMetadata = instances[jj].getData().metadata;
+      if (
+        !instanceMetadata ||
+        instanceMetadata === undefined ||
+        !instanceMetadata.ImagePositionPatient ||
+        instanceMetadata.ImagePositionPatient === undefined
+      ) {
+        continue;
+      }
+
+      if (_isSameArray(instanceMetadataControl.ImagePositionPatient, instanceMetadata.ImagePositionPatient)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function _isSameArray(iop1, iop2) {
   if (iop1 === undefined || !iop2 === undefined) {
     return;
   }
@@ -156,12 +254,12 @@ function _getSpacingIssue(spacing, averageSpacing) {
 
   if (errorForEachSpacing < spacingTolerance * averageSpacing) {
     return {
-      issue: reconstructionIssues.MISSING_FRAMES,
+      issue: ReconstructionIssues.MISSING_FRAMES,
       missingFrames: numberOfSpacings - 1,
     };
   }
 
-  return { issue: reconstructionIssues.IRREGULAR_SPACING };
+  return { issue: ReconstructionIssues.IRREGULAR_SPACING };
 }
 
 function _getPerpendicularDistance(a, b) {
@@ -173,7 +271,5 @@ function _getPerpendicularDistance(a, b) {
 }
 
 const constructableModalities = ['MR', 'CT', 'PT', 'NM'];
-const reconstructionIssues = {
-  MISSING_FRAMES: 'missingframes',
-  IRREGULAR_SPACING: 'irregularspacing',
-};
+
+export {isDisplaySetReconstructable, isSpacingUniform};

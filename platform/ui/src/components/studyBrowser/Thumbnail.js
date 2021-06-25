@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 import ImageThumbnail from './ImageThumbnail';
 import classNames from 'classnames';
+import { Icon } from './../../elements/Icon';
+import { Tooltip } from './../tooltip';
+import { OverlayTrigger } from './../overlayTrigger';
 
 import './Thumbnail.styl';
 
@@ -11,7 +14,22 @@ function ThumbnailFooter({
   SeriesNumber,
   InstanceNumber,
   numImageFrames,
+  hasWarnings
 }) {
+  const [inconsistencyWarnings, inconsistencyWarningsSet] = useState([]);
+
+  useEffect(() => {
+    let unmounted = false
+    hasWarnings.then(response => {
+      if (!unmounted) {
+        inconsistencyWarningsSet(response)
+      }
+    })
+    return () => {
+      unmounted = true
+    }
+  }, [])
+
   const infoOnly = !SeriesDescription;
 
   const getInfo = (value, icon, className = '') => {
@@ -22,28 +40,73 @@ function ThumbnailFooter({
       </div>
     );
   };
+
+  const getWarningContent = (inconsistencyWarnings) => {
+    if (Array.isArray(inconsistencyWarnings)) {
+      const listedWarnings = inconsistencyWarnings.map((warn, index) => {
+        return <li key={index}>{warn}</li>;
+      });
+
+      return <ol>{listedWarnings}</ol>;
+    } else {
+      return <React.Fragment>{inconsistencyWarnings}</React.Fragment>;
+    }
+  };
+
+  const getWarningInfo = (SeriesNumber, inconsistencyWarnings) => {
+      return(
+        <React.Fragment>
+        {inconsistencyWarnings && inconsistencyWarnings.length != 0 ? (
+          <OverlayTrigger
+            key={SeriesNumber}
+            placement="left"
+            overlay={
+              <Tooltip
+                placement="left"
+                className="in tooltip-warning"
+                id="tooltip-left"
+              >
+                <div className="warningTitle">Series Inconsistencies</div>
+                <div className="warningContent">{getWarningContent(inconsistencyWarnings)}</div>
+              </Tooltip>
+            }
+          >
+            <div className={classNames('warning')}>
+              <span className="warning-icon">
+                <Icon name="exclamation-triangle" />
+              </span>
+            </div>
+          </OverlayTrigger>
+        ) : (
+          <React.Fragment></React.Fragment>
+          )}
+      </React.Fragment>
+      );
+  };
   const getSeriesInformation = (
     SeriesNumber,
     InstanceNumber,
-    numImageFrames
+    numImageFrames,
+    inconsistencyWarnings
   ) => {
     if (!SeriesNumber && !InstanceNumber && !numImageFrames) {
       return;
     }
-
-    return (
+    const seriesInformation =
       <div className="series-information">
         {getInfo(SeriesNumber, 'S:')}
         {getInfo(InstanceNumber, 'I:')}
         {getInfo(numImageFrames, '', 'image-frames')}
+        {getWarningInfo(SeriesNumber, inconsistencyWarnings)}
       </div>
-    );
+
+    return (seriesInformation);
   };
 
   return (
     <div className={classNames('series-details', { 'info-only': infoOnly })}>
       <div className="series-description">{SeriesDescription}</div>
-      {getSeriesInformation(SeriesNumber, InstanceNumber, numImageFrames)}
+      {getSeriesInformation(SeriesNumber, InstanceNumber, numImageFrames, inconsistencyWarnings)}
     </div>
   );
 }
@@ -60,6 +123,7 @@ function Thumbnail(props) {
     numImageFrames,
     SeriesDescription,
     SeriesNumber,
+    hasWarnings,
     stackPercentComplete,
     StudyInstanceUID,
     onClick,
@@ -95,6 +159,7 @@ function Thumbnail(props) {
       {/* SHOW IMAGE */}
       {hasImage && (
         <ImageThumbnail
+          active={active}
           imageSrc={imageSrc}
           imageId={imageId}
           error={error}
@@ -126,13 +191,14 @@ Thumbnail.propTypes = {
   stackPercentComplete: PropTypes.number,
   /**
   altImageText will be used when no imageId or imageSrc is provided.
-It will be displayed inside the <div>. This is useful when it is difficult
+  It will be displayed inside the <div>. This is useful when it is difficult
   to make a preview for a type of DICOM series (e.g. DICOM-SR)
   */
   altImageText: PropTypes.string,
   SeriesDescription: PropTypes.string,
   SeriesNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   InstanceNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  hasWarnings: PropTypes.instanceOf(Promise),
   numImageFrames: PropTypes.number,
   onDoubleClick: PropTypes.func,
   onClick: PropTypes.func,

@@ -1,5 +1,5 @@
 import './ViewerMain.css';
-
+import { servicesManager } from './../App.js';
 import { Component } from 'react';
 import { ConnectedViewportGrid } from './../components/ViewportGrid/index.js';
 import PropTypes from 'prop-types';
@@ -141,7 +141,28 @@ class ViewerMain extends Component {
 
     if (displaySet.isDerived) {
       const { Modality } = displaySet;
-      displaySet = displaySet.getSourceDisplaySet(this.props.studies);
+      if (Modality === 'SEG' && servicesManager) {
+        const {LoggerService, UINotificationService} = servicesManager.services;
+        const onDisplaySetLoadFailureHandler = error => {
+          LoggerService.error({ error, message: error.message });
+          UINotificationService.show({
+            title: 'DICOM Segmentation Loader',
+            message: error.message,
+            type: 'error',
+            autoClose: true,
+          });
+        };
+
+        const {referencedDisplaySet} = displaySet.getSourceDisplaySet(
+          this.props.studies,
+          true,
+          onDisplaySetLoadFailureHandler
+        );
+        displaySet = referencedDisplaySet;
+
+      } else {
+        displaySet = displaySet.getSourceDisplaySet(this.props.studies);
+      }
 
       if (!displaySet) {
         throw new Error(

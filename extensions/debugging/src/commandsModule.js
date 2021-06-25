@@ -1,4 +1,6 @@
 import OHIF from '@ohif/core';
+import { useLogger } from '@ohif/ui';
+
 import {
   save,
   upload,
@@ -95,6 +97,7 @@ export function getCommands(context, servicesManager, extensionManager) {
       const { UIModalService } = servicesManager.services;
 
       const WrappedDebugReportModal = function() {
+        const { state: loggerState } = useLogger();
         return (
           <DebugReportModal
             viewports={viewports}
@@ -103,6 +106,7 @@ export function getCommands(context, servicesManager, extensionManager) {
             extensionManager={extensionManager}
             mailTo={state.mailTo}
             debugModalMessage={state.debugModalMessage}
+            errors={loggerState.errors}
           />
         );
       };

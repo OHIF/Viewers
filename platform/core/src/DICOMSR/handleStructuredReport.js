@@ -6,6 +6,7 @@ import parseDicomStructuredReport from './parseDicomStructuredReport';
 import parseMeasurementsData from './parseMeasurementsData';
 import getAllDisplaySets from './utils/getAllDisplaySets';
 import errorHandler from '../errorHandler';
+import getXHRRetryRequestHook from '../utils/xhrRetryRequestHook';
 
 const VERSION_NAME = 'dcmjs-0.0';
 const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
@@ -23,6 +24,7 @@ const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
     url: serverUrl,
     headers: DICOMWeb.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
+    requestHooks: [getXHRRetryRequestHook()],
   };
 
   const dicomWeb = new api.DICOMwebClient(config);
@@ -74,6 +76,7 @@ const stowSRFromMeasurements = async (measurements, serverUrl) => {
     url: serverUrl,
     headers: DICOMWeb.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
+    requestHooks: [getXHRRetryRequestHook()],
   };
 
   const dicomWeb = new api.DICOMwebClient(config);

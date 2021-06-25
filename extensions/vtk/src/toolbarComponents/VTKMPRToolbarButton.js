@@ -31,63 +31,7 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
 
   if (!displaySet) {
     return false;
-  }
-
-  // 2D MPR is not currently available for 4D datasets.
-
-  // Assuming that slices at different time have the same position, here we just check if
-  // there are multiple slices for the same ImagePositionPatient and disable MPR.
-
-  // A better heuristic would be checking 4D tags, e.g. the presence of multiple TemporalPositionIdentifier values.
-  // However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.
-
-  for (let ii = 0; ii < displaySet.numImageFrames; ++ii) {
-    const image = displaySet.images[ii];
-    if (!image) continue;
-
-    const imageIdControl = image.getImageId()
-    const instanceMetadataControl = cornerstone.metaData.get('instance', imageIdControl)
-
-    if (!instanceMetadataControl ||
-      instanceMetadataControl === undefined ||
-      !instanceMetadataControl.ImagePositionPatient ||
-      instanceMetadataControl.ImagePositionPatient === undefined) {
-      // if ImagePositionPatient is missing, skip the 4D datasets check.
-      // do not return false, because it could be a 3D dataset.
-      continue;
-    }
-
-    let xImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[0];
-    let yImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[1];
-    let zImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[2];
-
-    for (let jj = ii + 1; jj < displaySet.numImageFrames; ++jj) {
-      const image = displaySet.images[jj];
-      if (!image) continue;
-
-      const imageId = image.getImageId()
-      const instanceMetadata = cornerstone.metaData.get('instance', imageId)
-
-      if (!instanceMetadata ||
-        instanceMetadata === undefined ||
-        !instanceMetadata.ImagePositionPatient ||
-        instanceMetadata.ImagePositionPatient === undefined) {
-        // if ImagePositionPatient is missing, skip the 4D datasets check.
-        // do not return false, because it could be a 3D dataset.
-        continue;
-      }
-
-      let xImagePositionPatient = instanceMetadata.ImagePositionPatient[0];
-      let yImagePositionPatient = instanceMetadata.ImagePositionPatient[1];
-      let zImagePositionPatient = instanceMetadata.ImagePositionPatient[2];
-
-      if (xImagePositionPatientControl === xImagePositionPatient &&
-        yImagePositionPatientControl === yImagePositionPatient &&
-        zImagePositionPatientControl === zImagePositionPatient) {
-        return false;
-      }
-    }
-  }
+  };
 
   return displaySet.isReconstructable;
 };

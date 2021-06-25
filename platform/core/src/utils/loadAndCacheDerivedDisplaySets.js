@@ -45,13 +45,13 @@ import studyMetadataManager from './studyMetadataManager';
  * @param {string} referencedDisplaySet.studyInstanceUid
  * @param {Array} referencedDisplaySet.sopClassUids
  * @param {Study[]} studies Collection of studies
+ * @param {object} logger
+ * @param {object} snackbar
  * @returns void
  */
-const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
+async function loadAndCacheDerivedDisplaySets(referencedDisplaySet, studies, logger, snackbar) {
   const { StudyInstanceUID, SeriesInstanceUID } = referencedDisplaySet;
-
   const promises = [];
-
   const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
 
   if (!studyMetadata) {
@@ -80,11 +80,10 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   });
 
   // For each type, see if any are loaded, if not load the most recent.
-  Object.keys(displaySetsPerModality).forEach(key => {
+  await Promise.all(Object.keys(displaySetsPerModality).map(async (key) => {
     const displaySets = displaySetsPerModality[key];
 
     const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
-
     if (isLoaded) {
       return;
     }
@@ -107,12 +106,34 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
       }
     });
 
-    recentDisplaySet.isLoading = true;
+    try {
+      if (recentDisplaySet.hasOwnProperty('getSourceDisplaySet') &&
+        typeof recentDisplaySet.getSourceDisplaySet === 'function') {
+        await recentDisplaySet.getSourceDisplaySet(studies);
+      } else {
+        await recentDisplaySet.load(referencedDisplaySet, studies);
+      }
+    } catch (error) {
+      recentDisplaySet.isLoaded = false;
+      recentDisplaySet.loadError = true;
+      logger.error({ error, message: error.message });
+      snackbar.show({
+        title: 'Error loading derived display set:',
+        message: error.message,
+        type: 'error',
+        error,
+        autoClose: false,
+      });
+    }
+  }));
 
-    promises.push(recentDisplaySet.load(referencedDisplaySet, studies));
-  });
-
-  return promises;
+  /*
+  * TODO: Improve the way we notify parts of the app
+  * that depends on derived display sets to be loaded.
+  * (Implement pubsub for better tracking of derived display sets)
+  */
+  const event = new CustomEvent('deriveddisplaysetsloadedandcached');
+  document.dispatchEvent(event);
 };
 
 export default loadAndCacheDerivedDisplaySets;

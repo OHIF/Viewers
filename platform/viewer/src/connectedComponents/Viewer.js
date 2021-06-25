@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { useLogger } from '@ohif/ui';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
@@ -12,6 +13,8 @@ import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
+import { ReconstructionIssues } from './../../../core/src/enums.js';
+import dcmjs from 'dcmjs';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -20,6 +23,7 @@ import AppContext from '../context/AppContext';
 
 import './Viewer.css';
 import { finished } from 'stream';
+import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 
 class Viewer extends Component {
   static propTypes = {
@@ -193,18 +197,38 @@ class Viewer extends Component {
         ]);
       }
 
+      const activeViewport = this.props.viewports[this.props.activeViewportIndex];
+      const activeDisplaySetInstanceUID =
+        activeViewport ? activeViewport.displaySetInstanceUID : undefined;
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies),
+        thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
       });
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, isStudyLoaded } = this.props;
+    const {
+      studies,
+      isStudyLoaded,
+      activeViewportIndex,
+      viewports
+    } = this.props;
 
-    if (studies !== prevProps.studies) {
+    const activeViewport = viewports[activeViewportIndex];
+    const activeDisplaySetInstanceUID =
+      activeViewport ? activeViewport.displaySetInstanceUID : undefined;
+
+    const prevActiveViewport = prevProps.viewports[prevProps.activeViewportIndex];
+    const prevActiveDisplaySetInstanceUID =
+      prevActiveViewport ? prevActiveViewport.displaySetInstanceUID : undefined;
+
+    if (studies !== prevProps.studies ||
+      activeViewportIndex !== prevProps.activeViewportIndex ||
+      activeDisplaySetInstanceUID !== prevActiveDisplaySetInstanceUID
+      ) {
+
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies),
+        thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
@@ -268,6 +292,10 @@ class Viewer extends Component {
         {/* TOOLBAR */}
         <ErrorBoundaryDialog context="ToolbarRow">
           <ToolbarRow
+            activeViewport={
+              this.props.viewports[this.props.activeViewportIndex]
+            }
+            isDerivedDisplaySetsLoaded={this.props.isDerivedDisplaySetsLoaded}
             isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
             isRightSidePanelOpen={this.state.isRightSidePanelOpen}
             selectedLeftSidePanel={
@@ -320,11 +348,11 @@ class Viewer extends Component {
                   activeIndex={this.props.activeViewportIndex}
                 />
               ) : (
-                  <ConnectedStudyBrowser
-                    studies={this.state.thumbnails}
-                    studyMetadata={this.props.studies}
-                  />
-                )}
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
             </SidePanel>
           </ErrorBoundaryDialog>
 
@@ -347,7 +375,9 @@ class Viewer extends Component {
                   viewports={this.props.viewports}
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
-                  activeViewport={this.props.viewports[this.props.activeViewportIndex]}
+                  activeViewport={
+                    this.props.viewports[this.props.activeViewportIndex]
+                  }
                   getActiveViewport={this._getActiveViewport}
                 />
               )}
@@ -362,6 +392,207 @@ class Viewer extends Component {
 export default withDialog(Viewer);
 
 /**
+ * Async function to check if there are any inconsistences in the series.
+ *
+ * For segmentation checks that the geometry is consistent with the source images:
+ * 1) no frames out of plane;
+ * 2) have the same width and height.
+ *
+ * For reconstructable 3D volume:
+ * 1) Is series multiframe?
+ * 2) Do the frames have different dimensions/number of components/orientations?
+ * 3) Has the series any missing frames or irregular spacing?
+ * 4) Is the series 4D?
+ *
+ * If not reconstructable, MPR is disabled.
+ * The actual computations are done in isDisplaySetReconstructable.
+ *
+ * @param {*object} displaySet
+ * @returns {[string]} an array of strings containing the warnings
+ */
+const _checkForSeriesInconsistencesWarnings = async function (displaySet, studies) {
+  if (displaySet.inconsistencyWarnings) {
+    // warnings already checked and cached in displaySet
+    return displaySet.inconsistencyWarnings;
+  }
+  const inconsistencyWarnings = [];
+
+  if (displaySet.Modality !== 'SEG') {
+    if (displaySet.reconstructionIssues && displaySet.reconstructionIssues.length !== 0) {
+      displaySet.reconstructionIssues.forEach(warning => {
+        switch (warning) {
+          case ReconstructionIssues.DATASET_4D:
+            inconsistencyWarnings.push('The dataset is 4D.');
+            break;
+          case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
+            inconsistencyWarnings.push('The dataset frames have different dimensions (rows, columns).');
+            break;
+          case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
+            inconsistencyWarnings.push('The dataset frames have different components (Sample per pixel).');
+            break;
+          case ReconstructionIssues.VARYING_IMAGESORIENTATION:
+            inconsistencyWarnings.push('The dataset frames have different orientation.');
+            break;
+          case ReconstructionIssues.IRREGULAR_SPACING:
+            inconsistencyWarnings.push('The dataset frames have different pixel spacing.');
+            break;
+          case ReconstructionIssues.MULTIFFRAMES:
+            inconsistencyWarnings.push('The dataset is a multiframes.');
+            break;
+          default:
+            break;
+        }
+      });
+      inconsistencyWarnings.push('The datasets is not a reconstructable 3D volume. MPR mode is not available.');
+    }
+
+    if (displaySet.missingFrames &&
+      (!displaySet.reconstructionIssues ||
+        (displaySet.reconstructionIssues && !displaySet.reconstructionIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
+          inconsistencyWarnings.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
+    }
+  } else {
+    const segMetadata = displaySet.metadata;
+    if (!segMetadata) {
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
+      return inconsistencyWarnings;
+    }
+
+    const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
+    if (!referencedDisplaySet) {
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
+      return inconsistencyWarnings;
+    }
+
+    const imageIds = referencedDisplaySet.images.map(image => image.getImageId());
+    if (!imageIds || imageIds.length === 0) {
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
+      return inconsistencyWarnings;
+    }
+
+    for (
+      let i = 0, groupsLen = segMetadata.PerFrameFunctionalGroupsSequence.length;
+      i < groupsLen;
+      ++i
+    ) {
+      const PerFrameFunctionalGroups = segMetadata.PerFrameFunctionalGroupsSequence[i];
+      if (!PerFrameFunctionalGroups) {
+        continue;
+      }
+
+      let SourceImageSequence = undefined;
+      if (segMetadata.SourceImageSequence) {
+        SourceImageSequence = segMetadata.SourceImageSequence[i];
+      } else if (PerFrameFunctionalGroups.DerivationImageSequence) {
+        SourceImageSequence =
+          PerFrameFunctionalGroups.DerivationImageSequence
+            .SourceImageSequence;
+      }
+      if (!SourceImageSequence) {
+        if (inconsistencyWarnings.length === 0) {
+          const warningMessage = 'The segmentation ' +
+            'has frames out of plane respect to the source images.';
+            inconsistencyWarnings.push(warningMessage);
+        }
+        continue;
+      }
+
+      const {
+        ReferencedSOPInstanceUID,
+      } = SourceImageSequence;
+
+      const imageId = imageIds.find(imageId => {
+        const sopCommonModule = cornerstone.metaData.get(
+            "sopCommonModule",
+            imageId
+        );
+        if (!sopCommonModule) {
+            return;
+        }
+
+        return sopCommonModule.sopInstanceUID === ReferencedSOPInstanceUID;
+      });
+
+      if (!imageId) {
+        continue;
+      }
+
+      const sourceImageMetadata = cornerstone.metaData.get(
+        "instance",
+        imageId
+      );
+      if (
+        segMetadata.Rows !== sourceImageMetadata.Rows ||
+        segMetadata.Columns !== sourceImageMetadata.Columns
+      ) {
+        const warningMessage = 'The segmentation ' +
+          'has frames with different geometry ' +
+          'dimensions (Rows and Columns) respect to the source images.';
+          inconsistencyWarnings.push(warningMessage);
+        break;
+      }
+    }
+
+    if (inconsistencyWarnings.length !== 0) {
+      const warningMessage = 'The segmentation format is not supported yet. ' +
+        'The segmentation data (segments) could not be loaded.';
+        inconsistencyWarnings.push(warningMessage);
+    }
+  }
+
+  // cache the warnings
+  displaySet.inconsistencyWarnings = inconsistencyWarnings;
+  return inconsistencyWarnings;
+}
+
+/**
+ * Checks if display set is active, i.e. if the series is currently shown
+ * in the active viewport.
+ *
+ * For data display set, this functions checks if the active
+ * display set instance uid in the current active viewport is the same of the
+ * thumbnail one.
+ *
+ * For derived modalities (e.g., SEG and RTSTRUCT), the function gets the
+ * reference display set and then checks the reference uid with the active
+ * display set instance uid.
+ *
+ * @param {displaySet} displaySet
+ * @param {Study[]} studies
+ * @param {string} activeDisplaySetInstanceUID
+ * @returns {boolean} is active.
+ */
+ const _isDisplaySetActive = function(displaySet, studies, activeDisplaySetInstanceUID) {
+  let active = false;
+
+  const {
+    displaySetInstanceUID,
+  } = displaySet;
+
+  // TO DO: in the future, we could possibly support new modalities
+  // we should have a list of all modalities here, instead of having hard coded checks
+  if (displaySet.Modality !== 'SEG' &&
+    displaySet.Modality !== 'RTSTRUCT' &&
+    displaySet.Modality !== 'RTDOSE') {
+    active = activeDisplaySetInstanceUID === displaySetInstanceUID;
+  } else if (displaySet.getSourceDisplaySet){
+    if (displaySet.Modality === 'SEG') {
+      const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
+      active = referencedDisplaySet ?
+        activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
+          false;
+    } else {
+      const referencedDisplaySet = displaySet.getSourceDisplaySet(studies, false);
+      active = referencedDisplaySet ?
+        activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
+          false;
+    }
+  }
+
+  return active;
+};
+
+/**
  * What types are these? Why do we have "mapping" dropped in here instead of in
  * a mapping layer?
  *
@@ -369,12 +600,11 @@ export default withDialog(Viewer);
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
- * @param {DisplaySet[]} studies[].displaySets
+ * @param {string} activeDisplaySetInstanceUID
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
-
     const thumbnails = study.displaySets.map(displaySet => {
       const {
         displaySetInstanceUID,
@@ -394,13 +624,16 @@ const _mapStudiesToThumbnails = function (studies) {
         altImageText = 'SEG';
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
-
         imageId = displaySet.images[imageIndex].getImageId();
       } else {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
+      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet, studies);
+      const active = _isDisplaySetActive(displaySet, studies, activeDisplaySetInstanceUID)
+
       return {
+        active,
         imageId,
         altImageText,
         displaySetInstanceUID,
@@ -408,6 +641,7 @@ const _mapStudiesToThumbnails = function (studies) {
         InstanceNumber,
         numImageFrames,
         SeriesNumber,
+        hasWarnings,
       };
     });
 

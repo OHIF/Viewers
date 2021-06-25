@@ -77,7 +77,6 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
 
 /**
  * Function to create imagePath with all imageData related
- *
  * @param {string} StudyInstanceUID
  * @param {string} SeriesInstanceUID
  * @param {string} SOPInstanceUID

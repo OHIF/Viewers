@@ -12,3 +12,15 @@
   display: flex;
   flex-direction: row;
 }
+
+.debug-report-modal-container .errors {
+  margin-top: 10px;
+}
+
+.debug-report-modal-container .errors-container {
+  border: 1px solid var(--active-color);
+  border-radius: 5px;
+  padding: 10px;
+  overflow: scroll;
+  max-height: 300px;
+}
