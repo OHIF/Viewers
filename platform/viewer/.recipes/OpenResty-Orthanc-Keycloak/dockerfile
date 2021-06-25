@@ -23,20 +23,32 @@
 
 
 # Stage 1: Build the application
-FROM node:11.2.0-slim as builder
+FROM node:10.16.3-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
-ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-
+# Copy Files
+COPY .docker /usr/src/app/.docker
+COPY .webpack /usr/src/app/.webpack
+COPY extensions /usr/src/app/extensions
+COPY platform /usr/src/app/platform
+COPY .browserslistrc /usr/src/app/.browserslistrc
+COPY aliases.config.js /usr/src/app/aliases.config.js
+COPY babel.config.js /usr/src/app/babel.config.js
+COPY lerna.json /usr/src/app/lerna.json
 COPY package.json /usr/src/app/package.json
+COPY postcss.config.js /usr/src/app/postcss.config.js
 COPY yarn.lock /usr/src/app/yarn.lock
 
-ADD . /usr/src/app/
+# ADD . /usr/src/app/
+RUN yarn config set workspaces-experimental true
 RUN yarn install
-RUN yarn run build:web
+
+ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV QUICK_BUILD true
+RUN yarn run build
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs openresty (nginx) using Alpine Linux
@@ -60,6 +72,6 @@ RUN luarocks install lua-resty-openidc
 RUN luarocks install luacrypto
 
 # Copy build output to image
-COPY --from=builder /usr/src/app/build /var/www/html
+COPY --from=builder /usr/src/app/platform/viewer/dist /var/www/html
 
 ENTRYPOINT ["/usr/local/openresty/nginx/sbin/nginx", "-g", "daemon off;"]
