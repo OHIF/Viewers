@@ -17,58 +17,66 @@ The four main components of the toolbar are:
 
 ## Tools
 This section displays all the available tools inside the mode.
-
 ## Measurement tools
-They can be used to measure the area of interest. This measurement can be performed
-via:
+The basic viewer comes with the following default measurement tools:
 
-- Length Tool: Calculated the distance between two points
-- Bidirectional Tool: A 2D Length tool in two main axis
-- Annotation: To label and point to an area
-- Ellipse: Calculates statistics on a ellipse area
-- Rectangle: Calculates statistics on a rectangle area
-- Probe: To read the intensity value at a location
+- Length Tool: Calculates the linear distance between two points in *mm*
+- Bidirectional Tool: Creates a measurement of longest diameter (LD) and longest perpendicular diameter (LPD) in *mm*
+- Annotation: Used to create a qualitative marker with a freetext label
+- Ellipse: Measures an ellipical area in *mm<sup>2</sup>* and Hounsfield Units (HU)
 
+When a measurement tool is selected from the toolbar, it becomes the `active` tool. Use the caret to expand the measurement tools and select another tool.
+<!-- We should add a smaller screenshot for each measurement tool. Maybe have a matrix with 4 identical sized screenshots in a box? Also we should make sure the screenshots have more realistic measurements -->
 
 ![user-viewer-toolbar-measurements](../../assets/img/user-viewer-toolbar-measurements.png)
 
-To draw a measurement you can select it from the toolbar and click and drag mouse
-to reach the desired shape, size and direction.
 
-A sample tool drawing is shown below
+## Window/Level
+The `Window/Level` tool enables manipulating the window level and window width of the rendered image. Click on the tool to enable freeform adjustment, then click and drag on the viewport to freely adjust the window/level.
 
+Click on the caret to expand the tool and choose from predefined W/L settings for common imaging scenarios.
 
-## Presets
-Preset tool enables manipulating the window level and window width of the rendered
-image, which basically modifies the contrast and brightness.
-
-You can also choose from the list of pre-defined presets by clicking on the triangle.
 
 ![user-toolbar-preset](../../assets/img/user-toolbar-preset.png)
 
 
-## Download High Quality Image
-By clicking on the Camera icon you can open the window for downloading the image as
-common image formats (png, jpg)
+## Pan and Zoom
+With the Zoom tool selected, click and drag the cursor on an image to adjust the zoom. The magnification level is displayed in the viewport.
+
+With the Pan tool selected, click and drag the cursor on an image to adjust the image position.
+
+## Image Capture
+Click on the Camera icon to download a high quality image capture using common image formats (png, jpg)
 
 ![user-toolbar-download-icon](../../assets/img/user-toolbar-download-icon.png)
 
-In the opened modal, you can set the filename, image's width and height, and filetype and press download for downloading the image to your local computer.
+In the opened modal, the filename, image's width and height, and filetype and can be configured before downloading the image to your local computer.
 
 ![user-toolbar-download](../../assets/img/user-toolbar-download.png)
 
 
-## Extra tools
-Lots of other tools are also available in the last tool icon drawer. If you
-click on the triangle they will get appeared.
 
-![user-toolbar-extra](../../assets/img/user-toolbar-extra.png)
+## Layout Selector
+Please see the `Viewport` section for details.
 
 
+## More Tools Menu
+- Reset View: Resets all image manipulation such as position, zoom, and W/L
+- Rotate Right: Flips the image 90 degrees clockwise
+- Flip Horizontally: Flips the image 180 degrees horizontally
+- Stack Scroll: Links all viewports containing images to scroll together
+- Magnify: Click on an image to magnify a particular area of interest
+- Invert: Inverts the colorscale
+- Cine: Toggles the Cine player control in the currently selected viewport. Click the `x` on the Cine player or click the tool again to toggle off.
+- Angle: Measures an adjustable angle on an image
+<!-- - Probe: Should probe be enabled in basic viewer? Doesn't look like it works currently -->
+- Rectangle: Measures a rectangular area in mm^2 and HU
 
+When a tool is selected from the `More Tools` menu, it becomes the active tool until it is replaced by clicking on a different tool in the More Tools menu or main toolbar.
+
+<!-- Cine player tool -->
 ## Overview Video
 An overview of tool usage can been seen below:
-
 
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>

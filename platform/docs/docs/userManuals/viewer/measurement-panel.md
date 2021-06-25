@@ -2,23 +2,28 @@
 sidebar_position: 3
 ---
 
-# Measurement panel
+# Measurement Panel
 
 ## Introduction
-In `Basic Viewer` mode, right panel is the `Measurement Panel`. When you use an annotation tool, a pop up will show up and asks the user if they want to track measurements for the
-series on which the annotation was drawn.
+In `Basic Viewer` mode, the right panel is the `Measurement Panel`. The Measurement Panel can be expanded or hidden by clicking on the arrow to the left of `Measurements`.
+<!-- We might want to make an entire section about the tracking workflow including SR hydration because it's pretty complicated. Let's review after the deploy branch is ready. Logic is in OHIF-63 OHIF-339 tickets for reference -->
+Select a measurement tool and mark an image to initiate measurement tracking. A pop up will ask if you want to track measurements for the series on which the annotation was drawn.
 
 ![user-measurement-panel-modal](../../assets/img/user-measurement-panel-modal.png)
 
-If you select `yes`, the series becomes a `tracked series`, and the current drawn measurement and next measurements will get shown up on the measurement panel on the right.
+If you select `Yes`, the series becomes a `tracked series`, and the current drawn measurement and next measurements will get shown up on the measurement panel on the right.
 
 
 ![user-measurement-panel-tracked](../../assets/img/user-measurement-panel-tracked.png)
 
+If you select `No`, the measurement becomes temporary. The next annotation made will repeat the measurement tracking prompt.
 
+If you select `No, do not ask again`, all annotations made on the study will be temporary.
+<!-- Temporary measurement screenshot -->
 
-## Renaming Measurements
-You can edit the measurement name by hovering over the measurement and selecting the edit icon.
+## Labeling Measurements
+You can edit the measurement name by hovering over the measurement and selecting the edit icon. You can also label or relabel a measurement by right-clicking on it in the viewport.
+<!-- I would make this first screenshot smaller. Remove the other 2 screenshots as they are pretty self explanatory. Add another screenshot that shows the right-click menu option to lable/relabel measurement and justify the two screenshots in line together -->
 
 ![user-measurement-edit](../../assets/img/user-measurement-edit.png)
 
@@ -30,21 +35,18 @@ Result:
 
 
 ## Deleting a Measurement
-A measurement can be deleting by dragging it outside the image in the viewport. You can
-take a look at the overview video to see this behavior.
+A measurement can be deleting by dragging it outside the image in the viewport or by right-clicking on the measurement in the viewport and selecting 'Delete'.
 
 
 ## Jumping to a Measurement
-Measurements that appear on the measurement panel are linked directly to their original
-tool on the viewport. This enables the user to click on a measurement and the viewport will jump to the slice that the measurement has been drawn. You can
-take a look at the overview video to see this behavior.
-
-## Prev/Next Measurement
 Measurement navigation inside the top viewport can be used to move to previous and next measurement.
 
 ![user-measurement-prevnext](../../assets/img/user-measurement-prevnext.png)
 
+If a series containing a measurement is currently being displayed in a viewport, you can jump to display the measurement in the viewport by clicking on it in the Measurement Panel.
+
 ## Export Measurements
+<!-- I think PDF and DICOM export didn't make it into this version but should be options. Let's confirm -->
 You can export the measurements by clicking on the `Export`. A CSV file will get downloaded to your local computer containing the drawn measurements.
 
 
@@ -65,7 +67,6 @@ For instance, running the Viewer on a local DCM4CHEE:
 
 ## Overview Video
 An overview of measurement drawing and exporting can be seen below:
-
 
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
