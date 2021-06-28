@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.13.13](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.12...@ohif/core@2.13.13) (2021-06-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.12](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.11...@ohif/core@2.13.12) (2021-06-02)
+
+
+### Bug Fixes
+
+* **dicom-html:** Add parsed dicom meta info section ([#2419](https://github.com/OHIF/Viewers/issues/2419)) ([403688b](https://github.com/OHIF/Viewers/commit/403688b18c52468fc1101166ec0c1734fb710039))
+
+
+
+
+
+## [2.13.11](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.10...@ohif/core@2.13.11) (2021-05-17)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.10](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.9...@ohif/core@2.13.10) (2021-04-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.9](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.8...@ohif/core@2.13.9) (2021-04-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.7...@ohif/core@2.13.8) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.6...@ohif/core@2.13.7) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.6](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.5...@ohif/core@2.13.6) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.4...@ohif/core@2.13.5) (2021-04-16)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.13.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.3...@ohif/core@2.13.4) (2021-04-15)
+
+
+### Bug Fixes
+
+* **wl:** fix metadata provider window level issues after dicomweb update (string vs number) ([8681036](https://github.com/OHIF/Viewers/commit/8681036b2133cfc325658691a256a86b5e36705f))
+
+
+
+
+
 ## [2.13.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.2...@ohif/core@2.13.3) (2021-03-26)
 
 **Note:** Version bump only for package @ohif/core

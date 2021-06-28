@@ -3,6 +3,106 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.19...@ohif/viewer@4.9.20) (2021-06-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.19](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.18...@ohif/viewer@4.9.19) (2021-06-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.18](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.17...@ohif/viewer@4.9.18) (2021-06-02)
+
+
+### Bug Fixes
+
+* **dicom-html:** Add parsed dicom meta info section ([#2419](https://github.com/OHIF/Viewers/issues/2419)) ([403688b](https://github.com/OHIF/Viewers/commit/403688b18c52468fc1101166ec0c1734fb710039))
+
+
+
+
+
+## [4.9.17](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.16...@ohif/viewer@4.9.17) (2021-05-17)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+
+## [4.9.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.15...@ohif/viewer@4.9.16) (2021-05-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.14...@ohif/viewer@4.9.15) (2021-04-22)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.13...@ohif/viewer@4.9.14) (2021-04-22)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.12...@ohif/viewer@4.9.13) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.11...@ohif/viewer@4.9.12) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.10...@ohif/viewer@4.9.11) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.9...@ohif/viewer@4.9.10) (2021-04-16)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.8...@ohif/viewer@4.9.9) (2021-04-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.9.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.7...@ohif/viewer@4.9.8) (2021-03-31)
 
 **Note:** Version bump only for package @ohif/viewer

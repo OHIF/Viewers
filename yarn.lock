@@ -6619,10 +6619,10 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@0.18.3:
-  version "0.18.3"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.18.3.tgz#17d5a23d96b63264b8a1a859e4cb000b3e20495b"
-  integrity sha512-nmG6wEBcIMnadXAZOTcXwacBv+lrh8bqPwIKZwdy7AkdihLEwI6/OnyP+PYjzcdltuPu9wOQcKZionvXuCteag==
+dcmjs@0.18.8:
+  version "0.18.8"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.18.8.tgz#fc8e6af03ace9050da49f4108334aa3d0a3bdf3d"
+  integrity sha512-Z3nNEmzkWdpHQPgjozGqk8XcuhP/hXP1C64Wtg9V+VO9eEc8eNFJFJ6If62f1cuOh0FaRwHqxBT7OzhOAUpFTA==
   dependencies:
     "@babel/polyfill" "^7.8.3"
     "@babel/runtime" "^7.8.4"
@@ -6940,20 +6940,15 @@ dicom-parser@^1.8.3:
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.3.tgz#6e4b862898112304db30143147562011c1ce6a4d"
   integrity sha512-CMeUr+jea7Ml70N+/Z5Pd2MYtvLp6IU+TnvdLe6VRVKzZuTeYLYyuAQa9R+sFK4v4N39hig+hKHN+Wfi9sQ6GA==
 
-dicomweb-client@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.4.4.tgz#0ca0c7706556f3114330a3c40946ee66808148e4"
-  integrity sha512-5S7wLYxQgHnOyEgR1zlZlt79IjzOk+YDB/Jjzte6ijRZsAoj9RUiIZcsTyxvBD9gLMYs/954n2kYHdbz83Xbtw==
-
 dicomweb-client@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.2.tgz#aa5a4a6a5044b0702bb0a8a2662c86cd16901951"
   integrity sha512-e11n2+g7HfBuMyopWq76W11eSZJ707g4U1XiO8URA+23aoe0g1kGAtlPB29NKXl7zX7RznTJ7wfRBxFkW6EJDA==
 
-dicomweb-client@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.6.0.tgz#5e35ada52fe0155af1cc1f0e84f9c7f76477f92d"
-  integrity sha512-VAkBg4W6odIo2XsFxqjN/rptd7bQ8oHpRuKH5d46E9BUIPzRschazE8Dx1xg7/l3N3f1M70jB7yJ339arAXiDQ==
+dicomweb-client@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.8.1.tgz#12bdf0e9698bcf82730f38829ac30158164bb3fd"
+  integrity sha512-5EbK8epfSuonSnCW3nr2tkA1CcO1aFT3grEVvKXqv0tVyHsBvbEcEmBcPEbu1m/cF6t7+3uQRLOQ4dw4CodxFg==
 
 diff-sequences@^24.9.0:
   version "24.9.0"

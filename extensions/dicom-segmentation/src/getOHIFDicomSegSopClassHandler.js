@@ -55,6 +55,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         referencedDisplaySetUID: null, // Assigned when loaded.
         labelmapIndex: null, // Assigned when loaded.
         isLoaded: false,
+        loadError: false,
         hasOverlapping: false,
         SeriesDate,
         SeriesTime,
@@ -63,8 +64,8 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         metadata,
       };
 
-      segDisplaySet.getSourceDisplaySet = function(studies) {
-        return getSourceDisplaySet(studies, segDisplaySet);
+      segDisplaySet.getSourceDisplaySet = function(studies, activateLabelMap = true, onDisplaySetLoadFailureHandler) {
+        return getSourceDisplaySet(studies, segDisplaySet, activateLabelMap, onDisplaySetLoadFailureHandler);
       };
 
       segDisplaySet.load = async function(referencedDisplaySet, studies) {
@@ -82,57 +83,50 @@ export default function getSopClassHandlerModule({ servicesManager }) {
           StudyInstanceUID,
           referencedDisplaySet.SeriesInstanceUID
         );
-        return new Promise(async (resolve, reject) => {
-          let results;
-          try {
-            results = _parseSeg(segArrayBuffer, imageIds);
-          } catch (error) {
-            segDisplaySet.isLoaded = false;
-            segDisplaySet.loadError = true;
-            reject(error);
-          }
-          const {
-            labelmapBufferArray,
-            segMetadata,
-            segmentsOnFrame,
-            segmentsOnFrameArray,
-          } = results;
 
-          let labelmapIndex;
-          if (labelmapBufferArray.length > 1) {
-            let labelmapIndexes = [];
-            for (let i = 0; i < labelmapBufferArray.length; ++i) {
-              labelmapIndexes.push(
-                await loadSegmentation(
-                  imageIds,
-                  segDisplaySet,
-                  labelmapBufferArray[i],
-                  segMetadata,
-                  segmentsOnFrame,
-                  segmentsOnFrameArray[i]
-                )
-              );
-            }
-            /**
-             * Since overlapping segmentations have virtual labelmaps,
-             * originLabelMapIndex is used in the panel to select the correct dropdown value.
-             */
-            segDisplaySet.hasOverlapping = true;
-            segDisplaySet.originLabelMapIndex = labelmapIndexes[0];
-            labelmapIndex = labelmapIndexes[0];
-            console.warn('Overlapping segmentations!');
-          } else {
-            labelmapIndex = await loadSegmentation(
-              imageIds,
-              segDisplaySet,
-              labelmapBufferArray[0],
-              segMetadata,
-              segmentsOnFrame,
-              []
+        const results = await _parseSeg(segArrayBuffer, imageIds);
+        if (results === undefined) {
+          return;
+        }
+        const {
+          labelmapBufferArray,
+          segMetadata,
+          segmentsOnFrame,
+          segmentsOnFrameArray,
+        } = results;
+        let labelmapIndex;
+        if (labelmapBufferArray.length > 1) {
+          let labelmapIndexes = [];
+          for (let i = 0; i < labelmapBufferArray.length; ++i) {
+            labelmapIndexes.push(
+              await loadSegmentation(
+                imageIds,
+                segDisplaySet,
+                labelmapBufferArray[i],
+                segMetadata,
+                segmentsOnFrame,
+                segmentsOnFrameArray[i]
+              )
             );
           }
-          resolve(labelmapIndex);
-        });
+          /**
+           * Since overlapping segments have virtual labelmaps,
+           * originLabelMapIndex is used in the panel to select the correct dropdown value.
+           */
+          segDisplaySet.hasOverlapping = true;
+          segDisplaySet.originLabelMapIndex = labelmapIndexes[0];
+          labelmapIndex = labelmapIndexes[0];
+          console.warn('Overlapping segments!');
+        } else {
+          labelmapIndex = await loadSegmentation(
+            imageIds,
+            segDisplaySet,
+            labelmapBufferArray[0],
+            segMetadata,
+            segmentsOnFrame,
+            []
+          );
+        }
       };
 
       return segDisplaySet;

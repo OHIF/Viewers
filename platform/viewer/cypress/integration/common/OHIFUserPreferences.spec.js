@@ -741,7 +741,7 @@ describe('OHIF User Preferences', () => {
 
       // Overlay information from 2nd viewport
       let second_viewport_overlay =
-        'div:nth-child(2) > div > div.viewport-element > div.ViewportOverlay > div.bottom-right.overlay-element > div';
+        'div:nth-child(2) > div > div.viewport-element > div.OHIFCornerstoneViewportOverlay > div.bottom-right.overlay-element > div';
 
       // Shift active viewport to Viewport #2
       cy.get('body').type('{rightarrow}');
