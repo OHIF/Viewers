@@ -111,6 +111,7 @@
 .simpleDialog .footer {
   padding: 15px;
   text-align: right;
+  margin: 0;
 }
 
 .simpleDialog .footer .btn {

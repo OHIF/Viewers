@@ -68,7 +68,7 @@ class SimpleDialog extends Component {
                 <button className="btn btn-default" onClick={this.onClose}>
                   Cancel
                 </button>
-                <button className="btn btn-primary" onClick={this.onConfirm}>
+                <button className="btn btn-confirm" onClick={this.onConfirm}>
                   Confirm
                 </button>
               </div>
