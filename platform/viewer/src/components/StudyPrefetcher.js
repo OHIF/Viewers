@@ -89,30 +89,38 @@ const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
     };
   }, [studies, viewportIndex, studyPrefetcher, viewportData]);
 
-  const items = Array.from(cacheMap.values());
-  const progress = items.map((isImageCached, index) => {
-    const barWidth = document.querySelector('.StudyPrefetcher').offsetWidth;
-    const width = index * (barWidth / items.length);
-    return (
-      <div
-        key={`progress-item-${index}`}
-        className={isImageCached ? 'item cached' : 'item'}
-        style={{ width: `${width}px` }}
-      ></div>
-    );
-  });
+  if (options.displayProgress) {
+    const items = Array.from(cacheMap.values());
+    const progress = items.map((isImageCached, index) => {
+      const barWidth = document.querySelector('.StudyPrefetcher').offsetWidth;
+      const width = index * (barWidth / items.length);
+      return (
+        <div
+          key={`progress-item-${index}`}
+          className={isImageCached ? 'item cached' : 'item'}
+          style={{ width: `${width}px` }}
+        ></div>
+      );
+    });
 
-  return (
-    options.displayProgress && <div className="StudyPrefetcher">{progress}</div>
-  );
+    return <div className="StudyPrefetcher">{progress}</div>;
+  }
+
+  return null;
 };
 
 StudyPrefetcher.propTypes = {
   studies: PropTypes.array.isRequired,
   viewportIndex: PropTypes.number.isRequired,
   options: PropTypes.shape({
+    enabled: PropTypes.bool,
     order: PropTypes.string,
     displaySetCount: PropTypes.number,
+    requestType: PropTypes.string,
+    preventCache: PropTypes.bool,
+    prefetchDisplaySetsTimeout: PropTypes.number,
+    displayProgress: PropTypes.bool,
+    includeActiveDisplaySet: PropTypes.bool,
   }),
 };
 

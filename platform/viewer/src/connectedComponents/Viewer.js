@@ -21,6 +21,7 @@ import AppContext from '../context/AppContext';
 
 import './Viewer.css';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
+import ConnectedStudyLoadingMonitor from '../connectedComponents/ConnectedStudyLoadingMonitor';
 
 class Viewer extends Component {
   static propTypes = {
@@ -340,7 +341,14 @@ class Viewer extends Component {
             studies={this.props.studies}
           />
         </ErrorBoundaryDialog>
-        {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
+        <AppContext.Consumer>
+          {appContext => (
+            <ConnectedStudyLoadingMonitor
+              studies={this.props.studies}
+              enabled={appContext.displaySeriesProgress}
+            />
+          )}
+        </AppContext.Consumer>
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">
           {/* LEFT */}
@@ -365,13 +373,15 @@ class Viewer extends Component {
           <div className={classNames('main-content')}>
             <ErrorBoundaryDialog context="ViewerMain">
               <AppContext.Consumer>
-                {appContext => (
-                  <StudyPrefetcher
-                    viewportIndex={this.props.activeViewportIndex}
-                    studies={this.props.studies}
-                    options={appContext.appConfig.studyPrefetcher}
-                  />
-                )}
+                {appContext =>
+                  appContext.appConfig.studyPrefetcher.enabled && (
+                    <StudyPrefetcher
+                      viewportIndex={this.props.activeViewportIndex}
+                      studies={this.props.studies}
+                      options={appContext.appConfig.studyPrefetcher}
+                    />
+                  )
+                }
               </AppContext.Consumer>
               <ConnectedViewerMain
                 studies={this.props.studies}

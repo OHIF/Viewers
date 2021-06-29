@@ -1,10 +1,10 @@
-import { connect } from "react-redux";
-import StudyLoadingMonitor from "../components/StudyLoadingMonitor.js";
-import OHIF from "@ohif/core";
+import { connect } from 'react-redux';
+import StudyLoadingMonitor from '../components/StudyLoadingMonitor.js';
+import OHIF from '@ohif/core';
 
 const {
   setStudyLoadingProgress,
-  clearStudyLoadingProgress
+  clearStudyLoadingProgress,
 } = OHIF.redux.actions;
 
 const mapDispatchToProps = dispatch => {
@@ -14,7 +14,7 @@ const mapDispatchToProps = dispatch => {
     },
     clearStudyLoadingProgress: progressId => {
       dispatch(clearStudyLoadingProgress(progressId));
-    }
+    },
   };
 };
 

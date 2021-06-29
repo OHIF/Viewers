@@ -454,6 +454,9 @@ class StudyLoadingListener {
 
   _getSchema(stack) {
     const imageId = stack.imageIds[0];
+    if (!imageId) {
+      return;
+    }
     const colonIndex = imageId.indexOf(':');
     return imageId.substring(0, colonIndex);
   }
