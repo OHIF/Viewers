@@ -5,7 +5,7 @@ window.config = {
   showStudyList: true,
   filterQueryParam: false,
   disableServersCache: false,
-  displaySeriesProgress: true,
+  displaySeriesProgress: false,
   stackPrefetch: {
     enabled: true,
     maxImagesToPrefetch: Infinity,
