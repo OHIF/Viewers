@@ -11,7 +11,6 @@ export class StudyPrefetcher {
     order: 'closest',
     displaySetCount: 1,
     onImageCached: noop,
-    onImagesBeingCached: noop,
     requestType: 'prefetch',
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
@@ -118,7 +117,6 @@ export class StudyPrefetcher {
     const displaySetsToPrefetch = this.getDisplaySetsToPrefetch(element);
     const imageIds = this.getImageIdsFromDisplaySets(displaySetsToPrefetch);
     this.prefetchImageIds(imageIds);
-    this.options.onImagesBeingCached(imageIds);
   }
 
   /**

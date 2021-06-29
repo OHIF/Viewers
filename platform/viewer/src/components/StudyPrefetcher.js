@@ -7,37 +7,53 @@ import { useSelector } from 'react-redux';
 import './StudyPrefetcher.css';
 import studyMetadataManager from '../../../core/src/utils/studyMetadataManager';
 
-const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
-  const [cacheMap, setCacheMap] = useState(new Map());
+let cachedMap = new Map();
 
-  const displaySetInstanceUID = useSelector(state => {
+const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
+  const [cacheMap, setCacheMap] = useState(cachedMap);
+
+  const viewportData = useSelector(state => {
     const { viewports = {} } = state;
     const { activeViewportIndex, viewportSpecificData = {} } = viewports;
     const viewportData = viewportSpecificData[activeViewportIndex] || {};
-    return viewportData.displaySetInstanceUID;
+    return viewportData;
   });
 
   const onImageCached = imageId => {
     setCacheMap(map => {
-      map.set(imageId, true);
-      return new Map(map);
+      const newMap = new Map(map);
+      newMap.set(imageId, true);
+      cachedMap = newMap;
+      return newMap;
     });
-  };
-
-  const onImagesBeingCached = imageIds => {
-    const map = new Map();
-    imageIds.forEach(imageId => map.set(imageId, false));
-    setCacheMap(map);
   };
 
   const studyPrefetcher = classes.StudyPrefetcher.getInstance(studies, {
     ...options,
     onImageCached,
-    onImagesBeingCached,
   });
 
   useEffect(() => {
     studyPrefetcher.setStudies(studies);
+
+    const { StudyInstanceUID } = viewportData;
+    const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+    if (studyMetadata && studyMetadata.displaySets.length > 0) {
+      const imageIds = studyMetadata.displaySets.reduce(
+        (ids, ds) => ids.concat(ds.images.map(i => i.getImageId())),
+        []
+      );
+      const cachedImages = cs.imageCache.cachedImages.map(i => i.imageId);
+      const newMap = new Map(cachedMap);
+      imageIds.forEach(imageId => {
+        if (newMap.get(imageId) !== true) {
+          newMap.set(imageId, false);
+        }
+      });
+      cachedImages.forEach(imageId => newMap.set(imageId, true));
+      setCacheMap(newMap);
+      cachedMap = newMap;
+    }
 
     const onImageRendered = ({ detail }) => {
       console.debug('Prefetching...');
@@ -71,7 +87,7 @@ const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
       );
       studyPrefetcher.destroy();
     };
-  }, [studies, viewportIndex, studyPrefetcher, displaySetInstanceUID]);
+  }, [studies, viewportIndex, studyPrefetcher, viewportData]);
 
   const items = Array.from(cacheMap.values());
   const progress = items.map((isImageCached, index) => {

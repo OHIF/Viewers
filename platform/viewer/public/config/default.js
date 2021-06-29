@@ -13,7 +13,7 @@ window.config = {
   },
   studyPrefetcher: {
     order: 'closest',
-    displaySetCount: 1,
+    displaySetCount: 2,
     requestType: 'prefetch',
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
