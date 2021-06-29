@@ -1,9 +1,6 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import {
-  clearStudyLoadingProgress,
-  setStudyLoadingProgress,
-} from '../redux/actions';
+
 import StackManager from '../utils/StackManager';
 
 class BaseLoadingListener {
@@ -60,6 +57,9 @@ class BaseLoadingListener {
   }
 
   _getProgressId() {
+    /**
+     * TODO: The id key should be configurable.
+     */
     const displaySetInstanceUID = this.stack.displaySetInstanceUID;
     return 'StackProgress:' + displaySetInstanceUID;
   }
@@ -199,6 +199,30 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
     return this._convertImageIdToDataSetUrl(imageId);
   }
 }
+
+const StudyLoadingListenerEvents = {
+  OnProgress: 'StudyLoadingListenerEvents.OnProgress',
+};
+
+/**
+ * TODO: Use a different alternative without the use of events.
+ */
+const DEFAULT_OPTIONS = {
+  _setProgressData: (progressId, progressData) => {
+    document.dispatchEvent(
+      new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+        detail: { progressId, progressData },
+      })
+    );
+  },
+  _clearProgressById: progressId => {
+    document.dispatchEvent(
+      new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+        detail: { progressId, percentComplete: 0 },
+      })
+    );
+  },
+};
 
 class StackLoadingListener extends BaseLoadingListener {
   constructor(stack, options = {}) {
@@ -376,6 +400,8 @@ class StackLoadingListener extends BaseLoadingListener {
 }
 
 class StudyLoadingListener {
+  static events = StudyLoadingListenerEvents;
+
   constructor(options) {
     this.listeners = {};
     this.options = options;
@@ -462,7 +488,7 @@ class StudyLoadingListener {
   }
 
   // Singleton
-  static getInstance(options) {
+  static getInstance(options = DEFAULT_OPTIONS) {
     if (!StudyLoadingListener._instance) {
       StudyLoadingListener._instance = new StudyLoadingListener(options);
     }

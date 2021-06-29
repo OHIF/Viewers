@@ -21,7 +21,7 @@ import AppContext from '../context/AppContext';
 
 import './Viewer.css';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
-import ConnectedStudyLoadingMonitor from '../connectedComponents/ConnectedStudyLoadingMonitor';
+import StudyLoadingMonitor from '../components/StudyLoadingMonitor';
 
 class Viewer extends Component {
   static propTypes = {
@@ -343,7 +343,7 @@ class Viewer extends Component {
         </ErrorBoundaryDialog>
         <AppContext.Consumer>
           {appContext => (
-            <ConnectedStudyLoadingMonitor
+            <StudyLoadingMonitor
               studies={this.props.studies}
               enabled={appContext.displaySeriesProgress}
             />

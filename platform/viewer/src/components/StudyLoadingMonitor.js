@@ -7,8 +7,6 @@ const { StudyLoadingListener } = OHIF.classes;
 class StudyLoadingMonitor extends Component {
   static propTypes = {
     studies: PropTypes.array.isRequired,
-    setStudyLoadingProgress: PropTypes.func.isRequired,
-    clearStudyLoadingProgress: PropTypes.func.isRequired,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -19,20 +17,7 @@ class StudyLoadingMonitor extends Component {
   }
 
   componentDidMount() {
-    // TODO: This is pretty ugly. The thing is that the StudyLoadingListener
-    // needs to update the Redux store, but shouldn't know that it exists.
-    // I am therefore passing in some functions to update the store instead,
-    // but this should definitely be cleaned up somehow.
-    const options = {
-      _setProgressData: (progressId, progressData) => {
-        this.props.setStudyLoadingProgress(progressId, progressData);
-      },
-      _clearProgressById: progressId => {
-        this.props.clearStudyLoadingProgress(progressId);
-      },
-    };
-
-    this.studyLoadingListener = StudyLoadingListener.getInstance(options);
+    this.studyLoadingListener = StudyLoadingListener.getInstance();
     this.studyLoadingListener.clear();
     this.studyLoadingListener.addStudies(this.props.studies);
   }
