@@ -460,7 +460,6 @@ function _mapDisplaySets(
               onShow: () => {
                 const yesButton = document.querySelector('.reject-yes-button');
                 yesButton.focus();
-                debugger
               },
               onSubmit: async ({ action }) => {
                 switch (action.id) {
