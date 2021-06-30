@@ -54,6 +54,7 @@ const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
   INTERNAL_MEASUREMENT_UPDATED: 'event:internal_measurement_updated',
   MEASUREMENT_ADDED: 'event::measurement_added',
+  RAW_MEASUREMENT_ADDED: 'event::raw_measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
   JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
@@ -314,11 +315,17 @@ class MeasurementService {
    * Converted to/from annotation in the same way. E.g. import serialized data
    * Of the same form as the measurement source.
    * @param {MeasurementSource} source The measurement source instance.
-   * @param {string} definition The source definition you want to add the measuremnet to.
+   * @param {string} definition The source definition you want to add the measurement to.
    * @param {object} data The data you wish to add to the source.
    * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source definition.
    */
-  addRawMeasurement(source, definition, data, toMeasurementSchema) {
+  addRawMeasurement(
+    source,
+    definition,
+    data,
+    toMeasurementSchema,
+    dataSource = {}
+  ) {
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
       return;
@@ -342,7 +349,6 @@ class MeasurementService {
     try {
       /* Convert measurement */
       measurement = toMeasurementSchema(data);
-
       /* Assign measurement source instance */
       measurement.source = source;
     } catch (error) {
@@ -385,9 +391,11 @@ class MeasurementService {
     } else {
       log.info(`Measurement added.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
-      this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
+      this._broadcastEvent(this.EVENTS.RAW_MEASUREMENT_ADDED, {
         source,
         measurement: newMeasurement,
+        data,
+        dataSource,
       });
     }
 
@@ -501,6 +509,7 @@ class MeasurementService {
 
   clearMeasurements() {
     this.measurements = {};
+    this._jumpToMeasurementCache = {};
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 

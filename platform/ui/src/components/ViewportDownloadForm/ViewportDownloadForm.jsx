@@ -5,6 +5,7 @@ import React, {
   createRef,
   useRef,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import classnames from 'classnames';
 
@@ -47,6 +48,8 @@ const ViewportDownloadForm = ({
   maximumSize,
   canvasClass,
 }) => {
+  const { t } = useTranslation('Modals');
+
   const [filename, setFilename] = useState(DEFAULT_FILENAME);
   const [fileType, setFileType] = useState(['jpg']);
 
@@ -272,8 +275,7 @@ const ViewportDownloadForm = ({
   return (
     <div>
       <Typography variant="h6">
-        Please specify the dimensions, filename, and desired type for the output
-        image.
+        {t('Please specify the dimensions, filename, and desired type for the output image.')}
       </Typography>
 
       <div className="flex flex-col mt-6">
@@ -282,7 +284,7 @@ const ViewportDownloadForm = ({
             data-cy="file-name"
             value={filename}
             onChange={evt => setFilename(evt.target.value)}
-            label="File Name"
+            label={t("File Name")}
           />
           {renderErrorHandler('filename')}
         </div>
@@ -294,7 +296,7 @@ const ViewportDownloadForm = ({
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
-                  label="Image width (px)"
+                  label={t("Image width (px)")}
                   value={dimensions.width}
                   onChange={evt => onDimensionsChange(evt.target.value, 'width')}
                   data-cy="image-width"
@@ -306,7 +308,7 @@ const ViewportDownloadForm = ({
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
-                  label="Image height (px)"
+                  label={t("Image height (px)")}
                   value={dimensions.height}
                   onChange={evt => onDimensionsChange(evt.target.value, 'height')}
                   data-cy="image-height"
@@ -335,7 +337,7 @@ const ViewportDownloadForm = ({
             <div>
               <InputLabelWrapper
                 sortDirection="none"
-                label="File Type"
+                label={t("File Type")}
                 isSortable={false}
                 onLabelClick={() => {}}
               >
@@ -363,7 +365,7 @@ const ViewportDownloadForm = ({
                   checked={showAnnotations}
                   onChange={event => setShowAnnotations(event.target.checked)}
                 />
-                <Typography>Show Annotations</Typography>
+                <Typography>{t("Show Annotations")}</Typography>
               </label>
             </div>
           </div>
@@ -375,7 +377,7 @@ const ViewportDownloadForm = ({
             className="p-4 rounded bg-secondary-dark border-secondary-primary"
             data-cy="image-preview"
           >
-            <Typography variant="h5">Image preview</Typography>
+          <Typography variant="h5">{t("Image preview")}</Typography>
             {activeViewport && (<div
             className="mx-auto my-0"
               style={{
@@ -397,7 +399,7 @@ const ViewportDownloadForm = ({
             </div>)}
             {!activeViewport &&
               <Typography className="mt-4">
-                Active viewport has no displayed image
+            {t("Active viewport has no displayed image")}
               </Typography>
             }
           </div>
@@ -405,7 +407,7 @@ const ViewportDownloadForm = ({
 
       <div className="flex justify-end mt-4">
         <Button data-cy="cancel-btn" variant="outlined" onClick={onClose}>
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button
           className="ml-2"
@@ -414,7 +416,7 @@ const ViewportDownloadForm = ({
           color="primary"
           data-cy="download-btn"
         >
-          Download
+          {t("Download")}
         </Button>
       </div>
     </div>

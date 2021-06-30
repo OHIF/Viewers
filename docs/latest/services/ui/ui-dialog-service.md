@@ -10,12 +10,7 @@ streamlined focus. They can be helpful when:
 If you're curious about the DOs and DON'Ts of dialogs and modals, check out this
 article: ["Best Practices for Modals / Overlays / Dialog Windows"][ux-article]
 
-<div style="text-align: center;">
-  <a href="/assets/img/dialog-example.gif">
-    <img src="/assets/img/dialog-example.gif" alt="UI Dialog Service Example" style="margin: 0 auto; max-width: 500px;" />
-  </a>
-  <div><i>GIF showing successful call of UIDialogService from an extension.</i></div>
-</div>
+
 
 ## Interface
 

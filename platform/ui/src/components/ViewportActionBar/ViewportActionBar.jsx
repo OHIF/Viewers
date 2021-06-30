@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip, CinePlayer } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
+import { useTranslation } from 'react-i18next';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -14,6 +15,7 @@ const classes = {
 const ViewportActionBar = ({
   studyData,
   showNavArrows,
+  showStatus,
   showCine,
   cineProps,
   showPatientInfo: patientInfoVisibility,
@@ -255,7 +257,7 @@ const ViewportActionBar = ({
       <div className="flex flex-1 flex-grow mt-2 min-w-48">
         <div className="flex items-center">
           <span className="mr-2 text-white text-large">{label}</span>
-          {renderIconStatus()}
+          {showStatus && renderIconStatus()}
         </div>
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
@@ -352,6 +354,7 @@ ViewportActionBar.propTypes = {
 ViewportActionBar.defaultProps = {
   cineProps: {},
   showCine: false,
+  showStatus: true,
   showNavArrows: true,
   showPatientInfo: false,
 };
@@ -367,6 +370,8 @@ function PatientInfo({
   isOpen,
   showPatientInfoRef,
 }) {
+  const { t } = useTranslation("PatientInfo")
+
   while (patientAge.charAt(0) === '0') {
     patientAge = patientAge.substr(1);
   }
@@ -392,7 +397,7 @@ function PatientInfo({
                 </span>
                 <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
                   <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>Sex</span>
+                    <span className={classnames(classes.infoHeader)}>{t('Sex')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientSex}
@@ -401,7 +406,7 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>Age</span>
+                    <span className={classnames(classes.infoHeader)}>{t('Age')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientAge}
@@ -410,7 +415,7 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>MRN</span>
+                    <span className={classnames(classes.infoHeader)}>{t('MRN')}</span>
                     <span className={classnames(classes.infoText)} title={MRN}>
                       {MRN}
                     </span>
@@ -419,7 +424,7 @@ function PatientInfo({
                 <div className="flex">
                   <div className={classnames(classes.firstRow)}>
                     <span className={classnames(classes.infoHeader)}>
-                      Thickness
+                      {t('Thickness')}
                     </span>
                     <span
                       className={classnames(classes.infoText)}
@@ -430,7 +435,7 @@ function PatientInfo({
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>
-                      Spacing
+                      {t('Spacing')}
                     </span>
                     <span
                       className={classnames(classes.infoText)}
@@ -441,7 +446,7 @@ function PatientInfo({
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>
-                      Scanner
+                      {t('Scanner')}
                     </span>
                     <span
                       className={classnames(classes.infoText)}

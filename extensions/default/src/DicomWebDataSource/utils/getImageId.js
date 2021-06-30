@@ -34,6 +34,10 @@ export default function getImageId({
     return;
   }
 
+  if (instance.url) {
+    return instance.url;
+  }
+
   const renderingAttr = thumbnail ? 'thumbnailRendering' : 'imageRendering';
 
   if (!config[renderingAttr] || config[renderingAttr] === 'wadouri') {

@@ -8,8 +8,10 @@ import React, {
 import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
-  numRows: 1,
-  numCols: 1,
+  // starting from null, hanging
+  // protocol will defined number of rows and cols
+  numRows: null,
+  numCols: null,
   viewports: [
     /*
      * {
@@ -58,12 +60,14 @@ export function ViewportGridProvider({ children, service }) {
       }
       case 'RESET': {
         return {
-          numCols: 1,
-          numRows: 1,
+          numCols: null,
+          numRows: null,
           activeViewportIndex: 0,
-          viewports: [{
-            displaySetInstanceUID: null,
-          }],
+          viewports: [
+            {
+              displaySetInstanceUID: null,
+            },
+          ],
           cachedLayout: null,
         };
       }
@@ -175,7 +179,7 @@ export function ViewportGridProvider({ children, service }) {
   ]);
 
   const api = {
-    // getState,
+    getState,
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,

@@ -5,7 +5,7 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import getTools, { toolsGroupedByType } from './utils/getTools.js';
 import initCornerstoneTools from './initCornerstoneTools.js';
-import './initWADOImageLoader.js';
+import initWADOImageLoader from './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
@@ -69,6 +69,7 @@ export default function init({
     MeasurementService,
     DisplaySetService,
     ToolBarService,
+    UserAuthenticationService,
   } = servicesManager.services;
   const tools = getTools();
 
@@ -275,6 +276,8 @@ export default function init({
 
   cs.metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
+  initWADOImageLoader(UserAuthenticationService);
+
   // ~~
   const defaultCsToolsConfig = csToolsConfig || {
     globalToolSyncEnabled: false, // hold on to your pants!
@@ -465,6 +468,9 @@ const _connectToolsToMeasurementService = (
       }
     );
 
+    // on display sets added, check if there are any measurements in measurement service that need to be
+    // put into cornerstone tools tooldata
+
     const enabledElement = evt.detail.element;
     const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
     const updatedEvt = csTools.EVENTS.MEASUREMENT_MODIFIED;
@@ -480,9 +486,13 @@ const _connectToolsToMeasurementService = (
 
 const _connectMeasurementServiceToTools = (
   MeasurementService,
-  measurementSource
+  measurementSource,
+  dataSource
 ) => {
-  const { MEASUREMENT_REMOVED } = MeasurementService.EVENTS;
+  const {
+    MEASUREMENT_REMOVED,
+    RAW_MEASUREMENT_ADDED,
+  } = MeasurementService.EVENTS;
   const sourceId = measurementSource.id;
 
   // TODO: This is an unsafe delete
@@ -495,6 +505,86 @@ const _connectMeasurementServiceToTools = (
   //
   // Could potentially use "source" from event to determine tool type and skip some
   // iterations?
+
+  const {
+    POLYLINE,
+    ELLIPSE,
+    POINT,
+    BIDIRECTIONAL,
+  } = MeasurementService.VALUE_TYPES;
+
+  // TODO -> I get why this was attemped, but its not nearly flexible enough.
+  // A single measurement may have an ellipse + a bidirectional measurement, for instances.
+  // You can't define a bidirectional tool as a single type..
+  // OHIF-230
+  const TOOL_TYPE_TO_VALUE_TYPE = {
+    Length: POLYLINE,
+    EllipticalRoi: ELLIPSE,
+    Bidirectional: BIDIRECTIONAL,
+    ArrowAnnotate: POINT,
+  };
+
+  const VALUE_TYPE_TO_TOOL_TYPE = {
+    [POLYLINE]: 'Length',
+    [ELLIPSE]: 'EllipticalRoi',
+    [BIDIRECTIONAL]: 'Bidirectional',
+    [POINT]: 'ArrowAnnotate',
+  };
+
+  MeasurementService.subscribe(
+    RAW_MEASUREMENT_ADDED,
+    ({ source, measurement, data, dataSource }) => {
+      const {
+        referenceStudyUID: StudyInstanceUID,
+        referenceSeriesUID: SeriesInstanceUID,
+        SOPInstanceUID,
+      } = measurement;
+
+      let toolType;
+      try {
+        toolType = VALUE_TYPE_TO_TOOL_TYPE[measurement.type];
+      } catch {
+        throw Error('Cannot add tool to cornerstone tools');
+      }
+
+      let imageId;
+      if (data.imageId) {
+        // handle dicom json launch, since we cannot create image id from
+        // instance UIDs, each tool should embed the instance metadata
+        // TODO: handle multi instance case
+        imageId = data.imageId;
+      } else {
+        // handle general case of dicom web
+        const instance = {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          SOPInstanceUID,
+        };
+        // TODO: handle multi frame
+        imageId = dataSource.getImageIdsForInstance({ instance });
+      }
+
+      const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+
+      if (toolState[imageId] === undefined) {
+        toolState[imageId] = {};
+      }
+
+      const imageIdToolState = toolState[imageId];
+
+      // If we don't have tool state for this type of tool, add an empty object
+      if (imageIdToolState[toolType] === undefined) {
+        imageIdToolState[toolType] = {
+          data: [],
+        };
+      }
+
+      const toolData = imageIdToolState[toolType];
+
+      toolData.data.push(data);
+    }
+  );
+
   MeasurementService.subscribe(
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {

@@ -25,9 +25,9 @@ export {
   ViewportGridContext,
   ViewportGridProvider,
   useViewportGrid,
-  HangingProtocolContext,
-  HangingProtocolProvider,
-  useHangingProtocol,
+  UserAuthenticationContext,
+  UserAuthenticationProvider,
+  useUserAuthentication,
 } from './src/contextProviders';
 
 /** COMPONENTS */
@@ -95,7 +95,7 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
-  WindowLevelMenuItem
+  WindowLevelMenuItem,
 } from './src/components';
 
 /** VIEWS */

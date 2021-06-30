@@ -21,12 +21,13 @@ export default function PanelMeasurementTable({
 
     // ~~ Subscription
     const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
     const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
     const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
     const cleared = MeasurementService.EVENTS.MEASUREMENTS_CLEARED;
     const subscriptions = [];
 
-    [added, updated, removed, cleared].forEach(evt => {
+    [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
         MeasurementService.subscribe(evt, () => {
           debouncedSetDisplayMeasurements(

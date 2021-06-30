@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';
@@ -38,7 +38,6 @@ const seriesInStudiesMap = new Map();
  * - debounce `setFilterValues` (150ms?)
  */
 function WorkList({
-  history,
   data: studies,
   dataTotal: studiesTotal,
   isLoadingData,
@@ -52,6 +51,7 @@ function WorkList({
   const [appConfig] = useAppConfig();
   // ~ Filters
   const query = useQuery();
+  const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(query);
   const [filterValues, _setFilterValues] = useState({
@@ -175,7 +175,7 @@ function WorkList({
       }
     });
 
-    history.push({
+    navigate({
       pathname: '/',
       search: `?${qs.stringify(queryString, {
         skipNull: true,
@@ -352,7 +352,7 @@ function WorkList({
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
                   onClick={() => {}}
                 >
-                  {mode.displayName}
+                  {t(`Modes:${mode.displayName}`)}
                 </Button>
               </Link>
             );
@@ -408,7 +408,7 @@ function WorkList({
         'h-screen': !hasStudies,
       })}
     >
-      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} />
+      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} WhiteLabeling={appConfig.whiteLabeling} />
       <StudyListFilter
         numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
         filtersMeta={filtersMeta}
@@ -441,9 +441,6 @@ function WorkList({
 }
 
 WorkList.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
   data: PropTypes.array.isRequired,
   dataSource: PropTypes.shape({
     query: PropTypes.object.isRequired,

@@ -15,7 +15,9 @@ async function RetrieveMetadata(
   dicomWebClient,
   studyInstanceUid,
   enableStudyLazyLoad,
-  filters = {}
+  filters = {},
+  sortCriteria,
+  sortFunction
 ) {
   // const RetrieveMetadataLoader =
   //   enableStudyLazyLoad !== false
@@ -27,7 +29,9 @@ async function RetrieveMetadata(
   const retrieveMetadataLoader = new RetrieveMetadataLoader(
     dicomWebClient,
     studyInstanceUid,
-    filters
+    filters,
+    sortCriteria,
+    sortFunction
   );
   const { preLoadData, promises } = await retrieveMetadataLoader.execLoad();
 

@@ -1,14 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
 
 const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
+  const { t } = useTranslation("MeasurementTable")
+
   return (
     <div>
       <div className="flex justify-between px-2 py-1 bg-secondary-main">
         <span className="text-base font-bold tracking-widest text-white uppercase">
-          {title}
+          {t(title)}
         </span>
         <span className="text-base font-bold text-white">{amount}</span>
       </div>
@@ -31,7 +34,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
             <div className="w-6 py-1 text-base text-center transition duration-300 bg-primary-dark text-primary-light group-hover:bg-secondary-main"></div>
             <div className="flex items-center justify-between flex-1 px-2 py-4">
               <span className="flex items-center flex-1 mb-1 text-base text-primary-light">
-                No tracked measurements
+                {t('No tracked measurements')}
               </span>
             </div>
           </div>

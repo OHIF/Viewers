@@ -15,7 +15,6 @@ that process in an effort to:
 - [Contributions (Pull Requests)](#contributions-pull-requests)
 - [Releases](#releases)
 
-_Include issue lifecycle diagram_
 
 ## Issue Triage
 
@@ -24,11 +23,13 @@ and suggest changes to the OHIF Viewer's core team. Community issues generally
 fall into one of three categories, and are marked with a `triage` label when
 created.
 
-| Issue Template Name    | Description                                                                              |
-| ---------------------- | ---------------------------------------------------------------------------------------- |
-| Community: Report 🐛   | Describe a new issue; Provide steps to reproduce; Expected versus actual result?         |
-| Community: Request ✋  | Describe a proposed new feature. Why should it be implemented? What is the impact/value? |
-| Community: Question ❓ | Seek clarification or assistance relevant to the repository.                             |
+
+
+| Issue Template Name        | Description                                                                              |
+| ----------------------     | ---------------------------------------------------------------------------------------- |
+| Community: Report 🐛       | Describe a new issue; Provide steps to reproduce; Expected versus actual result?         |
+| Community: Request ✋      | Describe a proposed new feature. Why should it be implemented? What is the impact/value? |
+| Community: Question ❓     | Seek clarification or assistance relevant to the repository.                             |
 
 _table 1. issue template names and descriptions_
 
@@ -42,7 +43,7 @@ accomplish this by:
 3. Provide clear guidance and next steps (when applicable)
 4. Regularly clean up old (stale) issues
 
-> :pencil: Less obviously, patterns in the issues being reported can highlight
+> 🖋  Less obviously, patterns in the issues being reported can highlight
 > areas that need improvement. For example, users often have difficulty
 > navigating CORS issues when deploying the OHIF Viewer -- how do we best reduce
 > our ticket volume for this issue?

@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { HotkeyField, Typography } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
+
 
 /* TODO: Move these configs and utils to core? */
 import { MODIFIER_KEYS } from './hotkeysConfig';
 import { validate, splitHotkeyDefinitionsAndCreateTuples } from './utils';
 
 const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErrors, onChange }) => {
+  const { t } = useTranslation('UserPreferencesModal');
+
   const visibleHotkeys = Object.keys(hotkeyDefinitions)
     .filter(key => hotkeyDefinitions[key].isEditable)
     .reduce((obj, key) => {
@@ -57,7 +61,7 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
                           variant='subtitle'
                           className={classNames('pr-6 w-full text-right text-primary-light', !isFirst && 'hidden')}
                         >
-                          Function
+                          {t('Function')}
                       </Typography>
                         <Typography
                           variant='subtitle'
@@ -70,7 +74,7 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
                           variant='subtitle'
                           className={classNames('pr-6 pl-0 text-left text-primary-light', !isFirst && 'hidden')}
                         >
-                          Shortcut
+                          {t('Shortcut')}
                       </Typography>
                         <div className={classNames('flex flex-col w-32', isFirst && 'mt-5')}>
                           <HotkeyField

@@ -72,47 +72,47 @@ class MetadataProvider {
     this.imageIdToUIDs.set(imageId, uids);
   }
 
-  _getAndCacheStudy(StudyInstanceUID) {
-    const studies = this.studies;
+  // _getAndCacheStudy(StudyInstanceUID) {
+  //   const studies = this.studies;
 
-    let study = studies.get(StudyInstanceUID);
+  //   let study = studies.get(StudyInstanceUID);
 
-    if (!study) {
-      study = { series: new Map() };
-      studies.set(StudyInstanceUID, study);
-    }
+  //   if (!study) {
+  //     study = { series: new Map() };
+  //     studies.set(StudyInstanceUID, study);
+  //   }
 
-    return study;
-  }
-  _getAndCacheSeriesFromStudy(study, SeriesInstanceUID) {
-    let series = study.series.get(SeriesInstanceUID);
+  //   return study;
+  // }
+  // _getAndCacheSeriesFromStudy(study, SeriesInstanceUID) {
+  //   let series = study.series.get(SeriesInstanceUID);
 
-    if (!series) {
-      series = { instances: new Map() };
-      study.series.set(SeriesInstanceUID, series);
-    }
+  //   if (!series) {
+  //     series = { instances: new Map() };
+  //     study.series.set(SeriesInstanceUID, series);
+  //   }
 
-    return series;
-  }
+  //   return series;
+  // }
 
-  _getAndCacheInstanceFromStudy(series, SOPInstanceUID) {
-    let instance = series.instances.get(SOPInstanceUID);
+  // _getAndCacheInstanceFromStudy(series, SOPInstanceUID) {
+  //   let instance = series.instances.get(SOPInstanceUID);
 
-    if (!instance) {
-      instance = {};
-      series.instances.set(SOPInstanceUID, instance);
-    }
+  //   if (!instance) {
+  //     instance = {};
+  //     series.instances.set(SOPInstanceUID, instance);
+  //   }
 
-    return instance;
-  }
+  //   return instance;
+  // }
 
-  async _checkBulkDataAndInlineBinaries(instance, server) {
-    await fetchOverlayData(instance, server);
+  // async _checkBulkDataAndInlineBinaries(instance, server) {
+  //   await fetchOverlayData(instance, server);
 
-    if (instance.PhotometricInterpretation === 'PALETTE COLOR') {
-      await fetchPaletteColorLookupTableData(instance, server);
-    }
-  }
+  //   if (instance.PhotometricInterpretation === 'PALETTE COLOR') {
+  //     await fetchPaletteColorLookupTableData(instance, server);
+  //   }
+  // }
 
   _getInstance(imageId) {
     const uids = this._getUIDsFromImageID(imageId);
@@ -190,7 +190,7 @@ class MetadataProvider {
         metadata = {
           modality: instance.Modality,
           seriesInstanceUID: instance.SeriesInstanceUID,
-          seriesNumber: instance.SeriesNumber,
+          seriesNumber: getNumberValues(instance.SeriesNumber),
           studyInstanceUID: instance.StudyInstanceUID,
           seriesDate,
           seriesTime,
@@ -198,9 +198,9 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_STUDY_MODULE:
         metadata = {
-          patientAge: instance.PatientAge,
-          patientSize: instance.PatientSize,
-          patientWeight: instance.PatientWeight,
+          patientAge: getNumberValues(instance.PatientAge),
+          patientSize: getNumberValues(instance.PatientSize),
+          patientWeight: getNumberValues(instance.PatientWeight),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PLANE_MODULE:
@@ -229,51 +229,53 @@ class MetadataProvider {
 
         metadata = {
           frameOfReferenceUID: instance.FrameOfReferenceUID,
-          rows: instance.Rows,
-          columns: instance.Columns,
-          imageOrientationPatient: ImageOrientationPatient,
-          rowCosines,
-          columnCosines,
-          imagePositionPatient: instance.ImagePositionPatient,
-          sliceThickness: validNumber(instance.SliceThickness),
-          sliceLocation: instance.SliceLocation,
-          pixelSpacing: PixelSpacing,
-          rowPixelSpacing,
-          columnPixelSpacing,
+          rows: getNumberValues(instance.Rows),
+          columns: getNumberValues(instance.Columns),
+          imageOrientationPatient: getNumberValues(ImageOrientationPatient),
+          rowCosines: getNumberValues(rowCosines),
+          columnCosines: getNumberValues(columnCosines),
+          imagePositionPatient: getNumberValues(instance.ImagePositionPatient),
+          sliceThickness: getNumberValues(instance.SliceThickness),
+          sliceLocation: getNumberValues(instance.SliceLocation),
+          pixelSpacing: getNumberValues(PixelSpacing),
+          rowPixelSpacing: getNumberValues(rowPixelSpacing),
+          columnPixelSpacing: getNumberValues(columnPixelSpacing),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
         metadata = {
-          samplesPerPixel: instance.SamplesPerPixel,
-          photometricInterpretation: instance.PhotometricInterpretation,
-          rows: instance.Rows,
-          columns: instance.Columns,
-          bitsAllocated: instance.BitsAllocated,
-          bitsStored: instance.BitsStored,
-          highBit: instance.HighBit,
-          pixelRepresentation: instance.PixelRepresentation,
-          planarConfiguration: instance.PlanarConfiguration,
-          pixelAspectRatio: instance.PixelAspectRatio,
-          smallestPixelValue: instance.SmallestPixelValue,
-          largestPixelValue: instance.LargestPixelValue,
+          samplesPerPixel: getNumberValues(instance.SamplesPerPixel),
+          photometricInterpretation: getNumberValues(instance.PhotometricInterpretation),
+          rows: getNumberValues(instance.Rows),
+          columns: getNumberValues(instance.Columns),
+          bitsAllocated: getNumberValues(instance.BitsAllocated),
+          bitsStored: getNumberValues(instance.BitsStored),
+          highBit: getNumberValues(instance.HighBit),
+          pixelRepresentation: getNumberValues(instance.PixelRepresentation),
+          planarConfiguration: getNumberValues(instance.PlanarConfiguration),
+          pixelAspectRatio: getNumberValues(instance.PixelAspectRatio),
+          smallestPixelValue: getNumberValues(instance.SmallestPixelValue),
+          largestPixelValue: getNumberValues(instance.LargestPixelValue),
           redPaletteColorLookupTableDescriptor:
-            instance.RedPaletteColorLookupTableDescriptor,
+            getNumberValues(instance.RedPaletteColorLookupTableDescriptor),
           greenPaletteColorLookupTableDescriptor:
-            instance.GreenPaletteColorLookupTableDescriptor,
+            getNumberValues(instance.GreenPaletteColorLookupTableDescriptor),
           bluePaletteColorLookupTableDescriptor:
-            instance.BluePaletteColorLookupTableDescriptor,
+            getNumberValues(instance.BluePaletteColorLookupTableDescriptor),
           redPaletteColorLookupTableData:
-            instance.RedPaletteColorLookupTableData,
+            getNumberValues(instance.RedPaletteColorLookupTableData),
           greenPaletteColorLookupTableData:
-            instance.GreenPaletteColorLookupTableData,
+            getNumberValues(instance.GreenPaletteColorLookupTableData),
           bluePaletteColorLookupTableData:
-            instance.BluePaletteColorLookupTableData,
+            getNumberValues(instance.BluePaletteColorLookupTableData),
         };
 
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
-        let { WindowCenter, WindowWidth } = instance;
-
+        const { WindowCenter, WindowWidth } = instance;
+        if (WindowCenter === undefined || WindowWidth === undefined) {
+          return;
+        }
         const windowCenter = Array.isArray(WindowCenter)
           ? WindowCenter
           : [WindowCenter];
@@ -282,17 +284,20 @@ class MetadataProvider {
           : [WindowWidth];
 
         metadata = {
-          windowCenter: validNumber(windowCenter),
-          windowWidth: validNumber(windowWidth),
+          windowCenter: getNumberValues(windowCenter),
+          windowWidth: getNumberValues(windowWidth),
         };
 
         break;
       case WADO_IMAGE_LOADER_TAGS.MODALITY_LUT_MODULE:
-        const rescaleSlope = validNumber(instance.RescaleSlope);
-        const rescaleIntercept = validNumber(instance.RescaleIntercept);
+        const { RescaleIntercept, RescaleSlope } = instance;
+        if (RescaleIntercept === undefined || RescaleSlope === undefined) {
+          return;
+        }
+
         metadata = {
-          rescaleIntercept,
-          rescaleSlope,
+          rescaleIntercept: getNumberValues(instance.RescaleIntercept),
+          rescaleSlope: getNumberValues(instance.RescaleSlope),
           rescaleType: instance.RescaleType,
         };
         break;
@@ -404,7 +409,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUid: instance.SOPInstanceUID,
-          instanceNumber: instance.InstanceNumber,
+          instanceNumber: getNumberValues(instance.InstanceNumber),
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
           lossyImageCompressionMethod: instance.LossyImageCompressionMethod,
@@ -435,7 +440,7 @@ class MetadataProvider {
 
   _getUIDsFromImageID(imageId) {
     if (imageId.includes('wadors:')) {
-      const strippedImageId = imageId.split('studies/')[1];
+      const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
 
       return {
@@ -460,6 +465,31 @@ class MetadataProvider {
 
 const metadataProvider = new MetadataProvider();
 
+
+/**
+ * Returns the values as an array of javascript numbers
+ *
+ * @param element - The javascript object for the specified element in the metadata
+ * @returns {*}
+ */
+function getNumberValues(element) {
+  if (!element) {
+    return;
+  }
+
+  if (Array.isArray(element)) {
+    const values = [];
+    for (let i = 0; i < element.length; i++) {
+      values.push(parseFloat(element[i]));
+    }
+    return values;
+  }
+
+  return parseFloat(element)
+}
+
+
+
 export default metadataProvider;
 
 const WADO_IMAGE_LOADER_TAGS = {
@@ -482,3 +512,4 @@ const WADO_IMAGE_LOADER_TAGS = {
 };
 
 const INSTANCE = 'instance';
+const DICOMWEB = 'dicomweb';

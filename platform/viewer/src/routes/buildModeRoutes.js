@@ -26,7 +26,7 @@ export default function buildModeRoutes({
   dataSources,
   extensionManager,
   servicesManager,
-  hotkeysManager
+  hotkeysManager,
 }) {
   const routes = [];
 
@@ -51,20 +51,19 @@ export default function buildModeRoutes({
 
       // TODO move up.
       const component = ({ location }) => (
-          <ModeRoute
-            location={location}
-            mode={mode}
-            dataSourceName={dataSourceName}
-            extensionManager={extensionManager}
-            servicesManager={servicesManager}
-            hotkeysManager={hotkeysManager}
-          />
+        <ModeRoute
+          location={location}
+          mode={mode}
+          dataSourceName={dataSourceName}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+          hotkeysManager={hotkeysManager}
+        />
       );
 
       routes.push({
         path,
         component,
-        exact: true,
       });
     });
 
@@ -74,21 +73,21 @@ export default function buildModeRoutes({
     const path = `/${mode.id}`;
 
     // TODO move up.
-    const component = ({ location }) => (
-        <ModeRoute
-          location={location}
-          mode={mode}
-          dataSourceName={defaultDataSourceName}
-          extensionManager={extensionManager}
-          servicesManager={servicesManager}
-          hotkeysManager={hotkeysManager}
-        />
+    const children = ({ location }) => (
+      <ModeRoute
+        location={location}
+        mode={mode}
+        dataSourceName={defaultDataSourceName}
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+        hotkeysManager={hotkeysManager}
+      />
     );
 
     routes.push({
       path,
-      component,
-      exact: true,
+      children,
+      private: true, // todo: all mode routes are private for now
     });
   });
 

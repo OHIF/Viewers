@@ -1,7 +1,7 @@
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
-import getToolStateToCornerstoneMeasurementSchema from './getToolStateToCornerstoneMeasurementSchema';
+import getCornerstoneToolStateToMeasurementSchema from './getCornerstoneToolStateToMeasurementSchema';
 import { adapters } from 'dcmjs';
 
 const { guid } = OHIF.utils;
@@ -15,6 +15,7 @@ export default function _hydrateStructuredReport(
   { servicesManager, extensionManager },
   displaySetInstanceUID
 ) {
+  const dataSource = extensionManager.getActiveDataSource()[0];
   const { MeasurementService, DisplaySetService } = servicesManager.services;
 
   const displaySet = DisplaySetService.getDisplaySetByUID(
@@ -114,14 +115,23 @@ export default function _hydrateStructuredReport(
 
       data.id = guid();
 
-      _addToolDataToCornerstoneTools(data, toolType, imageId);
+      const instance = cornerstone.metaData.get('instance', imageId);
+      const {
+        SOPInstanceUID,
+        FrameOfReferenceUID,
+        SeriesInstanceUID,
+        StudyInstanceUID,
+      } = instance;
 
       // Let the measurement service know we added to toolState
-      const toMeasurementSchema = getToolStateToCornerstoneMeasurementSchema(
+      const toMeasurementSchema = getCornerstoneToolStateToMeasurementSchema(
         toolType,
         MeasurementService,
         DisplaySetService,
-        imageId
+        SOPInstanceUID,
+        FrameOfReferenceUID,
+        SeriesInstanceUID,
+        StudyInstanceUID
       );
 
       const source = MeasurementService.getSource('CornerstoneTools', '4');
@@ -132,7 +142,8 @@ export default function _hydrateStructuredReport(
         source,
         toolType,
         data,
-        toMeasurementSchema
+        toMeasurementSchema,
+        dataSource
       );
 
       if (!imageIds.includes(imageId)) {
@@ -147,25 +158,4 @@ export default function _hydrateStructuredReport(
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,
   };
-}
-
-function _addToolDataToCornerstoneTools(data, toolType, imageId) {
-  const toolState = globalImageIdSpecificToolStateManager.saveToolState();
-
-  if (toolState[imageId] === undefined) {
-    toolState[imageId] = {};
-  }
-
-  const imageIdToolState = toolState[imageId];
-
-  // If we don't have tool state for this type of tool, add an empty object
-  if (imageIdToolState[toolType] === undefined) {
-    imageIdToolState[toolType] = {
-      data: [],
-    };
-  }
-
-  const toolData = imageIdToolState[toolType];
-
-  toolData.data.push(data);
 }

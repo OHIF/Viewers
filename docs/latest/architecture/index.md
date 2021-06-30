@@ -1,20 +1,26 @@
 # Architecture
 
-Looking to extend your instance of the OHIF Viewer? Want learn how to reuse _a
-portion_ of the Viewer in your own application? Or maybe you want to get
-involved and draft or suggest a new feature? Regardless, you're in the right
-place!
 
-The OHIF Viewer aims to be decoupled, configurable, and extensible; while this
-allows our code to be used in more ways, it also increases complexity. Below, we
-aim to demistify that complexity by providing insight into how our Viewer is
+>New `OHIF-v3` architecture has made OHIF a general purpose extensible medical imaging **platform**, as opposed to a somewhat highly configurable viewer.
+
+In order to achieve a platform that can support various workflows and be extensible for the foreseeable future we went through extensive planning of possible use cases and decided to significantly change and improve the architecture.
+
+
+Below, we aim to demystify that complexity by providing insight into how `OHIF Platform` is
 architected, and the role each of it's dependent libraries plays.
 
-- [Overview](#overview)
-- [Business Logic](#business-logic)
-- [Component Library](#react-component-library)
-- [Extensions & Configuration](#extensions--configuration)
-- [Common Questions](#common-questions)
+- [Architecture](#architecture)
+  - [Overview](#overview)
+  - [Extensions](#extensions)
+  - [Modes](#modes)
+  - [Platform](#platform)
+    - [`@ohif/viewer`](#ohifviewer)
+    - [`@ohif/core`](#ohifcore)
+    - [`@ohif/ui`](#ohifui)
+  - [Overview of the architecture](#overview-of-the-architecture)
+  - [Common Questions](#common-questions)
+
+
 
 ## Overview
 
@@ -25,110 +31,156 @@ you'll see the following:
 
 ```bash
 .
+│
 ├── extensions
-│   ├── _example            # Skeleton of example extension
-│   ├── cornerstone         # 2D images w/ Cornerstone.js
-│   ├── dicom-html          # Structured Reports as HTML in viewport
-│   ├── dicom-microscopy    # Whole slide microscopy viewing
-│   ├── dicom-pdf           # View DICOM wrapped PDFs in viewport
-│   └── vtk                 # MPR and Volume support w/ VTK.js
+│   ├── _example             # Skeleton of example extension
+│   ├── default              # default functionalities
+│   ├── cornerstone          # 2D images w/ Cornerstone.js
+│   ├── measurement-tracking # measurement tracking
+│   ├── dicom-sr             # Structured reports
+│   └── dicom-pdf            # View DICOM wrapped PDFs in viewport
+│
+├── modes
+│   └── longitudinal         # longitudinal measurement tracking mode
 │
 ├── platform
-│   ├── core                # Business Logic
-│   ├── i18n                # Internationalization Support
-│   ├── ui                  # React component library
-│   └── viewer              # Connects platform and extension projects
+│   ├── core                 # Business Logic
+│   ├── i18n                 # Internationalization Support
+│   ├── ui                   # React component library
+│   └── viewer               # Connects platform and extension projects
 │
-├── ...                     # misc. shared configuration
-├── lerna.json              # MonoRepo (Lerna) settings
-├── package.json            # Shared devDependencies and commands
+├── ...                      # misc. shared configuration
+├── lerna.json               # MonoRepo (Lerna) settings
+├── package.json             # Shared devDependencies and commands
 └── README.md
 ```
 
-The `platform` directory contains the business logic library, component library,
-and the application library that combines them to create a powerful medical
-imaging viewer.
+OHIF v3 is comprised of the following components, described in detail in further sections:
 
-The `extensions` directory contains many packages that can be registered with
-`@ohif/core`'s `ExtensionManager` to expand an application's supported features
-and functionality.
+- `@ohif/viewer`: The core framework that controls extension registration, mode composition and routing.
+- `@ohif/core`: A library of useful and reusable medical imaging functionality for the web.
+- `@ohif/ui`: A library of reusable components to build OHIF-styled applications with.
+- `Extensions`: A set of building blocks for building applications. The OHIF org maintains a few core libraries.
+- `Modes`: Configuration objects that tell @ohif/viewer how to compose extensions to build applications on different routes of the platform.
 
-![Architecture Diagram](../assets/img/architecture-diagram.png)
 
-<center><i>architecture diagram</i></center>
 
-This diagram is a conceptual illustration of how the Viewer is architected.
 
-1. (optional) `extensions` can be registered with `@ohif/core`'s
-   `ExtensionManager`
-2. `@ohif/core` provides bussiness logic and a way for `@ohif/viewer` to access
-   registered extensions
-3. The `@ohif/viewer` composes and provides data to components from our
-   component library (`@ohif/ui`)
-4. The `@ohif/viewer` can be built and served as a stand-alone PWA, or as an
-   embeddable package ([`@ohif/viewer`][viewer-npm])
 
-## Business Logic
+## Extensions
+The `extensions` directory contains many packages that provides essential
+functionalities such as rendering, study/series browsers, measurement tracking that modes
+can consume to enable a certain workflow. Extensions have had their behavior changed
+in `OHIF-v3` and their api is expanded. In summary:
 
-The [`@ohif/core`][core-github] project offers pre-packaged solutions for
-features common to Web-based medical imaging viewers. For example:
+>In `OHIF-v3`, extensions no longer automatically hook themselves to the app. Now,
+>registering an extension makes its component available to `modes` that wish to use them.
+> Basically, extensions in `OHIF-v3` are **building blocks** for building applications.
 
-- Hotkeys
-- DICOM Web requests
-- Hanging Protocols
-- Managing a study's measurements
-- Managing a study's DICOM metadata
-- [A flexible pattern for extensions](../extensions/index.md)
-- And many others
 
-It does this while remaining decoupled from any particular view library or
-rendering logic. While we use it to power our React Viewer, it can be used with
-Vue, React, Vanilla JS, or any number of other frameworks.
-
-## React Component Library
-
-[`@ohif/ui`][ui-github] is a React Component library that contains the reusable
-components that power the OHIF Viewer. It allows us to build, compose, and test
-components in isolation; easing the development process by reducing the need to
-stand-up a local PACS with test case data.
-
-Extension authors can also use these same components when building their
-extension's UI; allowing for a consistent look and feel with the rest of the
-application.
-
-[Check out our component library!](https://react.ohif.org/)
-
-## Extensions & Configuration
-
-While OHIF maintains several high value and commonly requested features in its
-own extensions, there are many instances where one may wish to further extend
-the viewer. Some common use cases include:
-
-- Adding AI/ML tools and insights
-- Custom workflows for guided diagnosis
-- Collecting specific annotations for training data or reports
-- Authentication and granular permissions
-- Teleconsultation workflow, image comments, and tracking
-- Adding surgical templating tools and reports
-- and many others
-
-We expose common integration points via [extensions](../extensions/index.md) to
-make this possible. The viewer and many of our own extensions also offer
-[configuration][configuration]. For a list of extensions maintained by OHIF,
+OHIF team maintains several high value and commonly used functionalities in its
+own extensions. For a list of extensions maintained by OHIF,
 [check out this helpful table](../extensions/index.md#maintained-extensions).
+As an example `default` extension provides a default viewer layout,
+a study/series browser and a datasource that maps to a DICOMWeb compliant backend.
 
-If you find yourself thinking "I wish the Viewer could do X", and you can't
-accomplish it with an extension today, create a GitHub issue! We're actively
-looking for ways to improve our extensibility ^\_^
 
 [Click here to read more about extensions!](../extensions/index.md)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Modes
+
+The `modes` directory contains workflows that can be registered with OHIF
+within certain `routes`. The mode will get used once the user opens the viewer
+on the registered route.
+
+OHIF extensions were designed to provide certain core functionalities for building
+your viewer. However, often in medical imaging we face a specific use case
+in which we are using some core functionalities, adding our specific UI, and
+use it in our workflows. Previously, to achieve this you had to create an
+extension to add have such feature. `OHIF-v3` introduces `Modes` to enable
+building such workflows by re-using the core functionalities from the extensions.
+
+Some common workflows may include:
+
+- Measurement tracking for lesions
+- Segmentation of brain abnormalities
+- AI probe mode for detecting prostate cancer
+
+In the mentioned modes above, they will share the same core rendering module that
+the `default` extension provides. However, segmentation mode will require
+segmentation tools which is not needed for the other two.
+As you can see, modes are a layer on top of extensions, that you
+can configure in order to achieve certain workflows.
+
+To summarize the difference between extensions and modes in `OHIF-v3` and extensions in `OHIF-v2`
+
+> - `Modes` are configuration objects that tell *@ohif/viewer* how to compose extensions to build applications on different routes of the platform.
+> - In v2 extensions are “plugins” that add functionality to a core viewer.
+> - In v3 extensions are building blocks that a mode uses to build an entire viewer layout.
+
+[Click here to read more about modes!](../modes/index.md)
+
+
+
+## Platform
+
+### `@ohif/viewer`
+
+This library is the core library which consumes modes and extensions and builds an application. Extensions can be passed in as app configuration and will be consumed and initialized at the appropriate time by the application. Upon initialization the viewer will consume extensions and modes and build up the route desired, these can then be accessed via the study list, or directly via url parameters.
+
+Upon release modes will also be plugged into the app via configuration, but this is still an area which is under development/discussion, and they are currently pulled from the window in beta.
+
+Future ideas for this framework involve only adding modes and fetching the required extension versions at either runtime or build time, but this decision is still up for discussion.
+
+### `@ohif/core`
+OHIF core is a carefully maintained and tested set of web-based medical imaging functions and classes. This library includes managers and services used from within the viewer app.
+
+OHIF core is largely similar to the @ohif/core library in v2, however a lot of logic has been moved to extensions:
+ however all logic about DICOMWeb and other data fetching mechanisms have been pulled out, as these now live in extensions, described later.
+
+
+
+
+### `@ohif/ui`
+Firstly, a large time-consumer/barrier for entry we discovered was building new UI in a timely manner that fit OHIF’s theme. For this reason we have built a new UI component library which contains all the components one needs to build their own viewer.
+
+These components are presentational only, so you can reuse them with whatever logic you desire. As the components are presentational, you may swap out @ohif/ui for a custom UI library with conforming API if you wish to white label the viewer. The UI library is here to make development easier and quicker, but it is not mandatory for extension components to use.
+
+[Check out our component library!](https://react.ohif.org/)
+
+
+
+
+
+## Overview of the architecture
+OHIF-v3 architecture can be seen in the following figure. We will explore each
+piece in more detail.
+
+![mode-archs](../assets/img/mode-archs.png)
+
+
+
+
+
+
+
+
+
 ## Common Questions
 
-> When should I use the packaged source `@ohif/viewer` versus building a PWA
-> from the source?
-
-...
 
 > Can I create my own Viewer using Vue.js or Angular.js?
 
@@ -136,6 +188,14 @@ You can, but you will not be able to leverage as much of the existing code and
 components. `@ohif/core` could still be used for business logic, and to provide
 a model for extensions. `@ohif/ui` would then become a guide for the components
 you would need to recreate.
+
+
+> When I want to implement a functionality, should it be in the mode or in an extension?
+
+This is a great question. Modes are designed to consume extensions, so you should implement
+your functionality in one of the modules of your new extension,  and let the mode to consume it.
+ This way, in future, if you needed another mode that utilizes the same functionality, you can easily
+ hook the extension to the new mode as well.
 
 <!--
   Links

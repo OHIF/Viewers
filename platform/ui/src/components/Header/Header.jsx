@@ -3,20 +3,24 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 // TODO: This may fail if package is split from PWA build
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
 
-function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
-  const { t } = useTranslation();
-  const history = useHistory();
+function Header({ children, menuOptions, isReturnEnabled, isSticky, WhiteLabeling }) {
+  const { t } = useTranslation('Header');
+  const navigate = useNavigate();
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
   const onReturnHandler = () => {
     if (isReturnEnabled) {
-      history.push('/');
+      navigate('/');
     }
   };
+
+  const CustomLogo = (React) => {
+    return WhiteLabeling.createLogoComponentFn(React)
+  }
 
   return (
     <NavBar className='justify-between border-b-4 border-black' isSticky={isSticky}>
@@ -29,13 +33,13 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
             onClick={onReturnHandler}
           >
             {isReturnEnabled && <Icon name="chevron-left" className="w-8 text-primary-active" />}
-            <div className="ml-4"><Svg name="logo-ohif" /></div>
+            <div className="ml-4">{WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}</div>
           </div>
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
           <span className="mr-3 text-lg text-common-light">
-            {t('Header:INVESTIGATIONAL USE ONLY')}
+            {t('INVESTIGATIONAL USE ONLY')}
           </span>
           <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
             <IconButton
@@ -73,7 +77,8 @@ Header.propTypes = {
   ),
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   isReturnEnabled: PropTypes.bool,
-  isSticky: PropTypes.bool
+  isSticky: PropTypes.bool,
+  WhiteLabeling: PropTypes.element,
 };
 
 Header.defaultProps = {

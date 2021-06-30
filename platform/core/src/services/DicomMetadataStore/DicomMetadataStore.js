@@ -1,3 +1,5 @@
+import dcmjs from 'dcmjs'
+
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import createStudyMetadata from './createStudyMetadata';
 import EVENTS from './EVENTS';
@@ -23,6 +25,10 @@ const _model = {
   //     ...studyMetadata,
   // }]
 };
+
+function _getStudyInstanceUIDs() {
+  return _model.studies.map(aStudy => aStudy.StudyInstanceUID)
+}
 
 function _getStudy(StudyInstanceUID) {
   return _model.studies.find(
@@ -54,9 +60,56 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
   );
 }
 
+function _getInstanceFromImageId(imageId) {
+  for (let study of _model.studies) {
+    for (let series of study.series) {
+      for (let instance of series.instances) {
+        if (instance.imageId === imageId) {
+          return instance;
+        }
+      }
+    }
+  }
+}
+
 const BaseImplementation = {
   EVENTS,
   listeners: {},
+  addInstance(dicomJSONDatasetOrP10ArrayBuffer) {
+    let dicomJSONDataset;
+
+    // If Arraybuffer, parse to DICOMJSON before naturalizing.
+    if (dicomJSONDatasetOrP10ArrayBuffer instanceof ArrayBuffer) {
+      const dicomData = dcmjs.data.DicomMessage.readFile(dicomJSONDatasetOrP10ArrayBuffer);
+
+      dicomJSONDataset = dicomData.dict;
+    } else {
+      dicomJSONDataset = dicomJSONDatasetOrP10ArrayBuffer;
+    }
+
+    let naturalizedDataset;
+
+    if (dicomJSONDataset['SeriesInstanceUID'] === undefined) {
+      naturalizedDataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
+        dicomJSONDataset
+      );
+    } else {
+      naturalizedDataset = dicomJSONDataset;
+    }
+
+    const { StudyInstanceUID } = naturalizedDataset;
+
+    let study = _model.studies.find(
+      study => study.StudyInstanceUID === StudyInstanceUID
+    );
+
+    if (!study) {
+      _model.studies.push(createStudyMetadata(StudyInstanceUID));
+      study = _model.studies[_model.studies.length - 1];
+    }
+
+    study.addInstanceToSeries(naturalizedDataset);
+  },
   addInstances(instances, madeInClient = false) {
     const { StudyInstanceUID, SeriesInstanceUID } = instances[0];
 
@@ -82,7 +135,7 @@ const BaseImplementation = {
       madeInClient,
     });
   },
-  addSeriesMetadata(seriesSummaryMetadata) {
+  addSeriesMetadata(seriesSummaryMetadata, madeInClient = false) {
     const { StudyInstanceUID } = seriesSummaryMetadata[0];
     let study = _getStudy(StudyInstanceUID);
     if (!study) {
@@ -98,6 +151,7 @@ const BaseImplementation = {
 
     this._broadcastEvent(EVENTS.SERIES_ADDED, {
       StudyInstanceUID,
+      madeInClient,
     });
   },
   addStudy(study) {
@@ -121,9 +175,11 @@ const BaseImplementation = {
       _model.studies.push(newStudy);
     }
   },
+  getStudyInstanceUIDs: _getStudyInstanceUIDs,
   getStudy: _getStudy,
   getSeries: _getSeries,
   getInstance: _getInstance,
+  getInstanceFromImageId: _getInstanceFromImageId,
 };
 
 const DicomMetadataStore = Object.assign(
@@ -132,8 +188,6 @@ const DicomMetadataStore = Object.assign(
   pubSubServiceInterface
 );
 
-// TODO => Add instances
-//_addInstance(input) // arraybuffer, or other stuff
 
 export { DicomMetadataStore };
 export default DicomMetadataStore;

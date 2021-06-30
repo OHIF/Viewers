@@ -1,14 +1,57 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, utils } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
-const { isLowPriorityModality } = utils;
+async function defaultRouteInit({
+  servicesManager,
+  studyInstanceUIDs,
+  dataSource,
+}) {
+  const {
+    DisplaySetService,
+    HangingProtocolService,
+  } = servicesManager.services;
+
+  const unsubscriptions = [];
+  // TODO: This should be baked into core, not manual?
+  // DisplaySetService would wire this up?
+  const {
+    unsubscribe: instanceAddedUnsubscribe,
+  } = DicomMetadataStore.subscribe(
+    DicomMetadataStore.EVENTS.INSTANCES_ADDED,
+    ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
+      const seriesMetadata = DicomMetadataStore.getSeries(
+        StudyInstanceUID,
+        SeriesInstanceUID
+      );
+
+      DisplaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+    }
+  );
+
+  unsubscriptions.push(instanceAddedUnsubscribe);
+
+  const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
+    DicomMetadataStore.EVENTS.SERIES_ADDED,
+    ({ StudyInstanceUID }) => {
+      const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
+      HangingProtocolService.run(studyMetadata);
+    }
+  );
+  unsubscriptions.push(seriesAddedUnsubscribe);
+
+  studyInstanceUIDs.forEach(StudyInstanceUID => {
+    dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
+  });
+
+  return unsubscriptions;
+}
 
 export default function ModeRoute({
   location,
@@ -20,15 +63,27 @@ export default function ModeRoute({
 }) {
   // Parse route params/querystring
   const query = useQuery();
-  const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
-  const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = useParams();
-  const StudyInstanceUIDs = queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
-  const StudyInstanceUIDsAsArray =
-    StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
-      ? StudyInstanceUIDs
-      : [StudyInstanceUIDs];
+  const params = useParams();
 
-  const { extensions, sopClassHandlers, hotkeys } = mode;
+  const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
+
+  const [refresh, setRefresh] = useState(false);
+  const layoutTemplateData = useRef(false);
+  const locationRef = useRef(null);
+  const isMounted = useRef(false);
+
+  if (location !== locationRef.current) {
+    layoutTemplateData.current = null;
+    locationRef.current = location;
+  }
+
+  const {
+    DisplaySetService,
+    HangingProtocolService,
+    UserAuthenticationService,
+  } = servicesManager.services;
+
+  const { extensions, sopClassHandlers, hotkeys, hangingProtocols } = mode;
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;
@@ -43,16 +98,9 @@ export default function ModeRoute({
   // Only handling one route per mode for now
   const route = mode.routes[0];
 
-  const {
-    DisplaySetService,
-    MeasurementService,
-    ViewportGridService,
-    HangingProtocolService,
-  } = servicesManager.services;
-
-  const layoutTemplateData = route.layoutTemplate({ location });
+  const layoutTemplateRouteData = route.layoutTemplate({ location });
   const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
-    layoutTemplateData.id
+    layoutTemplateRouteData.id
   );
   const LayoutComponent = layoutTemplateModuleEntry.component;
 
@@ -82,8 +130,51 @@ export default function ModeRoute({
   }
 
   useEffect(() => {
+    // Preventing state update for unmounted component
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    // Todo: this should not be here, data source should not care about params
+    const initializeDataSource = async (params, query) => {
+      const studyInstanceUIDs = await dataSource.initialize({
+        params,
+        query,
+      });
+      setStudyInstanceUIDs(studyInstanceUIDs);
+    };
+
+    initializeDataSource(params, query);
+    return () => {
+      layoutTemplateData.current = null;
+    };
+  }, [location]);
+
+  useEffect(() => {
+    const retrieveLayoutData = async () => {
+      const layoutData = await route.layoutTemplate({
+        location,
+        servicesManager,
+        studyInstanceUIDs,
+      });
+      if (isMounted.current) {
+        layoutTemplateData.current = layoutData;
+        setRefresh(!refresh);
+      }
+    };
+    if (studyInstanceUIDs?.length && studyInstanceUIDs[0] !== undefined) {
+      retrieveLayoutData();
+    }
+    return () => {
+      layoutTemplateData.current = null;
+    };
+  }, [studyInstanceUIDs]);
+
+  useEffect(() => {
     if (!hotkeys) {
-      console.warn('[hotkeys] No bindings defined for hotkeys hook!');
       return;
     }
 
@@ -96,19 +187,61 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
+    if (!layoutTemplateData.current) {
+      return;
+    }
     // TODO: For some reason this is running before the Providers
-    // are calling setServiceImplementation
+    // are calling setServiceImplementationf
     // TOOD -> iterate through services.
 
     // Extension
+
+    // Add SOPClassHandlers to a new SOPClassManager.
+    DisplaySetService.init(extensionManager, sopClassHandlers);
+
     extensionManager.onModeEnter();
     mode?.onModeEnter({ servicesManager, extensionManager });
-    // Mode
-    route.init({ servicesManager, extensionManager });
+
+    // Adding hanging protocols of extensions after onModeEnter since
+    // it will reset the protocols
+    hangingProtocols.forEach(extentionProtocols => {
+      const hangingProtocolModule = extensionManager.getModuleEntry(extentionProtocols);
+      if (hangingProtocolModule?.protocols) {
+        HangingProtocolService.addProtocols(hangingProtocolModule.protocols);
+      }
+    });
+
+    const setupRouteInit = async () => {
+      if (route.init) {
+        return await route.init({
+          servicesManager,
+          extensionManager,
+          hotkeysManager,
+          studyInstanceUIDs,
+          dataSource,
+        });
+      }
+
+      return await defaultRouteInit({
+        servicesManager,
+        extensionManager,
+        hotkeysManager,
+        studyInstanceUIDs,
+        dataSource,
+      });
+    };
+
+    let unsubscriptions;
+    setupRouteInit().then(unsubs => {
+      unsubscriptions = unsubs;
+    });
 
     return () => {
       extensionManager.onModeExit();
       mode?.onModeExit({ servicesManager, extensionManager });
+      unsubscriptions.forEach(unsub => {
+        unsub();
+      });
     };
   }, [
     mode,
@@ -118,140 +251,35 @@ export default function ModeRoute({
     servicesManager,
     extensionManager,
     hotkeysManager,
+    studyInstanceUIDs,
+    refresh,
+    hangingProtocols,
   ]);
 
-  // This queries for series, but... What does it do with them?
-  useEffect(() => {
-    // Add SOPClassHandlers to a new SOPClassManager.
-    DisplaySetService.init(extensionManager, sopClassHandlers);
-
-    // TODO: This should be baked into core, not manuel?
-    // DisplaySetService would wire this up?
-    const { unsubscribe } = DicomMetadataStore.subscribe(
-      DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
-        const seriesMetadata = DicomMetadataStore.getSeries(
-          StudyInstanceUID,
-          SeriesInstanceUID
-        );
-
-        DisplaySetService.makeDisplaySets(
-          seriesMetadata.instances,
-          madeInClient
-        );
-      }
+  const renderLayoutData = props => {
+    const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
+      layoutTemplateData.current.id
     );
+    const LayoutComponent = layoutTemplateModuleEntry.component;
 
-    StudyInstanceUIDsAsArray.forEach(StudyInstanceUID => {
-      dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
-    });
-
-    return unsubscribe;
-  }, [
-    mode,
-    dataSourceName,
-    location,
-    DisplaySetService,
-    extensionManager,
-    sopClassHandlers,
-    StudyInstanceUIDsAsArray,
-    dataSource,
-  ]);
-
-  useEffect(() => {
-    const { unsubscribe } = DicomMetadataStore.subscribe(
-      DicomMetadataStore.EVENTS.SERIES_ADDED,
-      ({ StudyInstanceUID }) => {
-        const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-
-        const sortedSeries = studyMetadata.series.sort((a, b) => {
-          const aLowPriority = isLowPriorityModality(a.Modality);
-          const bLowPriority = isLowPriorityModality(b.Modality);
-          if (!aLowPriority && bLowPriority) {
-            return -1;
-          }
-          if (aLowPriority && !bLowPriority) {
-            return 1;
-          }
-
-          return a.SeriesNumber - b.SeriesNumber;
-        });
-
-        const { SeriesInstanceUID } = sortedSeries[0];
-
-        HangingProtocolService.setHangingProtocol({
-          /*protocolMatchingRules: [
-              {
-                id: '7tmuq7KzDMCWFeapc',
-                weight: 2,
-                required: false,
-                attribute: 'x00081030',
-                constraint: {
-                  contains: {
-                    value: 'DFCI CT CHEST',
-                  },
-                },
-              },
-            ],*/
-          stages: [
-            {
-              /*id: 'v5PfGt9F6mffZPif5',
-                viewportStructure: {
-                  type: 'grid',
-                  properties: {
-                    Rows: 1,
-                    Columns: 1,
-                  },
-                  layoutTemplateName: 'gridLayout',
-                },*/
-              viewports: [
-                {
-                  viewportSettings: {},
-                  imageMatchingRules: [],
-                  seriesMatchingRules: [
-                    {
-                      id: 'mXnsCcNzZL56z7mTZ',
-                      weight: 1,
-                      required: true,
-                      attribute: 'SeriesInstanceUID',
-                      constraint: {
-                        equals: {
-                          value: SeriesInstanceUID,
-                        },
-                      },
-                    },
-                  ],
-                  studyMatchingRules: [],
-                },
-              ],
-            },
-          ],
-        });
-      }
-    );
-    return unsubscribe;
-  }, [
-    mode,
-    dataSourceName,
-    location,
-    DisplaySetService,
-    extensionManager,
-    sopClassHandlers,
-    StudyInstanceUIDsAsArray,
-    dataSource,
-  ]);
+    return <LayoutComponent {...props} />;
+  };
 
   return (
     <ImageViewerProvider
-      initialState={{ StudyInstanceUIDs: StudyInstanceUIDsAsArray }}
+      // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
+      StudyInstanceUIDs={studyInstanceUIDs}
+    // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>
-          <LayoutComponent
-            {...layoutTemplateData.props}
-            StudyInstanceUIDs={StudyInstanceUIDs}
-            ViewportGridComp={ViewportGridWithDataSource}
-          />
+          {layoutTemplateData.current &&
+            studyInstanceUIDs?.length &&
+            studyInstanceUIDs[0] !== undefined &&
+            renderLayoutData({
+              ...layoutTemplateData.current.props,
+              ViewportGridComp: ViewportGridWithDataSource,
+            })}
         </DragAndDropProvider>
       </CombinedContextProvider>
     </ImageViewerProvider>

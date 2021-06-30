@@ -7,4 +7,5 @@ export default {
   VIEWPORT: 'viewportModule',
   CONTEXT: 'contextModule',
   LAYOUT_TEMPLATE: 'layoutTemplateModule',
+  HANGING_PROTOCOL: 'hangingProtocolModule',
 };

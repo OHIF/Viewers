@@ -4,6 +4,7 @@ import { hotkeys } from '@ohif/core';
 const ohif = {
   layout: 'org.ohif.default.layoutTemplateModule.viewerLayout',
   sopClassHandler: 'org.ohif.default.sopClassHandlerModule.stack',
+  hangingProtocols: 'org.ohif.default.hangingProtocolModule.default',
 };
 
 const tracked = {
@@ -16,6 +17,7 @@ const dicomsr = {
   sopClassHandler: 'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
 };
+
 
 export default function mode({ modeConfiguration }) {
   return {
@@ -40,6 +42,18 @@ export default function mode({ modeConfiguration }) {
       };
 
       ToolBarService.recordInteraction(interaction);
+
+      ToolBarService.init(extensionManager);
+      ToolBarService.addButtons(toolbarButtons);
+      ToolBarService.createButtonSection('primary', [
+        'MeasurementTools',
+        'Zoom',
+        'WindowLevel',
+        'Pan',
+        'Capture',
+        'Layout',
+        'MoreTools',
+      ]);
     },
     onModeExit: () => {},
     validationTags: {
@@ -53,21 +67,10 @@ export default function mode({ modeConfiguration }) {
     routes: [
       {
         path: 'longitudinal',
-        init: ({ servicesManager, extensionManager }) => {
-          const { ToolBarService } = servicesManager.services;
-          ToolBarService.init(extensionManager);
-          ToolBarService.addButtons(toolbarButtons);
-          ToolBarService.createButtonSection('primary', [
-            'MeasurementTools',
-            'Zoom',
-            'WindowLevel',
-            'Pan',
-            'Capture',
-            'Layout',
-            'MoreTools',
-          ]);
-        },
-        layoutTemplate: ({ routeProps }) => {
+        /*init: ({ servicesManager, extensionManager }) => {
+          //defaultViewerRouteInit
+        },*/
+        layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
             props: {
@@ -95,6 +98,7 @@ export default function mode({ modeConfiguration }) {
       'org.ohif.measurement-tracking',
       'org.ohif.dicom-sr',
     ],
+    hangingProtocols: [ohif.hangingProtocols],
     sopClassHandlers: [ohif.sopClassHandler, dicomsr.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };

@@ -9,6 +9,30 @@ const scroll = cornerstoneTools.import('util/scroll');
 
 const { studyMetadataManager } = OHIF.utils;
 
+const imagePositionSynchronizer = new cornerstoneTools.Synchronizer(
+  cornerstone.EVENTS.NEW_IMAGE,
+  cornerstoneTools.stackImagePositionSynchronizer
+);
+
+const panZoomSynchronizer = new cornerstoneTools.Synchronizer(
+  cornerstone.EVENTS.IMAGE_RENDERED,
+  cornerstoneTools.panZoomSynchronizer
+);
+
+function onElementEnabledAddToSync(event) {
+  const { element } = event.detail;
+
+  imagePositionSynchronizer.add(element);
+  // panZoomSynchronizer.add(element);
+}
+
+function onElementDisabledRemoveFromSync(event) {
+  const { element } = event.detail;
+
+  imagePositionSynchronizer.remove(element);
+  panZoomSynchronizer.remove(element);
+}
+
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const { ViewportGridService } = servicesManager.services;
 
@@ -70,8 +94,60 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         cornerstone.reset(enabledElement);
       }
     },
-    invertViewport: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+    toggleSynchronizer: ({ toggledState }) => {
+      const synchronizers = [imagePositionSynchronizer];
+      // Set synchronizer state when the command is run.
+      synchronizers.forEach(s => {
+        s.enabled = toggledState;
+      });
+
+      const unsubscribe = () => {
+        cornerstone.events.removeEventListener(
+          cornerstone.EVENTS.ELEMENT_ENABLED,
+          onElementEnabledAddToSync
+        );
+        cornerstone.events.removeEventListener(
+          cornerstone.EVENTS.ELEMENT_DISABLED,
+          onElementDisabledRemoveFromSync
+        );
+      };
+      const subscribe = () => {
+        cornerstone.events.addEventListener(
+          cornerstone.EVENTS.ELEMENT_ENABLED,
+          onElementEnabledAddToSync
+        );
+        cornerstone.events.addEventListener(
+          cornerstone.EVENTS.ELEMENT_DISABLED,
+          onElementDisabledRemoveFromSync
+        );
+      };
+
+      // Add event handlers so that if the layout is changed, new elements
+      // are automatically added to the synchronizer while it is enabled.
+      if (toggledState === true) {
+        subscribe();
+      } else {
+        // If the synchronizer is disabled, remove the event handlers
+        unsubscribe();
+      }
+
+      // Erase existing state and then set up all currently existing elements
+      cornerstone.getEnabledElements().map(e => {
+        synchronizers.forEach(s => {
+          s.remove(e.element);
+          s.add(e.element);
+        });
+      });
+      return unsubscribe;
+    },
+    invertViewport: ({ element }) => {
+      let enabledElement;
+
+      if (element === undefined) {
+        enabledElement = _getActiveViewportsEnabledElement();
+      } else {
+        enabledElement = element;
+      }
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -111,11 +187,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
 
         const viewportInfo = getEnabledElement(i);
         const hasCornerstoneContext =
-          viewportInfo.context == 'ACTIVE_VIEWPORT::CORNERSTONE';
+          viewportInfo.context === 'ACTIVE_VIEWPORT::CORNERSTONE';
 
         if (hasCornerstoneContext) {
           cornerstoneTools.setToolActiveForElement(
-            viewportInfo.enabledElement,
+            viewportInfo.element,
             toolName,
             { mouseButtonMask: 1 }
           );
@@ -330,6 +406,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
+      storeContexts: [],
+      options: {},
+    },
+    toggleSynchronizer: {
+      commandFn: actions.toggleSynchronizer,
       storeContexts: [],
       options: {},
     },

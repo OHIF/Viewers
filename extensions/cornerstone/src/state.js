@@ -10,7 +10,7 @@ const state = {
  * @return void
  */
 const setEnabledElement = (viewportIndex, element, context) => {
-  const targetContext = context || DEFAULT_CONTEXT;
+  const targetContext = context || state.DEFAULT_CONTEXT;
 
   state.enabledElements[viewportIndex] = {
     element,

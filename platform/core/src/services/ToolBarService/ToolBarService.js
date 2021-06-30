@@ -13,6 +13,7 @@ export default class ToolBarService {
     this.EVENTS = EVENTS;
     this.listeners = {};
     this.buttons = {};
+    this.unsubscriptions = []; // if tools need to unsubscribe from events
     this.buttonSections = {
       /**
        * primary: ['Zoom', 'Wwwc'],
@@ -39,6 +40,16 @@ export default class ToolBarService {
     this.extensionManager = extensionManager;
   }
 
+  reset() {
+    this.unsubscriptions.forEach(unsub => unsub());
+    this.state = {
+      primaryToolId: 'Wwwc',
+      toggles: {},
+      groups: {},
+    };
+    this.unsubscriptions = [];
+  }
+
   /**
    *
    * @param {*} interaction
@@ -63,6 +74,7 @@ export default class ToolBarService {
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
+        interaction.commandOptions.toggledState = this.state.toggles[itemId];
         break;
       }
       default:
@@ -73,11 +85,19 @@ export default class ToolBarService {
     //
     // NOTE: Should probably just do this for tools as well?
     // But would be nice if we could enforce at least the command name?
+    let unsubscribe;
     if (interaction.commandName) {
-      commandsManager.runCommand(
+      unsubscribe = commandsManager.runCommand(
         interaction.commandName,
         interaction.commandOptions
       );
+    }
+
+    // Storing the unsubscribe for later reseting
+    if (unsubscribe && typeof unsubscribe === 'function') {
+      if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
+        this.unsubscriptions.push(unsubscribe);
+      }
     }
 
     // Track last touched id for each group

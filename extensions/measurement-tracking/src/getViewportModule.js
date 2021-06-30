@@ -12,12 +12,13 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
-function getViewportModule({ servicesManager, commandsManager }) {
+function getViewportModule({ servicesManager, commandsManager, extensionManager }) {
   const ExtendedOHIFCornerstoneTrackingViewport = props => {
     return (
       <OHIFCornerstoneViewport
         servicesManager={servicesManager}
         commandsManager={commandsManager}
+        extensionManager={extensionManager}
         {...props}
       />
     );

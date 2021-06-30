@@ -43,3 +43,7 @@
     no-cache,
     no-store,
     must-revalidate'''
+
+    # COMMENT: For sharedArrayBuffer, see https://developer.chrome.com/blog/enabling-shared-array-buffer/
+    Cross-Origin-Embedder-Policy = "require-corp"
+    Cross-Origin-Opener-Policy =  "same-origin"

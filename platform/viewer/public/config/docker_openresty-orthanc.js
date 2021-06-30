@@ -1,10 +1,14 @@
 window.config = {
   routerBasename: '/',
   showStudyList: true,
-  servers: {
-    // This is an array, but we'll only use the first entry for now
-    dicomWeb: [
-      {
+  extensions: [],
+  modes: [],
+  dataSources: [
+    {
+      friendlyName: 'Orthanc Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
         name: 'Orthanc',
         wadoUriRoot: 'http://127.0.0.1/pacs/wado',
         qidoRoot: 'http://127.0.0.1/pacs/dicom-web',
@@ -12,11 +16,8 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        // requestOptions: {
-        // undefined to use JWT + Bearer auth
-        // auth: 'orthanc:orthanc',
-        // },
       },
-    ],
-  },
+    },
+  ],
+  defaultDataSourceName: 'dicomweb',
 };

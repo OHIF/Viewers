@@ -32,7 +32,7 @@
     "@ohif/core": "^0.50.0",
     "@ohif/ui": "^0.50.0",
     "cornerstone-core": "^2.3.0",
-    "cornerstone-math": "^0.1.8",
+    "cornerstone-math": "^0.1.9",
     "cornerstone-tools": "5.1.2",
     "cornerstone-wado-image-loader": "^3.1.2",
     "dcmjs": "0.18.8",
@@ -47,6 +47,6 @@
     "@babel/runtime": "7.7.6",
     "lodash.debounce": "4.0.8",
     "lodash.merge": "^4.6.2",
-    "react-cornerstone-viewport": "4.0.2"
+    "react-cornerstone-viewport": "4.0.5"
   }
 }

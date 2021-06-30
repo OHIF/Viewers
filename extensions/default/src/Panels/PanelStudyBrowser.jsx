@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer } from '@ohif/ui';
 import { utils } from '@ohif/core';
@@ -19,7 +19,7 @@ function PanelStudyBrowser({
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
-  const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
+  const { StudyInstanceUIDs } = useImageViewer();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -27,6 +27,7 @@ function PanelStudyBrowser({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
+  const isMounted = useRef(true);
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -47,8 +48,9 @@ function PanelStudyBrowser({
           // displaySets: []
         };
       });
-
-      setStudyDisplayList(actuallyMappedStudies);
+      if (isMounted.current) {
+        setStudyDisplayList(actuallyMappedStudies);
+      }
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
@@ -72,11 +74,16 @@ function PanelStudyBrowser({
         newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
           imageId
         );
-        setThumbnailImageSrcMap(prevState => {
-          return { ...prevState, ...newImageSrcEntry };
-        });
+        if (isMounted.current) {
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
+        }
       }
     });
+    return () => {
+      isMounted.current = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -112,11 +119,14 @@ function PanelStudyBrowser({
           if (imageId) {
             // When the image arrives, render it and store the result in the thumbnailImgSrcMap
             newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-              imageId
+              imageId,
+              dSet.initialViewport
             );
-            setThumbnailImageSrcMap(prevState => {
-              return { ...prevState, ...newImageSrcEntry };
-            });
+            if (isMounted.current) {
+              setThumbnailImageSrcMap(prevState => {
+                return { ...prevState, ...newImageSrcEntry };
+              });
+            }
           }
         });
       }

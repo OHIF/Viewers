@@ -1,7 +1,7 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
@@ -26,54 +26,86 @@ function ViewerViewportGrid(props) {
     HangingProtocolService,
   } = servicesManager.services;
 
-  // This is a placeholder for applying hanging protocols
-  // It probably shouldn't be done here
-  // For now it just hangs the first display set in the study in 1x1
-  // as sorted by SeriesNumber
+
+  const updateDisplaysetForViewports = useCallback(
+    (displaySets) => {
+      const [
+        matchDetails,
+        hpAlreadyApplied,
+      ] = HangingProtocolService.getState();
+
+      if (!matchDetails.length) return;
+      // Match each viewport individually
+
+      const numViewports = viewportGrid.numRows * viewportGrid.numCols;
+      for (let i = 0; i < numViewports; i++) {
+        if (hpAlreadyApplied[i] === true) {
+          continue;
+        }
+
+        // if current viewport doesn't have a match
+        if (matchDetails[i] === undefined) return
+
+        const { SeriesInstanceUID } = matchDetails[i];
+        const matchingDisplaySet = displaySets.find(ds => {
+          return ds.SeriesInstanceUID === SeriesInstanceUID;
+        });
+
+        if (!matchingDisplaySet) {
+          continue;
+        }
+
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: i,
+          displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+        });
+
+        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+      }
+    },
+    [viewportGrid, numRows, numCols],
+  )
+
+  // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
       eventData => {
         const { displaySetsAdded } = eventData;
-
-        const data = HangingProtocolService.getState();
-
-        // TODO: Sometimes this is undefined?
-        const { hpAlreadyApplied } = data;
-
-        // Match each viewport individually
-        const numViewports = numRows * numCols;
-        for (let i = 0; i < numViewports; i++) {
-          if (hpAlreadyApplied[i] === true) {
-            return;
-          }
-
-          // Temporary until matching is ported back over from the Meteor version.
-          const reqSeriesInstanceUID =
-            data.hangingProtocol.stages[0].viewports[0].seriesMatchingRules[0]
-              .constraint.equals.value;
-          const matchingDisplaySet = displaySetsAdded.find(ds => {
-            return ds.SeriesInstanceUID === reqSeriesInstanceUID;
-          });
-
-          if (!matchingDisplaySet) {
-            return;
-          }
-
-          viewportGridService.setDisplaysetForViewport({
-            viewportIndex: i,
-            displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
-          });
-
-          HangingProtocolService.setHangingProtocolAppliedForViewport(i);
-        }
+        updateDisplaysetForViewports(displaySetsAdded)
       }
     );
 
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [viewportGrid]);
+
+
+
+  // Changing the Hanging protocol while viewing
+  useEffect(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    updateDisplaysetForViewports(displaySets)
+  }, [viewportGrid])
+
+
+
+
+  // Layout change based on hanging protocols
+  useEffect(() => {
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.NEW_LAYOUT,
+      ({ numRows, numCols }) => {
+        viewportGridService.setLayout({ numRows, numCols });
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [viewports]);
+
 
   useEffect(() => {
     const { unsubscribe } = MeasurementService.subscribe(
@@ -82,16 +114,24 @@ function ViewerViewportGrid(props) {
         const referencedDisplaySetInstanceUID =
           measurement.displaySetInstanceUID;
 
-        // If the viewport does not contain the displaySet, then hang that displaySet.
+        const viewportsDisplaySetInstanceUIDs = viewports.map(
+          vp => vp.displaySetInstanceUID
+        );
+
+        // if we already have the displayset in one of the viewports
         if (
-          viewports[viewportIndex].displaySetInstanceUID !==
-          referencedDisplaySetInstanceUID
+          viewportsDisplaySetInstanceUIDs.indexOf(
+            referencedDisplaySetInstanceUID
+          ) > -1
         ) {
-          viewportGridService.setDisplaysetForViewport({
-            viewportIndex,
-            displaySetInstanceUID: referencedDisplaySetInstanceUID,
-          });
+          return;
         }
+
+        // If not in any of the viewports, hang it inside the active viewport
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex,
+          displaySetInstanceUID: referencedDisplaySetInstanceUID,
+        });
       }
     );
 
@@ -208,11 +248,9 @@ function ViewerViewportGrid(props) {
     return viewportPanes;
   };
 
-  // const ViewportPanes = React.useMemo(getViewportPanes, [
-  //   viewportComponents,
-  //   activeViewportIndex,
-  //   viewportGrid,
-  // ]);
+  if (!numCols || !numCols) {
+    return null;
+  }
 
   return (
     <ViewportGrid numRows={numRows} numCols={numCols}>

@@ -15,6 +15,10 @@ describe('ExtensionManager.js', () => {
     };
     servicesManager = {
       registerService: jest.fn(),
+      services: {
+        // Required for DataSource Module initiation
+        UserAuthenticationService: jest.fn(),
+      },
     };
     appConfig = {
       testing: true,
@@ -100,7 +104,6 @@ describe('ExtensionManager.js', () => {
         extensionManager.registerExtension(undefinedExtension);
       }).toThrow('Attempting to register a null/undefined extension.');
 
-
       expect(() => {
         extensionManager.registerExtension(nullExtension);
       }).toThrow('Attempting to register a null/undefined extension.');
@@ -185,7 +188,7 @@ describe('ExtensionManager.js', () => {
             hotkeysManager: undefined,
             appConfig,
             configuration: extensionConfiguration,
-            extensionManager
+            extensionManager,
           });
         }
       });
@@ -215,9 +218,12 @@ describe('ExtensionManager.js', () => {
         getDataSourcesModule: () => {
           return [{}];
         },
+        getHangingProtocolModule: () => {
+          return [{}];
+        },
         getContextModule: () => {
           return [{}];
-        }
+        },
       };
 
       extensionManager.registerExtension(extension);

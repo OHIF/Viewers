@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import './tooltip.css';
 
@@ -33,6 +34,7 @@ const Tooltip = ({
   isDisabled,
 }) => {
   const [isActive, setIsActive] = useState(false);
+  const { t } = useTranslation('Buttons');
 
   const handleMouseOver = () => {
     if (!isActive) {
@@ -72,7 +74,7 @@ const Tooltip = ({
             }
           )}
         >
-          {content}
+          {typeof content === 'string' ? t(content) : content}
           <svg
             className="absolute h-4 text-primary-dark stroke-secondary-main"
             style={arrowPositionStyle[position]}

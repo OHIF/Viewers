@@ -17,9 +17,11 @@ function create({
   retrieve,
   store,
   reject,
+  initialize,
   retrieveSeriesMetadata,
   deleteStudyMetadataPromise,
   getImageIdsForDisplaySet,
+  getImageIdsForInstance,
 }) {
   const defaultQuery = {
     studies: {
@@ -36,7 +38,7 @@ function create({
        * @param {number} params.resultsPerPage
        */
       mapParams: params => params,
-      requestResults: () => {},
+      requestResults: () => { },
       processResults: results => results,
     },
     series: {},
@@ -56,15 +58,16 @@ function create({
   };
 
   const defaultReject = {};
-
   return {
     query: query || defaultQuery,
     retrieve: retrieve || defaultRetrieve,
     reject: reject || defaultReject,
     store: store || defaultStore,
-    getImageIdsForDisplaySet,
+    initialize,
     retrieveSeriesMetadata,
     deleteStudyMetadataPromise,
+    getImageIdsForDisplaySet,
+    getImageIdsForInstance,
   };
 }
 

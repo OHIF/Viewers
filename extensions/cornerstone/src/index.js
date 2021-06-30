@@ -38,12 +38,14 @@ export default {
       const onNewImageHandler = jumpData => {
         commandsManager.runCommand('jumpToImage', jumpData);
       };
-      const { ToolBarService } = servicesManager;
+      const { ToolBarService } = servicesManager.services;
 
       return (
         <OHIFCornerstoneViewport
           {...props}
           ToolBarService={ToolBarService}
+          servicesManager={servicesManager}
+          commandsManager={commandsManager}
           onNewImage={onNewImageHandler}
         />
       );

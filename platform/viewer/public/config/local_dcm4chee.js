@@ -1,11 +1,14 @@
 window.config = {
-  // default: '/'
   routerBasename: '/',
-  // default: ''
   showStudyList: true,
-  servers: {
-    dicomWeb: [
-      {
+  extensions: [],
+  modes: [],
+  dataSources: [
+    {
+      friendlyName: 'DCM4CHEE Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -17,7 +20,8 @@ window.config = {
           auth: 'admin:admin',
         },
       },
-    ],
-  },
+    },
+  ],
   studyListFunctionsEnabled: true,
+  defaultDataSourceName: 'dicomweb',
 };

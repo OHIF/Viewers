@@ -12,11 +12,20 @@ export default class RetrieveMetadataLoader {
    * @param {Array} studyInstanceUID Study instance ui to be retrieved
    * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
    * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+   * @param {Function} [sortSeries] - Custom sort function for series
    */
-  constructor(client, studyInstanceUID, filters = {}) {
+  constructor(
+    client,
+    studyInstanceUID,
+    filters = {},
+    sortCriteria,
+    sortFunction
+  ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
+    this.sortCriteria = sortCriteria;
+    this.sortFunction = sortFunction;
   }
 
   async execLoad() {
