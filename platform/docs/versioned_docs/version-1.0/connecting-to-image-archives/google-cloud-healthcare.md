@@ -46,7 +46,7 @@ METEOR_PACKAGE_DIRS="../Packages" meteor --settings ../config/oidc-googleCloud.j
 
 ## Running via Docker
 
-OHIF is also providing a Docker container which can connect to Google Cloud Healthcare with a Client ID which is provided at runtime. This is a very simple method to get up and running. Internally, the container is running [Nginx](https://nginx.org/) to serve the [Standalone Viewer](../standalone-viewer/usage.md).
+OHIF is also providing a Docker container which can connect to Google Cloud Healthcare with a Client ID which is provided at runtime. This is a very simple method to get up and running. Internally, the container is running [Nginx](https://nginx.org/) to serve the [Standalone Viewer](../OHIF-Viewer/usage.md).
 
 1. Install Docker (https://www.docker.com/)
 1. Run the Docker container, providing a Client ID as an environment variable. Client IDs look like `xyz.apps.googleusercontent.com`.

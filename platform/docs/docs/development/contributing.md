@@ -12,7 +12,7 @@ should be implemented, please don't hesitate to create a new issue. At a
 minimum, you may want to read the following documentation:
 
 - [Getting Started](/development/getting-started.md)
-- [Architecture](/architecture/index.md)
+- [Architecture](../architecture.md)
 
 Pull requests that are:
 

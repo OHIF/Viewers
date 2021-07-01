@@ -26,7 +26,7 @@ We maintain the following UI Services:
 - [UI Modal Service](ui-modal-service.md)
 - [UI Dialog Service](ui-dialog-service.md)
 - [UI Viewport Dialog Service](ui-viewport-dialog-service.md)
-- [Cine Service](cine.md)
+- Cine Service
 - [Viewport Grid Service](ViewportGridService.md)
 
 

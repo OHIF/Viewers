@@ -200,7 +200,7 @@ your functionality in one of the modules of your new extension,  and let the mod
 [viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
 [pwa]: https://developers.google.com/web/progressive-web-apps/
 [configuration]: ./configuring/index.md
-[extensions]: ../extensions/index.md
+[extensions]: ./extensions/index.md
 [core-github]: https://github.com/OHIF/viewers/platform/core
 [ui-github]: https://github.com/OHIF/Viewers/tree/master/platform/ui
 <!-- prettier-ignore-end -->

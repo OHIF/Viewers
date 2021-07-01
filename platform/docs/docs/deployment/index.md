@@ -57,7 +57,7 @@ deployment experience.
 "Building", or creating, the files you will need is the same regardless of the
 web host you choose. You can find detailed instructions on how to configure and
 build the OHIF Viewer in our
-["Build for Production" guide](./recipes/build-for-production.md).
+["Build for Production" guide](./build-for-production.md).
 
 ##### Part 2 - Host Your App
 
@@ -67,18 +67,18 @@ via one of these guides:
 
 _Drag-n-drop_
 
-- [Netlify: Drop](/deployment/recipes/static-assets.md#netlify-drop)
+- [Netlify: Drop](./static-assets.md#netlify-drop)
 
 _Easy_
 
-- [Surge.sh](/deployment/recipes/static-assets.md#surgesh)
-- [GitHub Pages](/deployment/recipes/static-assets.md#github-pages)
+- [Surge.sh](./static-assets.md#surgesh)
+- [GitHub Pages](./static-assets.md#github-pages)
 
 _Advanced_
 
-- [AWS S3 + Cloudfront](/deployment/recipes/static-assets.md#aws-s3--cloudfront)
-- [GCP + Cloudflare](/deployment/recipes/static-assets.md#gcp--cloudflare)
-- [Azure](/deployment/recipes/static-assets.md#azure)
+- [AWS S3 + Cloudfront](./static-assets.md#aws-s3--cloudfront)
+- [GCP + Cloudflare](./static-assets.md#gcp--cloudflare)
+- [Azure](./static-assets.md#azure)
 
 ## Data
 
@@ -120,7 +120,7 @@ There are two important steps to making sure this setup works:
 Most image archives do not provide either of these features "out of the box".
 It's common to use IIS, Nginx, or Apache to route incoming requests and append
 appropriate headers. You can find an example of this setup in our
-[Nginx + Image Archive Deployment Recipe](./recipes/nginx--image-archive.md).
+[Nginx + Image Archive Deployment Recipe](./nginx--image-archive.md).
 
 #### What if my archive doesn't support DicomWeb?
 
@@ -264,7 +264,7 @@ window.config = {
 ```
 
 You can find an example of this setup in our
-[User Account Control Deployment Recipe](./recipes/user-account-control.md).
+[User Account Control Deployment Recipe](./user-account-control.md).
 
 #### Choosing a Flow for the Viewer
 
@@ -283,10 +283,10 @@ many possible configurations, so please don't feel limited to these setups.
 Please feel free to suggest or contribute your own recipes.
 
 
-- [Build for Production](./recipes/build-for-production.md)
-- [Static](./recipes/static-assets.md)
-- [Nginx + Image Archive](./recipes/nginx--image-archive.md)
-- [User Account Control](./recipes/user-account-control.md)
+- [Build for Production](./build-for-production.md)
+- [Static](./static-assets.md)
+- [Nginx + Image Archive](./nginx--image-archive.md)
+- [User Account Control](./user-account-control.md)
 
 <!--
   Links

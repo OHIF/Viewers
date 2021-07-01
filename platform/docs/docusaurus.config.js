@@ -336,11 +336,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           items: [
             {
               label: 'Feedback',
-              to: 'https://community.ohif.com/',
+              to: 'https://community.ohif.org/',
             },
             {
               label: 'Discussion board',
-              href: 'https://community.ohif.com/',
+              href: 'https://community.ohif.org/',
             },
             {
               label: 'Help',

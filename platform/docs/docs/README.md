@@ -87,8 +87,8 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     </tr>
     <tr>
         <td align="left">OpenID Connect standard authentication flow for connecting to identity providers</td>
-        <td align="center">🔜</td>
-        <td align="center">In Progress</td>
+        <td align="center">✅</td>
+        <td align="center"></td>
     </tr>
     <tr>
         <td align="left">Internationalization</td>
@@ -101,6 +101,16 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
         <td align="center"></td>
     </tr>
     <tr>
+        <td align="left">White-labelling: Easily replace the OHIF Logo with your logo</td>
+        <td align="center">✅</td>
+        <td align="center"></td>
+    </tr>
+    <tr>
+        <td align="left">DICOM Whole-slide imaging viewport</td>
+        <td align="center">🔜</td>
+        <td align="center">In Progress</td>
+    </tr>
+    <tr>
         <td align="left">IHE Invoke Image Display - Standard-compliant launching of the viewer (e.g. from PACS or RIS)</td>
         <td align="center">🔜</td>
         <td align="center">Not Started</td>
@@ -109,11 +119,6 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
         <td align="left">DICOM PDF support</td>
         <td align="center">🔜</td>
         <td align="center">Not Started</td>
-    </tr>
-    <tr>
-        <td align="left">DICOM Whole-slide imaging viewport</td>
-        <td align="center">🔜</td>
-        <td align="center">In Progress</td>
     </tr>
     <tr>
         <td align="left">Displaying non-renderable DICOM as HTML</td>
@@ -131,11 +136,6 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
         <td align="center">Not Started</td>
     </tr>
     <tr>
-        <td align="left">White-labelling: Easily replace the OHIF Logo with your logo</td>
-        <td align="center">✅</td>
-        <td align="center"></td>
-    </tr>
-    <tr>
         <td align="left">DICOM upload to PACS</td>
         <td align="center">🔜</td>
         <td align="center">Not Started</td>
@@ -148,7 +148,7 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     <tr>
         <td align="left">VTK Extension + MIP / MPR layout</td>
         <td align="center">❌</td>
-        <td align="center">Other plans</td>
+        <td align="center">Other plans that involves amazing news soon!</td>
     </tr>
     <tr>
         <td align="left">UMD Build (Embedded Viewer). </td>
