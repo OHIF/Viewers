@@ -1,9 +1,9 @@
 ---
 sidebar_position: 2
-sidebar_label: Study list
+sidebar_label: Study List
 ---
 
-# Study list
+# Study List
 
 ## Overview
 The first page you will see when the viewer is loaded is the `Study List`.

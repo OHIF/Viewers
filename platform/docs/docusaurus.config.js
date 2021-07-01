@@ -72,6 +72,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   // },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
+    'plugin-image-zoom', // 3rd party plugin for image click to pop
     [
       '@docusaurus/plugin-client-redirects',
       {
