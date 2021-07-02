@@ -41,13 +41,22 @@ Below, you can see different icons that appear for a tracked vs. untracked serie
 
 
 
-Overview video for starting the tracking for measurements:
+#### Overview video for starting the tracking for measurements:
 <!-- trackedMeasurements -->
-TEMP
 
-Overview video for not starting tracking for measurements:
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/570278865?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+
+<br></br>
+
+#### Overview video for not starting tracking for measurements:
 <!-- untrackedMeasurements -->
-TEMP
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/570280036?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 
 ### Reading and Writing DICOM SR
@@ -71,14 +80,27 @@ The full workflow for saving measurements to SR and loading SR into the viewer i
 ![user-measurement-panel-modal](../../assets/img/tracking-workflow3.png)
 
 
-Overview video for loading DICOM SR and making a tracked sereis:
+#### Overview video for loading DICOM SR and making a tracked sereis:
 <!-- SR Restore and Yes -->
-TEMP
 
-Overview video for loading DICOM SR and not making a tracked series:
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/570278845?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+<br></br>
+
+#### Overview video for loading DICOM SR and not making a tracked series:
 <!-- SR Restore and No -->
 <!-- SR Export and measurement restore -->
-TEMP
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/570278814?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+<br></br>
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/570278799?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
 
 ### Loading DICOM SR into an Already Tracked Series
 
@@ -90,6 +112,13 @@ you cannot edit the DICOM SR measurement.
 
 ![locked-sr](../../assets/img/locked-sr.png)
 
-Overview video for loading DICOM SR inside an already tracked sereis:
+<br></br>
+
+
+#### Overview video for loading DICOM SR inside an already tracked sereis:
 <!-- DICOMSRLockedTracked -->
-TEMP
+
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/570278726?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
