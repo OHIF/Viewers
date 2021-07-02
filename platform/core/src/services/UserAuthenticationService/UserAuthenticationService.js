@@ -37,9 +37,7 @@ function _getUser() {
 }
 
 function _getAuthorizationHeader() {
-  const user = serviceImplementation._getUser();
-
-  return serviceImplementation._getAuthorizationHeader(user);
+  return serviceImplementation._getAuthorizationHeader();
 }
 
 function _handleUnauthenticated() {

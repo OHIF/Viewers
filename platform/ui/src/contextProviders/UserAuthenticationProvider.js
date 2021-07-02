@@ -88,6 +88,7 @@ export function UserAuthenticationProvider({ children, service }) {
    *
    * @returns void
    */
+  // TODO: should this be a useEffect or not?
   useEffect(() => {
     if (service) {
       service.setServiceImplementation({
@@ -99,6 +100,19 @@ export function UserAuthenticationProvider({ children, service }) {
       });
     }
   }, [getState, service, setUser, getUser, reset, set]);
+
+  // TODO: This may not be correct, but I think we need to set the implementation for the service
+  // immediately when this runs, since otherwise the authentication redirects will fail.
+  // (useEffect only runs after the child components - in this case, routing logic - has failed)
+  if (service) {
+    service.setServiceImplementation({
+      getState,
+      setUser,
+      getUser,
+      reset,
+      set,
+    });
+  }
 
   const api = {
     getState,

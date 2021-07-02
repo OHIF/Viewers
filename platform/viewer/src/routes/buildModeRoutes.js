@@ -50,9 +50,8 @@ export default function buildModeRoutes({
       const path = `/${mode.id}/${dataSourceName}`;
 
       // TODO move up.
-      const component = ({ location }) => (
+      const children = () => (
         <ModeRoute
-          location={location}
           mode={mode}
           dataSourceName={dataSourceName}
           extensionManager={extensionManager}
@@ -63,7 +62,7 @@ export default function buildModeRoutes({
 
       routes.push({
         path,
-        component,
+        children,
       });
     });
 
@@ -73,9 +72,8 @@ export default function buildModeRoutes({
     const path = `/${mode.id}`;
 
     // TODO move up.
-    const children = ({ location }) => (
+    const children = () => (
       <ModeRoute
-        location={location}
         mode={mode}
         dataSourceName={defaultDataSourceName}
         extensionManager={extensionManager}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
 import CallbackPage from '../routes/CallbackPage';
 import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
@@ -100,7 +101,10 @@ function OpenIdConnectRoutes({
                          UserAuthenticationService
                         }) {
   const userManager = initUserManager(oidc, routerBasename);
-  const getAuthorizationHeader = (user) => {
+
+  const getAuthorizationHeader = () => {
+    const user = UserAuthenticationService.getUser();
+
     return {
       Authorization: `Bearer ${user.access_token}`
     };
@@ -115,10 +119,14 @@ function OpenIdConnectRoutes({
 
   const navigate = useNavigate();
 
-  UserAuthenticationService.setServiceImplementation({
-    getAuthorizationHeader,
-    handleUnauthenticated
-  });
+  useEffect(() => {
+    UserAuthenticationService.set({ enabled: true });
+
+    UserAuthenticationService.setServiceImplementation({
+      getAuthorizationHeader,
+      handleUnauthenticated
+    });
+  }, [])
 
   const oidcAuthority = oidc[0].authority;
 
@@ -166,7 +174,10 @@ function OpenIdConnectRoutes({
 
           UserAuthenticationService.setUser(user);
 
-          navigate(`${pathname}?${search}`);
+          navigate({
+            pathname,
+            search
+          })
         }}/>}
       />
       <Route

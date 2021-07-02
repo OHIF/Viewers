@@ -79,8 +79,6 @@ function App({ config, defaultExtensions }) {
   let authRoutes = null;
 
   if (oidc) {
-    UserAuthenticationService.set({ enabled: true });
-
     authRoutes = (<OpenIdConnectRoutes
                 oidc={oidc}
                 routerBasename={routerBasename}
