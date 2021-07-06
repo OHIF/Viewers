@@ -27,6 +27,7 @@ import {
   HangingProtocolService,
   pubSubServiceInterface,
   UserAuthenticationService,
+  ExtensibilityService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -64,6 +65,7 @@ const OHIF = {
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
+  ExtensibilityService,
   ToolBarService, // TODO: TYPO
   ViewportGridService,
   HangingProtocolService,
@@ -98,6 +100,7 @@ export {
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
+  ExtensibilityService,
   DisplaySetService,
   MeasurementService,
   ToolBarService,
