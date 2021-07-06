@@ -1,10 +1,10 @@
-import { ExtensibilityService, mergeAssign, mergeCreate, mergeObject } from './ExtensibilityService.js';
+import { ConfigPointService, mergeAssign, mergeCreate, mergeObject } from './ConfigPointService.js';
 import log from '../../log.js';
 
 jest.mock('../../log.js');
 
-describe('ExtensibilityService.js', () => {
-  const LEVEL_NAME = 'testLevel';
+describe('ConfigPointService.js', () => {
+  const CONFIG_NAME = 'testLevel';
   const BASE_CONFIG = {
     a: '1',
     list: [1, 2, 3],
@@ -20,7 +20,7 @@ describe('ExtensibilityService.js', () => {
     // Default object behaviour is update
     obj: { v2: 'v2New', v3: 'v3' },
     // Over-ride operation to replace entire item
-    obj2: { v2: 'v2New', v3: 'v3', ...ExtensibilityService.REPLACE },
+    obj2: { v2: 'v2New', v3: 'v3', ...ConfigPointService.REPLACE },
     // Default function behaviour is replace, which in this case means add new.
     subFunc: (a, b) => a - b,
   };
@@ -40,7 +40,7 @@ describe('ExtensibilityService.js', () => {
   const MODIFY_NAME = "modify";
 
   beforeEach(() => {
-    ExtensibilityService.clear();
+    ConfigPointService.clear();
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -88,18 +88,18 @@ describe('ExtensibilityService.js', () => {
 
   });
 
-  describe('addLevel()', () => {
+  describe('addConfig()', () => {
 
     it('Adds an extension level', () => {
-      const level = ExtensibilityService.addLevel(LEVEL_NAME, BASE_CONFIG);
-      expect(level).toMatchObject(BASE_CONFIG);
+      const config = ConfigPointService.addConfig(CONFIG_NAME, BASE_CONFIG);
+      expect(config).toMatchObject(BASE_CONFIG);
     });
   });
 
-  describe('extendLevel()', () => {
-    it('updates the level data', () => {
-      const level = ExtensibilityService.addLevel(LEVEL_NAME, BASE_CONFIG);
-      level.extendLevel(MODIFY_NAME, MODIFY_CONFIG);
+  describe('extendConfig()', () => {
+    it('updates the config data', () => {
+      const level = ConfigPointService.addConfig(CONFIG_NAME, BASE_CONFIG);
+      level.extendConfig(MODIFY_NAME, MODIFY_CONFIG);
       expect(level).toMatchObject(MODIFY_MATCH);
     });
   });

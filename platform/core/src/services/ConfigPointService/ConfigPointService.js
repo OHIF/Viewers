@@ -3,7 +3,7 @@ import log from '../../log.js';
 /**
  * Contains the model data for the extensibility level points.
  */
-let _levels = {};
+let _configPoints = {};
 
 /** Source types are the original/base type, and are unique by level/name */
 export const SOURCE_TYPE = 'source';
@@ -99,10 +99,15 @@ export function mergeObject(base, src) {
   return base;
 }
 
-const LevelFunctionality = {
-  extendLevel(name, data) {
-    if (this._extensions[name]) {
-      throw `Level already has extension ${name}`;
+const ConfigPointFunctionality = {
+  extendConfig(name, data, allowUpdate) {
+    const toRemove = this._extensions[name];
+    if (toRemove) {
+      if (allowUpdate) {
+        this._extensions._order = this._extensions._order.filter(item => item !== toRemove);
+      } else {
+        throw `Level already has extension ${name}`;
+      }
     }
     this._extensions[name] = data;
     this._extensions._order.push(data);
@@ -110,7 +115,7 @@ const LevelFunctionality = {
   },
 
   applyExtensions() {
-    mergeObject(this, this._levelBase);
+    mergeObject(this, this._configBase);
     for (const item of this._extensions._order) {
       console.warn("Merge item ", item);
       mergeObject(this, item);
@@ -119,46 +124,63 @@ const LevelFunctionality = {
 };
 
 const BaseImplementation = {
-  /** Adds a new level name, must get executed before the level is used.
-   * It isn't necessary to provide a default levelBase, but doing so enables
+  /** Adds a new configuraiton point, must get executed before the level is used.
+   * It isn't necessary to provide a default configBase, but doing so enables
    * inheritting from the levelBase to provide other functionality for the given level.
-   * The ordering of when addLevel is called to provide levelBase doesn't matter much.
+   * The ordering of when addConfig is called to provide configBase doesn't matter much.
    */
-  addLevel(levelName, levelBase) {
-    let level = _levels[levelName];
-    if (!level) {
-      _levels[levelName] = level = Object.assign({}, LevelFunctionality, levelBase);
-      level._levelBase = levelBase;
-      level._extensions = { _order: [] };
-    } else if (levelBase) {
-      Object.assign(level, levelBase);
-      level._levelBase = levelBase;
+  addConfig(configName, configBase) {
+    let config = _configPoints[configName];
+    if (!config) {
+      _configPoints[configName] = config = Object.assign({}, ConfigPointFunctionality, configBase);
+      config._levelBase = configBase;
+      config._extensions = { _order: [] };
+    } else if (configBase) {
+      Object.assign(config, configBase);
+      config._configBase = configBase;
     }
-    return level;
+    return config;
   },
 
-  hasLevel(levelName) {
-    return _levels[levelName] != undefined;
+  /** Extend the overall configuration on each configuration point referenced,
+   * adding the specified child items.
+   */
+  extendConfig(config) {
+    for (const configName in config) {
+      if (!this.hasConfig(configName)) {
+        console.warn(`Unknown ConfigPoint  ${configName}`);
+        continue;
+      }
+      const configPoint = this.addConfig(configName);
+      const extendItems = config[configName];
+      for (const itemName in extendItems) {
+        const item = extendItems[itemName];
+        configPoint.extendConfig(itemName, item);
+      }
+    }
+  },
+
+  hasConfig(configName) {
+    return _configPoints[configName] != undefined;
   },
 
   clear() {
-    _levels = {};
+    _configPoints = {};
   }
 };
 
-const ExtensibilityService = Object.assign(
-  { name: 'ExtensibilityService', create: () => ExtensibilityService, },
+const ConfigPointService = Object.assign(
+  { name: 'ConfigPointService', create: () => ConfigPointService, },
   BaseImplementation,
 );
 
 
-export { ExtensibilityService };
-export default ExtensibilityService;
+export { ConfigPointService };
+export default ConfigPointService;
 
 // TODO - find a way to allow loading a safe list of configuration elements
 // Make this globally available for now until a better method is found
-window.ExtensibilityService = ExtensibilityService;
+window.ConfigPointService = ConfigPointService;
 // This allows, for example, the following extension to the pagination service
 // Just run this in the console.
-// let StudyListPaginationLevel = ExtensibilityService.addLevel("StudyListPagination");
-// StudyListPaginationLevel.extendLevel('extraItems', {ranges:[null,{label:'Twenty Five'},null,{value:'10', label:'Ten'}]});
+// ConfigPointService.extendConfig({StudyListPagination: {extraItems, {ranges:[null,{label:'Twenty Five'},null,{value:'10', label:'Ten'}]}}});

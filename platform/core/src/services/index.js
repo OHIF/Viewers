@@ -1,6 +1,6 @@
 import MeasurementService from './MeasurementService';
 import ServicesManager from './ServicesManager.js';
-import ExtensibilityService from './ExtensibilityService';
+import ConfigPointService from './ConfigPointService';
 import UIDialogService from './UIDialogService';
 import UIModalService from './UIModalService';
 import UINotificationService from './UINotificationService';
@@ -17,7 +17,7 @@ import UserAuthenticationService from './UserAuthenticationService';
 export {
   MeasurementService,
   ServicesManager,
-  ExtensibilityService,
+  ConfigPointService,
   UIDialogService,
   UIModalService,
   UINotificationService,

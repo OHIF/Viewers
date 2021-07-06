@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, ButtonGroup, Typography, Select } from '../';
 import { useTranslation } from 'react-i18next';
-import ExtensibilityService from '../../../../core/src/services/ExtensibilityService/ExtensibilityService';
+import ConfigPointService from '../../../../core/src/services/ConfigPointService/ConfigPointService';
 
-function StudyListPaginationFunction({
+export function StudyListPagination({
   onChangePage,
   currentPage,
   perPage,
   onChangePerPage,
-  extensibility,
+  configPoint,
 }) {
   const { t } = useTranslation('StudyList');
 
@@ -18,8 +18,8 @@ function StudyListPaginationFunction({
     onChangePage(toPage);
   };
 
-  extensibility = extensibility || StudyListPaginationLevel;
-  const ranges = extensibility.ranges;
+  configPoint = configPoint || StudyListPaginationConfig;
+  const ranges = configPoint.ranges;
   const [selectedRange, setSelectedRange] = useState(
     ranges.find(r => r.value === perPage)
   );
@@ -88,7 +88,7 @@ function StudyListPaginationFunction({
   );
 };
 
-StudyListPaginationFunction.propTypes = {
+StudyListPagination.propTypes = {
   onChangePage: PropTypes.func.isRequired,
   currentPage: PropTypes.number.isRequired,
   perPage: PropTypes.number.isRequired,
@@ -96,7 +96,7 @@ StudyListPaginationFunction.propTypes = {
 };
 
 const StudyListPaginationSettings = {
-  reactFunction: StudyListPaginationFunction,
+  reactFunction: StudyListPagination,
   ranges: [
     { value: '25', label: '25' },
     { value: '50', label: '50' },
@@ -104,10 +104,6 @@ const StudyListPaginationSettings = {
   ],
 };
 
-const StudyListPaginationLevel = ExtensibilityService.addLevel("StudyListPagination", StudyListPaginationSettings);
-
-const StudyListPagination = StudyListPaginationFunction.bind(StudyListPaginationLevel);
-
-// StudyListPaginationLevel.extendLevel('extraItems', {ranges:[null,{label:'Twenty Five'},null,{value:'10', label:'Ten'}]});
+const StudyListPaginationConfig = ConfigPointService.addConfig("StudyListPagination", StudyListPaginationSettings);
 
 export default StudyListPagination;
