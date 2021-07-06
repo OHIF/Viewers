@@ -21,12 +21,24 @@ const {
  *
  * @param {DICOMwebClient} dicomWebClient A DICOMwebClient instance through
  *  which the referenced instances will be retrieved;
- * @param {string} studyInstanceUID 
+ * @param {string} studyInstanceUID
  *
 
  * @param {function} notifications A callback to retrieve notifications
 
 */
+
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
 
 async function downloadAndZip(dicomWebClient, studyInstanceUID, status) {
   if (dicomWebClient instanceof api.DICOMwebClient) {
@@ -39,9 +51,12 @@ async function downloadAndZip(dicomWebClient, studyInstanceUID, status) {
       studyInstanceUID,
       progressCallback: function(pe) {
         if (pe.lengthComputable) {
-          status('downloading', pe.loaded + ' of ' + pe.total);
+          status(
+            'downloading',
+            formatBytes(pe.loaded) + ' of ' + formatBytes(pe.total)
+          );
         } else {
-          status('downloading', pe.loaded);
+          status('downloading', formatBytes(pe.loaded));
         }
       },
     });

@@ -6,18 +6,22 @@ import { saveAs } from 'file-saver';
 
 const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
   const [status, setStatus] = useState({ notificationType: '', text: '' });
+  const [size, setSize] = useState('');
+  const [numberOfFiles, setNumberOfFiles] = useState('');
 
   useEffect(() => {
     setStatus({
-      notificationType:
-        'downloading ... depending on your Internet connection and file size, this might take several minutes',
+      notificationType: '',
       text: '',
     });
     _downloadAndZip(
       dicomWebClient,
       StudyInstanceUID,
-      (notificationType, text) =>
-        setStatus({ notificationType: notificationType, text: text })
+      (notificationType, text) => {
+        setStatus({ notificationType: notificationType, text: text });
+        if (notificationType === 'downloading') setSize(text);
+        if (notificationType === 'zipping') setNumberOfFiles(text);
+      }
     )
       .then(url => {
         OHIF.log.info('Files successfully compressed:', url);
@@ -34,10 +38,10 @@ const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
         });
       })
       .catch(error => {
-        OHIF.log.error('Error downloading study...', error);
+        OHIF.log.error('Error downloading study...', error.message);
         setStatus({
-          notificationType: 'Error downloading study...' + error,
-          text: '',
+          notificationType: 'Error',
+          text: error.message,
         });
       });
   }, [StudyInstanceUID, dicomWebClient]);
@@ -45,20 +49,38 @@ const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
   let info;
   switch (status.notificationType) {
     case 'downloading':
-      info = 'bytes transferred: ' + status.text;
+      info = 'Transferred: ' + status.text;
       break;
     case 'zipping':
       info = 'DICOM files: ' + status.text;
       break;
     case 'successfully saved':
       info = (
-        <button type="button" className="btn btn-primary" onClick={onClose}>
-          Ok
-        </button>
+        <span>
+          <p>{'Size: ' + size}</p>
+          <p>{'DICOM images: ' + numberOfFiles}</p>
+          <p>
+            <button type="button" className="btn btn-primary" onClick={onClose}>
+              Ok
+            </button>
+          </p>
+        </span>
+      );
+      break;
+    case 'Error':
+      info = (
+        <span>
+          <p>{status.text}</p>
+          <p>
+            <button type="button" className="btn btn-danger" onClick={onClose}>
+              Ok
+            </button>
+          </p>
+        </span>
       );
       break;
     default:
-      info = '';
+      info = status.text;
   }
   return (
     <div className="download-study-modal-container">
