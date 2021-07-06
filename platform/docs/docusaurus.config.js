@@ -77,13 +77,23 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
       '@docusaurus/plugin-client-redirects',
       {
         fromExtensions: ['html'],
-        createRedirects: function(path) {
-          // redirect to /docs from /docs/introduction,
-          // as introduction has been made the home doc
-          if (allDocHomesPaths.includes(path)) {
-            return [`${path}/introduction`];
+        redirects: [
+          {
+            // we need this for https://cloud.google.com/healthcare/docs/how-tos/dicom-viewers
+            to: "/deployment/recipes/google-cloud-healthcare",
+            from: ['/connecting-to-image-archives/google-cloud-healthcare', '/connecting-to-image-archives/google-cloud-healthcare.html']
           }
-        },
+        ]
+        // createRedirects: function(path) {
+        //   // redirect to /docs from /docs/introduction,
+        //   // as introduction has been made the home doc
+        //   // if (allDocHomesPaths.includes(path)) {
+        //   //   return [`${path}/introduction`];
+        //   // }
+        //   if (path.includes("/connecting-to-image-archives/google-cloud-healthcare")) {
+        //     return ["/deployment/recipes/google-cloud-healthcare"]
+        //   }
+        // },
         // redirects: [
         // {
         //   from: ['/'],
@@ -113,67 +123,67 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         steps: 2, // the max number of images generated between min and max (inclusive)
       },
     ],
-    [
-      '@docusaurus/plugin-pwa',
-      {
-        debug: isDeployPreview,
-        offlineModeActivationStrategies: [
-          'appInstalled',
-          'standalone',
-          'queryString',
-        ],
-        // swRegister: false,
-        // swCustom: path.resolve(__dirname, 'src/sw.js'),
-        pwaHead: [
-          {
-            tagName: 'link',
-            rel: 'icon',
-            href: 'img/docusaurus.png',
-          },
-          {
-            tagName: 'link',
-            rel: 'manifest',
-            href: `${baseUrl}manifest.json`,
-          },
-          {
-            tagName: 'meta',
-            name: 'theme-color',
-            content: 'rgb(37, 194, 160)',
-          },
-          {
-            tagName: 'meta',
-            name: 'apple-mobile-web-app-capable',
-            content: 'yes',
-          },
-          {
-            tagName: 'meta',
-            name: 'apple-mobile-web-app-status-bar-style',
-            content: '#000',
-          },
-          {
-            tagName: 'link',
-            rel: 'apple-touch-icon',
-            href: 'img/docusaurus.png',
-          },
-          {
-            tagName: 'link',
-            rel: 'mask-icon',
-            href: 'img/docusaurus.svg',
-            color: 'rgb(62, 204, 94)',
-          },
-          {
-            tagName: 'meta',
-            name: 'msapplication-TileImage',
-            content: 'img/docusaurus.png',
-          },
-          {
-            tagName: 'meta',
-            name: 'msapplication-TileColor',
-            content: '#000',
-          },
-        ],
-      },
-    ],
+    // [
+    //   '@docusaurus/plugin-pwa',
+    //   {
+    //     debug: isDeployPreview,
+    //     offlineModeActivationStrategies: [
+    //       'appInstalled',
+    //       'standalone',
+    //       'queryString',
+    //     ],
+    //     // swRegister: false,
+    //     // swCustom: path.resolve(__dirname, 'src/sw.js'),
+    //     pwaHead: [
+    //       {
+    //         tagName: 'link',
+    //         rel: 'icon',
+    //         href: 'img/docusaurus.png',
+    //       },
+    //       {
+    //         tagName: 'link',
+    //         rel: 'manifest',
+    //         href: `${baseUrl}manifest.json`,
+    //       },
+    //       {
+    //         tagName: 'meta',
+    //         name: 'theme-color',
+    //         content: 'rgb(37, 194, 160)',
+    //       },
+    //       {
+    //         tagName: 'meta',
+    //         name: 'apple-mobile-web-app-capable',
+    //         content: 'yes',
+    //       },
+    //       {
+    //         tagName: 'meta',
+    //         name: 'apple-mobile-web-app-status-bar-style',
+    //         content: '#000',
+    //       },
+    //       {
+    //         tagName: 'link',
+    //         rel: 'apple-touch-icon',
+    //         href: 'img/docusaurus.png',
+    //       },
+    //       {
+    //         tagName: 'link',
+    //         rel: 'mask-icon',
+    //         href: 'img/docusaurus.svg',
+    //         color: 'rgb(62, 204, 94)',
+    //       },
+    //       {
+    //         tagName: 'meta',
+    //         name: 'msapplication-TileImage',
+    //         content: 'img/docusaurus.png',
+    //       },
+    //       {
+    //         tagName: 'meta',
+    //         name: 'msapplication-TileColor',
+    //         content: '#000',
+    //       },
+    //     ],
+    //   },
+    // ],
   ],
   presets: [
     [
@@ -265,8 +275,8 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         srcDark: 'img/ohif-logo.svg',
       },
       items: [
-        { href: 'https://ohif.org/get-started', label: 'Get Started', target: '_self', position: 'left' },
-        { href: 'https://ohif.org/examples', label: 'Examples', target: '_self', position: 'left' },
+        { to: 'https://ohif.org/get-started', label: 'Get Started', target: '_self', position: 'left' },
+        { to: 'https://ohif.org/examples', label: 'Examples', target: '_self', position: 'left' },
         {
           position: 'left',
           to: '/',
@@ -274,7 +284,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           docId: 'Introduction',
           label: 'Docs',
         },
-        { href: 'https://ohif.org/community', label: 'Community', target: '_self', position: 'left' },
+        { to: 'https://ohif.org/community', label: 'Community', target: '_self', position: 'left' },
         { to: 'next/help', activeBaseRegex: '(^/help$)|(/next/help)', label: 'Help', position: 'right' },
         // { to: 'https://react.ohif.org/', label: 'UI Component Library', position: 'left' },
         // {to: 'showcase', label: 'Showcase', position: 'left'},
@@ -295,7 +305,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           ],
         },
         {
-          href: 'https://github.com/OHIF/Viewers',
+          to: 'https://github.com/OHIF/Viewers',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub Repository'
@@ -340,7 +350,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
             },
             {
               label: 'Discussion board',
-              href: 'https://community.ohif.org/',
+              to: 'https://community.ohif.org/',
             },
             {
               label: 'Help',
@@ -353,15 +363,15 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           items: [
             {
               label: 'Donate',
-              href: 'https://google.com/',
+              to: 'https://google.com/',
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/OHIF/Viewers',
+              to: 'https://github.com/OHIF/Viewers',
             },
             {
               label: 'Twitter',
-              href: 'https://twitter.com/OHIFviewer',
+              to: 'https://twitter.com/OHIFviewer',
             },
             // {
             //   html: `
