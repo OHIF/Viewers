@@ -11,6 +11,8 @@ import {
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
+import { hotkeys } from '@ohif/core';
+
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
@@ -115,7 +117,11 @@ function ViewerLayout({
             currentLanguage: currentLanguage(),
             availableLanguages,
             defaultLanguage,
-            onCancel: hide,
+            onCancel: () => {
+              hotkeys.stopRecord();
+              hotkeys.unpause();
+              hide();
+            },
             onSubmit: ({ hotkeyDefinitions, language }) => {
               i18n.changeLanguage(language.value);
               hotkeysManager.setHotkeys(hotkeyDefinitions);

@@ -35,9 +35,10 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
 
     setErrors(prevState => {
       const errors = { ...prevState, [id]: error };
-      onChange(id, definition, errors);
       return errors;
     });
+
+    onChange(id, definition, { ...errors, [id]: error });
   };
 
   return (
@@ -84,7 +85,7 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
                             onChange={onChangeHandler}
                             className='text-lg h-8'
                           />
-                          {error && <span className='p-2 text-red-600 text-sm'>{error}</span>}
+                          {error && <span className='p-2 text-left text-red-600 text-sm'>{error}</span>}
                         </div>
                       </div>
                     </div>
