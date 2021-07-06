@@ -18,9 +18,8 @@ function StudyListPaginationFunction({
     onChangePage(toPage);
   };
 
-  const ranges = this.ranges;
-  // TODO - consider using
-  // const ranges = extensibility.ranges || DEFAULT_RANGES;
+  extensibility = extensibility || StudyListPaginationLevel;
+  const ranges = extensibility.ranges;
   const [selectedRange, setSelectedRange] = useState(
     ranges.find(r => r.value === perPage)
   );
@@ -106,7 +105,6 @@ const StudyListPaginationSettings = {
 };
 
 const StudyListPaginationLevel = ExtensibilityService.addLevel("StudyListPagination", StudyListPaginationSettings);
-
 
 const StudyListPagination = StudyListPaginationFunction.bind(StudyListPaginationLevel);
 
