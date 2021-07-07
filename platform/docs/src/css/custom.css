@@ -203,6 +203,11 @@ article header h3 {
   --ifm-alert-color: var(--ifm-font-color-base);
 }
 
+.button--secondary:not(.button--outline) {
+  --ifm-button-background-color: #e8f7f7;
+}
+
+
 .admonition-icon svg {
   fill: #0151d9;
 }
@@ -218,4 +223,21 @@ article header h3 {
 
 .DocSearch {
   display: none;
+}
+
+
+/* Footer logo MGH */
+
+@media (max-width: 1200px) {
+  #mgh-logo {
+    margin-right: 100px;
+    width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  #mgh-logo {
+    margin-right: 10px;
+    width: 300px;
+  }
 }

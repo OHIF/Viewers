@@ -322,7 +322,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
             {
               html: `
                 <a href="https://viewer.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-                  <img src= 'https://rally.partners.org/study/image/A3C43B37-4BE8-4950-AB00-42B19677D9D2' style="margin-right: 100px;" alt="MGH" />
+                  <img src= 'https://rally.partners.org/study/image/A3C43B37-4BE8-4950-AB00-42B19677D9D2' id="mgh-logo" alt="MGH" />
                 </a>
               `,
             },
