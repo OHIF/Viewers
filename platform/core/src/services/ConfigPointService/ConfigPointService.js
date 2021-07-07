@@ -183,4 +183,4 @@ export default ConfigPointService;
 window.ConfigPointService = ConfigPointService;
 // This allows, for example, the following extension to the pagination service
 // Just run this in the console.
-// ConfigPointService.extendConfig({StudyListPagination: {extraItems, {ranges:[null,{label:'Twenty Five'},null,{value:'10', label:'Ten'}]}}});
+// ConfigPointService.extendConfig({StudyListPagination: {extraItems: {ranges:[null,{label:'Twenty Five'},null,{value:'10', label:'Ten'}]}}});
