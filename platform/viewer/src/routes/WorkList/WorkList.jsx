@@ -231,7 +231,7 @@ function WorkList({
   const rollingPageNumber = (pageNumber - 1) % rollingPageNumberMod;
   const offset = resultsPerPage * rollingPageNumber;
   const offsetAndTake = offset + resultsPerPage;
-  const tableDataSource = sortedStudies.map((study, key) => StudyListConfig({ study, key, expandedRows, appConfig, t, setExpandedRows, seriesInStudiesMap }));
+  const tableDataSource = sortedStudies.map((study, key) => StudyListConfig({ rowData: study, key, expandedRows, appConfig, t, setExpandedRows, seriesInStudiesMap }));
 
   const hasStudies = numOfStudies > 0;
 
