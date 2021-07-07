@@ -5,6 +5,23 @@ window.config = {
   showStudyList: true,
   filterQueryParam: false,
   disableServersCache: false,
+  displaySeriesProgress: false,
+  stackPrefetch: {
+    enabled: true,
+    maxImagesToPrefetch: Infinity,
+    preserveExistingPool: false,
+    maxSimultaneousRequests: 20,
+  },
+  studyPrefetcher: {
+    enabled: false,
+    order: 'closest',
+    displaySetCount: 1,
+    requestType: 'prefetch',
+    preventCache: false,
+    prefetchDisplaySetsTimeout: 300,
+    displayProgress: false,
+    includeActiveDisplaySet: false,
+  },
   servers: {
     dicomWeb: [
       {

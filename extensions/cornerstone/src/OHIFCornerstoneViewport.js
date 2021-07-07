@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import OHIFCornerstoneViewportOverlay from './components/OHIFCornerstoneViewportOverlay'
+import OHIFCornerstoneViewportOverlay from './components/OHIFCornerstoneViewportOverlay';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
@@ -23,6 +23,7 @@ class OHIFCornerstoneViewport extends Component {
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
     customProps: PropTypes.object,
+    stackPrefetch: PropTypes.object,
   };
 
   static id = 'OHIFCornerstoneViewport';
@@ -232,7 +233,12 @@ class OHIFCornerstoneViewport extends Component {
     };
 
     const warningsOverlay = props => {
-      return <OHIFCornerstoneViewportOverlay {...props} inconsistencyWarnings={inconsistencyWarnings} />
+      return (
+        <OHIFCornerstoneViewportOverlay
+          {...props}
+          inconsistencyWarnings={inconsistencyWarnings}
+        />
+      );
     };
 
     return (
@@ -244,6 +250,7 @@ class OHIFCornerstoneViewport extends Component {
           onNewImageDebounced={newImageHandler}
           onNewImageDebounceTime={300}
           viewportOverlayComponent={warningsOverlay}
+          stackPrefetch={this.props.stackPrefetch}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}

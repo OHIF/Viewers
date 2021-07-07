@@ -37,7 +37,14 @@ export default function init({ servicesManager, configuration }) {
     }
   };
 
-  const { csToolsConfig } = configuration;
+  const {
+    csToolsConfig,
+    stackPrefetch = {
+      maxImagesToPrefetch: Infinity,
+      preserveExistingPool: false,
+      maxSimultaneousRequests: 20,
+    },
+  } = configuration;
   const metadataProvider = OHIF.cornerstone.metadataProvider;
 
   cornerstone.metaData.addProvider(
@@ -52,7 +59,7 @@ export default function init({ servicesManager, configuration }) {
     autoResizeViewports: false,
   };
 
-  initCornerstoneTools(defaultCsToolsConfig);
+  initCornerstoneTools({ ...defaultCsToolsConfig, ...stackPrefetch });
 
   const toolsGroupedByType = {
     touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],

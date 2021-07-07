@@ -1,0 +1,15 @@
+.StudyPrefetcher {
+  height: 5px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: var(--default-color);
+}
+
+.StudyPrefetcher .item {
+  height: 5px;
+}
+
+.StudyPrefetcher .item.cached {
+  background-color: black;
+}
