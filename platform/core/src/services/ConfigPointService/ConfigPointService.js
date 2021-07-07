@@ -8,10 +8,21 @@ let _configPoints = {};
 /** Source types are the original/base type, and are unique by level/name */
 export const SOURCE_TYPE = 'source';
 export const USER_SETTING_TYPE = 'userSetting';
-const extensibilityOp = (op, args) => ({ _extensibilityOp: op, ...args });
-export const REPLACE = extensibilityOp("replace");
-export const REMOVE = extensibilityOp('remove');
-export const INSERT = extensibilityOp('insert');
+const extendOp = (op,) => ({ _extendOp: op });
+export const ConfigPointOp = {
+  insertAt: (position, value) => ({ ...INSERT, position, value }),
+};
+
+const performInsert = (sVal, base, bKey, context) => {
+  if (sVal.position != null) {
+    base.splice(sVal.position, 0, mergeCreate(sVal.value, context));
+  }
+  return base;
+};
+
+const REPLACE = extendOp("replace");
+const REMOVE = extendOp('remove');
+const INSERT = extendOp('insert');
 
 function isPrimitive(val) {
   const tof = typeof (val);
@@ -19,7 +30,13 @@ function isPrimitive(val) {
 }
 
 /** Creates an object of the same type as src, as a child of parent */
-export const mergeCreate = function (src) {
+export const mergeCreate = function (src, context) {
+  const reference = src && src._reference;
+  if (reference) {
+    const refValue = context && context[reference];
+    return refValue;
+  }
+
   if (isPrimitive(src)) {
     return src;
   }
@@ -33,48 +50,44 @@ export const mergeCreate = function (src) {
     // };
   }
   if (tof == 'object') {
-    return mergeObject(isArray(src) ? [] : {}, src);
+    return mergeObject(isArray(src) ? [] : {}, src, context);
   }
   console.warn("Unknown type", tof, "of value", src);
   throw `The value ${src} of type ${tof} isn't a known type for merging.`;
 }
 
-export function mergeArray(dest, src) {
-  return mergeObject(dest, src);
+export function mergeArray(dest, src, context) {
+  return mergeObject(dest, src, context);
 }
 
-function mergeKey(base, key) {
+function mergeKey(base, key, context) {
   return key;
 }
 
 function isRemove(src) {
-  return src && src._extensibilityOp == "remove";
+  return src && src._extendOp == "remove";
 }
 
 function isReplace(src) {
-  return src && src._extensibilityOp == "replace";
+  return src && src._extendOp == "replace";
 }
 
 function isInsert(src) {
-  return src && src._extensibilityOp == "insert";
+  return src && src._extendOp == "insert";
 }
 
 function isArray(src) {
   return typeof (src) == 'object' && typeof (src.length) == 'number';
 }
 
-export function mergeAssign(base, src, key) {
-  const bKey = mergeKey(base, key);
+export function mergeAssign(base, src, key, context) {
+  const bKey = mergeKey(base, key, context);
   const bVal = base[bKey];
-  const sVal = src[key];
+  let sVal = src[key];
   if (isArray(bVal)) {
     if (sVal == null) return;
     if (isRemove(sVal)) {
       base.splice(key, 1);
-      return base;
-    }
-    if (isInsert(sVal)) {
-      base.splice(bKey, 0, mergeCreate(sVal));
       return base;
     }
   } else {
@@ -83,24 +96,33 @@ export function mergeAssign(base, src, key) {
       return;
     }
   }
+
+  if (isInsert(sVal)) {
+    return performInsert(sVal, base, bKey, context);
+  }
+
+
   if (isPrimitive(bVal)) {
-    return base[bKey] = mergeCreate(sVal);
+    return base[bKey] = mergeCreate(sVal, context);
   }
+
   if (isReplace(sVal)) {
-    return base[bKey] = mergeCreate(sVal);
+    return base[bKey] = mergeCreate(sVal, context);
   }
-  return mergeObject(bVal, sVal);
+
+  return mergeObject(bVal, sVal, context);
 }
 
-export function mergeObject(base, src) {
+export function mergeObject(base, src, context) {
   for (const key in src) {
-    mergeAssign(base, src, key);
+    mergeAssign(base, src, key, context);
   }
   return base;
 }
 
 const ConfigPointFunctionality = {
-  extendConfig(name, data, allowUpdate) {
+  extendConfig(data, allowUpdate) {
+    const name = data.name && ("_order" + this._extensions._order.length);
     const toRemove = this._extensions[name];
     if (toRemove) {
       if (allowUpdate) {
@@ -112,13 +134,15 @@ const ConfigPointFunctionality = {
     this._extensions[name] = data;
     this._extensions._order.push(data);
     this.applyExtensions();
+    return this;
   },
 
   applyExtensions() {
-    mergeObject(this, this._configBase);
+    const baseContext = this._configBase && this._configBase.context;
+    mergeObject(this, this._configBase, baseContext);
     for (const item of this._extensions._order) {
       console.warn("Merge item ", item);
-      mergeObject(this, item);
+      mergeObject(this, item, this.context);
     }
   },
 };
@@ -130,34 +154,46 @@ const BaseImplementation = {
    * The ordering of when addConfig is called to provide configBase doesn't matter much.
    */
   addConfig(configName, configBase) {
+    if (typeof (configBase) === 'string') {
+      if (configBase === configName) throw `The configuration point ${configName} uses itself as a base`;
+      configBase = this.addConfig(configBase);
+    }
     let config = _configPoints[configName];
     if (!config) {
-      _configPoints[configName] = config = Object.assign({}, ConfigPointFunctionality, configBase);
-      config._levelBase = configBase;
+      _configPoints[configName] = config = Object.assign({}, ConfigPointFunctionality);
+      config._configBase = configBase;
       config._extensions = { _order: [] };
     } else if (configBase) {
       Object.assign(config, configBase);
       config._configBase = configBase;
     }
+    if (configBase) {
+      config.applyExtensions();
+    }
     return config;
   },
 
-  /** Extend the overall configuration on each configuration point referenced,
-   * adding the specified child items.
+  /** Registers the specified configuration items.
+   * The format of config is an array of extension items.
+   * Each item has a configName for the top level config to change,
+   * and then has configBase to set the base configuration.
+   * The base
+   * extension, with an extension item or
+   * basedOn, to base the extension on another existing configuration.
    */
-  extendConfig(config) {
-    for (const configName in config) {
-      if (!this.hasConfig(configName)) {
-        console.warn(`Unknown ConfigPoint  ${configName}`);
-        continue;
+  register(config) {
+    let ret = {};
+    for (const configItem of config) {
+      const { configName, configBase, extension, basedOn } = configItem;
+      if (configBase) {
+        ret[configName] = this.addConfig(configName, configBase);
       }
-      const configPoint = this.addConfig(configName);
-      const extendItems = config[configName];
-      for (const itemName in extendItems) {
-        const item = extendItems[itemName];
-        configPoint.extendConfig(itemName, item);
+      if (extension) {
+        ret[configName] = this.addConfig(configName).extendConfig(extension);
       }
     }
+    console.warn("Returning", ret);
+    return ret;
   },
 
   hasConfig(configName) {
@@ -183,4 +219,5 @@ export default ConfigPointService;
 window.ConfigPointService = ConfigPointService;
 // This allows, for example, the following extension to the pagination service
 // Just run this in the console.
-// ConfigPointService.extendConfig({StudyListPagination: {extraItems: {ranges:[null,{label:'Twenty Five'},null,{value:'10', label:'Ten'}]}}});
+//
+// ConfigPointService.register([  {configName: 'StudyListPagination',extension: {extraItems: { ranges: [null, { label: 'Twenty Five' }, null, { value: '10', label: 'Ten' }] },}});

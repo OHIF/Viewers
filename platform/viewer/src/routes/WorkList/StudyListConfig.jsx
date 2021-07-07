@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
+import { ConfigPointService, ConfigPointOp } from '../../../../core/src/services/ConfigPointService/ConfigPointService';
 
 import {
   Icon,
@@ -12,7 +13,8 @@ import {
 
 import i18n from '@ohif/i18n';
 
-export default function StudyListConfig({ rowData, key, expandedRows, seriesInStudiesMap, appConfig, t, setExpandedRows }) {
+export default function StudyListConfig(props) {
+  const { rowData, key, expandedRows, seriesInStudiesMap, appConfig, t, setExpandedRows } = props;
   const rowKey = key + 1;
   const isExpanded = expandedRows.some(k => k === rowKey);
   const {
@@ -21,8 +23,6 @@ export default function StudyListConfig({ rowData, key, expandedRows, seriesInSt
     modalities,
     instances,
     description,
-    mrn,
-    patientName,
     date,
     time,
   } = rowData;
@@ -34,67 +34,51 @@ export default function StudyListConfig({ rowData, key, expandedRows, seriesInSt
     time &&
     moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
     moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+  const configPoint = props.configPoint || StudyListConfigPoint;
 
+  console.warn("configPoint=", configPoint);
+  const configPointRows = configPoint.tableColumns.map((column, colKey) => ({ ...column, content: column.content({ props, rowData, column }) }));
   return {
-    row: [
-      {
-        key: 'patientName',
-        content: patientName ? (
-          <TooltipClipboard>{patientName}</TooltipClipboard>
-        ) : (
-          <span className="text-gray-700">(Empty)</span>
-        ),
-        gridCol: 4,
-      },
-      {
-        key: 'mrn',
-        content: <TooltipClipboard>{mrn}</TooltipClipboard>,
-        gridCol: 3,
-      },
-      {
-        key: 'studyDate',
-        content: (
-          <div>
-            {studyDate && <span className="mr-4">{studyDate}</span>}
-            {studyTime && <span>{studyTime}</span>}
-          </div>
-        ),
-        title: `${studyDate || ''} ${studyTime || ''}`,
-        gridCol: 5,
-      },
-      {
-        key: 'description',
-        content: <TooltipClipboard>{description}</TooltipClipboard>,
-        gridCol: 4,
-      },
-      {
-        key: 'modality',
-        content: modalities,
-        title: modalities,
-        gridCol: 3,
-      },
-      {
-        key: 'accession',
-        content: <TooltipClipboard>{accession}</TooltipClipboard>,
-        gridCol: 3,
-      },
-      {
-        key: 'instances',
-        content: (
-          <>
-            <Icon
-              name="group-layers"
-              className={classnames('inline-flex mr-2 w-4', {
-                'text-primary-active': isExpanded,
-                'text-secondary-light': !isExpanded,
-              })}
-            />
-            {instances}
-          </>
-        ),
-        title: (instances || 0).toString(),
-        gridCol: 4,
-      },
+    row: [...configPointRows,
+    {
+      key: 'studyDate',
+      content: (
+        <div>
+          {studyDate && <span className="mr-4">{studyDate}</span>}
+          {studyTime && <span>{studyTime}</span>}
+        </div>
+      ),
+      title: `${studyDate || ''} ${studyTime || ''}`,
+      gridCol: 5,
+    },
+    {
+      key: 'modality',
+      content: modalities,
+      title: modalities,
+      gridCol: 3,
+    },
+    {
+      key: 'accession',
+      content: <TooltipClipboard>{accession}</TooltipClipboard>,
+      gridCol: 3,
+    },
+    {
+      key: 'instances',
+      content: (
+        <>
+          <Icon
+            name="group-layers"
+            className={classnames('inline-flex mr-2 w-4', {
+              'text-primary-active': isExpanded,
+              'text-secondary-light': !isExpanded,
+            })}
+          />
+          {instances}
+        </>
+      ),
+      title: (instances || 0).toString(),
+      gridCol: 4,
+    },
     ],
     expandedContent: (
       <StudyListExpandedRow
@@ -154,3 +138,47 @@ export default function StudyListConfig({ rowData, key, expandedRows, seriesInSt
     isExpanded,
   };
 }
+
+const tooltipClipboardFunction = ({ rowData, column }) => (<TooltipClipboard>{rowData[column.key]}</TooltipClipboard>);
+
+export const { StudyListConfigPoint, PatientListConfigPoint } = ConfigPointService.register([
+  {
+    configName: 'PatientListConfigPoint',
+    configBase: {
+      context: {
+        tooltipClipboardFunction,
+      },
+      tableColumns: [
+        {
+          key: 'patientName',
+          content: ({ rowData }) => rowData.patientName ? (
+            <TooltipClipboard>{rowData.patientName}</TooltipClipboard>
+          ) : (
+            <span className="text-gray-700">(Empty)</span>
+          ),
+          gridCol: 4,
+        },
+        {
+          key: 'mrn',
+          content: tooltipClipboardFunction,
+          gridCol: 3,
+        },
+      ],
+    },
+  },
+  {
+    configName: 'StudyListConfigPoint',
+    configBase: 'PatientListConfigPoint',
+    extension: {
+      tableColumns: [
+        ConfigPointOp.insertAt(3, {
+          key: 'description',
+          // This is a way to reference an exsiting function, as long
+          // as it is available in the context.  This may still change TBD
+          content: { _reference: 'tooltipClipboardFunction' },
+          gridCol: 4,
+        }),
+      ],
+    },
+  },
+]);

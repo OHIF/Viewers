@@ -1,10 +1,10 @@
-import { ConfigPointService, mergeAssign, mergeCreate, mergeObject } from './ConfigPointService.js';
+import { ConfigPointService, mergeAssign, mergeCreate, mergeObject, ConfigPointOp } from './ConfigPointService.js';
 import log from '../../log.js';
 
 jest.mock('../../log.js');
 
 describe('ConfigPointService.js', () => {
-  const CONFIG_NAME = 'testLevel';
+  const CONFIG_NAME = 'testConfigPoint';
   const BASE_CONFIG = {
     a: '1',
     list: [1, 2, 3],
@@ -13,7 +13,9 @@ describe('ConfigPointService.js', () => {
     sumFunc: (a, b) => a + b,
   };
 
+  const MODIFY_NAME = "modify";
   const MODIFY_CONFIG = {
+    name: MODIFY_NAME,
     a: '2',
     // Default operation is to merge/replace item by item
     list: ["one", "two", "three", "four"],
@@ -37,15 +39,13 @@ describe('ConfigPointService.js', () => {
   };
 
 
-  const MODIFY_NAME = "modify";
-
   beforeEach(() => {
     ConfigPointService.clear();
     log.warn.mockClear();
     jest.clearAllMocks();
   });
 
-  describe('mergeCreate', () => {
+  describe('mergeCreate()', () => {
     it('creates primitives', () => {
       const aNumber = mergeCreate(123);
       expect(aNumber).toBe(123);
@@ -79,17 +79,19 @@ describe('ConfigPointService.js', () => {
       expect(aCopy.list).toEqual([1, 2, 3]);
       expect(aCopy.sumFunc(5, 6)).toBe(11);
     });
-  });
 
-  describe('mergeObject', () => {
-    it('Merges simple values', () => {
-      let dest;
+    it('inserts elements', () => {
+      const arr = [1, 2, 3];
+      const base = { arr };
+      const inserts = { arr: [ConfigPointOp.insertAt(1, 1.5)] };
+      let created = mergeCreate(base);
+      mergeObject(created, inserts);
+      expect(created.arr).toEqual([1, 1.5, 2, 3]);
     });
 
   });
 
   describe('addConfig()', () => {
-
     it('Adds an extension level', () => {
       const config = ConfigPointService.addConfig(CONFIG_NAME, BASE_CONFIG);
       expect(config).toMatchObject(BASE_CONFIG);
@@ -99,8 +101,43 @@ describe('ConfigPointService.js', () => {
   describe('extendConfig()', () => {
     it('updates the config data', () => {
       const level = ConfigPointService.addConfig(CONFIG_NAME, BASE_CONFIG);
-      level.extendConfig(MODIFY_NAME, MODIFY_CONFIG);
+      level.extendConfig(MODIFY_CONFIG);
       expect(level).toMatchObject(MODIFY_MATCH);
     });
   });
+
+  describe('register()', () => {
+    it('creates a base configuration', () => {
+      const { testConfigPoint } = ConfigPointService.register([{
+        configName: CONFIG_NAME,
+        configBase: BASE_CONFIG,
+      }]);
+      expect(testConfigPoint).toMatchObject(BASE_CONFIG);
+    });
+
+    it('creates and updates', () => {
+      const { testConfigPoint } = ConfigPointService.register([{
+        configName: CONFIG_NAME,
+        configBase: BASE_CONFIG,
+        extension: MODIFY_CONFIG,
+      }]);
+      expect(testConfigPoint).toMatchObject(MODIFY_MATCH);
+    });
+
+    it('references context value', () => {
+      const multiply = (a, b) => a * b;
+      const registered = ConfigPointService.register([{
+        configName: CONFIG_NAME,
+        configBase: {
+          context: { multiply },
+          multiply: { _reference: 'multiply' },
+        },
+        extension: MODIFY_CONFIG,
+      }]);
+      const { testConfigPoint } = registered;
+      expect(testConfigPoint.multiply).toBe(multiply);
+    });
+
+  });
+
 });
