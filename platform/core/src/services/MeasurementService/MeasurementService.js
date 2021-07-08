@@ -1,3 +1,4 @@
+/** Internal imports */
 import log from '../../log';
 import guid from '../../utils/guid';
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
@@ -581,10 +582,27 @@ class MeasurementService {
 
     /* Criteria Matching */
     return sourceMappingsByDefinition.find(({ matchingCriteria }) => {
-      return (
+      if (matchingCriteria.type !== measurement.type) {
+        return false;
+      }
+
+      if (
+        matchingCriteria.properties &&
+        matchingCriteria.properties.every(name =>
+          measurement.hasOwnProperty(name)
+        )
+      ) {
+        return true;
+      }
+
+      if (
         measurement.points &&
         measurement.points.length === matchingCriteria.points
-      );
+      ) {
+        return true;
+      }
+
+      return false;
     });
   }
 

@@ -30,6 +30,7 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
   'SRBidirectional',
   'SRArrowAnnotate',
   'SREllipticalRoi',
+  'SRRectangleRoi',
 ];
 
 const _refreshViewports = () =>
@@ -319,6 +320,8 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     Length,
     Bidirectional,
     EllipticalRoi,
+    RectangleRoi,
+    FreehandRoi,
     ArrowAnnotate,
   } = measurementServiceMappingsFactory(MeasurementService, DisplaySetService);
   const csToolsVer4MeasurementSource = MeasurementService.createSource(
@@ -349,6 +352,22 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     EllipticalRoi.matchingCriteria,
     EllipticalRoi.toAnnotation,
     EllipticalRoi.toMeasurement
+  );
+
+  MeasurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'RectangleRoi',
+    RectangleRoi.matchingCriteria,
+    RectangleRoi.toAnnotation,
+    RectangleRoi.toMeasurement
+  );
+
+  MeasurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'FreehandRoi',
+    FreehandRoi.matchingCriteria,
+    FreehandRoi.toAnnotation,
+    FreehandRoi.toMeasurement
   );
 
   MeasurementService.addMapping(
@@ -520,6 +539,8 @@ const _connectMeasurementServiceToTools = (
   const TOOL_TYPE_TO_VALUE_TYPE = {
     Length: POLYLINE,
     EllipticalRoi: ELLIPSE,
+    RectangleRoi: POLYLINE,
+    FreehandRoi: POLYLINE,
     Bidirectional: BIDIRECTIONAL,
     ArrowAnnotate: POINT,
   };
@@ -527,6 +548,8 @@ const _connectMeasurementServiceToTools = (
   const VALUE_TYPE_TO_TOOL_TYPE = {
     [POLYLINE]: 'Length',
     [ELLIPSE]: 'EllipticalRoi',
+    [POLYLINE]: 'RectangleRoi',
+    [POLYLINE]: 'FreehandRoi',
     [BIDIRECTIONAL]: 'Bidirectional',
     [POINT]: 'ArrowAnnotate',
   };

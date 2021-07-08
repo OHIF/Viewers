@@ -1,3 +1,4 @@
+/** Internal imports */
 import hydrateStructuredReport from './_hydrateStructuredReport.js';
 
 const RESPONSE = {

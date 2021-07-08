@@ -22,7 +22,7 @@ function _createButton(type, id, icon, label, commandName, commandOptions) {
     label,
     type,
     commandName,
-    commandOptions
+    commandOptions,
   };
 }
 
@@ -229,6 +229,9 @@ export default [
           undefined,
           { toolName: 'RectangleRoi' }
         ),
+        _createToolButton('Freehand', 'tool-move', 'Freehand', undefined, {
+          toolName: 'FreehandRoi',
+        }),
       ],
     },
   },

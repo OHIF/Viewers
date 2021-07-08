@@ -1,8 +1,11 @@
 import React from 'react';
+
+/** Internal imports */
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import onModeEnter from './onModeEnter';
 import id from './id.js';
 import init from './init';
+import getToolAlias from './tools/utils/getToolAlias';
 
 const Component = React.lazy(() => {
   return import('./viewports/OHIFCornerstoneSRViewport');
@@ -70,7 +73,7 @@ export default {
             }
 
             // Set same tool or alt tool
-            const toolAlias = _getToolAlias(toolName);
+            const toolAlias = getToolAlias(toolName);
 
             cornerstoneTools.setToolActiveForElement(element, toolAlias, {
               mouseButtonMask: 1,
@@ -86,24 +89,3 @@ export default {
   getSopClassHandlerModule,
   onModeEnter,
 };
-
-function _getToolAlias(toolName) {
-  let toolAlias = toolName;
-
-  switch (toolName) {
-    case 'Length':
-      toolAlias = 'SRLength';
-      break;
-    case 'Bidirectional':
-      toolAlias = 'SRBidirectional';
-      break;
-    case 'ArrowAnnotate':
-      toolAlias = 'SRArrowAnnotate';
-      break;
-    case 'EllipticalRoi':
-      toolAlias = 'SREllipticalRoi';
-      break;
-  }
-
-  return toolAlias;
-}

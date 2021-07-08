@@ -22,6 +22,8 @@ export default function getCornerstoneToolStateToMeasurementSchema(
     const TOOL_TYPE_TO_VALUE_TYPE = {
       Length: POLYLINE,
       EllipticalRoi: ELLIPSE,
+      RectangleRoi: POLYLINE,
+      FreehandRoi: POLYLINE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
     };
@@ -55,6 +57,28 @@ export default function getCornerstoneToolStateToMeasurementSchema(
     case 'EllipticalRoi':
       return measurementData =>
         EllipticalRoi(
+          measurementData,
+          SOPInstanceUID,
+          FrameOfReferenceUID,
+          SeriesInstanceUID,
+          StudyInstanceUID,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
+    case 'RectangleRoi':
+      return measurementData =>
+        RectangleRoi(
+          measurementData,
+          SOPInstanceUID,
+          FrameOfReferenceUID,
+          SeriesInstanceUID,
+          StudyInstanceUID,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
+    case 'FreehandRoi':
+      return measurementData =>
+        FreehandRoi(
           measurementData,
           SOPInstanceUID,
           FrameOfReferenceUID,

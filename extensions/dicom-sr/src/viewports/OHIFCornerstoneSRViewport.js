@@ -3,27 +3,27 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
-import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
-import ViewportOverlay from './ViewportOverlay';
+import OHIF, { utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
+
+/** Internal imports */
+import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
+import ViewportOverlay from './ViewportOverlay';
 import TOOL_NAMES from './../constants/toolNames';
-import { adapters } from 'dcmjs';
 import id from './../id';
+import getToolAlias from '../tools/utils/getToolAlias';
 
 const { formatDate } = utils;
-const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
-const globalImageIdSpecificToolStateManager =
-  cornerstoneTools.globalImageIdSpecificToolStateManager;
-
-const { StackManager, guid } = OHIF.utils;
-
+const { StackManager } = OHIF.utils;
 const MEASUREMENT_TRACKING_EXTENSION_ID = 'org.ohif.measurement-tracking';
+
+/** Cornerstone 3rd party dev kit imports */
+const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 function OHIFCornerstoneSRViewport({
   children,
@@ -33,11 +33,7 @@ function OHIFCornerstoneSRViewport({
   servicesManager,
   extensionManager,
 }) {
-  const {
-    DisplaySetService,
-    MeasurementService,
-    ToolBarService,
-  } = servicesManager.services;
+  const { DisplaySetService, ToolBarService } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [measurementSelected, setMeasurementSelected] = useState(0);
@@ -98,32 +94,12 @@ function OHIFCornerstoneSRViewport({
     isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
   }, [trackedMeasurements]);
 
-  function _getToolAlias() {
-    const primaryToolId = ToolBarService.state.primaryToolId;
-    let toolAlias = primaryToolId;
-
-    switch (primaryToolId) {
-      case 'Length':
-        toolAlias = 'SRLength';
-        break;
-      case 'Bidirectional':
-        toolAlias = 'SRBidirectional';
-        break;
-      case 'ArrowAnnotate':
-        toolAlias = 'SRArrowAnnotate';
-        break;
-      case 'EllipticalRoi':
-        toolAlias = 'SREllipticalRoi';
-        break;
-    }
-
-    return toolAlias;
-  }
-
   const onElementEnabled = evt => {
     const eventData = evt.detail;
     const targetElement = eventData.element;
-    const toolAlias = _getToolAlias(); // These are 1:1 for built-in only
+
+    const primaryToolId = ToolBarService.state.primaryToolId;
+    const toolAlias = getToolAlias(primaryToolId); // These are 1:1 for built-in only
 
     // ~~ MAGIC
     cornerstoneTools.addToolForElement(targetElement, DICOMSRDisplayTool);
@@ -168,6 +144,26 @@ function OHIFCornerstoneSRViewport({
       cornerstoneTools.EllipticalRoiTool,
       {
         name: 'SREllipticalRoi',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.RectangleRoiTool,
+      {
+        name: 'SRRectangleRoi',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.FreehandRoiTool,
+      {
+        name: 'SRFreehandRoi',
         configuration: {
           renderDashed: true,
         },
