@@ -123,9 +123,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   if (isProdBuild) {
     config.optimization.minimizer = [
       new TerserJSPlugin({
-        // Supports:
-        // source-map and inline-source-map
-        sourceMap: isProdBuild && !isQuickBuild,
         parallel: true,
         terserOptions: {},
       }),
