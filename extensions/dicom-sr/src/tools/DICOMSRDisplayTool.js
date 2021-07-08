@@ -1,11 +1,12 @@
 import { importInternal, getToolState, toolColors } from 'cornerstone-tools';
 import { pixelToCanvas } from 'cornerstone-core';
 
+/** Internal imports */
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
 import id from '../id';
 
-// Cornerstone 3rd party dev kit imports
+/** Cornerstone 3rd party dev kit imports */
 const draw = importInternal('drawing/draw');
 const drawJoinedLines = importInternal('drawing/drawJoinedLines');
 const drawCircle = importInternal('drawing/drawCircle');
@@ -18,6 +19,14 @@ const drawLinkedTextBox = importInternal('drawing/drawLinkedTextBox');
 
 /**
  * @class DICOMSRDisplayTool - Renders DICOMSR data in a read only manner (i.e. as an overlay).
+ *
+ * This is a generic render tool.
+ *
+ * A single tool that, given some schema, can render
+ * POINT, MULTIPOINT, POLYLINE, CIRCLE, and ELLIPSE
+ * value types for a given imageId.
+ *
+ *
  * @extends cornerstoneTools.BaseTool
  */
 export default class DICOMSRDisplayTool extends BaseTool {

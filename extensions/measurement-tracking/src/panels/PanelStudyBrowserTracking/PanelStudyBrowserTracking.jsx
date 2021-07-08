@@ -459,7 +459,6 @@ function _mapDisplaySets(
               onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
               onShow: () => {
                 const yesButton = document.querySelector('.reject-yes-button');
-
                 yesButton.focus();
               },
               onSubmit: async ({ action }) => {

@@ -1,6 +1,7 @@
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstoneMath from 'cornerstone-math';
-import cornerstone from 'cornerstone-core';
+
+/** Internal imports */
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
 

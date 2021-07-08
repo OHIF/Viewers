@@ -1,12 +1,11 @@
-import cornerstoneTools from 'cornerstone-tools';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
-import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
-import getCornerstoneToolStateToMeasurementSchema from './getCornerstoneToolStateToMeasurementSchema';
 import { adapters } from 'dcmjs';
 
+/** Internal imports */
+import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
+import getCornerstoneToolStateToMeasurementSchema from './getCornerstoneToolStateToMeasurementSchema';
+
 const { guid } = OHIF.utils;
-const globalImageIdSpecificToolStateManager =
-  cornerstoneTools.globalImageIdSpecificToolStateManager;
 
 /**
  *

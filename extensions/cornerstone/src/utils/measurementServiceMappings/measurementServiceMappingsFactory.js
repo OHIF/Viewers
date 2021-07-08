@@ -2,6 +2,8 @@ import Length from './Length';
 import Bidirectional from './Bidirectional';
 import ArrowAnnotate from './ArrowAnnotate';
 import EllipticalRoi from './EllipticalRoi';
+import RectangleRoi from './RectangleRoi';
+import FreehandRoi from './FreehandRoi';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
@@ -23,12 +25,14 @@ const measurementServiceMappingsFactory = (
       BIDIRECTIONAL,
     } = MeasurementService.VALUE_TYPES;
 
-    // TODO -> I get why this was attemped, but its not nearly flexible enough.
+    // TODO -> I get why this was attempted, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.
     // You can't define a bidirectional tool as a single type..
     const TOOL_TYPE_TO_VALUE_TYPE = {
       Length: POLYLINE,
       EllipticalRoi: ELLIPSE,
+      RectangleRoi: POLYLINE,
+      FreehandRoi: POLYLINE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
     };
@@ -85,6 +89,55 @@ const measurementServiceMappingsFactory = (
         {
           valueType: MeasurementService.VALUE_TYPES.POINT,
           points: 1,
+        },
+      ],
+    },
+    FreehandRoi: {
+      toAnnotation: FreehandRoi.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        FreehandRoi.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          properties: ['stdDev'],
+          // attributes: [
+          //   {
+          //     codeValue: '386136009',
+          //     codeMeaning: 'Standard Deviation',
+          //     codingSchemeDesignator: 'SCT',
+          //   },
+          // ],
+        },
+      ],
+    },
+    RectangleRoi: {
+      toAnnotation: RectangleRoi.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        RectangleRoi.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
         },
       ],
     },

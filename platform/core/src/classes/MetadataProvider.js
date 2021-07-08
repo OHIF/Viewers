@@ -4,6 +4,7 @@ import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacin
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
 import DicomMetadataStore from '../services/DicomMetadataStore';
+import { validNumber } from '../utils';
 
 class MetadataProvider {
   constructor() {

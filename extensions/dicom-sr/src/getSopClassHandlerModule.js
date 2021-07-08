@@ -1,7 +1,9 @@
-import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
+
+/** Internal imports */
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
+import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 
 const { ImageSet } = classes;
 
@@ -217,7 +219,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
-        if (_measurmentReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
+        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
           addMeasurement(
             measurement,
             imageId,
@@ -231,7 +233,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   }
 }
 
-function _measurmentReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
+function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
   const { coords } = measurement;
 
   for (let j = 0; j < coords.length; j++) {
@@ -526,13 +528,14 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 function _getCoordsFromSCOORDOrSCOORD3D(item) {
   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
 
-  if (RelationshipType !== RELATIONSHIP_TYPE.INFERRED_FROM) {
-    console.warn(
-      `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM."`
-    );
+  //debugger;
+  // if (RelationshipType !== RELATIONSHIP_TYPE.INFERRED_FROM) {
+  //   console.warn(
+  //     `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM."`
+  //   );
 
-    return;
-  }
+  //   return;
+  // }
 
   const coords = { ValueType, GraphicType, GraphicData };
 
@@ -569,11 +572,17 @@ function _getLabelFromMeasuredValueSequence(
 }
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
+  const referencedImages = [];
+
   const ImageLibrary = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.ImageLibrary
   );
+
+  if (!ImageLibrary.ContentSequence) {
+    return referencedImages;
+  }
 
   const ImageLibraryGroup = _getSequenceAsArray(
     ImageLibrary.ContentSequence
@@ -582,8 +591,6 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.ImageLibraryGroup
   );
-
-  const referencedImages = [];
 
   _getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;

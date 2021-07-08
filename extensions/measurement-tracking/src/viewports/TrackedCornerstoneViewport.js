@@ -26,6 +26,8 @@ const {
   ArrowAnnotateTool,
   BidirectionalTool,
   EllipticalRoiTool,
+  RectangleRoiTool,
+  FreehandRoiTool,
   LengthTool,
 } = cornerstoneTools;
 
@@ -82,6 +84,8 @@ function TrackedCornerstoneViewport(props) {
         tool instanceof ArrowAnnotateTool ||
         tool instanceof BidirectionalTool ||
         tool instanceof EllipticalRoiTool ||
+        tool instanceof FreehandRoiTool ||
+        tool instanceof RectangleRoiTool ||
         tool instanceof LengthTool
       ) {
         const configuration = tool.configuration;
