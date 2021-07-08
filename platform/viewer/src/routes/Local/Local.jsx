@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import classnames from 'classnames'
+import { useNavigate } from 'react-router-dom';
 import { MODULE_TYPES } from '@ohif/core'
 
-import PropTypes from 'prop-types'
 import Dropzone from 'react-dropzone'
 import filesToStudies from './filesToStudies'
 
@@ -39,8 +39,8 @@ const getLoadButton = (onDrop, text, isDir) => {
     </Dropzone>)
 }
 
-function Local(props) {
-  const { history } = props
+function Local() {
+  const navigate = useNavigate();
   const dropzoneRef = useRef()
 
   // Initializing the dicom local dataSource
@@ -61,7 +61,7 @@ function Local(props) {
   const onDrop = async (acceptedFiles) => {
     const studies = await filesToStudies(acceptedFiles, dataSource)
     // Todo: navigate to work list and let user select a mode
-    history.push(`/viewer/dicomlocal?StudyInstanceUIDs=${studies[0]}`)
+    navigate(`/viewer/dicomlocal?StudyInstanceUIDs=${studies[0]}`)
   }
 
   // Set body style
@@ -74,7 +74,7 @@ function Local(props) {
 
   return (
     <Dropzone ref={dropzoneRef} onDrop={onDrop} noClick>
-      {({ getRootProps, getInputProps }) => (
+      {({ getRootProps }) => (
         <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
           <div className="h-screen w-screen flex justify-center items-center ">
             <div className="py-8 px-8 mx-auto bg-secondary-dark shadow-md space-y-2 rounded-lg">
@@ -106,11 +106,5 @@ function Local(props) {
     </Dropzone>
   )
 }
-
-Local.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
-};
 
 export default Local

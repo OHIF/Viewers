@@ -175,12 +175,14 @@ function WorkList({
       }
     });
 
+    const search = qs.stringify(queryString, {
+      skipNull: true,
+      skipEmptyString: true,
+    });
+
     navigate({
       pathname: '/',
-      search: `?${qs.stringify(queryString, {
-        skipNull: true,
-        skipEmptyString: true,
-      })}`,
+      search: search ? `?${search}` : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedFilterValues]);

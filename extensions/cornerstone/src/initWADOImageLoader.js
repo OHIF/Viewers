@@ -1,6 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
+import { errorHandler } from '@ohif/core'
 
 let initialized = false;
 
@@ -34,6 +35,9 @@ export default function initWADOImageLoader(UserAuthenticationService) {
       if (headers && headers.Authorization) {
         xhr.setRequestHeader('Authorization', headers.Authorization);
       }
+    },
+    errorInterceptor: error => {
+      errorHandler.getHTTPErrorHandler(error)
     },
   });
 

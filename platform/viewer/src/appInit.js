@@ -14,6 +14,7 @@ import {
   HangingProtocolService,
   CineService,
   UserAuthenticationService,
+  errorHandler
   // utils,
 } from '@ohif/core';
 
@@ -61,6 +62,12 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     CineService,
     UserAuthenticationService,
   ]);
+
+  errorHandler.getHTTPErrorHandler = () => {
+    if (typeof appConfig.httpErrorHandler === 'function') {
+      return appConfig.httpErrorHandler;
+    }
+  };
 
   /**
    * Example: [ext1, ext2, ext3]
