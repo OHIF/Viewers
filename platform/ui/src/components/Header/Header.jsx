@@ -2,19 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-// TODO: This may fail if package is split from PWA build
-import { useNavigate } from 'react-router-dom';
 import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
 
-function Header({ children, menuOptions, isReturnEnabled, isSticky, WhiteLabeling }) {
+function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, isSticky, WhiteLabeling }) {
   const { t } = useTranslation('Header');
-  const navigate = useNavigate();
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
-  const onReturnHandler = () => {
-    if (isReturnEnabled) {
-      navigate('/');
+  const onClickReturn = () => {
+    if (isReturnEnabled && onClickReturnButton) {
+      onClickReturnButton()
     }
   };
 
@@ -30,7 +27,7 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky, WhiteLabelin
               // Either injected service? Or context (like react router's `useLocation`?) */}
           <div
             className={classNames("inline-flex items-center mr-3", isReturnEnabled && 'cursor-pointer')}
-            onClick={onReturnHandler}
+            onClick={onClickReturn}
           >
             {isReturnEnabled && <Icon name="chevron-left" className="w-8 text-primary-active" />}
             <div className="ml-4">{WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}</div>
@@ -78,6 +75,7 @@ Header.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   isReturnEnabled: PropTypes.bool,
   isSticky: PropTypes.bool,
+  onClickReturnButton: PropTypes.func,
   WhiteLabeling: PropTypes.element,
 };
 

@@ -27,6 +27,8 @@ const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
 
+console.warn(path.resolve(__dirname, '../node_modules'));
+
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
@@ -44,6 +46,15 @@ module.exports = (env, argv) => {
     module: {
       rules: [...extractStyleChunksRule(isProdBuild)],
     },
+    resolve: {
+      modules: [
+        // Modules specific to this package
+        path.resolve(__dirname, '../node_modules'),
+        // Hoisted Yarn Workspace Modules
+        path.resolve(__dirname, '../../../node_modules'),
+        SRC_DIR,
+      ],
+    },
     plugins: [
       new Dotenv(),
       // Uncomment to generate bundle analyzer
@@ -51,27 +62,31 @@ module.exports = (env, argv) => {
       // Clean output.path
       new CleanWebpackPlugin(),
       // Copy "Public" Folder to Dist
-      new CopyWebpackPlugin([
-        {
-          from: PUBLIC_DIR,
-          to: DIST_DIR,
-          toType: 'dir',
-          // Ignore our HtmlWebpackPlugin template file
-          // Ignore our configuration files
-          ignore: ['config/*', 'html-templates/*', '.DS_Store'],
-        },
-        // Short term solution to make sure GCloud config is available in output
-        // for our docker implementation
-        {
-          from: `${PUBLIC_DIR}/config/google.js`,
-          to: `${DIST_DIR}/google.js`,
-        },
-        // Copy over and rename our target app config file
-        {
-          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
-          to: `${DIST_DIR}/app-config.js`,
-        },
-      ]),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: PUBLIC_DIR,
+            to: DIST_DIR,
+            toType: 'dir',
+            globOptions: {
+              // Ignore our HtmlWebpackPlugin template file
+              // Ignore our configuration files
+              ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+            },
+          },
+          // Short term solution to make sure GCloud config is available in output
+          // for our docker implementation
+          {
+            from: `${PUBLIC_DIR}/config/google.js`,
+            to: `${DIST_DIR}/google.js`,
+          },
+          // Copy over and rename our target app config file
+          {
+            from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+            to: `${DIST_DIR}/app-config.js`,
+          },
+        ],
+      }),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
         filename: isProdBuild ? '[name].[hash].css' : '[name].css',

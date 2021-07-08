@@ -2,6 +2,16 @@
   "name": "ohif-docs",
   "version": "0.0.0",
   "private": true,
+  "workspaces": {
+    "nohoist": [
+      "@docusaurus/core/**",
+      "@docusaurus/core",
+      "@docusaurus/preset-classic",
+      "@docusaurus/preset-classic/**",
+      "**/react-router-dom",
+      "**/react-router"
+    ]
+  },
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 8001",
@@ -30,8 +40,8 @@
     "url-loader": "^4.1.1"
   },
   "peerDependencies": {
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "browserslist": {
     "production": [

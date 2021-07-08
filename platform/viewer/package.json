@@ -20,13 +20,12 @@
     "build:viewer": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --progress",
     "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/ APP_CONFIG=config/netlify.js QUICK_BUILD=true node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js",
     "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html QUICK_BUILD=true node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --config .webpack/webpack.pwa.js --watch",
-    "dev:orthanc": "cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker_nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js --watch",
+    "dev": "cross-env NODE_ENV=development webpack serve --config .webpack/webpack.pwa.js",
+    "dev:orthanc": "cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker_nginx-orthanc.js webpack serve --config .webpack/webpack.pwa.js",
     "dev:viewer": "yarn run dev",
     "start": "yarn run dev",
     "test:e2e": "cypress open",
     "test:e2e:ci": "percy exec -- cypress run --config video=false --record --browser chrome --spec 'cypress/integration/visual-regression/**/*'",
-    "test:e2e:script-tag": "cypress run --config video=false --browser chrome --spec 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'",
     "test:e2e:local": "cypress run --config video=false --browser chrome --spec 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'",
     "test:e2e:dist": "start-server-and-test test:e2e:serve http://localhost:3000 test:e2e:ci",
     "test:e2e:serve": "serve -n -l 3000 -s dist",
@@ -40,9 +39,8 @@
   ],
   "peerDependencies": {
     "cornerstone-core": "^2.3.0",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "webpack": "^4.0.0"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",
@@ -77,13 +75,15 @@
     "react-router-dom": "next"
   },
   "devDependencies": {
+    "webpack": "^5.43.0",
+    "webpack-cli": "^4.7.2",
     "@percy/cypress": "^2.3.0",
-    "cypress-file-upload": "^3.5.3",
     "cypress": "^6.4.0",
+    "cypress-file-upload": "^3.5.3",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.15",
     "terser-webpack-plugin": "^5.1.1",
-    "webpack-bundle-analyzer": "^3.6.0",
+    "webpack-bundle-analyzer": "^4.4.2",
     "webpack-merge": "^5.7.3"
   }
 }
