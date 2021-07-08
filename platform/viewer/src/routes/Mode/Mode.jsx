@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore } from '@ohif/core';
@@ -54,7 +54,6 @@ async function defaultRouteInit({
 }
 
 export default function ModeRoute({
-  location,
   mode,
   dataSourceName,
   extensionManager,
@@ -62,6 +61,7 @@ export default function ModeRoute({
   hotkeysManager,
 }) {
   // Parse route params/querystring
+  const location = useLocation();
   const query = useQuery();
   const params = useParams();
 
@@ -80,7 +80,9 @@ export default function ModeRoute({
   const {
     DisplaySetService,
     HangingProtocolService,
+    UserAuthenticationService,
   } = servicesManager.services;
+
   const { extensions, sopClassHandlers, hotkeys, hangingProtocols } = mode;
 
   if (dataSourceName === undefined) {
@@ -95,6 +97,12 @@ export default function ModeRoute({
   const dataSource = dataSources[0];
   // Only handling one route per mode for now
   const route = mode.routes[0];
+
+  const layoutTemplateRouteData = route.layoutTemplate({ location });
+  const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
+    layoutTemplateRouteData.id
+  );
+  const LayoutComponent = layoutTemplateModuleEntry.component;
 
   // For each extension, look up their context modules
   // TODO: move to extension manager.
@@ -279,14 +287,6 @@ export default function ModeRoute({
 }
 
 ModeRoute.propTypes = {
-  // Ref: https://reacttraining.com/react-router/web/api/location
-  location: PropTypes.shape({
-    key: PropTypes.string,
-    pathname: PropTypes.string.isRequired,
-    search: PropTypes.string.isRequired,
-    hash: PropTypes.string.isRequired,
-    //state: PropTypes.object.isRequired,
-  }),
   mode: PropTypes.object.isRequired,
   dataSourceName: PropTypes.string,
   extensionManager: PropTypes.object,

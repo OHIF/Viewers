@@ -186,15 +186,9 @@ export default class ExtensionManager {
           case MODULE_TYPES.SOP_CLASS_HANDLER:
           case MODULE_TYPES.CONTEXT:
           case MODULE_TYPES.LAYOUT_TEMPLATE:
+          case MODULE_TYPES.HANGING_PROTOCOL:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
-            extensionModule.forEach(element => {
-              this.modulesMap[
-                `${extensionId}.${moduleType}.${element.name}`
-              ] = element;
-            });
-            break;
-          case MODULE_TYPES.HANGING_PROTOCOL:
             extensionModule.forEach(element => {
               this.modulesMap[
                 `${extensionId}.${moduleType}.${element.name}`
@@ -277,13 +271,16 @@ export default class ExtensionManager {
   };
 
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
+    const { UserAuthenticationService } = this._servicesManager.services;
+
     extensionModule.forEach(element => {
       const namespace = `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`;
 
       dataSources.forEach(dataSource => {
         if (dataSource.namespace === namespace) {
           const dataSourceInstance = element.createDataSource(
-            dataSource.configuration
+            dataSource.configuration,
+            UserAuthenticationService
           );
 
           if (this.dataSourceMap[dataSource.sourceName]) {
@@ -304,26 +301,8 @@ export default class ExtensionManager {
 
   _initHangingProtocolModule(extensionModule, extensionId) {
     extensionModule.forEach(element => {
-      const namespace = `${extensionId}.${MODULE_TYPES.HANGING_PROTOCOL}.${element.name}`;
-
-      dataSources.forEach(dataSource => {
-        if (dataSource.namespace === namespace) {
-          const dataSourceInstance = element.createDataSource(
-            dataSource.configuration
-          );
-
-          if (this.dataSourceMap[dataSource.sourceName]) {
-            this.dataSourceMap[dataSource.sourceName].push(dataSourceInstance);
-          } else {
-            this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
-          }
-        }
-      });
-    });
-
-    extensionModule.forEach(element => {
       this.modulesMap[
-        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
+        `${extensionId}.${MODULE_TYPES.HANGING_PROTOCOL}.${element.name}`
       ] = element;
     });
   }

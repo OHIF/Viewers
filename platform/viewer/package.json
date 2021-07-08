@@ -62,17 +62,19 @@
     "dicom-parser": "^1.8.3",
     "dotenv-webpack": "^1.7.0",
     "hammerjs": "^2.0.8",
+    "history": "5.0.0",
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
+    "oidc-client": "1.11.5",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.1",
     "react-dropzone": "^10.1.7",
     "react-i18next": "^10.11.0",
     "react-resize-detector": "^4.2.0",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0"
+    "react-router": "next",
+    "react-router-dom": "next"
   },
   "devDependencies": {
     "@percy/cypress": "^2.3.0",

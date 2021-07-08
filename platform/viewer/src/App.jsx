@@ -3,7 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import Compose from './routes/Mode/Compose.js';
+
 import {
   DialogProvider,
   Modal,
@@ -13,21 +15,17 @@ import {
   ViewportDialogProvider,
   ViewportGridProvider,
   CineProvider,
+  UserAuthenticationProvider,
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
-import history from './history'
+import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes.jsx';
 
 // TODO: Temporarily for testing
 import '@ohif/mode-longitudinal';
-
-/**
- * ENV Variable to determine routing behavior
- */
-const OHIFRouter = Router
 
 let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
@@ -42,7 +40,8 @@ function App({ config, defaultExtensions }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { routerBasename, modes, dataSources } = appConfigState;
+  const { routerBasename, modes, dataSources, oidc } = appConfigState;
+
   // Use config to create routes
   const appRoutes = createRoutes({
     modes,
@@ -50,38 +49,50 @@ function App({ config, defaultExtensions }) {
     extensionManager,
     servicesManager,
     hotkeysManager,
+    routerBasename,
   });
   const {
     UIDialogService,
     UIModalService,
     UINotificationService,
     UIViewportDialogService,
-    ViewportGridService, // TODO: Should this be a "UI" Service?
-    CineService
+    ViewportGridService,
+    CineService,
+    UserAuthenticationService,
   } = servicesManager.services;
 
+  const providers = [
+    [AppConfigProvider, { value: appConfigState }],
+    [UserAuthenticationProvider, { service: UserAuthenticationService}],
+    [I18nextProvider, { i18n }],
+    [ThemeWrapper],
+    [ViewportGridProvider, {service: ViewportGridService}],
+    [ViewportDialogProvider, {service: UIViewportDialogService}],
+    [CineProvider, {service: CineService}],
+    [SnackbarProvider, {service: UINotificationService}],
+    [DialogProvider, {service: UIDialogService}],
+    [ModalProvider, {service: UIModalService, modal: Modal}],
+  ]
+  const CombinedProviders = ({ children }) =>
+    Compose({ components: providers, children });
+
+  let authRoutes = null;
+
+  if (oidc) {
+    authRoutes = (<OpenIdConnectRoutes
+                oidc={oidc}
+                routerBasename={routerBasename}
+                UserAuthenticationService={UserAuthenticationService}
+              />)
+  }
+
   return (
-    <AppConfigProvider value={appConfigState}>
-      <I18nextProvider i18n={i18n}>
-        <OHIFRouter basename={routerBasename} history={history}>
-          <ThemeWrapper>
-            <ViewportGridProvider service={ViewportGridService}>
-              <ViewportDialogProvider service={UIViewportDialogService}>
-                <CineProvider service={CineService}>
-                  <SnackbarProvider service={UINotificationService}>
-                    <DialogProvider service={UIDialogService}>
-                      <ModalProvider modal={Modal} service={UIModalService}>
-                        {appRoutes}
-                      </ModalProvider>
-                    </DialogProvider>
-                  </SnackbarProvider>
-                </CineProvider>
-              </ViewportDialogProvider>
-            </ViewportGridProvider>
-          </ThemeWrapper>
-        </OHIFRouter>
-      </I18nextProvider>
-    </AppConfigProvider>
+    <CombinedProviders>
+      <BrowserRouter>
+        {authRoutes}
+        {appRoutes}
+      </BrowserRouter>
+    </CombinedProviders>
   );
 }
 

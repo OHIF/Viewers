@@ -56,7 +56,7 @@ export default class ToolBarService {
    */
   recordInteraction(interaction) {
     const commandsManager = this._commandsManager;
-    const { groupId, itemId, interactionType } = interaction;
+    const { groupId, itemId, interactionType, commandName, commandOptions } = interaction;
 
     switch (interactionType) {
       case 'action': {
@@ -66,7 +66,7 @@ export default class ToolBarService {
         this.state.primaryToolId = itemId;
         // TODO: Force run this for all contexts? Even inactive?
         // or... They'll just detect primaryToolId when they spin up and apply...
-        commandsManager.runCommand('setToolActive', interaction.commandOptions);
+        commandsManager.runCommand('setToolActive', commandOptions);
         break;
       }
       case 'toggle': {
@@ -74,7 +74,9 @@ export default class ToolBarService {
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
-        interaction.commandOptions.toggledState = this.state.toggles[itemId];
+        if (commandOptions) {
+          commandOptions.toggledState = this.state.toggles[itemId];
+        }
         break;
       }
       default:
@@ -86,11 +88,8 @@ export default class ToolBarService {
     // NOTE: Should probably just do this for tools as well?
     // But would be nice if we could enforce at least the command name?
     let unsubscribe;
-    if (interaction.commandName) {
-      unsubscribe = commandsManager.runCommand(
-        interaction.commandName,
-        interaction.commandOptions
-      );
+    if (commandName) {
+      unsubscribe = commandsManager.runCommand(commandName, commandOptions);
     }
 
     // Storing the unsubscribe for later reseting

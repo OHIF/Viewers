@@ -260,8 +260,7 @@ following resources helpful:
 We chose to use a generic OpenID Connect library on the client, but it's worth
 noting that Keycloak comes packaged with its own:
 
-- [redux-oidc](https://github.com/maxmantz/redux-oidc) (Which wraps
-  [oidc-client-js](https://github.com/IdentityModel/oidc-client-js/wiki))
+- [oidc-client-js](https://github.com/IdentityModel/oidc-client-js/wiki)
 - [Keycloak JavaScript Adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter)
 
 If you're not already drowning in links, here are some good security resources

@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
 //
-import { useAppConfig } from '@state';
 import { extensionManager } from '../App.jsx';
+import { useParams, useLocation } from 'react-router';
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -15,8 +15,10 @@ import { extensionManager } from '../App.jsx';
  * @param {function} props.children - Layout Template React Component
  */
 function DataSourceWrapper(props) {
-  const [appConfig] = useAppConfig();
-  const { children: LayoutTemplate, history, ...rest } = props;
+  const { children: LayoutTemplate, ...rest } = props;
+  const params = useParams();
+  const location = useLocation();
+
   // TODO: Fetch by type, name, etc?
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
   // TODO: Good usecase for flatmap?
@@ -30,13 +32,10 @@ function DataSourceWrapper(props) {
     return acc.concat(mods);
   }, []);
 
-  // Grabbing first for now. This isn't hydrated yet, but we should
-  // hydrate it somewhere based on config...
-  // ~ default.js
-  const firstAppConfigDataSource = appConfig.dataSources[0];
-  const dataSourceConfig = firstAppConfigDataSource.configuration;
-  const firstWebApiDataSource = webApiDataSources[0];
-  const dataSource = firstWebApiDataSource.createDataSource(dataSourceConfig);
+  // Grabbing first for now - should get active?
+  const name = webApiDataSources[0].name;
+  // TODO: Why does this return an array?
+  const dataSource = extensionManager.getDataSources(name)[0]
 
   // Route props --> studies.mapParams
   // mapParams --> studies.search
@@ -55,19 +54,18 @@ function DataSourceWrapper(props) {
 
   useEffect(() => {
     const queryFilterValues = _getQueryFilterValues(
-      history.location.search,
+      location.search,
       STUDIES_LIMIT
     );
 
     // 204: no content
     async function getData() {
       setIsLoading(true);
-
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setIsLoading(false);
       setData({
-        studies,
+        studies: studies || [],
         total: studies.length,
         resultsPerPage: queryFilterValues.resultsPerPage,
         pageNumber: queryFilterValues.pageNumber,
@@ -99,14 +97,13 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history.location.search]);
+  }, [location, params]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?
   return (
     <LayoutTemplate
       {...rest}
-      history={history}
       data={data.studies}
       dataTotal={data.total}
       dataSource={dataSource}

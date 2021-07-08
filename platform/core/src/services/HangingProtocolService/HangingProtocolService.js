@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy.js';
 import ProtocolEngine from './ProtocolEngine';

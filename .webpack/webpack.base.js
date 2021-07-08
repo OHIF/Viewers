@@ -101,7 +101,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         ),
       }),
       new UnusedFilesWebpackPlugin({
-        failOnUnused: true,
+        failOnUnused: false,
         globOptions: {
           ignore: [
             "node_modules/**/*",

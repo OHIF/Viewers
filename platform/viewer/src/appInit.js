@@ -13,10 +13,10 @@ import {
   ViewportGridService,
   HangingProtocolService,
   CineService,
+  UserAuthenticationService,
+  errorHandler
   // utils,
 } from '@ohif/core';
-
-// TODO -> this feels bad.
 
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
@@ -60,7 +60,14 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     ViewportGridService,
     HangingProtocolService,
     CineService,
+    UserAuthenticationService,
   ]);
+
+  errorHandler.getHTTPErrorHandler = () => {
+    if (typeof appConfig.httpErrorHandler === 'function') {
+      return appConfig.httpErrorHandler;
+    }
+  };
 
   /**
    * Example: [ext1, ext2, ext3]
@@ -75,12 +82,15 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   // TODO: We no longer init webWorkers at app level
   // TODO: We no longer init the user Manager
 
+  if (!appConfig.modes) {
+    throw new Error('No modes are defined! Check your app-config.js');
+  }
+
   // TODO: Remove this
   if (!appConfig.modes.length) {
     appConfig.modes.push(window.longitudinalMode);
     // appConfig.modes.push(window.segmentationMode);
   }
-
 
   return {
     appConfig,
