@@ -17,69 +17,18 @@ export default function StudyListConfig(props) {
   const { rowData, key, expandedRows, seriesInStudiesMap, appConfig, t, setExpandedRows } = props;
   const rowKey = key + 1;
   const isExpanded = expandedRows.some(k => k === rowKey);
-  const {
-    studyInstanceUid,
-    accession,
-    modalities,
-    instances,
-    description,
-    date,
-    time,
-  } = rowData;
-  const studyDate =
-    date &&
-    moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-    moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
-  const studyTime =
-    time &&
-    moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-    moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+  const { studyInstanceUid } = rowData;
   const configPoint = props.configPoint || StudyListConfigPoint;
 
-  console.warn("configPoint=", configPoint);
-  const configPointRows = configPoint.tableColumns.map((column, colKey) => ({ ...column, content: column.content({ props, rowData, column }) }));
+  const rowArgs = { isExpanded, props, rowData };
+  const row = configPoint.tableColumns.map((column, colKey) => {
+    const formattedArgs = column.formatArgs && column.formatArgs({ ...rowArgs, column, });
+    let ret = ({ ...column, content: column.content({ ...rowArgs, column, formattedArgs }) })
+    if (typeof (column.title) === 'function') ret.title = column.title({ ...rowArgs, column, formattedArgs });
+    return ret;
+  });
   return {
-    row: [...configPointRows,
-    {
-      key: 'studyDate',
-      content: (
-        <div>
-          {studyDate && <span className="mr-4">{studyDate}</span>}
-          {studyTime && <span>{studyTime}</span>}
-        </div>
-      ),
-      title: `${studyDate || ''} ${studyTime || ''}`,
-      gridCol: 5,
-    },
-    {
-      key: 'modality',
-      content: modalities,
-      title: modalities,
-      gridCol: 3,
-    },
-    {
-      key: 'accession',
-      content: <TooltipClipboard>{accession}</TooltipClipboard>,
-      gridCol: 3,
-    },
-    {
-      key: 'instances',
-      content: (
-        <>
-          <Icon
-            name="group-layers"
-            className={classnames('inline-flex mr-2 w-4', {
-              'text-primary-active': isExpanded,
-              'text-secondary-light': !isExpanded,
-            })}
-          />
-          {instances}
-        </>
-      ),
-      title: (instances || 0).toString(),
-      gridCol: 4,
-    },
-    ],
+    row,
     expandedContent: (
       <StudyListExpandedRow
         seriesTableColumns={{
@@ -139,7 +88,47 @@ export default function StudyListConfig(props) {
   };
 }
 
-const tooltipClipboardFunction = ({ rowData, column }) => (<TooltipClipboard>{rowData[column.key]}</TooltipClipboard>);
+const tooltipClipboardFunction = ({ rowData, column }) => (<TooltipClipboard>{rowData[column.keyVar || column.key]}</TooltipClipboard>);
+
+const titleDateTime = ({ formattedArgs }) => `${formattedArgs.date || ''} ${formattedArgs.Time || ''}`;
+
+const titleKeyVar = ({ column, rowData }) => rowData[column.keyVar];
+
+const rowDateTime = ({ formattedArgs }) => (
+  <div>
+    {formattedArgs.date && <span className="mr-4">{formattedArgs.date}</span>}
+    {formattedArgs.time && <span>{formattedArgs.time}</span>}
+  </div>
+);
+
+const contentInstances = ({ rowData, isExpanded }) => (
+  <>
+    <Icon
+      name="group-layers"
+      className={classnames('inline-flex mr-2 w-4', {
+        'text-primary-active': isExpanded,
+        'text-secondary-light': !isExpanded,
+      })}
+    />
+    {rowData.instances}
+  </>
+);
+
+const titleNumber = ({ rowData, column }) => (rowData[column.keyVar || column.key] || 0).toString();
+
+const dateFormatArgs = ({ column, rowData }) => {
+  const dateSrc = column.dateKey ? rowData[column.dateKey] : rowData.date;
+  const timeSrc = column.timeKey ? rowData[column.timeKey] : rowData.time;
+  const date =
+    dateSrc &&
+    moment(dateSrc, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
+    moment(dateSrc, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
+  const time =
+    timeSrc &&
+    moment(timeSrc, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
+    moment(timeSrc, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+  return { date, time };
+};
 
 export const { StudyListConfigPoint, PatientListConfigPoint } = ConfigPointService.register([
   {
@@ -147,6 +136,12 @@ export const { StudyListConfigPoint, PatientListConfigPoint } = ConfigPointServi
     configBase: {
       context: {
         tooltipClipboardFunction,
+        titleDateTime,
+        titleKeyVar,
+        dateFormatArgs,
+        rowDateTime,
+        contentInstances,
+        titleNumber,
       },
       tableColumns: [
         {
@@ -172,10 +167,35 @@ export const { StudyListConfigPoint, PatientListConfigPoint } = ConfigPointServi
     extension: {
       tableColumns: [
         ConfigPointOp.insertAt(3, {
+          key: 'studyDate',
+          content: rowDateTime,
+          title: titleDateTime,
+          formatArgs: dateFormatArgs,
+          gridCol: 5,
+        }),
+        ConfigPointOp.insertAt(4, {
           key: 'description',
           // This is a way to reference an exsiting function, as long
           // as it is available in the context.  This may still change TBD
           content: { _reference: 'tooltipClipboardFunction' },
+          gridCol: 4,
+        }),
+        ConfigPointOp.insertAt(5, {
+          key: 'modality',
+          keyVar: 'modalities',
+          content: tooltipClipboardFunction,
+          title: titleKeyVar,
+          gridCol: 3,
+        }),
+        ConfigPointOp.insertAt(6, {
+          key: 'accession',
+          content: tooltipClipboardFunction,
+          gridCol: 3,
+        }),
+        ConfigPointOp.insertAt(7, {
+          key: 'instances',
+          content: contentInstances,
+          title: titleNumber,
           gridCol: 4,
         }),
       ],
