@@ -20,6 +20,15 @@
         </tr>
         <tr>
             <td>
+                <a href="./data/ConfigPointService.md">Config Point Service</a>
+            </td>
+            <td>Data Service</td>
+            <td>
+                ConfigPointService
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./data/DisplaySetService.md">
                     DisplaySetService (NEW)
                 </a>

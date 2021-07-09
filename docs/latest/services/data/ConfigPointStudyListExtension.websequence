@@ -1,0 +1,14 @@
+title Config Point Study List Extension
+
+Source->+ConfigPoint: register(study list extension)
+ConfigPoint->_points: add point('StudyListConfigPoint')
+ConfigPoint->StudyListConfigPoint: push extension(study list extension)
+ConfigPoint->+StudyListConfigPoint: applyExtensions
+StudyListConfigPoint->baseConfig: mergeObject into StudyListConfigPoint
+StudyListConfigPoint->+extensions: mergeObject into StudyListConfigPoint
+extensions->StudyListConfigPoint.tableList: mergeObject extension.tableList
+StudyListConfigPoint.tableList->extensions: perform insert merge for extensions
+extensions->StudyListConfigPoint.content: mergeObject reference context.contentFunction
+StudyListConfigPoint.content->extensions: get referenced value context.contentFunction
+
+

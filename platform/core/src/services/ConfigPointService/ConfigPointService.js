@@ -138,11 +138,9 @@ const ConfigPointFunctionality = {
   },
 
   applyExtensions() {
-    const baseContext = this._configBase && this._configBase.context;
-    mergeObject(this, this._configBase, baseContext);
+    mergeObject(this, this._configBase, this._configBase);
     for (const item of this._extensions._order) {
-      console.warn("Merge item ", item);
-      mergeObject(this, item, this.context);
+      mergeObject(this, item, this);
     }
   },
 };

@@ -1,0 +1,11 @@
+title Config Point Study List
+
+Source->+ConfigPoint: const {StudyListConfigPoint} = register(study list baseConfig)
+ConfigPoint->baseConfig: get configName
+ConfigPoint->_points: add point('StudyListConfigPoint')
+ConfigPoint->StudyListConfigPoint: set baseConfig
+ConfigPoint->+StudyListConfigPoint: applyExtensions
+StudyListConfigPoint->baseConfig: mergeObject into StudyListConfigPoint
+StudyListConfigPoint->extensions: mergeObject into StudyListConfigPoint
+
+

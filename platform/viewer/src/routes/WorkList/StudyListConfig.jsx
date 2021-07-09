@@ -134,15 +134,13 @@ export const { StudyListConfigPoint, PatientListConfigPoint } = ConfigPointServi
   {
     configName: 'PatientListConfigPoint',
     configBase: {
-      context: {
-        tooltipClipboardFunction,
-        titleDateTime,
-        titleKeyVar,
-        dateFormatArgs,
-        rowDateTime,
-        contentInstances,
-        titleNumber,
-      },
+      tooltipClipboardFunction,
+      titleDateTime,
+      titleKeyVar,
+      dateFormatArgs,
+      rowDateTime,
+      contentInstances,
+      titleNumber,
       tableColumns: [
         {
           key: 'patientName',

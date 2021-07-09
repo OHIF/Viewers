@@ -1,0 +1,8 @@
+title Config Point Study List Usage
+
+WorkList->StudyList: call ReactJS function ( {configPoint,...} )
+StudyList->StudyList: configPoint = configPoint || StudyListConfigPoint
+StudyList->configPoint: const tableColumns = configPoint.tableColumns
+StudyList->StudyList: iterate over tableColumns as configuration values
+
+
