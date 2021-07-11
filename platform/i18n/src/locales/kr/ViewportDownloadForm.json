@@ -1,0 +1,14 @@
+{
+  "emptyFilenameError": "파일 이름을 지정해 주십시오.",
+  "fileType": "파일 타입",
+  "filename": "파일명",
+  "formTitle": "이미지 치수, 파일명, 출력 이미지 파일 타입을 지정해 주십시오.",
+  "imageHeight": "이미지 높이 (px)",
+  "imagePreview": "이미지 미리보기",
+  "imageWidth": "이미지 너비 (px)",
+  "keepAspectRatio": "화면비 유지",
+  "loadingPreview": "미리보기 이미지 로딩중...",
+  "minHeightError": "최소 이미지 높이는 100px 입니다..",
+  "minWidthError": "최소 이미지 너비는 100px. 입니다.",
+  "showAnnotations": "주석 보기"
+}

@@ -1,0 +1,10 @@
+{
+  "AccessionNumber": "Accession #",
+  "Empty": "Empty",
+  "MRN": "MRN",
+  "Modality": "모달리티",
+  "PatientName": "환자명",
+  "StudyDate": "검사 날짜",
+  "StudyDescription": "설명",
+  "StudyList": "검사 목록"
+}
