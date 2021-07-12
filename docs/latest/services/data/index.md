@@ -13,6 +13,7 @@ Each services have their own internal state which they handle.
 We maintain the following non-ui Services:
 
 - [DicomMetadata Store](./../data/DicomMetadataStore.md)
+- [Config Point](./../data/ConfigPointService.md)
 - [DisplaySet Service](./../data/DisplaySetService.md)
 - [Hanging Protocol Service](../data/HangingProtocolService.md)
 - [Toolbar Service](../data/ToolbarService.md)
