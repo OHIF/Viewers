@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, ButtonGroup, Typography, Select } from '../';
 import { useTranslation } from 'react-i18next';
-import ConfigPointService from '../../../../core/src/services/ConfigPointService/ConfigPointService';
+import ConfigPoint from 'config-point';
 
 export function StudyListPagination({
   onChangePage,
@@ -104,6 +104,6 @@ const StudyListPaginationSettings = {
   ],
 };
 
-const StudyListPaginationConfig = ConfigPointService.addConfig("StudyListPagination", StudyListPaginationSettings);
+const StudyListPaginationConfigPoint = ConfigPoint.addConfig("StudyListPaginationConfigPoint", StudyListPaginationSettings);
 
 export default StudyListPagination;

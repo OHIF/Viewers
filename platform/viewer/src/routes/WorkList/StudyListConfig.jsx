@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
-import { ConfigPointService, ConfigPointOp } from '../../../../core/src/services/ConfigPointService/ConfigPointService';
+import { ConfigPoint, ConfigPointOp } from 'config-point';
 
 import {
   Icon,
@@ -130,7 +130,7 @@ const dateFormatArgs = ({ column, rowData }) => {
   return { date, time };
 };
 
-export const { StudyListConfigPoint, PatientListConfigPoint } = ConfigPointService.register([
+export const { StudyListConfigPoint, PatientListConfigPoint } = ConfigPoint.register([
   {
     configName: 'PatientListConfigPoint',
     configBase: {
