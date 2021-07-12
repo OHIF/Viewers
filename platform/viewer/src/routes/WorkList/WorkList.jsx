@@ -10,7 +10,8 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
-import { utils, ConfigPointService } from '@ohif/core';
+import { utils } from '@ohif/core';
+import ConfigPoint from 'config-point';
 
 import {
   Icon,
@@ -390,6 +391,6 @@ export const DefaultWorkListConfig = {
   reactFunction: WorkList,
 };
 
-const WorkListConfig = ConfigPointService.addConfig('WorkList', DefaultWorkListConfig);
+const WorkListConfig = ConfigPoint.addConfig('WorkList', DefaultWorkListConfig);
 
 export default WorkList;

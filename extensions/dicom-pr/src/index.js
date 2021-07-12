@@ -3,7 +3,7 @@ import { IWebApiDataSource } from '@ohif/core';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { data } from 'autoprefixer';
-
+import ConfigPoint from 'config-point';
 /**
  *
  */
@@ -17,8 +17,6 @@ export default {
     hotkeysManager.setHotkeys([
       { commandName: 'exampleActionDef', label: 'Example', keys: ['w'] },
     ]);
-    const { ConfigPointService } = servicesManager.services;
-    const studyListPaginationConfig = ConfigPointService.addLevel("StudyListPagination");
     studyListPaginationConfig.extendLevel("demo", { ranges: [null, { label: 'Fifty' }, null, { value: 10, label: 'ten' }] });
   },
   beforeExtInit() { },

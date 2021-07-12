@@ -18,7 +18,7 @@ export function StudyListPagination({
     onChangePage(toPage);
   };
 
-  configPoint = configPoint || StudyListPaginationConfig;
+  configPoint = configPoint || StudyListPaginationConfigPoint;
   const ranges = configPoint.ranges;
   const [selectedRange, setSelectedRange] = useState(
     ranges.find(r => r.value === perPage)
@@ -104,6 +104,6 @@ const StudyListPaginationSettings = {
   ],
 };
 
-const StudyListPaginationConfigPoint = ConfigPoint.addConfig("StudyListPaginationConfigPoint", StudyListPaginationSettings);
+export const StudyListPaginationConfigPoint = ConfigPoint.addConfig("StudyListPaginationConfigPoint", StudyListPaginationSettings);
 
 export default StudyListPagination;
