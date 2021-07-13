@@ -55,13 +55,15 @@ component across all application.
       );
     };
     const ViewportActionButtons = () => {
-    const [dialogState, dialogApi] = useViewportDialog();
-      return (
-        <Button onClick={() => dialogApi.show({ content: ViewportNotification })}>
-          Open Dialog
-        </Button>
-      );
-    };
+      const [dialogState, dialogApi] = useViewportDialog();
+        return (
+          <Button onClick={() => dialogApi.show({ content: ViewportNotification })}>
+            Open Dialog
+          </Button>
+        );
+      };
+    }
+
     return (
       <div className="w-full flex flex-row p-4" style={{height: '400px'}}>
         <div className="flex flex-1 items-center justify-center h-full w-full bg-black text-white border border-primary-main">

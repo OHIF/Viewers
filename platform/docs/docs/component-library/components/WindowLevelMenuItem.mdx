@@ -19,14 +19,12 @@ import { WindowLevelMenuItem, ListMenu } from '@ohif/ui';
 ```
 
 ```jsx live
-{
-  () => {
-    return (
-      <div className="py-10 flex justify-center">
-        <ListMenu renderer={WindowLevelMenuItem} items={[]} />
-      </div>
-    );
-  };
+function() {
+  return (
+    <div className="py-10 flex justify-center">
+      <ListMenu renderer={WindowLevelMenuItem} items={[]} />
+    </div>
+  );
 }
 ```
 

@@ -19,48 +19,46 @@ import { Dropdown } from '@ohif/ui';
 ```
 
 ```jsx live
-{
-  () => {
-    const handleClick = () => {
-      alert('Clicked');
-    };
-    return (
-      <div className="py-4">
-        <Dropdown
-          showDropdownIcon={false}
-          list={[
-            {
-              title: 'Option 1',
-              icon: 'info',
-              onClick: handleClick,
-            },
-            {
-              title: 'Option 2',
-              icon: 'settings',
-              onClick: handleClick,
-            },
-          ]}
-        >
-          <IconButton
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
-          >
-            <Icon name="settings" />
-          </IconButton>
-          <IconButton
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
-          >
-            <Icon name="chevron-down" />
-          </IconButton>
-        </Dropdown>
-      </div>
-    );
+function() {
+  const handleClick = () => {
+    alert('Clicked');
   };
+  return (
+    <div className="py-4">
+      <Dropdown
+        showDropdownIcon={false}
+        list={[
+          {
+            title: 'Option 1',
+            icon: 'info',
+            onClick: handleClick,
+          },
+          {
+            title: 'Option 2',
+            icon: 'settings',
+            onClick: handleClick,
+          },
+        ]}
+      >
+        <IconButton
+          variant="text"
+          color="inherit"
+          size="initial"
+          className="text-primary-active"
+        >
+          <Icon name="settings" />
+        </IconButton>
+        <IconButton
+          variant="text"
+          color="inherit"
+          size="initial"
+          className="text-primary-active"
+        >
+          <Icon name="chevron-down" />
+        </IconButton>
+      </Dropdown>
+    </div>
+  );
 }
 ```
 

@@ -19,22 +19,20 @@ import { CinePlayer } from '@ohif/ui';
 ## Basic usage
 
 ```jsx live
-{
-  () => {
-    return (
-      <div className="flex flex-col flex-1 p-4 items-center">
-        <div className="w-56">
-          <CinePlayer
-            cineMinFrameRate={1}
-            cineMaxFrameRate={90}
-            cineStepFrameRate={1}
-            cineFrameRate={24}
-            isPlaying={false}
-          />
-        </div>
+function() {
+  return (
+    <div className="flex flex-col flex-1 p-4 items-center">
+      <div className="w-56">
+        <CinePlayer
+          cineMinFrameRate={1}
+          cineMaxFrameRate={90}
+          cineStepFrameRate={1}
+          cineFrameRate={24}
+          isPlaying={false}
+        />
       </div>
-    );
-  };
+    </div>
+  );
 }
 ```
 

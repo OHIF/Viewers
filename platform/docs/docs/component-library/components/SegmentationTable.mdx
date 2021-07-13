@@ -17,19 +17,17 @@ import { SegmentationTable } from '@ohif/ui';
 ## Basic usage
 
 ```jsx live
-{
-  () => {
-    const tableData = {
-      title: 'Segments',
-      amount: 12,
-      data: new Array(12).fill(''),
-    };
-    return (
-      <div className="p-4 w-80">
-        <SegmentationTable {...tableData} />
-      </div>
-    );
+function() {
+  const tableData = {
+    title: 'Segments',
+    amount: 12,
+    data: new Array(12).fill(''),
   };
+  return (
+    <div className="p-4 w-80">
+      <SegmentationTable {...tableData} />
+    </div>
+  );
 }
 ```
 

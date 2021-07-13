@@ -17,21 +17,19 @@ import { Input } from '@ohif/ui';
 ## Basic usage
 
 ```jsx live
-{
-  () => {
-    const [inputValue, setInputValue] = React.useState('');
-    return (
-      <div className="p-4">
-        <Input
-          transparent
-          containerClassName="mb-3"
-          label="Label"
-          placeholder="With Label"
-        />
-        <Input placeholder="Without label" />
-      </div>
-    );
-  };
+function() {
+  const [inputValue, setInputValue] = React.useState('');
+  return (
+    <div className="p-4">
+      <Input
+        transparent
+        containerClassName="mb-3"
+        label="Label"
+        placeholder="With Label"
+      />
+      <Input placeholder="Without label" />
+    </div>
+  );
 }
 ```
 
