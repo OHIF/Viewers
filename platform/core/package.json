@@ -43,7 +43,7 @@
     "lodash.merge": "^4.6.1",
     "lodash.clonedeep": "^4.5.0",
     "moment": "^2.24.0",
-    "mousetrap": "^1.6.3",
+    "mousetrap": "^1.6.5",
     "query-string": "^6.14.0",
     "object-hash": "2.1.1",
     "cornerstone-math": "0.1.9",
