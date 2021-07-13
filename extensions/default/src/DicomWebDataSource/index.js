@@ -266,6 +266,10 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         study.isLoaded = true;
       }
 
+      // Google Cloud Healthcare doesn't return StudyInstanceUID, so we need to add
+      // it manually here
+      seriesSummaryMetadata.forEach(aSeries => { aSeries.StudyInstanceUID = StudyInstanceUID })
+
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
       const numberOfSeries = seriesPromises.length;
