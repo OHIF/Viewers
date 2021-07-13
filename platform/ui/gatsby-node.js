@@ -12,6 +12,10 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
             use: loaders.null(),
           },
           {
+            test: /core/,
+            use: loaders.null(),
+          },
+          {
             test: /cornerstone\-math/,
             use: loaders.null(),
           },

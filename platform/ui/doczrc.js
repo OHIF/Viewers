@@ -10,6 +10,9 @@ export default {
     'Navigation',
     // 'Other',
   ],
-  ignore: ['README.md'],
+  ignore: ['README.md', 'CHANGELOG.md'],
   base: '/',
+  src: './src',
+  files: '**/*.{md,markdown,mdx}',
+  propsParser: false,
 };
