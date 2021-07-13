@@ -4,7 +4,7 @@ menu: General
 route: components/toolbarButton
 ---
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 import { ToolbarButton } from '@ohif/ui';
 
@@ -19,17 +19,18 @@ import { ToolbarButton } from '@ohif/ui';
 ```
 
 ```jsx live
-function ToolbarButtonExample(props) {
-  // const [isActive, setIsActive] = useState(false);
+function() {
+  const [isActive, setIsActive] = useState(false);
+
   const tool = {
     id: 'Zoom',
     label: 'Zoom',
     icon: 'tool-zoom',
     type: null,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'Zoom' },
-    //onClick: () => setIsActive(true),
-    isActive: true,
+    /*commandName: 'setToolActive',
+    commandOptions: { toolName: 'Zoom' },*/
+    onInteraction: () => setIsActive(!isActive),
+    isActive,
   };
 
   return (

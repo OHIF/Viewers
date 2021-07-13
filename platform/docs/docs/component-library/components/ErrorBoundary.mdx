@@ -18,10 +18,10 @@ import { ErrorBoundary } from '@ohif/ui';
 
 ## Basic usage
 
-````jsx live
+```jsx live
   <div className="p-4">
     <ErrorBoundary context="Somewhere">
-      {() => {
+      function() {
         throw new Error('Error!');
         return <p></p>;
       }}
@@ -32,7 +32,7 @@ import { ErrorBoundary } from '@ohif/ui';
 ## Custom error fallback
 
 ```jsx live
-  {() => {
+  function() {
     const CustomFallback = ({ error, componentStack, resetErrorBoundary }) => {
       return (
         <div>
@@ -43,7 +43,7 @@ import { ErrorBoundary } from '@ohif/ui';
     return (
       <div className="p-4">
         <ErrorBoundary context="Somewhere" fallbackComponent={CustomFallback}>
-          {() => {
+          function() {
             throw new Error('Error!');
             return <p></p>;
           }}
