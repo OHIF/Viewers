@@ -1,0 +1,48 @@
+---
+name: Date Range
+menu: Form
+route: components/date-range
+---
+
+import { useState } from 'react';
+
+import { DateRange } from '@ohif/ui';
+
+# Date Range
+
+Date Range is used to select a range of dates.
+
+## Import
+
+```javascript
+import { DateRange } from '@ohif/ui';
+```
+
+## Date Range
+
+```jsx live
+{
+  () => {
+    const [dates, setDates] = useState({
+      startDate: null,
+      endDate: null,
+    });
+    return (
+      <div className="p-4 flex flex-col items-center">
+        <DateRange
+          startDate={dates.startDate}
+          endDate={dates.endDate}
+          onChange={({ startDate, endDate }) =>
+            setDates({ startDate, endDate })
+          }
+        />
+      </div>
+    );
+  };
+}
+```
+
+## Properties
+
+<Props of={DateRange} />
+```

@@ -1,0 +1,36 @@
+---
+name: Window Level Menu Item
+menu: General
+route: components/windowLevelMenuItem
+---
+
+import { useState } from 'react';
+
+import { ListMenu, WindowLevelMenuItem } from '@ohif/ui';
+
+# Window Level Menu Item
+
+Window Level Menu Item are used as renderer of the ListMenu.
+
+## Import
+
+```javascript
+import { WindowLevelMenuItem, ListMenu } from '@ohif/ui';
+```
+
+```jsx live
+{
+  () => {
+    return (
+      <div className="py-10 flex justify-center">
+        <ListMenu renderer={WindowLevelMenuItem} items={[]} />
+      </div>
+    );
+  };
+}
+```
+
+## Properties
+
+<Props of={WindowLevelMenuItem} />
+```

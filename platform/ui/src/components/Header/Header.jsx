@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton, Dropdown } from '../';
 
 function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, isSticky, WhiteLabeling }) {
   const { t } = useTranslation('Header');

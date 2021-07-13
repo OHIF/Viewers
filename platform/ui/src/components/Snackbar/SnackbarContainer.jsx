@@ -1,6 +1,6 @@
 import React from 'react';
-import SnackbarItem from './SnackbarItem';
-import { useSnackbar } from '../../contextProviders';
+import SnackbarItem from './SnackbarItem'
+import { useSnackbar } from '../../contextProviders/SnackbarProvider';
 
 import './Snackbar.css';
 

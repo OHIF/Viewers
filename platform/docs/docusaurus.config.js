@@ -72,6 +72,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   // },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
+    path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     'plugin-image-zoom', // 3rd party plugin for image click to pop
     [
       '@docusaurus/plugin-client-redirects',
@@ -80,10 +81,13 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         redirects: [
           {
             // we need this for https://cloud.google.com/healthcare/docs/how-tos/dicom-viewers
-            to: "/deployment/recipes/google-cloud-healthcare",
-            from: ['/connecting-to-image-archives/google-cloud-healthcare', '/connecting-to-image-archives/google-cloud-healthcare.html']
-          }
-        ]
+            to: '/deployment/recipes/google-cloud-healthcare',
+            from: [
+              '/connecting-to-image-archives/google-cloud-healthcare',
+              '/connecting-to-image-archives/google-cloud-healthcare.html',
+            ],
+          },
+        ],
         // createRedirects: function(path) {
         //   // redirect to /docs from /docs/introduction,
         //   // as introduction has been made the home doc
@@ -275,8 +279,18 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         srcDark: 'img/ohif-logo.svg',
       },
       items: [
-        { to: 'https://ohif.org/get-started', label: 'Get Started', target: '_self', position: 'left' },
-        { to: 'https://ohif.org/examples', label: 'Examples', target: '_self', position: 'left' },
+        {
+          to: 'https://ohif.org/get-started',
+          label: 'Get Started',
+          target: '_self',
+          position: 'left',
+        },
+        {
+          to: 'https://ohif.org/examples',
+          label: 'Examples',
+          target: '_self',
+          position: 'left',
+        },
         {
           position: 'left',
           to: '/',
@@ -284,8 +298,18 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           docId: 'Introduction',
           label: 'Docs',
         },
-        { to: 'https://ohif.org/community', label: 'Community', target: '_self', position: 'left' },
-        { to: 'next/help', activeBaseRegex: '(^/help$)|(/next/help)', label: 'Help', position: 'right' },
+        {
+          to: 'https://ohif.org/community',
+          label: 'Community',
+          target: '_self',
+          position: 'left',
+        },
+        {
+          to: 'next/help',
+          activeBaseRegex: '(^/help$)|(/next/help)',
+          label: 'Help',
+          position: 'right',
+        },
         // { to: 'https://react.ohif.org/', label: 'UI Component Library', position: 'left' },
         // {to: 'showcase', label: 'Showcase', position: 'left'},
         // right
@@ -299,7 +323,8 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           position: 'right',
           dropdownItemsAfter: [
             {
-              to: 'next/viewer/internationalization#contributing-with-new-languages',
+              to:
+                'next/viewer/internationalization#contributing-with-new-languages',
               label: 'Help Us Translate',
             },
           ],
@@ -308,12 +333,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           to: 'https://github.com/OHIF/Viewers',
           position: 'right',
           className: 'header-github-link',
-          'aria-label': 'GitHub Repository'
+          'aria-label': 'GitHub Repository',
         },
       ],
     },
     footer: {
-
       style: 'dark',
       links: [
         {

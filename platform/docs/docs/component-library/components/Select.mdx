@@ -1,0 +1,70 @@
+---
+name: Select
+menu: Form
+route: components/select
+---
+
+import { Select } from '@ohif/ui';
+
+# Select
+
+## Import
+
+```javascript
+import { Select } from '@ohif/ui';
+```
+
+## Basic usage
+
+````jsx live
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-56">
+      <Select
+        options={[
+          { value: 'ONE', label: 'ONE' },
+          { value: 'TWO', label: 'TWO' },
+          { value: 'THREE', label: 'THREE' },
+          { value: 'FOUR', label: 'FOUR' },
+        ]}
+      />
+    </div>
+  </div>
+```
+
+## Disabled
+
+```jsx live
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-56">
+      <Select
+        isDisabled
+        options={[
+          { value: 'ONE', label: 'ONE' },
+          { value: 'TWO', label: 'TWO' },
+          { value: 'THREE', label: 'THREE' },
+          { value: 'FOUR', label: 'FOUR' },
+        ]}
+      />
+    </div>
+  </div>
+```
+
+## No Options
+
+```jsx live
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-56">
+      <Select
+        noOptionsMessage={() => {
+          'No Options';
+        }}
+        options={[]}
+      />
+    </div>
+  </div>
+```
+
+## Properties
+
+<Props of={Select} />
+````
