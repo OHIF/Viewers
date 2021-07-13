@@ -15,14 +15,15 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commandName, commandOptions) {
+function _createButton(type, id, icon, label, commandName, commandOptions, tooltip) {
   return {
     id,
     icon,
     label,
     type,
     commandName,
-    commandOptions
+    commandOptions,
+    tooltip,
   };
 }
 
@@ -56,9 +57,14 @@ export default [
       groupId: 'MeasurementTools',
       isRadio: true, // ?
       // Switch?
-      primary: _createToolButton('Length', 'tool-length', 'Length', undefined, {
-        toolName: 'Length',
-      }),
+      primary: _createToolButton(
+        'Length',
+        'tool-length',
+        'Length',
+        undefined,
+        { toolName: 'Length' },
+        'Length'
+      ),
       secondary: {
         icon: 'chevron-down',
         label: '',
@@ -66,22 +72,29 @@ export default [
         tooltip: 'More Measure Tools',
       },
       items: [
-        _createToolButton('Length', 'tool-length', 'Length', undefined, {
-          toolName: 'Length',
-        }),
+        _createToolButton(
+          'Length',
+          'tool-length',
+          'Length',
+          undefined,
+          { toolName: 'Length' },
+          'Length Tool'
+        ),
         _createToolButton(
           'Bidirectional',
           'tool-bidirectional',
           'Bidirectional',
           undefined,
-          { toolName: 'Bidirectional' }
+          { toolName: 'Bidirectional' },
+          'Bidirectional Tool'
         ),
         _createToolButton(
           'ArrowAnnotate',
           'tool-annotate',
           'Annotation',
           undefined,
-          { toolName: 'ArrowAnnotate' }
+          { toolName: 'ArrowAnnotate' },
+          'Arrow Annotate'
         ),
         _createToolButton(
           'EllipticalRoi',
@@ -90,7 +103,8 @@ export default [
           undefined,
           {
             toolName: 'EllipticalRoi',
-          }
+          },
+          'Ellipse Tool'
         ),
       ],
     },
@@ -117,7 +131,8 @@ export default [
         'tool-window-level',
         'Window Level',
         undefined,
-        { toolName: 'Wwwc' }
+        { toolName: 'Wwwc' },
+        'Window Level'
       ),
       secondary: {
         icon: 'chevron-down',
@@ -172,7 +187,9 @@ export default [
         'Reset',
         'tool-reset',
         'Reset View',
-        'resetViewport'
+        'resetViewport',
+        undefined,
+        'Reset'
       ),
       secondary: {
         icon: 'chevron-down',
@@ -185,49 +202,80 @@ export default [
           'Reset',
           'tool-reset',
           'Reset View',
-          'resetViewport'
+          'resetViewport',
+          undefined,
+          'Reset'
         ),
         _createActionButton(
           'rotate-right',
           'tool-rotate-right',
           'Rotate Right',
-          'rotateViewportCW'
+          'rotateViewportCW',
+          undefined,
+          'Rotate +90'
         ),
         _createActionButton(
           'flip-horizontal',
           'tool-flip-horizontal',
           'Flip Horizontally',
-          'flipViewportHorizontal'
+          'flipViewportHorizontal',
+          undefined,
+          'Flip Horizontal'
         ),
         _createToolButton(
           'StackScroll',
           'tool-stack-scroll',
           'Stack Scroll',
           undefined,
-          { toolName: 'StackScroll' }
+          { toolName: 'StackScroll' },
+          'Stack Scroll'
         ),
-        _createToolButton('Magnify', 'tool-magnify', 'Magnify', undefined, {
-          toolName: 'Magnify',
-        }),
+        _createToolButton(
+          'Magnify',
+          'tool-magnify',
+          'Magnify',
+          undefined,
+          { toolName: 'Magnify' },
+          'Magnify'
+        ),
         _createActionButton(
           'invert',
           'tool-invert',
           'Invert',
-          'invertViewport'
+          'invertViewport',
+          undefined,
+          'Invert Colors'
         ),
-        _createToggleButton('cine', 'tool-cine', 'Cine', 'toggleCine'),
-        _createToolButton('Angle', 'tool-angle', 'Angle', undefined, {
-          toolName: 'Angle',
-        }),
-        _createToolButton('DragProbe', 'tool-probe', 'Probe', undefined, {
-          toolName: 'DragProbe',
-        }),
+        _createToggleButton(
+          'cine',
+          'tool-cine',
+          'Cine',
+          'toggleCine',
+          'Cine'
+        ),
+        _createToolButton(
+          'Angle',
+          'tool-angle',
+          'Angle',
+          undefined,
+          { toolName: 'Angle' },
+          'Angle'
+        ),
+        _createToolButton(
+          'DragProbe',
+          'tool-probe',
+          'Probe',
+          undefined,
+          { toolName: 'DragProbe' },
+          'Probe'
+        ),
         _createToolButton(
           'Rectangle',
           'tool-rectangle',
           'Rectangle',
           undefined,
-          { toolName: 'RectangleRoi' }
+          { toolName: 'RectangleRoi' },
+          'Rectangle'
         ),
       ],
     },
