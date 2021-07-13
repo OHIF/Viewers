@@ -2,8 +2,25 @@ const path = require('path');
 // ~~ Plugins
 const PnpWebpackPlugin = require(`pnp-webpack-plugin`); // Required until Webpack@5
 
-exports.onCreateWebpackConfig = args => {
-  args.actions.setWebpackConfig({
+exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
+  if (stage === 'build-html' || stage === 'develop-html') {
+    actions.setWebpackConfig({
+      module: {
+        rules: [
+          {
+            test: /\@ohif\/core/,
+            use: loaders.null(),
+          },
+          {
+            test: /cornerstone\-math/,
+            use: loaders.null(),
+          },
+        ],
+      },
+    });
+  }
+
+  actions.setWebpackConfig({
     node: { fs: 'empty' },
     resolve: {
       plugins: [PnpWebpackPlugin],
@@ -14,9 +31,6 @@ exports.onCreateWebpackConfig = args => {
         // .docz
         'node_modules',
       ],
-      // resolve: {
-      //   symlinks: true,
-      // },
     },
     resolveLoader: {
       plugins: [PnpWebpackPlugin.moduleLoader(module)],
