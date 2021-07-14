@@ -2,7 +2,7 @@ module.exports = {
   prefix: '',
   important: false,
   separator: ':',
-  purge: ['./docs/**/*.jsx', './docs/**/*.mdx'],
+  //purge: ['./docs/**/*.jsx', './docs/**/*.mdx'],
   theme: {
     screens: {
       sm: '640px',

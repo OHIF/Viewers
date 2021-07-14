@@ -6,6 +6,7 @@ route: components/ThumbnailTracked
 
 
 import { ThumbnailTracked } from '../';
+import { ComponentPropsTable } from '../../../src/components/ComponentPropsTable.jsx';
 
 # ThumbnailTracked
 
@@ -36,4 +37,4 @@ import { ThumbnailTracked } from '@ohif/ui';
 
 ## Properties
 
-<Props of={ThumbnailTracked} />
+<ComponentPropsTable componentName={'ThumbnailTracked'} />

@@ -34,4 +34,4 @@ import { Thumbnail } from '@ohif/ui';
 
 ## Properties
 
-<Props of={ThumbnailNoImage} />
+<ComponentPropsTable componentName={'ThumbnailNoImage'} />

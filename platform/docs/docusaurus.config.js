@@ -46,8 +46,8 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 (module.exports = {
   title: 'OHIF',
-  tagline: 'Build optimized websites quickly, focus on your content',
-  organizationName: 'facebook',
+  tagline: 'Open-source web-based medical imaging viewer',
+  organizationName: 'Open Health Imaging Foundation',
   projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
@@ -188,6 +188,20 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     //     ],
     //   },
     // ],
+    [
+      'docusaurus-plugin-react-docgen',
+      {
+        // pass in a single string or an array of strings
+        //id: 'docgen-button',
+        src: ['../ui/src/components/**/*.jsx'],
+        global: true,
+        /*route: {
+          path: '/docs/api',
+          component: require.resolve('./ComponentDocPage.jsx'),
+          exact: true,
+        },*/
+      },
+    ],
   ],
   presets: [
     [
@@ -368,10 +382,6 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         {
           title: 'Community',
           items: [
-            {
-              label: 'Feedback',
-              to: 'https://community.ohif.org/',
-            },
             {
               label: 'Discussion board',
               to: 'https://community.ohif.org/',

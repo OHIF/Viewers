@@ -5,6 +5,7 @@ route: components/table
 ---
 
 import { Table, TableHead, TableBody, TableRow, TableCell } from '@ohif/ui';
+import { ComponentPropsTable } from '../../../src/components/ComponentPropsTable.jsx';
 
 # Table
 
@@ -58,21 +59,21 @@ passing a `className` or `style`.
 
 ### Table Props
 
-<Props of={Table} />
+<ComponentPropsTable componentName={'Table'} />
 
 ### TableHead Props
 
-<Props of={TableHead} />
+<ComponentPropsTable componentName={'TableHead'} />
 
 ### TableBody Props
 
-<Props of={TableBody} />
+<ComponentPropsTable componentName={'TableBody'} />
 
 ### TableRow Props
 
-<Props of={TableRow} />
+<ComponentPropsTable componentName={'TableRow'} />
 
 ### TableCell Props
 
-<Props of={TableCell} />
+<ComponentPropsTable componentName={'TableCell'} />
 ```

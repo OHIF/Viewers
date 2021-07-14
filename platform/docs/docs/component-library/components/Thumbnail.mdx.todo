@@ -37,4 +37,4 @@ import { Thumbnail } from '@ohif/ui';
 
 ## Properties
 
-<Props of={Thumbnail} />
+<ComponentPropsTable componentName={'Thumbnail'} />
