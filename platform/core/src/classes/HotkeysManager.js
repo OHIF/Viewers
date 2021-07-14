@@ -1,6 +1,6 @@
 import objectHash from 'object-hash';
-import hotkeys from './../utils/hotkeys';
 import log from './../log.js';
+import hotkeys from './../utils/hotkeys';
 
 /**
  *
@@ -26,6 +26,8 @@ export class HotkeysManager {
 
     this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
+
+    hotkeys.initialize();
   }
 
   /**
@@ -163,25 +165,40 @@ export class HotkeysManager {
    * @param {String} extension
    * @returns {undefined}
    */
-  registerHotkeys({ commandName, commandOptions = {}, keys, label, isEditable } = {}, extension) {
+  registerHotkeys(
+    { commandName, commandOptions = {}, keys, label, isEditable } = {},
+    extension
+  ) {
     if (!commandName) {
       throw new Error(`No command was defined for hotkey "${keys}"`);
     }
 
     const commandHash = objectHash({ commandName, commandOptions });
-    const options = Object.keys(commandOptions).length ? JSON.stringify(commandOptions) : 'no';
+    const options = Object.keys(commandOptions).length
+      ? JSON.stringify(commandOptions)
+      : 'no';
     const previouslyRegisteredDefinition = this.hotkeyDefinitions[commandHash];
 
     if (previouslyRegisteredDefinition) {
       const previouslyRegisteredKeys = previouslyRegisteredDefinition.keys;
       this._unbindHotkeys(commandName, previouslyRegisteredKeys);
-      log.info(`[hotkeys] Unbinding ${commandName} with ${options} options from ${previouslyRegisteredKeys}`);
+      log.info(
+        `[hotkeys] Unbinding ${commandName} with ${options} options from ${previouslyRegisteredKeys}`
+      );
     }
 
     // Set definition & bind
-    this.hotkeyDefinitions[commandHash] = { commandName, commandOptions, keys, label, isEditable };
+    this.hotkeyDefinitions[commandHash] = {
+      commandName,
+      commandOptions,
+      keys,
+      label,
+      isEditable,
+    };
     this._bindHotkeys(commandName, commandOptions, keys);
-    log.info(`[hotkeys] Binding ${commandName} with ${options} options to ${keys}`);
+    log.info(
+      `[hotkeys] Binding ${commandName} with ${options} options to ${keys}`
+    );
   }
 
   /**

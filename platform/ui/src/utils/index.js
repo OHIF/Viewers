@@ -1,7 +1,8 @@
 import getMockedStudies from './getMockedStudies';
+import hotkeys from './hotkeys';
 
-const utils = { getMockedStudies };
+const utils = { getMockedStudies, hotkeys };
 
-export { getMockedStudies };
+export { getMockedStudies, hotkeys };
 
 export default utils;

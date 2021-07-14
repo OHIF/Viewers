@@ -6,3 +6,5 @@
 /pwa/* /pwa/index.html 200
 # UI Demo
 /ui/* /ui/index.html 200
+# UI Demo
+/docs/* /docs/index.html 200

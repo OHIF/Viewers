@@ -9,12 +9,13 @@ const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 // ~~ PLUGINS
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
-const { UnusedFilesWebpackPlugin } = require("unused-files-webpack-plugin");
 
 //
 dotenv.config();
@@ -30,7 +31,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
+    devtool: isProdBuild ? 'source-map' : 'eval',
     entry: {
       app: `${SRC_DIR}/index.js`,
     },
@@ -55,9 +56,16 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
         loadShadersRule,
+        {
+          test: /\.m?js/,
+          resolve: {
+            fullySpecified: false,
+          },
+        },
       ],
     },
     resolve: {
+      mainFields: ['browser', 'module', 'main'],
       alias: {
         // Viewer project
         '@': path.resolve(__dirname, '../platform/viewer/src'),
@@ -81,6 +89,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       extensions: ['.js', '.jsx', '.json', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
+      fallback: { fs: false, path: false },
     },
     plugins: [
       new webpack.DefinePlugin({
@@ -89,7 +98,9 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
-        'process.env.VERSION_NUMBER': JSON.stringify(process.env.VERSION_NUMBER || PACKAGE.version || ''),
+        'process.env.VERSION_NUMBER': JSON.stringify(
+          process.env.VERSION_NUMBER || PACKAGE.version || ''
+        ),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
@@ -99,33 +110,23 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.LOCIZE_API_KEY': JSON.stringify(
           process.env.LOCIZE_API_KEY || ''
         ),
+        'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(
+          process.env.REACT_APP_I18N_DEBUG || ''
+        ),
       }),
-      new UnusedFilesWebpackPlugin({
-        failOnUnused: false,
-        globOptions: {
-          ignore: [
-            "node_modules/**/*",
-            "index.umd.js",
-            "sanity.test.js",
-            "__mocks__/fileMock.js",
-            "__tests__/globalSetup.js"
-          ]
-        }
-      }),
+      // Uncomment to generate bundle analyzer
+      // new BundleAnalyzerPlugin(),
     ],
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881
     // For issue in cornerstone-wado-image-loader
-    node: {
+    /*node: {
       fs: 'empty',
-    },
+    },*/
   };
 
   if (isProdBuild) {
     config.optimization.minimizer = [
       new TerserJSPlugin({
-        // Supports:
-        // source-map and inline-source-map
-        sourceMap: isProdBuild && !isQuickBuild,
         parallel: true,
         terserOptions: {},
       }),

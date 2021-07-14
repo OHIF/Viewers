@@ -11,8 +11,10 @@ import {
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
+import { utils } from '@ohif/ui';
+import { useNavigate } from 'react-router-dom';
 
+const { hotkeys } = utils;
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
@@ -91,6 +93,11 @@ function ViewerLayout({
   ViewportGridComp,
 }) {
   const [appConfig] = useAppConfig();
+  const navigate = useNavigate();
+
+  const onClickReturnButton = () => {
+    navigate('/')
+  };
 
   const { t } = useTranslation();
   const { show, hide } = useModal();
@@ -176,7 +183,7 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header menuOptions={menuOptions} WhiteLabeling={appConfig.whiteLabeling} >
+      <Header menuOptions={menuOptions} onClickReturnButton={onClickReturnButton} WhiteLabeling={appConfig.whiteLabeling} >
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
             <Toolbar servicesManager={servicesManager} />

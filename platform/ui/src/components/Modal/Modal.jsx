@@ -4,8 +4,8 @@ import ReactModal from 'react-modal';
 
 import './Modal.css';
 
-import { Typography, Icon } from '../../components';
-import { useModal } from '../../contextProviders';
+import { Typography, Icon } from '../';
+import { useModal } from '../../contextProviders'
 
 if (typeof document !== 'undefined') {
   ReactModal.setAppElement(document.getElementById('root'));

@@ -1,5 +1,5 @@
 window.config = {
-  routerBasename: '/pwa',
+  routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
   modes: [],

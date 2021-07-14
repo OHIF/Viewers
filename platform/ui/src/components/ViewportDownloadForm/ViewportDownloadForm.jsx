@@ -34,7 +34,7 @@ const FILE_TYPE_OPTIONS = [
 const DEFAULT_FILENAME = 'image';
 const REFRESH_VIEWPORT_TIMEOUT = 1000;
 
-const ViewportDownloadForm = ({
+export const ViewportDownloadForm = ({
   activeViewport,
   onClose,
   updateViewportPreview,

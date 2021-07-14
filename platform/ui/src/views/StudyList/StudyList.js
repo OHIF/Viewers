@@ -284,10 +284,10 @@ const StudyList = () => {
           />
         </>
       ) : (
-          <div className="flex flex-col items-center justify-center pt-48">
-            <EmptyStudies />
-          </div>
-        )}
+        <div className="flex flex-col items-center justify-center pt-48">
+          <EmptyStudies />
+        </div>
+      )}
     </div>
   );
 };

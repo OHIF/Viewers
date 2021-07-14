@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { HotkeyField, Typography } from '@ohif/ui';
+import { HotkeyField, Typography } from '../';
 import { useTranslation } from 'react-i18next';
 
 

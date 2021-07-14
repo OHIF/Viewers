@@ -144,4 +144,4 @@ export default function getIcon(key, props) {
   return React.createElement(ICONS[key], props);
 }
 
-export { ICONS };
+export { getIcon, ICONS };

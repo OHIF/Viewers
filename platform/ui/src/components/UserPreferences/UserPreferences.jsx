@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Select, Typography, Button, HotkeysPreferences } from '@ohif/ui';
+import { Select, Typography, Button, HotkeysPreferences } from '../';
 import { useTranslation } from 'react-i18next';
 
 const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage, disabled, hotkeyDefinitions, hotkeyDefaults, onCancel, onSubmit, onReset }) => {
