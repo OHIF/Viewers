@@ -2,8 +2,7 @@ module.exports = {
   prefix: '',
   important: false,
   separator: ':',
-  purge: false, // TODO: unclear how we should purge when using a component library in another app
-  //purge: ['./src/**/*.jsx', './src/**/*.js'],
+  purge: ['./docs/**/*.jsx', './docs/**/*.mdx'],
   theme: {
     screens: {
       sm: '640px',

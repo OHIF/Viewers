@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const ModalComponent = ({
+export const ModalComponent = ({
   content,
   contentProps,
   shouldCloseOnEsc,

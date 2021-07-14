@@ -33,5 +33,15 @@ module.exports = (env, argv) => {
       libraryTarget: 'umd',
       filename: pkg.main,
     },
+    externals: [
+      {
+        'cornerstone-math': {
+          commonjs: 'cornerstone-math',
+          commonjs2: 'cornerstone-math',
+          amd: 'cornerstone-math',
+          root: 'cornerstoneMath',
+        },
+      },
+    ],
   });
 };

@@ -1,5 +1,6 @@
 import toolbarButtons from './toolbarButtons.js';
-import { hotkeys } from '@ohif/core';
+import { utils } from '@ohif/ui';
+const { hotkeys } = utils;
 
 const ohif = {
   layout: 'org.ohif.default.layoutTemplateModule.viewerLayout',
@@ -17,7 +18,6 @@ const dicomsr = {
   sopClassHandler: 'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
 };
-
 
 export default function mode({ modeConfiguration }) {
   return {

@@ -2,6 +2,7 @@
 sidebar_position: 4
 sidebar_label: Internationalization
 ---
+
 # Viewer: Internationalization
 
 OHIF supports internationalization using [i18next](https://www.i18next.com/)
@@ -18,13 +19,12 @@ where is the main instance of i18n containing several languages and tools.
 </div>
 
 ## How to change language for the viewer?
-You can take a look into user manuals to see how to change the viewer's language.
-In summary you can change the language:
+
+You can take a look into user manuals to see how to change the viewer's
+language. In summary you can change the language:
 
 - In the preference modals
 - Using the language query in the URL: `lng=Test-LNG`
-
-
 
 ## Installing
 
@@ -74,25 +74,22 @@ This section will introduce you to [react-i18next](https://react.i18next.com/)
 basics and show how to implement the [t](https://www.i18next.com/overview/api#t)
 function easily.
 
-
 #### Using Hooks
+
 You can use `useTranslation` hooks that is provided by `react-i18next`
 
-
-You can read more about this [here](https://react.i18next.com/latest/usetranslation-hook).
-
+You can read more about this
+[here](https://react.i18next.com/latest/usetranslation-hook).
 
 ```js
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
 
 function MyComponent() {
   const { t } = useTranslation();
 
   return <p>{t('my translated text')}</p>;
 }
-
 ```
 
 ### Using outside of OHIF viewer
@@ -145,7 +142,7 @@ semantically or by use. Each `.json` file inside `@ohif/i18n` npm package
 becomes a new namespace automatically.
 
 - Buttons: All buttons translations
-- CineDialog: Translations for the toll tips inside the Cine Player Dialog
+- CineDialog: Translations for the tool tips inside the Cine Player Dialog
 - Common: all common jargons that can be reused like `t('$t(common:image)')`
 - Header: translations related to OHIF's Header Top Bar
 - MeasurementTable - Translations for the `@ohif/ui` Measurement Table
@@ -282,14 +279,14 @@ You can also set them manually, one by one, using this
 
 ---
 
-
-
 ## Test Language
-We have created a test language that its translations can be seen in the locales folder. You can copy paste the folder and its `.json` namespaces and add your custom
-language translations.
 
-> If you apply the test-LNG you can see all the elements get appended with 'Test {}'.
-> For instance `Study list` becomes `Test Study list`.
+We have created a test language that its translations can be seen in the locales
+folder. You can copy paste the folder and its `.json` namespaces and add your
+custom language translations.
+
+> If you apply the test-LNG you can see all the elements get appended with 'Test
+> {}'. For instance `Study list` becomes `Test Study list`.
 
 ## Language Detections
 
@@ -329,9 +326,18 @@ REACT_APP_I18N_DEBUG=true yarn run dev
 
 ## Contributing with new languages
 
-We have integrated `i18next` into the OHIF Viewer and hooked it up with Locize for translation management. Now we need your help to get the app translated into as many languages as possible, and ensure that we haven't missed pieces of the app that need translation. Locize has graciously offered to provide us with free usage of their product.
+We have integrated `i18next` into the OHIF Viewer and hooked it up with Locize
+for translation management. Now we need your help to get the app translated into
+as many languages as possible, and ensure that we haven't missed pieces of the
+app that need translation. Locize has graciously offered to provide us with free
+usage of their product.
 
-Once each crowd-sourcing project is completed, we can approve it and merge the changes into the main project. At that point, the language will be immediately available on https://viewer.ohif.org/ for testing, and can be used in any OHIF project. We will support usage through both the Locize CDN and by copying the language directly into the `@ohif/i18n` package, so that end users can serve the content from their own domains.
+Once each crowd-sourcing project is completed, we can approve it and merge the
+changes into the main project. At that point, the language will be immediately
+available on https://viewer.ohif.org/ for testing, and can be used in any OHIF
+project. We will support usage through both the Locize CDN and by copying the
+language directly into the `@ohif/i18n` package, so that end users can serve the
+content from their own domains.
 
 Here are a couple examples:
 
@@ -344,9 +350,12 @@ https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78
 Portugese:
 https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78?lng=pt-BR
 
-Here are some links you can use to sign up to help translate. All you have to do is sign up, translate the strings, and click Save. On our side, we have a dashboard to see how many strings are translated and by whom.
+Here are some links you can use to sign up to help translate. All you have to do
+is sign up, translate the strings, and click Save. On our side, we have a
+dashboard to see how many strings are translated and by whom.
 
-This is a pretty random set of languages, so please post below if you'd like a new language link to be added:
+This is a pretty random set of languages, so please post below if you'd like a
+new language link to be added:
 
 Languages:
 
@@ -382,4 +391,6 @@ Languages:
 
 [Portugese-Brazil](https://www.locize.io/register?invitation=Qc5Dq449xbblQqLTpWeMfsyFiu3gACcgpj0EIucQjjs9Ph9pzPLpq3MnZupF9t6N)
 
-Don't see your language in the above list? Add a request [here](https://github.com/OHIF/Viewers/issues/618) so that we can create the language for your translation contribution.
+Don't see your language in the above list? Add a request
+[here](https://github.com/OHIF/Viewers/issues/618) so that we can create the
+language for your translation contribution.

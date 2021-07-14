@@ -98,5 +98,10 @@ export {
   WindowLevelMenuItem,
 } from './components';
 
+/** These are mostly used in the docs */
+export { getIcon, ICONS } from './components/Icon/getIcon';
+export { BackgroundColor } from './pages/Colors/BackgroundColor';
+export { ModalComponent } from './contextProviders/ModalComponent';
+
 /** VIEWS */
 export { StudyList, Viewer } from './views';

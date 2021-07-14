@@ -1,13 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { hotkeys } from '@ohif/core';
 import Input from '../Input';
-
+import { hotkeys } from '../../utils/'
 import { getKeys, formatKeysForInput } from './utils';
-
-
-
 
 /**
  * HotkeyField
@@ -22,6 +18,10 @@ import { getKeys, formatKeysForInput } from './utils';
  */
 const HotkeyField = ({ disabled, keys, onChange, className, modifierKeys }) => {
   const inputValue = formatKeysForInput(keys);
+
+  useEffect(() => {
+    hotkeys.initialize();
+  }, [])
 
   const onInputKeyDown = event => {
     event.stopPropagation();

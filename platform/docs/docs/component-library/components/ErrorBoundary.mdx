@@ -19,38 +19,38 @@ import { ErrorBoundary } from '@ohif/ui';
 ## Basic usage
 
 ```jsx live
-  <div className="p-4">
-    <ErrorBoundary context="Somewhere">
-      function() {
-        throw new Error('Error!');
-        return <p></p>;
-      }}
-    </ErrorBoundary>
-  </div>
+<div className="p-4">
+  <ErrorBoundary context="Somewhere">
+    {function() {
+      throw new Error('Error!');
+      return <p></p>;
+    }}
+  </ErrorBoundary>
+</div>
 ```
 
 ## Custom error fallback
 
 ```jsx live
-  function() {
-    const CustomFallback = ({ error, componentStack, resetErrorBoundary }) => {
-      return (
-        <div>
-          <p>This is a custom fallback!</p>
-        </div>
-      );
-    };
+function() {
+  const CustomFallback = ({ error, componentStack, resetErrorBoundary }) => {
     return (
-      <div className="p-4">
-        <ErrorBoundary context="Somewhere" fallbackComponent={CustomFallback}>
-          function() {
-            throw new Error('Error!');
-            return <p></p>;
-          }}
-        </ErrorBoundary>
+      <div>
+        <p>This is a custom fallback!</p>
       </div>
     );
-  }}
+  };
+  return (
+    <div className="p-4">
+      <ErrorBoundary context="Somewhere" fallbackComponent={CustomFallback}>
+        {function() {
+          throw new Error('Error!');
+          return <p></p>;
+        }}
+      </ErrorBoundary>
+    </div>
+  );
+}
 ```
 
 ## Properties

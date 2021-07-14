@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function LayoutSelector({ onSelection }) {
+export function LayoutSelector({ onSelection }) {
   const [hoveredIndex, setHoveredIndex] = useState();
   const hoverX = hoveredIndex % 3;
   const hoverY = Math.floor(hoveredIndex / 3);
