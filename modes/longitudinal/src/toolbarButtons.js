@@ -251,6 +251,7 @@ export default [
           'tool-cine',
           'Cine',
           'toggleCine',
+          undefined,
           'Cine'
         ),
         _createToolButton(
