@@ -1,7 +1,8 @@
 function requestDisplaySetCreationForStudy(
   dataSource,
   DisplaySetService,
-  StudyInstanceUID
+  StudyInstanceUID,
+  madeInClient,
 ) {
   // TODO: is this already short-circuited by the map of Retrieve promises?
   if (
@@ -12,7 +13,7 @@ function requestDisplaySetCreationForStudy(
     return;
   }
 
-  dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
+  dataSource.retrieveSeriesMetadata({ StudyInstanceUID, madeInClient });
 }
 
 export default requestDisplaySetCreationForStudy;
