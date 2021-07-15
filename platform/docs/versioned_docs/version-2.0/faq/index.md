@@ -1,9 +1,7 @@
 ---
 sidebar_position: 1
 sidebar_label: Overview
-
----
-# Frequently Asked Questions
+---# Frequently Asked Questions
 
 ## Index
 
@@ -26,7 +24,7 @@ to communicate this to the community. If your requested feature is on the
 roadmap, then it will most likely be built at some point. If it is not, you are
 welcome to build it yourself and [contribute it](development/contributing.md).
 If you have resources and would like to fund the development of a feature,
-please [contact us](http://www.ohif.org) or work with community members that
+please [contact us](https://www.ohif.org) or work with community members that
 offer [consulting services][commercial-support].
 
 ### Who should I contact about Academic Collaborations?

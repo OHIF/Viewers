@@ -6,7 +6,7 @@ import { useDrop } from 'react-dnd';
 // NOTE: If we found a way to make `useDrop` conditional,
 // Or we provided a HOC of this component, we could provide
 // this UI without the DragAndDropContext dependency.
-export function ViewportPane({
+function ViewportPane({
   children,
   className,
   isActive,

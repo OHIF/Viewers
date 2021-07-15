@@ -4,7 +4,6 @@ sidebar_position: 2
 
 # Build for Production
 
-
 ### Build Machine Requirements
 
 - [Node.js & NPM](https://nodejs.org/en/download/)
@@ -25,7 +24,7 @@ More on: _[`git clone`](https://git-scm.com/docs/git-clone),
 
 _From .zip:_
 
-[OHIF/Viewers: react.zip](https://github.com/OHIF/Viewers/archive/master.zip)
+[OHIF/Viewers: master.zip](https://github.com/OHIF/Viewers/archive/master.zip)
 
 ### Restore Dependencies & Build
 
@@ -33,18 +32,18 @@ Open your terminal, and navigate to the directory containing the source files.
 Next run these commands:
 
 ```bash
-// If you haven't already, enable yarn workspaces
+# If you haven't already, enable yarn workspaces
 yarn config set workspaces-experimental true
 
-// Restore dependencies
+# Restore dependencies
 yarn install
 
-// Build source code for production
+# Build source code for production
 yarn run build
 ```
 
 If everything worked as expected, you should have a new `dist/` directory in the
-project's folder. It should roughly resemble the following:
+`platform/viewer/dist` folder. It should roughly resemble the following:
 
 ```bash title="<root>platform/viewer/dist/"
 ├── app-config.js
@@ -99,16 +98,15 @@ You can do this by running the following commands in the `dist/` output
 directory:
 
 ```bash
-// Install http-server as a globally available package
+# Install http-server as a globally available package
 yarn global add http-server
 
-// Change the directory to the platform/viewer
+# Change the directory to the platform/viewer
 
-// Serve the files in our current directory
-// Accessible at: `http://localhost:8080`
+# Serve the files in our current directory
+# Accessible at: `http://localhost:8080`
 npx http-server ./dist
 ```
-
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
     <iframe src="https://player.vimeo.com/video/551957266?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
@@ -124,8 +122,6 @@ web application. For a starting point, check out this repository's own use of:
 - [CircleCI][circleci]: [config.yaml][circleci-config]
 - [Netlify][netlify]: [netlify.toml][netlify.toml] |
   [build-deploy-preview.sh][build-deploy-preview.sh]
-
-
 
 <!-- prettier-ignore-start -->
 [circleci]: https://circleci.com/gh/OHIF/Viewers

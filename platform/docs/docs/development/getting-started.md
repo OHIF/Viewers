@@ -2,6 +2,7 @@
 sidebar_position: 1
 sidebar_label: Getting Started
 ---
+
 # Getting Started
 
 ## Setup
@@ -74,11 +75,9 @@ You should see the following output:
 
 ### 🎉 Celebrate 🎉
 
-
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
     <iframe src="https://player.vimeo.com/video/545988245?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
-
 
 ### Building for Production
 
@@ -97,7 +96,7 @@ yarn run build:package
 
 - If you receive a _"No Studies Found"_ message and do not see your studies, try
   changing the Study Date filters to a wider range.
-- If you see a 'Loading' message which never resolves, check your browser
+- If you see a 'Loading' message which never resolves, check your browser's
   JavaScript console inside the Developer Tools to identify any errors.
 
 <!--

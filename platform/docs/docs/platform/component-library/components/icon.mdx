@@ -1,0 +1,50 @@
+---
+name: Icon
+menu: General
+route: components/icon
+---
+
+import { Icon, ICONS } from '@ohif/ui';
+import { ComponentPropsTable } from '../../../../src/components/ComponentPropsTable.jsx';
+
+# Icon
+
+## Import
+
+```javascript
+import { Icon } from '@ohif/ui';
+```
+
+## Basic usage
+
+```jsx live
+<div className="p-4">
+  <Icon name="series-active" className="text-primary-light m-4" />
+</div>
+```
+
+## All Icons
+
+<div className="p-4 flex flex-wrap items-center bg-black py-8">
+  {Object.keys(ICONS)
+    .sort()
+    .map((name, i) => {
+      return (
+        <React.Fragment key={i}>
+          <div className="flex flex-col items-center w-48 py-4">
+            <div className="flex items-center justify-center rounded border border-primary-light p-4 m-2 w-20 h-20">
+              <Icon name={name} className="text-primary-light w-6" />
+            </div>
+            <div className="break-normal text-white">{name}</div>
+          </div>
+        </React.Fragment>
+      );
+    })}
+</div>
+
+## Properties
+
+<ComponentPropsTable componentName={'Icon'} />
+
+The `Icon` component takes a single prop of `name`, which indicates which Icon
+should be displayed. The icon inherit the component text/font styles.

@@ -1,31 +1,35 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 sidebar_label: Testing
 ---
+
 # Running Tests for OHIF
 
-We introduce here various test types that is available
-for OIHF, and how to run each test in order to make sure your contribution
-hasn't broken any existing functionalities. Idea and philosophy of each testing category is discussed in the second
-part of this page.
+We introduce here various test types that is available for OHIF, and how to run
+each test in order to make sure your contribution hasn't broken any existing
+functionalities. Idea and philosophy of each testing category is discussed in
+the second part of this page.
 
 ## Unit test
+
 To run the unit test:
+
 ```bash
 yarn run test:unit:ci
 ```
 
 Note: You should have already installed all the packages with `yarn install`.
 
-
 Running unit test will generate a report at the end showing the successful and
 unsuccessful tests with detailed explanations.
 
 ## End-to-end test
+
 For running the OHIF e2e test you need to run the following steps:
 
-- Create a mini-pacs for OHIF to access the images for testing. We download
-and run our lightweight implementation which provides a collection of DICOM studies ([source code][mini-pacs]).
+- Create a mini-pacs for OHIF to access the images for testing. We download and
+  run our lightweight implementation which provides a collection of DICOM
+  studies ([source code][mini-pacs]).
 
   ```bash
   docker run -p 5985:5985 -p 5984:5984 -e USE_POUCHDB=true -e DB_SERVER=http://0.0.0.0 ohif/viewer-testdata:0.1-test
@@ -35,7 +39,8 @@ and run our lightweight implementation which provides a collection of DICOM stud
 
   ![](../assets/img/docker-pacs.png)
 
-- Open a new terminal, navigate to the OHIF project, and run OHIF with the dicom-server config
+- Open a new terminal, navigate to the OHIF project, and run OHIF with the
+  dicom-server config
 
   ```bash
   APP_CONFIG=config/dicomweb-server.js yarn start
@@ -45,7 +50,7 @@ and run our lightweight implementation which provides a collection of DICOM stud
 
   ![OHIF-e2e-test-studies](../assets/img/OHIF-e2e-test-studies.png)
 
-- Open a new terminal inside the OIHF project, and run the e2e cypress test
+- Open a new terminal inside the OHIF project, and run the e2e cypress test
 
   ```bash
   yarn run test:e2e
@@ -61,11 +66,6 @@ and run our lightweight implementation which provides a collection of DICOM stud
   each other.
 
   ![e2e-cypress-final](../assets/img/e2e-cypress-final.png)
-
-
-
-
-
 
 ## Testing Philosiphy
 

@@ -4,7 +4,6 @@ slug: /
 sidebar_position: 1
 ---
 
-
 <!-- <div class='row'>
 	<div class='column' style='text-align: right; padding: 0 20px'>
 		<strong>Looking for a Live Demo?</strong>
@@ -21,7 +20,6 @@ sidebar_position: 1
 	<strong>Looking for a Live Demo?</strong>
 </div>
 
-
 <!-- <a href="https://www.netlify.com"> -->
 
 <div className="text--center">
@@ -33,7 +31,6 @@ sidebar_position: 1
 <!--
 <img className={{width:'50px'}} src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"/>
 </a> -->
-
 
 > ATTENTION! You are looking at the docs for the `React` version of the OHIF
 > Viewer. If you're looking for the `Meteor` version's documentation (now
@@ -71,7 +68,7 @@ Check out these helpful links:
   -->
 
 <!-- prettier-ignore-start -->
-[ohif-org]: http://www.ohif.org
+[ohif-org]: https://www.ohif.org
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [gh-issues]: https://github.com/OHIF/Viewers/issues
 <!-- prettier-ignore-end -->

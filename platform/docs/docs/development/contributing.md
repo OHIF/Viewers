@@ -1,7 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 sidebar_label: Contributing
 ---
+
 # Contributing
 
 ## How can I help?
@@ -12,7 +13,7 @@ should be implemented, please don't hesitate to create a new issue. At a
 minimum, you may want to read the following documentation:
 
 - [Getting Started](/development/getting-started.md)
-- [Architecture](../architecture.md)
+- [Architecture](./architecture.md)
 
 Pull requests that are:
 
@@ -49,9 +50,8 @@ On your local file system:
   - [`yarn link`](https://yarnpkg.com/en/docs/cli/link)
   - `yarn run dev`
 
-
-- Open a new terminal/shell
-- Navigate to `ohif/viewers` (the root of ohif project)
+* Open a new terminal/shell
+* Navigate to `ohif/viewers` (the root of ohif project)
   - `yarn install`
   - [`yarn link cornerstone-tools`](https://yarnpkg.com/en/docs/cli/link)
   - `yarn run dev`
@@ -59,11 +59,7 @@ On your local file system:
 As you make changed to `cornerstone-tools`, and it's output is rebuilt, you
 should see the following behavior:
 
-
-
 ![tools](..//assets/img/cornerstone-tools-link.gif)
-
-
 
 If you wish to stop using your local package, run the following commands in the
 `ohif/viewers` repository root:
@@ -101,9 +97,10 @@ there are a lot of factors that can influence the behavior of our development
 server and bundler. If you encounter issues not addressed here, please don't
 hesitate to reach out on GitHub.
 
-Sometimes you might encounter a situation where the linking doesn't work as expected.
-This might happen when there are multiple linked packages with the same name.
-You can [remove][unlink] the linked packages inside yarn and try again.
+Sometimes you might encounter a situation where the linking doesn't work as
+expected. This might happen when there are multiple linked packages with the
+same name. You can [remove][unlink] the linked packages inside yarn and try
+again.
 
 ## Any guidance on submitting changes?
 

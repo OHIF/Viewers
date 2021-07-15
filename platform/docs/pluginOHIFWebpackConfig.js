@@ -21,7 +21,7 @@ module.exports = function(context, options) {
         },
       };
     },
-    configurePostCss(postcssOptions) {
+    /*configurePostCss(postcssOptions) {
       postcssOptions.plugins.push(
         require('postcss-import'),
         require('tailwindcss'),
@@ -33,6 +33,6 @@ module.exports = function(context, options) {
         })
       );
       return postcssOptions;
-    },
+    },*/
   };
 };

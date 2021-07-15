@@ -2,6 +2,7 @@ module.exports = {
   prefix: '',
   important: false,
   separator: ':',
+  purge: false,
   //purge: ['./docs/**/*.jsx', './docs/**/*.mdx'],
   theme: {
     screens: {

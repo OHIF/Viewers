@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export function ViewportGrid({ numRows, numCols, children }) {
+function ViewportGrid({ numRows, numCols, children }) {
   const rowSize = 100 / numRows;
   const colSize = 100 / numCols;
 

@@ -1,0 +1,7 @@
+---
+sidebar_position: 9
+sidebar_label: Migration to v3
+---
+
+> New `OHIF-v3` architecture has made OHIF a general purpose extensible medical
+> imaging **platform**, as opposed to a configurable viewer.

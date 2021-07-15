@@ -2,7 +2,8 @@
 sidebar_position: 1
 sidebar_label: Pre Registration
 ---
-# Lifecylce Hook: preRegistration
+
+# Lifecycle Hook: preRegistration
 
 If an extension defines the `preRegistration` lifecycle hook, it is called
 before any modules are registered in the `ExtensionManager`. This hook can be

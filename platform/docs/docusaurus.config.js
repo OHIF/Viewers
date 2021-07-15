@@ -337,8 +337,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           position: 'right',
           dropdownItemsAfter: [
             {
-              to:
-                'next/viewer/internationalization#contributing-with-new-languages',
+              to: 'next/viewer/internationalization',
               label: 'Help Us Translate',
             },
           ],
@@ -355,7 +354,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
       style: 'dark',
       links: [
         {
-          title: 'Open Health Imaging Foundation',
+          title: ' ',
           items: [
             {
               html: `
