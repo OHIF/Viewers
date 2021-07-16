@@ -1,0 +1,35 @@
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - cd ..
+            - cd ..
+            - yarn config set workspaces-experimental true
+            - yarn install
+        build:
+          commands:
+            - yarn run build
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+            - node_modules/**/*
+    test:
+      artifacts:
+        baseDirectory: cypress
+        configFilePath: '**/mochawesome.json'
+        files:
+          - '**/*.png'
+          - '**/*.mp4'
+      phases:
+        preTest:
+          commands: []
+        test:
+          commands: []
+        postTest:
+          commands: []
+    appRoot: platform/viewer
