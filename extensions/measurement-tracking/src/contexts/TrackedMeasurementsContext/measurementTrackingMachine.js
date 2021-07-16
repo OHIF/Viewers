@@ -22,6 +22,7 @@ const machineConfiguration = {
     prevTrackedSeries: [],
     prevIgnoredSeries: [],
     //
+    ignoredSRSeriesForHydration: [],
     isDirty: false,
   },
   states: {
@@ -39,7 +40,11 @@ const machineConfiguration = {
             actions: ['setTrackedStudyAndMultipleSeries', 'setIsDirtyToClean'],
           },
         ],
-        PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
+        PROMPT_HYDRATE_SR: {
+          target: 'promptHydrateStructuredReport',
+          cond: 'hasNotIgnoredSRSeriesForHydration',
+        },
+        RESTORE_PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport'
       },
     },
     promptBeginTracking: {
@@ -218,6 +223,8 @@ const machineConfiguration = {
           },
           {
             target: 'idle',
+            actions: ['ignoreHydrationForSRSeries'],
+            cond: 'shouldIgnoreHydrationForSR'
           },
         ],
         onError: {
@@ -300,6 +307,9 @@ const defaultOptions = {
       prevIgnoredSeries: [...ctx.ignoredSeries],
       ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
     })),
+    ignoreHydrationForSRSeries: assign((ctx, evt) => ({
+      ignoredSRSeriesForHydration: [...ctx.ignoredSRSeriesForHydration, evt.data.srSeriesInstanceUID],
+    })),
     addTrackedSeries: assign((ctx, evt) => ({
       prevTrackedSeries: [...ctx.trackedSeries],
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
@@ -348,6 +358,8 @@ const defaultOptions = {
       evt.data && evt.data.userResponse === RESPONSE.NO_NOT_FOR_SERIES,
     shouldPromptSaveReport: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.CREATE_REPORT,
+    shouldIgnoreHydrationForSR: (ctx, evt) =>
+      evt.data && evt.data.userResponse === RESPONSE.CANCEL,
     shouldSaveAndContinueWithSameReport: (ctx, evt) =>
       evt.data &&
       evt.data.userResponse === RESPONSE.CREATE_REPORT &&
@@ -363,6 +375,9 @@ const defaultOptions = {
     hasRemainingTrackedSeries: (ctx, evt) =>
       ctx.trackedSeries.length > 1 ||
       !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
+    hasNotIgnoredSRSeriesForHydration: (ctx, evt) => {
+      return !ctx.ignoredSRSeriesForHydration.includes(evt.SeriesInstanceUID)
+    },
     isNewStudy: (ctx, evt) =>
       !ctx.ignoredSeries.includes(evt.SeriesInstanceUID) &&
       ctx.trackedStudy !== evt.StudyInstanceUID,
