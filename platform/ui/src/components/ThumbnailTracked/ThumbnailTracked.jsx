@@ -70,7 +70,10 @@ const ThumbnailTracked = ({
             position="right"
             content={
               <div className="flex flex-row flex-1">
-                <div className="flex flex-col flex-1 pr-4">
+                <div className="flex items-center justify-center pr-4 flex-2">
+                  <Icon name="info-link" className="text-primary-active" />
+                </div>
+                <div className="flex flex-col flex-1">
                   <span>
                     Series is
                     <span className="text-white">
@@ -86,9 +89,7 @@ const ThumbnailTracked = ({
                     </span>
                   )}
                 </div>
-                <div className="flex items-center justify-center flex-2">
-                  <Icon name="info-link" className="text-primary-active" />
-                </div>
+
               </div>
             }
           >
