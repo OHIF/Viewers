@@ -377,7 +377,7 @@ function OHIFCornerstoneSRViewport({
           evt.preventDefault();
         }}
         onPillClick={() => {
-          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+          sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
             displaySetInstanceUID: displaySet.displaySetInstanceUID,
             viewportIndex,
           });
