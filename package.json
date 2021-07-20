@@ -20,6 +20,7 @@
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
+    "build:qa": "lerna run build:viewer:qa --stream",
     "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "dev": "lerna run dev:viewer --stream",

@@ -71,7 +71,7 @@ class HangingProtocolService {
       this.customAttributeRetrievalCallbacks
     );
 
-    // if there is no pre-defiend protocol
+    // if there is no pre-defined protocol
     if (!protocol || protocol.id === undefined) {
       const matchedProtocol = this.ProtocolEngine.run(metaData);
       this._setProtocol(matchedProtocol);

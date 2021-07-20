@@ -11,8 +11,9 @@ const RESPONSE = {
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIViewportDialogService } = servicesManager.services;
+  const { UIViewportDialogService, DisplaySetService } = servicesManager.services;
   const { viewportIndex, displaySetInstanceUID } = evt;
+  const srDisplaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
 
   return new Promise(async function(resolve, reject) {
     const promptResult = await _askTrackMeasurements(
@@ -37,6 +38,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
     resolve({
       userResponse: promptResult,
       displaySetInstanceUID: evt.displaySetInstanceUID,
+      srSeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
       viewportIndex,
       StudyInstanceUID,
       SeriesInstanceUIDs,

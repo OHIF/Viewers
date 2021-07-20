@@ -39,9 +39,11 @@ async function defaultRouteInit({
 
   const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.SERIES_ADDED,
-    ({ StudyInstanceUID }) => {
+    ({ StudyInstanceUID, madeInClient }) => {
       const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-      HangingProtocolService.run(studyMetadata);
+      if (!madeInClient) {
+        HangingProtocolService.run(studyMetadata);
+      }
     }
   );
   unsubscriptions.push(seriesAddedUnsubscribe);
