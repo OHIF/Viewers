@@ -13,7 +13,7 @@ window.config = {
       // Authorization Server URL
       authority: 'https://accounts.google.com',
       client_id: '884380798556-rqqt4gc1iq4fr36aduphrr8eacol9dr0.apps.googleusercontent.com',
-      redirect_uri: '/studylist', // `OHIFStandaloneViewer.js`
+      redirect_uri: '/callback', // `OHIFStandaloneViewer.js`
       response_type: 'id_token token',
       scope:
         'email profile openid https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/cloud-healthcare', // email profile openid
