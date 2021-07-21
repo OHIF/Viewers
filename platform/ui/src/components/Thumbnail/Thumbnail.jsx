@@ -24,6 +24,7 @@ const Thumbnail = ({
   // this will still allow for "drag", even if there is no drop target for the
   // specified item.
   const [collectedProps, drag, dragPreview] = useDrag({
+    type: "displayset",
     item: { ...dragData },
     canDrag: function(monitor) {
       return Object.keys(dragData).length !== 0;

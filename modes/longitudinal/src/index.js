@@ -18,7 +18,6 @@ const dicomsr = {
   viewport: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
 };
 
-
 export default function mode({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment

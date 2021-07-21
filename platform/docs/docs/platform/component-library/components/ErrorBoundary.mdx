@@ -1,0 +1,59 @@
+---
+name: Error Boundary
+menu: Data Display
+route: components/errorBoundary
+---
+
+import { ErrorBoundary } from '@ohif/ui';
+import { ComponentPropsTable } from '../../../../src/components/ComponentPropsTable.jsx';
+
+# Error Boundary
+
+This component can be used to display a message or handle unhandled errors.
+
+## Import
+
+```javascript
+import { ErrorBoundary } from '@ohif/ui';
+```
+
+## Basic usage
+
+```jsx live
+<div className="p-4">
+  <ErrorBoundary context="Somewhere">
+    {function() {
+      throw new Error('Error!');
+      return <p></p>;
+    }}
+  </ErrorBoundary>
+</div>
+```
+
+## Custom error fallback
+
+```jsx live
+function() {
+  const CustomFallback = ({ error, componentStack, resetErrorBoundary }) => {
+    return (
+      <div>
+        <p>This is a custom fallback!</p>
+      </div>
+    );
+  };
+  return (
+    <div className="p-4">
+      <ErrorBoundary context="Somewhere" fallbackComponent={CustomFallback}>
+        {function() {
+          throw new Error('Error!');
+          return <p></p>;
+        }}
+      </ErrorBoundary>
+    </div>
+  );
+}
+```
+
+## Properties
+
+<ComponentPropsTable componentName={'ErrorBoundary'} />

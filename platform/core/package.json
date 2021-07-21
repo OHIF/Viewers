@@ -32,8 +32,10 @@
   "peerDependencies": {
     "cornerstone-core": "^2.3.0",
     "cornerstone-tools": "5.1.2",
+    "cornerstone-math": "0.1.9",
     "cornerstone-wado-image-loader": "^3.1.2",
-    "dicom-parser": "^1.8.3"
+    "dicom-parser": "^1.8.3",
+    "@ohif/ui": "^1.8.2"
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",
@@ -43,10 +45,8 @@
     "lodash.merge": "^4.6.1",
     "lodash.clonedeep": "^4.5.0",
     "moment": "^2.24.0",
-    "mousetrap": "^1.6.3",
     "query-string": "^6.14.0",
     "object-hash": "2.1.1",
-    "cornerstone-math": "0.1.9",
     "validate.js": "^0.12.0"
   },
   "devDependencies": {

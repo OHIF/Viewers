@@ -126,5 +126,5 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
-  WindowLevelMenuItem
+  WindowLevelMenuItem,
 };

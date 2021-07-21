@@ -1,8 +1,8 @@
 import React from 'react';
-import '../../gatsby-theme-docz/tailwind.css';
+import '../../tailwind.css';
 import '../../assets/styles/styles.css';
 
-const ThemeWrapper = ({ children }) => (
+export const ThemeWrapper = ({ children }) => (
   <React.Fragment>{children}</React.Fragment>
 );
 

@@ -1,0 +1,58 @@
+---
+name: Notification
+menu: Feedback
+route: components/notification
+---
+
+import { Notification } from '@ohif/ui';
+import { ComponentPropsTable } from '../../../../src/components/ComponentPropsTable.jsx';
+
+# Notification
+
+A notification displays a short message in a way that attracts the user's
+attention without interrupting the user's task.
+
+## Import
+
+```javascript
+import { Notification } from '@ohif/ui';
+```
+
+## Basic usage
+
+```jsx live
+function() {
+  return (
+    <div className="p-4 w-full lg:w-2/3">
+      <Notification
+        message="Track all measurement for this series?"
+        type="info"
+        actions={[
+          {
+            type: 'cancel',
+            text: 'No',
+            value: 0,
+          },
+          {
+            type: 'secondary',
+            text: 'No, do not ask again',
+            value: -1,
+          },
+          {
+            type: 'primary',
+            text: 'Yes',
+            value: 1,
+          },
+        ]}
+        onSubmit={value => {
+          window.alert(value);
+        }}
+      />
+    </div>
+  );
+}
+```
+
+## Properties
+
+<ComponentPropsTable componentName={'Notification'} />
