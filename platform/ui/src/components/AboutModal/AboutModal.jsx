@@ -72,7 +72,7 @@ const AboutModal = ({buildNumber, versionNumber}) => {
           </Link>
         </span>
         <span className="ml-4">
-          <Link href="http://ohif.org/" showIcon={true}>
+          <Link href="https://ohif.org/" showIcon={true}>
             More details
           </Link>
         </span>

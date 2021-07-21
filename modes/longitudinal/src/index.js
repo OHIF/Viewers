@@ -1,6 +1,5 @@
 import toolbarButtons from './toolbarButtons.js';
-import { utils } from '@ohif/ui';
-const { hotkeys } = utils;
+import { hotkeys } from '@ohif/core';
 
 const ohif = {
   layout: 'org.ohif.default.layoutTemplateModule.viewerLayout',

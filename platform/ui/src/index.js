@@ -1,6 +1,6 @@
 /** UTILS */
-import utils from './utils';
-export { utils };
+//import utils from './utils';
+//export { utils };
 
 /** CONTEXT/HOOKS */
 export {
@@ -102,6 +102,3 @@ export {
 export { getIcon, ICONS } from './components/Icon/getIcon';
 export { BackgroundColor } from './pages/Colors/BackgroundColor';
 export { ModalComponent } from './contextProviders/ModalComponent';
-
-/** VIEWS */
-export { StudyList, Viewer } from './views';

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Input from '../Input';
-import { hotkeys } from '../../utils/'
 import { getKeys, formatKeysForInput } from './utils';
 
 /**
@@ -16,7 +15,7 @@ import { getKeys, formatKeysForInput } from './utils';
  * @param {string} props.className input classes
  * @param {Array[]} props.modifierKeys
  */
-const HotkeyField = ({ disabled, keys, onChange, className, modifierKeys }) => {
+const HotkeyField = ({ disabled, keys, onChange, className, modifierKeys, hotkeys }) => {
   const inputValue = formatKeysForInput(keys);
 
   useEffect(() => {
@@ -57,6 +56,13 @@ HotkeyField.propTypes = {
   className: PropTypes.string,
   modifierKeys: PropTypes.array,
   disabled: PropTypes.bool,
+  hotkeys: PropTypes.object({
+    initialize: PropTypes.func.isRequired,
+    pause: PropTypes.func.isRequired,
+    unpause: PropTypes.func.isRequired,
+    startRecording: PropTypes.func.isRequired,
+    record: PropTypes.func.isRequired,
+  }).isRequired
 };
 
 HotkeyField.defaultProps = {

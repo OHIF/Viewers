@@ -11,10 +11,8 @@ import {
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import { utils } from '@ohif/ui';
+import { hotkeys } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
-
-const { hotkeys } = utils;
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 

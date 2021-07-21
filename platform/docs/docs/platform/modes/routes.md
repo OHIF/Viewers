@@ -78,7 +78,7 @@ There are two types of `routes` that are created by the mode.
 - Routes with dataSourceName `/${mode.id}/${dataSourceName}`
 - Routes without dataSourceName `/${mode.id}`
 
-Therefore navigating to `http://localhost:3000/viewer/?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1` will run the app with the layout and functionalities of the `viewer` mode using the `defaultDataSourceName` which is defined in the [App Config](../configuring/index.md)
+Therefore navigating to `http://localhost:3000/viewer/?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1` will run the app with the layout and functionalities of the `viewer` mode using the `defaultDataSourceName` which is defined in the [App Config](../../configuration/index.md)
 
 You can use the same exact mode using a different registered data source (e.g., `dicomjson`) by navigating to `http://localhost:3000/viewer/dicomjson/?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1`
 

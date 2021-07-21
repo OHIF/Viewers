@@ -1,6 +1,6 @@
 import objectHash from 'object-hash';
 import log from './../log.js';
-import hotkeys from './../utils/hotkeys';
+import { hotkeys } from '../utils';
 
 /**
  *

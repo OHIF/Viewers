@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Select, Typography, Button, HotkeysPreferences } from '../';
 import { useTranslation } from 'react-i18next';
 
-const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage, disabled, hotkeyDefinitions, hotkeyDefaults, onCancel, onSubmit, onReset }) => {
+const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage, disabled, hotkeyDefinitions, hotkeyDefaults, onCancel, onSubmit, onReset, hotkeysModule }) => {
   const { t } = useTranslation('UserPreferencesModal');
   const [state, setState] = useState({
     isDisabled: disabled,
@@ -85,6 +85,7 @@ const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage,
           hotkeyDefinitions={state.hotkeyDefinitions}
           onChange={onHotkeysChangeHandler}
           errors={state.hotkeyErrors}
+          hotkeysModule={hotkeysModule}
         />
       </Section>
       <div className="flex flex-row justify-between">
@@ -125,6 +126,13 @@ UserPreferences.propTypes = {
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
   onReset: PropTypes.func,
+  hotkeysModule: PropTypes.object({
+    initialize: PropTypes.func.isRequired,
+    pause: PropTypes.func.isRequired,
+    unpause: PropTypes.func.isRequired,
+    startRecording: PropTypes.func.isRequired,
+    record: PropTypes.func.isRequired,
+  }).isRequired
 };
 
 UserPreferences.defaultProps = {

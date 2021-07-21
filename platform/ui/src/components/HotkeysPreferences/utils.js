@@ -46,7 +46,4 @@ const validate = ({ commandName, pressedKeys, hotkeys }) => {
   return { error: undefined };
 };
 
-export {
-  validate,
-  splitHotkeyDefinitionsAndCreateTuples
-};
+export { validate, splitHotkeyDefinitionsAndCreateTuples };

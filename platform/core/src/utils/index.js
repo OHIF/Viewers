@@ -46,7 +46,7 @@ const utils = {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
-  isLowPriorityModality
+  isLowPriorityModality,
 };
 
 export {
@@ -69,7 +69,7 @@ export {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
-  isLowPriorityModality
+  isLowPriorityModality,
 };
 
 export default utils;
