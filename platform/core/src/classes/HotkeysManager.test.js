@@ -2,7 +2,7 @@ import CommandsManager from './CommandsManager.js';
 import HotkeysManager from './HotkeysManager.js';
 import hotkeys from './../utils/hotkeys';
 import log from './../log.js';
-import objectHash from "object-hash";
+import objectHash from 'object-hash';
 
 jest.mock('./CommandsManager.js');
 jest.mock('./../utils/hotkeys');
@@ -10,6 +10,9 @@ jest.mock('./../log.js');
 
 describe('HotkeysManager', () => {
   let hotkeysManager, commandsManager;
+  beforeAll(() => {
+    hotkeys.initialize();
+  });
 
   beforeEach(() => {
     commandsManager = new CommandsManager();
@@ -19,7 +22,6 @@ describe('HotkeysManager', () => {
     log.warn.mockClear();
     jest.clearAllMocks();
   });
-
   it('has expected properties', () => {
     const allProperties = Object.keys(hotkeysManager);
     const expectedProprties = [
@@ -122,11 +124,16 @@ describe('HotkeysManager', () => {
       const definition = { commandName: undefined, keys: '+' };
 
       expect(() => {
-        hotkeysManager.registerHotkeys(definition)
+        hotkeysManager.registerHotkeys(definition);
       }).toThrow();
     });
     it('updates hotkeyDefinitions property with registered keys', () => {
-      const definition = { commandName: 'dance', commandOptions: {}, label: 'hello', keys: '+', };
+      const definition = {
+        commandName: 'dance',
+        commandOptions: {},
+        label: 'hello',
+        keys: '+',
+      };
 
       hotkeysManager.registerHotkeys(definition);
 
@@ -136,13 +143,15 @@ describe('HotkeysManager', () => {
 
       const commandHash = objectHash({
         commandName: definition.commandName,
-        commandOptions: definition.commandOptions
+        commandOptions: definition.commandOptions,
       });
       const hotkeyDefinitionForRegisteredCommand =
         hotkeysManager.hotkeyDefinitions[commandHash];
 
       expect(numOfHotkeyDefinitions).toBe(1);
-      expect(Object.keys(hotkeysManager.hotkeyDefinitions)[0]).toEqual(commandHash);
+      expect(Object.keys(hotkeysManager.hotkeyDefinitions)[0]).toEqual(
+        commandHash
+      );
       expect(hotkeyDefinitionForRegisteredCommand).toEqual(definition);
     });
     it('calls hotkeys.bind for the group of keys', () => {
