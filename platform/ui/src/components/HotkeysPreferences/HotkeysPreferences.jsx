@@ -107,7 +107,7 @@ HotkeysPreferences.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   hotkeyDefinitions: PropTypes.object.isRequired,
-  hotkeysModule: PropTypes.object({
+  hotkeysModule: PropTypes.shape({
     initialize: PropTypes.func.isRequired,
     pause: PropTypes.func.isRequired,
     unpause: PropTypes.func.isRequired,

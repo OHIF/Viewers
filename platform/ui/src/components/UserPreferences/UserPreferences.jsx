@@ -126,7 +126,7 @@ UserPreferences.propTypes = {
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
   onReset: PropTypes.func,
-  hotkeysModule: PropTypes.object({
+  hotkeysModule: PropTypes.shape({
     initialize: PropTypes.func.isRequired,
     pause: PropTypes.func.isRequired,
     unpause: PropTypes.func.isRequired,

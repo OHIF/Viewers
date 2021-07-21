@@ -35,6 +35,7 @@
     "@mdx-js/react": "^1.6.21",
     "@ohif/ui": "^2.0.0",
     "@svgr/webpack": "^5.5.0",
+    "classnames": "^2.3.1",
     "clsx": "^1.1.1",
     "file-loader": "^6.2.0",
     "plugin-image-zoom": "ataft/plugin-image-zoom",

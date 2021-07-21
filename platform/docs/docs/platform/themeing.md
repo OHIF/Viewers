@@ -2,23 +2,22 @@
 sidebar_position: 2
 sidebar_label: Theming
 ---
+
 # Viewer: Theming
 
-
-`OHIF-v3` has introduced the [`LayoutTemplateModule`](../extensions/modules/layout-template.md) which enables addition of custom layouts. You can easily design your custom components inside an extension and consume it via the layoutTemplate module you write.
-
-
-
+`OHIF-v3` has introduced the
+[`LayoutTemplateModule`](./extensions/modules/layout-template.md) which enables
+addition of custom layouts. You can easily design your custom components inside
+an extension and consume it via the layoutTemplate module you write.
 
 ## Tailwind CSS
-[Tailwind CSS](https://tailwindcss.com/) is a utility-first CSS framework for creating custom user interfaces.
 
+[Tailwind CSS](https://tailwindcss.com/) is a utility-first CSS framework for
+creating custom user interfaces.
 
-Below you can see a compiled version of the tailwind configs.
-Each section can be edited accordingly. For instance screen size break points, primary
-and secondary colors, etc.
-
-
+Below you can see a compiled version of the tailwind configs. Each section can
+be edited accordingly. For instance screen size break points, primary and
+secondary colors, etc.
 
 ```js
 module.exports = {
@@ -79,12 +78,10 @@ module.exports = {
       },
     },
   },
-}
+};
 ```
 
-
 You can also use the color variable like before. For instance:
-
 
 ```js
 primary: {
@@ -96,19 +93,22 @@ primary: {
 }
 ```
 
-
 ## White Labeling
 
-A white-label product is a product or service produced by one company (the producer) that other companies (the marketers) rebrand to make it appear as if they had made it - [Wikipedia: White-Label Product](https://en.wikipedia.org/wiki/White-label_product)
+A white-label product is a product or service produced by one company (the
+producer) that other companies (the marketers) rebrand to make it appear as if
+they had made it -
+[Wikipedia: White-Label Product](https://en.wikipedia.org/wiki/White-label_product)
 
-Current white-labeling options are limited.
-We expose the ability to replace the "Logo" section of the application with a custom "Logo" component. You can do this by adding a whiteLabeling key to your configuration file.
+Current white-labeling options are limited. We expose the ability to replace the
+"Logo" section of the application with a custom "Logo" component. You can do
+this by adding a whiteLabeling key to your configuration file.
 
 ```js
 window.config = {
   /** .. **/
   whiteLabeling: {
-    createLogoComponentFn: function (React) {
+    createLogoComponentFn: function(React) {
       return React.createElement(
         'a',
         {
@@ -118,24 +118,22 @@ window.config = {
           href: 'http://radicalimaging.com',
         },
         React.createElement('h5', {}, 'RADICAL IMAGING')
-      )
+      );
     },
   },
   /** .. **/
-}
+};
 ```
 
 > You can simply use the stylings from tailwind CSS in the whiteLabeling
 
-
 In addition to text, you can also add your custom logo
-
 
 ```js
 window.config = {
   /** .. **/
   whiteLabeling: {
-    createLogoComponentFn: function (React) {
+    createLogoComponentFn: function(React) {
       return React.createElement(
         'a',
         {
@@ -148,19 +146,16 @@ window.config = {
           src: './customLogo.svg',
           // className: 'w-8 h-8',
         })
-      )
+      );
     },
   },
   /** .. **/
-}
+};
 ```
 
 The output will look like
 
-
 ![custom-logo](../assets/img/custom-logo.png)
-
-
 
 <!--
   Links

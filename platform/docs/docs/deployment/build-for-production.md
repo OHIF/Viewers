@@ -70,7 +70,7 @@ and registered extension's features, are configured using this file.
 
 The easiest way to apply your own configuration is to modify the `default.js`
 file. For more advanced cofiguration options, check out our
-[configuration essentials guide](../../configuration/index.md).
+[configuration essentials guide](../configuration/index.md).
 
 ## Next Steps
 

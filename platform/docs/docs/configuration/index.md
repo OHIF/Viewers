@@ -61,7 +61,7 @@ window.config = {
 > data!
 >
 > You can read more about data sources at
-> [Data Source section in Modes](../modes/index.md)
+> [Data Source section in Modes](../platform/modes/index.md)
 
 The configuration can also be written as a JS Function in case you need to
 inject dependencies like external services:

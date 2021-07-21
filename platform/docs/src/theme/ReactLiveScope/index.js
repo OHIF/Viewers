@@ -6,13 +6,19 @@
  */
 
 import React from 'react';
+import classnames from 'classnames';
+import moment from 'moment';
 import * as ui from '@ohif/ui';
+import utils from '../../utils/';
 
 // Add react-live imports you need here
 const ReactLiveScope = {
   React,
   ...React,
   ...ui,
+  classnames,
+  utils,
+  moment,
 };
 
 export default ReactLiveScope;
