@@ -12,6 +12,8 @@ import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
 import { utils } from '@ohif/core';
 
+const { sortBySeriesDate, hotkeys } = utils;
+
 import {
   Icon,
   StudyListExpandedRow,
@@ -194,7 +196,7 @@ function WorkList({
         const series = await dataSource.query.series.search(studyInstanceUid);
         seriesInStudiesMap.set(
           studyInstanceUid,
-          utils.sortBySeriesDate(series)
+          sortBySeriesDate(series)
         );
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
@@ -399,6 +401,7 @@ function WorkList({
               hide();
             },
             onReset: () => hotkeysManager.restoreDefaultBindings(),
+            hotkeysModule: hotkeys
           },
         }),
     },

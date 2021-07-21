@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useTranslation } from 'react-i18next';
 
-import { Icon, Tooltip, ListMenu } from '@ohif/ui';
+import { Icon, Tooltip, ListMenu } from '../';
 
 const baseClasses = {
   Button:

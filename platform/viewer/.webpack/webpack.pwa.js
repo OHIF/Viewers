@@ -5,15 +5,11 @@ const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
 // ~~ Plugins
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
-const TerserJSPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // ~~ Rules
 const extractStyleChunksRule = require('./rules/extractStyleChunks.js');
 // ~~ Directories
@@ -46,34 +42,45 @@ module.exports = (env, argv) => {
     module: {
       rules: [...extractStyleChunksRule(isProdBuild)],
     },
+    resolve: {
+      modules: [
+        // Modules specific to this package
+        path.resolve(__dirname, '../node_modules'),
+        // Hoisted Yarn Workspace Modules
+        path.resolve(__dirname, '../../../node_modules'),
+        SRC_DIR,
+      ],
+    },
     plugins: [
       new Dotenv(),
-      // Uncomment to generate bundle analyzer
-      // new BundleAnalyzerPlugin(),
       // Clean output.path
       new CleanWebpackPlugin(),
       // Copy "Public" Folder to Dist
-      new CopyWebpackPlugin([
-        {
-          from: PUBLIC_DIR,
-          to: DIST_DIR,
-          toType: 'dir',
-          // Ignore our HtmlWebpackPlugin template file
-          // Ignore our configuration files
-          ignore: ['config/*', 'html-templates/*', '.DS_Store'],
-        },
-        // Short term solution to make sure GCloud config is available in output
-        // for our docker implementation
-        {
-          from: `${PUBLIC_DIR}/config/google.js`,
-          to: `${DIST_DIR}/google.js`,
-        },
-        // Copy over and rename our target app config file
-        {
-          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
-          to: `${DIST_DIR}/app-config.js`,
-        },
-      ]),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: PUBLIC_DIR,
+            to: DIST_DIR,
+            toType: 'dir',
+            globOptions: {
+              // Ignore our HtmlWebpackPlugin template file
+              // Ignore our configuration files
+              ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+            },
+          },
+          // Short term solution to make sure GCloud config is available in output
+          // for our docker implementation
+          {
+            from: `${PUBLIC_DIR}/config/google.js`,
+            to: `${DIST_DIR}/google.js`,
+          },
+          // Copy over and rename our target app config file
+          {
+            from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+            to: `${DIST_DIR}/app-config.js`,
+          },
+        ],
+      }),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
         filename: isProdBuild ? '[name].[hash].css' : '[name].css',

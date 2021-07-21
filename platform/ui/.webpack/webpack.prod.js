@@ -1,6 +1,6 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const path = require('path');
-const webpackCommon = require('./../../../.webpack/webpack.commonjs.js');
+const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
 
 const ROOT_DIR = path.join(__dirname, './..');
@@ -32,6 +32,24 @@ module.exports = (env, argv) => {
       library: 'ohifUi',
       libraryTarget: 'umd',
       filename: pkg.main,
+    },
+    externals: {
+      '@ohif/core': {
+        commonjs: '@ohif/core',
+        commonjs2: '@ohif/core',
+        amd: '@ohif/core',
+        root: '@ohif/core',
+      },
+      react: 'React',
+      'react-dom': 'ReactDOM',
+    },
+    module: {
+      rules: [
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader', 'postcss-loader'],
+        },
+      ],
     },
   });
 };

@@ -1,0 +1,243 @@
+/* stylelint-disable docusaurus/copyright-header */
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+/* You can override the default Infima variables here. */
+/* https://infima.dev/docs/utilities/colors */
+/* https://docs.theochu.com/docusaurus/styling/ */
+:root {
+  --ifm-color-primary: #25c2a0;
+  --ifm-color-primary-dark: rgb(33, 175, 144);
+  --ifm-color-primary-darker: rgb(31, 165, 136);
+  --ifm-color-primary-darkest: rgb(26, 136, 112);
+  --ifm-color-primary-light: rgb(70, 203, 174);
+  --ifm-color-primary-lighter: rgb(102, 212, 189);
+  --ifm-color-primary-lightest: rgb(146, 224, 208);
+  --ifm-font-color-base: #474747;
+  --ifm-color-primary: #0151d9;
+  --ifm-color-primary-dark: #0149c3;
+  --ifm-color-primary-darker: #0145b8;
+  --ifm-color-primary-darkest: #013998;
+  --ifm-color-primary-light: #0159ef;
+  --ifm-color-primary-lighter: #015dfa;
+  --ifm-color-primary-lightest: #1d71fe;
+  --ifm-color-secondary: #e8f7f7;
+  --ifm-code-font-size: 95%;
+  --ifm-background-color: #ffffff;
+  --ifm-zoom-image-background-color: #ffffffe5;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-menu-color: #1e427e;
+  --ifm-code-background: #e8f7f7;
+  --ifm-toc-border-color: #ffffff;
+  --ifm-footer-background-color: #000000;
+  --ifm-table-stripe-background: #f4fbfb;
+  --ifm-color-warning: #e9e489;
+  --ifm-alert-color: #333333;
+  --ohif-color-border: #7bb2ce;
+}
+
+html[data-theme='dark'] .header-github-link:before {
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='white' d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
+    no-repeat;
+}
+
+html[data-theme='dark'] {
+  --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24"><path fill="rgba(0,0,0,0.4)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path></svg>');
+  --ifm-color-primary: #5acce6;
+  --ifm-color-primary-dark: #3ec3e2;
+  --ifm-color-primary-darker: #30bfe0;
+  --ifm-color-primary-darkest: #1da4c3;
+  --ifm-color-primary-light: #76d5ea;
+  --ifm-color-primary-lighter: #84d9ec;
+  --ifm-color-primary-lightest: #ade6f3;
+  --ifm-font-color-base: #ffffff;
+  --ifm-color-secondary: #050719;
+  --ifm-blockquote-color: #7bb2ce;
+  --ifm-background-color: #080b2b;
+  --ifm-zoom-image-background-color: #080b2be5;
+  --ifm-background-surface-color: #080b2b;
+  --ifm-menu-color: #7bb2ce;
+  --ifm-toc-link-color: #7bb2ce;
+  --ifm-code-background: #1c296d;
+  --ifm-toc-border-color: #080b2b;
+  --ifm-menu-color-active: #ffffff;
+  --ifm-footer-background-color: #000000;
+  --ifm-table-stripe-background: #060920;
+  --ifm-color-warning: #f1c55a;
+  --ifm-alert-color: #000000;
+  --ohif-color-border: #3a3f99;
+}
+
+.medium-zoom-overlay {
+  background: var(--ifm-zoom-image-background-color) !important;
+}
+
+.header-github-link:hover {
+  opacity: 0.6;
+}
+.header-github-link:before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  display: flex;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
+    no-repeat;
+}
+/*
+.docusaurus-highlight-code-line {
+  background-color: rgb(72, 77, 91);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+*/
+
+/* Typography updates */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+html {
+  font-size: 18px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: var(--ifm-color-primary);
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+}
+
+blockquote {
+  border-left: 3px solid #4042af;
+}
+
+/* Temporary Type Size Changes */
+
+article header h1 {
+  font-size: 2.6rem !important;
+}
+
+article h2 {
+  font-size: 1.85rem !important;
+}
+
+article header h3 {
+  font-size: 1.5rem !important;
+}
+
+/* Remove navigation shadow */
+
+.navbar {
+  box-shadow: none;
+}
+
+/* Navigation color and type updates */
+
+.footer {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.footer a {
+  color: #7bb2ce;
+}
+
+.footer a:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.menu {
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.table-of-contents {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.menu {
+  padding-top: 2rem !important;
+}
+
+.menu__link--active {
+  color: var(--ifm-menu-color-active);
+  font-weight: 600;
+}
+
+.table-of-contents__link:hover,
+.table-of-contents__link:hover code,
+.table-of-contents__link--active,
+.table-of-contents__link--active code {
+  color: var(--ifm-menu-color-active);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.badge--secondary {
+  --ifm-badge-background-color: var(--ifm-color-secondary);
+  --ifm-badge-border-color: var(--ifm-badge-background-color);
+  color: var(--ifm-color-primary);
+  border: 1px solid var(--ohif-color-border);
+}
+
+/* Alerts */
+
+.alert {
+  font-size: 0.9rem;
+  padding: 10px;
+}
+
+.alert--secondary {
+  --ifm-alert-background-color: var(--ifm-color-secondary);
+  --ifm-alert-color: var(--ifm-font-color-base);
+}
+
+.button--secondary:not(.button--outline) {
+  --ifm-button-background-color: #e8f7f7;
+}
+
+
+.admonition-icon svg {
+  fill: #0151d9;
+}
+
+.table-of-contents__left-border {
+  border-left: #013998;
+}
+
+.footer__col:first-of-type {
+  flex-grow: 2;
+  margin-right: 20%;
+}
+
+.DocSearch {
+  display: none;
+}
+
+
+/* Footer logo MGH */
+
+@media (max-width: 1200px) {
+  #mgh-logo {
+    margin-right: 100px;
+    width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  #mgh-logo {
+    margin-right: 10px;
+    width: 300px;
+  }
+}

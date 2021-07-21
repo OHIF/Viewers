@@ -1,5 +1,6 @@
 import React from 'react';
-import { Typography, Icon } from '../../components';
+import { Typography, Icon } from '../';
+import PropTypes from 'prop-types';
 import detect from 'browser-detect';
 
 const Link = ({ href, children, showIcon = false }) => {
@@ -41,7 +42,7 @@ const Row = ({ title, value, link }) => {
   );
 };
 
-const AboutModal = () => {
+const AboutModal = ({buildNumber, versionNumber}) => {
   const { os, version, name } = detect();
   const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
 
@@ -71,7 +72,7 @@ const AboutModal = () => {
           </Link>
         </span>
         <span className="ml-4">
-          <Link href="http://ohif.org/" showIcon={true}>
+          <Link href="https://ohif.org/" showIcon={true}>
             More details
           </Link>
         </span>
@@ -89,13 +90,18 @@ const AboutModal = () => {
           value="https://github.com/OHIF/Viewers/commits/master"
           link="https://github.com/OHIF/Viewers/commits/master"
         />
-        <Row title="Version Number" value={process.env.VERSION_NUMBER} />
-        <Row title="Build number" value={process.env.BUILD_NUM} />
+        <Row title="Version number" value={versionNumber} />
+        <Row title="Build number" value={buildNumber} />
         <Row title="Browser" value={browser} />
         <Row title="OS" value={os} />
       </div>
     </div>
   );
 };
+
+AboutModal.propTypes = {
+  buildNumber: PropTypes.string,
+  versionNumber: PropTypes.string,
+}
 
 export default AboutModal;

@@ -2,6 +2,8 @@ module.exports = {
   prefix: '',
   important: false,
   separator: ':',
+  purge: false, // TODO: unclear how we should purge when using a component library in another app
+  //purge: ['./src/**/*.jsx', './src/**/*.js'],
   theme: {
     screens: {
       sm: '640px',
@@ -215,18 +217,18 @@ module.exports = {
     },
     borderColor: theme => ({
       ...theme('colors'),
-      default: theme('colors.gray.300', 'currentColor'),
+      DEFAULT: theme('colors.gray.300', 'currentColor'),
     }),
     borderRadius: {
       none: '0',
       sm: '0.125rem',
-      default: '0.25rem',
+      DEFAULT: '0.25rem',
       md: '0.375rem',
       lg: '0.5rem',
       full: '9999px',
     },
     borderWidth: {
-      default: '1px',
+      DEFAULT: '1px',
       '0': '0',
       '2': '2px',
       '4': '4px',
@@ -235,7 +237,7 @@ module.exports = {
     boxShadow: {
       xs: '0 0 0 1px rgba(0, 0, 0, 0.05)',
       sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-      default:
+      DEFAULT:
         '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
       md:
         '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
@@ -271,11 +273,11 @@ module.exports = {
     },
     flexGrow: {
       '0': '0',
-      default: '1',
+      DEFAULT: '1',
     },
     flexShrink: {
       '0': '0',
-      default: '1',
+      DEFAULT: '1',
     },
     fontFamily: {
       sans: [
@@ -694,7 +696,7 @@ module.exports = {
       none: 'none',
       all: 'all',
       height: 'height',
-      default:
+      DEFAULT:
         'background-color, border-color, color, fill, stroke, opacity, box-shadow, transform',
       colors: 'background-color, border-color, color, fill, stroke',
       opacity: 'opacity',
@@ -747,7 +749,7 @@ module.exports = {
     ],
     borderRadius: ['responsive', 'focus', 'first', 'last'],
     borderStyle: ['responsive', 'focus'],
-    borderWidth: ['responsive', 'focus', 'first', 'last'],
+    //borderWidth: ['responsive', 'focus', 'first', 'last'],
     boxShadow: ['responsive', 'hover', 'focus'],
     boxSizing: ['responsive'],
     cursor: ['responsive'],

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { IconButton, Icon } from '@ohif/ui';
+import { IconButton, Icon } from '../';
 
 import './CinePlayerCustomInputRange.css';
 

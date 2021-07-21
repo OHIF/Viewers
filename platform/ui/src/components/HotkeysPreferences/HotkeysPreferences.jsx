@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { HotkeyField, Typography } from '@ohif/ui';
+import { HotkeyField, Typography } from '../';
 import { useTranslation } from 'react-i18next';
 
 
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MODIFIER_KEYS } from './hotkeysConfig';
 import { validate, splitHotkeyDefinitionsAndCreateTuples } from './utils';
 
-const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErrors, onChange }) => {
+const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErrors, onChange, hotkeysModule }) => {
   const { t } = useTranslation('UserPreferencesModal');
 
   const visibleHotkeys = Object.keys(hotkeyDefinitions)
@@ -83,6 +83,7 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
                             keys={definition.keys}
                             modifierKeys={MODIFIER_KEYS}
                             onChange={onChangeHandler}
+                            hotkeys={hotkeysModule}
                             className='text-lg h-8'
                           />
                           {error && <span className='p-2 text-left text-red-600 text-sm'>{error}</span>}
@@ -106,6 +107,13 @@ HotkeysPreferences.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   hotkeyDefinitions: PropTypes.object.isRequired,
+  hotkeysModule: PropTypes.shape({
+    initialize: PropTypes.func.isRequired,
+    pause: PropTypes.func.isRequired,
+    unpause: PropTypes.func.isRequired,
+    startRecording: PropTypes.func.isRequired,
+    record: PropTypes.func.isRequired,
+  }).isRequired
 };
 
 HotkeysPreferences.defaultProps = {

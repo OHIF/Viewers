@@ -164,6 +164,7 @@ function TrackedMeasurementsContextProvider(
         console.log('sending event...', trackedMeasurements);
         sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
           displaySetInstanceUID: displaySet.displaySetInstanceUID,
+          SeriesInstanceUID: displaySet.SeriesInstanceUID,
           viewportIndex: activeViewportIndex,
         });
       }

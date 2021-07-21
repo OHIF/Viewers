@@ -175,7 +175,8 @@ function PanelStudyBrowser({
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
-      requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID);
+      const madeInClient = true
+      requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID, madeInClient);
     }
   }
 
