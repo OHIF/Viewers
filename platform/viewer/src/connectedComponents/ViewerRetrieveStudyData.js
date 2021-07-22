@@ -259,7 +259,6 @@ function ViewerRetrieveStudyData({
     );
 
     setStudies([...studies, study]);
-    setIsStudyLoaded(true);
   };
 
   /**
@@ -295,6 +294,9 @@ function ViewerRetrieveStudyData({
               setError(error);
               log.error(error);
             }
+          })
+          .finally(() => {
+            setIsStudyLoaded(true);
           });
 
         return study;
@@ -323,8 +325,9 @@ function ViewerRetrieveStudyData({
     const promises = Array(concurrentRequestsAllowed)
       .fill(null)
       .map(loadNextSeries);
-
-    return await Promise.all(promises);
+    const remainingPromises = await Promise.all(promises);
+    setIsStudyLoaded(true);
+    return remainingPromises;
   };
 
   const loadStudies = async () => {

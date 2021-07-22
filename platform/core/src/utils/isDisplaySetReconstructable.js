@@ -4,11 +4,11 @@ import { ReconstructionIssues } from './../enums.js';
 /**
  * Checks if a series is reconstructable to a 3D volume.
  *
- * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
+ * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
  *
- * @returns {Object} reconstructable value, missingFrames and warningIssues.
+ * @returns {Object} value, reconstructionIssues.
  */
-export default function isDisplaySetReconstructable(instances) {
+function isDisplaySetReconstructable(instances) {
   if (!instances.length) {
     return { value: false };
   }
@@ -28,7 +28,7 @@ export default function isDisplaySetReconstructable(instances) {
   }
 
   if (isMultiframe) {
-    return processMultiframe(instances[0]);
+    return processMultiframe();
   } else {
     return processSingleframe(instances);
   }
@@ -37,22 +37,20 @@ export default function isDisplaySetReconstructable(instances) {
 /**
  * Process reconstructable multiframes checks
  * TODO: deal with multriframe checks! return false for now as can't reconstruct.
- *
- * @param {Object} instanceof `OHIFInstanceMetadata` objects. Currently not used.
- *
- * @returns {Object} reconstructable value and warningIssues.
+ * *
+ * @returns {Object} value and reconstructionIssues.
  */
-function processMultiframe(instance) {
-  const warningIssues = [ReconstructionIssues.MULTIFRAMES];
-  return { value: false, warningIssues };
+function processMultiframe() {
+  const reconstructionIssues = [ReconstructionIssues.MULTIFRAMES];
+  return { value: false, reconstructionIssues };
 }
 
 /**
  * Process reconstructable single frame checks
  *
- * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
+ * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
  *
- * @returns {Object} reconstructable value, missingFrames and warningIssues.
+ * @returns {Object} value and reconstructionIssues.
  */
 function processSingleframe(instances) {
   const n = instances.length;
@@ -61,9 +59,8 @@ function processSingleframe(instances) {
   const firstImageColumns = firstImage.Columns;
   const firstImageSamplesPerPixel = firstImage.SamplesPerPixel;
   const firstImageOrientationPatient = firstImage.ImageOrientationPatient;
-  const firstImagePositionPatient = firstImage.ImagePositionPatient;
 
-  const warningIssues = [];
+  const reconstructionIssues = [];
   // Can't reconstruct if we:
   // -- Have a different dimensions within a displaySet.
   // -- Have a different number of components within a displaySet.
@@ -78,18 +75,41 @@ function processSingleframe(instances) {
     } = instance;
 
     if (Rows !== firstImageRows || Columns !== firstImageColumns) {
-      warningIssues.push(ReconstructionIssues.VARYING_IMAGESDIMENSIONS);
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESDIMENSIONS);
     } else if (SamplesPerPixel !== firstImageSamplesPerPixel) {
-      warningIssues.push(ReconstructionIssues.VARYING_IMAGESCOMPONENTS);
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESCOMPONENTS);
     } else if (!_isSameArray(ImageOrientationPatient, firstImageOrientationPatient)) {
-      warningIssues.push(ReconstructionIssues.VARYING_IMAGESORIENTATION);
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESORIENTATION);
     }
 
-    if (warningIssues.length !== 0) {
+    if (reconstructionIssues.length !== 0) {
       break;
     }
   }
 
+  // check if dataset is 4D
+  if (_isDataset4D(instances)) {
+    reconstructionIssues.push(ReconstructionIssues.DATASET_4D);
+  }
+
+  return { value: reconstructionIssues.length === 0 ? true : false, reconstructionIssues };
+}
+
+/**
+ *  Check is the spacing is uniform.
+ *  The input metadata array has to be ordered by image position.
+ *
+ * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
+ * @param {boolean} is the dataset 4D.
+ *
+ * @returns {Object} isUniform, reconstructionIssues and missingFrames
+ */
+function isSpacingUniform(instances, datasetIs4D) {
+  const n = instances.length;
+  const firstImage = instances[0].getData().metadata;
+  const firstImagePositionPatient = firstImage.ImagePositionPatient;
+
+  const reconstructionIssues = [];
   let missingFrames = 0;
 
   // Check if frame spacing is approximately equal within a spacingTolerance.
@@ -115,6 +135,14 @@ function processSingleframe(instances) {
           ImagePositionPatient,
           previousImagePositionPatient
         );
+
+        if (datasetIs4D && spacingBetweenFrames < 1.e-3) {
+          // the dataset is 4D, if the distance is zero, means that we are
+          // checking the 4th dimension. Do not return, since we want still to
+          // check the 3rd dimension spacing.
+          continue;
+        }
+
         const spacingIssue = _getSpacingIssue(
           spacingBetweenFrames,
           averageSpacingBetweenFrames
@@ -126,7 +154,7 @@ function processSingleframe(instances) {
           if (issue === ReconstructionIssues.MISSING_FRAMES) {
             missingFrames += spacingIssue.missingFrames;
           } else if (issue === ReconstructionIssues.IRREGULAR_SPACING) {
-            warningIssues.push(issue);
+            reconstructionIssues.push(issue);
             break;
           }
         }
@@ -136,13 +164,9 @@ function processSingleframe(instances) {
     }
   }
 
-  // check if dataset is 4D
-  if (_isDataset4D(instances)) {
-    warningIssues.push(ReconstructionIssues.DATASET_4D);
-  }
-
-  return { value: warningIssues.length === 0 ? true : false, missingFrames, warningIssues };
+  return { isUniform: reconstructionIssues.length === 0 ? true : false, missingFrames, reconstructionIssues };
 }
+
 
 /**
  *  Check if 4D dataset.
@@ -155,7 +179,7 @@ function processSingleframe(instances) {
  *
  * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
  *
- * @returns {boolean} reconstructable value.
+ * @returns {boolean} dataset4D value.
  */
  function _isDataset4D(instances) {
   const n = instances.length;
@@ -247,3 +271,5 @@ function _getPerpendicularDistance(a, b) {
 }
 
 const constructableModalities = ['MR', 'CT', 'PT', 'NM'];
+
+export {isDisplaySetReconstructable, isSpacingUniform};

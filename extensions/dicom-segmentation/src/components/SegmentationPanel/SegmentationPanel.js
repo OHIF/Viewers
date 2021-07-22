@@ -155,7 +155,9 @@ const SegmentationPanel = ({
 
     const brushStackState = getBrushStackState();
     brushStackState.activeLabelmapIndex = newLabelmapIndex;
-    setState(state => ({ ...state, selectedSegmentation }));
+    if (selectedSegmentation) {
+      setState(state => ({ ...state, selectedSegmentation }));
+    }
 
     refreshViewports();
 
@@ -189,6 +191,10 @@ const SegmentationPanel = ({
       'extensiondicomsegmentationsegloaded',
       refreshSegmentations
     );
+    document.addEventListener(
+      'extensiondicomsegmentationsegselected',
+      updateSegmentationComboBox
+    );
 
     /*
      * These are specific to each element;
@@ -207,6 +213,10 @@ const SegmentationPanel = ({
         'extensiondicomsegmentationsegloaded',
         refreshSegmentations
       );
+      document.removeEventListener(
+        'extensiondicomsegmentationsegselected',
+        updateSegmentationComboBox
+      );
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
           'cornerstonetoolslabelmapmodified',
@@ -215,6 +225,27 @@ const SegmentationPanel = ({
       );
     };
   }, [activeIndex, viewports]);
+
+  const updateSegmentationComboBox = (e) => {
+    const index = e.detail.activatedLabelmapIndex;
+    if (index !== -1) {
+      setState(state => ({ ...state, selectedSegmentation: index }));
+    } else {
+      cleanSegmentationComboBox();
+    }
+  }
+
+  const cleanSegmentationComboBox = () => {
+    setState(state => ({
+      ...state,
+      segmentsHidden: [],
+      segmentNumbers: [],
+      labelMapList: [],
+      segmentList: [],
+      isDisabled: true,
+      selectedSegmentation: -1,
+    }));
+  }
 
   const refreshSegmentations = () => {
     const activeViewport = getActiveViewport();
@@ -277,7 +308,10 @@ const SegmentationPanel = ({
       activeViewport.SeriesInstanceUID
     );
 
-    return referencedSegDisplaysets.map((displaySet, index) => {
+    const filteredReferencedSegDisplaysets = referencedSegDisplaysets.filter(
+      (segDisplay => segDisplay.loadError !== true));
+
+    return filteredReferencedSegDisplaysets.map((displaySet, index) => {
       const {
         labelmapIndex,
         originLabelMapIndex,
@@ -289,7 +323,7 @@ const SegmentationPanel = ({
       /* Map to display representation */
       const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
       const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-      const displayDate = date.format('ddd, MMM Do YYYY');
+      const displayDate = date.format('ddd, MMM Do YYYY, h:mm:ss a');
       const displayDescription = displaySet.SeriesDescription;
 
       return {
@@ -709,7 +743,7 @@ const _getReferencedSegDisplaysets = (StudyInstanceUID, SeriesInstanceUID) => {
   referencedDisplaysets.sort((a, b) => {
     const aNumber = Number(`${a.SeriesDate}${a.SeriesTime}`);
     const bNumber = Number(`${b.SeriesDate}${b.SeriesTime}`);
-    return aNumber - bNumber;
+    return bNumber - aNumber;
   });
 
   return referencedDisplaysets;
