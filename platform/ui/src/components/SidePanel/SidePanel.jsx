@@ -31,12 +31,12 @@ const baseClasses =
 
 const classesMap = {
   open: {
-    left: `border-r-${borderSize}`,
-    right: `border-l-${borderSize}`,
+    left: `border-r-4`,
+    right: `border-l-4`,
   },
   closed: {
-    left: `border-r-${borderSize} items-end`,
-    right: `border-l-${borderSize} items-start`,
+    left: `border-r-4 items-end`,
+    right: `border-l-4 items-start`,
   },
 };
 

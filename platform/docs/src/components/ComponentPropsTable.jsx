@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { PropsTable } from '../react-docgen-props-table/PropsTable'
+import '@ohif/ui/dist/app.bundle.css'
 
 export function ComponentPropsTable({ componentName }) {
   if (!componentName) {

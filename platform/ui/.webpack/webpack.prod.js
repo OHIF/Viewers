@@ -2,6 +2,7 @@ const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');
@@ -24,8 +25,8 @@ module.exports = (env, argv) => {
       warnings: true,
     },
     optimization: {
-      minimize: true,
-      sideEffects: true,
+      minimize: false,
+      sideEffects: false,
     },
     output: {
       path: ROOT_DIR,
@@ -34,22 +35,8 @@ module.exports = (env, argv) => {
       filename: pkg.main,
     },
     externals: {
-      '@ohif/core': {
-        commonjs: '@ohif/core',
-        commonjs2: '@ohif/core',
-        amd: '@ohif/core',
-        root: '@ohif/core',
-      },
       react: 'React',
       'react-dom': 'ReactDOM',
-    },
-    module: {
-      rules: [
-        {
-          test: /\.css$/i,
-          use: ['style-loader', 'css-loader', 'postcss-loader'],
-        },
-      ],
     },
   });
 };

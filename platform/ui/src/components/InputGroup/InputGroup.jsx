@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import getGridWidthClass from '../../utils/getGridWidthClass'
 
 import {
   InputText,
@@ -132,7 +133,7 @@ const InputGroup = ({
               key={inputMeta.name}
               className={classnames(
                 'pl-4 first:pl-12',
-                `w-${inputMeta.gridCol}/24`
+                getGridWidthClass(inputMeta.gridCol)
               )}
             >
               {renderFieldInputComponent(inputMeta)}

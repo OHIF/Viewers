@@ -2,8 +2,10 @@ module.exports = {
   prefix: '',
   important: false,
   separator: ':',
-  purge: false, // TODO: unclear how we should purge when using a component library in another app
-  //purge: ['./src/**/*.jsx', './src/**/*.js'],
+  purge: {
+    content: ['./src/**/*.{jsx,js,css}'],
+    safelist: [],
+  },
   theme: {
     screens: {
       sm: '640px',
@@ -826,4 +828,8 @@ module.exports = {
   },
   corePlugins: {},
   plugins: [],
+  future: {
+    purgeLayersByDefault: true,
+    standardFontWeights: true,
+  },
 };
