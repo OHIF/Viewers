@@ -4,7 +4,6 @@
 // which components which entry in the safelist are used for.
 // https://tailwindcss.com/docs/optimizing-for-production
 export default function getGridWidthClass(gridCol) {
-  console.warn(gridCol);
   const widthClasses = {
     1: 'w-1-24',
     2: 'w-2-24',

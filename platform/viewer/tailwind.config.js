@@ -4,7 +4,7 @@ module.exports = {
   separator: ':',
   purge: {
     enabled: true,
-    content: ['./docs/**/*.jsx', './docs/**/*.mdx'],
+    content: ['./src/**/*.{jsx,js,css}'],
   },
   theme: {
     screens: {

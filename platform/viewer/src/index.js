@@ -6,7 +6,11 @@ import 'regenerator-runtime/runtime';
 import App from './App.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
-// test
+
+// TODO: this probably isn't how we should be consuming styles from the UI library,
+// but it seems to allow us to purge unused tailwind styles at the UI library level
+// and again at the viewer and/or docs (docusaurus) levels without any issues
+import '@ohif/ui/dist/app.bundle.css';
 
 /**
  * EXTENSIONS

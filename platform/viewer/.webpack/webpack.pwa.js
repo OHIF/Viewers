@@ -7,11 +7,8 @@ const webpackBase = require('./../../../.webpack/webpack.base.js');
 // ~~ Plugins
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
-// ~~ Rules
-const extractStyleChunksRule = require('./rules/extractStyleChunks.js');
 // ~~ Directories
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -38,9 +35,6 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-    },
-    module: {
-      rules: [...extractStyleChunksRule(isProdBuild)],
     },
     resolve: {
       modules: [
@@ -80,12 +74,6 @@ module.exports = (env, argv) => {
             to: `${DIST_DIR}/app-config.js`,
           },
         ],
-      }),
-      // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
-      new ExtractCssChunksPlugin({
-        filename: isProdBuild ? '[name].[hash].css' : '[name].css',
-        chunkFilename: isProdBuild ? '[id].[hash].css' : '[id].css',
-        ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
       // Generate "index.html" w/ correct includes/imports
       new HtmlWebpackPlugin({
