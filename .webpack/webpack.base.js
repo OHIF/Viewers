@@ -119,13 +119,8 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         ),
       }),
       // Uncomment to generate bundle analyzer
-      //new BundleAnalyzerPlugin(),
+      // new BundleAnalyzerPlugin(),
     ],
-    // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881
-    // For issue in cornerstone-wado-image-loader
-    /*node: {
-      fs: 'empty',
-    },*/
   };
 
   if (isProdBuild) {
