@@ -35,17 +35,17 @@ const ViewportOverlay = ({
         {isZoomActive && (
           <div className="flex flex-row">
             <span className="mr-1">Zoom:</span>
-            <span className="font-thin">{scale.toFixed(2)}x</span>
+            <span className="font-light">{scale.toFixed(2)}x</span>
           </div>
         )}
         {isWwwcActive && (
           <div className="flex flex-row">
             <span className="mr-1">W:</span>
-            <span className="ml-1 mr-2 font-thin">
+            <span className="ml-1 mr-2 font-light">
               {windowWidth.toFixed(0)}
             </span>
             <span className="mr-1">L:</span>
-            <span className="ml-1 font-thin">{windowCenter.toFixed(0)}</span>
+            <span className="ml-1 font-light">{windowCenter.toFixed(0)}</span>
           </div>
         )}
       </div>
@@ -53,7 +53,7 @@ const ViewportOverlay = ({
         {stackSize > 1 && (
           <div className="flex flex-row">
             <span className="mr-1">I:</span>
-            <span className="font-thin">
+            <span className="font-light">
               {`${instanceNumber} (${imageIndex}/${stackSize})`}
             </span>
           </div>

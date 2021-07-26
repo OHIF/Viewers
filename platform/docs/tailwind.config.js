@@ -3,8 +3,12 @@ module.exports = {
   important: false,
   separator: ':',
   purge: {
-    enabled: true,
-    content: ['./docs/**/*.jsx', './docs/**/*.mdx'],
+    content: [
+      './docs/**/*.jsx',
+      './docs/**/*.mdx',
+      './node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
+      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
+    ],
   },
   theme: {
     screens: {
