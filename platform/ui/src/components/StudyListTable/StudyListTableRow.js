@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon } from '../';
+import getGridWidthClass from '../../utils/getGridWidthClass';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
@@ -36,14 +37,13 @@ const StudyListTableRow = props => {
                 >
                   {row.map((cell, index) => {
                     const { content, title, gridCol } = cell;
-
                     return (
                       <td
                         key={index}
                         className={classnames(
                           'px-4 py-2 text-base truncate',
                           { 'border-b border-secondary-light': !isExpanded },
-                          `w-${gridCol}/24` || ''
+                          getGridWidthClass(gridCol) || ''
                         )}
                         style={{
                           maxWidth: 0,

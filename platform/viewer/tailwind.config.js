@@ -3,11 +3,14 @@ module.exports = {
   important: false,
   separator: ':',
   purge: {
+    // Note: if you are writing an extension that uses Tailwind classes,
+    // you need to put it here so they are not purged in the production build
     content: [
-      './docs/**/*.jsx',
-      './docs/**/*.mdx',
+      './src/**/*.{jsx,js,css}',
       './node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
       '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
+      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
+      '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,css}',
     ],
   },
   theme: {

@@ -12,7 +12,7 @@ const WindowLevelMenuItem = ({ title, subtitle, isSelected, index }) => (
       <span className='text-common-bright mr-2 text-base whitespace-no-wrap'>
         {title}
       </span>
-      <span className='flex-1 text-aqua-pale font-thin text-sm whitespace-no-wrap'>
+      <span className='flex-1 text-aqua-pale font-light text-sm whitespace-no-wrap'>
         {subtitle}
       </span>
       <span className='text-primary-active ml-5 text-sm whitespace-no-wrap'>{index + 1}</span>

@@ -32,36 +32,48 @@ const ViewportOverlay = ({
 
   return (
     <div className="text-primary-light">
-      <div data-cy={"viewport-overlay-top-left"} className={classnames(overlay, topLeft)}>
+      <div
+        data-cy={'viewport-overlay-top-left'}
+        className={classnames(overlay, topLeft)}
+      >
         {isZoomActive && (
           <div className="flex flex-row">
             <span className="mr-1">Zoom:</span>
-            <span className="font-thin">{scale.toFixed(2)}x</span>
+            <span className="font-light">{scale.toFixed(2)}x</span>
           </div>
         )}
         {isWwwcActive && (
           <div className="flex flex-row">
             <span className="mr-1">W:</span>
-            <span className="ml-1 mr-2 font-thin">
+            <span className="ml-1 mr-2 font-light">
               {windowWidth.toFixed(0)}
             </span>
             <span className="mr-1">L:</span>
-            <span className="ml-1 font-thin">{windowCenter.toFixed(0)}</span>
+            <span className="ml-1 font-light">{windowCenter.toFixed(0)}</span>
           </div>
         )}
       </div>
-      <div data-cy={"viewport-overlay-top-right"} className={classnames(overlay, topRight)}>
+      <div
+        data-cy={'viewport-overlay-top-right'}
+        className={classnames(overlay, topRight)}
+      >
         {stackSize > 1 && (
           <div className="flex flex-row">
             <span className="mr-1">I:</span>
-            <span className="font-thin">
+            <span className="font-light">
               {`${instanceNumber} (${imageIndex}/${stackSize})`}
             </span>
           </div>
         )}
       </div>
-      <div data-cy={"viewport-overlay-bottom-right"} className={classnames(overlay, bottomRight)}></div>
-      <div data-cy={"viewport-overlay-bottom-left"} className={classnames(overlay, bottomLeft)}></div>
+      <div
+        data-cy={'viewport-overlay-bottom-right'}
+        className={classnames(overlay, bottomRight)}
+      ></div>
+      <div
+        data-cy={'viewport-overlay-bottom-left'}
+        className={classnames(overlay, bottomLeft)}
+      ></div>
     </div>
   );
 };

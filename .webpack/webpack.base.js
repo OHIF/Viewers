@@ -8,10 +8,13 @@ const PACKAGE = require('../platform/viewer/package.json');
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
+const cssToJavaScript = require('./rules/cssToJavaScript.js');
 // ~~ PLUGINS
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
@@ -62,6 +65,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
             fullySpecified: false,
           },
         },
+        cssToJavaScript,
       ],
     },
     resolve: {
@@ -117,11 +121,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
-    // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881
-    // For issue in cornerstone-wado-image-loader
-    /*node: {
-      fs: 'empty',
-    },*/
   };
 
   if (isProdBuild) {
@@ -131,6 +130,13 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         terserOptions: {},
       }),
     ];
+
+    /*config.plugins.push(
+      new MiniCssExtractPlugin({
+        filename: 'dist/[name].bundle.css',
+        chunkFilename: 'dist/[id].css',
+      })
+    );*/
   }
 
   if (isQuickBuild) {
