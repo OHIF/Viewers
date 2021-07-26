@@ -63,20 +63,21 @@ function DataSourceWrapper(props) {
       setIsLoading(true);
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
-      setIsLoading(false);
       setData({
         studies: studies || [],
         total: studies.length,
         resultsPerPage: queryFilterValues.resultsPerPage,
         pageNumber: queryFilterValues.pageNumber,
       });
+
+      setIsLoading(false);
     }
 
     try {
       // Cache invalidation :thinking:
       // - Anytime change is not just next/previous page
       // - And we didn't cross a result offset range
-      const isFirstLoad = data.studies.length === 0;
+      const isFirstLoad = data.studies.length === 0 && !isLoading;
       const isSamePage = data.pageNumber === queryFilterValues.pageNumber;
       const previousOffset =
         Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) *
@@ -88,7 +89,7 @@ function DataSourceWrapper(props) {
         ) *
         (STUDIES_LIMIT - 1);
       const isDataInvalid =
-        isFirstLoad || isSamePage || newOffset !== previousOffset;
+        isFirstLoad || !isSamePage || newOffset !== previousOffset;
 
       if (isDataInvalid) {
         getData();
@@ -97,7 +98,7 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location, params]);
+  }, [data, location, params, isLoading, setIsLoading]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?

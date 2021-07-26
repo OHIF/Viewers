@@ -8,8 +8,8 @@ const devMode = process.env.NODE_ENV !== 'production';
 const cssToJavaScript = {
   test: /\.css$/,
   use: [
-    'style-loader',
-    //devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+    //'style-loader',
+    devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
     { loader: 'css-loader', options: { importLoaders: 1 } },
     {
       loader: 'postcss-loader',
