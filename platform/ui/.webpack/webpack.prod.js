@@ -24,8 +24,8 @@ module.exports = (env, argv) => {
       warnings: true,
     },
     optimization: {
-      minimize: false,
-      sideEffects: false,
+      minimize: true,
+      sideEffects: true,
     },
     output: {
       path: ROOT_DIR,

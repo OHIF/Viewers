@@ -66,7 +66,7 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
                       </Typography>
                         <Typography
                           variant='subtitle'
-                          className={classNames('pr-6 h-full flex flex-row items-center whitespace-no-wrap', isFirst && 'mt-5')}>
+                          className={classNames('pr-6 h-full flex flex-row items-center whitespace-nowrap', isFirst && 'mt-5')}>
                           {definition.label}
                         </Typography>
                       </div>
