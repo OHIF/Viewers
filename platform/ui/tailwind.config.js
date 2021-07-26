@@ -828,8 +828,4 @@ module.exports = {
   },
   corePlugins: {},
   plugins: [],
-  future: {
-    purgeLayersByDefault: true,
-    standardFontWeights: true,
-  },
 };

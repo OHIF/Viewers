@@ -189,7 +189,7 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="flex flex-row flex-no-wrap items-stretch w-full overflow-hidden"
+        className="flex flex-row flex-nowrap items-stretch w-full overflow-hidden"
         style={{ height: 'calc(100vh - 52px' }}
       >
         {/* LEFT SIDEPANELS */}
