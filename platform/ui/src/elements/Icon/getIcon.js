@@ -4,6 +4,7 @@ import adjust from './icons/adjust.svg';
 import angleDoubleDown from './icons/angle-double-down.svg';
 import angleDoubleUp from './icons/angle-double-up.svg';
 import angleLeft from './icons/angle-left.svg';
+import angleOpen from './icons/angle-open.svg';
 import arrows from './icons/arrows.svg';
 import arrowsAltH from './icons/arrows-alt-h.svg';
 import arrowsAltV from './icons/arrows-alt-v.svg';
@@ -107,6 +108,7 @@ const ICONS = {
   crosshairs,
   'dot-circle': dotCircle,
   'angle-left': angleLeft,
+  'angle-open': angleOpen,
   '3d-rotate': d3Rotate,
   plus,
   'chevron-down': chevronDown,

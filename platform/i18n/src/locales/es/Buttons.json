@@ -1,6 +1,7 @@
 {
   "Acquired": "Adquirido",
   "Angle": "Ángulo",
+  "Cobb Angle": "Ángulo Cobb",
   "Axial": "Axial",
   "Bidirectional": "Bidireccional",
   "Brush": "Cepillo",
@@ -19,6 +20,7 @@
   "Invert": "Negativo",
   "Layout": "$t(Common:Layout)",
   "Length": "Longitud",
+  "Annotate": "Anotación",
   "Levels": "W/L",
   "Magnify": "Lupa",
   "Manual": "Manual",
