@@ -10,9 +10,6 @@ jest.mock('./../log.js');
 
 describe('HotkeysManager', () => {
   let hotkeysManager, commandsManager;
-  beforeAll(() => {
-    hotkeys.initialize();
-  });
 
   beforeEach(() => {
     commandsManager = new CommandsManager();
