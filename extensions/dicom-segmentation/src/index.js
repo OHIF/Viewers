@@ -1,9 +1,12 @@
 import React from 'react';
+import OHIF from '@ohif/core';
+
 import init from './init.js';
 import toolbarModule from './toolbarModule.js';
 import getSopClassHandlerModule from './getOHIFDicomSegSopClassHandler.js';
 import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
 import { version } from '../package.json';
+const { studyMetadataManager } = OHIF.utils;
 
 export default {
   /**
@@ -79,12 +82,36 @@ export default {
       );
     };
 
+    const onSegmentationsLoaded = ({ detail }) => {
+      const { segDisplaySet, segMetadata } = detail;
+      const studyMetadata = studyMetadataManager.get(
+        segDisplaySet.StudyInstanceUID
+      );
+      const referencedDisplaysets = studyMetadata.getDerivedDatasets({
+        referencedSeriesInstanceUID: segMetadata.seriesInstanceUid,
+        Modality: 'SEG',
+      });
+      const event = new CustomEvent('segmentation-panel-updated', {
+        detail: {
+          badgeNumber: referencedDisplaysets.length,
+          target: 'segmentation-panel',
+        },
+      });
+      document.dispatchEvent(event);
+    };
+
+    document.addEventListener(
+      'extensiondicomsegmentationsegloaded',
+      onSegmentationsLoaded
+    );
+
     return {
       menuOptions: [
         {
           icon: 'list',
           label: 'Segmentations',
           target: 'segmentation-panel',
+          stateEvent: 'segmentation-panel-updated',
           isDisabled: studies => {
             if (!studies) {
               return true;

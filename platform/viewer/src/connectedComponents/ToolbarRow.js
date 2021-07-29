@@ -96,6 +96,8 @@ class ToolbarRow extends Component {
             value: menuOption.target,
             icon: menuOption.icon,
             bottomLabel: menuOption.label,
+            badgeNumber: menuOption.badgeNumber,
+            stateEvent: menuOption.stateEvent,
           };
           const from = menuOption.from || 'right';
 
@@ -110,6 +112,10 @@ class ToolbarRow extends Component {
       icon: 'th-large',
       bottomLabel: this.props.t('Series'),
     });
+
+    // this.setState({
+    //   toolbarButtons: _getVisibleToolbarButtons.call(this),
+    // });
   }
 
   componentDidMount() {

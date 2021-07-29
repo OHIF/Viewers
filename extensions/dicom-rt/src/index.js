@@ -1,11 +1,12 @@
 import React from 'react';
+import { utils } from '@ohif/core';
+
 import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
 import RTPanel from './components/RTPanel/RTPanel';
 import { version } from '../package.json';
 
-import { utils } from '@ohif/core';
 const { studyMetadataManager } = utils;
 
 export default {
@@ -42,12 +43,34 @@ export default {
       );
     };
 
+    const onRTStructsLoaded = ({ detail }) => {
+      const { rtStructDisplaySet, referencedDisplaySet } = detail;
+
+      const studyMetadata = studyMetadataManager.get(
+        rtStructDisplaySet.StudyInstanceUID
+      );
+      const referencedDisplaysets = studyMetadata.getDerivedDatasets({
+        referencedSeriesInstanceUID: referencedDisplaySet.SeriesInstanceUID,
+        Modality: 'RTSTRUCT',
+      });
+      const event = new CustomEvent('rt-panel-updated', {
+        detail: {
+          badgeNumber: referencedDisplaysets.length,
+          target: 'rt-panel',
+        },
+      });
+      document.dispatchEvent(event);
+    };
+
+    document.addEventListener('extensiondicomrtrtloaded', onRTStructsLoaded);
+
     return {
       menuOptions: [
         {
           icon: 'list',
           label: 'RTSTRUCT',
           target: 'rt-panel',
+          stateEvent: 'rt-panel-updated',
           isDisabled: (studies, activeViewport) => {
             if (!studies) {
               return true;
