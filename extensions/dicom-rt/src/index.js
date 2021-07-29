@@ -43,6 +43,23 @@ export default {
       );
     };
 
+    const RTPanelTabChangedEvent = 'rt-panel-tab-updated';
+
+    /**
+     * Trigger's an event to update the state of the panel's RoundedButtonGroup.
+     *
+     * This is required to avoid extension state
+     * coupling with the viewer's ToolbarRow component.
+     *
+     * @param {object} data
+     */
+    const triggerRTPanelUpdatedEvent = data => {
+      const event = new CustomEvent(RTPanelTabChangedEvent, {
+        detail: data,
+      });
+      document.dispatchEvent(event);
+    };
+
     const onRTStructsLoaded = ({ detail }) => {
       const { rtStructDisplaySet, referencedDisplaySet } = detail;
 
@@ -53,13 +70,10 @@ export default {
         referencedSeriesInstanceUID: referencedDisplaySet.SeriesInstanceUID,
         Modality: 'RTSTRUCT',
       });
-      const event = new CustomEvent('rt-panel-updated', {
-        detail: {
-          badgeNumber: referencedDisplaysets.length,
-          target: 'rt-panel',
-        },
+      triggerRTPanelUpdatedEvent({
+        badgeNumber: referencedDisplaysets.length,
+        target: 'rt-panel',
       });
-      document.dispatchEvent(event);
     };
 
     document.addEventListener('extensiondicomrtrtloaded', onRTStructsLoaded);
@@ -70,7 +84,7 @@ export default {
           icon: 'list',
           label: 'RTSTRUCT',
           target: 'rt-panel',
-          stateEvent: 'rt-panel-updated',
+          stateEvent: RTPanelTabChangedEvent,
           isDisabled: (studies, activeViewport) => {
             if (!studies) {
               return true;

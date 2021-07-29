@@ -112,10 +112,6 @@ class ToolbarRow extends Component {
       icon: 'th-large',
       bottomLabel: this.props.t('Series'),
     });
-
-    // this.setState({
-    //   toolbarButtons: _getVisibleToolbarButtons.call(this),
-    // });
   }
 
   componentDidMount() {

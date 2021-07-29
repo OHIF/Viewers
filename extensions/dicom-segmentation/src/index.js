@@ -82,6 +82,23 @@ export default {
       );
     };
 
+    const SegmentationPanelTabUpdatedEvent = 'segmentation-panel-tab-updated';
+
+    /**
+     * Trigger's an event to update the state of the panel's RoundedButtonGroup.
+     *
+     * This is required to avoid extension state
+     * coupling with the viewer's ToolbarRow component.
+     *
+     * @param {object} data
+     */
+    const triggerSegmentationPanelTabUpdatedEvent = data => {
+      const event = new CustomEvent(SegmentationPanelTabUpdatedEvent, {
+        detail: data,
+      });
+      document.dispatchEvent(event);
+    };
+
     const onSegmentationsLoaded = ({ detail }) => {
       const { segDisplaySet, segMetadata } = detail;
       const studyMetadata = studyMetadataManager.get(
@@ -91,13 +108,10 @@ export default {
         referencedSeriesInstanceUID: segMetadata.seriesInstanceUid,
         Modality: 'SEG',
       });
-      const event = new CustomEvent('segmentation-panel-updated', {
-        detail: {
-          badgeNumber: referencedDisplaysets.length,
-          target: 'segmentation-panel',
-        },
+      triggerSegmentationPanelTabUpdatedEvent({
+        badgeNumber: referencedDisplaysets.length,
+        target: 'segmentation-panel',
       });
-      document.dispatchEvent(event);
     };
 
     document.addEventListener(
@@ -111,7 +125,7 @@ export default {
           icon: 'list',
           label: 'Segmentations',
           target: 'segmentation-panel',
-          stateEvent: 'segmentation-panel-updated',
+          stateEvent: SegmentationPanelTabUpdatedEvent,
           isDisabled: studies => {
             if (!studies) {
               return true;
