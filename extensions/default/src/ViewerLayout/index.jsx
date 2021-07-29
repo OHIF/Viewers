@@ -133,6 +133,7 @@ function ViewerLayout({
               hide();
             },
             onReset: () => hotkeysManager.restoreDefaultBindings(),
+            hotkeysModule: hotkeys
           },
         }),
     },

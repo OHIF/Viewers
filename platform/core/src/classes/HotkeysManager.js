@@ -26,8 +26,6 @@ export class HotkeysManager {
 
     this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
-
-    hotkeys.initialize();
   }
 
   /**
