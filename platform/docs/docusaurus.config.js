@@ -215,9 +215,10 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: ({ locale, docPath }) => {
-            if (locale !== 'en') {
+            /*if (locale !== 'en') {
               return `https://crowdin.com/project/docusaurus-v2/${locale}`;
-            }
+            }*/
+
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
             const nextVersionDocsDirPath = 'docs';
@@ -234,14 +235,19 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           //   !isVersioningDisabled && (isDev || isDeployPreview)
           //     ? ['current', ...versions.slice(0, 2)]
           //     : undefined,
-          // versions: {
-          //   current: {
-          //     // label: `${getNextBetaVersionName()} 🚧`,
-          //     // label: `2.0 🎉`,
-          //     label: `2.0`,
-          //     // path: `2.0`,
-          //   },
-          // },
+          versions: {
+            current: {
+              label: 'Version 3.0 🚧`',
+            },
+            '2.0': {
+              label: 'Version 2.0',
+              //path: `2.0`,
+            },
+            '1.0': {
+              label: 'Version 2.0',
+              //path: `1.0`,
+            },
+          },
         },
         theme: {
           customCss: [require.resolve('./src/css/custom.css')],
@@ -319,8 +325,8 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           position: 'left',
         },
         {
-          to: 'next/help',
-          activeBaseRegex: '(^/help$)|(/next/help)',
+          to: '/help',
+          activeBaseRegex: '(^/help$)|(/help)',
           label: 'Help',
           position: 'right',
         },

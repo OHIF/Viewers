@@ -19,6 +19,6 @@ export function ComponentPropsTable({ componentName }) {
   )
 }
 
-ComponentPropsTable.PropTypes = {
+ComponentPropsTable.propTypes = {
   componentName: PropTypes.string.required
 }
