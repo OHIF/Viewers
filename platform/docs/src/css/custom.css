@@ -99,7 +99,7 @@ html[data-theme='dark'] {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 html {
-  font-size: 18px;
+  font-size: 1em;
 }
 
 body {
@@ -224,7 +224,6 @@ article header h3 {
 .DocSearch {
   display: none;
 }
-
 
 /* Footer logo MGH */
 

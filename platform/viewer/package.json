@@ -1,6 +1,7 @@
 {
   "name": "@ohif/viewer",
   "version": "4.0.0",
+  "productVersion": "3.0-dev",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -90,6 +91,7 @@
     "lodash": "4.17.15",
     "terser-webpack-plugin": "^5.1.1",
     "webpack-bundle-analyzer": "^4.4.2",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.7.3",
+    "tailwindcss": "2.2.4"
   }
 }

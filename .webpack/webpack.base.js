@@ -103,7 +103,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
         'process.env.VERSION_NUMBER': JSON.stringify(
-          process.env.VERSION_NUMBER || PACKAGE.version || ''
+          process.env.VERSION_NUMBER || PACKAGE.productVersion || ''
         ),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         /* i18n */

@@ -258,7 +258,7 @@ differently.
   <tbody>
     <tr>
       <td align="left">
-        <a href="./modules/layout-template.md">
+        <a href="./modules/layout-template">
           LayoutTemplate (NEW)
         </a>
       </td>
@@ -266,7 +266,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/data-source.md">
+        <a href="./modules/data-source">
           DataSource (NEW)
         </a>
       </td>
@@ -274,7 +274,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/sop-class-handler.md">
+        <a href="./modules/sop-class-handler">
           SOPClassHandler
         </a>
       </td>
@@ -282,7 +282,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/panel.md">
+        <a href="./modules/panel">
           Panel
         </a>
       </td>
@@ -290,7 +290,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/viewport.md">
+        <a href="./modules/viewport">
           Viewport
         </a>
       </td>
@@ -298,7 +298,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/commands.md">
+        <a href="./modules/commands">
           Commands
         </a>
       </td>
@@ -306,7 +306,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/toolbar.md">
+        <a href="./modules/toolbar">
           Toolbar
         </a>
       </td>
@@ -314,7 +314,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/context.md">
+        <a href="./modules/contextModule">
           Context
         </a>
       </td>
@@ -322,7 +322,7 @@ differently.
     </tr>
     <tr>
       <td align="left">
-        <a href="./modules/hpModule.md">
+        <a href="./modules/hpModule">
           HangingProtocol
         </a>
       </td>

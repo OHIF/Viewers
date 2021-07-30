@@ -2,14 +2,16 @@
 sidebar_position: 1
 sidebar_label: Introduction
 ---
+
 # Services
 
-
 ## Overview
-Services are "concern-specific" code modules that can be consumed across layers. Services provide
-a set of operations, often tied to some shared state, and are made available to
-through out the app via the `ServicesManager`. Services are particularly well suited to
-address [cross-cutting concerns][cross-cutting-concerns].
+
+Services are "concern-specific" code modules that can be consumed across layers.
+Services provide a set of operations, often tied to some shared state, and are
+made available to through out the app via the `ServicesManager`. Services are
+particularly well suited to address [cross-cutting
+concerns][cross-cutting-concerns].
 
 Each service should be:
 
@@ -17,13 +19,13 @@ Each service should be:
 - able to fail and/or be removed without breaking the application
 - completely interchangeable with another module implementing the same interface
 
-
-> In `OHIF-v3` we have added multiple non-UI services and have introduced **pub/sub** pattern to reduce coupling between layers.
+> In `OHIF-v3` we have added multiple non-UI services and have introduced
+> **pub/sub** pattern to reduce coupling between layers.
 >
 > [Read more about Pub/Sub](./pubsub.md)
 
-
 ## Services
+
 The following services is available in the `OHIF-v3`.
 
 <table>
@@ -37,7 +39,7 @@ The following services is available in the `OHIF-v3`.
     <tbody>
         <tr>
             <td>
-                <a href="./data/DicomMetadataStore.md">
+                <a href="./data/DicomMetadataStore">
                     DicomMetadataStore (NEW)
                 </a>
             </td>
@@ -48,7 +50,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./data/DisplaySetService.md">
+                <a href="./data/DisplaySetService">
                     DisplaySetService (NEW)
                 </a>
             </td>
@@ -59,7 +61,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./data/HangingProtocolService.md">
+                <a href="./data/HangingProtocolService">
                     HangingProtocolService (NEW)
                 </a>
             </td>
@@ -70,7 +72,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./data/MeasurementService.md">
+                <a href="./data/MeasurementService">
                     MeasurementService (MODIFIED)
                 </a>
             </td>
@@ -81,7 +83,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./data/ToolbarService.md">
+                <a href="./data/ToolbarService">
                     ToolBarService (NEW)
                 </a>
             </td>
@@ -92,7 +94,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./ui/ViewportGridService.md">
+                <a href="./ui/viewport-grid-service">
                     ViewportGridService (NEW)
                 </a>
             </td>
@@ -103,7 +105,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./ui/cine.md">
+                <a href="./ui/cine-service">
                     Cine Service (NEW)
                 </a>
             </td>
@@ -114,7 +116,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./ui/ui-dialog-service.md">
+                <a href="./ui/ui-dialog-service">
                     UIDialogService
                 </a>
             </td>
@@ -125,7 +127,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./ui/ui-modal-service.md">
+                <a href="./ui/ui-modal-service">
                     UIModalService
                 </a>
             </td>
@@ -136,7 +138,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./ui/ui-notification-service.md">
+                <a href="./ui/ui-notification-service">
                     UINotificationService
                 </a>
             </td>
@@ -147,7 +149,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./ui/ui-viewport-dialog-service.md">
+                <a href="./ui/ui-viewport-dialog-service">
                     UIViewportDialogService (NEW)
                 </a>
             </td>
@@ -158,7 +160,6 @@ The following services is available in the `OHIF-v3`.
         </tr>
     </tbody>
 </table>
-
 
 <!--
   LINKS
