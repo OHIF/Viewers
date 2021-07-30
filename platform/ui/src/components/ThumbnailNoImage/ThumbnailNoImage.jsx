@@ -41,29 +41,29 @@ const ThumbnailNoImage = ({
       tabIndex="0"
     >
       <div ref={drag}>
-        <div className="flex flex-col flex-1">
-          <div className="flex flex-row items-center flex-1 mb-2">
-            <Icon name="list-bullets" className="w-12 text-secondary-light" />
+        <div className={px("flex flex-col flex-1")}>
+          <div className={px("flex flex-row items-center flex-1 mb-2")}>
+            <Icon name="list-bullets" className={px("w-12 text-secondary-light")} />
             <Tooltip
               position="bottom"
               content={<Typography>{modalityTooltip}</Typography>}
             >
-              <div className="px-3 text-lg text-white rounded-sm bg-primary-main">
+              <div className={px("px-3 text-lg text-white rounded-sm bg-primary-main")}>
                 {modality}
               </div>
             </Tooltip>
-            <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
+            <span className={px("ml-4 text-base text-blue-300")}>{seriesDate}</span>
           </div>
-          <div className="flex flex-row">
+          <div className={px("flex flex-row")}>
             {canReject && (
               <Icon
                 name="old-trash"
                 style={{ minWidth: '12px' }}
-                className="w-3 ml-4 text-red-500"
+                className={px("w-3 ml-4 text-red-500")}
                 onClick={onReject}
               />
             )}
-            <div className="ml-4 text-base text-white break-all">
+            <div className={px("ml-4 text-base text-white break-all")}>
               {description}
             </div>
           </div>

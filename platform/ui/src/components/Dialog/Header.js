@@ -10,7 +10,7 @@ const CloseButton = ({ onClick }) => {
       data-cy="close-button"
       onClick={onClick}
       name="close"
-      className="cursor-pointer text-primary-active w-6 h-6"
+      className={px('cursor-pointer text-primary-active w-6 h-6')}
     />
   );
 };
@@ -26,8 +26,8 @@ const Header = ({ title, noCloseButton, onClose }) => {
   const spacing = 'p-4';
 
   return (
-    <div className={classNames(theme, flex, border, spacing)}>
-      <Typography variant="h6" className="text-primary-active">
+    <div className={px(classnames(theme, flex, border, spacing))}>
+      <Typography variant="h6" className={px('text-primary-active')}>
         {title}
       </Typography>
       {!noCloseButton && <CloseButton onClick={onClose} />}
@@ -43,7 +43,7 @@ Header.propTypes = {
 };
 
 Header.defaultProps = {
-  noCloseButton: false
+  noCloseButton: false,
 };
 
 export default Header;

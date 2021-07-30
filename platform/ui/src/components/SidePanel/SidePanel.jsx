@@ -97,13 +97,13 @@ const SidePanel = ({
             width: `${collapsedWidth}px`,
           }}
           name={childComponent.name}
-          className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b"
+          className={px("flex flex-col text-xs px-1 py-1 text-white border-transparent border-b")}
         >
           <Icon
             name={childComponent.iconName}
-            className="text-primary-active"
+            className={px("text-primary-active")}
           />
-          <span className="mt-2 text-white text-xs">
+          <span className={px("mt-2 text-white text-xs")}>
             {t(childComponent.iconLabel)}
           </span>
         </Button>
@@ -122,7 +122,7 @@ const SidePanel = ({
     >
       {componentOpen ? (
         <React.Fragment>
-          <div className="px-3 border-b border-secondary-light">
+          <div className={px("px-3 border-b border-secondary-light")}>
             <Button
               variant="text"
               color="inherit"
@@ -131,7 +131,7 @@ const SidePanel = ({
                 setComponentOpen(null);
               }}
               name={childComponent.name}
-              className="flex flex-row items-center px-3 h-12 relative w-full"
+              className={px("flex flex-row items-center px-3 h-12 relative w-full")}
             >
               <Icon
                 name={openIconName[side]}
@@ -141,7 +141,7 @@ const SidePanel = ({
                 )}
                 style={{ ...position[side] }}
               />
-              <span className="flex-1 text-primary-active">
+              <span className={px("flex-1 text-primary-active")}>
                 {t(childComponent.label)}
               </span>
             </Button>

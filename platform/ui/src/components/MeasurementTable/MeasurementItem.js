@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon } from '../';
+import px from '../../utils/px';
 
 const MeasurementItem = ({
   id,
@@ -26,36 +27,39 @@ const MeasurementItem = ({
 
   return (
     <div
-      className={classnames(
-        'group flex cursor-pointer bg-black border outline-none border-transparent transition duration-300',
-        {
-          'rounded overflow-hidden border-primary-light': isActive,
-        }
+      className={px(
+        classnames(
+          'group flex cursor-pointer bg-black border outline-none border-transparent transition duration-300',
+          {
+            'rounded overflow-hidden border-primary-light': isActive,
+          }
+        )
       )}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClickHandler}
       role="button"
       tabIndex="0"
-      data-cy={"measurement-item"}
+      data-cy={'measurement-item'}
     >
       <div
-        className={classnames(
-          'text-center w-6 py-1 text-base transition duration-300',
-          {
+        className={px(
+          classnames('text-center w-6 py-1 text-base transition duration-300', {
             'bg-primary-light text-black active': isActive,
             'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
-          }
+          })
         )}
       >
         {index}
       </div>
-      <div className="relative flex flex-col flex-1 px-2 py-1">
-        <span className="mb-1 text-base text-primary-light">{label}</span>
+      <div className={px('relative flex flex-col flex-1 px-2 py-1')}>
+        <span className={px('mb-1 text-base text-primary-light')}>{label}</span>
         {displayText.map(line => (
           <span
             key={line}
-            className="pl-2 text-base text-white border-l border-primary-light"
+            className={px(
+              'pl-2 text-base text-white border-l border-primary-light'
+            )}
             dangerouslySetInnerHTML={{ __html: line }}
           ></span>
         ))}

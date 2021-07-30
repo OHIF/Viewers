@@ -36,13 +36,13 @@ const ThumbnailTracked = ({
           <Tooltip
             position="right"
             content={
-              <div className="text-left max-w-40">
+              <div className={px("text-left max-w-40")}>
                 Series is displayed <br /> in viewport{' '}
                 {viewportIdentificatorLabel}
               </div>
             }
           >
-            <Icon name="tool-more-menu" className="text-white py-2" />
+            <Icon name="tool-more-menu" className={px("text-white py-2")} />
           </Tooltip>
         </div>
       );
@@ -59,7 +59,7 @@ const ThumbnailTracked = ({
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
     >
-      <div className="flex flex-col items-center flex-2">
+      <div className={px("flex flex-col items-center flex-2")}>
         <div
           className={classnames(
             'flex flex-col items-center justify-start p-2 mb-2 relative cursor-pointer',
@@ -69,21 +69,21 @@ const ThumbnailTracked = ({
           <Tooltip
             position="right"
             content={
-              <div className="flex flex-row flex-1">
-                <div className="flex items-center justify-center pr-4 flex-2">
-                  <Icon name="info-link" className="text-primary-active" />
+              <div className={px("flex flex-row flex-1")}>
+                <div className={px("flex items-center justify-center pr-4 flex-2")}>
+                  <Icon name="info-link" className={px("text-primary-active")} />
                 </div>
-                <div className="flex flex-col flex-1">
+                <div className={px("flex flex-col flex-1")}>
                   <span>
                     Series is
-                    <span className="text-white">
+                    <span className={px("text-white")}>
                       {isTracked ? ' tracked' : ' untracked'}
                     </span>
                   </span>
                   {!!viewportIdentificator.length && (
                     <span>
                       in viewport
-                      <span className="ml-1 text-white">
+                      <span className={px("ml-1 text-white")}>
                         {viewportIdentificatorLabel}
                       </span>
                     </span>
@@ -93,15 +93,15 @@ const ThumbnailTracked = ({
               </div>
             }
           >
-            <Icon name={trackedIcon} className="w-4 mb-2 text-primary-light" />
+            <Icon name={trackedIcon} className={px("w-4 mb-2 text-primary-light")} />
           </Tooltip>
-          <div className="text-xl leading-tight text-white text-center">
+          <div className={px("text-xl leading-tight text-white text-center")}>
             {renderViewportLabels()}
           </div>
         </div>
         {isTracked && (
           <div onClick={onClickUntrack}>
-            <Icon name="cancel" className="w-4 text-primary-active" />
+            <Icon name="cancel" className={px("w-4 text-primary-active")} />
           </div>
         )}
       </div>

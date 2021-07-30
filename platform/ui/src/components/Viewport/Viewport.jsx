@@ -4,8 +4,8 @@ import { ViewportActionBar, Notification } from '../';
 
 const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
   return (
-    <div className="relative flex flex-col h-full">
-      <div className="absolute top-0 left-0 w-full">
+    <div className={px("relative flex flex-col h-full")}>
+      <div className={px("absolute top-0 left-0 w-full")}>
         <ViewportActionBar
           onSeriesChange={onSeriesChange}
           studyData={studyData}
@@ -39,7 +39,7 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
       </div>
 
       {/* STUDY IMAGE */}
-      <div className="w-full h-full" id={`viewport-${viewportIndex}`}>
+      <div className={px("w-full h-full")} id={`viewport-${viewportIndex}`}>
         {children}
       </div>
     </div>

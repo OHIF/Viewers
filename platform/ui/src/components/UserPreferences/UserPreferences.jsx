@@ -50,25 +50,25 @@ const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage,
 
   const Section = ({ title, children }) => (
     <>
-      <div className="border-b-2 border-black mb-2">
+      <div className={px("border-b-2 border-black mb-2")}>
         <Typography
           variant="h5"
-          className="flex flex-grow text-primary-light font-light pb-2"
+          className={px("flex flex-grow text-primary-light font-light pb-2")}
         >
           {title}
         </Typography>
       </div>
-      <div className="mt-4 mb-8">
+      <div className={px("mt-4 mb-8")}>
         {children}
       </div>
     </>
   );
 
   return (
-    <div className="p-2">
+    <div className={px("p-2")}>
       <Section title={t('General')}>
-        <div className="flex flex-row justify-center items-center w-72">
-          <Typography variant="subtitle" className="mr-5 text-right h-full">
+        <div className={px("flex flex-row justify-center items-center w-72")}>
+          <Typography variant="subtitle" className={px("mr-5 text-right h-full")}>
             {t('Language')}
           </Typography>
           <Select
@@ -88,11 +88,11 @@ const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage,
           hotkeysModule={hotkeysModule}
         />
       </Section>
-      <div className="flex flex-row justify-between">
+      <div className={px("flex flex-row justify-between")}>
         <Button variant="outlined" onClick={onResetHandler} disabled={disabled}>
           {t('Reset to Defaults')}
         </Button>
-        <div className="flex flex-row">
+        <div className={px("flex flex-row")}>
           <Button variant="outlined" onClick={onCancelHandler}>
             {t('Cancel')}
           </Button>
@@ -100,7 +100,7 @@ const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage,
             variant="contained"
             disabled={state.isDisabled}
             color="light"
-            className="ml-2"
+            className={px("ml-2")}
             onClick={onSubmitHandler}
           >
             {t('Save')}

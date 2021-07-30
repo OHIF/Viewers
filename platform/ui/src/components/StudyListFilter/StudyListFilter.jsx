@@ -26,33 +26,33 @@ const StudyListFilter = ({
   return (
     <React.Fragment>
       <div>
-        <div className="bg-primary-dark">
-          <div className="container relative flex flex-col pt-5 m-auto">
-            <div className="flex flex-row justify-between px-12 mb-5">
-              <div className="flex flex-row">
-                <Typography variant="h4" className="mr-6 text-primary-light">
+        <div className={px("bg-primary-dark")}>
+          <div className={px("container relative flex flex-col pt-5 m-auto")}>
+            <div className={px("flex flex-row justify-between px-12 mb-5")}>
+              <div className={px("flex flex-row")}>
+                <Typography variant="h4" className={px("mr-6 text-primary-light")}>
                   {t('Study list')}
                 </Typography>
               </div>
-              <div className="flex flex-row">
+              <div className={px("flex flex-row")}>
                 {isFiltering && (
                   <Button
                     rounded="full"
                     variant="outlined"
                     color="primary"
-                    className="mx-8 text-primary-active border-primary-active"
+                    className={px("mx-8 text-primary-active border-primary-active")}
                     startIcon={<Icon name="cancel" />}
                     onClick={clearFilters}
                   >
                     {t('Clear filters')}
                   </Button>
                 )}
-                <Typography variant="h4" className="mr-2" data-cy={"num-studies"}>
+                <Typography variant="h4" className={px("mr-2")} data-cy={"num-studies"}>
                   {numOfStudies > 100 ? '>100' : numOfStudies}
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="self-end pb-1 text-common-light"
+                  className={px("self-end pb-1 text-common-light")}
                 >
                   {t('Studies')}
                 </Typography>
@@ -62,10 +62,10 @@ const StudyListFilter = ({
         </div>
       </div>
       <div
-        className="sticky z-10 border-b-4 border-black"
+        className={px("sticky z-10 border-b-4 border-black")}
         style={{ top: '52px' }}
       >
-        <div className="pt-3 pb-3 bg-primary-dark ">
+        <div className={px("pt-3 pb-3 bg-primary-dark ")}>
           <InputGroup
             inputMeta={filtersMeta}
             values={filterValues}
@@ -76,9 +76,9 @@ const StudyListFilter = ({
           />
         </div>
         {numOfStudies > 100 && (
-          <div className="container m-auto">
-            <div className="py-1 text-base text-center rounded-b bg-primary-main">
-              <p className="text-white">
+          <div className={px("container m-auto")}>
+            <div className={px("py-1 text-base text-center rounded-b bg-primary-main")}>
+              <p className={px("text-white")}>
                 {t('Filter list to 100 studies or less to enable sorting')}
               </p>
             </div>

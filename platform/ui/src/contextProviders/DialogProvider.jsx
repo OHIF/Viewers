@@ -231,7 +231,7 @@ const DialogProvider = ({ children, service }) => {
         const background = 'bg-black bg-opacity-50';
         const overlay = 'fixed z-50 left-0 top-0 w-full h-full overflow-auto';
         return (
-          <div className={classNames(overlay, background)} key={id}>
+          <div className={px(classnames(overlay, background))} key={id}>
             {component}
           </div>
         );
@@ -280,7 +280,7 @@ const DialogProvider = ({ children, service }) => {
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
       {!isEmpty() && (
-        <div className="w-full h-full absolute" onKeyDown={onKeyDownHandler}>
+        <div className={px("w-full h-full absolute")} onKeyDown={onKeyDownHandler}>
           {renderDialogs()}
         </div>
       )}

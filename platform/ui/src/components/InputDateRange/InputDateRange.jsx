@@ -26,7 +26,7 @@ const InputDateRange = ({
       sortDirection={sortDirection}
       onLabelClick={onClickHandler}
     >
-      <div className="relative">
+      <div className={px("relative")}>
         <DateRange
           id={id}
           startDate={startDate}

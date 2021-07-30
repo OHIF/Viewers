@@ -23,7 +23,7 @@ const Option = props => {
         <input
           type="checkbox"
           checked={props.isSelected}
-          className="w-6 h-6 mr-2"
+          className={px("w-6 h-6 mr-2")}
           onChange={e => null}
         />
         <label>{props.value} </label>

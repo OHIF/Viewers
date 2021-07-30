@@ -35,7 +35,7 @@ const SnackbarContainer = () => {
           }
 
           return (
-            <div key={pos} className={`fixed z-50 p-6 box-border h-auto sb-${pos}`}>
+            <div key={pos} className={px(`fixed z-50 p-6 box-border h-auto sb-${pos}`)}>
               {items[pos].map((item, index) => (
                 <div key={item.id + index}>{renderItem(item)}</div>
               ))}

@@ -115,7 +115,7 @@ const TooltipClipboard = ({ children, text }) => {
 
   return (
     <div
-      className={classnames('inline-flex max-w-full')}
+      className={px(classnames('inline-flex max-w-full'))}
       onMouseOver={handleMouseOver}
       onFocus={handleMouseOver}
       onMouseOut={handleMouseOut}
@@ -123,7 +123,7 @@ const TooltipClipboard = ({ children, text }) => {
       role="tooltip"
       ref={tooltipContainerRef}
     >
-      <span className="truncate">{children}</span>
+      <span className={px("truncate")}>{children}</span>
       <div
         className={classnames(`fixed pt-1`, {
           block: isActive,
@@ -140,8 +140,8 @@ const TooltipClipboard = ({ children, text }) => {
           {message || (
             <>
               {children}
-              <div className="ml-2 pl-2 border-l border-secondary-light">
-                <Icon name="clipboard" className="w-4 text-white" />
+              <div className={px("ml-2 pl-2 border-l border-secondary-light")}>
+                <Icon name="clipboard" className={px("w-4 text-white")} />
               </div>
             </>
           )}

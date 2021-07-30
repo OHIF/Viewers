@@ -52,13 +52,13 @@ const DateRange = (props) => {
 
   const renderDatePresets = () => {
     return (
-      <div className="PresetDateRangePicker_panel flex justify-between">
+      <div className={px("PresetDateRangePicker_panel flex justify-between")}>
         {studyDatePresets.map(({ text, start, end }) => {
           return (
             <button
               key={text}
               type="button"
-              className={`m-0 py-2 px-3 bg-primary-main border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
+              className={px("m-0 py-2 px-3 bg-primary-main border-0 rounded text-white text-base transition duration-300 hover:opacity-80")}
               onClick={() =>
                 onChange({
                   startDate: start ? start.format('YYYYMMDD') : undefined,
@@ -92,10 +92,10 @@ const DateRange = (props) => {
     const handleOnBlur = () => { };
 
     return (
-      <div className="flex justify-center">
-        <div className="my-0 mx-1">
+      <div className={px("flex justify-center")}>
+        <div className={px("my-0 mx-1")}>
           <select
-            className="DateRangePicker_select"
+            className={px("DateRangePicker_select")}
             value={month.month()}
             onChange={handleMonthChange}
             onBlur={handleOnBlur}
@@ -107,9 +107,9 @@ const DateRange = (props) => {
             ))}
           </select>
         </div>
-        <div className="my-0 mx-1">
+        <div className={px("my-0 mx-1")}>
           <select
-            className="DateRangePicker_select"
+            className={px("DateRangePicker_select")}
             value={month.year()}
             onChange={handleYearChange}
             onBlur={handleOnBlur}

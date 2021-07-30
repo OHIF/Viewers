@@ -16,14 +16,14 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
     };
 
     return (
-      <div className={classnames(flex, theme, 'cursor-pointer')} onClick={onClickHandler} data-cy={item.id}>
+      <div className={px(classnames(flex, theme, 'cursor-pointer'))} onClick={onClickHandler} data-cy={item.id}>
         {renderer && renderer({ ...item, index, isSelected })}
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col rounded-md bg-secondary-dark pt-2 pb-2">
+    <div className={px("flex flex-col rounded-md bg-secondary-dark pt-2 pb-2")}>
       {items.map((item, index) => {
         return (
           <ListItem

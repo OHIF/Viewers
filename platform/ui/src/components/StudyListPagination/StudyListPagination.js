@@ -9,7 +9,7 @@ const StudyListPagination = ({
   perPage,
   onChangePerPage,
 }) => {
-  const { t } = useTranslation("StudyList")
+  const { t } = useTranslation('StudyList');
 
   const navigateToPage = page => {
     const toPage = page < 1 ? 1 : page;
@@ -21,20 +21,22 @@ const StudyListPagination = ({
     { value: '50', label: '50' },
     { value: '100', label: '100' },
   ];
-  const [selectedRange, setSelectedRange] = useState(ranges.find(r => r.value === perPage));
-  const onSelectedRange = (selectedRange) => {
+  const [selectedRange, setSelectedRange] = useState(
+    ranges.find(r => r.value === perPage)
+  );
+  const onSelectedRange = selectedRange => {
     setSelectedRange(selectedRange);
     onChangePerPage(selectedRange.value);
   };
 
   return (
-    <div className="bg-black py-10">
-      <div className="container m-auto relative px-8">
-        <div className="flex justify-between">
-          <div className="flex items-center">
+    <div className={px('bg-black py-10')}>
+      <div className={px('container m-auto relative px-8')}>
+        <div className={px('flex justify-between')}>
+          <div className={px('flex items-center')}>
             <Select
-              id={"rows-per-page"}
-              className="relative mr-3 w-16 border-primary-main"
+              id={'rows-per-page'}
+              className={px('relative mr-3 w-16 border-primary-main')}
               options={ranges}
               value={selectedRange}
               isMulti={false}
@@ -44,19 +46,19 @@ const StudyListPagination = ({
               hideSelectedOptions={true}
               onChange={onSelectedRange}
             />
-            <Typography className="text-base opacity-60">
+            <Typography className={px('text-base opacity-60')}>
               {t('Results per page')}
             </Typography>
           </div>
           <div className="">
-            <div className="flex items-center">
-              <Typography className="opacity-60 mr-4 text-base">
+            <div className={px('flex items-center')}>
+              <Typography className={px('opacity-60 mr-4 text-base')}>
                 Page {currentPage}
               </Typography>
               <ButtonGroup color="primary">
                 <Button
                   size="initial"
-                  className="border-primary-main px-4 py-2 text-base"
+                  className={px('border-primary-main px-4 py-2 text-base')}
                   color="white"
                   onClick={() => navigateToPage(1)}
                 >
@@ -64,13 +66,15 @@ const StudyListPagination = ({
                 </Button>
                 <Button
                   size="initial"
-                  className="border-primary-main py-2 px-2 text-base"
+                  className={px('border-primary-main py-2 px-2 text-base')}
                   color="white"
                   onClick={() => navigateToPage(currentPage - 1)}
-                >{t(`< Previous`)}</Button>
+                >
+                  {t(`< Previous`)}
+                </Button>
                 <Button
                   size="initial"
-                  className="border-primary-main py-2 px-4 text-base"
+                  className={px('border-primary-main py-2 px-4 text-base')}
                   color="white"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >

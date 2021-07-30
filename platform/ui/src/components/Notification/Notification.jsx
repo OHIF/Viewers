@@ -56,14 +56,14 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
   return (
     <div
       ref={notificationRef}
-      className="flex flex-col p-2 mx-2 mt-2 rounded bg-common-bright"
+      className={px("flex flex-col p-2 mx-2 mt-2 rounded bg-common-bright")}
       data-cy={id}
     >
-      <div className="flex flex-grow">
-        <Icon name={icon} className={classnames('w-5', color)} />
-        <span className="ml-2 text-base text-black">{message}</span>
+      <div className={px("flex flex-grow")}>
+        <Icon name={icon} className={px(classnames('w-5', color))} />
+        <span className={px("ml-2 text-base text-black")}>{message}</span>
       </div>
-      <div className="flex justify-end mt-2">
+      <div className={px("flex justify-end mt-2")}>
         {actions.map((action, index) => {
           const isFirst = index === 0;
           const isPrimary = action.type === 'primary';
@@ -72,7 +72,7 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
             <Button
               data-cy={action.id}
               key={index}
-              className={classnames({ 'ml-2': !isFirst })}
+              className={px(classnames({ 'ml-2': !isFirst }))}
               color={isPrimary ? 'primary' : undefined}
               onClick={() => {
                 onSubmit(action.value);

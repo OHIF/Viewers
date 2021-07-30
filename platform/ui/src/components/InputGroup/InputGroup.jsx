@@ -125,8 +125,8 @@ const InputGroup = ({
     }
   };
   return (
-    <div className="container m-auto relative flex flex-col">
-      <div className="flex flex-row w-full">
+    <div className={px("container m-auto relative flex flex-col")}>
+      <div className={px("flex flex-row w-full")}>
         {inputMeta.map(inputMeta => {
           return (
             <div

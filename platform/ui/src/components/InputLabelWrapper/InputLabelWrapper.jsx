@@ -33,7 +33,7 @@ const InputLabelWrapper = ({
   };
 
   return (
-    <label className={classnames(baseLabelClassName, className)}>
+    <label className={px(classnames(baseLabelClassName, className))}>
       <span
         role="button"
         className={spanClassName}

@@ -6,9 +6,11 @@ import { Icon, Typography } from '../';
 // TODO: Add loading spinner to OHIF + use it here.
 const EmptyStudies = ({ className, isLoading }) => {
   return (
-    <div className={classnames('flex-col inline-flex items-center', className)}>
-      <Icon name="magnifier" className="mb-4" />
-      <Typography className="text-primary-light" variant="h5">
+    <div
+      className={px(classnames('flex-col inline-flex items-center', className))}
+    >
+      <Icon name="magnifier" className={px('mb-4')} />
+      <Typography className={px('text-primary-light')} variant="h5">
         {!isLoading ? 'No studies available' : 'Loading...'}
       </Typography>
     </div>

@@ -1,5 +1,5 @@
 module.exports = {
-  prefix: '',
+  prefix: 'ohif-',
   important: false,
   separator: ':',
   purge: {

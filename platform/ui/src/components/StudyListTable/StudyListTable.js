@@ -5,9 +5,9 @@ import StudyListTableRow from './StudyListTableRow';
 
 const StudyListTable = ({ tableDataSource }) => {
   return (
-    <div className="bg-black">
-      <div className="container m-auto relative">
-        <table className="w-full text-white">
+    <div className={px('bg-black')}>
+      <div className={px('container m-auto relative')}>
+        <table className={px('w-full text-white')}>
           <tbody data-cy="study-list-results">
             {tableDataSource.map((tableData, i) => {
               return <StudyListTableRow tableData={tableData} key={i} />;

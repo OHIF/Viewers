@@ -21,7 +21,7 @@ const Dropdown = ({ id, children, showDropdownIcon, list }) => {
         }}
         data-cy={id}
       >
-        {!!icon && <Icon name={icon} className="text-white w-4 mr-2" />}
+        {!!icon && <Icon name={icon} className={px("text-white w-4 mr-2")} />}
         <Typography>{title}</Typography>
       </div>
     );
@@ -40,10 +40,10 @@ const Dropdown = ({ id, children, showDropdownIcon, list }) => {
 
   const renderTitleElement = () => {
     return (
-      <div className="flex text-white items-center">
+      <div className={px("flex text-white items-center")}>
         {children}
         {showDropdownIcon && (
-          <Icon name="chevron-down" className="text-white ml-1" />
+          <Icon name="chevron-down" className={px("text-white ml-1")} />
         )}
       </div>
     );
@@ -93,8 +93,8 @@ const Dropdown = ({ id, children, showDropdownIcon, list }) => {
   }, [open]);
 
   return (
-    <div data-cy="dropdown" ref={element} className="relative">
-      <div className="cursor-pointer flex items-center" onClick={toggleList}>
+    <div data-cy="dropdown" ref={element} className={px("relative")}>
+      <div className={px("cursor-pointer flex items-center")} onClick={toggleList}>
         {renderTitleElement()}
       </div>
 

@@ -11,11 +11,10 @@ const StudyListExpandedRow = ({
 }) => {
   const { t } = useTranslation('StudyList');
 
-
   return (
-    <div className="w-full bg-black py-4 pl-12 pr-2">
-      <div className="block">{children}</div>
-      <div className="mt-4">
+    <div className={px('w-full bg-black py-4 pl-12 pr-2')}>
+      <div className={px('block')}>{children}</div>
+      <div className={px('mt-4')}>
         <Table>
           <TableHead>
             <TableRow>
@@ -35,7 +34,7 @@ const StudyListExpandedRow = ({
                 {Object.keys(row).map(cellKey => {
                   const content = row[cellKey];
                   return (
-                    <TableCell key={cellKey} className="truncate">
+                    <TableCell key={cellKey} className={px('truncate')}>
                       {content}
                     </TableCell>
                   );

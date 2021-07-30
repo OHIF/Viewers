@@ -12,19 +12,19 @@ function Header({ appLogo = OHIFLogo(), children, t }) {
   };
 
   return (
-    <NavBar className="justify-between" isSticky>
-      <div className="flex items-center">
-        <div className="mx-3">{appLogo}</div>
+    <NavBar className={px('justify-between')} isSticky>
+      <div className={px('flex items-center')}>
+        <div className={px('mx-3')}>{appLogo}</div>
         <div>{children}</div>
       </div>
-      <div className="flex items-center">
-        <span className="mr-3 text-common-light text-lg">
+      <div className={px('flex items-center')}>
+        <span className={px('mr-3 text-common-light text-lg')}>
           {t('FOR INVESTIGATIONAL USE ONLY')}
         </span>
         <IconButton
           variant="text"
           color="inherit"
-          className="text-primary-active"
+          className={px('text-primary-active')}
           onClick={showSettingsDropdown}
         >
           <React.Fragment>

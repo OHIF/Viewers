@@ -9,14 +9,14 @@ const DefaultFallback = ({ error, componentStack, context, resetErrorBoundary, f
   const title = `Something went wrong${!isProduction && ` in ${context}`}.`;
   const subtitle = `Sorry, something went wrong there. Try again.`;
   return (
-    <div className="ErrorFallback bg-primary-dark w-full h-full" role="alert">
-      <p className="text-primary-light text-xl">{title}</p>
-      <p className="text-primary-light text-base">{subtitle}</p>
+    <div className={px("ErrorFallback bg-primary-dark w-full h-full")} role="alert">
+      <p className={px("text-primary-light text-xl")}>{title}</p>
+      <p className={px("text-primary-light text-base")}>{subtitle}</p>
       {!isProduction && (
-        <div className="rounded-md bg-secondary-dark p-5 mt-5">
-          <pre className="text-primary-light">Context: {context}</pre>
-          <pre className="text-primary-light">Error Message: {error.message}</pre>
-          <pre className="text-primary-light">Stack: {componentStack}</pre>
+        <div className={px("rounded-md bg-secondary-dark p-5 mt-5")}>
+          <pre className={px("text-primary-light")}>Context: {context}</pre>
+          <pre className={px("text-primary-light")}>Error Message: {error.message}</pre>
+          <pre className={px("text-primary-light")}>Stack: {componentStack}</pre>
         </div>
       )}
     </div>

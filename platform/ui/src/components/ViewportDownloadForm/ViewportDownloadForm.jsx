@@ -167,7 +167,7 @@ const ViewportDownloadForm = ({
     }
 
     return (
-      <Typography className="pl-1 mt-2" color="error">
+      <Typography className={px("pl-1 mt-2")} color="error">
         {error_messages[errorType]}
       </Typography>
     );
@@ -278,8 +278,8 @@ const ViewportDownloadForm = ({
         {t('Please specify the dimensions, filename, and desired type for the output image.')}
       </Typography>
 
-      <div className="flex flex-col mt-6">
-        <div className="w-full mb-4">
+      <div className={px("flex flex-col mt-6")}>
+        <div className={px("w-full mb-4")}>
           <Input
             data-cy="file-name"
             value={filename}
@@ -288,10 +288,10 @@ const ViewportDownloadForm = ({
           />
           {renderErrorHandler('filename')}
         </div>
-        <div className="flex">
-          <div className="flex w-1/3">
-            <div className="flex flex-col flex-grow">
-              <div className="w-full">
+        <div className={px("flex")}>
+          <div className={px("flex w-1/3")}>
+            <div className={px("flex flex-col flex-grow")}>
+              <div className={px("w-full")}>
                 <Input
                   type="number"
                   min={minimumSize}
@@ -303,7 +303,7 @@ const ViewportDownloadForm = ({
                 />
                 {renderErrorHandler('width')}
               </div>
-              <div className="w-full mt-4">
+              <div className={px("w-full mt-4")}>
                 <Input
                   type="number"
                   min={minimumSize}
@@ -317,7 +317,7 @@ const ViewportDownloadForm = ({
               </div>
             </div>
 
-            <div className="flex items-center mt-8">
+            <div className={px("flex items-center mt-8")}>
               <Tooltip
                 position="right"
                 content={keepAspect ? 'Dismiss Aspect' : 'Keep Aspect'}
@@ -333,7 +333,7 @@ const ViewportDownloadForm = ({
             </div>
           </div>
 
-          <div className="w-1/4 pl-6 ml-6 border-l border-secondary-dark">
+          <div className={px("w-1/4 pl-6 ml-6 border-l border-secondary-dark")}>
             <div>
               <InputLabelWrapper
                 sortDirection="none"
@@ -342,7 +342,7 @@ const ViewportDownloadForm = ({
                 onLabelClick={() => {}}
               >
                 <Select
-                  className="mt-2"
+                  className={px("mt-2")}
                   isClearable={false}
                   value={fileType}
                   data-cy="file-type"
@@ -355,13 +355,13 @@ const ViewportDownloadForm = ({
                 />
               </InputLabelWrapper>
             </div>
-            <div className="mt-4 ml-2">
-              <label htmlFor="show-annotations" className="flex items-center">
+            <div className={px("mt-4 ml-2")}>
+              <label htmlFor="show-annotations" className={px("flex items-center")}>
                 <input
                   id="show-annotations"
                   data-cy="show-annotations"
                   type="checkbox"
-                  className="mr-2"
+                  className={px("mr-2")}
                   checked={showAnnotations}
                   onChange={event => setShowAnnotations(event.target.checked)}
                 />
@@ -372,14 +372,14 @@ const ViewportDownloadForm = ({
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className={px("mt-8")}>
           <div
-            className="p-4 rounded bg-secondary-dark border-secondary-primary"
+            className={px("p-4 rounded bg-secondary-dark border-secondary-primary")}
             data-cy="image-preview"
           >
           <Typography variant="h5">{t("Image preview")}</Typography>
             {activeViewport && (<div
-            className="mx-auto my-0"
+            className={px("mx-auto my-0")}
               style={{
                 height: viewportElementDimensions.height,
                 width: viewportElementDimensions.width,
@@ -387,7 +387,7 @@ const ViewportDownloadForm = ({
               ref={ref => setViewportElement(ref)}
             >
               <canvas
-                className={classnames('block', canvasClass)}
+                className={px(classnames('block', canvasClass))}
                 style={{
                   height: downloadCanvas.height,
                   width: downloadCanvas.width,
@@ -398,19 +398,19 @@ const ViewportDownloadForm = ({
               ></canvas>
             </div>)}
             {!activeViewport &&
-              <Typography className="mt-4">
+              <Typography className={px("mt-4")}>
             {t("Active viewport has no displayed image")}
               </Typography>
             }
           </div>
       </div>
 
-      <div className="flex justify-end mt-4">
+      <div className={px("flex justify-end mt-4")}>
         <Button data-cy="cancel-btn" variant="outlined" onClick={onClose}>
           {t("Cancel")}
         </Button>
         <Button
-          className="ml-2"
+          className={px("ml-2")}
           disabled={hasError}
           onClick={downloadImage}
           color="primary"

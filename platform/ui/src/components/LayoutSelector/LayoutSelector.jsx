@@ -20,7 +20,7 @@ function LayoutSelector({ onSelection }) {
         gridTemplateRows: '20px 20px 20px',
         backgroundColor: '#090c29', // primary-dark
       }}
-      className="p-2"
+      className={px("p-2")}
     >
       {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(index => (
         <div
@@ -29,7 +29,7 @@ function LayoutSelector({ onSelection }) {
             border: '1px solid white',
             backgroundColor: isHovered(index) ? '#5acce6' : '#0b1a42',
           }}
-          className="cursor-pointer"
+          className={px("cursor-pointer")}
           onClick={() => {
             const x = index % 3;
             const y = Math.floor(index / 3);

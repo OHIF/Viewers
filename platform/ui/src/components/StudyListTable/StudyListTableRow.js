@@ -9,7 +9,7 @@ const StudyListTableRow = props => {
   const { row, expandedContent, onClickRow, isExpanded } = tableData;
   return (
     <>
-      <tr className="select-none">
+      <tr className={px('select-none')}>
         <td
           className={classnames('border-0 p-0', {
             'border-b border-secondary-light bg-primary-dark': isExpanded,
@@ -23,7 +23,7 @@ const StudyListTableRow = props => {
               }
             )}
           >
-            <table className={classnames('w-full p-4')}>
+            <table className={px(classnames('w-full p-4'))}>
               <tbody>
                 <tr
                   className={classnames(
@@ -53,7 +53,7 @@ const StudyListTableRow = props => {
                         {index === 0 && (
                           <Icon
                             name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                            className="mr-4 inline-flex"
+                            className={px('mr-4 inline-flex')}
                           />
                         )}
                         {content}
@@ -62,7 +62,11 @@ const StudyListTableRow = props => {
                   })}
                 </tr>
                 {isExpanded && (
-                  <tr className="w-full bg-black select-text max-h-0 overflow-hidden">
+                  <tr
+                    className={px(
+                      'w-full bg-black select-text max-h-0 overflow-hidden'
+                    )}
+                  >
                     <td colSpan={row.length}>{expandedContent}</td>
                   </tr>
                 )}

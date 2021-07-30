@@ -11,7 +11,7 @@ const ThumbnailList = ({
   onClickUntrack,
 }) => {
   return (
-    <div className="py-3 bg-black">
+    <div className={px("py-3 bg-black")}>
       {thumbnails.map(
         ({
           displaySetInstanceUID,

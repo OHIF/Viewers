@@ -1,5 +1,5 @@
 /* TODO: Create tailwind styles for this component */
-.sb-topLeft {
+/*.sb-topLeft {
   @apply top-0 left-0 bottom-auto right-auto;
 }
 
@@ -103,7 +103,7 @@
 }
 
 /* Internet Explorer */
-@-ms-keyframes fadein {
+/*@-ms-keyframes fadein {
   from {
     top: 30px;
     @apply opacity-0;
@@ -112,4 +112,4 @@
     @apply opacity-100;
     top: 0;
   }
-}
+}*/

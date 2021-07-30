@@ -34,15 +34,19 @@ const Header = () => {
           {dropdownContent.map((row, i) => (
             <div
               key={i}
-              className="flex justify-between px-3 py-2 cursor-pointer hover:bg-secondary-dark"
+              className={px(
+                'flex justify-between px-3 py-2 cursor-pointer hover:bg-secondary-dark'
+              )}
             >
               <div>
-                <span className="text-base text-white">{row.name}</span>
-                <span className="ml-3 text-base text-primary-light">
+                <span className={px('text-base text-white')}>{row.name}</span>
+                <span className={px('ml-3 text-base text-primary-light')}>
                   {row.value}
                 </span>
               </div>
-              <span className="ml-4 text-base text-primary-active">{i}</span>
+              <span className={px('ml-4 text-base text-primary-active')}>
+                {i}
+              </span>
             </div>
           ))}
         </div>
@@ -74,31 +78,31 @@ const Header = () => {
     },
   ];
   return (
-    <NavBar className="justify-between border-b-4 border-black">
-      <div className="flex justify-between flex-1">
-        <div className="flex items-center">
-          <div className="inline-flex items-center mr-3">
+    <NavBar className={px('justify-between border-b-4 border-black')}>
+      <div className={px('flex justify-between flex-1')}>
+        <div className={px('flex items-center')}>
+          <div className={px('inline-flex items-center mr-3')}>
             <Icon
               name="chevron-left"
-              className="w-8 cursor-pointer text-primary-active"
+              className={px('w-8 cursor-pointer text-primary-active')}
               onClick={() => alert('Navigate to previous page')}
             />
-            <a href="#" className="ml-4">
+            <a href="#" className={px('ml-4')}>
               <Svg name="logo-ohif" />
             </a>
           </div>
         </div>
-        <div className="flex items-center">
+        <div className={px('flex items-center')}>
           {/* <Toolbar tools={tools} activeTool={activeTool} moreTools={tools} /> */}
         </div>
-        <div className="flex items-center">
-          <span className="mr-3 text-lg text-common-light">
+        <div className={px('flex items-center')}>
+          <span className={px('mr-3 text-lg text-common-light')}>
             FOR INVESTIGATIONAL USE ONLY
           </span>
           <IconButton
             variant="text"
             color="inherit"
-            className="text-primary-active"
+            className={px('text-primary-active')}
             onClick={() => {}}
           >
             <React.Fragment>

@@ -47,6 +47,7 @@
     "autoprefixer": "9.7.4",
     "postcss": "^8.3.5",
     "postcss-loader": "^6.1.1",
+    "prefix-classnames": "^0.0.5",
     "prop-types": "15.7.2",
     "tailwindcss": "2.2.4"
   }

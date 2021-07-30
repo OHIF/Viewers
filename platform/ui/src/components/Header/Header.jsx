@@ -21,21 +21,21 @@ function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, i
 
   return (
     <NavBar className='justify-between border-b-4 border-black' isSticky={isSticky}>
-      <div className="flex justify-between flex-1">
-        <div className="flex items-center">
+      <div className={px("flex justify-between flex-1")}>
+        <div className={px("flex items-center")}>
           {/* // TODO: Should preserve filter/sort
               // Either injected service? Or context (like react router's `useLocation`?) */}
           <div
-            className={classNames("inline-flex items-center mr-3", isReturnEnabled && 'cursor-pointer')}
+            className={px(classnames("inline-flex items-center mr-3", isReturnEnabled && 'cursor-pointer'))}
             onClick={onClickReturn}
           >
-            {isReturnEnabled && <Icon name="chevron-left" className="w-8 text-primary-active" />}
-            <div className="ml-4">{WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}</div>
+            {isReturnEnabled && <Icon name="chevron-left" className={px("w-8 text-primary-active")} />}
+            <div className={px("ml-4")}>{WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}</div>
           </div>
         </div>
-        <div className="flex items-center">{children}</div>
-        <div className="flex items-center">
-          <span className="mr-3 text-lg text-common-light">
+        <div className={px("flex items-center")}>{children}</div>
+        <div className={px("flex items-center")}>
+          <span className={px("mr-3 text-lg text-common-light")}>
             {t('INVESTIGATIONAL USE ONLY')}
           </span>
           <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
@@ -44,7 +44,7 @@ function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, i
               variant="text"
               color="inherit"
               size="initial"
-              className="text-primary-active"
+              className={px("text-primary-active")}
             >
               <Icon name="settings" />
             </IconButton>
@@ -53,7 +53,7 @@ function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, i
               variant="text"
               color="inherit"
               size="initial"
-              className="text-primary-active"
+              className={px("text-primary-active")}
             >
               <Icon name="chevron-down" />
             </IconButton>

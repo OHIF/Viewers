@@ -24,20 +24,20 @@ const SegmentationTable = ({ title, amount, data }) => {
 
   return (
     <div>
-      <div className="flex justify-between px-2 py-1 bg-secondary-main">
-        <span className="text-base font-bold text-white tracking-widest uppercase">
+      <div className={px("flex justify-between px-2 py-1 bg-secondary-main")}>
+        <span className={px("text-base font-bold text-white tracking-widest uppercase")}>
           {title}
         </span>
-        <div className="flex">
-          <span className="text-base font-bold text-white">{amount}</span>
+        <div className={px("flex")}>
+          <span className={px("text-base font-bold text-white")}>{amount}</span>
           <Icon
             name="eye-hidden"
-            className="w-6 text-white ml-2 cursor-pointer transition duration-300 hover:opacity-80"
+            className={px("w-6 text-white ml-2 cursor-pointer transition duration-300 hover:opacity-80")}
             onClick={() => alert('TBD')}
           />
         </div>
       </div>
-      <div className="overflow-y-auto overflow-x-hidden ohif-scrollbar max-h-64">
+      <div className={px("overflow-y-auto overflow-x-hidden ohif-scrollbar max-h-64")}>
         {!!data.length &&
           data.map((e, i) => {
             const itemKey = i;
@@ -78,10 +78,10 @@ const SegmentationTable = ({ title, amount, data }) => {
                 >
                   {currentItem}
                 </div>
-                <div className="px-2 py-1 flex flex-1 items-center justify-between">
-                  <span className="text-base text-primary-light mb-1 flex items-center flex-1">
+                <div className={px("px-2 py-1 flex flex-1 items-center justify-between")}>
+                  <span className={px("text-base text-primary-light mb-1 flex items-center flex-1")}>
                     <div
-                      className="w-3 h-3 rounded-full mr-2"
+                      className={px("w-3 h-3 rounded-full mr-2")}
                       style={{ backgroundColor: colorLUT[i] }}
                     ></div>
                     Label short description

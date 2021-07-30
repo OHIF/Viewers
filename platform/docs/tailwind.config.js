@@ -1,5 +1,5 @@
 module.exports = {
-  prefix: '',
+  prefix: 'ohif-',
   important: false,
   separator: ':',
   purge: {
@@ -831,6 +831,8 @@ module.exports = {
     transitionTimingFunction: ['responsive'],
     transitionDuration: ['responsive'],
   },
-  corePlugins: {},
+  corePlugins: {
+    preflight: false,
+  },
   plugins: [],
 };

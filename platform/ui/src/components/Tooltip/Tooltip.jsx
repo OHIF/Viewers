@@ -52,7 +52,7 @@ const Tooltip = ({
 
   return (
     <div
-      className="relative"
+      className={px("relative")}
       onMouseOver={handleMouseOver}
       onFocus={handleMouseOver}
       onMouseOut={handleMouseOut}
@@ -61,10 +61,10 @@ const Tooltip = ({
     >
       {children}
       <div
-        className={classnames(`tooltip tooltip-${position}`, {
+        className={px(classnames(`tooltip tooltip-${position}`, {
           block: isOpen,
           hidden: !isOpen,
-        })}
+        }))}
       >
         <div
           className={classnames(
@@ -76,7 +76,7 @@ const Tooltip = ({
         >
           {typeof content === 'string' ? t(content) : content}
           <svg
-            className="absolute h-4 text-primary-dark stroke-secondary-main"
+            className={px("absolute h-4 text-primary-dark stroke-secondary-main")}
             style={arrowPositionStyle[position]}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

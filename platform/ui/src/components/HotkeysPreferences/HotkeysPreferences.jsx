@@ -60,24 +60,24 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
                       <div className='flex flex-col items-center'>
                         <Typography
                           variant='subtitle'
-                          className={classNames('pr-6 w-full text-right text-primary-light', !isFirst && 'hidden')}
+                          className={px(classnames('pr-6 w-full text-right text-primary-light', !isFirst && 'hidden'))}
                         >
                           {t('Function')}
                       </Typography>
                         <Typography
                           variant='subtitle'
-                          className={classNames('pr-6 h-full flex flex-row items-center whitespace-nowrap', isFirst && 'mt-5')}>
+                          className={px(classnames('pr-6 h-full flex flex-row items-center whitespace-nowrap', isFirst && 'mt-5'))}>
                           {definition.label}
                         </Typography>
                       </div>
                       <div className='flex flex-col'>
                         <Typography
                           variant='subtitle'
-                          className={classNames('pr-6 pl-0 text-left text-primary-light', !isFirst && 'hidden')}
+                          className={px(classnames('pr-6 pl-0 text-left text-primary-light', !isFirst && 'hidden'))}
                         >
                           {t('Shortcut')}
                       </Typography>
-                        <div className={classNames('flex flex-col w-32', isFirst && 'mt-5')}>
+                        <div className={px(classnames('flex flex-col w-32', isFirst && 'mt-5'))}>
                           <HotkeyField
                             disabled={disabled}
                             keys={definition.keys}

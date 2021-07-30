@@ -7,9 +7,9 @@ import { Typography } from '..';
 const Body = ({ text, className }) => {
   const theme = 'bg-primary-dark';
   return (
-    <div className={classNames('relative flex-auto', theme, className)}>
-      <div className="p-6">
-        <Typography variant="body" className="my-4 leading-relaxed">
+    <div className={px(classnames("('relative flex-auto', theme, className)"))}>
+      <div className={px('p-6')}>
+        <Typography variant="body" className={px('my-4 leading-relaxed')}>
           {text}
         </Typography>
       </div>

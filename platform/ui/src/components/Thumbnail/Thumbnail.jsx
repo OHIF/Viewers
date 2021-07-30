@@ -60,22 +60,22 @@ const Thumbnail = ({
             <img
               src={imageSrc}
               alt={imageAltText}
-              className="object-none min-h-32"
+              className={px("object-none min-h-32")}
             />
           ) : (
             <div>{imageAltText}</div>
           )}
         </div>
-        <div className="flex flex-row items-center flex-1 text-base text-blue-300 pt-2">
-          <div className="mr-4">
-            <span className="font-bold text-primary-main">{'S: '}</span>
+        <div className={px("flex flex-row items-center flex-1 text-base text-blue-300 pt-2")}>
+          <div className={px("mr-4")}>
+            <span className={px("font-bold text-primary-main")}>{'S: '}</span>
             {seriesNumber}
           </div>
-          <div className="flex flex-row items-center flex-1">
-            <Icon name="group-layers" className="w-3 mr-2" /> {numInstances}
+          <div className={px("flex flex-row items-center flex-1")}>
+            <Icon name="group-layers" className={px("w-3 mr-2")} /> {numInstances}
           </div>
         </div>
-        <div className="text-base text-white break-all">{description}</div>
+        <div className={px("text-base text-white break-all")}>{description}</div>
       </div>
     </div>
   );

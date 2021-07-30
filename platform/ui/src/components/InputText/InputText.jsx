@@ -21,9 +21,9 @@ const InputText = ({
     >
       <Input
         id={id}
-        className="border-primary-main mt-2 bg-black"
+        className={px("border-primary-main mt-2 bg-black")}
         type="text"
-        containerClassName="mr-2"
+        containerclassName={px("mr-2")}
         value={value}
         onChange={event => {
           onChange(event.target.value);

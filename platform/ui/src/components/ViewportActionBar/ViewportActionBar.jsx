@@ -88,7 +88,7 @@ const ViewportActionBar = ({
         case 1:
           StatusIcon = () => (
             <div
-              className="flex items-center justify-center -mr-1 rounded-full"
+              className={px("flex items-center justify-center -mr-1 rounded-full")}
               style={{
                 width: '18px',
                 height: '18px',
@@ -114,7 +114,7 @@ const ViewportActionBar = ({
         case 2:
           StatusIcon = () => (
             <div
-              className="flex items-center justify-center -mr-1 bg-black rounded-full"
+              className={px("flex items-center justify-center -mr-1 bg-black rounded-full")}
               style={{
                 width: '18px',
                 height: '18px',
@@ -140,7 +140,7 @@ const ViewportActionBar = ({
         case 3:
           StatusIcon = () => (
             <div
-              className="flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200"
+              className={px("flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200")}
               style={{
                 width: '18px',
                 height: '18px',
@@ -181,7 +181,7 @@ const ViewportActionBar = ({
             }
           }}
         >
-          <span className="pr-1 text-lg font-bold leading-none text-black">
+          <span className={px("pr-1 text-lg font-bold leading-none text-black")}>
             SR
           </span>
           <StatusIcon />
@@ -203,26 +203,26 @@ const ViewportActionBar = ({
     const trackedIcon = isTracked ? 'tracked' : 'dotted-circle';
 
     return (
-      <div className="relative">
+      <div className={px("relative")}>
         <Tooltip
           position="bottom-left"
           content={
-            <div className="flex py-2">
-              <div className="flex pt-1">
-                <Icon name="info-link" className="w-4 text-primary-main" />
+            <div className={px("flex py-2")}>
+              <div className={px("flex pt-1")}>
+                <Icon name="info-link" className={px("w-4 text-primary-main")} />
               </div>
-              <div className="flex ml-4">
-                <span className="text-base text-common-light">
+              <div className={px("flex ml-4")}>
+                <span className={px("text-base text-common-light")}>
                   {isTracked ? (
                     <>
                       Series is
-                      <span className="font-bold text-white"> tracked</span> and
+                      <span className={px("font-bold text-white")}> tracked</span> and
                       can be viewed <br /> in the measurement panel
                     </>
                   ) : (
                     <>
                       Measurements for
-                      <span className="font-bold text-white"> untracked </span>
+                      <span className={px("font-bold text-white")}> untracked </span>
                       series <br /> will not be shown in the <br /> measurements
                       panel
                     </>
@@ -232,7 +232,7 @@ const ViewportActionBar = ({
             </div>
           }
         >
-          <Icon name={trackedIcon} className="w-6 text-primary-light" />
+          <Icon name={trackedIcon} className={px("w-6 text-primary-light")} />
         </Tooltip>
       </div>
     );
@@ -247,26 +247,26 @@ const ViewportActionBar = ({
 
   return (
     <div
-      className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
+      className={px("flex flex-wrap items-center p-2 -mt-2 border-b select-none")}
       style={{
         borderColor: borderColor,
         backgroundColor: backgroundColor,
       }}
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-1 flex-grow mt-2 min-w-48">
-        <div className="flex items-center">
-          <span className="mr-2 text-white text-large">{label}</span>
+      <div className={px("flex flex-1 flex-grow mt-2 min-w-48")}>
+        <div className={px("flex items-center")}>
+          <span className={px("mr-2 text-white text-large")}>{label}</span>
           {showStatus && renderIconStatus()}
         </div>
-        <div className="flex flex-col justify-start ml-4">
-          <div className="flex">
-            <span className="text-base text-white">{studyDate}</span>
-            <span className="pl-2 ml-2 text-base border-l border-primary-light text-primary-light">
+        <div className={px("flex flex-col justify-start ml-4")}>
+          <div className={px("flex")}>
+            <span className={px("text-base text-white")}>{studyDate}</span>
+            <span className={px("pl-2 ml-2 text-base border-l border-primary-light text-primary-light")}>
               S: {currentSeries}
             </span>
           </div>
-          <div className="flex">
+          <div className={px("flex")}>
             {/* TODO:
                 This is tricky. Our "no-wrap" in truncate means this has a hard
                 length. The overflow forces ellipse. If we don't set max width
@@ -274,38 +274,38 @@ const ViewportActionBar = ({
                 Can clean up by setting percentage widths + calc on parent
                 containers
              */}
-            <p className="text-base truncate max-w-40 text-primary-light">
+            <p className={px("text-base truncate max-w-40 text-primary-light")}>
               {seriesDescription}
             </p>
           </div>
         </div>
       </div>
       {showNavArrows && !showCine && (
-        <div className="mt-2" style={{ pointerEvents: 'all' }}>
+        <div className={px("mt-2")} style={{ pointerEvents: 'all' }}>
           <ButtonGroup>
             <Button
               size="initial"
-              className="px-2 py-1 bg-black"
+              className={px("px-2 py-1 bg-black")}
               onClick={() => onSeriesChange('left')}
             >
-              <Icon name="chevron-left" className="w-4 text-white" />
+              <Icon name="chevron-left" className={px("w-4 text-white")} />
             </Button>
             <Button
               size="initial"
-              className="px-2 py-1 bg-black"
+              className={px("px-2 py-1 bg-black")}
               onClick={() => onSeriesChange('right')}
             >
-              <Icon name="chevron-right" className="w-4 text-white" />
+              <Icon name="chevron-right" className={px("w-4 text-white")} />
             </Button>
           </ButtonGroup>
         </div>
       )}
       {showCine && !showNavArrows && (
-        <div className="mt-2 mr-auto min-w-48 max-w-48">
+        <div className={px("mt-2 mr-auto min-w-48 max-w-48")}>
           <CinePlayer {...cineProps} />
         </div>
       )}
-      <div className="flex h-8 mt-2 ml-4 mr-2" onClick={onPatientInfoClick}>
+      <div className={px("flex h-8 mt-2 ml-4 mr-2")} onClick={onPatientInfoClick}>
         <PatientInfo
           showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}
@@ -384,72 +384,72 @@ function PatientInfo({
         position="bottom-right"
         content={
           isOpen && (
-            <div className="flex py-2">
-              <div className="flex pt-1">
-                <Icon name="info-link" className="w-4 text-primary-main" />
+            <div className={px("flex py-2")}>
+              <div className={px("flex pt-1")}>
+                <Icon name="info-link" className={px("w-4 text-primary-main")} />
               </div>
-              <div className="flex flex-col ml-2">
+              <div className={px("flex flex-col ml-2")}>
                 <span
-                  className="text-base font-bold text-white"
+                  className={px("text-base font-bold text-white")}
                   title={patientName}
                 >
                   {patientName}
                 </span>
-                <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
-                  <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>{t('Sex')}</span>
+                <div className={px("flex pb-4 mt-4 mb-4 border-b border-secondary-main")}>
+                  <div className={px(classnames(classes.firstRow))}>
+                    <span className={px(classnames(classes.infoHeader))}>{t('Sex')}</span>
                     <span
-                      className={classnames(classes.infoText)}
+                      className={px(classnames(classes.infoText))}
                       title={patientSex}
                     >
                       {patientSex}
                     </span>
                   </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>{t('Age')}</span>
+                  <div className={px(classnames(classes.row))}>
+                    <span className={px(classnames(classes.infoHeader))}>{t('Age')}</span>
                     <span
-                      className={classnames(classes.infoText)}
+                      className={px(classnames(classes.infoText))}
                       title={patientAge}
                     >
                       {patientAge}
                     </span>
                   </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>{t('MRN')}</span>
-                    <span className={classnames(classes.infoText)} title={MRN}>
+                  <div className={px(classnames(classes.row))}>
+                    <span className={px(classnames(classes.infoHeader))}>{t('MRN')}</span>
+                    <span className={px(classnames(classes.infoText))} title={MRN}>
                       {MRN}
                     </span>
                   </div>
                 </div>
-                <div className="flex">
-                  <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
+                <div className={px("flex")}>
+                  <div className={px(classnames(classes.firstRow))}>
+                    <span className={px(classnames(classes.infoHeader))}>
                       {t('Thickness')}
                     </span>
                     <span
-                      className={classnames(classes.infoText)}
+                      className={px(classnames(classes.infoText))}
                       title={thickness}
                     >
                       {thickness}
                     </span>
                   </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
+                  <div className={px(classnames(classes.row))}>
+                    <span className={px(classnames(classes.infoHeader))}>
                       {t('Spacing')}
                     </span>
                     <span
-                      className={classnames(classes.infoText)}
+                      className={px(classnames(classes.infoText))}
                       title={spacing}
                     >
                       {spacing}
                     </span>
                   </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
+                  <div className={px(classnames(classes.row))}>
+                    <span className={px(classnames(classes.infoHeader))}>
                       {t('Scanner')}
                     </span>
                     <span
-                      className={classnames(classes.infoText)}
+                      className={px(classnames(classes.infoText))}
                       title={scanner}
                     >
                       {scanner}
@@ -461,12 +461,12 @@ function PatientInfo({
           )
         }
       >
-        <div className="relative flex justify-end cursor-pointer">
-          <div className="relative">
-            <Icon name="profile" className="w-5 text-white" />
+        <div className={px("relative flex justify-end cursor-pointer")}>
+          <div className={px("relative")}>
+            <Icon name="profile" className={px("w-5 text-white")} />
             <Icon
               name="info-link"
-              className="absolute w-5 text-white bg-black"
+              className={px("absolute w-5 text-white bg-black")}
               style={{ right: -7, bottom: -10 }}
             />
           </div>

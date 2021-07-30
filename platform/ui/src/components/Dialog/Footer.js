@@ -11,7 +11,7 @@ const Footer = ({ actions, className, onSubmit, value }) => {
   const theme = 'bg-primary-dark';
 
   return (
-    <div className={classNames(flex, border, spacing, theme, className)}>
+    <div className={px(classnames(flex, border, spacing, theme, className))}>
       {actions.map((action, index) => {
         const isFirst = index === 0;
         const isPrimary = action.type === 'primary';
@@ -21,7 +21,7 @@ const Footer = ({ actions, className, onSubmit, value }) => {
         return (
           <Button
             key={index}
-            className={classNames({ 'ml-2': !isFirst }, action.classes)}
+            className={px(classnames({ 'ml-2': !isFirst }, action.classes))}
             color={isPrimary ? 'primary' : undefined}
             onClick={onClickHandler}
             style={{ transition: 'all .15s ease', height: 34 }}

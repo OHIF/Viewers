@@ -151,7 +151,7 @@ const SplitButton = ({
 
   return (
     <OutsideClickHandler onOutsideClick={outsideClickHandler}>
-      <div name="SplitButton" className="relative">
+      <div name="SplitButton" className={px("relative")}>
         <div
           className={classes.Button({
             ...state,
@@ -176,7 +176,7 @@ const SplitButton = ({
                 content={state.primary.tooltip}
               >
                 <div
-                  className="flex items-center justify-center w-full h-full"
+                  className={px("flex items-center justify-center w-full h-full")}
                   style={{ padding: '10px' }}
                 >
                   <Icon
@@ -206,7 +206,7 @@ const SplitButton = ({
               <Tooltip
                 isDisabled={state.isExpanded || !secondary.tooltip}
                 content={secondary.tooltip}
-                className="h-full"
+                className={px("h-full")}
               >
                 <Icon
                   name={secondary.icon}
@@ -238,10 +238,10 @@ const DefaultListItemRenderer = ({ icon, label, isActive, t }) => (
       isActive && 'bg-primary-dark'
     )}
   >
-    <span className="mr-4 text-base whitespace-pre text-common-bright">
-      <Icon name={icon} className="w-5 h-5 text-common-bright" />
+    <span className={px("mr-4 text-base whitespace-pre text-common-bright")}>
+      <Icon name={icon} className={px("w-5 h-5 text-common-bright")} />
     </span>
-    <span className="mr-5 text-base whitespace-pre text-common-bright">
+    <span className={px("mr-5 text-base whitespace-pre text-common-bright")}>
       {t(label)}
     </span>
   </div>

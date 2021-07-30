@@ -32,17 +32,17 @@ const CinePlayer = ({
   };
 
   return (
-    <div className="flex flex-row items-center justify-center h-10 border rounded-full CinePlayer border-primary-light">
+    <div className={px("flex flex-row items-center justify-center h-10 border rounded-full CinePlayer border-primary-light")}>
       <IconButton
         variant="text"
         color="inherit"
         size="initial"
-        className="ml-4 mr-3 text-primary-active"
+        className={px("ml-4 mr-3 text-primary-active")}
         onClick={onPlayPauseChangeHandler}
       >
         <Icon width="15px" height="15px" name={action[isPlaying].icon} />
       </IconButton>
-      <div className="flex flex-col justify-center h-full pt-2 pl-1 pr-1 mr-3">
+      <div className={px("flex flex-col justify-center h-full pt-2 pl-1 pr-1 mr-3")}>
         <input
           type="range"
           name="frameRate"
@@ -52,14 +52,14 @@ const CinePlayer = ({
           value={frameRate}
           onChange={onFrameRateChangeHandler}
         />
-        <p className="-mt-2 text-sm text-primary-light">{`${frameRate.toFixed(
+        <p className={px("-mt-2 text-sm text-primary-light")}>{`${frameRate.toFixed(
           1
         )} fps`}</p>
       </div>
       <IconButton
         color="inherit"
         size="initial"
-        className="mr-3 border rounded-full text-primary-active border-primary-active"
+        className={px("mr-3 border rounded-full text-primary-active border-primary-active")}
         onClick={onClose}
       >
         <Icon name="close" width="15px" height="15px" />

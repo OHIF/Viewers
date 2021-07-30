@@ -76,11 +76,11 @@ const StudyBrowser = ({
 
   return (
     <React.Fragment>
-      <div className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark" data-cy={"studyBrowser-panel"}>
+      <div className={px("flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark")} data-cy={"studyBrowser-panel"}>
         <ButtonGroup
           variant="outlined"
           color="inherit"
-          className="border rounded-md border-secondary-light"
+          className={px("border rounded-md border-secondary-light")}
         >
           {tabs.map(tab => {
             const { name, label, studies } = tab;
@@ -105,7 +105,7 @@ const StudyBrowser = ({
           })}
         </ButtonGroup>
       </div>
-      <div className="flex flex-col flex-1 overflow-auto invisible-scrollbar">
+      <div className={px("flex flex-col flex-1 overflow-auto invisible-scrollbar")}>
         {getTabContent()}
       </div>
     </React.Fragment>

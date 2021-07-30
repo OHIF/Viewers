@@ -6,7 +6,7 @@ const Label = ({ children, className, text, ...rest }) => {
   const baseClasses = '';
 
   return (
-    <label className={classnames(baseClasses, className)} {...rest}>
+    <label className={px(classnames(baseClasses, className))} {...rest}>
       {text}
       {children}
     </label>

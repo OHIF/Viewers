@@ -86,7 +86,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     <Provider value={{ show, hide }}>
       {ModalContent && (
         <Modal
-          className={classNames(customClassName, ModalContent.className)}
+          className={px(classnames(customClassName, ModalContent.className))}
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
           title={t(title)}

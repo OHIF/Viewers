@@ -28,11 +28,11 @@ const SnackbarItem = ({ options, onClose }) => {
         typeClasses[options.type]
       )}
     >
-      <span className="sb-closeBtn" onClick={handleClose}>
-        <span className="sb-closeIcon">x</span>
+      <span className={px("sb-closeBtn")} onClick={handleClose}>
+        <span className={px("sb-closeIcon")}>x</span>
       </span>
-      {options.title && <div className="sb-title">{options.title}</div>}
-      {options.message && <div className="sb-message">{options.message}</div>}
+      {options.title && <div className={px("sb-title")}>{options.title}</div>}
+      {options.message && <div className={px("sb-message")}>{options.message}</div>}
     </div>
   );
 };
