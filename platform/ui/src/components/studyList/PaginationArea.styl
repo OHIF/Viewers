@@ -1,0 +1,63 @@
+.pagination-area
+  display: flex;
+  color: var(--text-secondary-color);
+  font-size: 13px
+  font-weight: normal !important
+
+  label
+    font-weight: normal
+
+  select
+    margin: 5px
+    background-color: var(--primary-background-color)
+    color: white
+
+
+  .rows-dropdown
+    width: 25%;
+    padding-right: 15px;
+    padding-left: 15px;
+
+  .pagination-buttons
+    width: 75%;
+    padding-right: 15px;
+    padding-left: 15px;
+
+  .form-group
+    margin-bottom: 15px;
+
+.rows-per-page label.wrapperLabel
+  display: inline-table !important
+  margin: 0 4px
+
+  select
+    margin: 0px 4px 0px 4px
+    width: 42px
+
+.page-buttons
+  margin: 0
+  text-align: right
+  font-weight: normal
+  ul.pagination-control
+    margin: 0
+
+    li
+      display: table-cell
+      padding: 5px 2px
+
+      button
+        padding: 4px 8px
+        background-color: var(--primary-background-color)
+        border-color: var(--ui-gray)
+        color: var(--ui-gray-darkest)
+        color: white
+        text-decoration: none
+
+        &:hover:enabled
+          color: var(--active-color)
+
+      .active
+        button
+          background-color: var(--ui-gray)
+          border-color: #ddd
+          color: white

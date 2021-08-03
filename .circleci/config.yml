@@ -1,0 +1,508 @@
+version: 2.1
+
+### ABOUT
+#
+# This configuration powers our Circleci.io integration
+#
+# Note:
+# Netlify works independently from this configuration to
+# create pull request previews and to update `https://docs.ohif.org`
+###
+
+## https://github.com/cypress-io/circleci-orb
+##
+orbs:
+  codecov: codecov/codecov@1.0.5
+  cypress: cypress-io/cypress@1.26.0
+executors:
+  # Custom executor to override Cypress config
+  deploy-to-prod-executor:
+    docker:
+      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
+        environment:
+          CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
+  chrome-and-pacs:
+    docker:
+      # Primary container image where all steps run.
+      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
+      - image: 'ohif/viewer-testdata:0.1-test'
+
+defaults: &defaults
+  docker:
+    - image: circleci/node:14.15.0
+      environment:
+        TERM: xterm # Enable colors in term
+        QUICK_BUILD: true
+  working_directory: ~/repo
+
+jobs:
+  ###
+  # Workflow: PR_CHECKS
+  ###
+  UNIT_TESTS:
+    <<: *defaults
+    steps:
+      # Update yarn
+      - run: yarn -v
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       # when lock file changes, use increasingly general patterns to restore cache
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache ## Cache yarn and Cypress
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      # RUN TESTS
+      - run:
+          name: 'JavaScript Test Suite'
+          command: yarn run test:unit:ci
+      # PLATFORM/VIEWER
+      - run:
+          name: 'VIEWER: Combine report output'
+          command: |
+            viewerCov="/home/circleci/repo/platform/viewer/coverage"
+            touch "${viewerCov}/reports"
+            cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+            cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          flags: 'viewer'
+      # PLATFORM/CORE
+      - run:
+          name: 'CORE: Combine report output'
+          command: |
+            coreCov="/home/circleci/repo/platform/core/coverage"
+            touch "${coreCov}/reports"
+            cat "${coreCov}/clover.xml" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+            cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/core/coverage/reports'
+          flags: 'core'
+
+  ###
+  # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
+  ###
+  DOCKER_PR_PUBLISH:
+    <<: *defaults
+    steps:
+      # Enable yarn workspaces
+      - run: yarn config set workspaces-experimental true
+
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       # when lock file changes, use increasingly general patterns to restore cache
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
+
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+
+      - setup_remote_docker:
+          docker_layer_caching: false
+
+      - run:
+          name: Build and push Docker image
+          command: |
+            # Remove npm config
+            rm -f ./.npmrc
+            # Set our version number using vars
+            echo $CIRCLE_BUILD_NUM
+            # Build our image, auth, and push
+            docker build --tag ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM .
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM
+
+  ###
+  # Workflow: DEPLOY
+  ###
+  BUILD:
+    <<: *defaults
+    steps:
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       # when lock file changes, use increasingly general patterns to restore cache
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache ## Cache yarn and Cypress
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      # Build & Test
+      - run:
+          name: 'Build the OHIF Viewer'
+          command: yarn run build
+          no_output_timeout: 45m
+      # - run:
+      #     name: 'Upload SourceMaps, Send Deploy Notification'
+      #     command: |
+      #       # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
+      #       # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
+      #       # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
+      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
+      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
+      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
+      #       curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
+      # Persist :+1:
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - platform/viewer/dist
+            - netlify.toml
+            - .netlify
+
+  DEPLOY_TO_DEV:
+    docker:
+      - image: circleci/node:14.15.0
+        environment:
+          TERM: xterm
+          NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: cd .netlify && npm install
+      - run:
+          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
+      - run: cd .netlify && npm run deploy
+
+  DEPLOY_TO_STAGING:
+    docker:
+      - image: circleci/node:14.15.0
+        environment:
+          TERM: xterm
+          NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: cd .netlify && npm install
+      - run:
+          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
+      - run: cd .netlify && npm run deploy
+
+  DEPLOY_TO_PRODUCTION:
+    docker:
+      - image: circleci/node:14.15.0
+        environment:
+          TERM: xterm
+          NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: cd .netlify && npm install
+      - run:
+          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
+      - run: cd .netlify && npm run deploy
+
+  ###
+  # Workflow: RELEASE
+  ###
+  NPM_PUBLISH:
+    <<: *defaults
+    steps:
+      - run: yarn -v
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+      # Use increasingly general patterns to restore cache
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Avoid hosts unknown for github
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run:
+          name: Authenticate with NPM registry
+          command:
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run: npx lerna version
+      - run: npx lerna publish from-package
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
+  DOCS_PUBLISH:
+    docker:
+      # Gitbook fails due to graceful-fs updates above this node version :-(
+      - image: circleci/node:12.9.1
+        environment:
+          TERM: xterm # Enable colors in term
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Avoid hosts unknown for github
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run: yarn global add gitbook-cli gh-pages
+      - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
+      - run: ~/repo/.circleci/build-and-publish-docs.sh
+
+  DOCKER_MASTER_PUBLISH:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Build and push Docker image
+          command: |
+            # This file will exist if a new version was published by
+            # our command in the previous job. Created in npm postpublish hook
+            # in the `platform/viewer` project.
+            if [[ ! -e platform/viewer/success_version.txt ]]; then
+              exit 0
+            else
+              # Remove npm config
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat platform/viewer/success_version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our image, auth, and push
+              docker build --tag ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL --tag ohif/$IMAGE_NAME:latest .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+              docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
+              docker push ohif/$IMAGE_NAME:latest
+            fi
+
+workflows:
+  version: 2
+
+  PR_CHECKS:
+    jobs:
+      - UNIT_TESTS:
+          filters:
+            branches:
+              ignore:
+                - master
+                - feature/*
+                - hotfix/*
+      # E2E: PWA
+      - cypress/run:
+          name: 'E2E: PWA'
+          executor: chrome-and-pacs
+          browser: chrome
+          pre-steps:
+            - run: |
+                # Clear yarn cache; update to latest
+                rm -rf ~/.yarn
+                npm i -g yarn
+                yarn -v
+          yarn: true
+          record: true
+          store_artifacts: true
+          working_directory: platform/viewer
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
+          start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
+          wait-on: 'http://localhost:3000'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
+            - store_test_results:
+                path: platform/viewer/cypress/results
+          requires:
+            - UNIT_TESTS
+      # E2E: script-tag
+      - cypress/run:
+          name: 'E2E: Script Tag'
+          executor: chrome-and-pacs
+          browser: chrome
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+          yarn: true
+          record: true
+          store_artifacts: true
+          working_directory: platform/viewer
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build:package
+          start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
+          wait-on: 'http://localhost:3000'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
+            - store_test_results:
+                path: platform/viewer/cypress/results
+          requires:
+            - UNIT_TESTS
+
+  PR_OPTIONAL_VISUAL_TESTS:
+    jobs:
+      - AWAIT_APPROVAL:
+          type: approval
+      # Update hub.docker.org
+      - cypress/run:
+          name: 'Generate Percy Snapshots'
+          executor: chrome-and-pacs
+          browser: chrome
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+                add wait-on' # Use yarn latest
+          yarn: true
+          store_artifacts: false
+          working_directory: platform/viewer
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
+          # start server --> verify running --> percy + chrome + cypress
+          command: yarn run test:e2e:dist
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
+          requires:
+            - AWAIT_APPROVAL
+
+  PR_OPTIONAL_DOCKER_PUBLISH:
+    jobs:
+      # https://circleci.com/docs/2.0/workflows/#holding-a-workflow-for-a-manual-approval
+      - AWAIT_APPROVAL:
+          type: approval
+      # Update hub.docker.org
+      - DOCKER_PR_PUBLISH:
+          context: Docker Hub
+          requires:
+            - AWAIT_APPROVAL
+
+  ###
+  # Our workflow for building, deploying, and promoting builds across our
+  # development, staging, and production environments.
+  ###
+  DEPLOY:
+    jobs:
+      - BUILD:
+          filters:
+            branches:
+              only: master
+      - DEPLOY_TO_DEV:
+          requires:
+            - BUILD
+      - PROMOTE_TO_STAGING:
+          type: approval
+          requires:
+            - DEPLOY_TO_DEV
+      - DEPLOY_TO_STAGING:
+          requires:
+            - PROMOTE_TO_STAGING
+      - PROMOTE_TO_PRODUCTION:
+          type: approval
+          requires:
+            - DEPLOY_TO_STAGING
+      - DEPLOY_TO_PRODUCTION:
+          requires:
+            - PROMOTE_TO_PRODUCTION
+  ###
+  # Unit and E2E tests have already run for PR_CHECKS
+  # Re-running should not gain us any confidence here
+  ###
+  RELEASE:
+    jobs:
+      - NPM_PUBLISH:
+          filters:
+            branches:
+              only: master
+      - DOCS_PUBLISH:
+          filters:
+            branches:
+              only: master
+      # Update base branch snapshots
+      # and record a Cypress dashboard test run
+      - cypress/run:
+          name: 'Generate Percy Snapshots'
+          executor: chrome-and-pacs
+          browser: chrome
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+                add wait-on' # Use yarn latest
+          yarn: true
+          store_artifacts: false
+          working_directory: platform/viewer
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
+          # start server --> verify running --> percy + chrome + cypress
+          command: yarn run test:e2e:dist
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
+            - store_test_results:
+                path: platform/viewer/cypress/results
+          filters:
+            branches:
+              only: master
+      - DOCKER_MASTER_PUBLISH:
+          requires:
+            - NPM_PUBLISH

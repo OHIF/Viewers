@@ -1,0 +1,84 @@
+.RoundedButtonGroup {
+  --height: 25px;
+  position: relative;
+  z-index: 0;
+}
+
+.roundedButtonWrapper {
+  cursor: pointer;
+  display: inline-block;
+  float: left;
+  margin-left: -2px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.roundedButtonWrapper.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.RoundedButtonGroup .roundedButtonWrapper .roundedButton {
+  align-items: center;
+  background-color: var(--ui-gray-dark);
+  border: 2px solid var(--ui-border-color-dark);
+  color: var(--text-secondary-color);
+  display: flex;
+  font-size: 15px;
+  font-weight: 500;
+  justify-content: center;
+  height: var(--height);
+  line-height: var(--height);
+  padding: 0 22px;
+  position: relative;
+  text-transform: uppercase;
+  transition: var(--sidebar-transition);
+  z-index: 1;
+}
+
+.roundedButtonWrapper .roundedButton svg .roundedButtonWrapper .roundedButton span {
+  margin: 0 2px;
+}
+
+.roundedButtonWrapper .roundedButton i {
+  line-height: 15px;
+  font-size: 15px;
+}
+
+.roundedButtonWrapper .bottomLabel {
+  padding: 0 10px 0 10px;
+}
+
+.bottomLabel {
+  color: var(--text-secondary-color);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 12px;
+  margin-top: 8px;
+}
+
+.roundedButtonWrapper:first-child {
+  margin-left: 0;
+}
+
+.RoundedButtonGroup .roundedButtonWrapper:first-child .roundedButton {
+  border-bottom-left-radius: var(--height);
+  border-top-left-radius: var(--height);
+}
+
+.RoundedButtonGroup .roundedButtonWrapper:last-child .roundedButton {
+  border-bottom-right-radius: var(--height);
+  border-top-right-radius: var(--height);
+}
+
+.roundedButtonWrapper:hover .roundedButton {
+  background-color: var(--box-background-color);
+  color: var(--ui-gray-dark);
+}
+
+.roundedButtonWrapper.active .roundedButton {
+  background-color: var(--active-color);
+  border-color: var(--ui-border-color-active);
+  color: var(--ui-gray-dark);
+  z-index: 2;
+}

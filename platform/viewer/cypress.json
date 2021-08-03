@@ -1,0 +1,15 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "chromeWebSecurity": false,
+  "waitForAnimations": true,
+  "defaultCommandTimeout": 10000,
+  "requestTimeout": 10000,
+  "responseTimeout": 10000,
+  "projectId": "4oe38f",
+  "video": false,
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "cypress/results/test-output.xml",
+    "toConsole": true
+  }
+}

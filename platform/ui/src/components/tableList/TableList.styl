@@ -1,0 +1,50 @@
+
+$headerRowHeight = 63px
+
+.tableList
+  background-color: var(--primary-background-color)
+  height: 100%;
+  width: 100%;
+
+  .tableListHeader
+    background-color: var(--ui-gray-darker)
+    color: var(--text-secondary-color)
+    display: flex
+    height: $headerRowHeight
+    line-height: $headerRowHeight
+    margin-top: 2px
+    overflow: hidden
+    width: 100%
+
+    .tableListHeaderTitle
+      color: var(--text-secondary-color)
+      font-size: 22px
+      font-weight: 300
+      line-height: $headerRowHeight
+      padding: 0 10px
+      text-align: left
+      flex: 1;
+
+    .tableListHeaderSelector
+      cursor: pointer
+      max-width: 30px
+      padding-left: 2px
+      align-items: stretch
+      flex: 1
+      justify-content: space-around
+      text-align: center
+
+      svg
+        fill: #c1d8e3
+        height: 63px
+        max-width: 11px
+
+    .numberOfItems
+      color: var(--ui-sky-blue)
+      float: right
+      font-weight: 300
+      font-size: 40px
+      max-width: 54px
+      height: $headerRowHeight
+      line-height: 66px
+      flex: 1;

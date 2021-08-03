@@ -1,0 +1,57 @@
+.nav-tabs
+  border-bottom: 0
+  margin-bottom: 3px
+  position: relative
+  z-index: 1
+
+  :hover
+    cursor: pointer
+
+  &>li
+    font-size: 14px
+    font-weight: normal
+    height: 40px
+    line-height: 40px
+    margin-bottom: 0
+
+    &>button
+      display: block
+      width: 100%
+      line-height: inherit
+      margin: 0
+      height: inherit
+      padding: 0 10px 0 10px
+      outline: none
+
+      &:after
+        background-color: transparent
+        bottom: -3px
+        content: ' '
+        display: block
+        height: 3px
+        transition(background-color 0.3s ease)
+        width: 100%
+
+    &>button, &.active>button
+      &, &:hover, &:active, &:focus
+        color: var(--active-color)
+        background-color: transparent
+        border: 0
+
+    &.active>button
+      font-weight: bold
+
+      &:after
+        background-color: var(--active-color)
+
+.nav
+  padding-left: 0;
+  list-style: none;
+
+  > li
+    position: relative;
+    display: block;
+
+  > li
+    float: left;
+    margin-bottom: -1px;

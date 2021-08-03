@@ -1,0 +1,76 @@
+---
+name: Introduction
+route: /
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { TableList, TableListItem } from './../index.js';
+
+# Introduction
+
+**@ohif/ui is a collection of components and utilities** that power OHIF's
+[zero-footprint DICOM viewer](https://github.com/OHIF/Viewers)
+([demo][demo-url]). We maintain them as a separate component library to:
+
+- Decouple presentation from business logic
+- Test and develop components in isolation
+- Provide well documented, reusable components
+- Aid rapid application development for context specific viewers
+
+## Quick Example
+
+> This component library is pre- v1.0. All realeases until a v1.0 have the
+> possibility of introducing breaking changes. Please depend on an "exact"
+> version in your projects to prevent issues caused by loose versioning.
+
+```js
+// Add '@ohif/ui' as a dependency
+yarn add @ohif/ui
+
+// Import and use components
+import { TableList } from '@ohif/ui'
+```
+
+<Playground>
+  <State
+    initial={{
+      selectedIndex: null,
+      listItems: [
+        { label: 'Brain Left' },
+        { label: 'Brain Right' },
+        { label: 'Heart Left' },
+        { label: 'Heart Right' },
+      ],
+    }}
+  >
+    {({ state, setState }) => (
+      <TableList headerTitle="Example Table List Header">
+        {state.listItems.map((item, index) => {
+          return (
+            <TableListItem
+              key={`item_${index}`}
+              itemClass={state.selectedIndex === index ? 'selected' : ''}
+              itemIndex={index}
+              onItemClick={() => alert('item clicked')}
+            >
+              <label>{item.label}</label>
+            </TableListItem>
+          );
+        })}
+      </TableList>
+    )}
+  </State>
+</Playground>
+
+## FAQ
+
+...
+
+<!--
+  Links
+  -->
+
+<!-- prettier-ignore-start -->
+[demo-url]: https://docs.ohif.org/demo/
+<!-- prettier-ignore-end -->

@@ -1,0 +1,125 @@
+.dcmseg-segmentation-panel {
+  color: white;
+  min-height: 200px;
+  background-color: var(--primary-background-color);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.dcmseg-segmentation-panel.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.dcmseg-segmentation-panel h3 {
+  margin-top: 0;
+}
+
+.dcmseg-segmentation-panel .segmentations {
+  padding-bottom: 10px;
+}
+
+.dcmseg-segmentation-panel .cog-icon {
+  align-self: flex-end;
+  color: var(--default-color);
+  cursor: pointer;
+  min-height: 23px;
+  max-height: 23px;
+}
+
+.dcmseg-segmentation-panel .cog-icon:hover {
+  color: var(--hover-color);
+}
+
+.dcmseg-segmentation-panel .segmentation-icon {
+  margin-right: 8px;
+  margin-top: 12px;
+  min-width: 14px;
+}
+
+.dcmseg-segmentation-panel .selector-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  height: 150px;
+}
+
+.dcmseg-segmentation-panel .selector-form > div {
+  width: 100%;
+}
+
+.dcmseg-segmentation-panel .selector-form > div:first-of-type {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.dcmseg-segmentation-panel .tableList .tableListHeader .numberOfItems {
+  float: unset;
+  max-width: unset;
+  flex: unset;
+  margin-right: 16px;
+}
+
+.SegmentsSection {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary-color);
+  font-size: 12px;
+  margin-bottom: 0px;
+  height: 100%;
+}
+
+.SegmentsSection .header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--ui-gray-dark);
+  border-radius: 5px;
+  font-weight: bold;
+  padding: 10px 15px;
+}
+
+.SegmentsSection .count {
+  font-size: 15px;
+  color: var(--active-color);
+  margin-left: 15px;
+  border-radius: 5px;
+  background-color: var(--ui-gray-darker);
+  text-align: center;
+  min-width: 25px;
+}
+
+.SegmentsSection .header .eye-icon,
+.SegmentsSection .header .angle-double-down,
+.SegmentsSection .header .angle-double-up {
+  cursor: pointer;
+  color: var(--active-color);
+}
+
+.SegmentsSection .header .eye-icon:hover,
+.SegmentsSection .header .angle-double-down:hover,
+.SegmentsSection .header .angle-double-up:hover {
+  color: var(--hover-color);
+}
+
+.SegmentsSection .header .eye-icon.expanded {
+  color: var(--default-color);
+}
+
+.SegmentsSection .header .icons {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.SegmentsSection .header .icons .angle-double-down,
+.SegmentsSection .header .icons .angle-double-up {
+  margin-left: 15px;
+}

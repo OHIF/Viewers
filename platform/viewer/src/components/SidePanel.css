@@ -1,0 +1,48 @@
+.FlexboxLayout {
+  display: flex;
+  flex: 1;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  height: calc(100% - var(--toolbar-height) - var(--top-bar-height));
+  width: 100%;
+  overflow: hidden;
+}
+
+.sidepanel {
+  flex: 1;
+  height: 100%;
+  transition: var(--sidepanel-transition);
+  overflow-y: auto;
+}
+
+.from-left {
+  border-right: var(--ui-border-thickness) solid var(--ui-border-color);
+  margin-left: calc(var(--left-sidepanel-menu-width) * -1);
+  max-width: var(--left-sidepanel-menu-width);
+}
+
+.from-right {
+  border-left: var(--ui-border-thickness) solid var(--ui-border-color);
+  margin-right: calc(var(--right-sidepanel-menu-width) * -1);
+  max-width: var(--right-sidepanel-menu-width);
+}
+
+.sidepanel.is-open {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.main-content {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  transition: var(--sidepanel-transition);
+  width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+  /* Account for "Investigational Use" banner height */
+  .FlexboxLayout {
+    height: calc(100% - var(--toolbar-height) - var(--top-bar-height) - 16px);
+  }
+}

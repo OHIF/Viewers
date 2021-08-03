@@ -1,0 +1,33 @@
+.ContextMenu {
+  position: relative;
+  background-color: white;
+  border-radius: 5px;
+  z-index: 1000;
+  display: block;
+  width: 170px;
+}
+
+.ContextMenu>ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.ContextMenu>ul>li>button {
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  color: #516873;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  background: none;
+}
+
+.ContextMenu>ul>li>button:hover {
+  color: #16202b;
+}
+
+.ContextMenu>ul>li>button:active {
+  color: #79f9fe;
+}

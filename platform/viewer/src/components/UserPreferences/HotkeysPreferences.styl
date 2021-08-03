@@ -1,0 +1,46 @@
+.HotkeysPreferences
+    display: flex
+    padding: 20px
+
+    .hotkeyTable
+      display: flex
+      flex-direction: row
+      flex-basis: 0
+      flex-grow: 1.5
+
+      .hotkeyColumn
+        display: flex
+        flex-direction: column
+        flex-basis: 0
+        flex-grow: 1.5
+
+        .hotkeyHeader
+          display: flex
+          flex-direction: row
+          margin-bottom: 10px
+
+          .headerItemText
+            flex-basis: 0
+            flex-grow: 1.5
+            padding: 5px 15px 5px 0
+
+        .hotkeyRow
+          display: flex
+
+          .wrapperHotkeyInput
+            margin-bottom: 5px
+            cursor: pointer
+            display: flex
+            flex-direction: column
+            flex-basis: 0
+            flex-grow: 1.5
+
+          .hotkeyLabel
+            padding: 5px 15px 5px 0
+            text-align: right
+            flex-basis: 0
+            flex-grow: 1.5
+
+          .stateError
+            .preferencesInput
+              background-color: var(--state-error)

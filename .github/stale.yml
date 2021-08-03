@@ -1,0 +1,32 @@
+# GitHub App: Stale
+# https://github.com/apps/stale
+#
+# Number of days of inactivity before an issue becomes stale
+daysUntilStale: 180
+# Number of days of inactivity before a stale issue is closed
+daysUntilClose: 9000
+# Issues with these labels will never be considered stale
+exemptLabels:
+  - 'Story :raised_hands:'
+  - 'Bug: Verified :bug:'
+  - 'Task: CI/Tooling :robot:'
+  - 'Task: Docs 📖'
+  - 'Task: Docs :book:'
+  - 'Task: Refactor :hammer_and_wrench:'
+  - 'Task: Tests :microscope:'
+  - 'PR: Awaiting Review 👀'
+  - 'Triage :white_flag:'
+  - 'Extension: Discussion'
+  - 'Announcement 🎉'
+  - 'IDC:priority'
+  - 'IDC:candidate'
+  - 'IDC:collaboration'
+# Label to use when marking an issue as stale
+staleLabel: 'Stale :baguette_bread:'
+# Comment to post when marking an issue as stale. Set to `false` to disable
+markComment: >
+  This issue has been automatically marked as stale because it has not had
+  recent activity. It will be closed if no further activity occurs. Thank you
+  for your contributions.
+# Comment to post when closing a stale issue. Set to `false` to disable
+closeComment: false

@@ -1,0 +1,83 @@
+---
+name: Simple Dialog
+menu: Components
+route: /components/simple-dialog
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { SimpleDialog } from './../index.js'
+
+# Simple Dialog
+
+Its similar to a modal but we can pass its style as props and manipulate it as
+we want. Initially used to display tool data changes in our Viewport.
+
+## Basic usage
+
+<Playground>
+    <State initial={{
+        isDialogOpen: false,
+        inputValue: '',
+        selectValue: '',
+        dialogStyle: {
+            top: '50px',
+            left: '100px',
+            position: 'absolute'
+        }
+    }}>
+        {({ state, setState }) => (
+            <React.Fragment>
+                <div><pre>{JSON.stringify(state, null, 2) }</pre></div>
+
+                {/* Toggle Dialog */}
+                <button onClick={() => setState({ isDialogOpen: !state.isDialogOpen})}>
+                    {state.isDialogOpen ? 'Close Dialog' : 'Open Dialog'}
+                </button>
+
+                <SimpleDialog
+                    isOpen={state.isDialogOpen}
+                    headerTitle='Example Dialog Header'
+                    onClose={() => setState({ isDialogOpen: false })}
+                    onConfirm={() => setState({
+                        isDialogOpen: false,
+                        // If you don't want to update external state until complete,
+                        // This is where you could grab current field values and update parent
+                        // With setState
+                        //
+                        // inputValue: this.input.value,
+                        // selectValue: this.select.value
+                    })}
+                    componentStyle={state.dialogStyle}
+                    onValueChanged={(value) => setState({value}) }
+                >
+                    <label htmlFor='input' className='simpleDialogLabelFor'>Input Example</label>
+                    <input
+                        id='input'
+                        type='text'
+                        className='simpleDialogInput'
+                        autoComplete='off'
+                        onChange={(e) => setState({inputValue: e.target.value})}
+                    />
+                    <label htmlFor='select' className='simpleDialogLabelFor'>SelectExample</label>
+                    <select
+                        name='select'
+                        id='select'
+                        className='simpleDialogSelect'
+                        onChange={(e) => setState({selectValue: e.target.value})}
+                    >
+                        <option value='Option1'>Option1</option>
+                        <option value='Option2'>Option2</option>
+                        <option value='Option3'>Option3</option>
+                        <option value='Option4'>Option4</option>
+                    </select>
+                </SimpleDialog>
+            </React.Fragment>
+        )}
+    </State>
+
+</Playground>
+
+## API
+
+<Props of={SimpleDialog} />

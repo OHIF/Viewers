@@ -1,0 +1,5 @@
+# Specific to our non-deploy-preview deploys
+# Confgure redirects using netlify.toml
+
+# PWA Redirect
+/* /index.html 200

@@ -1,0 +1,44 @@
+# Netlify Config
+#
+# TOML Reference:
+# https://www.netlify.com/docs/netlify-toml-reference/
+#
+# We use Netlify for deploy previews and for publishing docs (gh-pages branch).
+# https://viewer.ohif.org is created using a different process that is
+# managed by CircleCI and deployed to our Google Hosting
+#
+
+[build]
+  base = ""
+  publish = ".netlify/www/"
+  command = "chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
+
+# NODE_VERSION in root `.nvmrc` takes priority
+# YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
+[build.environment]
+  NODE_END = "production"
+  NODE_VERSION = "10.16.0"
+  YARN_VERSION = "1.17.3"
+  RUBY_VERSION = "2.6.2"
+  YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
+  NETLIFY_RESTORE = "1"
+
+# Production context: all deploys from the Production branch set in your site's
+# deploy contexts will inherit these settings.
+[context.production]
+  ignore = "exit 0" # Never build production; We'll let our CI do that
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+    # Multi-key header rules are expressed with multi-line strings.
+    cache-control = '''
+    max-age=0,
+    no-cache,
+    no-store,
+    must-revalidate'''

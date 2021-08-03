@@ -1,0 +1,212 @@
+body {
+  background-color: #040507;
+  background-image: url('../img/background.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  color: #fff;
+  font-family: sans-serif;
+  text-shadow: 0px 0px 10px #000;
+}
+
+a {
+  color: #fff;
+}
+
+div#kc-content {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  width: 550px;
+  margin-left: -180px;
+}
+
+div#kc-form {
+  float: left;
+  width: 350px;
+}
+
+div#kc-form label {
+  display: block;
+  font-size: 16px;
+}
+
+div#info-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin-top: 40px;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  width: 100%;
+}
+
+div#info-area p {
+  margin-right: 30px;
+  display: inline;
+  text-shadow: none;
+}
+
+input[type='text'],
+input[type='password'] {
+  color: #333;
+  font-size: 18px;
+  margin-bottom: 20px;
+  background-color: rgba(256, 256, 256, 0.7);
+  border: 0px solid rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  width: 296px;
+}
+
+input[type='text']:hover,
+input[type='password']:hover {
+  background-color: rgba(256, 256, 256, 0.9);
+}
+
+input[type='submit'] {
+  border: none;
+
+  background: -webkit-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  );
+  background: -moz-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  );
+  background: -ms-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  );
+  background: -o-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  );
+
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.5);
+
+  color: rgba(0, 0, 0, 0.6);
+
+  font-size: 14px;
+  font-weight: bold;
+
+  padding: 10px;
+  margin-top: 20px;
+  margin-right: 10px;
+  width: 150px;
+}
+
+input[type='submit']:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+div#kc-form-options div {
+  display: inline-block;
+  margin-right: 20px;
+  font-size: 12px;
+}
+
+div#kc-form-options div label {
+  font-size: 12px;
+}
+
+div#kc-feedback {
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+div#kc-feedback-wrapper {
+  padding: 1em;
+}
+
+div.feedback-success {
+  background-color: rgba(155, 155, 255, 0.1);
+}
+
+div.feedback-warning {
+  background-color: rgba(255, 175, 0, 0.1);
+}
+
+div.feedback-error {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+div#kc-header {
+  display: none;
+}
+
+div#kc-registration {
+  margin-bottom: 20px;
+}
+
+div#social-login {
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  float: right;
+  width: 150px;
+  padding: 20px 0 200px 40px;
+}
+
+div.social-login span {
+  display: none;
+}
+
+div#kc-social-providers ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+div#kc-social-providers ul li {
+  margin-bottom: 20px;
+}
+
+div#kc-social-providers ul li span {
+  display: inline;
+  width: 100px;
+}
+
+a.zocial {
+  border: none;
+  background: -webkit-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  ) !important;
+  background: -moz-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  ) !important;
+  background: -ms-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  ) !important;
+  background: -o-linear-gradient(
+    top,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.1)
+  ) !important;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.6);
+  width: 130px;
+  text-shadow: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}

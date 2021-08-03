@@ -1,0 +1,21 @@
+.labelling-appear {
+  opacity: 0;
+}
+
+.labelling-appear.labelling-appear-active {
+  opacity: 1;
+  transition: opacity 500ms linear;
+}
+
+.labelling-exit {
+  opacity: 1;
+}
+
+.labelling-exit.labelling-exit-active {
+  opacity: 0;
+  transition: opacity 500ms linear;
+}
+
+.labelling-exit-done {
+  opacity: 0;
+}

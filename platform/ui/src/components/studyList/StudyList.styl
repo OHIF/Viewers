@@ -1,0 +1,238 @@
+@import './../../design/styles/common/form.styl'
+@import './../../design/styles/common/global.styl'
+
+$study-list-padding = 8%;
+$study-list-toolbar-height = 75px;
+$body-cell-height = 40px;
+$body-cell-top-bottom-padding = 16px;
+
+$tablePaddingMediumScreen = 5px
+$tablePaddingBigScreen = 3%
+$tablePaddingLargeScreen = 5%
+
+// TODO: move this to a common mixin files
+placeholder-color(c)
+  &::-webkit-input-placeholder
+    color: c
+  &:-moz-placeholder
+    color: c
+  &::-moz-placeholder
+    color: c
+  &:-ms-input-placeholder
+    color: c
+
+.study-list-header
+  .addNewStudy
+    margin: 0 10px
+
+    label
+      font-weight: 400
+      cursor: pointer
+      display: inline-block;
+      max-width: 100%;
+      margin-bottom: 5px;
+
+    input
+      width: 0.1px;
+      height: 0.1px
+      opacity: 0
+      overflow: hidden
+      position: absolute
+      z-index: -1
+
+    color: var(--text-secondary-color)
+
+    &:hover
+      color: var(--hover-color)
+
+    &:active
+      color: var(--active-color)
+
+.study-list-header
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--ui-gray-darker)
+  height: $study-list-toolbar-height
+  margin-bottom: 2px
+  padding: 0 $study-list-padding
+  line-height: $study-list-toolbar-height
+
+  .header
+    font-size: 22px
+    font-weight: 300
+    color: var(--table-text-secondary-color)
+    line-height: $study-list-toolbar-height
+
+  .actions
+    display: flex;
+
+  .study-count
+    color: var(--large-numbers-color)
+    font-size: 40px
+    font-weight: 100
+    line-height: $study-list-toolbar-height
+
+/*
+ * Dark gray background with blue border
+ * Spans width of page to create a distinct area for table filters
+ */
+.table-head-background
+  height: 121px
+  position: absolute
+  width: 100%
+
+  &:before, &:after
+    content: ''
+    display: block
+    left: 0
+    position: absolute
+    width: 100%
+
+  &:before
+    background-color: var(--ui-gray-darker)
+    height: 100%
+    top: 0
+    z-index: 1
+
+  &:after
+    background-color: var(--ui-border-color-active)
+    bottom: -1px
+    height: 1px
+    z-index: 2
+
+
+.study-list-container
+  width: 100%
+  padding: 0 $study-list-padding
+  position: absolute
+  z-index: 2
+
+table.table
+  width: 100%;
+  margin-bottom: 20px;
+  border-spacing: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: var(--table-text-primary-color)
+  font-weight: 300
+
+  > tbody tr
+    padding: 5px
+    background-color: black
+
+  > tbody td
+    padding: $body-cell-top-bottom-padding 8px;
+    height: $body-cell-height
+    word-wrap: break-word;
+
+  /* Striped Variant */
+  &.table--striped > tbody tr:nth-child(even)
+    background-color: var(--ui-gray-darker)
+
+  /* Hover Variant */
+  &.table--hoverable > tbody tr
+    &:hover, &:active, &.active
+      background-color: var(--table-hover-color)
+    &.no-hover
+      &:hover, &:active, &.active
+        background-color: var(--ui-gray-darker)
+
+  .empty-value
+    color: var(--ui-gray-light)
+
+.study-list-container > table.table > tr
+  height: 20px
+
+.study-list-container > table.table > thead
+  ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+  ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+  ::-webkit-datetime-edit-day-field:not([aria-valuenow])
+    color: transparent
+
+.study-list-container > table.table > thead > tr > th
+  padding: 0;
+  border-bottom: 1px solid var(--ui-border-color-active);
+  width: 100%;
+  text-align: left;
+  border-top: 0;
+
+.study-list-container > table.table > thead > tr > th.StudyDate
+  min-width: 230px
+.study-list-container > table.table .modalities
+  font-weight: 500;
+  min-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+.study-list-container
+  .filters
+    label
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      width: 100%;
+      min-width: 95px;
+      margin: 0 auto;
+      color: var(--table-text-primary-color);
+      font-weight: 400;
+      padding: 20px 8px;
+      user-select: none;
+      font-size: 15px;
+
+      &:hover
+        color: var(--active-color);
+
+      &.active, &:active
+        color: var(--active-color);
+    i
+      margin: 0 5px;
+
+  input
+    height: 40px
+    margin: 0 5px 20px 5px
+    padding: 0 20px
+    cursor: pointer
+    border: none
+    background-color: var(--input-background-color)
+    color: var(--input-placeholder-color)
+    font-size: 10pt
+    font-weight: normal
+    border-radius: 4px
+    width: calc(100% - 10px); /* Just use padding? */
+    transition(all 0.15s ease)
+    placeholder-color(var(--input-placeholder-color))
+
+    &:active, &:hover
+      background-color: var(--input-background-color)
+
+  .loading-text
+    color: var(--table-text-secondary-color)
+    text-align: center;
+    font-size: 30px
+
+  .notFound
+    color: var(--table-text-secondary-color)
+    font-size: 30px
+    font-weight: 200
+    text-align: center
+
+@media only screen and (max-width: 768px)
+  .study-list-header
+    padding: 0 16px;
+
+  .study-list-container
+    padding: 0;
+
+  .study-list-container > table.table > thead > tr > th
+    padding: 0 13px;
+
+  .study-list-container > table.table > tbody > tr > td
+    padding: 8px;
+
+  .study-list-container .filters label
+    padding: 8px;
+
+@media only screen and (max-width: 500px)
+  .hide-xs
+    display: none;

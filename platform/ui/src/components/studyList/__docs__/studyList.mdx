@@ -1,0 +1,53 @@
+---
+name: Study List
+menu: Components
+route: /components/study-list
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { StudyList } from './../index.js'
+// Data
+import defaultStudies from './studies.js'
+import onSearch from './onSearch.js'
+import moment from 'moment'
+
+# Study List
+
+## Basic usage
+
+<Playground>
+    <State initial={{
+        searchData: {},
+        studies: defaultStudies.filter(study => {
+            const StudyDate = moment(study['StudyDate'], 'YYYYMMDD');
+            const startDate = moment().subtract(5, 'days');
+            const endDate = moment();
+
+            return StudyDate.isBetween(startDate, endDate, 'days', '[]');
+        }).slice(0, 5)
+    }}>
+        {({ state, setState }) => (
+        <div className="row" style={{ backgroundColor: '#000', height: '600px' }}>
+            <div className="col-xs-12" style={{ padding: 0 }}>
+                <StudyList
+                    studies={state.studies}
+                    pageOptions={[1, 2, 3, 5, 10, 15, 20, 25, 50, 100]}
+                    studyListFunctionsEnabled={true}
+                    onImport={(e) => alert('Import study mock ' + e)}
+                    onSelectItem={(StudyInstanceUID) => { alert(StudyInstanceUID + ' has selected! Now you can open your study.'); }}
+                    rowsPerPage={5}
+                    defaultSort={{ field: 'PatientName', order: 'desc', }}
+                    studyListDateFilterNumDays={7}
+                    onSearch={onSearch.bind({ setState, defaultStudies })}
+                />
+            </div>
+        </div>
+        )}
+    </State>
+
+</Playground>
+
+## API
+
+<Props of={StudyList} />

@@ -1,0 +1,79 @@
+.OHIFModal
+  background-color: var(--ui-gray-darker)
+  border-color: var(--ui-border-color)
+  color: var(--text-secondary-color)
+  border-radius: 6px
+  border: 0
+  color: var(--text-primary-color)
+  position: relative
+  -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5)
+  box-shadow: 0 3px 9px rgba(0,0,0,.5);
+  background-clip: padding-box
+  outline: 0
+
+  @media (min-width: 320px)
+    width: 78%
+    min-width: 300px
+
+  @media (min-width: 768px)
+    width: 600px
+
+    &.OHIFModal-fullscreen
+      width: 95%
+
+  @media (min-width: 992px)
+    width: 900px
+
+    &.OHIFModal-fullscreen
+      width: 95%
+
+  &__content
+    padding: 20px
+    max-height: 90vh;
+    overflow-y: auto;
+
+  &.noScroll &__content {
+    overflow: hidden;
+  }
+
+  &:not(.visibleScrollbar) &__content
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar
+      display: none;
+
+  &__header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    border-bottom-width: 3px
+    border-bottom-style: solid
+    border-bottom-color: #000000
+    padding: 20px
+    position: relative
+
+    h4
+      color: var(--text-secondary-color)
+      font-size: 20px
+      font-weight: 500
+      line-height: 24px
+      padding-right: 24px
+      margin: 0
+
+    button
+      cursor: pointer
+      margin: -10px 0 0 0
+      padding: 0
+      background-color: transparent
+      border: none
+      color: var(--text-secondary-color)
+      font-size: 25px
+      font-weight: lighter
+
+      &:active,
+      &:focus,
+      &:focus:active
+        background-image: none
+        outline: 0
+        box-shadow: none

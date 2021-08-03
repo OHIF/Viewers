@@ -1,0 +1,50 @@
+{
+  "title": "OHIF",
+  "description": "Documentation for the OHIF framework",
+  "gitbook": ">3.0.0",
+  "plugins": [
+    "edit-link",
+    "theme-cornerstone",
+    "-fontsettings",
+    "github",
+    "ga",
+    "anchors",
+    "versions"
+  ],
+  "pluginsConfig": {
+    "edit-link": {
+      "base": "https://github.com/OHIF/Viewers/edit/master/docs",
+      "label": "Edit This Page"
+    },
+    "github": {
+      "url": "https://github.com/OHIF/Viewers"
+    },
+    "ga": {
+      "token": "UA-110573590-2"
+    },
+    "sitemap": {
+      "hostname": "https://docs.ohif.org",
+      "todo": "sitemap plugin removed; causing build errors"
+    },
+    "versions": {
+      "gitbookConfigURL": "https://raw.githubusercontent.com/OHIF/Viewers/master/docs/book.json",
+      "options": [
+        {
+          "value": "https://docs.ohif.org/history/v1/",
+          "text": "Version 1.0.0 (Meteor)"
+        },
+        {
+          "value": "https://docs.ohif.org/",
+          "text": "Version 2.0.0",
+          "selected": true
+        }
+      ]
+    }
+  },
+  "links": {
+    "sharing": {
+      "facebook": false,
+      "twitter": false
+    }
+  }
+}

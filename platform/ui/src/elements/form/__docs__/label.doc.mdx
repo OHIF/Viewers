@@ -1,0 +1,32 @@
+---
+name: Form / Label
+menu: Elements
+route: /elements/form-label
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { Label } from './../index.js';
+
+# Label
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      text: 'This is a label',
+      for: '',
+    }}
+  >
+    {({ state, setState }) => (
+      <div className="label-example">
+        <Label {...state} />
+      </div>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={Label} />

@@ -1,0 +1,42 @@
+---
+name: Select Tree
+menu: Components
+route: /components/select-tree
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { SelectTree } from './../index.js'
+
+import selectTreeItems from './selectTreeItems.js'
+
+# SelectTree
+
+## Basic usage
+
+<Playground>
+    <State initial={{
+        items: selectTreeItems,
+    }}>
+        {({ state, setState }) => (
+            <React.Fragment>
+            <pre style={{ maxHeight: '135px', overflowX: 'auto' }}>
+                {JSON.stringify(state.items, null, 2)}
+            </pre>
+
+           <SelectTree
+                items={state.items}
+                onSelected={(event, item) => setState({ itemLabelSelected: item.label }) }
+                selectTreeFirstTitle="Select Tree Example Header"
+                autoFocus={false}
+            />
+            </React.Fragment>
+        )}
+
+    </State>
+
+</Playground>
+
+## API
+
+<Props of={SelectTree} />

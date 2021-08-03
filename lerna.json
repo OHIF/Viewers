@@ -1,0 +1,19 @@
+{
+  "version": "independent",
+  "packages": ["extensions/*", "platform/*"],
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "command": {
+    "publish": {
+      "ignoreChanges": ["*.md", "*.yml", "*.spec.js", "*.test.js"],
+      "message": "chore(release): publish"
+    },
+    "version": {
+      "allowBranch": "master",
+      "conventionalCommits": true,
+      "createRelease": "github",
+      "yes": true,
+      "message": "chore(release): publish [skip ci]"
+    }
+  }
+}

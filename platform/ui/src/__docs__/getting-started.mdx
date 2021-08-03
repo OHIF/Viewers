@@ -1,0 +1,76 @@
+---
+name: Getting Started
+route: /getting-started
+---
+
+# Getting Started
+
+## Installation
+
+> This component library is pre- v1.0. All realeases until a v1.0 have the
+> possibility of introducing breaking changes. Please depend on an "exact"
+> version in your projects to prevent issues caused by loose versioning.
+
+Install `@ohif/ui` from npm:
+
+```shell
+// with npm
+npm i @ohif/ui --save-exact
+
+// with yarn
+yarn add @ohif/ui --exact
+```
+
+## Usage
+
+There is some setup required for `@ohif/ui`. We are working to eliminate these
+requirements with the goal of providing ready to use components.
+
+### External Dependencies
+
+We have tried to keep the number of external dependencies limited to make setup
+as easy as possible. You will, however, need to include either the default font
+or the font you set for your theme:
+
+```js
+// Google Fonts, Roboto
+'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700&display=swap';
+```
+
+`@ohif/ui` also looks for theme CSS variabled defined on `:root`. You can find a
+list of variables [on the theming page](/styling-and-theming)
+
+### Import & Use
+
+You can use components in your React app:
+
+```js
+import React, { Component } from 'react';
+import { LayoutButton } from '@ohif/ui';
+
+class Example extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedCell: {
+        className: 'hover',
+        col: 1,
+        row: 1,
+      },
+    };
+  }
+
+  render() {
+    return (
+      <LayoutButton
+        selectedCell={this.state.selectedCell}
+        onChange={cell => this.setState({ selectedCell: cell })}
+      />
+    );
+  }
+}
+```
+
+> NOTE: It is heavily recommended that you use a CSS reset or normalize. As well
+> as the following style: `* { Box-sizing: Border-box }`

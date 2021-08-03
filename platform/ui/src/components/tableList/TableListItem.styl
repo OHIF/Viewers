@@ -1,0 +1,46 @@
+.tableListItem
+  display: flex
+  margin-left: -6px
+  margin-top: 2px
+  padding-left: 6px
+  opacity: 0.7
+  cursor: pointer;
+  width: calc(100% + 6px)
+
+  &:hover
+    opacity 1
+
+  &.selected
+    opacity 1
+    .itemIndex
+      color: $activeColor
+
+  &.hasWarning
+    .warning
+      display: block
+
+  .itemIndex
+    background-color: var(--ui-gray)
+    color: var(--text-secondary-color)
+    cursor: pointer
+    flex: 1
+    max-width: 25px
+    transition(all 0.3s ease)
+    font-size: 14px
+    font-weight: 400
+    margin-right: 6px
+    padding: 10px
+    text-align: center
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
+
+  .itemContent
+    flex: 1
+    color: var(--text-secondary-color)
+    width: calc(100% - 51px);
+    font-weight: 400
+    margin-top: 9px;
+
+  .warning-icon
+    display: none

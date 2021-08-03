@@ -1,0 +1,20 @@
+---
+name: Tooltip
+menu: Components
+route: /components/tooltip
+---
+
+import { Playground, Props } from 'docz'
+import { Tooltip } from './../index.js'
+
+# Tooltip
+
+## Basic usage
+
+<Playground>
+  <Tooltip />
+</Playground>
+
+## API
+
+<Props of={Tooltip} />

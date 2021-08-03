@@ -1,0 +1,61 @@
+---
+name: Quick Switch
+menu: Components
+route: /components/quick-switch
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { QuickSwitch } from './../index.js'
+//
+import studies from './studies.js'
+
+# Quick Switch
+
+## Basic usage
+
+<Playground>
+    <State initial={{
+        studyListData: studies,
+    }}>
+        {({ state, setState }) => (
+            <QuickSwitch
+                studyListData={state.studyListData}
+                // If this is always activeStudy's thumbnails,
+                // Why do we need to specify this?
+                seriesData={
+                    state.studyListData.find((study) => {
+                        return !!study.active;
+                    }).thumbnails}
+                onSeriesSelected={(selectedSeries) => {
+                    const { studyListData } = state;
+                    const selectedId = selectedSeries.displaySetInstanceUID;
+
+                    studyListData.forEach(study => {
+                        study.thumbnails.forEach(series => {
+                            series.active = series.displaySetInstanceUID  === selectedId;
+                        })
+                    });
+
+                    setState({ studyListData });
+                }}
+                onStudySelected={(selectedStudy) => {
+                    const { studyListData } = state;
+                    const selectedId = selectedStudy.StudyInstanceUID;
+
+                    studyListData.forEach(study => {
+                        study.active = study.StudyInstanceUID === selectedId;
+                    });
+
+                    setState({ studyListData });
+                }}
+            />
+        )}
+
+    </State>
+
+</Playground>
+
+## API
+
+<Props of={QuickSwitch} />

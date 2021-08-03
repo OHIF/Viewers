@@ -1,0 +1,155 @@
+.loading-icon-spin {
+  animation: spin 2s linear infinite;
+}
+
+.loading-icon {
+  font-size: 30px;
+  margin: 20px 0;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.gcp-table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+.gcp-table > tr {
+  height: 20px;
+}
+.gcp-table > thead {
+  white-space: nowrap;
+}
+.gcp-table > thead tr th {
+  padding: 0;
+  border-bottom: 1px solid var(--ui-border-color-active);
+  width: 100%;
+  text-align: left;
+  border-top: 0;
+}
+.gcp-table > tbody tr {
+  padding: 5px;
+  background-color: var(--ui-gray-darker);
+}
+.gcp-table > tbody tr:nth-child(even) {
+  background-color: var(--ui-gray-dark);
+}
+
+.gcp-table > tbody tr td {
+  padding: 8px;
+  height: $body-cell-height;
+  line-height: $body-cell-height;
+  color: var(--table-text-primary-color);
+  font-weight: 300;
+  border-top: 1px solid var(--ui-gray-lighter);
+  border-bottom: 1px solid var(--ui-gray-lighter);
+  white-space: nowrap;
+}
+.gcp-table > tbody tr td.emptyCell {
+  color: #516873;
+}
+.gcp-table > tbody tr td.emptyValue {
+  color: var(--ui-gray-light);
+}
+.gcp-table > tbody tr:hover,
+.gcp-table > tbody tr:active,
+.gcp-table > tbody tr.active {
+  background-color: var(--table-hover-color);
+  color: var(--text-primary-color);
+}
+.gcp-table > tbody tr:hover td,
+.gcp-table > tbody tr:active td,
+.gcp-table > tbody tr.active td {
+  border-top: 1px solid var(--ui-gray-lighter);
+  border-bottom: 1px solid var(--ui-gray-lighter);
+  background-color: var(--table-hover-color);
+}
+
+.gcp-files-selector {
+  display: flex;
+  justify-content: space-between;
+}
+.gcp-files-selector__btn-dir,
+.gcp-files-selector__btn-file {
+  height: 80px !important;
+  width: 228px !important;
+  font-size: 14px;
+  border-radius: 8px;
+  margin: 0 !important;
+}
+.gcp-files-selector__btn-dir {
+  background-image: url('/assets/Button_Folder.svg');
+}
+.gcp-files-selector__btn-file {
+  background-image: url('/assets/Button_File.svg');
+}
+
+.gcp-window {
+  background-color: #000000;
+}
+
+.gcp-hidden {
+  display: none;
+}
+
+.gcp-picker {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  width: 650px;
+  height: 600px;
+  background-color: #161a1f;
+  padding: 20px 30px;
+  position: relative;
+}
+
+.gcp-dicom-picker__exit {
+  cursor: pointer;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 14px !important;
+  height: 14px !important;
+  filter: opacity(0.5);
+}
+
+.gcp-dicom-picker__exit:hover {
+  filter: opacity(1);
+}
+
+.gcp-picker--btn {
+  margin: auto;
+}
+
+.gcp-picker--title {
+  color: #ffffff;
+  font-size: 24px;
+  text-align: center;
+  margin: 20px auto;
+}
+
+.gcp-picker--path {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 28px;
+  text-align: left;
+  margin: 20px auto;
+}
+
+.gcp-input{
+  height: 40px;
+  margin: 0 5px 20px 5px;
+  padding: 0 20px;
+  cursor: pointer;
+  border: none;
+  background-color: var(--input-background-color);
+  color: var(--input-placeholder-color);
+  font-size: 10pt;
+  font-weight: normal;
+  border-radius: 4px;
+}

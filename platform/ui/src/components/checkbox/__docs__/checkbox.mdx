@@ -1,0 +1,42 @@
+---
+name: Checkbox
+menu: Elements
+route: /components/checkbox
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { Checkbox } from './../index'
+import NameSpace from '../../../__docs__/NameSpace'
+
+# Checkbox
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      checked : false,
+      label : 'Sample check'
+    }}
+  >
+    {({ state, setState }) => (
+      <React.Fragment>
+        <div>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </div>
+        <div style={{ maxWidth: '300px', margin: '0 auto' }}>
+          <Checkbox {...state} />
+        </div>
+      </React.Fragment>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={Checkbox} />
+
+## Translation Namespace
+
+<NameSpace name="Checkbox" />

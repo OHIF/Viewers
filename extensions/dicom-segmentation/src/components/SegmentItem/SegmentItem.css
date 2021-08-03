@@ -1,0 +1,83 @@
+.dcmseg-segment-item .segment-color-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.dcmseg-segment-item .segment-color {
+  margin-top: 8px;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+}
+
+.dcmseg-segment-item .segment-info {
+  display: inline-block;
+  margin-top: 9px;
+  padding-left: 9px;
+  width: 90px;
+  border-left: 1px solid var(--text-secondary-color);
+  color: var(--text-primary-color);
+  width: 100%;
+}
+
+.dcmseg-segment-item.selected .segment-actions {
+  height: 35px;
+  visibility: visible;
+}
+
+.dcmseg-segment-item .segment-actions {
+  margin-left: -1px;
+  background-color: var(--ui-gray-darker);
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  visibility: hidden;
+  padding-left: 14px;
+}
+
+.dcmseg-segment-item .segment-actions .btnAction {
+  background-color: transparent;
+  border: none;
+  color: var(--default-color);
+  cursor: pointer;
+  line-height: 35px;
+  height: 35px;
+  transition: all 0.3s ease;
+}
+
+.dcmseg-segment-item .segment-actions .btnAction:hover, .dcmseg-segment-item .segment-actions .btnAction:active {
+  color: var(--text-primary-color);
+}
+
+.dcmseg-segment-item .segment-actions .btnAction i {
+  margin-right: 4px;
+}
+
+.dcmseg-segment-item .segment-label {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 20px;
+}
+
+.dcmseg-segment-item .segment-label span {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: calc(100% - 40px); /* calc(100% - 50px); 20px = eye icon */
+  text-overflow: ellipsis;
+}
+
+.dcmseg-segment-item .segment-label .eye-icon {
+  cursor: pointer;
+  color: var(--active-color);
+}
+
+.dcmseg-segment-item .segment-label .eye-icon:hover {
+  color: var(--hover-color);
+}
+
+.dcmseg-segment-item .segment-label .eye-icon.--visible {
+  color: var(--default-color);
+}

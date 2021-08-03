@@ -1,2 +1,0 @@
-import './seriesDetailsModal';
-import './studylist';

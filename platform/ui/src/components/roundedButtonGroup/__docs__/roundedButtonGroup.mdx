@@ -1,0 +1,51 @@
+---
+name: Rounded Button Group
+menu: Components
+route: /components/rounded-button-group
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { RoundedButtonGroup } from './../index.js';
+
+# Rounded Button Group
+
+A basic styled toggle switch
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      value: null,
+      options: [
+        {
+          value: 'studies',
+          icon: 'th',
+          bottomLabel: 'Series',
+        },
+        {
+          value: 'measurements',
+          icon: 'th-list',
+          bottomLabel: 'Measurements',
+        },
+      ],
+    }}
+  >
+    {({ state, setState }) => (
+      <React.Fragment>
+        <div>
+          <pre>value: {JSON.stringify(state.value, null, 2)}</pre>
+        </div>
+        <RoundedButtonGroup
+          {...state}
+          onValueChanged={value => setState({ value })}
+        />
+      </React.Fragment>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={RoundedButtonGroup} />

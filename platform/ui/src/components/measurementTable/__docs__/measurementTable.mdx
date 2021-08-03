@@ -1,0 +1,49 @@
+---
+name: Measurement Table
+menu: Components
+route: /components/measurement-table
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { MeasurementTable } from './../index.js'
+import NameSpace from '../../../__docs__/NameSpace'
+//
+import measurements from './measurements.js'
+import timepoints from './timepoints.js'
+import warnings from './warnings.js'
+
+# Measurement Table
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      // Spelling error: overwallWarnings
+      overwallWarnings: warnings,
+      timepoints,
+      measurementCollection: measurements,
+    }}
+  >
+    {({ state, setState }) => (
+      <div style={{ height: '340px' }}>
+        <MeasurementTable
+          {...state}
+          onItemClick={() => alert('onItemClick')}
+          onRelabelClick={() => alert('onRelabelClick')}
+          onDeleteClick={() => alert('onDeleteClick')}
+          onEditDescriptionClick={() => alert('onEditDescriptionClick')}
+        />
+      </div>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={MeasurementTable} />
+
+## Translation Namespace
+
+<NameSpace name="MeasurementTable" />

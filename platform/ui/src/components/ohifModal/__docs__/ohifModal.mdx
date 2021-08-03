@@ -1,0 +1,39 @@
+---
+name: OHIFModal
+menu: Components
+route: /components/ohif-modal
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { OHIFModal } from './../index'
+import NameSpace from '../../../__docs__/NameSpace'
+
+# OHIF Modal
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{}}
+  >
+    {({ state, setState }) => (
+      <React.Fragment>
+        <div>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </div>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          <OHIFModal />
+        </div>
+      </React.Fragment>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={OHIFModal} />
+
+## Translation Namespace
+
+<NameSpace name="OHIFModal" />

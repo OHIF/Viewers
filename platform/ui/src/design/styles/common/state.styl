@@ -1,0 +1,25 @@
+.form-themed .state-error, .state-error
+
+    &.wrapperLabel input + .wrapperText
+        color: var(--state-error-text)
+
+    &+.tooltip
+
+        .tooltip-inner
+            color: white
+            background-color: var(--state-error-border)
+
+        &.top .tooltip-arrow
+            border-top-color: var(--state-error-border)
+        &.right .tooltip-arrow
+            border-right-color: var(--state-error-border)
+        &.bottom .tooltip-arrow
+            border-bottom-color: var(--state-error-border)
+        &.left .tooltip-arrow
+            border-left-color: var(--state-error-border)
+
+
+    &:not(.component-group)
+        &.form-control, .form-control
+            background-color: var(--state-error-border)
+            border-color: var(--state-error-border)

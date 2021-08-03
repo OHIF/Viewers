@@ -1,0 +1,49 @@
+---
+name: Layout Button
+menu: Components
+route: /components/layout-button
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { LayoutButton } from './../index.js'
+import './layoutButton.css'
+import NameSpace from '../../../__docs__/NameSpace'
+
+# Layout Button
+
+## Basic usage
+
+<Playground>
+    <State initial={{
+        selectedCell: {
+            className: 'hover',
+            col: 1,
+            row: 1
+        },
+    }}>
+        {({ state, setState }) => (
+            <React.Fragment>
+                {/* STATE */}
+                <div><pre>{JSON.stringify(state, null, 2) }</pre></div>
+
+                {/* COMPONENT */}
+                <div className="LayoutExample">
+                    <LayoutButton
+                        {...state}
+                        onChange={cell => setState({ selectedCell: cell })}
+                    />
+                </div>
+            </React.Fragment>
+        )}
+    </State>
+
+</Playground>
+
+## API
+
+<Props of={LayoutButton} />
+
+## Translation Namespace
+
+<NameSpace name="Buttons" />

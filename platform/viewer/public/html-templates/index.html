@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="OHIF Viewer">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="@ohif/viewer">
+  <meta name="msapplication-TileColor" content="#fff">
+  <meta name="msapplication-TileImage" content="<%= PUBLIC_URL %>assets/mstile-144x144.png">
+  <meta name="msapplication-config" content="<%= PUBLIC_URL %>assets/browserconfig.xml">
+  <link rel="manifest" href="<%= PUBLIC_URL %>manifest.json">
+
+  <link rel="shortcut icon" href="<%= PUBLIC_URL %>assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="<%= PUBLIC_URL %>assets/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="<%= PUBLIC_URL %>assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="57x57" href="<%= PUBLIC_URL %>assets/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="<%= PUBLIC_URL %>assets/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="<%= PUBLIC_URL %>assets/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="<%= PUBLIC_URL %>assets/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="<%= PUBLIC_URL %>assets/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="<%= PUBLIC_URL %>assets/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="<%= PUBLIC_URL %>assets/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="<%= PUBLIC_URL %>assets/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="<%= PUBLIC_URL %>assets/apple-touch-icon-167x167.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="<%= PUBLIC_URL %>assets/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="1024x1024" href="<%= PUBLIC_URL %>assets/apple-touch-icon-1024x1024.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-320x460.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-640x920.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-640x1096.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-750x1294.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 414px) and (device-height: 736px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 3)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-1182x2208.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 414px) and (device-height: 736px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-1242x2148.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-748x1024.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-768x1004.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-1496x2048.png">
+  <link rel="apple-touch-startup-image"
+    media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)"
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-1536x2008.png">
+  <link rel="icon" type="image/png" sizes="228x228" href="<%= PUBLIC_URL %>assets/coast-228x228.png">
+  <link rel="yandex-tableau-widget" href="<%= PUBLIC_URL %>assets/yandex-browser-manifest.json">
+
+  <!-- Built with: https://polyfill.io/v3/url-builder/ -->
+  <!-- Targets IE11 -->
+  <script
+    src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CObject.values%2CArray.prototype.flat%2CObject.entries%2CSymbol%2CArray.prototype.includes%2CString.prototype.repeat%2CArray.prototype.find"></script>
+  <script type="text/javascript">
+    window.PUBLIC_URL = '<%= PUBLIC_URL %>';
+  </script>
+  <script type="text/javascript" src="<%= PUBLIC_URL %>app-config.js"></script>
+  <script type="module" src="<%= PUBLIC_URL %>init-service-worker.js"></script>
+
+  <title>OHIF Viewer</title>
+
+  <!-- WEB FONTS -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700&display=swap" rel="stylesheet" />
+
+  <!-- EXTENSIONS -->
+  <!-- <script type="text/javascript" src="path/to/some-extension.js"></script>
+
+    <script>
+      // If configuration file is a JS Object:
+      window.config.extensions = [SomeExtension];
+
+      // If configuration file is a JS Function:
+      window.config = () => {
+        return {
+          extensions: [SomeExtension]
+        };
+      };
+    </script> -->
+</head>
+
+<body>
+  <noscript> You need to enable JavaScript to run this app. </noscript>
+
+  <div id="root"></div>
+</body>
+
+</html>

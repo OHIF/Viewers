@@ -1,0 +1,21 @@
+.DraggableItem.draggable
+  div
+    cursor: grab !important
+
+.DraggableItem.draggable.dragging
+  div
+    cursor: grabbing !important
+
+.DraggableArea
+  width: 100%
+  height: 100%
+  position: absolute
+  .Overlay
+    position: fixed
+    z-index: 999
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    overflow: auto
+    background: rgba(0,0,0,.1)

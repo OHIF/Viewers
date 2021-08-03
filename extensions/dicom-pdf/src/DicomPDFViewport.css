@@ -1,0 +1,62 @@
+.DicomPDFViewport {
+  --header-height: 50px;
+}
+
+.DicomPDFViewport #toolbar {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  padding: 0.5em;
+  border-bottom: var(--ui-border-thickness) solid var(--ui-border-color);
+  height: var(--header-height);
+}
+
+.DicomPDFViewport #canvas {
+  height: calc(100% - var(--header-height));
+  overflow-y: scroll;
+}
+
+.DicomPDFViewport #text-layer {
+  height: 100%;
+  margin-top: var(--header-height);
+}
+
+.DicomPDFViewport #pdf-canvas-container {
+  position: relative;
+}
+
+.DicomPDFViewport canvas, #text-layer {
+  display: block;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.DicomPDFViewport #toolbar button {
+  color: currentColor;
+  background-color: transparent;
+  font: inherit;
+  border: var(--ui-border-thickness) solid var(--ui-border-color);
+  border-radius: 3px;
+  padding: 0.25em 0.5em;
+  margin-right: 0.5em;
+  cursor: pointer;
+}
+
+.DicomPDFViewport #text-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1;
+}
+
+.DicomPDFViewport #text-layer>span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}

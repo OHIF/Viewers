@@ -1,0 +1,42 @@
+---
+name: Form / Dropdown Menu
+menu: Elements
+route: /elements/form-ddMenu
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { DropdownMenu } from './../index.js';
+
+# Select
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      title: 'Test Title',
+      align: 'left',
+      list: [
+        {
+          title: 'Edit',
+          icon: {
+            name: 'edit',
+          },
+        },
+        {
+          title: 'Retry',
+          icon: {
+            name: 'reset',
+          },
+        },
+      ],
+    }}
+  >
+    {({ state, setState }) => <DropdownMenu {...state} />}
+  </State>
+</Playground>
+
+## API
+
+<Props of={DropdownMenu} />

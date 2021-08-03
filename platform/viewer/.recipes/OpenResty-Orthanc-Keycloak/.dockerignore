@@ -1,0 +1,16 @@
+# Output
+dist/
+
+# Dependencies
+node_modules/
+
+# Root
+README.md
+Dockerfile
+
+# Misc. Config
+.git
+.DS_Store
+.gitignore
+.vscode
+.circleci

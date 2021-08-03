@@ -1,0 +1,76 @@
+version: '3.5'
+
+services:
+  ldap:
+    image: dcm4che/slapd-dcm4chee:2.4.44-15.0
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+    ports:
+      - '389:389'
+    env_file: ./docker-compose-dcm4che.env
+    volumes:
+      - ./dcm4che/etc/localtime:/etc/localtime:ro
+      - ./dcm4che/etc/timezone:/etc/timezone:ro
+      - ./dcm4che/dcm4che-arc/ldap:/var/lib/ldap
+      - ./dcm4che/dcm4che-arc/slapd.d:/etc/ldap/slapd.d
+    networks:
+      - dcm4che_default
+  db:
+    image: dcm4che/postgres-dcm4chee:11.1-15
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+    ports:
+      - '5432:5432'
+    env_file: ./docker-compose-dcm4che.env
+    volumes:
+      - ./dcm4che/etc/localtime:/etc/localtime:ro
+      - ./dcm4che/etc/timezone:/etc/timezone:ro
+      - ./dcm4che/dcm4che-arc/db:/var/lib/postgresql/data
+    networks:
+      - dcm4che_default
+  arc:
+    image: dcm4che/dcm4chee-arc-psql:5.15.0
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+      - '9990:9990'
+      - '11112:11112'
+      - '2575:2575'
+    env_file: ./docker-compose-dcm4che.env
+    environment:
+      WILDFLY_CHOWN: /opt/wildfly/standalone /storage
+      WILDFLY_WAIT_FOR: ldap:389 db:5432
+    depends_on:
+      - ldap
+      - db
+    volumes:
+      - ./dcm4che/etc/localtime:/etc/localtime:ro
+      - ./dcm4che/etc/timezone:/etc/timezone:ro
+      - ./dcm4che/dcm4che-arc/wildfly:/opt/wildfly/standalone
+      - ./dcm4che/dcm4che-arc/storage:/storage
+    networks:
+      - dcm4che_default
+  viewer:
+    container_name: ohif-viewer
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    # depends_on:
+    #   - orthanc
+    environment:
+      - NODE_ENV=production
+      - APP_CONFIG=config/local_dcm4chee
+    restart: always
+    networks:
+      - dcm4che_default
+    networks: dcm4che_default:

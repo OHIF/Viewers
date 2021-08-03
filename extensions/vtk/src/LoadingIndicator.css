@@ -1,0 +1,17 @@
+.imageViewerLoadingIndicator {
+  color: #91b9cd;
+}
+
+.loadingIndicator {
+  background-color: rgba(0, 0, 0, 0);
+  font-size: 8px;
+  height: 20%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+
+  /* Necessary for click-through to vtkjs element below */
+  pointer-events: none;
+}
