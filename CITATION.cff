@@ -23,6 +23,7 @@ authors:
 doi: 10.1200/CCI.19.00131
 date-released: 2020-04-23
 url: "https://github.com/OHIF/Viewers"
+license: MIT
 identifiers:
   - type: doi
     value: 10.1200/CCI.19.00131
