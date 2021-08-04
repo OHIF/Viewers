@@ -32,6 +32,7 @@ doi: 10.1200/CCI.19.00131
 date-released: 2020-04-23
 url: "https://github.com/OHIF/Viewers"
 license: MIT
+version: 1.0.0
 identifiers:
   - 
     type: doi
