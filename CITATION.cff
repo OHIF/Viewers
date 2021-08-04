@@ -1,32 +1,22 @@
-# YAML 1.2
----
-cff-version: "1.1.0"
+cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-  -
-    family-names: "Ziegler"
+  - family-names: "Ziegler"
     given-names: "Erik"
     orcid: "http://orcid.org/0000-0003-1857-8129"
-  - 
-    family-names: "Urban"
+  - family-names: "Urban"
     given-names: "Trinity"
-  - 
-    family-names: "Brown"
+  - family-names: "Brown"
     given-names: "Danny"
-  - 
-    family-names: "Petts"
+  - family-names: "Petts"
     given-names: "James"
-  - 
-    family-names: "Pieper"
+  - family-names: "Pieper"
     given-names: "Steve D"
-  - 
-    family-names: "Lewis"
+  - family-names: "Lewis"
     given-names: "Rob"
-  - 
-    family-names: "Hafey"
+  - family-names: "Hafey"
     given-names: "Chris"
-  - 
-    family-names: "Harris"
+  - family-names: "Harris"
     given-names: "Gordon J"
 doi: 10.1200/CCI.19.00131
 date-released: 2020-04-23
@@ -34,17 +24,12 @@ url: "https://github.com/OHIF/Viewers"
 license: MIT
 version: 1.0.0
 identifiers:
-  - 
-    type: doi
+  - type: doi
     value: 10.1200/CCI.19.00131
-  - 
-    type: other
+  - type: other
     value: urn:issn:2473-4276
-  - 
-    type: other
+  - type: other
     value: pmcid:7259879
-  - 
-    type: other
+  - type: other
     value: pmid:32324447
 title: "Open Health Imaging Foundation Viewer: An Extensible Open-Source Framework for Building Web-Based Imaging Applications to Support Cancer Research"
-...
