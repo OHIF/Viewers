@@ -20,5 +20,5 @@ authors:
   given-names: "Gordon J"
 title: "Open Health Imaging Foundation Viewer: An Extensible Open-Source Framework for Building Web-Based Imaging Applications to Support Cancer Research"
 doi: 10.1200/CCI.19.00131
-url: "https://github.com/OHIF/Viewers"
 version: 1.0.0
+url: "https://github.com/OHIF/Viewers"
