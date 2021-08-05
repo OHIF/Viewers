@@ -7,7 +7,7 @@ const ViewportLoadingIndicator = ({ error }) => {
     return (
       <>
         <div className="bg-black h-full w-full absolute opacity-50"></div>
-        <div className="text-primary-light text-xl font-thin">
+        <div className="text-primary-light text-xl font-light">
           <h4>Error Loading Image</h4>
           <p>An error has occurred.</p>
           <p>{error.message}</p>
@@ -20,9 +20,7 @@ const ViewportLoadingIndicator = ({ error }) => {
     <>
       <div className="bg-black h-full w-full absolute opacity-50"></div>
       <div className="absolute transparent w-full h-full flex items-center justify-center">
-        <p className="text-primary-light text-xl font-thin">
-          Loading...
-      </p>
+        <p className="text-primary-light text-xl font-light">Loading...</p>
       </div>
     </>
   );

@@ -2,8 +2,14 @@ module.exports = {
   prefix: '',
   important: false,
   separator: ':',
-  purge: false,
-  //purge: ['./docs/**/*.jsx', './docs/**/*.mdx'],
+  purge: {
+    content: [
+      './docs/**/*.jsx',
+      './docs/**/*.mdx',
+      './node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
+      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
+    ],
+  },
   theme: {
     screens: {
       sm: '640px',
@@ -749,7 +755,7 @@ module.exports = {
     ],
     borderRadius: ['responsive', 'focus', 'first', 'last'],
     borderStyle: ['responsive', 'focus'],
-    //borderWidth: ['responsive', 'focus', 'first', 'last'],
+    borderWidth: ['responsive', 'focus', 'first', 'last'],
     boxShadow: ['responsive', 'hover', 'focus'],
     boxSizing: ['responsive'],
     cursor: ['responsive'],

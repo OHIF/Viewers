@@ -10,9 +10,9 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
-import { utils } from '@ohif/core';
+import { utils, hotkeys } from '@ohif/core';
 
-const { sortBySeriesDate, hotkeys } = utils;
+const { sortBySeriesDate } = utils;
 
 import {
   Icon,

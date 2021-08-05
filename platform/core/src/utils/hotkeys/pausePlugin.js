@@ -5,7 +5,7 @@
  *
  * https://github.com/ccampbell/mousetrap/blob/master/plugins/pause/mousetrap-pause.js
  */
-export default function(Mousetrap) {
+export default function pausePlugin(Mousetrap) {
   var _originalStopCallback = Mousetrap.prototype.stopCallback;
 
   Mousetrap.prototype.stopCallback = function(e, element, combo) {

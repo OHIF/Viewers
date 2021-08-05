@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Input from '../Input';
@@ -18,14 +18,7 @@ import { getKeys, formatKeysForInput } from './utils';
 const HotkeyField = ({ disabled, keys, onChange, className, modifierKeys, hotkeys }) => {
   const inputValue = formatKeysForInput(keys);
 
-  useEffect(() => {
-    hotkeys.initialize();
-  }, [])
-
   const onInputKeyDown = event => {
-    event.stopPropagation();
-    event.preventDefault();
-
     hotkeys.record(sequence => {
       const keys = getKeys({ sequence, modifierKeys });
       hotkeys.unpause();

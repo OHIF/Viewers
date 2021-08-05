@@ -34,22 +34,8 @@ module.exports = (env, argv) => {
       filename: pkg.main,
     },
     externals: {
-      '@ohif/core': {
-        commonjs: '@ohif/core',
-        commonjs2: '@ohif/core',
-        amd: '@ohif/core',
-        root: '@ohif/core',
-      },
       react: 'React',
       'react-dom': 'ReactDOM',
-    },
-    module: {
-      rules: [
-        {
-          test: /\.css$/i,
-          use: ['style-loader', 'css-loader', 'postcss-loader'],
-        },
-      ],
     },
   });
 };

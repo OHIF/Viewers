@@ -7,11 +7,9 @@ const webpackBase = require('./../../../.webpack/webpack.base.js');
 // ~~ Plugins
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
-// ~~ Rules
-const extractStyleChunksRule = require('./rules/extractStyleChunks.js');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // ~~ Directories
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -38,9 +36,13 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-    },
-    module: {
-      rules: [...extractStyleChunksRule(isProdBuild)],
+      devtoolModuleFilenameTemplate: function(info) {
+        if (isProdBuild) {
+          return `webpack:///${info.resourcePath}`;
+        } else {
+          return 'file:///' + encodeURI(info.absoluteResourcePath);
+        }
+      },
     },
     resolve: {
       modules: [
@@ -80,12 +82,6 @@ module.exports = (env, argv) => {
             to: `${DIST_DIR}/app-config.js`,
           },
         ],
-      }),
-      // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
-      new ExtractCssChunksPlugin({
-        filename: isProdBuild ? '[name].[hash].css' : '[name].css',
-        chunkFilename: isProdBuild ? '[id].[hash].css' : '[id].css',
-        ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
       // Generate "index.html" w/ correct includes/imports
       new HtmlWebpackPlugin({
@@ -131,7 +127,14 @@ module.exports = (env, argv) => {
     mergedConfig.devServer.proxy[PROXY_TARGET] = PROXY_DOMAIN;
   }
 
-  if (!isProdBuild) {
+  if (isProdBuild) {
+    mergedConfig.plugins.push(
+      new MiniCssExtractPlugin({
+        filename: '[name].bundle.css',
+        chunkFilename: '[id].css',
+      })
+    );
+  } else {
     mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
   }
 
