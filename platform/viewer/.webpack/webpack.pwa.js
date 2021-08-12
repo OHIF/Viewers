@@ -112,6 +112,7 @@ module.exports = (env, argv) => {
       port: 3000,
       host: '0.0.0.0',
       public: 'http://localhost:' + 3000,
+      //writeToDisk: true,
       historyApiFallback: {
         disableDotRule: true,
       },

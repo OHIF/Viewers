@@ -54,9 +54,6 @@
     "@babel/runtime": "7.7.6",
     "core-js": "^3.2.1",
     "cornerstone-core": "2.3.0",
-    "shader-loader": "^1.3.1",
-    "webpack": "^5.43.0",
-    "worker-loader": "^3.0.8",
     "wslink": "^0.1.8"
   },
   "peerDependencies": {
@@ -115,9 +112,13 @@
     "terser-webpack-plugin": "^5.1.4",
     "unused-webpack-plugin": "2.4.0",
     "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^5.7.3",
-    "workbox-webpack-plugin": "^6.1.5"
+    "workbox-webpack-plugin": "^6.1.5",
+    "shader-loader": "^1.3.1",
+    "webpack": "^5.50.0",
+    "worker-loader": "^3.0.8"
   },
   "husky": {
     "hooks": {

@@ -21,7 +21,7 @@ function transpileJavaScript(mode) {
       : excludeNodeModulesExcept([]);
 
   return {
-    test: /\.jsx?$/,
+    test: /\.(mjs|js|jsx)?$/,
     // These are packages that are not transpiled to our lowest supported
     // JS version (currently ES5). Most of these leverage ES6+ features,
     // that we need to transpile to a different syntax.

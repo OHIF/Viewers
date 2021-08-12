@@ -13,7 +13,7 @@ const cssToJavaScript = require('./rules/cssToJavaScript.js');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -39,8 +39,16 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       app: `${SRC_DIR}/index.js`,
     },
     optimization: {
+      splitChunks: {
+        // include all types of chunks
+        chunks: 'all',
+      },
+      //runtimeChunk: 'single',
       minimize: isProdBuild,
       sideEffects: true,
+    },
+    output: {
+      clean: true,
     },
     context: SRC_DIR,
     stats: {
@@ -69,7 +77,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       ],
     },
     resolve: {
-      mainFields: ['browser', 'module', 'main'],
+      mainFields: ['module', 'browser', 'main'],
       alias: {
         // Viewer project
         '@': path.resolve(__dirname, '../platform/viewer/src'),
@@ -120,6 +128,15 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       }),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
+      new CopyPlugin({
+        patterns: [
+          {
+            from:
+              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
+          },
+        ],
+      }),
     ],
   };
 
@@ -130,13 +147,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         terserOptions: {},
       }),
     ];
-
-    /*config.plugins.push(
-      new MiniCssExtractPlugin({
-        filename: 'dist/[name].bundle.css',
-        chunkFilename: 'dist/[id].css',
-      })
-    );*/
   }
 
   if (isQuickBuild) {

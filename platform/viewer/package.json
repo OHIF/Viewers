@@ -48,8 +48,6 @@
     "cornerstone-core": "^2.3.0"
   },
   "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
     "@babel/runtime": "7.7.6",
     "@ohif/core": "^2.5.1",
     "@ohif/extension-cornerstone": "^2.4.0",
@@ -59,10 +57,10 @@
     "@ohif/ui": "^2.0.0",
     "@types/react": "^16.0.0",
     "classnames": "^2.2.6",
-    "core-js": "^3.2.1",
+    "core-js": "^3.16.1",
     "cornerstone-math": "^0.1.9",
     "cornerstone-tools": "5.1.2",
-    "cornerstone-wado-image-loader": "^3.1.2",
+    "cornerstone-wado-image-loader": "^4.0.0-rc1",
     "dcmjs": "0.16.1",
     "dicom-parser": "^1.8.3",
     "dotenv-webpack": "^1.7.0",
@@ -75,6 +73,8 @@
     "oidc-client": "1.11.5",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-dropzone": "^10.1.7",
     "react-i18next": "^10.11.0",
     "react-resize-detector": "^4.2.0",
@@ -82,16 +82,16 @@
     "react-router-dom": "next"
   },
   "devDependencies": {
-    "webpack": "^5.43.0",
-    "webpack-cli": "^4.7.2",
     "@percy/cypress": "^2.3.0",
     "cypress": "^6.4.0",
     "cypress-file-upload": "^3.5.3",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.15",
+    "tailwindcss": "2.2.4",
     "terser-webpack-plugin": "^5.1.1",
+    "webpack": "^5.50.0",
     "webpack-bundle-analyzer": "^4.4.2",
-    "webpack-merge": "^5.7.3",
-    "tailwindcss": "2.2.4"
+    "webpack-cli": "^4.7.2",
+    "webpack-merge": "^5.7.3"
   }
 }

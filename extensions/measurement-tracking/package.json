@@ -36,7 +36,7 @@
     "react": "^16.13.1",
     "react-cornerstone-viewport": "^4.0.5",
     "react-dom": "^16.13.1",
-    "webpack": "^5.43.0",
+    "webpack": "^5.50.0",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {

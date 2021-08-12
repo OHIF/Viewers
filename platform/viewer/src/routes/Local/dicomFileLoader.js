@@ -1,7 +1,6 @@
 import dcmjs from 'dcmjs';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js';
 import FileLoader from './fileLoader';
-
 
 const DICOMFileLoader = new (class extends FileLoader {
   fileType = 'application/dicom';
@@ -16,13 +15,13 @@ const DICOMFileLoader = new (class extends FileLoader {
       dicomData.dict
     );
 
-    dataset.url = imageId
+    dataset.url = imageId;
 
     dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(
       dicomData.meta
     );
 
-    return dataset
+    return dataset;
   }
 })();
 
