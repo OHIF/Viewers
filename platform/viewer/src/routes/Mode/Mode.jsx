@@ -186,7 +186,7 @@ export default function ModeRoute({
       localStorage.getItem('hotkey-definitions')
     );
 
-    if (userPreferredHotkeys.length) {
+    if (userPreferredHotkeys?.length) {
       hotkeysManager.setHotkeys(userPreferredHotkeys);
     } else {
       hotkeysManager.setHotkeys(hotkeys);
