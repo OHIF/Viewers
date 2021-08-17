@@ -181,7 +181,17 @@ export default function ModeRoute({
     }
 
     hotkeysManager.setDefaultHotKeys(hotkeys);
-    hotkeysManager.setHotkeys(hotkeys);
+
+    const userPreferredHotkeys = JSON.parse(
+      localStorage.getItem('hotkey-definitions')
+    );
+
+    debugger
+    if (userPreferredHotkeys.length) {
+      hotkeysManager.setHotkeys(userPreferredHotkeys);
+    } else {
+      hotkeysManager.setHotkeys(hotkeys);
+    }
 
     return () => {
       hotkeysManager.destroy();
