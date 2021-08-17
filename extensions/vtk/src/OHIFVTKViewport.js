@@ -72,7 +72,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => {},
+    onScroll: () => { },
   };
 
   static id = 'OHIFVTKViewport';
@@ -267,11 +267,13 @@ class OHIFVTKViewport extends Component {
     const spacing = vtkImageData.getSpacing();
     // Set the sample distance to half the mean length of one side. This is where the divide by 6 comes from.
     // https://github.com/Kitware/VTK/blob/6b559c65bb90614fb02eb6d1b9e3f0fca3fe4b0b/Rendering/VolumeOpenGL2/vtkSmartVolumeMapper.cxx#L344
-    const sampleDistance = (spacing[0] + spacing[1] + spacing[2]) / 6;
+    const sampleDistance =
+      (parseFloat(spacing[0]) + parseFloat(spacing[1]) + parseFloat(spacing[2])) /
+      6;
 
     volumeMapper.setSampleDistance(sampleDistance);
 
-    // Be generous to surpress warnings, as the logging really hurts performance.
+    // Be generous to suppress warnings, as the logging really hurts performance.
     // TODO: maybe we should auto adjust samples to 1000.
     volumeMapper.setMaximumSamplesPerRay(4000);
 
@@ -398,7 +400,7 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
