@@ -20,10 +20,10 @@ async function getStudiesForPatientByStudyInstanceUID(
     return dataSource.query.studies.search({
       patientId: getStudyResult[0].mrn,
     });
-  } else {
-    console.log('No mrn found for', getStudyResult);
-    return getStudyResult;
   }
+  console.log('No mrn found for', getStudyResult);
+  // The original study we KNOW belongs to the same set, so just return it
+  return getStudyResult;
 }
 
 export default getStudiesForPatientByStudyInstanceUID;

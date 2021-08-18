@@ -20,7 +20,7 @@ const makeDisplaySet = instances => {
     SeriesTime: instance.SeriesTime,
     SeriesInstanceUID: instance.SeriesInstanceUID,
     StudyInstanceUID: instance.StudyInstanceUID,
-    SeriesNumber: instance.SeriesNumber,
+    SeriesNumber: instance.SeriesNumber || 0,
     FrameRate: instance.FrameTime,
     SeriesDescription: instance.SeriesDescription || 'Unspecified',
     Modality: instance.Modality,
