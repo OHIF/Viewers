@@ -90,8 +90,8 @@ function DataSourceWrapper(props) {
         ) *
         (STUDIES_LIMIT - 1);
       const isLocationUpdated = data.location !== location;
-      const isDataInvalid = !isLoading &&
-        (!isSamePage || newOffset !== previousOffset || isLocationUpdated);
+      const isDataInvalid = !isSamePage || !isLoading &&
+        (newOffset !== previousOffset || isLocationUpdated);
 
       if (isDataInvalid) {
         getData();
