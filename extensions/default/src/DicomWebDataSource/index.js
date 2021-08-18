@@ -47,7 +47,6 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     supportsFuzzyMatching,
     supportsWildcard,
     supportsReject,
-    requestOptions,
     staticWado,
   } = dicomWebConfig;
 
@@ -66,7 +65,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   // TODO -> Two clients sucks, but its better than 1000.
   // TODO -> We'll need to merge auth later.
-  const qidoDicomWebClient = new StaticWadoClient(qidoConfig);
+  const qidoDicomWebClient = staticWado ? new StaticWadoClient(qidoConfig) : new api.DICOMwebClient(wadoConfig);
   const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
