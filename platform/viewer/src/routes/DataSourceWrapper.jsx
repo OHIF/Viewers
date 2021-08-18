@@ -93,7 +93,6 @@ function DataSourceWrapper(props) {
       const isDataInvalid = !isLoading &&
         (!isSamePage || newOffset !== previousOffset || isLocationUpdated);
 
-      console.log("Study query", isSamePage, newOffset, previousOffset, isLocationUpdated, isDataInvalid);
       if (isDataInvalid) {
         getData();
       }
