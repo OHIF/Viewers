@@ -20,6 +20,9 @@ async function getStudiesForPatientByStudyInstanceUID(
     return dataSource.query.studies.search({
       patientId: getStudyResult[0].mrn,
     });
+  } else {
+    console.log('No mrn found for', getStudyResult);
+    return getStudyResult;
   }
 }
 

@@ -23,6 +23,7 @@ package-lock.json
 yarn-error.log
 .DS_Store
 .env
+*.code-workspace
 
 # Common Example Data Directories
 sampledata/

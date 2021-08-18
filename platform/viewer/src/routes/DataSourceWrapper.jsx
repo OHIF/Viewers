@@ -49,6 +49,7 @@ function DataSourceWrapper(props) {
     total: 0,
     resultsPerPage: 25,
     pageNumber: 1,
+    location: 'PERFORM_INITIAL_QUERY',
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,6 +69,7 @@ function DataSourceWrapper(props) {
         total: studies.length,
         resultsPerPage: queryFilterValues.resultsPerPage,
         pageNumber: queryFilterValues.pageNumber,
+        location,
       });
 
       setIsLoading(false);
@@ -77,7 +79,7 @@ function DataSourceWrapper(props) {
       // Cache invalidation :thinking:
       // - Anytime change is not just next/previous page
       // - And we didn't cross a result offset range
-      const isFirstLoad = data.studies.length === 0 && !isLoading;
+      const isFirstLoad = data.total === -1 && !isLoading;
       const isSamePage = data.pageNumber === queryFilterValues.pageNumber;
       const previousOffset =
         Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) *
@@ -85,11 +87,12 @@ function DataSourceWrapper(props) {
       const newOffset =
         Math.floor(
           (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) /
-            STUDIES_LIMIT
+          STUDIES_LIMIT
         ) *
         (STUDIES_LIMIT - 1);
+      const isLocationUpdated = data.location !== location;
       const isDataInvalid =
-        isFirstLoad || !isSamePage || newOffset !== previousOffset;
+        isFirstLoad || !isSamePage || newOffset !== previousOffset || isLocationUpdated;
 
       if (isDataInvalid) {
         getData();

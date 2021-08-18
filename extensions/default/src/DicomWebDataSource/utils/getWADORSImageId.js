@@ -6,7 +6,7 @@ function buildInstanceWadoRsUri(instance, config) {
 function buildInstanceFrameWadoRsUri(instance, config, frame) {
   const baseWadoRsUri = buildInstanceWadoRsUri(instance, config);
 
-  frame = frame != null || 1;
+  frame = frame || 1;
 
   return `${baseWadoRsUri}/frames/${frame}`;
 }
