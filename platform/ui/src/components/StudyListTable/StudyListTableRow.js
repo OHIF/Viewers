@@ -50,13 +50,22 @@ const StudyListTableRow = props => {
                         }}
                         title={title}
                       >
-                        {index === 0 && (
-                          <Icon
-                            name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                            className="mr-4 inline-flex"
-                          />
-                        )}
-                        {content}
+                        <div className="flex">
+                          {index === 0 && (
+                            <div>
+                              <Icon
+                                name={isExpanded ? 'chevron-down' : 'chevron-right'}
+                                className="mr-4 inline-flex"
+                              />
+                            </div>
+                          )}
+                          <div className={classnames(
+                            { 'overflow-hidden': true },
+                            { 'truncate': true }
+                          )}>
+                            {content}
+                          </div>
+                        </div>
                       </td>
                     );
                   })}
