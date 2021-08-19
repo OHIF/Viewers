@@ -63,6 +63,7 @@ export class HotkeysManager {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       definitions.forEach(definition => this.registerHotkeys(definition));
+      localStorage.setItem('hotkey-definitions', JSON.stringify(definitions));
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
       UINotificationService.show({

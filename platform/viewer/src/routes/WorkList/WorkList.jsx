@@ -270,10 +270,10 @@ function WorkList({
         {
           key: 'studyDate',
           content: (
-            <div>
+            <>
               {studyDate && <span className="mr-4">{studyDate}</span>}
               {studyTime && <span>{studyTime}</span>}
-            </div>
+            </>
           ),
           title: `${studyDate || ''} ${studyTime || ''}`,
           gridCol: 5,
