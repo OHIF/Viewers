@@ -22,7 +22,7 @@ const makeDisplaySet = instances => {
     StudyInstanceUID: instance.StudyInstanceUID,
     SeriesNumber: instance.SeriesNumber || 0,
     FrameRate: instance.FrameTime,
-    SeriesDescription: instance.SeriesDescription || 'Unspecified',
+    SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
     numImageFrames: instances.length,
