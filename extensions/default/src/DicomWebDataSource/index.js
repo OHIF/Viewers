@@ -15,6 +15,7 @@ import {
   retrieveStudyMetadata,
   deleteStudyMetadataPromise,
 } from './retrieveStudyMetadata.js';
+import StaticWadoClient from './utils/StaticWadoClient.js';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -46,14 +47,14 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     supportsFuzzyMatching,
     supportsWildcard,
     supportsReject,
-    requestOptions,
+    staticWado,
   } = dicomWebConfig;
 
   const qidoConfig = {
     url: qidoRoot,
+    staticWado,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
-
   };
 
   const wadoConfig = {
@@ -64,7 +65,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   // TODO -> Two clients sucks, but its better than 1000.
   // TODO -> We'll need to merge auth later.
-  const qidoDicomWebClient = new api.DICOMwebClient(qidoConfig);
+  const qidoDicomWebClient = staticWado ? new StaticWadoClient(qidoConfig) : new api.DICOMwebClient(wadoConfig);
   const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
@@ -83,7 +84,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -108,7 +109,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;

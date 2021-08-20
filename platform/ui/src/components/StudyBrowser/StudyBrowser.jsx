@@ -105,7 +105,7 @@ const StudyBrowser = ({
           })}
         </ButtonGroup>
       </div>
-      <div className="flex flex-col flex-1 overflow-auto invisible-scrollbar">
+      <div className="flex flex-col flex-1 overflow-auto ohif-scrollbar">
         {getTabContent()}
       </div>
     </React.Fragment>
@@ -167,7 +167,7 @@ StudyBrowser.propTypes = {
   ),
 };
 
-const noop = () => {};
+const noop = () => { };
 
 StudyBrowser.defaultProps = {
   onClickTab: noop,
