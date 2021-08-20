@@ -55,8 +55,8 @@ function Local() {
     return acc.concat(mods)
   }, [])
 
-  const fistLocalDataSource = localDataSources[0]
-  const dataSource = fistLocalDataSource.createDataSource({})
+  const firstLocalDataSource = localDataSources[0]
+  const dataSource = firstLocalDataSource.createDataSource({})
 
   const onDrop = async (acceptedFiles) => {
     const studies = await filesToStudies(acceptedFiles, dataSource)

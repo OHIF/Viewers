@@ -257,7 +257,7 @@ function TrackedCornerstoneViewport(props) {
           isLocked: false,
           isRehydratable: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
-          currentSeries: SeriesNumber,
+          currentSeries: SeriesNumber,  // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
