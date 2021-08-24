@@ -99,7 +99,7 @@ export default function mode() {
     </tr>
     <tr>
       <td align="left">
-        <a href="./lifeCycle.md#onModeEnter">
+        <a href="./lifecycle#onModeEnter">
           onModeEnter
         </a>
       </td>
@@ -107,7 +107,7 @@ export default function mode() {
     </tr>
     <tr>
       <td align="left">
-        <a href="./lifeCycle.md#onModeExit">
+        <a href="./lifecycle#onModeExit">
           onModeExit
         </a>
       </td>
@@ -139,7 +139,7 @@ export default function mode() {
     </tr>
     <tr>
       <td align="left">
-        <a href="./index.md#consuming-extensions">
+        <a href="./index#consuming-extensions">
           extensions
         </a>
       </td>

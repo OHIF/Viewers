@@ -33,7 +33,6 @@
     "@docusaurus/remark-plugin-npm2yarn": "2.0.0-beta.3",
     "@docusaurus/theme-live-codeblock": "2.0.0-beta.3",
     "@mdx-js/react": "^1.6.21",
-    "@ohif/ui": "^2.0.0",
     "@svgr/webpack": "^5.5.0",
     "classnames": "^2.3.1",
     "clsx": "^1.1.1",
@@ -58,13 +57,7 @@
     ]
   },
   "devDependencies": {
-    "capitalize": "^2.0.3",
-    "docusaurus-plugin-react-docgen": "^0.0.2",
-    "lodash.get": "^4.4.2",
     "postcss-import": "^14.0.2",
-    "postcss-preset-env": "^6.7.0",
-    "react-docgen": "^5.4.0",
-    "react-tooltip": "^4.2.21",
-    "tailwindcss": "^2.2.4"
+    "postcss-preset-env": "^6.7.0"
   }
 }
