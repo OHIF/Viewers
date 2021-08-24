@@ -1,7 +1,3 @@
----
-sidebar_position: 7
----
-
 # Help
 
 We all need a little help sometimes. Don't let a few roadblocks stand in the way
@@ -28,12 +24,8 @@ persue paid support.
 ## Commercial Support
 
 The Open Health Imaging Foundation does not offer commercial support, however,
-some community members do offer consulting services:
-
-- Rob Lewis ([Radical Imaging](https://radicalimaging.com/))
-
-**Please file a Pull Request if you wish to add your name or organization to
-this list.**
+some community members do offer consulting services. You can search our
+[Community Forum](https://community.ohif.org/) for more information.
 
 <!--
   Links

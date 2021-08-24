@@ -2,12 +2,14 @@
 sidebar_position: 1
 sidebar_label: Introduction
 ---
+
 # Managers
 
 ## Overview
 
-
-`OHIF` uses `Managers` to accomplish various purposes such as registering new services, dependency injection, and aggregating and exposing `extension` features.
+`OHIF` uses `Managers` to accomplish various purposes such as registering new
+services, dependency injection, and aggregating and exposing `extension`
+features.
 
 `OHIF-v3` provides the following managers which we will discuss in depth.
 
@@ -21,7 +23,7 @@ sidebar_label: Introduction
     <tbody>
         <tr>
             <td>
-                <a href="./extension.md">
+                <a href="./extension">
                     Extension Manager
                 </a>
             </td>
@@ -31,7 +33,7 @@ sidebar_label: Introduction
         </tr>
         <tr>
             <td>
-                <a href="./service.md">
+                <a href="./service">
                     Services Manager
                 </a>
             </td>
@@ -41,7 +43,7 @@ sidebar_label: Introduction
         </tr>
         <tr>
             <td>
-                <a href="./commands.md">
+                <a href="./commands">
                     Commands Manager
                 </a>
             </td>
@@ -51,7 +53,7 @@ sidebar_label: Introduction
         </tr>
         <tr>
             <td>
-                <a href="./hotkeys.md">
+                <a href="./hotkeys">
                     Hotkeys Manager
                 </a>
             </td>
@@ -61,10 +63,6 @@ sidebar_label: Introduction
         </tr>
     </tbody>
 </table>
-
-
-
-
 
 <!--
   LINKS

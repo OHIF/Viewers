@@ -10,7 +10,9 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
 
-    cy.get('[data-cy="study-browser-thumbnail"]').eq(1).click();
+    cy.get('[data-cy="study-browser-thumbnail"]')
+      .eq(1)
+      .click();
 
     //const expectedText = 'Ser: 1';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
@@ -19,24 +21,15 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 
   it('checks if all primary buttons are being displayed', () => {
-    cy.get('@zoomBtn')
-      .should('be.visible');
-    cy.get('@wwwcBtnPrimary')
-      .should('be.visible');
-    cy.get('@wwwcBtnSecondary')
-      .should('be.visible');
-    cy.get('@panBtn')
-      .should('be.visible');
-    cy.get('@measurementToolsBtnPrimary')
-      .should('be.visible');
-    cy.get('@measurementToolsBtnSecondary')
-      .should('be.visible');
-    cy.get('@moreBtnPrimary')
-      .should('be.visible');
-    cy.get('@moreBtnSecondary')
-      .should('be.visible');
-    cy.get('@layoutBtn')
-      .should('be.visible');
+    cy.get('@zoomBtn').should('be.visible');
+    cy.get('@wwwcBtnPrimary').should('be.visible');
+    cy.get('@wwwcBtnSecondary').should('be.visible');
+    cy.get('@panBtn').should('be.visible');
+    cy.get('@measurementToolsBtnPrimary').should('be.visible');
+    cy.get('@measurementToolsBtnSecondary').should('be.visible');
+    cy.get('@moreBtnPrimary').should('be.visible');
+    cy.get('@moreBtnSecondary').should('be.visible');
+    cy.get('@layoutBtn').should('be.visible');
   });
 
   /*it('checks if Stack Scroll tool will navigate across all series in the viewport', () => {
@@ -113,8 +106,12 @@ describe('OHIF Cornerstone Toolbar', () => {
   it('checks if Length annotation can be added to viewport and shows up in the measurements panel', () => {
     //Click on button and verify if icon is active on toolbar
     cy.addLengthMeasurement();
-    cy.get('[data-cy="measurement-tracking-prompt-begin-tracking"]').should('exist')
-    cy.get('[data-cy="measurement-tracking-prompt-begin-tracking"]').should('be.visible')
+    cy.get('[data-cy="measurement-tracking-prompt-begin-tracking"]').should(
+      'exist'
+    );
+    cy.get('[data-cy="measurement-tracking-prompt-begin-tracking"]').should(
+      'be.visible'
+    );
     cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
 
     //Verify the measurement exists in the table
@@ -235,20 +232,18 @@ describe('OHIF Cornerstone Toolbar', () => {
       .should('be.visible');
 
     // Click on one of the secondary tools from the overlay
-    cy.get('[data-cy="Magnify"]').click()
+    cy.get('[data-cy="Magnify"]').click();
 
     // Check if More button is active and if it has same icon as the secondary tool selected
-    cy.get('@moreBtnPrimary')
-      .then($moreBtn => {
-        cy.wrap($moreBtn)
-          .should('have.class', 'active')
-          .should('have.attr', 'data-tool', 'Magnify')
-      });
+    cy.get('@moreBtnPrimary').then($moreBtn => {
+      cy.wrap($moreBtn)
+        .should('have.class', 'active')
+        .should('have.attr', 'data-tool', 'Magnify');
+    });
 
     // Verify if overlay is hidden
     cy.get('@toolbarOverlay').should('not.be.visible');
   });
-
 
   /*it('checks if Layout tool will multiply the number of viewports displayed', () => {
     //Click on Layout button and verify if overlay is displayed
@@ -370,9 +365,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('[data-cy="clear"]').click();
 
     //Verify if measurements were removed from the measurements panel
-
-    // TODO: We need a seperate test server for this to work.
-    // As anyone can save measurements on a different slice.
 
     //cy.get('.measurementItem'); //.should('not.exist');
 

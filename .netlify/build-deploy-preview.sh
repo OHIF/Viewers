@@ -17,20 +17,6 @@ mkdir -p ./.netlify/www/pwa
 mv platform/viewer/dist/* .netlify/www/pwa -v
 echo 'Web application built and copied'
 
-# Build && Move script output
-# yarn run build:package
-
-# Build && Move Docz Output (for the UI Component Library)
-# Using local yarn install to prevent Gatsby from needing to access
-# node_modules above the platform/ui folder
-cd platform/ui
-yarn install
-yarn run build
-cd ../..
-mkdir -p ./.netlify/www/ui
-mv platform/ui/.docz/dist/* .netlify/www/ui -v
-echo 'UI Component docs (docz) built and copied'
-
 # Build && Move Docusaurus Output (for the docs themselves)
 cd platform/docs
 yarn install

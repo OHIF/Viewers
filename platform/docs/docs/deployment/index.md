@@ -17,7 +17,7 @@ your Viewer will display).
 Our goal is to make deployment as simple and painless as possible; however,
 there is an inherent amount of complexity in configuring and deploying web
 applications. If you find yourself a little lost, please don't hesitate to
-[reach out for help](/help.md)
+[reach out for help](/help)
 
 ## Deployment Scenarios
 
@@ -53,7 +53,7 @@ HTML, CSS, JS, Font Files, and Images. We "build" those files from our
 files publicly accessible by hosting them on a Web Server.
 
 If you have not deployed a web application before, this may be a good time to
-[reach out for help](/help.md), as these steps assume prior web development and
+[reach out for help](/help), as these steps assume prior web development and
 deployment experience.
 
 ##### Part 1 - Build Production Assets
@@ -264,7 +264,7 @@ Coming soon
 <!--
 > Feeling lost? Securing your data is important, and it can be hard to tell if
 > you've gotten it right. Don't hesitate to work with professional auditors, or
-> [enlist help from experts](./../help.md).
+> [enlist help from experts](../help).
 
 The OHIF Viewer can be configured to work with authorization servers that
 support one or more of the OpenID-Connect authorization flows. The Viewer finds

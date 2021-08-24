@@ -40,13 +40,8 @@ proposed collaboration has an impact on cancer research.
 ### Does OHIF offer commercial support?
 
 The Open Health Imaging Foundation does not offer commercial support, however,
-some community members do offer consulting services. The following contacts may
-be useful:
-
-- Rob Lewis ([Radical Imaging](https://radicalimaging.com/))
-
-**Please file a Pull Request if you wish to add your name or organization to
-this list.**
+some community members do offer consulting services. You can search our
+[Community Forum](https://community.ohif.org/) for more information.
 
 ### Does The OHIF Viewer have [510(k) Clearance][501k-clearance] from the U.S. F.D.A or [CE Marking][ce-marking] from the European Commission?
 

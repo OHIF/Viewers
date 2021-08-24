@@ -82,7 +82,7 @@ We offer support through
 - [Request a Feature 🚀](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Request+%3Ahand%3A&template=---feature-request.md)
 - [Ask a Question 🤗](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Question+%3Aquestion%3A&template=---support-question.md)
 
-For commercial support, academic collaberations, and answers to common
+For commercial support, academic collaborations, and answers to common
 questions; please read our
 [documented FAQ](https://docs.ohif.org/faq/index.html#does-ohif-offer-commercial-support).
 
@@ -173,7 +173,7 @@ also supports a number of commands that can be found in their respective
 | `dev:project <package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
 | `test:unit`                  | Jest multi-project test runner; overall coverage              |
 | **Deploy**                   |                                                               |
-| `build`\*                    | Builds production output for our PWA Viewer                   |                      |
+| `build`\*                    | Builds production output for our PWA Viewer                   |  |
 
 \* - For more information on our different builds, check out our [Deploy
 Docs][deployment-docs]
@@ -189,14 +189,14 @@ you'll see the following:
 .
 ├── extensions               #
 │   ├── _example             # Skeleton of example extension
-│   ├── default              #  
+│   ├── default              #
 │   ├── cornerstone          # 2D images w/ Cornerstone.js
-│   ├── dicom-sr             # 
-│   └── measurement-tracking # 
+│   ├── dicom-sr             #
+│   └── measurement-tracking #
 │
 ├── modes                    #
 │   ├── _example             # Skeleton of example mode
-│   └── longitudinal         #  
+│   └── longitudinal         #
 │
 ├── platform                 #
 │   ├── core                 # Business Logic
@@ -230,13 +230,27 @@ This is a list of Extensions maintained by the OHIF Core team. It's possible to
 customize and configure these extensions, and you can even create your own. You
 can [read more about extensions here][ohif-extensions].
 
-| Name                                                           | Description                                             | Links                  |
-| -------------------------------------------------------------- | ------------------------------------------------------- | ---------------------- |
-| [@ohif/extension-cornerstone][extension-cornerstone]            | 2D image viewing, annotation, and segementation tools   | [NPM][cornerstone-npm] |
+| Name                                                 | Description                                           | Links                  |
+| ---------------------------------------------------- | ----------------------------------------------------- | ---------------------- |
+| [@ohif/extension-cornerstone][extension-cornerstone] | 2D image viewing, annotation, and segementation tools | [NPM][cornerstone-npm] |
 
 ## Acknowledgments
 
 To acknowledge the OHIF Viewer in an academic publication, please cite
+
+> _Open Health Imaging Foundation Viewer: An Extensible Open-Source Framework
+> for Building Web-Based Imaging Applications to Support Cancer Research_
+>
+> Erik Ziegler, Trinity Urban, Danny Brown, James Petts, Steve D. Pieper, Rob
+> Lewis, Chris Hafey, and Gordon J. Harris
+>
+> _JCO Clinical Cancer Informatics_, no. 4 (2020), 336-345, DOI:
+> [10.1200/CCI.19.00131](https://www.doi.org/10.1200/CCI.19.00131)
+>
+> Open-Access on Pubmed Central:
+> https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7259879/
+
+or, for v1, please cite:
 
 > _LesionTracker: Extensible Open-Source Zero-Footprint Web Viewer for Cancer
 > Imaging Research and Clinical Trials_
