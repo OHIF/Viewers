@@ -11,8 +11,8 @@ Select a measurement tool and mark an image to initiate measurement tracking. A 
 
 ![user-measurement-panel-modal](../../assets/img/user-measurement-panel-modal.png)
 
-If you select `Yes`, the series becomes a `tracked series`, and the current drawn measurement and next measurements will get shown up on the measurement panel on the right.
 
+If you select `Yes`, the series becomes a `tracked series`, and the current drawn measurement and next measurements are shown on the measurement panel on the right.
 
 ![user-measurement-panel-tracked](../../assets/img/user-measurement-panel-tracked.png)
 

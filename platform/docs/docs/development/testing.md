@@ -67,7 +67,7 @@ For running the OHIF e2e test you need to run the following steps:
 
   ![e2e-cypress-final](../assets/img/e2e-cypress-final.png)
 
-## Testing Philosiphy
+## Testing Philosophy
 
 > Testing is an opinionated topic. Here is a rough overview of our testing
 > philosophy. See something you want to discuss or think should be changed? Open
@@ -87,7 +87,7 @@ Gaining the confidence we need to answer these questions after every change is
 costly. Good tests allow us to answer them without manual regression testing.
 What and how we choose to test to increase that confidence is nuanced.
 
-## Kinds of Tests
+## Further Reading: Kinds of Tests
 
 Test's buy us confidence, but not all tests are created equal. Each kind of test
 has a different cost to write and maintain. An expensive test is worth it if it
@@ -149,9 +149,6 @@ We write integration tests to gain confidence that several units work together.
 Generally, we want to mock as little as possible for these tests. In practice,
 this means only mocking network requests.
 
-#### When to use
-
-...
 
 ### End-to-End Tests
 
@@ -164,13 +161,6 @@ do we write them? Because they also buy us the most confidence.
 Mission critical features and functionality, or to cover a large breadth of
 functionality until unit tests catch up. Unsure if we should have a test for
 feature `X` or scenario `Y`? Open an issue and let's discuss.
-
-## Summary
-
-- Does your test increase confidence?
-- Does the test type chosen balance the cost-to-confidence ratio?
-
-## Further Reading
 
 ### General
 
@@ -187,9 +177,7 @@ feature `X` or scenario `Y`? Open an issue and let's discuss.
 - [Best Practices](https://docs.cypress.io/guides/references/best-practices.html)
 - [Example Recipes](https://docs.cypress.io/examples/examples/recipes.html)
 
-## Testing Dorito
 
-[![testing dorito][testing-dorito-img]][testing-dorito]
 
 <!--
   Links

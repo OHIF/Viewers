@@ -52,7 +52,7 @@ Click on the Camera icon to download a high quality image capture using common i
 
 In the opened modal, the filename, image's width and height, and filetype and can be configured before downloading the image to your local computer.
 
-![user-toolbar-download](../../assets/img/user-toolbar-download.png)
+![user-toolbarDownload](../../assets/img/user-toolbarDownload.png)
 
 
 
