@@ -5,7 +5,6 @@ window.config = {
   showStudyList: true,
   filterQueryParam: false,
   disableServersCache: false,
-  displaySeriesProgress: false,
   stackPrefetch: {
     enabled: true,
     maxImagesToPrefetch: Infinity,
@@ -13,8 +12,8 @@ window.config = {
     maxSimultaneousRequests: 20,
   },
   studyPrefetcher: {
-    enabled: false,
-    order: 'closest',
+    enabled: true,
+    order: 'all',
     displaySetCount: 1,
     requestType: 'prefetch',
     preventCache: false,

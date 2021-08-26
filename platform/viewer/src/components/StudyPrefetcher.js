@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { classes } from '@ohif/core';
+import { classes, utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import cs from 'cornerstone-core';
 import { useSelector } from 'react-redux';
 
 import './StudyPrefetcher.css';
-import studyMetadataManager from '../../../core/src/utils/studyMetadataManager';
+const { studyMetadataManager } = utils;
 
 let cachedMap = new Map();
 
@@ -38,22 +38,32 @@ const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
 
     const { StudyInstanceUID } = viewportData;
     const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
-    if (studyMetadata && studyMetadata.displaySets.length > 0) {
-      const imageIds = studyMetadata.displaySets.reduce(
-        (ids, ds) => ids.concat(ds.images.map(i => i.getImageId())),
-        []
-      );
-      const cachedImages = cs.imageCache.cachedImages.map(i => i.imageId);
-      const newMap = new Map(cachedMap);
-      imageIds.forEach(imageId => {
-        if (newMap.get(imageId) !== true) {
-          newMap.set(imageId, false);
-        }
-      });
-      cachedImages.forEach(imageId => newMap.set(imageId, true));
-      setCacheMap(newMap);
-      cachedMap = newMap;
+
+    if (
+      !studyMetadata ||
+      !studyMetadata.displaySets ||
+      !studyMetadata.displaySets.length > 0
+    ) {
+      return;
     }
+
+    const imageIds = studyMetadata.displaySets.reduce((ids, ds) => {
+      return ids.concat(
+        ds.images && ds.images.length > 0
+          ? ds.images.map(i => i.getImageId())
+          : []
+      );
+    }, []);
+    const cachedImages = cs.imageCache.cachedImages.map(i => i.imageId);
+    const newMap = new Map(cachedMap);
+    imageIds.forEach(imageId => {
+      if (newMap.get(imageId) !== true) {
+        newMap.set(imageId, false);
+      }
+    });
+    cachedImages.forEach(imageId => newMap.set(imageId, true));
+    setCacheMap(newMap);
+    cachedMap = newMap;
 
     const onImageRendered = ({ detail }) => {
       console.debug('Prefetching...');

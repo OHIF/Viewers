@@ -342,12 +342,7 @@ class Viewer extends Component {
           />
         </ErrorBoundaryDialog>
         <AppContext.Consumer>
-          {appContext => (
-            <StudyLoadingMonitor
-              studies={this.props.studies}
-              enabled={appContext.displaySeriesProgress}
-            />
-          )}
+          {appContext => <StudyLoadingMonitor studies={this.props.studies} />}
         </AppContext.Consumer>
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">

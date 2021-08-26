@@ -1,0 +1,64 @@
+# Viewer: Study Prefetcher & Stack Prefetch
+
+Prefetching the stack of images of the active viewport is enabled by default for
+cornerstone viewports via cornerstone tools's stack prefetch functionality.
+
+_Note: The stack prefetch and the study prefetch provides similar functionality
+with different level of configuration, use one or the other._
+
+You can customize these options via the viewer's configuration:
+
+```js
+window.config = {
+  /**
+   * Cornerstone Tools's stack prefetch configuration.
+   *
+   * @param {boolean} enabled Whether to enable/disable Cornerstone Tools stack prefetch
+   * @param {boolean} maxImagesToPrefetch Max number of images to prefetch
+   * @param {boolean} preserveExistingPool Wether to persist the image pool (cache)
+   * @param {boolean} maxSimultaneousRequests Max simultaneous requests triggered while prefetching
+   */
+  stackPrefetch: {
+    enabled: true,
+    maxImagesToPrefetch: Infinity,
+    preserveExistingPool: false,
+    maxSimultaneousRequests: 20,
+  },
+};
+```
+
+In order to have a more customizable alternative for prefetching, OHIF provides
+a built-in study prefetcher functionality which allows the user to set the order
+in which the display sets are prefetched, the granularity, the timeout and
+wether or not display a progress bar in the display set (close to the thumbnail
+image) in the study browser.
+
+_Note: The stack prefetch and the study prefetch provides similar functionality
+with different level of configuration, use one or the other._
+
+You can customize these options via the viewer's configuration:
+
+```js
+window.config = {
+  /**
+   * OHIF's study prefetcher configuration.
+   *
+   * @param {boolean} enabled Whether to enable/disable OHIF's study prefetcher
+   * @param {('all'|'closest'|'downward'|'topdown')} order Fetching order: all display sets, the closest ones, downward or top down fashion based on the currently selected display set
+   * @param {boolean} displaySetCount How much display sets should be prefetched at once
+   * @param {boolean} preventCache Prevent images to be cached in Cornerstone Tools's request pool manager
+   * @param {boolean} prefetchDisplaySetsTimeout Prefetch timeout
+   * @param {boolean} displayProgress Whether to display or not the progress bar in the display set
+   * @param {boolean} includeActiveDisplaySet Include or not the active display set while prefetching
+   */
+  studyPrefetcher: {
+    enabled: true,
+    order: 'all',
+    displaySetCount: 1,
+    preventCache: false,
+    prefetchDisplaySetsTimeout: 300,
+    displayProgress: false,
+    includeActiveDisplaySet: false,
+  },
+};
+```
