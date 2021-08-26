@@ -134,7 +134,7 @@ export class StudyPrefetcher {
         imageId,
         this.options.requestType,
         this.options.preventCache,
-        () => this.options.onImageCached(imageId, imageIds),
+        () => {},
         noop
       );
     });

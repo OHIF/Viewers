@@ -3,38 +3,11 @@
 Prefetching the stack of images of the active viewport is enabled by default for
 cornerstone viewports via cornerstone tools's stack prefetch functionality.
 
-_Note: The stack prefetch and the study prefetch provides similar functionality
-with different level of configuration, use one or the other._
-
-You can customize these options via the viewer's configuration:
-
-```js
-window.config = {
-  /**
-   * Cornerstone Tools's stack prefetch configuration.
-   *
-   * @param {boolean} enabled Whether to enable/disable Cornerstone Tools stack prefetch
-   * @param {boolean} maxImagesToPrefetch Max number of images to prefetch
-   * @param {boolean} preserveExistingPool Wether to persist the image pool (cache)
-   * @param {boolean} maxSimultaneousRequests Max simultaneous requests triggered while prefetching
-   */
-  stackPrefetch: {
-    enabled: true,
-    maxImagesToPrefetch: Infinity,
-    preserveExistingPool: false,
-    maxSimultaneousRequests: 20,
-  },
-};
-```
-
 In order to have a more customizable alternative for prefetching, OHIF provides
 a built-in study prefetcher functionality which allows the user to set the order
 in which the display sets are prefetched, the granularity, the timeout and
 wether or not display a progress bar in the display set (close to the thumbnail
 image) in the study browser.
-
-_Note: The stack prefetch and the study prefetch provides similar functionality
-with different level of configuration, use one or the other._
 
 You can customize these options via the viewer's configuration:
 

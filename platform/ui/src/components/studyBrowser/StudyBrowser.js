@@ -9,6 +9,7 @@ function StudyBrowser(props) {
     onThumbnailClick,
     onThumbnailDoubleClick,
     supportsDrag,
+    showThumbnailProgressBar,
   } = props;
 
   return (
@@ -59,6 +60,7 @@ function StudyBrowser(props) {
                       displaySetInstanceUID
                     )}
                     onDoubleClick={onThumbnailDoubleClick}
+                    showProgressBar={showThumbnailProgressBar}
                   />
                 </div>
               );
@@ -93,6 +95,7 @@ StudyBrowser.propTypes = {
   supportsDrag: PropTypes.bool,
   onThumbnailClick: PropTypes.func,
   onThumbnailDoubleClick: PropTypes.func,
+  showThumbnailProgressBar: PropTypes.bool,
 };
 
 StudyBrowser.defaultProps = {
@@ -100,6 +103,7 @@ StudyBrowser.defaultProps = {
   supportsDrag: true,
   onThumbnailClick: noop,
   onThumbnailDoubleClick: noop,
+  showThumbnailProgressBar: true,
 };
 
 export { StudyBrowser };

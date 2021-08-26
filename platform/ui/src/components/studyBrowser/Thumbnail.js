@@ -139,6 +139,7 @@ function Thumbnail(props) {
     onDoubleClick,
     onMouseDown,
     supportsDrag,
+    showProgressBar,
   } = props;
 
   const [stackPercentComplete, setStackPercentComplete] = useState(0);
@@ -196,6 +197,7 @@ function Thumbnail(props) {
           imageId={imageId}
           error={error}
           stackPercentComplete={stackPercentComplete}
+          showProgressBar={showProgressBar}
         />
       )}
       {/* SHOW TEXT ALTERNATIVE */}
@@ -235,6 +237,7 @@ Thumbnail.propTypes = {
   onDoubleClick: PropTypes.func,
   onClick: PropTypes.func,
   onMouseDown: PropTypes.func,
+  showProgressBar: PropTypes.bool,
 };
 
 Thumbnail.defaultProps = {

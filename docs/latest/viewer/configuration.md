@@ -75,20 +75,6 @@ window.config = {
    */
   disableServersCache: false,
   /**
-   * Cornerstone Tools stack prefetch configuration.
-   *
-   * @param {boolean} enabled Whether to enable/disable Cornerstone Tools stack prefetch
-   * @param {boolean} maxImagesToPrefetch Max number of images to prefetch
-   * @param {boolean} preserveExistingPool Wether to persist the image pool (cache)
-   * @param {boolean} maxSimultaneousRequests Max simultaneous requests triggered while prefetching
-   */
-  stackPrefetch: {
-    enabled: true,
-    maxImagesToPrefetch: Infinity,
-    preserveExistingPool: false,
-    maxSimultaneousRequests: 20,
-  },
-  /**
    * OHIF's study prefetcher configuration.
    *
    * @param {boolean} enabled Whether to enable/disable OHIF's study prefetcher

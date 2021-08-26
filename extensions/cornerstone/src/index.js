@@ -48,10 +48,20 @@ export default {
         jumpData.refreshViewports = false;
         commandsManager.runCommand('jumpToImage', jumpData);
       };
+
+      const stackPrefetchConfig = appConfig.studyPrefetcher
+        ? {
+            enabled: true,
+            maxImagesToPrefetch: Infinity,
+            preserveExistingPool: false,
+            maxSimultaneousRequests: 20,
+          }
+        : null;
+
       return (
         <OHIFCornerstoneViewport
           {...props}
-          stackPrefetch={appConfig.stackPrefetch}
+          stackPrefetch={stackPrefetchConfig}
           onNewImage={onNewImageHandler}
         />
       );

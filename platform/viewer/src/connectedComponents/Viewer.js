@@ -356,10 +356,18 @@ class Viewer extends Component {
                   activeIndex={this.props.activeViewportIndex}
                 />
               ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
+                <AppContext.Consumer>
+                  {appContext => (
+                    <ConnectedStudyBrowser
+                      studies={this.state.thumbnails}
+                      studyMetadata={this.props.studies}
+                      showThumbnailProgressBar={
+                        appContext.appConfig.studyPrefetcher &&
+                        appContext.appConfig.studyPrefetcher.displayProgress
+                      }
+                    />
+                  )}
+                </AppContext.Consumer>
               )}
             </SidePanel>
           </ErrorBoundaryDialog>

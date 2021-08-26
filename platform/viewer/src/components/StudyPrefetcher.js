@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { classes, utils } from '@ohif/core';
+import React, { useEffect } from 'react';
+import { classes } from '@ohif/core';
 import PropTypes from 'prop-types';
 import cs from 'cornerstone-core';
 import { useSelector } from 'react-redux';
 
 import './StudyPrefetcher.css';
-const { studyMetadataManager } = utils;
-
-let cachedMap = new Map();
 
 const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
-  const [cacheMap, setCacheMap] = useState(cachedMap);
-
   const viewportData = useSelector(state => {
     const { viewports = {} } = state;
     const { activeViewportIndex, viewportSpecificData = {} } = viewports;
@@ -19,51 +14,10 @@ const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
     return viewportData;
   });
 
-  const onImageCached = imageId => {
-    setCacheMap(map => {
-      const newMap = new Map(map);
-      newMap.set(imageId, true);
-      cachedMap = newMap;
-      return newMap;
-    });
-  };
-
-  const studyPrefetcher = classes.StudyPrefetcher.getInstance(studies, {
-    ...options,
-    onImageCached,
-  });
+  const studyPrefetcher = classes.StudyPrefetcher.getInstance(studies, options);
 
   useEffect(() => {
     studyPrefetcher.setStudies(studies);
-
-    const { StudyInstanceUID } = viewportData;
-    const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
-
-    if (
-      !studyMetadata ||
-      !studyMetadata.displaySets ||
-      !studyMetadata.displaySets.length > 0
-    ) {
-      return;
-    }
-
-    const imageIds = studyMetadata.displaySets.reduce((ids, ds) => {
-      return ids.concat(
-        ds.images && ds.images.length > 0
-          ? ds.images.map(i => i.getImageId())
-          : []
-      );
-    }, []);
-    const cachedImages = cs.imageCache.cachedImages.map(i => i.imageId);
-    const newMap = new Map(cachedMap);
-    imageIds.forEach(imageId => {
-      if (newMap.get(imageId) !== true) {
-        newMap.set(imageId, false);
-      }
-    });
-    cachedImages.forEach(imageId => newMap.set(imageId, true));
-    setCacheMap(newMap);
-    cachedMap = newMap;
 
     const onImageRendered = ({ detail }) => {
       console.debug('Prefetching...');
@@ -97,24 +51,7 @@ const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
       );
       studyPrefetcher.destroy();
     };
-  }, [studies, viewportIndex, studyPrefetcher, viewportData]);
-
-  if (options.displayProgress) {
-    const items = Array.from(cacheMap.values());
-    const progress = items.map((isImageCached, index) => {
-      const barWidth = document.querySelector('.StudyPrefetcher').offsetWidth;
-      const width = index * (barWidth / items.length);
-      return (
-        <div
-          key={`progress-item-${index}`}
-          className={isImageCached ? 'item cached' : 'item'}
-          style={{ width: `${width}px` }}
-        ></div>
-      );
-    });
-
-    return <div className="StudyPrefetcher">{progress}</div>;
-  }
+  }, [studies, viewportIndex, studyPrefetcher]);
 
   return null;
 };
@@ -126,10 +63,8 @@ StudyPrefetcher.propTypes = {
     enabled: PropTypes.bool,
     order: PropTypes.string,
     displaySetCount: PropTypes.number,
-    requestType: PropTypes.string,
     preventCache: PropTypes.bool,
     prefetchDisplaySetsTimeout: PropTypes.number,
-    displayProgress: PropTypes.bool,
     includeActiveDisplaySet: PropTypes.bool,
   }),
 };
@@ -138,10 +73,8 @@ StudyPrefetcher.defaultProps = {
   options: {
     order: 'closest',
     displaySetCount: 1,
-    requestType: 'prefetch',
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
-    displayProgress: false,
     includeActiveDisplaySet: false,
   },
 };
