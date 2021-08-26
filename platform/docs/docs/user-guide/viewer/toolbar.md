@@ -66,10 +66,10 @@ Please see the `Viewport` section for details.
 - Flip Horizontally: Flips the image 180 degrees horizontally
 - Stack Scroll: Links all viewports containing images to scroll together
 - Magnify: Click on an image to magnify a particular area of interest
-- Invert: Inverts the colorscale
+- Invert: Inverts the color scale
 - Cine: Toggles the Cine player control in the currently selected viewport. Click the `x` on the Cine player or click the tool again to toggle off.
 - Angle: Measures an adjustable angle on an image
-<!-- - Probe: Should probe be enabled in basic viewer? Doesn't look like it works currently -->
+- Probe: Drag the probe to see pixel values
 - Rectangle: Measures a rectangular area in mm^2 and HU
 
 When a tool is selected from the `More Tools` menu, it becomes the active tool until it is replaced by clicking on a different tool in the More Tools menu or main toolbar.
