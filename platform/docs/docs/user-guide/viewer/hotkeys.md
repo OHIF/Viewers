@@ -7,7 +7,6 @@ sidebar_position: 7
 To open the hotkey assignment panel, you can click on the Preferences gear on the
 top right side of the viewer.
 
-![user-hotkeys](../../assets/img/user-hotkeys.png)
 
 Below, you can see the default hotkeys key bindings:
 

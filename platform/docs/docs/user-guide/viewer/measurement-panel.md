@@ -9,29 +9,28 @@ In `Basic Viewer` mode, the right panel is the `Measurement Panel`. The Measurem
 <!-- We might want to make an entire section about the tracking workflow including SR hydration because it's pretty complicated. Let's review after the deploy branch is ready. Logic is in OHIF-63 OHIF-339 tickets for reference -->
 Select a measurement tool and mark an image to initiate measurement tracking. A pop up will ask if you want to track measurements for the series on which the annotation was drawn.
 
-![user-measurement-panel-modal](../../assets/img/user-measurement-panel-modal.png)
+![user-measurement-panel-modal](../../assets/img/measurement-panel-prompt.png)
+
+
+
 
 
 If you select `Yes`, the series becomes a `tracked series`, and the current drawn measurement and next measurements are shown on the measurement panel on the right.
 
-![user-measurement-panel-tracked](../../assets/img/user-measurement-panel-tracked.png)
+![user-measurement-panel-tracked](../../assets/img/measurement-panel-tracked.png)
 
 If you select `No`, the measurement becomes temporary. The next annotation made will repeat the measurement tracking prompt.
 
 If you select `No, do not ask again`, all annotations made on the study will be temporary.
 <!-- Temporary measurement screenshot -->
+![measurement-temporary](../../assets/img/measurement-temporary.png)
+
 
 ## Labeling Measurements
 You can edit the measurement name by hovering over the measurement and selecting the edit icon. You can also label or relabel a measurement by right-clicking on it in the viewport.
-<!-- I would make this first screenshot smaller. Remove the other 2 screenshots as they are pretty self explanatory. Add another screenshot that shows the right-click menu option to lable/relabel measurement and justify the two screenshots in line together -->
 
-![user-measurement-edit](../../assets/img/user-measurement-edit.png)
+![user-measurement-edit](../../assets/img/measurement-panel-1.png)
 
-![user-measurement-edit-name](../../assets/img/user-measurement-edit-name.png)
-
-Result:
-
-![user-measurement-name](../../assets/img/user-measurement-name.png)
 
 
 ## Deleting a Measurement
