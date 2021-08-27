@@ -6,7 +6,7 @@ cornerstone viewports via cornerstone tools's stack prefetch functionality.
 In order to have a more customizable alternative for prefetching, OHIF provides
 a built-in study prefetcher functionality which allows the user to set the order
 in which the display sets are prefetched, the granularity, the timeout and
-wether or not display a progress bar in the display set (close to the thumbnail
+whether or not display a progress bar in the display set (close to the thumbnail
 image) in the study browser.
 
 You can customize these options via the viewer's configuration:

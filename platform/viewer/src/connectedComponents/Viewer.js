@@ -363,6 +363,7 @@ class Viewer extends Component {
                       studyMetadata={this.props.studies}
                       showThumbnailProgressBar={
                         appContext.appConfig.studyPrefetcher &&
+                        appContext.appConfig.studyPrefetcher.enabled &&
                         appContext.appConfig.studyPrefetcher.displayProgress
                       }
                     />
@@ -377,6 +378,7 @@ class Viewer extends Component {
             <ErrorBoundaryDialog context="ViewerMain">
               <AppContext.Consumer>
                 {appContext =>
+                  appContext.appConfig.studyPrefetcher &&
                   appContext.appConfig.studyPrefetcher.enabled && (
                     <StudyPrefetcher
                       viewportIndex={this.props.activeViewportIndex}

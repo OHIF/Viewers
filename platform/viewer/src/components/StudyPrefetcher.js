@@ -2,18 +2,10 @@ import React, { useEffect } from 'react';
 import { classes } from '@ohif/core';
 import PropTypes from 'prop-types';
 import cs from 'cornerstone-core';
-import { useSelector } from 'react-redux';
 
 import './StudyPrefetcher.css';
 
 const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
-  const viewportData = useSelector(state => {
-    const { viewports = {} } = state;
-    const { activeViewportIndex, viewportSpecificData = {} } = viewports;
-    const viewportData = viewportSpecificData[activeViewportIndex] || {};
-    return viewportData;
-  });
-
   const studyPrefetcher = classes.StudyPrefetcher.getInstance(studies, options);
 
   useEffect(() => {

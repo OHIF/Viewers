@@ -289,10 +289,9 @@ export class StudyPrefetcher {
     const length = displaySets.length;
     const selectedDisplaySets = [];
 
-    for (let i = 0; i < length && displaySetCount; i++) {
+    for (let i = 0; i < length; i++) {
       const displaySet = displaySets[i];
       selectedDisplaySets.push(displaySet);
-      displaySetCount--;
     }
 
     return selectedDisplaySets;

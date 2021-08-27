@@ -49,21 +49,8 @@ export default {
         commandsManager.runCommand('jumpToImage', jumpData);
       };
 
-      const stackPrefetchConfig = appConfig.studyPrefetcher
-        ? {
-            enabled: true,
-            maxImagesToPrefetch: Infinity,
-            preserveExistingPool: false,
-            maxSimultaneousRequests: 20,
-          }
-        : null;
-
       return (
-        <OHIFCornerstoneViewport
-          {...props}
-          stackPrefetch={stackPrefetchConfig}
-          onNewImage={onNewImageHandler}
-        />
+        <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />
       );
     };
 
