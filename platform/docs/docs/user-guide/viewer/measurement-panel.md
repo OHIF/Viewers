@@ -40,7 +40,8 @@ A measurement can be deleting by dragging it outside the image in the viewport o
 ## Jumping to a Measurement
 Measurement navigation inside the top viewport can be used to move to previous and next measurement.
 
-![user-measurement-prevnext](../../assets/img/user-measurement-prevnext.png)
+
+![measurements-prevNext](../../assets/img/measurements-prevNext.png)
 
 If a series containing a measurement is currently being displayed in a viewport, you can jump to display the measurement in the viewport by clicking on it in the Measurement Panel.
 
