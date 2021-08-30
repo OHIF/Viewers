@@ -54,15 +54,13 @@ To cite the OHIF Viewer in an academic publication, please cite
 
 > _Open Health Imaging Foundation Viewer: An Extensible Open-Source Framework
 > for Building Web-Based Imaging Applications to Support Cancer Research_
-
-> Erik Ziegler, Trinity Urban, Danny Brown, James Petts, Steve D. Pieper, Rob
-> Lewis, Chris Hafey, and Gordon J. Harris
-
-> _JCO Clinical Cancer Informatics_, no. 4 (2020), 336-345, DOI:
+>
+>  Erik Ziegler, Trinity Urban, Danny Brown, James Petts, Steve D. Pieper, Rob
+> Lewis, Chris Hafey, and Gordon J. Harris _JCO Clinical Cancer Informatics_, no. 4 (2020), 336-345, DOI:
 > [10.1200/CCI.19.00131](https://www.doi.org/10.1200/CCI.19.00131)
 
-This article is freely available on Pubmed Central:
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7259879/
+This article is freely available on Pubmed Central: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7259879/
+
 
 or, for Lesion Tracker of OHIF v1, please cite:
 
@@ -70,13 +68,12 @@ or, for Lesion Tracker of OHIF v1, please cite:
 > Imaging Research and Clinical Trials_
 >
 > Trinity Urban, Erik Ziegler, Rob Lewis, Chris Hafey, Cheryl Sadow, Annick D.
-> Van den Abbeele and Gordon J. Harris
->
-> _Cancer Research_, November 1 2017 (77) (21) e119-e122 DOI:
+> Van den Abbeele and Gordon J. Harris _Cancer Research_, November 1 2017 (77) (21) e119-e122 DOI:
 > [10.1158/0008-5472.CAN-17-0334](https://www.doi.org/10.1158/0008-5472.CAN-17-0334)
 
-This article is freely available on Pubmed Central:
+This article is freely available on Pubmed Central.
 https://pubmed.ncbi.nlm.nih.gov/29092955/
+
 
 **Note:** If you use or find this repository helpful, please take the time to
 star this repository on Github. This is an easy way for us to assess adoption

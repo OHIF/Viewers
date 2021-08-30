@@ -336,6 +336,7 @@ function WorkList({
           {appConfig.modes.map((mode, i) => {
             const isFirst = i === 0;
 
+            const isValidMode = mode.isValidMode({ modalities })
             // TODO: Modes need a default/target route? We mostly support a single one for now.
             // We should also be using the route path, but currently are not
             // mode.id
@@ -350,8 +351,8 @@ function WorkList({
               >
                 <Button
                   rounded="full"
-                  variant="contained" // outlined
-                  disabled={false}
+                  variant={isValidMode ? "contained" : "disabled"}
+                  disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
                   onClick={() => {}}

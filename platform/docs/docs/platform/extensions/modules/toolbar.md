@@ -9,7 +9,8 @@ An extension can register a Toolbar Module by defining a `getToolbarModule`
 method. `OHIF-v3`'s `default` extension (`"ohif.org.default"`) provides 5 main
 toolbar button types:
 
-![toolbarModule](../../../assets/img/toolbarModule.png)
+![toolbarModule](../../../assets/img/toolbar-module.png)
+
 
 ## Example Toolbar Module
 

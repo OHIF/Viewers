@@ -59,9 +59,11 @@ export default function mode({ modeConfiguration }) {
       study: [],
       series: [],
     },
-    isValidMode: (studyTags, seriesTags) => {
-      // All series are welcome in this mode!
-      return true;
+    isValidMode: ({ modalities }) => {
+      const modalities_list = modalities.split('\\');
+
+      // Slide Microscopy modality not supported by basic mode yet
+      return !modalities_list.includes('SM')
     },
     routes: [
       {
