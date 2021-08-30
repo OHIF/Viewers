@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.22](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.21...@ohif/viewer@4.9.22) (2021-08-19)
+
+
+### Bug Fixes
+
+* Remove internet dependency for workbox (addressing [#2109](https://github.com/OHIF/Viewers/issues/2109)) ([#2151](https://github.com/OHIF/Viewers/issues/2151)) ([5f92f6e](https://github.com/OHIF/Viewers/commit/5f92f6ec7faa11d3fdc33ef8f22971a0bab87a36))
+
+
+
+
+
 ## [4.9.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.20...@ohif/viewer@4.9.21) (2021-07-26)
 
 **Note:** Version bump only for package @ohif/viewer
