@@ -33,6 +33,7 @@ class OHIFDicomPDFViewport extends Component {
 
   componentDidMount() {
     const { displaySet, studies } = this.props.viewportData;
+
     DicomLoaderService.findDicomDataPromise(displaySet, studies).then(
       data => this.setState({ byteArray: new Uint8Array(data) }),
       error => {

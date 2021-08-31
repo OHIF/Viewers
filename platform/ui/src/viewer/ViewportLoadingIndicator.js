@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export function ViewportLoadingIndicator(props) {
   return (
     <div
-      className="loadingIndicator"
+      className="loading-indicator"
       style={{
         position: 'absolute',
         top: 0,

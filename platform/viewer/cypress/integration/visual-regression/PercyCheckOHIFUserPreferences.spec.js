@@ -7,10 +7,16 @@ describe('Visual Regression - OHIF User Preferences', () => {
     beforeEach(() => {
       // Open User Preferences modal
       cy.openPreferences();
-      cy.initPreferencesModalAliases();
+    });
+
+    afterEach(() => {
+      // Close User Preferences modal
+      cy.closePreferences();
     });
 
     it('checks displayed information on User Preferences modal', function() {
+      // Go go hotkeys tab
+      cy.selectPreferencesTab('@userPreferencesHotkeysTab');
       cy.get('@restoreBtn').scrollIntoView();
 
       // Visual comparison
@@ -21,9 +27,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
     });
 
     it('checks translation by selecting Spanish language', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
@@ -52,20 +56,27 @@ describe('Visual Regression - OHIF User Preferences', () => {
 
   context('Study Viewer Page', function() {
     before(() => {
-      cy.openStudy('MISTER^MR');
-      cy.expectMinimumThumbnails(5);
+      cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
+      cy.expectMinimumThumbnails(3);
     });
 
     beforeEach(() => {
       cy.initCommonElementsAliases();
       cy.resetViewport();
 
-      cy.resetUserHoktkeyPreferences();
+      cy.resetUserHotkeyPreferences();
       // Open User Preferences modal
       cy.openPreferences();
     });
 
+    afterEach(() => {
+      // Close User Preferences modal
+      cy.closePreferences();
+    });
+
     it('checks displayed information on User Preferences modal', function() {
+      // Go go hotkeys tab
+      cy.selectPreferencesTab('@userPreferencesHotkeysTab');
       cy.get('@restoreBtn').scrollIntoView();
 
       // Visual comparison
@@ -75,10 +86,18 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
 
+    it('checks if W/L Preferences table is being displayed in the Window Level tab', function() {
+      //Navigate to Window Level tab
+      cy.selectPreferencesTab('@userPreferencesWindowLevelTab');
+
+      // Visual comparison
+      cy.percyCanvasSnapshot(
+        'User Preferences Modal - Window Level Presets Tab'
+      );
+    });
+
     it('checks translation by selecting Spanish language', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       // Visual comparison
       cy.percyCanvasSnapshot(
@@ -102,9 +121,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
     });
 
     it('checks if user can restore to default the language selection and application will be in English', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       // Set language to Spanish
       cy.setLanguage('Spanish');
@@ -113,7 +130,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.openPreferences();
 
       // Go to general tab
-      cy.get('@userPreferencesGeneralTab').click();
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       cy.get('@restoreBtn')
         .scrollIntoView()
@@ -139,19 +156,17 @@ describe('Visual Regression - OHIF User Preferences', () => {
 
     it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab')
-        .click()
-        .should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesHotkeysTab');
 
       // Set new hotkey for 'Next Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Next Image Viewport',
+        'Next Viewport',
         '{shift}{rightarrow}'
       );
 
       // Set new hotkey for 'Previous Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Previous Image Viewport',
+        'Previous Viewport',
         '{shift}{leftarrow}'
       );
 

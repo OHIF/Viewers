@@ -60,8 +60,8 @@ class BaseLoadingListener {
   }
 
   _getProgressId() {
-    const displaySetInstanceUid = this.stack.displaySetInstanceUid;
-    return 'StackProgress:' + displaySetInstanceUid;
+    const displaySetInstanceUID = this.stack.displaySetInstanceUID;
+    return 'StackProgress:' + displaySetInstanceUID;
   }
 
   _clearProgress() {
@@ -362,7 +362,7 @@ class StackLoadingListener extends BaseLoadingListener {
 
   _logProgress() {
     const totalFramesCount = this.stack.imageIds.length;
-    const displaySetInstanceUid = this.stack.displaySetInstanceUid;
+    const displaySetInstanceUID = this.stack.displaySetInstanceUID;
     let progressBar = '[';
 
     for (let i = 0; i < totalFramesCount; i++) {
@@ -371,7 +371,7 @@ class StackLoadingListener extends BaseLoadingListener {
     }
 
     progressBar += ']';
-    log.info(`${displaySetInstanceUid}: ${progressBar}`);
+    log.info(`${displaySetInstanceUID}: ${progressBar}`);
   }
 }
 
@@ -388,12 +388,12 @@ class StudyLoadingListener {
       return;
     }
 
-    const displaySetInstanceUid = stack.displaySetInstanceUid;
+    const displaySetInstanceUID = stack.displaySetInstanceUID;
 
-    if (!this.listeners[displaySetInstanceUid]) {
+    if (!this.listeners[displaySetInstanceUID]) {
       const listener = this._createListener(stack, stackMetaData);
       if (listener) {
-        this.listeners[displaySetInstanceUid] = listener;
+        this.listeners[displaySetInstanceUID] = listener;
       }
     }
   }
@@ -424,12 +424,12 @@ class StudyLoadingListener {
   }
 
   clear() {
-    const displaySetInstanceUids = Object.keys(this.listeners);
-    const length = displaySetInstanceUids.length;
+    const displaySetInstanceUIDs = Object.keys(this.listeners);
+    const length = displaySetInstanceUIDs.length;
 
     for (let i = 0; i < length; i++) {
-      const displaySetInstanceUid = displaySetInstanceUids[i];
-      const displaySet = this.listeners[displaySetInstanceUid];
+      const displaySetInstanceUID = displaySetInstanceUIDs[i];
+      const displaySet = this.listeners[displaySetInstanceUID];
 
       displaySet.destroy();
     }

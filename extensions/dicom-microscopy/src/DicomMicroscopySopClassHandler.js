@@ -8,20 +8,33 @@ const SOP_CLASS_UIDS = {
 
 const DicomMicroscopySopClassHandler = {
   id: 'DicomMicroscopySopClassHandlerPlugin',
-  sopClassUids: [SOP_CLASS_UIDS.VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE],
+  sopClassUIDs: [SOP_CLASS_UIDS.VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE],
   getDisplaySetFromSeries(series, study, dicomWebClient) {
     const instance = series.getFirstInstance();
+
+    const metadata = instance.getData().metadata;
+    const {
+      SeriesDescription,
+      SeriesNumber,
+      ContentDate,
+      ContentTime,
+    } = metadata;
 
     // Note: We are passing the dicomweb client into each viewport!
 
     return {
       plugin: 'microscopy',
-      modality: 'SM',
-      displaySetInstanceUid: utils.guid(),
+      Modality: 'SM',
+      displaySetInstanceUID: utils.guid(),
       dicomWebClient,
-      sopInstanceUid: instance.getSOPInstanceUID(),
-      seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID(),
+      SOPInstanceUID: instance.getSOPInstanceUID(),
+      SeriesInstanceUID: series.getSeriesInstanceUID(),
+      StudyInstanceUID: study.getStudyInstanceUID(),
+      SeriesDescription,
+      SeriesDate: ContentDate, // Map ContentDate/Time to SeriesTime for series list sorting.
+      SeriesTime: ContentTime,
+      SeriesNumber,
+      metadata,
     };
   },
 };

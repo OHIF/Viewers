@@ -94,17 +94,23 @@ export class StudyPrefetcher {
   }
 
   getStudy(image) {
-    const studyMetadata = cornerstone.metaData.get('study', image.imageId);
+    const StudyInstanceUID = cornerstone.metaData.get(
+      'StudyInstanceUID',
+      image.imageId
+    );
     return OHIF.viewer.Studies.find(
-      study => study.studyInstanceUid === studyMetadata.studyInstanceUid
+      study => study.StudyInstanceUID === StudyInstanceUID
     );
   }
 
   getSeries(study, image) {
-    const seriesMetadata = cornerstone.metaData.get('series', image.imageId);
+    const SeriesInstanceUID = cornerstone.metaData.get(
+      'SeriesInstanceUID',
+      image.imageId
+    );
     const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
 
-    return studyMetadata.getSeriesByUID(seriesMetadata.seriesInstanceUid);
+    return studyMetadata.getSeriesByUID(SeriesInstanceUID);
   }
 
   getInstance(series, image) {
@@ -112,13 +118,13 @@ export class StudyPrefetcher {
       'instance',
       image.imageId
     );
-    return series.getInstanceByUID(instanceMetadata.sopInstanceUid);
+    return series.getInstanceByUID(instanceMetadata.SOPInstanceUID);
   }
 
   getActiveDisplaySet(displaySets, instance) {
     return displaySets.find(displaySet => {
       return displaySet.images.some(displaySetImage => {
-        return displaySetImage.sopInstanceUid === instance.sopInstanceUid;
+        return displaySetImage.SOPInstanceUID === instance.SOPInstanceUID;
       });
     });
   }

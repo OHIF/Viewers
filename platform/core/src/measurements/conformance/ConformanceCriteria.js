@@ -21,12 +21,12 @@ class ConformanceCriteria {
     this.options = options;
   }
 
-  loadStudy(studyInstanceUid) {
+  loadStudy(StudyInstanceUID) {
     if (typeof this.options.loadStudy !== 'function') {
       throw new Error('loadStudy callback is not defined');
     }
 
-    return this.options.loadStudy(null, studyInstanceUid);
+    return this.options.loadStudy(null, StudyInstanceUID);
   }
 
   async validate(trialCriteriaType) {
@@ -181,7 +181,7 @@ class ConformanceCriteria {
       const measurements = this.measurementApi.fetch(measurementType);
 
       measurements.forEach(measurement => {
-        const { studyInstanceUid } = measurement;
+        const { StudyInstanceUID } = measurement;
 
         const timepointId = measurement.timepointId;
         const timepoint =
@@ -195,7 +195,7 @@ class ConformanceCriteria {
           return;
         }
 
-        const promise = this.loadStudy(studyInstanceUid);
+        const promise = this.loadStudy(StudyInstanceUID);
         promise.then(
           studyMetadata => {
             data[measurementType].push({

@@ -10,8 +10,18 @@ export class TableListItem extends Component {
     children: PropTypes.node,
     itemClass: PropTypes.string,
     itemIndex: PropTypes.number,
-    itemKey: PropTypes.oneOfType(['number', 'string']),
+    itemMeta: PropTypes.node,
+    itemMetaClass: PropTypes.string,
+    itemKey: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
     onItemClick: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    itemMeta: null,
+    itemMetaClass: ''
   };
 
   render() {
@@ -20,8 +30,9 @@ export class TableListItem extends Component {
         className={`tableListItem ${this.props.itemClass}`}
         onClick={this.onItemClick}
       >
-        <div className="itemIndex">
+        <div className={`itemIndex ${this.props.itemMetaClass}`}>
           {this.props.itemIndex}
+          {this.props.itemMeta}
           <span className="warning-icon">
             <Icon name="exclamation-triangle" />
           </span>

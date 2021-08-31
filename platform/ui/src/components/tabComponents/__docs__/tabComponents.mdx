@@ -1,0 +1,27 @@
+---
+name: Tab Components
+menu: Components
+route: /components/tab-components
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { TabComponents } from './../index.js'
+
+// Data
+import tabs from './tabs.js'
+
+# Tab Components
+
+## Basic usage
+
+<Playground>
+    <TabComponents
+        tabs={tabs}
+        customProps={}
+    />
+</Playground>
+
+## API
+
+<Props of={TabComponents} />

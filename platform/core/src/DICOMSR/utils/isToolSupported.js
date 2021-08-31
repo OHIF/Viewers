@@ -1,4 +1,4 @@
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 
 /**
  *  Checks if dcmjs has support to determined tool

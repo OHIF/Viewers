@@ -4,8 +4,16 @@
   height: var(--top-bar-height);
 }
 
-.dd-item {
-  width: 100%;
+.header-left-box {
+  display: inline-block;
+  position: relative;
+}
+
+.header-brand {
+  text-decoration: none;
+  height: 30px;
+  float: left;
+  clear: both;
 }
 
 /* Home Page */
@@ -17,33 +25,9 @@
   width: 100%;
 }
 
-.header-left-box {
-  display: inline-block;
-  position: relative;
-}
-
-.header-viewerLink {
-  float: left;
-}
-
-.header-brand {
-  height: 30px;
-  text-decoration: none;
-  float: left;
-  clear: both;
-}
-
 .entry-header.header-big .header-brand {
-  height: auto;
+  height: 50px;
   padding: 0;
-}
-
-.header-logo-image {
-  fill: transparent;
-  height: 100%;
-  margin: 0 8px 0 0;
-  width: 30px;
-  float: left;
 }
 
 .entry-header.header-big .header-logo-image {
@@ -55,6 +39,24 @@
 .entry-header.header-big .header-logo-text {
   width: 474px;
   height: auto;
+}
+
+/** OTHER STYLES **/
+
+.dd-item {
+  width: 100%;
+}
+
+.header-viewerLink {
+  float: left;
+}
+
+.header-logo-image {
+  fill: transparent;
+  height: 100%;
+  margin: 0 8px 0 0;
+  width: 30px;
+  float: left;
 }
 
 .header-btn {
@@ -128,13 +130,6 @@
 
   .entry-header.header-big .header-logo-text {
     width: 40%;
-  }
-
-  /* Account for notification bar height */
-  .entry-header.header-big .header-brand {
-  }
-
-  .dd-menu {
   }
 
   /* Toggle Notification Bar */

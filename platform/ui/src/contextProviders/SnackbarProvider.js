@@ -22,21 +22,11 @@ const SnackbarProvider = ({ children, service }) => {
     autoClose: true,
     position: 'bottomRight',
     type: SnackbarTypes.INFO,
+    action: null,
   };
 
   const [count, setCount] = useState(1);
   const [snackbarItems, setSnackbarItems] = useState([]);
-
-  /**
-   * Sets the implementation of a notification service that can be used by extensions.
-   *
-   * @returns void
-   */
-  useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({ hide, show });
-    }
-  }, [service, hide, show]);
 
   const show = useCallback(
     options => {
@@ -46,6 +36,10 @@ const SnackbarProvider = ({ children, service }) => {
         );
 
         return null;
+      }
+
+      if (options.type === 'error') {
+        console.error(options.error);
       }
 
       const newItem = {
@@ -91,6 +85,17 @@ const SnackbarProvider = ({ children, service }) => {
     // remove all items from array
     setSnackbarItems(() => []);
   };
+
+  /**
+   * Sets the implementation of a notification service that can be used by extensions.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (service) {
+      service.setServiceImplementation({ hide, show });
+    }
+  }, [service, hide, show]);
 
   /**
    * expose snackbar methods to window for debug purposes

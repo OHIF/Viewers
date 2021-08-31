@@ -217,7 +217,7 @@ const definitions = [
       },
       {
         id: 'Eraser',
-        label: 'Brush',
+        label: 'Eraser',
         icon: 'eraser',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
@@ -245,7 +245,7 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
-  }
+  },
 ];
 
 export default {

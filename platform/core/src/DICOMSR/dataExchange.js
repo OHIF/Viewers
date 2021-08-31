@@ -31,6 +31,7 @@ const retrieveMeasurements = server => {
 
   const serverUrl = server.wadoRoot;
   const studies = utils.studyMetadataManager.all();
+
   const latestSeries = findMostRecentStructuredReport(studies);
 
   if (!latestSeries) return Promise.resolve({});
@@ -57,17 +58,17 @@ const storeMeasurements = async (measurementData, filter, server) => {
   const serverUrl = server.wadoRoot;
   const firstMeasurementKey = Object.keys(measurementData)[0];
   const firstMeasurement = measurementData[firstMeasurementKey][0];
-  const studyInstanceUid =
-    firstMeasurement && firstMeasurement.studyInstanceUid;
+  const StudyInstanceUID =
+    firstMeasurement && firstMeasurement.StudyInstanceUID;
 
   try {
     await stowSRFromMeasurements(measurementData, serverUrl);
-    if (studyInstanceUid) {
-      studies.deleteStudyMetadataPromise(studyInstanceUid);
+    if (StudyInstanceUID) {
+      studies.deleteStudyMetadataPromise(StudyInstanceUID);
     }
 
     return {
-      message: 'Measurements were saved with success',
+      message: 'Measurements saved successfully',
     };
   } catch (error) {
     log.error(

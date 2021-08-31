@@ -1,7 +1,7 @@
 window.config = {
   routerBasename: '/',
-  whiteLabelling: {},
   enableGoogleCloudAdapter: true,
+  healthcareApiEndpoint: 'https://healthcare.googleapis.com/v1',
   servers: {
     // This is an array, but we'll only use the first entry for now
     dicomWeb: [],

@@ -122,10 +122,7 @@ class DatasetSelector extends Component {
       <>
         {projectBreadcrumbs}
         {!project && (
-          <ProjectPicker
-            accessToken={accessToken}
-            onSelect={onProjectSelect}
-          />
+          <ProjectPicker accessToken={accessToken} onSelect={onProjectSelect} />
         )}
 
         {project && !location && (

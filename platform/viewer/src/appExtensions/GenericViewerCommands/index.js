@@ -2,7 +2,10 @@ import commandsModule from './commandsModule.js';
 
 export default {
   id: 'generic-viewer-commands',
-  getCommandsModule() {
-    return commandsModule;
+  get version() {
+    return window.version;
+  },
+  getCommandsModule({ commandsManager }) {
+    return commandsModule({ commandsManager });
   },
 };

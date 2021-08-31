@@ -2,15 +2,20 @@ import ViewportGrid from './ViewportGrid.js';
 import { MODULE_TYPES } from '@ohif/core';
 import { connect } from 'react-redux';
 import { extensionManager } from './../../App.js';
+import memoize from 'lodash/memoize';
 
-const mapStateToProps = state => {
+const getAvailableViewportModules = memoize(viewportModules => {
   const availableViewportModules = {};
-  const viewportModules = extensionManager.modules[MODULE_TYPES.VIEWPORT];
-
   viewportModules.forEach(moduleDefinition => {
     availableViewportModules[moduleDefinition.extensionId] =
       moduleDefinition.module;
   });
+  return availableViewportModules;
+});
+
+const mapStateToProps = state => {
+  const viewportModules = extensionManager.modules[MODULE_TYPES.VIEWPORT];
+  const availableViewportModules = getAvailableViewportModules(viewportModules);
 
   // TODO: Use something like state.plugins.defaultPlugin[MODULE_TYPES.VIEWPORT]
   let defaultPlugin;

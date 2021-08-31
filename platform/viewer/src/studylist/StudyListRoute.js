@@ -19,7 +19,7 @@ import filesToStudies from '../lib/filesToStudies.js';
 
 // Contexts
 import UserManagerContext from '../context/UserManagerContext';
-import WhiteLabellingContext from '../context/WhiteLabellingContext';
+import WhiteLabelingContext from '../context/WhiteLabelingContext';
 import AppContext from '../context/AppContext';
 
 const { urlUtil: UrlUtil } = OHIF.utils;
@@ -29,18 +29,18 @@ function StudyListRoute(props) {
   const [t] = useTranslation('Common');
   // ~~ STATE
   const [sort, setSort] = useState({
-    fieldName: 'patientName',
+    fieldName: 'PatientName',
     direction: 'desc',
   });
   const [filterValues, setFilterValues] = useState({
     studyDateTo: null,
     studyDateFrom: null,
-    patientName: '',
-    patientId: '',
-    accessionNumber: '',
-    studyDate: '',
+    PatientName: '',
+    PatientID: '',
+    AccessionNumber: '',
+    StudyDate: '',
     modalities: '',
-    studyDescription: '',
+    StudyDescription: '',
     //
     patientNameOrId: '',
     accessionOrModalityOrDescription: '',
@@ -209,21 +209,23 @@ function StudyListRoute(props) {
         />
       ) : null}
       {healthCareApiWindows}
-      <WhiteLabellingContext.Consumer>
-        {whiteLabelling => (
+      <WhiteLabelingContext.Consumer>
+        {whiteLabeling => (
           <UserManagerContext.Consumer>
             {userManager => (
               <ConnectedHeader
-                home={true}
+                useLargeLogo={true}
                 user={user}
                 userManager={userManager}
               >
-                {whiteLabelling.logoComponent}
+                {whiteLabeling &&
+                  whiteLabeling.createLogoComponentFn &&
+                  whiteLabeling.createLogoComponentFn(React)}
               </ConnectedHeader>
             )}
           </UserManagerContext.Consumer>
         )}
-      </WhiteLabellingContext.Consumer>
+      </WhiteLabelingContext.Consumer>
       <div className="study-list-header">
         <div className="header">
           <h1 style={{ fontWeight: 300, fontSize: '22px' }}>
@@ -251,7 +253,7 @@ function StudyListRoute(props) {
           studies={studies}
           onSelectItem={studyInstanceUID => {
             const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-              studyInstanceUids: studyInstanceUID,
+              studyInstanceUIDs: studyInstanceUID,
             });
             history.push(viewerPath);
           }}
@@ -268,7 +270,7 @@ function StudyListRoute(props) {
           currentPage={pageNumber}
           nextPageFunc={() => setPageNumber(pageNumber + 1)}
           prevPageFunc={() => setPageNumber(pageNumber - 1)}
-          onRowsPerPageChange={rows => setRowsPerPage(rows)}
+          onRowsPerPageChange={Rows => setRowsPerPage(Rows)}
           rowsPerPage={rowsPerPage}
           recordCount={studies.length}
         />
@@ -279,7 +281,7 @@ function StudyListRoute(props) {
 
 StudyListRoute.propTypes = {
   filters: PropTypes.object,
-  patientId: PropTypes.string,
+  PatientID: PropTypes.string,
   server: PropTypes.object,
   user: PropTypes.object,
   history: PropTypes.object,
@@ -332,24 +334,18 @@ async function getStudyList(
     patientNameOrId,
     accessionOrModalityOrDescription,
   } = filters;
-  const sortFieldName = sort.fieldName || 'patientName';
+  const sortFieldName = sort.fieldName || 'PatientName';
   const sortDirection = sort.direction || 'desc';
-  const studyDateFrom =
-    filters.studyDateFrom ||
-    moment()
-      .subtract(25000, 'days')
-      .toDate();
-  const studyDateTo = filters.studyDateTo || new Date();
 
   const mappedFilters = {
-    patientId: filters.patientId,
-    patientName: filters.patientName,
-    accessionNumber: filters.accessionNumber,
-    studyDescription: filters.studyDescription,
-    modalitiesInStudy: filters.modalities,
+    PatientID: filters.PatientID,
+    PatientName: filters.PatientName,
+    AccessionNumber: filters.AccessionNumber,
+    StudyDescription: filters.StudyDescription,
+    ModalitiesInStudy: filters.modalities,
     // NEVER CHANGE
-    studyDateFrom,
-    studyDateTo,
+    studyDateFrom: filters.studyDateFrom,
+    studyDateTo: filters.studyDateTo,
     limit: rowsPerPage,
     offset: pageNumber * rowsPerPage,
     fuzzymatching: server.supportsFuzzyMatching === true,
@@ -363,32 +359,32 @@ async function getStudyList(
 
   // Only the fields we use
   const mappedStudies = studies.map(study => {
-    const patientName =
-      typeof study.patientName === 'string' ? study.patientName : undefined;
+    const PatientName =
+      typeof study.PatientName === 'string' ? study.PatientName : undefined;
 
     return {
-      accessionNumber: study.accessionNumber, // "1"
+      AccessionNumber: study.AccessionNumber, // "1"
       modalities: study.modalities, // "SEG\\MR"  ​​
       // numberOfStudyRelatedInstances: "3"
       // numberOfStudyRelatedSeries: "3"
-      // patientBirthdate: undefined
-      patientId: study.patientId, // "NOID"
-      patientName, // "NAME^NONE"
-      // patientSex: "M"
+      // PatientBirthdate: undefined
+      PatientID: study.PatientID, // "NOID"
+      PatientName, // "NAME^NONE"
+      // PatientSex: "M"
       // referringPhysicianName: undefined
-      studyDate: study.studyDate, // "Jun 28, 2002"
-      studyDescription: study.studyDescription, // "BRAIN"
+      StudyDate: study.StudyDate, // "Jun 28, 2002"
+      StudyDescription: study.StudyDescription, // "BRAIN"
       // studyId: "No Study ID"
-      studyInstanceUid: study.studyInstanceUid, // "1.3.6.1.4.1.5962.99.1.3814087073.479799962.1489872804257.3.0"
-      // studyTime: "160956.0"
+      StudyInstanceUID: study.StudyInstanceUID, // "1.3.6.1.4.1.5962.99.1.3814087073.479799962.1489872804257.3.0"
+      // StudyTime: "160956.0"
     };
   });
 
   // For our smaller displays, map our field name to a single
   // field we can actually sort by.
   const sortFieldNameMapping = {
-    allFields: 'patientName',
-    patientNameOrId: 'patientName',
+    allFields: 'PatientName',
+    patientNameOrId: 'PatientName',
     accessionOrModalityOrDescription: 'modalities',
   };
   const mappedSortFieldName =
@@ -401,7 +397,7 @@ async function getStudyList(
   );
 
   // Because we've merged multiple requests, we may have more than
-  // our rows per page. Let's `take` that number from our sorted array.
+  // our Rows per page. Let's `take` that number from our sorted array.
   // This "might" cause paging issues.
   const numToTake =
     sortedStudies.length < rowsPerPage ? sortedStudies.length : rowsPerPage;
@@ -414,16 +410,16 @@ async function getStudyList(
  *
  *
  * @param {object[]} studies - Array of studies to sort
- * @param {string} studies.studyDate - Date in 'MMM DD, YYYY' format
+ * @param {string} studies.StudyDate - Date in 'MMM DD, YYYY' format
  * @param {string} field - name of properties on study to sort by
  * @param {string} order - 'asc' or 'desc'
  * @returns
  */
 function _sortStudies(studies, field, order) {
-  // Make sure our studyDate is in a valid format and create copy of studies array
+  // Make sure our StudyDate is in a valid format and create copy of studies array
   const sortedStudies = studies.map(study => {
-    if (!moment(study.studyDate, 'MMM DD, YYYY', true).isValid()) {
-      study.studyDate = moment(study.studyDate, 'YYYYMMDD').format(
+    if (!moment(study.StudyDate, 'MMM DD, YYYY', true).isValid()) {
+      study.StudyDate = moment(study.StudyDate, 'YYYYMMDD').format(
         'MMM DD, YYYY'
       );
     }
@@ -434,7 +430,7 @@ function _sortStudies(studies, field, order) {
   sortedStudies.sort(function(a, b) {
     let fieldA = a[field];
     let fieldB = b[field];
-    if (field === 'studyDate') {
+    if (field === 'StudyDate') {
       fieldA = moment(fieldA).toISOString();
       fieldB = moment(fieldB).toISOString();
     }
@@ -486,11 +482,11 @@ async function _fetchStudies(
     const firstSet = _getQueryFiltersForValue(
       filters,
       [
-        'patientId',
-        'patientName',
-        'accessionNumber',
-        'studyDescription',
-        'modalitiesInStudy',
+        'PatientID',
+        'PatientName',
+        'AccessionNumber',
+        'StudyDescription',
+        'ModalitiesInStudy',
       ],
       allFields
     );
@@ -501,13 +497,13 @@ async function _fetchStudies(
   } else if (displaySize === 'medium') {
     const firstSet = _getQueryFiltersForValue(
       filters,
-      ['patientId', 'patientName'],
+      ['PatientID', 'PatientName'],
       patientNameOrId
     );
 
     const secondSet = _getQueryFiltersForValue(
       filters,
-      ['accessionNumber', 'studyDescription', 'modalitiesInStudy'],
+      ['AccessionNumber', 'StudyDescription', 'ModalitiesInStudy'],
       accessionOrModalityOrDescription
     );
 
@@ -530,7 +526,7 @@ async function _fetchStudies(
   lotsOfStudies.forEach(arrayOfStudies => {
     if (arrayOfStudies) {
       arrayOfStudies.forEach(study => {
-        if (!studies.some(s => s.studyInstanceUid === study.studyInstanceUid)) {
+        if (!studies.some(s => s.StudyInstanceUID === study.StudyInstanceUID)) {
           studies.push(study);
         }
       });
@@ -557,11 +553,11 @@ function _getQueryFiltersForValue(filters, fields, value) {
   fields.forEach(field => {
     const filter = Object.assign(
       {
-        patientId: '',
-        patientName: '',
-        accessionNumber: '',
-        studyDescription: '',
-        modalitiesInStudy: '',
+        PatientID: '',
+        PatientName: '',
+        AccessionNumber: '',
+        StudyDescription: '',
+        ModalitiesInStudy: '',
       },
       filters
     );

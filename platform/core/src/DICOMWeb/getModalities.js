@@ -1,23 +1,23 @@
-export default function getModalities(modality, modalitiesInStudy) {
-  if (!modality && !modalitiesInStudy) {
+export default function getModalities(Modality, ModalitiesInStudy) {
+  if (!Modality && !ModalitiesInStudy) {
     return {};
   }
 
-  const modalities = modality || {
+  const modalities = Modality || {
     vr: 'CS',
     Value: [],
   };
 
-  if (modalitiesInStudy) {
-    if (modalities.vr && modalities.vr === modalitiesInStudy.vr) {
-      for (let i = 0; i < modalitiesInStudy.Value.length; i++) {
-        const value = modalitiesInStudy.Value[i];
+  if (ModalitiesInStudy) {
+    if (modalities.vr && modalities.vr === ModalitiesInStudy.vr) {
+      for (let i = 0; i < ModalitiesInStudy.Value.length; i++) {
+        const value = ModalitiesInStudy.Value[i];
         if (modalities.Value.indexOf(value) === -1) {
           modalities.Value.push(value);
         }
       }
     } else {
-      return modalitiesInStudy;
+      return ModalitiesInStudy;
     }
   }
 

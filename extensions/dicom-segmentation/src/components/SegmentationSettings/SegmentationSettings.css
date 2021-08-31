@@ -1,0 +1,95 @@
+.dcmseg-segmentation-settings {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.dcmseg-segmentation-settings .range label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.dcmseg-segmentation-settings .settings-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+}
+
+.dcmseg-segmentation-settings .settings-title h3 {
+  color: var(--text-primary-color);
+  margin: 0;
+  padding: 0;
+}
+
+.dcmseg-segmentation-settings .settings-group {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary-color);
+  font-size: 12px;
+}
+
+.dcmseg-segmentation-settings .settings-group .range {
+  display: flex;
+  padding: 20px 15px;
+}
+
+.dcmseg-segmentation-settings .settings-group .range:not(:last-of-type) {
+  padding-bottom: 0;
+}
+
+.dcmseg-segmentation-settings .settings-group .range label {
+  margin: 0;
+  display: unset;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+.dcmseg-segmentation-settings .settings-group .range input {
+  width: 100%;
+  padding: 0 20px 0 20px;
+}
+
+.dcmseg-segmentation-settings .custom-check label {
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid black;
+  padding: 10px 15px;
+}
+
+.dcmseg-segmentation-settings .custom-check input {
+  width: 15px;
+  height: 15px;
+}
+
+.dcmseg-segmentation-settings .settings-group {
+  background-color: var(--ui-gray-dark);
+  border-radius: 5px;
+}
+
+.dcmseg-segmentation-settings .return-button {
+  color: #333;
+  background-color: #fff;
+  padding: 4px 12px;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.dcmseg-segmentation-settings .return-button:hover,
+.dcmseg-segmentation-settings .return-button:active,
+.dcmseg-segmentation-settings .return-button.active {
+  background-color: var(--active-color);
+  border-color: var(--ui-border-color-active);
+  color: #fff;
+}

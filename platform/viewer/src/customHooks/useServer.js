@@ -18,6 +18,7 @@ const getActiveServer = servers => {
 const getServers = (appConfig, project, location, dataset, dicomStore) => {
   let servers = [];
   if (appConfig.enableGoogleCloudAdapter) {
+    GoogleCloudApi.urlBase = appConfig.healthcareApiEndpoint;
     const pathUrl = GoogleCloudApi.getUrlBaseDicomWeb(
       project,
       location,

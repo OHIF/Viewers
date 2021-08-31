@@ -21,7 +21,7 @@ function getBoundingBox(context, textLines, x, y, options) {
     // Get the text width in the current font
     const width = context.measureText(text).width;
 
-    // Find the maximum with for all the text rows;
+    // Find the maximum with for all the text Rows;
     maxWidth = Math.max(maxWidth, width);
   });
 

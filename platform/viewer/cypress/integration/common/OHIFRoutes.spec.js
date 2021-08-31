@@ -5,17 +5,18 @@ describe('OHIF Routes', function() {
     cy.openStudyList();
   });
 
-  it('checks PT/CT json url study route', function() {
-    cy.visit(
-      '/viewer?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/JSON/PTCTStudy.json'
-    );
+  // TODO -> Bring back when testJSON is hosted again.
+  // it('checks TEST json url study route', function() {
+  //   cy.visit(
+  //     '/viewer?url=https://ohif-viewer.s3.eu-central-1.amazonaws.com/JSON/testJSON.json'
+  //   );
 
-    cy.server();
-    cy.route('GET', '**/PTCTStudy/**').as('getPTCTStudy');
+  //   cy.server();
+  //   cy.route('GET', '**/ MRStudy; /**').as('getTESTStudy');
 
-    cy.wait('@getPTCTStudy.all');
-    cy.get('@getPTCTStudy').should($route => {
-      expect($route.status).to.be.eq(200);
-    });
-  });
+  //   cy.wait('@getTESTStudy.all');
+  //   cy.get('@getTESTStudy').should($route => {
+  //     expect($route.status).to.be.eq(200);
+  //   });
+  // });
 });

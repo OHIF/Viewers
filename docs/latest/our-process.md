@@ -75,7 +75,7 @@ items to our ["Active Development" GitHub Project Board][gh-board]. Items on
 this project board are either in active development by Core Team members, or
 queued up for development as in-progress items are completed.
 
-> :pencil: Want to contribute but not sure where to start? Check out [Up for
+> 🖋 Want to contribute but not sure where to start? Check out [Up for
 > grabs][label-grabs] issues and our [Contributing
 > documentation][contributing-docs]
 
@@ -156,5 +156,5 @@ addressed and a Stable version is released.
 [ohif-prod]: https://viewer.ohif.org
 [gh-board]: https://github.com/OHIF/Viewers/projects/4
 [label-grabs]: https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3A%22Up+For+Grabs+%3Araising_hand_woman%3A%22
-[contributing-docs]: https://docs.ohif.org/contributing/
+[contributing-docs]: ./development/contributing.md
 <!-- prettier-ignore-end -->

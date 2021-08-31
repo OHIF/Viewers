@@ -1,6 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import { MeasurementApi } from '../classes';
 import log from '../../log';
+import refreshCornerstoneViewports from '../lib/refreshCornerstoneViewports';
 
 export default function handleSingleMeasurementRemoved({
   eventData,
@@ -35,9 +36,7 @@ export default function handleSingleMeasurementRemoved({
   });
 
   // TODO: This is very hacky, but will work for now
-  cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
-  });
+  refreshCornerstoneViewports();
 
   if (MeasurementApi.isToolIncluded(tool)) {
     // TODO: Notify that viewer suffered changes

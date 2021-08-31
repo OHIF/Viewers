@@ -329,7 +329,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       measurementApi.syncMeasurementsAndToolData();
 
       cornerstone.getEnabledElements().forEach(enabledElement => {
-        cornerstone.updateImage(enabledElement.element);
+        if (enabledElement.image) {
+          cornerstone.updateImage(enabledElement.element);
+        }
       });
 
       // Needs to update viewports.layout state to set layout

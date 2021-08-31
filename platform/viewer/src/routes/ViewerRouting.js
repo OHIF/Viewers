@@ -1,21 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { utils, user } from '@ohif/core';
+//
 import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData';
 import useServer from '../customHooks/useServer';
-import OHIF from '@ohif/core';
-const { urlUtil: UrlUtil } = OHIF.utils;
+import useQuery from '../customHooks/useQuery';
+const { urlUtil: UrlUtil } = utils;
 
 /**
  * Get array of seriesUIDs from param or from queryString
- * @param {*} seriesInstanceUids
+ * @param {*} seriesInstanceUIDs
  * @param {*} location
  */
-const getSeriesInstanceUIDs = (seriesInstanceUids, routeLocation) => {
+const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
   const queryFilters = UrlUtil.queryString.getQueryFilters(routeLocation);
   const querySeriesUIDs = queryFilters && queryFilters['seriesInstanceUID'];
-  const _seriesInstanceUids = seriesInstanceUids || querySeriesUIDs;
+  const _seriesInstanceUIDs = seriesInstanceUIDs || querySeriesUIDs;
 
-  return UrlUtil.paramString.parseParam(_seriesInstanceUids);
+  return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
 };
 
 function ViewerRouting({ match: routeMatch, location: routeLocation }) {
@@ -24,19 +26,30 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
     location,
     dataset,
     dicomStore,
-    studyInstanceUids,
-    seriesInstanceUids,
+    studyInstanceUIDs,
+    seriesInstanceUIDs,
   } = routeMatch.params;
+
+  // Set the user's default authToken for outbound DICOMWeb requests.
+  // Is only applied if target server does not set `requestOptions` property.
+  //
+  // See: `getAuthorizationHeaders.js`
+  let query = useQuery();
+  const authToken = query.get('token');
+
+  if (authToken) {
+    user.getAccessToken = () => authToken;
+  }
+
   const server = useServer({ project, location, dataset, dicomStore });
+  const studyUIDs = UrlUtil.paramString.parseParam(studyInstanceUIDs);
+  const seriesUIDs = getSeriesInstanceUIDs(seriesInstanceUIDs, routeLocation);
 
-  const studyUids = UrlUtil.paramString.parseParam(studyInstanceUids);
-  const seriesUids = getSeriesInstanceUIDs(seriesInstanceUids, routeLocation);
-
-  if (server && studyUids) {
+  if (server && studyUIDs) {
     return (
       <ConnectedViewerRetrieveStudyData
-        studyInstanceUids={studyUids}
-        seriesInstanceUids={seriesUids}
+        studyInstanceUIDs={studyUIDs}
+        seriesInstanceUIDs={seriesUIDs}
       />
     );
   }
@@ -47,14 +60,15 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
 ViewerRouting.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
-      studyInstanceUids: PropTypes.string.isRequired,
-      seriesInstanceUids: PropTypes.string,
+      studyInstanceUIDs: PropTypes.string.isRequired,
+      seriesInstanceUIDs: PropTypes.string,
       dataset: PropTypes.string,
       dicomStore: PropTypes.string,
       location: PropTypes.string,
       project: PropTypes.string,
     }),
   }),
+  location: PropTypes.any,
 };
 
 export default ViewerRouting;

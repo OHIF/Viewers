@@ -1,6 +1,6 @@
 import log from '../log';
 
-export const retrieveMeasurements = (patientId, timepointIds) => {
+export const retrieveMeasurements = (PatientID, timepointIds) => {
   log.error('retrieveMeasurements');
   return Promise.resolve();
 };
@@ -30,7 +30,7 @@ export const removeTimepoint = timepointId => {
   return Promise.resolve();
 };
 
-export const disassociateStudy = (timepointIds, studyInstanceUid) => {
+export const disassociateStudy = (timepointIds, StudyInstanceUID) => {
   log.error('disassociateStudy');
   return Promise.resolve();
 };
