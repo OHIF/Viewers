@@ -239,6 +239,7 @@ class Viewer extends Component {
           studies,
           activeDisplaySetInstanceUID
         ),
+        activeDisplaySetInstanceUID,
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
@@ -356,17 +357,22 @@ class Viewer extends Component {
                 />
               ) : (
                 <AppContext.Consumer>
-                  {appContext => (
-                    <ConnectedStudyBrowser
-                      studies={this.state.thumbnails}
-                      studyMetadata={this.props.studies}
-                      showThumbnailProgressBar={
-                        appContext.appConfig.studyPrefetcher &&
-                        appContext.appConfig.studyPrefetcher.enabled &&
-                        appContext.appConfig.studyPrefetcher.displayProgress
-                      }
-                    />
-                  )}
+                  {appContext => {
+                    const { appConfig } = appContext;
+                    const { studyPrefetcher } = appConfig;
+                    const { thumbnails } = this.state;
+                    return (
+                      <ConnectedStudyBrowser
+                        studies={thumbnails}
+                        studyMetadata={this.props.studies}
+                        showThumbnailProgressBar={
+                          studyPrefetcher &&
+                          studyPrefetcher.enabled &&
+                          studyPrefetcher.displayProgress
+                        }
+                      />
+                    );
+                  }}
                 </AppContext.Consumer>
               )}
             </SidePanel>
@@ -376,16 +382,25 @@ class Viewer extends Component {
           <div className={classNames('main-content')}>
             <ErrorBoundaryDialog context="ViewerMain">
               <AppContext.Consumer>
-                {appContext =>
-                  appContext.appConfig.studyPrefetcher &&
-                  appContext.appConfig.studyPrefetcher.enabled && (
-                    <StudyPrefetcher
-                      viewportIndex={this.props.activeViewportIndex}
-                      studies={this.props.studies}
-                      options={appContext.appConfig.studyPrefetcher}
-                    />
-                  )
-                }
+                {appContext => {
+                  const { appConfig } = appContext;
+                  const { studyPrefetcher } = appConfig;
+                  const { activeViewportIndex, studies } = this.props;
+                  const { activeDisplaySetInstanceUID } = this.state;
+                  return (
+                    studyPrefetcher &&
+                    studyPrefetcher.enabled && (
+                      <StudyPrefetcher
+                        viewportIndex={activeViewportIndex}
+                        displaySetInstanceUID={activeDisplaySetInstanceUID}
+                        autoPrefetch={studyPrefetcher.autoPrefetch}
+                        getActiveViewport={this._getActiveViewport}
+                        studies={studies}
+                        options={studyPrefetcher}
+                      />
+                    )
+                  );
+                }}
               </AppContext.Consumer>
               <ConnectedViewerMain
                 studies={this.props.studies}

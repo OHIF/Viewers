@@ -77,9 +77,10 @@ export class StudyPrefetcher {
    * with previously set options.
    *
    * @param {*} element
+   * @param {string} displaySetInstanceUID the display set instance uid
    * @returns
    */
-  prefetch(element) {
+  prefetch(element, displaySetInstanceUID) {
     if (!this.studies || !this.studies.length) {
       return;
     }
@@ -87,7 +88,7 @@ export class StudyPrefetcher {
     this.enabledElement = cornerstone.getEnabledElement(element);
 
     this.stopPrefetching();
-    this.prefetchDisplaySets();
+    this.prefetchDisplaySets(displaySetInstanceUID);
   }
 
   /**
@@ -115,9 +116,13 @@ export class StudyPrefetcher {
   /**
    * Extract all image ids from all display sets to be fetched and
    * call method to add images to request pool manager.
+   *
+   * @param {string} displaySetInstanceUID the display set instance uid
    */
-  prefetchDisplaySets() {
-    const displaySetsToPrefetch = this.getDisplaySetsToPrefetch();
+  prefetchDisplaySets(displaySetInstanceUID) {
+    const displaySetsToPrefetch = this.getDisplaySetsToPrefetch(
+      displaySetInstanceUID
+    );
     const imageIds = this.getImageIdsFromDisplaySets(displaySetsToPrefetch);
     this.prefetchImageIds(imageIds);
   }
@@ -193,6 +198,25 @@ export class StudyPrefetcher {
   }
 
   /**
+   * Returns the display set with given uid.
+   *
+   * @param {string} displaySetInstanceUID the display set instance uid
+   * @returns {object} displaySet
+   */
+  getDisplaySetByUID(displaySetInstanceUID) {
+    let displaySet;
+    studyMetadataManager.all().forEach(study => {
+      const ds = study.displaySets.find(
+        ds => ds.displaySetInstanceUID === displaySetInstanceUID
+      );
+      if (ds) {
+        displaySet = ds;
+      }
+    });
+    return displaySet;
+  }
+
+  /**
    * Get display set by SOPInstanceUID.
    *
    * @param {array} displaySets
@@ -221,9 +245,11 @@ export class StudyPrefetcher {
 
   /**
    * Prefetch display sets based on cornerstone viewport element image.
-   * @returns
+   *
+   * @param {string} displaySetInstanceUID the display set instance uid
+   * @returns {array} displaySets
    */
-  getDisplaySetsToPrefetch() {
+  getDisplaySetsToPrefetch(displaySetInstanceUID) {
     const image = this.getActiveViewportImage();
 
     if (!image) {
@@ -234,14 +260,15 @@ export class StudyPrefetcher {
     const series = this.getSeries(study, image);
     const instance = this.getInstance(series, image);
     const displaySets = study.displaySets;
-    const activeDisplaySet = this.getDisplaySetBySOPInstanceUID(
-      displaySets,
-      instance
-    );
+    const activeDisplaySet =
+      prefetchOrder !== 'topdown' && displaySetInstanceUID
+        ? this.getDisplaySetByUID(displaySetInstanceUID)
+        : this.getDisplaySetBySOPInstanceUID(displaySets, instance);
 
     const prefetchMethodMap = {
       topdown: 'getFirstDisplaySets',
       downward: 'getNextDisplaySets',
+      upward: 'getPreviousDisplaySets',
       closest: 'getClosestDisplaySets',
       all: 'getAllDisplaySets',
     };
@@ -321,6 +348,29 @@ export class StudyPrefetcher {
     }
 
     return selectedDisplaySets;
+  }
+
+  /**
+   * Get all display sets before the active display set.
+   *
+   * @param {array} displaySets
+   * @param {object} activeDisplaySet
+   * @param {number} displaySetCount
+   * @param {boolean} includeActiveDisplaySet
+   * @returns
+   */
+  getPreviousDisplaySets(
+    displaySets,
+    activeDisplaySet,
+    displaySetCount,
+    includeActiveDisplaySet
+  ) {
+    const activeDisplaySetIndex = displaySets.indexOf(activeDisplaySet);
+    const end = includeActiveDisplaySet
+      ? activeDisplaySetIndex + 1
+      : activeDisplaySetIndex;
+    const previousDisplaySets = displaySets.slice(0, end);
+    return previousDisplaySets.reverse().slice(0, displaySetCount);
   }
 
   /**
