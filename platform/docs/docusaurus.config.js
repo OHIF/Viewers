@@ -341,9 +341,10 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           title: ' ',
           items: [
             {
+              // This doesn't show up on dev for some reason, but displays in build
               html: `
                 <a href="https://www.massgeneral.org/" target="_blank" rel="noreferrer noopener">
-                  <img src= '/static/img/mgh-logo.png' id="mgh-logo" alt="MGH" />
+                  <img src="/img/mgh-logo.png" id="mgh-logo" alt="MGH" />
                 </a>
               `,
             },
