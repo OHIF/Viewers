@@ -217,7 +217,7 @@ const definitions = [
       },
       {
         id: 'Eraser',
-        label: 'Eraser',
+        label: 'Brush',
         icon: 'eraser',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
