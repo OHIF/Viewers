@@ -17,11 +17,12 @@ window.config = {
    * OHIF's study prefetcher configuration.
    *
    * @param {boolean} enabled Whether to enable/disable OHIF's study prefetcher
-   * @param {('all'|'closest'|'downward'|'topdown')} order Fetching order: all display sets, the closest ones, downward or top down fashion based on the currently selected display set
-   * @param {boolean} displaySetCount How much display sets should be prefetched at once
+   * @param {('all'|'closest'|'downward'|'upward'|'topdown')} order Fetching order: all display sets, the closest ones, downward or top down fashion based on the currently selected display set
+   * @param {number} displaySetCount How much display sets should be prefetched at once (note: this attribute is ignored if order was set to 'all')
    * @param {boolean} preventCache Prevent images to be cached in Cornerstone Tools's request pool manager
-   * @param {boolean} prefetchDisplaySetsTimeout Prefetch timeout
+   * @param {number} prefetchDisplaySetsTimeout Prefetch timeout
    * @param {boolean} displayProgress Whether to display or not the progress bar in the display set
+   * @param {boolean} includeActiveDisplaySet Include or not the active display set while prefetching
    */
   studyPrefetcher: {
     enabled: true,
@@ -30,6 +31,7 @@ window.config = {
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
     displayProgress: false,
+    includeActiveDisplaySet: true,
   },
 };
 ```

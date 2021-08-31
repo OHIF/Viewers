@@ -1,48 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { classes } from '@ohif/core';
 import PropTypes from 'prop-types';
 import cs from 'cornerstone-core';
 
 import './StudyPrefetcher.css';
 
-const StudyPrefetcher = ({
-  autoPrefetch,
-  displaySetInstanceUID,
-  studies,
-  options,
-  viewportIndex,
-}) => {
-  const [activeDisplaySet, setActiveDisplaySet] = useState();
-
+const StudyPrefetcher = ({ studies, options }) => {
   useEffect(() => {
-    if (
-      activeDisplaySet !== null &&
-      displaySetInstanceUID &&
-      displaySetInstanceUID !== activeDisplaySet
-    ) {
-      setActiveDisplaySet(displaySetInstanceUID);
-      const enabledElement = cs.getEnabledElements()[viewportIndex];
-      if (enabledElement) {
-        const studyPrefetcher = classes.StudyPrefetcher.getInstance(
-          studies,
-          options
-        );
-        studyPrefetcher.prefetch(enabledElement.element, displaySetInstanceUID);
-      }
-    }
-  }, [
-    activeDisplaySet,
-    displaySetInstanceUID,
-    options,
-    studies,
-    viewportIndex,
-  ]);
-
-  useEffect(() => {
-    const AUTO_PREFETCH_ORDERS = ['topdown', 'all'];
-    if (!AUTO_PREFETCH_ORDERS.includes(options.order)) {
-      return;
-    }
+    let prefetching = {};
 
     const studyPrefetcher = classes.StudyPrefetcher.getInstance(
       studies,
@@ -51,12 +16,20 @@ const StudyPrefetcher = ({
     studyPrefetcher.setStudies(studies);
 
     const onImageRendered = ({ detail }) => {
-      console.debug('Prefetching...');
-      studyPrefetcher.prefetch(detail.element);
-      detail.element.removeEventListener(
-        cs.EVENTS.IMAGE_RENDERED,
-        onImageRendered
+      const study = studyPrefetcher.getStudy(detail.image);
+      const series = studyPrefetcher.getSeries(study, detail.image);
+      const instance = studyPrefetcher.getInstance(series, detail.image);
+      const {
+        displaySetInstanceUID,
+      } = studyPrefetcher.getDisplaySetBySOPInstanceUID(
+        study.displaySets,
+        instance
       );
+      if (prefetching[displaySetInstanceUID] !== true) {
+        console.debug('Prefetching...');
+        studyPrefetcher.prefetch(detail.element, displaySetInstanceUID);
+        prefetching[displaySetInstanceUID] = true;
+      }
     };
 
     const onElementEnabled = ({ detail }) => {
@@ -67,6 +40,7 @@ const StudyPrefetcher = ({
     };
 
     cs.events.addEventListener(cs.EVENTS.ELEMENT_ENABLED, onElementEnabled);
+
     return () => {
       cs.events.removeEventListener(
         cs.EVENTS.ELEMENT_ENABLED,
@@ -74,7 +48,7 @@ const StudyPrefetcher = ({
       );
       studyPrefetcher.destroy();
     };
-  }, [autoPrefetch, options, studies]);
+  }, [options, studies]);
 
   return null;
 };

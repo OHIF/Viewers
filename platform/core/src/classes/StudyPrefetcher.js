@@ -260,10 +260,9 @@ export class StudyPrefetcher {
     const series = this.getSeries(study, image);
     const instance = this.getInstance(series, image);
     const displaySets = study.displaySets;
-    const activeDisplaySet =
-      prefetchOrder !== 'topdown' && displaySetInstanceUID
-        ? this.getDisplaySetByUID(displaySetInstanceUID)
-        : this.getDisplaySetBySOPInstanceUID(displaySets, instance);
+    const activeDisplaySet = displaySetInstanceUID
+      ? this.getDisplaySetByUID(displaySetInstanceUID)
+      : this.getDisplaySetBySOPInstanceUID(displaySets, instance);
 
     const prefetchMethodMap = {
       topdown: 'getFirstDisplaySets',
@@ -419,6 +418,7 @@ export class StudyPrefetcher {
 
     if (includeActiveDisplaySet) {
       selectedDisplaySets.push(displaySets[activeDisplaySetIndex]);
+      displaySetCount--;
     }
 
     while ((left >= 0 || right < length) && displaySetCount) {

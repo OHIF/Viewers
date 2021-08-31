@@ -7,8 +7,8 @@ window.config = {
   disableServersCache: false,
   studyPrefetcher: {
     enabled: true,
-    order: 'closest',
-    displaySetCount: 2,
+    order: 'topdown',
+    displaySetCount: 3,
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
     displayProgress: true,
