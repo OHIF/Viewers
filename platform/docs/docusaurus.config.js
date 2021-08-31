@@ -51,7 +51,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
-  url: 'https://ohif.org',
+  url: 'https://v3-docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
     locales: isDeployPreview
@@ -264,11 +264,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     gtag: {
       trackingID: 'UA-110573590-2',
     },
-    algolia: {
-      apiKey: '1960250e38c7655d2bfe0ce8fdaed987',
-      indexName: 'ohif',
-      contextualSearch: true,
-    },
+    // algolia: {
+    //   apiKey: '47ecd3b21be71c5822571b9f59e52544',
+    //   indexName: 'docusaurus-2',
+    //   contextualSearch: true,
+    // },
     navbar: {
       hideOnScroll: false,
       logo: {
