@@ -1,35 +1,23 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 import OHIF from '@ohif/core';
 
 const { StudyLoadingListener } = OHIF.classes;
 
-class StudyLoadingMonitor extends Component {
-  static propTypes = {
-    studies: PropTypes.array.isRequired,
-  };
+const StudyLoadingMonitor = ({ studies }) => {
+  useEffect(() => {
+    const studyLoadingListener = StudyLoadingListener.getInstance();
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.studies !== prevProps.studies) {
-      this.studyLoadingListener.clear();
-      this.studyLoadingListener.addStudies(this.props.studies);
+    if (studies && studies.length > 0) {
+      studyLoadingListener.clear();
+      studyLoadingListener.addStudies(studies);
     }
-  }
 
-  componentDidMount() {
-    this.studyLoadingListener = StudyLoadingListener.getInstance();
-    this.studyLoadingListener.clear();
-    this.studyLoadingListener.addStudies(this.props.studies);
-  }
+    return () => {
+      studyLoadingListener.clear();
+    };
+  }, [studies]);
 
-  render() {
-    return null;
-  }
-
-  componentWillUnmount() {
-    // Destroy stack loading listeners when we close the viewer
-    this.studyLoadingListener.clear();
-  }
-}
+  return null;
+};
 
 export default StudyLoadingMonitor;

@@ -304,7 +304,6 @@ class Viewer extends Component {
             activeViewport={
               this.props.viewports[this.props.activeViewportIndex]
             }
-            isDerivedDisplaySetsLoaded={this.props.isDerivedDisplaySetsLoaded}
             isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
             isRightSidePanelOpen={this.state.isRightSidePanelOpen}
             selectedLeftSidePanel={
@@ -602,65 +601,6 @@ const _checkForSeriesInconsistencesWarnings = async function(
 };
 
 /**
- * Checks if display set is active, i.e. if the series is currently shown
- * in the active viewport.
- *
- * For data display set, this functions checks if the active
- * display set instance uid in the current active viewport is the same of the
- * thumbnail one.
- *
- * For derived modalities (e.g., SEG and RTSTRUCT), the function gets the
- * reference display set and then checks the reference uid with the active
- * display set instance uid.
- *
- * @param {displaySet} displaySet
- * @param {Study[]} studies
- * @param {string} activeDisplaySetInstanceUID
- * @returns {boolean} is active.
- */
-const _isDisplaySetActive = function(
-  displaySet,
-  studies,
-  activeDisplaySetInstanceUID
-) {
-  let active = false;
-
-  const { displaySetInstanceUID } = displaySet;
-
-  // TO DO: in the future, we could possibly support new modalities
-  // we should have a list of all modalities here, instead of having hard coded checks
-  if (
-    displaySet.Modality !== 'SEG' &&
-    displaySet.Modality !== 'RTSTRUCT' &&
-    displaySet.Modality !== 'RTDOSE'
-  ) {
-    active = activeDisplaySetInstanceUID === displaySetInstanceUID;
-  } else if (displaySet.getSourceDisplaySet) {
-    if (displaySet.Modality === 'SEG') {
-      const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
-        studies,
-        false
-      );
-      active = referencedDisplaySet
-        ? activeDisplaySetInstanceUID ===
-          referencedDisplaySet.displaySetInstanceUID
-        : false;
-    } else {
-      const referencedDisplaySet = displaySet.getSourceDisplaySet(
-        studies,
-        false
-      );
-      active = referencedDisplaySet
-        ? activeDisplaySetInstanceUID ===
-          referencedDisplaySet.displaySetInstanceUID
-        : false;
-    }
-  }
-
-  return active;
-};
-
-/**
  * What types are these? Why do we have "mapping" dropped in here instead of in
  * a mapping layer?
  *
@@ -701,14 +641,10 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         displaySet,
         studies
       );
-      const active = _isDisplaySetActive(
-        displaySet,
-        studies,
-        activeDisplaySetInstanceUID
-      );
 
       return {
-        active,
+        active:
+          displaySet.displaySetInstanceUID === activeDisplaySetInstanceUID,
         imageId,
         altImageText,
         displaySetInstanceUID,

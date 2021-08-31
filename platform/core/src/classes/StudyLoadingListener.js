@@ -7,7 +7,6 @@ class BaseLoadingListener {
   constructor(stack, options = {}) {
     this.id = BaseLoadingListener.getNewId();
     this.stack = stack;
-    this.startListening();
     this.statsItemsLimit = options.statsItemsLimit || 2;
     this.stats = {
       items: [],
@@ -96,11 +95,18 @@ class BaseLoadingListener {
 class DICOMFileLoadingListener extends BaseLoadingListener {
   constructor(stack, options) {
     super(stack, options);
+
+    this.imageLoadProgressEventHandler = this._imageLoadProgressEventHandle.bind(
+      this
+    );
+
     this._dataSetUrl = this._getDataSetUrl(stack);
     this._lastLoaded = 0;
 
     // Check how many instances has already been download (cached)
     this._checkCachedData();
+
+    this.startListening();
   }
 
   _checkCachedData() {
@@ -126,10 +132,6 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
 
   startListening() {
     const imageLoadProgressEventName = this._getImageLoadProgressEventName();
-
-    this.imageLoadProgressEventHandler = this._imageLoadProgressEventHandle.bind(
-      this
-    );
 
     this.stopListening();
 
@@ -204,30 +206,16 @@ const StudyLoadingListenerEvents = {
   OnProgress: 'StudyLoadingListenerEvents.OnProgress',
 };
 
-/**
- * TODO: Use a different alternative without the use of events.
- */
-const DEFAULT_OPTIONS = {
-  _setProgressData: (progressId, progressData) => {
-    document.dispatchEvent(
-      new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
-        detail: { progressId, progressData },
-      })
-    );
-  },
-  _clearProgressById: progressId => {
-    document.dispatchEvent(
-      new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
-        detail: { progressId, percentComplete: 0 },
-      })
-    );
-  },
-};
-
 class StackLoadingListener extends BaseLoadingListener {
   constructor(stack, options = {}) {
     options.statsItemsLimit = 20;
+
     super(stack, options);
+
+    this.imageLoadedEventHandler = this._imageLoadedEventHandler.bind(this);
+    this.imageCachePromiseRemovedEventHandler = this._imageCachePromiseRemovedEventHandler.bind(
+      this
+    );
 
     this.imageDataMap = this._convertImageIdsArrayToMap(stack.imageIds);
     this.framesStatus = this._createArray(stack.imageIds.length, false);
@@ -235,6 +223,8 @@ class StackLoadingListener extends BaseLoadingListener {
 
     // Check how many instances has already been download (cached)
     this._checkCachedData();
+
+    this.startListening();
   }
 
   _convertImageIdsArrayToMap(imageIds) {
@@ -295,11 +285,6 @@ class StackLoadingListener extends BaseLoadingListener {
   startListening() {
     const imageLoadedEventName = this._getImageLoadedEventName();
     const imageCachePromiseRemovedEventName = this._getImageCachePromiseRemoveEventName();
-
-    this.imageLoadedEventHandler = this._imageLoadedEventHandler.bind(this);
-    this.imageCachePromiseRemovedEventHandler = this._imageCachePromiseRemovedEventHandler.bind(
-      this
-    );
 
     this.stopListening();
 
@@ -395,7 +380,7 @@ class StackLoadingListener extends BaseLoadingListener {
     }
 
     progressBar += ']';
-    log.info(`${displaySetInstanceUID}: ${progressBar}`);
+    console.info(`${displaySetInstanceUID}: ${progressBar}`);
   }
 }
 
@@ -487,10 +472,30 @@ class StudyLoadingListener {
     return imageId.substring(0, colonIndex);
   }
 
-  // Singleton
-  static getInstance(options = DEFAULT_OPTIONS) {
+  static getInstance(options) {
+    /**
+     * TODO: Use a different alternative without the use of events.
+     */
+    const DEFAULT_OPTIONS = {
+      _setProgressData: (progressId, progressData) => {
+        document.dispatchEvent(
+          new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+            detail: { progressId, progressData },
+          })
+        );
+      },
+      _clearProgressById: progressId =>
+        document.dispatchEvent(
+          new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+            detail: { progressId, percentComplete: 0 },
+          })
+        ),
+    };
+
     if (!StudyLoadingListener._instance) {
-      StudyLoadingListener._instance = new StudyLoadingListener(options);
+      StudyLoadingListener._instance = new StudyLoadingListener(
+        options || DEFAULT_OPTIONS
+      );
     }
 
     return StudyLoadingListener._instance;

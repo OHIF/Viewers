@@ -21,7 +21,8 @@ export class StudyPrefetcher {
     this.studies = studies || [];
 
     if (options) {
-      this.options = options;
+      this.options = { ...this.options, ...options };
+      this.options.requestType = 'prefetch';
     }
 
     cornerstone.events.addEventListener(
@@ -54,7 +55,8 @@ export class StudyPrefetcher {
     }
 
     if (options) {
-      this.options = options;
+      this.options = { ...this.options, ...options };
+      this.options.requestType = 'prefetch';
     }
 
     return StudyPrefetcher.instance;
@@ -82,8 +84,10 @@ export class StudyPrefetcher {
       return;
     }
 
+    this.enabledElement = cornerstone.getEnabledElement(element);
+
     this.stopPrefetching();
-    this.prefetchDisplaySets(element);
+    this.prefetchDisplaySets();
   }
 
   /**
@@ -100,6 +104,7 @@ export class StudyPrefetcher {
    * @param {number} timeout
    */
   prefetchDisplaySetsAsync(element, timeout) {
+    this.enabledElement = cornerstone.getEnabledElement(element);
     timeout = timeout || this.options.prefetchDisplaySetsTimeout;
     clearTimeout(this.prefetchDisplaySetsHandler);
     this.prefetchDisplaySetsHandler = setTimeout(() => {
@@ -110,11 +115,9 @@ export class StudyPrefetcher {
   /**
    * Extract all image ids from all display sets to be fetched and
    * call method to add images to request pool manager.
-   *
-   * @param {HTMLElement} element cornerstone viewport element
    */
-  prefetchDisplaySets(element) {
-    const displaySetsToPrefetch = this.getDisplaySetsToPrefetch(element);
+  prefetchDisplaySets() {
+    const displaySetsToPrefetch = this.getDisplaySetsToPrefetch();
     const imageIds = this.getImageIdsFromDisplaySets(displaySetsToPrefetch);
     this.prefetchImageIds(imageIds);
   }
@@ -206,29 +209,22 @@ export class StudyPrefetcher {
 
   /**
    * Get active viewport image based on cornerstone viewport element.
-   *
-   * @param {HTMLElement} element
    * @returns
    */
-  getActiveViewportImage(element) {
-    if (!element) {
+  getActiveViewportImage() {
+    if (!this.enabledElement) {
       return;
     }
 
-    const enabledElement = cornerstone.getEnabledElement(element);
-    const image = enabledElement.image;
-
-    return image;
+    return this.enabledElement.image;
   }
 
   /**
    * Prefetch display sets based on cornerstone viewport element image.
-   *
-   * @param {HTMLElement} element
    * @returns
    */
-  getDisplaySetsToPrefetch(element) {
-    const image = this.getActiveViewportImage(element);
+  getDisplaySetsToPrefetch() {
+    const image = this.getActiveViewportImage();
 
     if (!image) {
       return [];

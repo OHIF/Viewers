@@ -83,7 +83,6 @@ window.config = {
    * @param {boolean} preventCache Prevent images to be cached in Cornerstone Tools's request pool manager
    * @param {boolean} prefetchDisplaySetsTimeout Prefetch timeout
    * @param {boolean} displayProgress Whether to display or not the progress bar in the display set
-   * @param {boolean} includeActiveDisplaySet Include or not the active display set while prefetching
    */
   studyPrefetcher: {
     enabled: true,
@@ -92,7 +91,6 @@ window.config = {
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
     displayProgress: false,
-    includeActiveDisplaySet: false,
   },
   servers: {
     dicomWeb: [

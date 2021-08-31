@@ -15,6 +15,7 @@ class OHIFCornerstoneViewport extends Component {
 
   static defaultProps = {
     customProps: {},
+    isStackPrefetchEnabled: true,
   };
 
   static propTypes = {
@@ -24,6 +25,7 @@ class OHIFCornerstoneViewport extends Component {
     children: PropTypes.node,
     customProps: PropTypes.object,
     stackPrefetch: PropTypes.object,
+    isStackPrefetchEnabled: PropTypes.bool,
   };
 
   static id = 'OHIFCornerstoneViewport';
@@ -251,10 +253,10 @@ class OHIFCornerstoneViewport extends Component {
           onNewImageDebounceTime={300}
           viewportOverlayComponent={warningsOverlay}
           stackPrefetch={this.props.stackPrefetch}
+          isStackPrefetchEnabled={this.props.isStackPrefetchEnabled}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
-          // isStackPrefetchEnabled={true}
           // onElementEnabled={() => {}}
           // setViewportActive{() => {}}
           {...this.props.customProps}

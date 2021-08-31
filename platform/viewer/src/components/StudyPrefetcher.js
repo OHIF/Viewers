@@ -1,14 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { classes } from '@ohif/core';
 import PropTypes from 'prop-types';
 import cs from 'cornerstone-core';
 
 import './StudyPrefetcher.css';
 
-const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
-  const studyPrefetcher = classes.StudyPrefetcher.getInstance(studies, options);
-
+const StudyPrefetcher = ({ studies, options }) => {
   useEffect(() => {
+    const studyPrefetcher = classes.StudyPrefetcher.getInstance(
+      studies,
+      options
+    );
     studyPrefetcher.setStudies(studies);
 
     const onImageRendered = ({ detail }) => {
@@ -19,14 +21,6 @@ const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
         onImageRendered
       );
     };
-
-    const activeEnabledElement = cs.getEnabledElements()[viewportIndex];
-    if (activeEnabledElement && activeEnabledElement.image) {
-      activeEnabledElement.element.addEventListener(
-        cs.EVENTS.IMAGE_RENDERED,
-        onImageRendered
-      );
-    }
 
     const onElementEnabled = ({ detail }) => {
       detail.element.addEventListener(
@@ -43,14 +37,13 @@ const StudyPrefetcher = ({ studies, viewportIndex, options }) => {
       );
       studyPrefetcher.destroy();
     };
-  }, [studies, viewportIndex, studyPrefetcher]);
+  }, [options, studies]);
 
   return null;
 };
 
 StudyPrefetcher.propTypes = {
   studies: PropTypes.array.isRequired,
-  viewportIndex: PropTypes.number.isRequired,
   options: PropTypes.shape({
     enabled: PropTypes.bool,
     order: PropTypes.string,
