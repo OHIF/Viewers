@@ -206,6 +206,26 @@ const StudyLoadingListenerEvents = {
   OnProgress: 'StudyLoadingListenerEvents.OnProgress',
 };
 
+function promiseState(promise, callback) {
+  // Symbols and RegExps are never content-equal
+  var uniqueValue = window['Symbol'] ? Symbol('unique') : /unique/;
+
+  function notifyPendingOrResolved(value) {
+    if (value === uniqueValue) {
+      return callback('pending');
+    } else {
+      return callback('fulfilled');
+    }
+  }
+
+  function notifyRejected(reason) {
+    return callback('rejected');
+  }
+
+  var race = [promise, Promise.resolve(uniqueValue)];
+  Promise.race(race).then(notifyPendingOrResolved, notifyRejected);
+}
+
 class StackLoadingListener extends BaseLoadingListener {
   constructor(stack, options = {}) {
     options.statsItemsLimit = 20;
@@ -253,17 +273,21 @@ class StackLoadingListener extends BaseLoadingListener {
   }
 
   _checkCachedData() {
-    // const imageIds = this.stack.imageIds;
+    const imageIds = this.stack.imageIds;
     // TODO: No way to check status of Promise.
-    /*for(let i = 0; i < imageIds.length; i++) {
-            const imageId = imageIds[i];
+    for (let i = 0; i < imageIds.length; i++) {
+      const imageId = imageIds[i];
 
-            const imagePromise = cornerstone.imageCache.getImageLoadObject(imageId).promise;
+      const imageObject = cornerstone.imageCache.getImageLoadObject(imageId);
 
-            if (imagePromise && (imagePromise.state() === 'resolved')) {
-                this._updateFrameStatus(imageId, true);
-            }
-        }*/
+      if (imageObject && imageObject.promise) {
+        promiseState(imageObject.promise, state => {
+          if (state === 'fulfilled') {
+            this._updateFrameStatus(imageId, true);
+          }
+        });
+      }
+    }
   }
 
   _getImageLoadedEventName() {

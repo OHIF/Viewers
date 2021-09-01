@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { classes } from '@ohif/core';
+import { classes, utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import cs from 'cornerstone-core';
 
@@ -13,22 +13,46 @@ const StudyPrefetcher = ({ studies, options }) => {
       studies,
       options
     );
-    studyPrefetcher.setStudies(studies);
+    const studiesMetadata = studies.map(s =>
+      utils.studyMetadataManager.get(s.StudyInstanceUID)
+    );
+    studyPrefetcher.setStudies(studiesMetadata);
 
     const onImageRendered = ({ detail }) => {
+      /**
+       * When images are cached the viewport will load instantly and
+       * the display sets will not be available at this point in time.
+       *
+       * This code add display sets and updates the study prefetcher metadata.
+       */
+      const studiesMetadata = studies.map(s => {
+        const studyMetadata = utils.studyMetadataManager.get(
+          s.StudyInstanceUID
+        );
+        const displaySets = studyMetadata.getDisplaySets();
+        if (!displaySets || displaySets.length < 1) {
+          s.displaySets.forEach(ds => studyMetadata.addDisplaySet(ds));
+        }
+        return studyMetadata;
+      });
+      studyPrefetcher.setStudies(studiesMetadata);
+
       const study = studyPrefetcher.getStudy(detail.image);
       const series = studyPrefetcher.getSeries(study, detail.image);
       const instance = studyPrefetcher.getInstance(series, detail.image);
-      const {
-        displaySetInstanceUID,
-      } = studyPrefetcher.getDisplaySetBySOPInstanceUID(
-        study.displaySets,
-        instance
-      );
-      if (prefetching[displaySetInstanceUID] !== true) {
-        console.debug('Prefetching...');
-        studyPrefetcher.prefetch(detail.element, displaySetInstanceUID);
-        prefetching[displaySetInstanceUID] = true;
+
+      if (study.displaySets && study.displaySets.length > 0) {
+        const {
+          displaySetInstanceUID,
+        } = studyPrefetcher.getDisplaySetBySOPInstanceUID(
+          study.displaySets,
+          instance
+        );
+        if (prefetching[displaySetInstanceUID] !== true) {
+          console.debug('Prefetching...');
+          studyPrefetcher.prefetch(detail.element, displaySetInstanceUID);
+          prefetching[displaySetInstanceUID] = true;
+        }
       }
     };
 
@@ -54,7 +78,6 @@ const StudyPrefetcher = ({ studies, options }) => {
 };
 
 StudyPrefetcher.propTypes = {
-  autoPrefetch: PropTypes.bool,
   studies: PropTypes.array.isRequired,
   options: PropTypes.shape({
     enabled: PropTypes.bool,
@@ -68,7 +91,6 @@ StudyPrefetcher.propTypes = {
 
 StudyPrefetcher.defaultProps = {
   options: {
-    autoPrefetch: true,
     order: 'closest',
     displaySetCount: 1,
     preventCache: false,

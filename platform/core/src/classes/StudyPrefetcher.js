@@ -1,8 +1,7 @@
-import log from '../log.js';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
+
 import getImageId from '../utils/getImageId.js';
-import studyMetadataManager from '../utils/studyMetadataManager';
 
 const noop = () => {};
 
@@ -161,7 +160,7 @@ export class StudyPrefetcher {
       'StudyInstanceUID',
       image.imageId
     );
-    const studies = studyMetadataManager.all();
+    const studies = this.studies;
     return studies.find(
       study => study.getData().StudyInstanceUID === StudyInstanceUID
     );
@@ -205,7 +204,7 @@ export class StudyPrefetcher {
    */
   getDisplaySetByUID(displaySetInstanceUID) {
     let displaySet;
-    studyMetadataManager.all().forEach(study => {
+    this.studies.forEach(study => {
       const ds = study.displaySets.find(
         ds => ds.displaySetInstanceUID === displaySetInstanceUID
       );

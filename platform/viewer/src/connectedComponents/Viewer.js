@@ -385,16 +385,11 @@ class Viewer extends Component {
                 {appContext => {
                   const { appConfig } = appContext;
                   const { studyPrefetcher } = appConfig;
-                  const { activeViewportIndex, studies } = this.props;
-                  const { activeDisplaySetInstanceUID } = this.state;
+                  const { studies } = this.props;
                   return (
                     studyPrefetcher &&
                     studyPrefetcher.enabled && (
                       <StudyPrefetcher
-                        viewportIndex={activeViewportIndex}
-                        displaySetInstanceUID={activeDisplaySetInstanceUID}
-                        autoPrefetch={studyPrefetcher.autoPrefetch}
-                        getActiveViewport={this._getActiveViewport}
                         studies={studies}
                         options={studyPrefetcher}
                       />
@@ -616,6 +611,65 @@ const _checkForSeriesInconsistencesWarnings = async function(
 };
 
 /**
+ * Checks if display set is active, i.e. if the series is currently shown
+ * in the active viewport.
+ *
+ * For data display set, this functions checks if the active
+ * display set instance uid in the current active viewport is the same of the
+ * thumbnail one.
+ *
+ * For derived modalities (e.g., SEG and RTSTRUCT), the function gets the
+ * reference display set and then checks the reference uid with the active
+ * display set instance uid.
+ *
+ * @param {displaySet} displaySet
+ * @param {Study[]} studies
+ * @param {string} activeDisplaySetInstanceUID
+ * @returns {boolean} is active.
+ */
+const _isDisplaySetActive = function(
+  displaySet,
+  studies,
+  activeDisplaySetInstanceUID
+) {
+  let active = false;
+
+  const { displaySetInstanceUID } = displaySet;
+
+  // TO DO: in the future, we could possibly support new modalities
+  // we should have a list of all modalities here, instead of having hard coded checks
+  if (
+    displaySet.Modality !== 'SEG' &&
+    displaySet.Modality !== 'RTSTRUCT' &&
+    displaySet.Modality !== 'RTDOSE'
+  ) {
+    active = activeDisplaySetInstanceUID === displaySetInstanceUID;
+  } else if (displaySet.getSourceDisplaySet) {
+    if (displaySet.Modality === 'SEG') {
+      const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
+        studies,
+        false
+      );
+      active = referencedDisplaySet
+        ? activeDisplaySetInstanceUID ===
+          referencedDisplaySet.displaySetInstanceUID
+        : false;
+    } else {
+      const referencedDisplaySet = displaySet.getSourceDisplaySet(
+        studies,
+        false
+      );
+      active = referencedDisplaySet
+        ? activeDisplaySetInstanceUID ===
+          referencedDisplaySet.displaySetInstanceUID
+        : false;
+    }
+  }
+
+  return active;
+};
+
+/**
  * What types are these? Why do we have "mapping" dropped in here instead of in
  * a mapping layer?
  *
@@ -658,8 +712,11 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       );
 
       return {
-        active:
-          displaySet.displaySetInstanceUID === activeDisplaySetInstanceUID,
+        active: _isDisplaySetActive(
+          displaySet,
+          studies,
+          activeDisplaySetInstanceUID
+        ),
         imageId,
         altImageText,
         displaySetInstanceUID,
