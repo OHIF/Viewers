@@ -7,8 +7,6 @@ import './StudyPrefetcher.css';
 
 const StudyPrefetcher = ({ studies, options }) => {
   useEffect(() => {
-    let prefetching = {};
-
     const studyPrefetcher = classes.StudyPrefetcher.getInstance(
       studies,
       options
@@ -48,11 +46,8 @@ const StudyPrefetcher = ({ studies, options }) => {
           study.displaySets,
           instance
         );
-        if (prefetching[displaySetInstanceUID] !== true) {
-          console.debug('Prefetching...');
-          studyPrefetcher.prefetch(detail.element, displaySetInstanceUID);
-          prefetching[displaySetInstanceUID] = true;
-        }
+        console.debug('Prefetching...');
+        studyPrefetcher.prefetch(detail.element, displaySetInstanceUID);
       }
     };
 
