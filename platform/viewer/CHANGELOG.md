@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.23](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.22...@ohif/viewer@4.9.23) (2021-08-30)
+
+
+### Bug Fixes
+
+* MPR metadata parsing for spacings ([#2517](https://github.com/OHIF/Viewers/issues/2517)) ([715dfc5](https://github.com/OHIF/Viewers/commit/715dfc556a3883de31d74012dcc99e431d91f57d))
+
+
+
+
+
 ## [4.9.22](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.21...@ohif/viewer@4.9.22) (2021-08-19)
 
 
