@@ -3154,7 +3154,7 @@
     locize-lastused "^1.1.0"
     rollup-plugin-json "^4.0.0"
 
-"@ohif/ui@^1.8.2":
+"@ohif/ui@^1.8.2", "@ohif/ui@^2.0.0":
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/@ohif/ui/-/ui-1.9.2.tgz#8eaef005dae6c50c127d5f2baa9ca3a7a0bb4769"
   integrity sha512-M2bNbxgrc5nBGKuV7s82RG4oJIXjHGNRtirbxBWqTtcbL2aintN2u3AtjHSDQ2X4rv9rOff7imTDVfiY2hbujA==

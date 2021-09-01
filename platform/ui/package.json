@@ -1,6 +1,6 @@
 {
-  "name": "@ohif/ui",
-  "version": "2.0.0",
+  "name": "@newlantern/ohif-ui",
+  "version": "2.0.16",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "start": "yarn run build --watch",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js",
     "build:package": "yarn run build"
   },
   "peerDependencies": {
