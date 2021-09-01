@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ToolbarButton } from '@ohif/ui';
+import { ToolbarButton } from '@newlantern/ohif-ui';
 
 function NestedMenu({ children, label, icon, isActive }) {
   const [isOpen, setIsOpen] = useState(false);

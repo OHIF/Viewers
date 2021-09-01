@@ -1,3 +1,3 @@
-import { SplitButton } from '@ohif/ui';
+import { SplitButton } from '@newlantern/ohif-ui';
 
 export default SplitButton;

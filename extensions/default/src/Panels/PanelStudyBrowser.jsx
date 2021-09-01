@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { StudyBrowser, useImageViewer } from '@ohif/ui';
+import { StudyBrowser, useImageViewer } from '@newlantern/ohif-ui';
 import { utils } from '@ohif/core';
 
 const { formatDate } = utils;

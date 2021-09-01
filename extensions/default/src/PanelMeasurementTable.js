@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { MeasurementTable } from '@ohif/ui';
+import { MeasurementTable } from '@newlantern/ohif-ui';
 import { DicomMetadataStore } from '@ohif/core';
 import debounce from './debounce.js';
 

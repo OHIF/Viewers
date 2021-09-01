@@ -1,4 +1,4 @@
-import { ToolbarButton } from '@ohif/ui';
+import { ToolbarButton } from '@newlantern/ohif-ui';
 import ToolbarDivider from './Toolbar/ToolbarDivider.jsx';
 import ToolbarLayoutSelector from './Toolbar/ToolbarLayoutSelector.jsx';
 import ToolbarSplitButton from './Toolbar/ToolbarSplitButton.jsx';

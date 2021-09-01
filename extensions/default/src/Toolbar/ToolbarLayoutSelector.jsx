@@ -3,7 +3,7 @@ import {
   LayoutSelector as OHIFLayoutSelector,
   ToolbarButton,
   useViewportGrid,
-} from '@ohif/ui';
+} from '@newlantern/ohif-ui';
 
 function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);

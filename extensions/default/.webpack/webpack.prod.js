@@ -36,9 +36,7 @@ module.exports = (env, argv) => {
       filename: pkg.main,
     },
     plugins: [
-      new webpack.optimize.LimitChunkCountPlugin({
-        maxChunks: 1,
-      }),
+      new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     ],
   });
 };

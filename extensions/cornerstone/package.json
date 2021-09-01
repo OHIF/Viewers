@@ -1,6 +1,6 @@
 {
-  "name": "@ohif/extension-cornerstone",
-  "version": "3.0.0",
+  "name": "@newlantern/ohif-extension-cornerstone",
+  "version": "3.0.1",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -22,7 +22,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js",
     "build:package": "yarn run build",
     "start": "yarn run dev",
     "test:unit": "jest --watchAll",
@@ -45,8 +45,9 @@
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",
-    "lodash.merge": "^4.6.2",
     "lodash.debounce": "4.0.8",
-    "react-cornerstone-viewport": "4.0.5"
+    "lodash.merge": "^4.6.2",
+    "react-cornerstone-viewport": "4.0.5",
+    "webpack": "^5.51.1"
   }
 }

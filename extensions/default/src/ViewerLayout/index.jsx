@@ -8,7 +8,7 @@ import {
   AboutModal,
   Header,
   useModal,
-} from '@ohif/ui';
+} from '@newlantern/ohif-ui';
 
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
