@@ -131,12 +131,12 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       }),
     ];
 
-    /*config.plugins.push(
+    config.plugins.push(
       new MiniCssExtractPlugin({
         filename: 'dist/[name].bundle.css',
         chunkFilename: 'dist/[id].css',
       })
-    );*/
+    );
   }
 
   if (isQuickBuild) {
