@@ -11,7 +11,7 @@ import {
 } from '@newlantern/ohif-ui';
 
 import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
+import { hotkeys } from '@newlantern/ohif-core';
 import { useNavigate } from 'react-router-dom';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;

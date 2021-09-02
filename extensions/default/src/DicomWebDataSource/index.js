@@ -7,7 +7,7 @@ import {
   processSeriesResults,
 } from './qido.js';
 import dcm4cheeReject from './dcm4cheeReject';
-import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler } from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler } from '@newlantern/ohif-core';
 
 import getImageId from './utils/getImageId';
 import dcmjs from 'dcmjs';

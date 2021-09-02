@@ -1,7 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
-import { errorHandler } from '@ohif/core'
+import { errorHandler } from '@newlantern/ohif-core'
 
 let initialized = false;
 

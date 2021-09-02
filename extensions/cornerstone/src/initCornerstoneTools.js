@@ -2,9 +2,7 @@ import Hammer from 'hammerjs';
 import cornerstone from 'cornerstone-core';
 import cornerstoneMath from 'cornerstone-math';
 import cornerstoneTools from 'cornerstone-tools';
-import OHIF from '@ohif/core';
-
-const { log } = OHIF;
+import { log } from '@newlantern/ohif-core';
 
 export default function(configuration = {}) {
   // TODO: Cypress tests are currently grabbing this from the window?

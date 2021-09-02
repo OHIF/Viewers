@@ -1,4 +1,4 @@
-import OHIF from '@ohif/core';
+import ohifCore from '@newlantern/ohif-core';
 import { ContextMenuMeasurements } from '@ohif/ui';
 import cs from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
@@ -272,7 +272,7 @@ export default function init({
   }
 
   const { csToolsConfig } = configuration;
-  const metadataProvider = OHIF.classes.MetadataProvider;
+  const metadataProvider = ohifCore.classes.MetadataProvider;
 
   cs.metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 

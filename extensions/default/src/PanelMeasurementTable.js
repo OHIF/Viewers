@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MeasurementTable } from '@newlantern/ohif-ui';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '@newlantern/ohif-core';
 import debounce from './debounce.js';
 
 export default function PanelMeasurementTable({

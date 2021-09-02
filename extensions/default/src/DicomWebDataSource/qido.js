@@ -22,7 +22,7 @@
  * | limit            | {number}           |
  * | offset           | {number}           |
  */
-import { DICOMWeb, utils } from '@ohif/core';
+import { DICOMWeb, utils } from '@newlatern/ohif-core';
 
 const { getString, getName, getModalities } = DICOMWeb;
 

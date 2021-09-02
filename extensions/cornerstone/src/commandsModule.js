@@ -1,13 +1,13 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import OHIF from '@ohif/core';
+import ohifCore from '@newlantern/ohif-core';
 
 //import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
 
-const { studyMetadataManager } = OHIF.utils;
+const { studyMetadataManager } = ohifCore.utils;
 
 const imagePositionSynchronizer = new cornerstoneTools.Synchronizer(
   cornerstone.EVENTS.NEW_IMAGE,
@@ -256,7 +256,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       });
 
       measurementsToRemove.forEach(measurementData => {
-        OHIF.measurements.MeasurementHandlers.onRemoved({
+        ohifCore.measurements.MeasurementHandlers.onRemoved({
           detail: {
             toolType: measurementData.toolType,
             measurementData,
@@ -298,7 +298,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       description,
     }) {
       // Update all measurements by measurement number
-      const measurementApi = OHIF.measurements.MeasurementApi.Instance;
+      const measurementApi = ohifCore.measurements.MeasurementApi.Instance;
       const measurements = measurementApi.tools[toolType].filter(
         m => m.measurementNumber === measurementNumber
       );

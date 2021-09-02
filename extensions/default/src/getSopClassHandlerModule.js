@@ -1,6 +1,6 @@
-import { isImage } from '@ohif/core/src/utils/isImage';
-import ImageSet from '@ohif/core/src/classes/ImageSet';
-import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
+import { isImage } from '@newlantern/ohif-core/src/utils/isImage';
+import ImageSet from '@newlantern/ohif-core/src/classes/ImageSet';
+import isDisplaySetReconstructable from '@newlantern/ohif-core/src/utils/isDisplaySetReconstructable';
 import id from './id';
 
 const sopClassHandlerName = 'stack';

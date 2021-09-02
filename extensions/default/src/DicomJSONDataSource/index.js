@@ -1,5 +1,5 @@
-import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
-import OHIF from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource } from '@newlantern/ohif-core';
+import OHIF from '@newlantern/ohif-core';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 

@@ -4,7 +4,7 @@ import cornerstoneTools from 'cornerstone-tools';
 import PropTypes from 'prop-types';
 
 import { ViewportDownloadForm } from '@ohif/ui';
-import { utils } from '@ohif/core';
+import { utils } from '@newlantern/ohif-core';
 
 import { getEnabledElement } from './state';
 
