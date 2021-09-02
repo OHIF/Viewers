@@ -42,7 +42,7 @@ const ROUTES_DEF = {
       component: StandaloneRouting,
     },
     list: {
-      path: ['/studylist', '/'],
+      path: ['/studylist', '/', '/callback'],
       component: StudyListRouting,
       condition: appConfig => {
         return appConfig.showStudyList;
