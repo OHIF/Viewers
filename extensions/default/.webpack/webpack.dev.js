@@ -28,6 +28,11 @@ module.exports = (env, argv) => {
       libraryExport: 'default',
       filename: pkg.main,
     },
+    externals: {
+      react: 'react',
+      'react-router': 'react-router',
+      'react-router-dom': 'react-router-dom',
+    },
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     ],

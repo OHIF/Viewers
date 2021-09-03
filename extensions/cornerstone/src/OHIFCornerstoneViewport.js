@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import {ohifCore} from '@newlantern/ohif-core';
+import { utils } from '@newlantern/ohif-core';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import setCornerstoneMeasurementActive from './_shared/setCornerstoneMeasurementActive';
 import ViewportOverlay from './ViewportOverlay';
@@ -12,7 +12,7 @@ import { useCine, useViewportGrid } from '@ohif/ui';
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
-const { StackManager } = ohifCore.utils;
+const { StackManager } = utils;
 
 function OHIFCornerstoneViewport({
   children,

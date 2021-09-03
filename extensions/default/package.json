@@ -35,13 +35,16 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-i18next": "^10.11.0",
-    "react-router": "next",
-    "react-router-dom": "next",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
     "webpack": "^5.43.0",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",
+    "@newlantern/ohif-core": "^2.9.8",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
     "webpack": "^5.51.2"
   }
 }

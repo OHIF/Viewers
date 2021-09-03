@@ -1,6 +1,6 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import ohifCore from '@newlantern/ohif-core';
+import { utils, measurements } from '@newlantern/ohif-core';
 
 //import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
