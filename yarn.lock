@@ -1337,6 +1337,21 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@cornerstonejs/codec-charls@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-charls/-/codec-charls-0.1.1.tgz#e55d4aa908732d0cc902888b7f3856c5a996df7f"
+  integrity sha512-Y250DGVzmownJ7WgpHxNqWvfTnv4/malaKm/tWm0xE1FxhQE8iErMWFpKxpNDk3MdfXO4/98piVsUwmJMiWoDQ==
+
+"@cornerstonejs/codec-libjpeg-turbo-8bit@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-libjpeg-turbo-8bit/-/codec-libjpeg-turbo-8bit-0.0.7.tgz#2ea9b575eed19e6e7e3701b7a50a4ae0ffbef0c4"
+  integrity sha512-qgm6BuVAy5mNP8SJ+A6+VbmPnqgj8jPvJrw4HbUoAzndmf9/VHjTYwawn3kmZWya5ErFAsXQ6c0U0noB1LKAiA==
+
+"@cornerstonejs/codec-openjpeg@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-0.1.0.tgz#5bca10ae2980ff681ebcdace2074a0adaf12ad86"
+  integrity sha512-9mwseBidYPQ1rGPcUU8JriQnzUi5Bgtontqca7gw47uzxC4Zamoc1Kuho5LUpbS1LSnOLePOkDrg/LCYhJIq8g==
+
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
@@ -6032,13 +6047,16 @@ cornerstone-tools@^4.20.1:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
 
-cornerstone-wado-image-loader@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-3.1.0.tgz#6007470be896678636da3188f194f5e66ed07858"
-  integrity sha512-n2yadbwK7rCHqJyh5AUmYVPUY5m7boKpheK60sXV41Z0eSZLin9Ja+P9yeAvkg0VGV+/zaBZGPUGY3YyjdWBgg==
+cornerstone-wado-image-loader@^4.0.0-rc1:
+  version "4.0.0-rc1"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.0.0-rc1.tgz#2c33447aabff9efac534dd6cc34d79deffab7e2b"
+  integrity sha512-T/rzXdYyt92zPCn0USXJPxiyWEsCc/G8HvJMPt0kss1s+D5g7hDm5YwRvn5TA5IzXI3B6+GAgheBXCQiHILaAg==
   dependencies:
-    dicom-parser "^1.8.3"
-    pako "^1.0.10"
+    "@cornerstonejs/codec-charls" "^0.1.1"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
+    "@cornerstonejs/codec-openjpeg" "^0.1.0"
+    dicom-parser "^1.8.8"
+    pako "^2.0.4"
 
 cors@^2.8.4:
   version "2.8.5"
@@ -6939,6 +6957,11 @@ dicom-parser@^1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.3.tgz#6e4b862898112304db30143147562011c1ce6a4d"
   integrity sha512-CMeUr+jea7Ml70N+/Z5Pd2MYtvLp6IU+TnvdLe6VRVKzZuTeYLYyuAQa9R+sFK4v4N39hig+hKHN+Wfi9sQ6GA==
+
+dicom-parser@^1.8.8:
+  version "1.8.8"
+  resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.8.tgz#2eefec545eb47ba3ba6c759a9ed6277dc7eaa6a2"
+  integrity sha512-yTuHYdimnxv+oN1sVZVQlifYlVCYH0B4nHFNvH4vGKxNLz2t4fqisMbeRslcZWBw9rU4NHxI49kGqniFdTC0Dg==
 
 dicomweb-client@^0.5.2:
   version "0.5.2"
@@ -14060,7 +14083,12 @@ pako@1.0.6:
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.6.tgz#0101211baa70c4bca4a0f63f2206e97b7dfaf258"
   integrity sha512-lQe48YPsMJAig+yngZ87Lus+NF+3mtu7DVOBu6b/gHO1YpKwIj5AWjZ/TOS7i46HD/UixzWb1zeWDZfGZ3iYcg==
 
-pako@^1.0.10, pako@~1.0.2, pako@~1.0.5:
+pako@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-2.0.4.tgz#6cebc4bbb0b6c73b0d5b8d7e8476e2b2fbea576d"
+  integrity sha512-v8tweI900AUkZN6heMU/4Uy4cXRc2AYNRggVmTR+dEncawDJgCdLMximOVA2p4qO57WMynangsfGRb5WD6L1Bg==
+
+pako@~1.0.2, pako@~1.0.5:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
   integrity sha512-0DTvPVU3ed8+HNXOu5Bs+o//Mbdj9VNQMUOe9oKCwh8l0GNwpTDMKCWbRjgtD291AWnkAgkqA/LOnQS8AmS1tw==
