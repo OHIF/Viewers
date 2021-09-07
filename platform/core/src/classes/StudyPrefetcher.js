@@ -462,6 +462,10 @@ export class StudyPrefetcher {
   getImageIdsFromDisplaySet(displaySet) {
     const imageIds = [];
 
+    if (!displaySet.images || displaySet.images.length < 1) {
+      return [];
+    }
+
     // TODO: This duplicates work done by the stack manager
     displaySet.images.forEach(image => {
       const numFrames = image.numFrames;
