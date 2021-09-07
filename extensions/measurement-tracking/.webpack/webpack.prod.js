@@ -42,8 +42,10 @@ module.exports = (env, argv) => {
     ],
     externals: {
       react: 'react',
-      'react-router': 'react-router',
-      'react-router-dom': 'react-router-dom',
+      'react-dom': 'react-dom',
+      '@ohif/ui': '@newlantern/ohif-ui',
+      '@ohif/core': '@newlantern/ohif-core',
+      '@hooks': '@hooks',
     },
   });
 };

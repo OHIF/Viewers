@@ -40,5 +40,11 @@ module.exports = (env, argv) => {
         maxChunks: 1,
       }),
     ],
+    externals: {
+      react: 'react',
+      'react-dom': 'react-dom',
+      '@ohif/ui': '@newlantern/ohif-ui',
+      '@ohif/core': '@newlantern/ohif-core',
+    },
   });
 };
