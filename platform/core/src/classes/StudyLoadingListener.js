@@ -1,5 +1,6 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import debounce from 'lodash.debounce';
 
 import StackManager from '../utils/StackManager';
 
@@ -242,7 +243,10 @@ class StackLoadingListener extends BaseLoadingListener {
     this.loadedCount = 0;
 
     // Check how many instances has already been download (cached)
-    this._checkCachedData();
+    this._debouncedSetProgressData = debounce(this._setProgressData, 300);
+    const debounced = true;
+    this._checkCachedData(debounced);
+    console.debug('Checking cached data...');
 
     this.startListening();
   }
@@ -272,9 +276,9 @@ class StackLoadingListener extends BaseLoadingListener {
     return array;
   }
 
-  _checkCachedData() {
+  _checkCachedData(debounced = false) {
     const imageIds = this.stack.imageIds;
-    // TODO: No way to check status of Promise.
+
     for (let i = 0; i < imageIds.length; i++) {
       const imageId = imageIds[i];
 
@@ -283,7 +287,7 @@ class StackLoadingListener extends BaseLoadingListener {
       if (imageObject && imageObject.promise) {
         promiseState(imageObject.promise, state => {
           if (state === 'fulfilled') {
-            this._updateFrameStatus(imageId, true);
+            this._updateFrameStatus(imageId, true, debounced);
           }
         });
       }
@@ -336,7 +340,7 @@ class StackLoadingListener extends BaseLoadingListener {
     );
   }
 
-  _updateFrameStatus(imageId, loaded) {
+  _updateFrameStatus(imageId, loaded, debounced) {
     const imageData = this.imageDataMap.get(imageId);
 
     if (!imageData || imageData.loaded === loaded) {
@@ -351,10 +355,10 @@ class StackLoadingListener extends BaseLoadingListener {
     imageData.loaded = loaded;
     this.framesStatus[imageData.index] = loaded;
     this.loadedCount += loaded ? 1 : -1;
-    this._updateProgress();
+    this._updateProgress(debounced);
   }
 
-  _setProgressData(progressId, progressData) {
+  _setProgressData(progressId, progressData, debounced) {
     // TODO: This method (and _clearProgressById) need to access
     // the Redux store and should therefore be provided from the
     // application. I've added a workaround to pass this in through
@@ -372,7 +376,7 @@ class StackLoadingListener extends BaseLoadingListener {
     );
   }
 
-  _updateProgress() {
+  _updateProgress(debounced) {
     const totalFramesCount = this.stack.imageIds.length;
     const loadedFramesCount = this.loadedCount;
     const loadingFramesCount = totalFramesCount - loadedFramesCount;
@@ -390,7 +394,12 @@ class StackLoadingListener extends BaseLoadingListener {
       framesStatus: this.framesStatus,
     };
 
-    this._setProgressData(progressId, progressData);
+    if (debounced) {
+      this._debouncedSetProgressData(progressId, progressData, debounced);
+      return;
+    }
+
+    this._setProgressData(progressId, progressData, debounced);
   }
 
   _logProgress() {
@@ -502,18 +511,17 @@ class StudyLoadingListener {
      */
     const DEFAULT_OPTIONS = {
       _setProgressData: (progressId, progressData) => {
-        document.dispatchEvent(
-          new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
-            detail: { progressId, progressData },
-          })
-        );
+        const event = new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+          detail: { progressId, progressData },
+        });
+        document.dispatchEvent(event);
       },
-      _clearProgressById: progressId =>
-        document.dispatchEvent(
-          new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
-            detail: { progressId, percentComplete: 0 },
-          })
-        ),
+      _clearProgressById: progressId => {
+        const event = new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+          detail: { progressId, percentComplete: 0 },
+        });
+        document.dispatchEvent(event);
+      },
     };
 
     if (!StudyLoadingListener._instance) {
