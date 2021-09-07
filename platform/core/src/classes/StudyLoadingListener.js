@@ -358,7 +358,7 @@ class StackLoadingListener extends BaseLoadingListener {
     this._updateProgress(debounced);
   }
 
-  _setProgressData(progressId, progressData, debounced) {
+  _setProgressData(progressId, progressData) {
     // TODO: This method (and _clearProgressById) need to access
     // the Redux store and should therefore be provided from the
     // application. I've added a workaround to pass this in through
@@ -395,11 +395,11 @@ class StackLoadingListener extends BaseLoadingListener {
     };
 
     if (debounced) {
-      this._debouncedSetProgressData(progressId, progressData, debounced);
+      this._debouncedSetProgressData(progressId, progressData);
       return;
     }
 
-    this._setProgressData(progressId, progressData, debounced);
+    this._setProgressData(progressId, progressData);
   }
 
   _logProgress() {
