@@ -8,6 +8,13 @@ import SCOORD_TYPES from '../constants/scoordTypes';
 const globalImageIdSpecificToolStateManager =
   cornerstoneTools.globalImageIdSpecificToolStateManager;
 
+/**
+ * Add a measurement to a display set.
+ *
+ * @param {*} measurement
+ * @param {*} imageId
+ * @param {*} displaySetInstanceUID
+ */
 export default function addMeasurement(
   measurement,
   imageId,
@@ -24,14 +31,14 @@ export default function addMeasurement(
   };
 
   measurement.coords.forEach(coord => {
-    const { GraphicType, GraphicData } = coord;
+    const { GraphicType, GraphicData, ValueType } = coord;
 
     if (measurementData.renderableData[GraphicType] === undefined) {
       measurementData.renderableData[GraphicType] = [];
     }
 
     measurementData.renderableData[GraphicType].push(
-      _getRenderableData(GraphicType, GraphicData)
+      _getRenderableData(GraphicType, GraphicData, ValueType)
     );
   });
 
@@ -63,10 +70,11 @@ export default function addMeasurement(
   // It'd be super werid if it didn't anyway as a SCOORD.
   measurement.ReferencedSOPInstanceUID =
     measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
-  delete measurement.coords;
+
+  return measurement;
 }
 
-function _getRenderableData(GraphicType, GraphicData) {
+function _getRenderableData(GraphicType, GraphicData, ValueType) {
   let renderableData;
 
   switch (GraphicType) {
@@ -75,8 +83,30 @@ function _getRenderableData(GraphicType, GraphicData) {
     case SCOORD_TYPES.POLYLINE:
       renderableData = [];
 
-      for (let i = 0; i < GraphicData.length; i += 2) {
-        renderableData.push({ x: GraphicData[i], y: GraphicData[i + 1] });
+      if (ValueType === 'SCOORD3D') {
+        for (let i = 0; i < GraphicData.length; i += 3) {
+          renderableData.push({
+            x: GraphicData[i],
+            y: GraphicData[i + 1],
+            z: GraphicData[i + 2],
+          });
+        }
+      } else {
+        for (let i = 0; i < GraphicData.length; i += 2) {
+          renderableData.push({ x: GraphicData[i], y: GraphicData[i + 1] });
+        }
+      }
+
+      break;
+    case SCOORD_TYPES.POLYGON:
+      renderableData = [];
+
+      for (let i = 0; i < GraphicData.length; i += 3) {
+        renderableData.push({
+          x: GraphicData[i],
+          y: GraphicData[i + 1],
+          z: GraphicData[i + 2],
+        });
       }
       break;
     case SCOORD_TYPES.CIRCLE:

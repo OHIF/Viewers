@@ -104,7 +104,7 @@ export default class ToolBarService {
       this.state.groups[groupId] = itemId;
     }
 
-    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, {});
+    this.publish(this.EVENTS.TOOL_BAR_STATE_MODIFIED, {});
   }
 
   getButtons() {
@@ -118,7 +118,7 @@ export default class ToolBarService {
   setButton(id, button) {
     if (this.buttons[id]) {
       this.buttons[id] = merge(this.buttons[id], button);
-      this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
+      this.publish(this.EVENTS.TOOL_BAR_MODIFIED, {
         buttons: this.buttons,
         button: this.buttons[id],
         buttonSections: this.buttonSections,
@@ -128,7 +128,7 @@ export default class ToolBarService {
 
   setButtons(buttons) {
     this.buttons = buttons;
-    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
+    this.publish(this.EVENTS.TOOL_BAR_MODIFIED, {
       buttons: this.buttons,
       buttonSections: this.buttonSections,
     });
@@ -159,7 +159,7 @@ export default class ToolBarService {
     // Props check important for validation here...
 
     this.buttonSections[key] = buttons;
-    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
+    this.publish(this.EVENTS.TOOL_BAR_MODIFIED, {});
   }
 
   /**
@@ -199,7 +199,7 @@ export default class ToolBarService {
       }
     });
 
-    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
+    this.publish(this.EVENTS.TOOL_BAR_MODIFIED, {});
   }
 
   /**

@@ -4,4 +4,5 @@ export default {
   POLYLINE: 'POLYLINE',
   CIRCLE: 'CIRCLE',
   ELLIPSE: 'ELLIPSE',
+  POLYGON: 'POLYGON',
 };

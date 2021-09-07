@@ -86,7 +86,7 @@ ThumbnailNoImage.propTypes = {
     /** Must match the "type" a dropTarget expects */
     type: PropTypes.string.isRequired,
   }),
-  description: PropTypes.string.isRequired,
+  description: PropTypes.string,
   modality: PropTypes.string.isRequired,
   /* Tooltip message to display when modality text is hovered */
   modalityTooltip: PropTypes.string.isRequired,

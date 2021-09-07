@@ -102,6 +102,7 @@ export default class DICOMSRDisplayTool extends BaseTool {
               options
             );
             break;
+          case SCOORD_TYPES.POLYGON:
           case SCOORD_TYPES.POLYLINE:
             this.renderPolyLine(
               renderableDataForGraphicType,
@@ -202,7 +203,6 @@ export default class DICOMSRDisplayTool extends BaseTool {
   renderPolyLine(renderableData, eventData, options) {
     const { element } = eventData;
     const context = getNewContext(eventData.canvasContext.canvas);
-
     renderableData.forEach(points => {
       draw(context, context => {
         drawJoinedLines(context, element, points[0], points, options);
@@ -345,6 +345,7 @@ function _getTextBoxAnchorPointsForRenderableData(renderableData, eventData) {
         break;
       case SCOORD_TYPES.MULTIPOINT:
       case SCOORD_TYPES.POLYLINE:
+      case SCOORD_TYPES.POLYGON:
         renderableDataForGraphicType.forEach(points => {
           anchorPoints = [...anchorPoints, ...points];
         });

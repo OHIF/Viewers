@@ -12,11 +12,9 @@ import {
 } from '@ohif/ui';
 
 /** Internal imports */
-import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
 import ViewportOverlay from './ViewportOverlay';
-import TOOL_NAMES from './../constants/toolNames';
 import id from './../id';
-import getToolAlias from '../tools/utils/getToolAlias';
+import initSRTools from '../tools/initSRTools';
 
 const { formatDate } = utils;
 const { StackManager } = OHIF.utils;
@@ -44,6 +42,9 @@ function OHIFCornerstoneSRViewport({
   const [isHydrated, setIsHydrated] = useState(displaySet.isHydrated);
   const { viewports, activeViewportIndex } = viewportGrid;
 
+  /**
+   * Empty SR viewport if display set removed.
+   */
   useEffect(() => {
     const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
@@ -65,12 +66,15 @@ function OHIFCornerstoneSRViewport({
     };
   }, []);
 
-  // Optional hook into tracking extension, if present.
+  /**
+   * Optional hook into tracking extension, if present.
+   */
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
 
-  // TODO: this is a hook that fails if we register/de-register
-  //
+  /**
+   * TODO: this is a hook that fails if we register/de-register.
+   */
   if (
     extensionManager.registeredExtensionIds.includes(
       MEASUREMENT_TRACKING_EXTENSION_ID
@@ -88,7 +92,9 @@ function OHIFCornerstoneSRViewport({
     ] = useTrackedMeasurements();
   }
 
-  // Locked if tracking any series
+  /**
+   * Locked if tracking any series
+   */
   let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
   useEffect(() => {
     isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
@@ -98,110 +104,22 @@ function OHIFCornerstoneSRViewport({
     const eventData = evt.detail;
     const targetElement = eventData.element;
 
-    const primaryToolId = ToolBarService.state.primaryToolId;
-    const toolAlias = getToolAlias(primaryToolId); // These are 1:1 for built-in only
+    /**
+     * Initialize SR cornerstone tools.
+     */
+    initSRTools(targetElement, ToolBarService);
 
-    // ~~ MAGIC
-    cornerstoneTools.addToolForElement(targetElement, DICOMSRDisplayTool);
-    cornerstoneTools.setToolEnabledForElement(
+    setTrackingUniqueIdentifiersForElement(
       targetElement,
-      TOOL_NAMES.DICOM_SR_DISPLAY_TOOL
+      displaySet,
+      measurementSelected
     );
-
-    // ~~ Variants
-    cornerstoneTools.addToolForElement(
-      targetElement,
-      cornerstoneTools.LengthTool,
-      {
-        name: 'SRLength',
-        configuration: {
-          renderDashed: true,
-        },
-      }
-    );
-    cornerstoneTools.addToolForElement(
-      targetElement,
-      cornerstoneTools.ArrowAnnotateTool,
-      {
-        name: 'SRArrowAnnotate',
-        configuration: {
-          renderDashed: true,
-        },
-      }
-    );
-    cornerstoneTools.addToolForElement(
-      targetElement,
-      cornerstoneTools.BidirectionalTool,
-      {
-        name: 'SRBidirectional',
-        configuration: {
-          renderDashed: true,
-        },
-      }
-    );
-    cornerstoneTools.addToolForElement(
-      targetElement,
-      cornerstoneTools.EllipticalRoiTool,
-      {
-        name: 'SREllipticalRoi',
-        configuration: {
-          renderDashed: true,
-        },
-      }
-    );
-    cornerstoneTools.addToolForElement(
-      targetElement,
-      cornerstoneTools.RectangleRoiTool,
-      {
-        name: 'SRRectangleRoi',
-        configuration: {
-          renderDashed: true,
-        },
-      }
-    );
-    cornerstoneTools.addToolForElement(
-      targetElement,
-      cornerstoneTools.FreehandRoiTool,
-      {
-        name: 'SRFreehandRoi',
-        configuration: {
-          renderDashed: true,
-        },
-      }
-    );
-
-    // ~~ Business as usual
-    cornerstoneTools.setToolActiveForElement(targetElement, 'PanMultiTouch', {
-      pointers: 2,
-    });
-    cornerstoneTools.setToolActiveForElement(
-      targetElement,
-      'ZoomTouchPinch',
-      {}
-    );
-
-    // TODO: Add always dashed tool alternative aliases
-    // TODO: or same name... alternative config?
-    cornerstoneTools.setToolActiveForElement(targetElement, toolAlias, {
-      mouseButtonMask: 1,
-    });
-    cornerstoneTools.setToolActiveForElement(targetElement, 'Pan', {
-      mouseButtonMask: 4,
-    });
-    cornerstoneTools.setToolActiveForElement(targetElement, 'Zoom', {
-      mouseButtonMask: 2,
-    });
-    cornerstoneTools.setToolActiveForElement(
-      targetElement,
-      'StackScrollMouseWheel',
-      {}
-    );
-
-    setTrackingUniqueIdentifiersForElement(targetElement);
     setElement(targetElement);
 
-    // TODO: Enabled Element appears to be incorrect here, it should be called
-    // 'element' since it is the DOM element, not the enabledElement object
+    /**
+     * TODO: Enabled Element appears to be incorrect here, it should be called
+     * 'element' since it is the DOM element, not the enabledElement object
+     */
     const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
       'ohif-cornerstone-enabled-element-event',
       {
@@ -216,6 +134,9 @@ function OHIFCornerstoneSRViewport({
     document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
 
+  /**
+   * Loads display set if not loaded yet.
+   */
   useEffect(() => {
     if (!displaySet.isLoaded) {
       displaySet.load();
@@ -223,7 +144,19 @@ function OHIFCornerstoneSRViewport({
     setIsHydrated(displaySet.isHydrated);
   }, [displaySet]);
 
-  const setTrackingUniqueIdentifiersForElement = useCallback(targetElement => {
+  /**
+   * Update SR module tracking identifiers based on
+   * currently active display set.
+   *
+   * @param {*} targetElement
+   * @param {*} displaySet
+   * @param {*} measurementSelected
+   */
+  const setTrackingUniqueIdentifiersForElement = (
+    targetElement,
+    displaySet,
+    measurementSelected
+  ) => {
     const { measurements } = displaySet;
 
     const srModule = cornerstoneTools.getModule(id);
@@ -233,15 +166,38 @@ function OHIFCornerstoneSRViewport({
       measurements.map(measurement => measurement.TrackingUniqueIdentifier),
       measurementSelected
     );
-  });
+  };
 
+  /**
+   * Updates measurements count.
+   */
   useEffect(() => {
     const numMeasurements = displaySet.measurements.length;
-
     setMeasurementCount(numMeasurements);
   }, [dataSource, displaySet]);
 
-  const updateViewport = useCallback(newMeasurementSelected => {
+  /**
+   * Update SR viewport.
+   *
+   * @param {*} displaySet
+   * @param {*} element
+   * @param {*} dataSource
+   * @param {*} newMeasurementSelected
+   * @returns
+   */
+  const updateViewport = (
+    displaySet,
+    element,
+    dataSource,
+    newMeasurementSelected
+  ) => {
+    if (
+      !displaySet.measurements ||
+      !displaySet.measurements.filter(m => m.loaded === true).length > 0
+    ) {
+      return;
+    }
+
     const {
       StudyInstanceUID,
       displaySetInstanceUID,
@@ -274,29 +230,42 @@ function OHIFCornerstoneSRViewport({
         cornerstone.updateImage(element);
       }
     });
-  });
+  };
 
-  useEffect(
-    () => {
-      if (element !== null) {
-        setTrackingUniqueIdentifiersForElement(element);
+  useEffect(() => {
+    if (element !== null) {
+      setTrackingUniqueIdentifiersForElement(
+        element,
+        displaySet,
+        measurementSelected
+      );
+    }
+  }, [dataSource, displaySet]);
+
+  /**
+   * Updates the SR viewport if data source,
+   * element or display set changes.
+   */
+  useEffect(() => {
+    updateViewport(displaySet, element, dataSource, measurementSelected);
+
+    const onDisplaySetLoadedHandler = ({
+      displaySet: { displaySetInstanceUID },
+    }) => {
+      if (displaySet.displaySetInstanceUID === displaySetInstanceUID) {
+        updateViewport(displaySet, element, dataSource, measurementSelected);
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dataSource, displaySet]
-  );
+    };
 
-  useEffect(
-    () => {
-      updateViewport(measurementSelected);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dataSource, displaySet, element]
-  );
+    const subscription = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SET_LOADED,
+      onDisplaySetLoadedHandler
+    );
 
-  const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
-    vp => vp.displaySetInstanceUID === displaySet.displaySetInstanceUID
-  );
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dataSource, displaySet, element]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -327,6 +296,10 @@ function OHIFCornerstoneSRViewport({
 
   const { Modality } = displaySet;
 
+  if (![]) {
+    return;
+  }
+
   const {
     PatientID,
     PatientName,
@@ -336,12 +309,15 @@ function OHIFCornerstoneSRViewport({
     ManufacturerModelName,
     StudyDate,
     SeriesDescription,
-    SeriesInstanceUID,
     SpacingBetweenSlices,
     SeriesNumber,
-    displaySetInstanceUID,
   } = activeDisplaySetData;
 
+  /**
+   * Measurement change event handler.
+   *
+   * @param {*} direction
+   */
   const onMeasurementChange = direction => {
     let newMeasurementSelected = measurementSelected;
 
@@ -359,7 +335,7 @@ function OHIFCornerstoneSRViewport({
       }
     }
 
-    updateViewport(newMeasurementSelected);
+    updateViewport(displaySet, element, dataSource, measurementSelected);
   };
 
   const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
@@ -367,47 +343,49 @@ function OHIFCornerstoneSRViewport({
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
   return (
     <>
-      <ViewportActionBar
-        onDoubleClick={evt => {
-          evt.stopPropagation();
-          evt.preventDefault();
-        }}
-        onPillClick={() => {
-          sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
-            displaySetInstanceUID: displaySet.displaySetInstanceUID,
-            viewportIndex,
-          });
-        }}
-        onSeriesChange={onMeasurementChange}
-        studyData={{
-          label,
-          useAltStyling: true,
-          isTracked: false,
-          isLocked,
-          isRehydratable: displaySet.isRehydratable,
-          isHydrated,
-          studyDate: formatDate(StudyDate),
-          currentSeries: SeriesNumber,
-          seriesDescription: SeriesDescription,
-          modality: Modality,
-          patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName.Alphabetic)
-              : '',
-            patientSex: PatientSex || '',
-            patientAge: PatientAge || '',
-            MRN: PatientID || '',
-            thickness: SliceThickness
-              ? `${Number(SliceThickness).toFixed(2)}mm`
-              : '',
-            spacing:
-              SpacingBetweenSlices !== undefined
-                ? `${SpacingBetweenSlices.toFixed(2)}mm`
+      {activeDisplaySetData && Object.keys(activeDisplaySetData).length > 0 && (
+        <ViewportActionBar
+          onDoubleClick={evt => {
+            evt.stopPropagation();
+            evt.preventDefault();
+          }}
+          onPillClick={() => {
+            sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
+              displaySetInstanceUID: displaySet.displaySetInstanceUID,
+              viewportIndex,
+            });
+          }}
+          onSeriesChange={onMeasurementChange}
+          studyData={{
+            label,
+            useAltStyling: true,
+            isTracked: false,
+            isLocked,
+            isRehydratable: displaySet.isRehydratable,
+            isHydrated,
+            studyDate: formatDate(StudyDate),
+            currentSeries: SeriesNumber,
+            seriesDescription: SeriesDescription,
+            modality: Modality,
+            patientInformation: {
+              patientName: PatientName
+                ? OHIF.utils.formatPN(PatientName.Alphabetic)
                 : '',
-            scanner: ManufacturerModelName || '',
-          },
-        }}
-      />
+              patientSex: PatientSex || '',
+              patientAge: PatientAge || '',
+              MRN: PatientID || '',
+              thickness: SliceThickness
+                ? `${Number(SliceThickness).toFixed(2)}mm`
+                : '',
+              spacing:
+                SpacingBetweenSlices !== undefined
+                  ? `${SpacingBetweenSlices.toFixed(2)}mm`
+                  : '',
+              scanner: ManufacturerModelName || '',
+            },
+          }}
+        />
+      )}
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         <CornerstoneViewport
@@ -513,7 +491,8 @@ async function _getViewportAndActiveDisplaySetData(
 ) {
   let viewportData;
 
-  const { measurements } = displaySet;
+  const { measurements: _measurements } = displaySet;
+  const measurements = _measurements.filter(m => m.loaded === true);
   const measurement = measurements[measurementSelected];
 
   const stack = _getCornerstoneStack(

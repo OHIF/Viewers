@@ -297,7 +297,7 @@ class MeasurementService {
 
       this.measurements[id] = updatedMeasurement;
 
-      this._broadcastEvent(
+      this.publish(
         // Add an internal flag to say the measurement has not yet been updated at source.
         this.EVENTS.MEASUREMENT_UPDATED,
         {
@@ -385,14 +385,14 @@ class MeasurementService {
         newMeasurement
       );
       this.measurements[internalId] = newMeasurement;
-      this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      this.publish(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
         measurement: newMeasurement,
       });
     } else {
       log.info(`Measurement added.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
-      this._broadcastEvent(this.EVENTS.RAW_MEASUREMENT_ADDED, {
+      this.publish(this.EVENTS.RAW_MEASUREMENT_ADDED, {
         source,
         measurement: newMeasurement,
         data,
@@ -471,7 +471,7 @@ class MeasurementService {
         newMeasurement
       );
       this.measurements[internalId] = newMeasurement;
-      this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      this.publish(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
         measurement: newMeasurement,
         notYetUpdatedAtSource: false,
@@ -479,7 +479,7 @@ class MeasurementService {
     } else {
       log.info('Measurement added.', newMeasurement);
       this.measurements[internalId] = newMeasurement;
-      this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
+      this.publish(this.EVENTS.MEASUREMENT_ADDED, {
         source,
         measurement: newMeasurement,
       });
@@ -502,7 +502,7 @@ class MeasurementService {
     }
 
     delete this.measurements[id];
-    this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
+    this.publish(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: id, // This is weird :shrug:
     });
@@ -511,7 +511,7 @@ class MeasurementService {
   clearMeasurements() {
     this.measurements = {};
     this._jumpToMeasurementCache = {};
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED);
+    this.publish(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
   jumpToMeasurement(viewportIndex, id) {
@@ -562,7 +562,7 @@ class MeasurementService {
    */
   clear() {
     this.measurements = {};
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED);
+    this.publish(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
   /**

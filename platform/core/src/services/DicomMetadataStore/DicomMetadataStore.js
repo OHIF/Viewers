@@ -129,7 +129,7 @@ const BaseImplementation = {
     // This is because the mode needs to listen to instances that are added to build up its active displaySets.
     // It will see there are cached displaySets and end early if this Series has already been fired in this
     // Mode session for some reason.
-    this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
+    this.publish(EVENTS.INSTANCES_ADDED, {
       StudyInstanceUID,
       SeriesInstanceUID,
       madeInClient,
@@ -149,7 +149,7 @@ const BaseImplementation = {
       study.setSeriesMetadata(SeriesInstanceUID, series);
     });
 
-    this._broadcastEvent(EVENTS.SERIES_ADDED, {
+    this.publish(EVENTS.SERIES_ADDED, {
       StudyInstanceUID,
       madeInClient,
     });

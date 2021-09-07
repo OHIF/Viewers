@@ -128,7 +128,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient)
 
       // Series metadata already added via local upload
-      DicomMetadataStore._broadcastEvent(EVENTS.SERIES_ADDED, {
+      DicomMetadataStore.publish(EVENTS.SERIES_ADDED, {
         StudyInstanceUID,
         madeInClient,
       })
@@ -152,7 +152,7 @@ function createDicomLocalApi(dicomLocalConfig) {
             })
           })
 
-        DicomMetadataStore._broadcastEvent(EVENTS.INSTANCES_ADDED, {
+        DicomMetadataStore.publish(EVENTS.INSTANCES_ADDED, {
           StudyInstanceUID,
           SeriesInstanceUID,
           madeInClient,

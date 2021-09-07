@@ -7,7 +7,7 @@ import guid from '../../utils/guid';
  */
 export default {
   subscribe,
-  _broadcastEvent,
+  publish,
   _unsubscribe,
   _isValidEvent,
 };
@@ -76,7 +76,7 @@ function _isValidEvent(eventName) {
  * @param {func} callbackProps - Properties to pass callback
  * @return void
  */
-function _broadcastEvent(eventName, callbackProps) {
+function publish(eventName, callbackProps) {
   const hasListeners = Object.keys(this.listeners).length > 0;
   const hasCallbacks = Array.isArray(this.listeners[eventName]);
 

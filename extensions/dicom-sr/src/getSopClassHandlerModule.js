@@ -13,9 +13,10 @@ const { ImageSet } = classes;
 // Get stacks from referenced displayInstanceUID and load into wrapped CornerStone viewport.
 
 const sopClassUids = [
-  '1.2.840.10008.5.1.4.1.1.88.11', //BASIC_TEXT_SR:
-  '1.2.840.10008.5.1.4.1.1.88.22', //ENHANCED_SR:
-  '1.2.840.10008.5.1.4.1.1.88.33', //COMPREHENSIVE_SR:
+  '1.2.840.10008.5.1.4.1.1.88.11', // BASIC_TEXT_SR
+  '1.2.840.10008.5.1.4.1.1.88.22', // ENHANCED_SR
+  '1.2.840.10008.5.1.4.1.1.88.33', // COMPREHENSIVE_SR
+  '1.2.840.10008.5.1.4.1.1.88.34', // COMPREHENSIVE_3D_SR
 ];
 
 const CodeNameCodeSequenceValues = {
@@ -29,6 +30,7 @@ const CodeNameCodeSequenceValues = {
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
   CornerstoneFreeText: 'CORNERSTONEFREETEXT', // CST4
+  Score: '246262008',
 };
 
 const CodingSchemeDesignators = {
@@ -38,6 +40,7 @@ const CodingSchemeDesignators = {
 
 const RELATIONSHIP_TYPE = {
   INFERRED_FROM: 'INFERRED FROM',
+  SELECTED_FROM: 'SELECTED FROM',
 };
 
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
@@ -116,7 +119,7 @@ function _load(displaySet, servicesManager, extensionManager) {
   const { ContentSequence } = displaySet.instance;
 
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
-  displaySet.measurements = _getMeasurements(ContentSequence);
+  displaySet.measurements = _getMeasurements(ContentSequence, displaySet);
 
   const mappings = MeasurementService.getSourceMappings(
     'CornerstoneTools',
@@ -127,12 +130,23 @@ function _load(displaySet, servicesManager, extensionManager) {
   displaySet.isRehydratable = isRehydratable(displaySet, mappings);
   displaySet.isLoaded = true;
 
+  /**
+   * Handler that publishes event to notify that
+   * this display set has fully loaded.
+   */
+  const onMeasurementsLoadedHandler = () => {
+    DisplaySetService.publish(DisplaySetService.EVENTS.DISPLAY_SET_LOADED, {
+      displaySet,
+    });
+  };
+
   // Check currently added displaySets and add measurements if the sources exist.
   DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
     _checkIfCanAddMeasurementsToDisplaySet(
       displaySet,
       activeDisplaySet,
-      dataSource
+      dataSource,
+      onMeasurementsLoadedHandler
     );
   });
 
@@ -147,103 +161,76 @@ function _load(displaySet, servicesManager, extensionManager) {
         _checkIfCanAddMeasurementsToDisplaySet(
           displaySet,
           newDisplaySet,
-          dataSource
+          dataSource,
+          onMeasurementsLoadedHandler
         );
       });
     }
   );
+
+  return displaySet;
 }
 
 function _checkIfCanAddMeasurementsToDisplaySet(
   srDisplaySet,
   newDisplaySet,
-  dataSource
+  dataSource,
+  onDone
 ) {
-  let unloadedMeasurements = srDisplaySet.measurements.filter(
-    measurement => measurement.loaded === false
-  );
+  let measurements = srDisplaySet.measurements;
 
-  if (unloadedMeasurements.length === 0) {
-    // All already loaded!
-    return;
-  }
-
+  /**
+   * Look for image sets.
+   * This also filters out _this_ displaySet, as it is not an image set.
+   */
   if (!newDisplaySet instanceof ImageSet) {
-    // This also filters out _this_ displaySet, as it is not an ImageSet.
     return;
   }
 
   const { sopClassUids, images } = newDisplaySet;
 
-  // Check if any have the newDisplaySet is the correct SOPClass.
-  unloadedMeasurements = unloadedMeasurements.filter(measurement =>
-    measurement.coords.some(coord =>
-      sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
-    )
-  );
+  /**
+   * Filter measurements that references the correct sop class.
+   */
+  measurements = measurements.filter(measurement => {
+    return measurement.coords.some(coord => {
+      return sopClassUids.includes(
+        coord.ReferencedSOPSequence.ReferencedSOPClassUID
+      );
+    });
+  });
 
-  if (unloadedMeasurements.length === 0) {
-    // New displaySet isn't the correct SOPClass, so can't contain the referenced images.
+  /**
+   * New display set doesn't have measurements that references the correct sop class.
+   */
+  if (measurements.length === 0) {
     return;
   }
 
-  const SOPInstanceUIDs = [];
+  const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
+  const SOPInstanceUIDs = images.map(i => i.SOPInstanceUID);
 
-  unloadedMeasurements.forEach(measurement => {
+  measurements.forEach(measurement => {
     const { coords } = measurement;
 
     coords.forEach(coord => {
-      const SOPInstanceUID =
-        coord.ReferencedSOPSequence.ReferencedSOPInstanceUID;
-
-      if (!SOPInstanceUIDs.includes(SOPInstanceUID)) {
-        SOPInstanceUIDs.push(SOPInstanceUID);
+      const imageIndex = SOPInstanceUIDs.findIndex(
+        SOPInstanceUID =>
+          SOPInstanceUID ===
+          coord.ReferencedSOPSequence.ReferencedSOPInstanceUID
+      );
+      if (imageIndex > -1) {
+        const imageId = imageIds[imageIndex];
+        addMeasurement(
+          measurement,
+          imageId,
+          newDisplaySet.displaySetInstanceUID
+        );
       }
     });
   });
 
-  const imageIdsForDisplaySet = dataSource.getImageIdsForDisplaySet(
-    newDisplaySet
-  );
-
-  for (let i = 0; i < images.length; i++) {
-    if (!unloadedMeasurements.length) {
-      // All measurements loaded.
-      break;
-    }
-
-    const image = images[i];
-    const { SOPInstanceUID } = image;
-    if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
-      const imageId = imageIdsForDisplaySet[i];
-
-      for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
-        const measurement = unloadedMeasurements[j];
-        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
-          addMeasurement(
-            measurement,
-            imageId,
-            newDisplaySet.displaySetInstanceUID
-          );
-
-          unloadedMeasurements.splice(j, 1);
-        }
-      }
-    }
-  }
-}
-
-function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
-  const { coords } = measurement;
-
-  for (let j = 0; j < coords.length; j++) {
-    const coord = coords[j];
-    const { ReferencedSOPInstanceUID } = coord.ReferencedSOPSequence;
-
-    if (ReferencedSOPInstanceUID === SOPInstanceUID) {
-      return true;
-    }
-  }
+  onDone();
 }
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
@@ -264,7 +251,7 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   ];
 }
 
-function _getMeasurements(ImagingMeasurementReportContentSequence) {
+function _getMeasurements(ImagingMeasurementReportContentSequence, displaySet) {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
@@ -292,7 +279,10 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
           trackingUniqueIdentifier
         ];
 
-      const measurement = _processMeasurement(mergedContentSequence);
+      const measurement = _processMeasurement(
+        mergedContentSequence,
+        displaySet
+      );
 
       if (measurement) {
         measurements.push(measurement);
@@ -355,25 +345,31 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
   return mergedContentSequencesByTrackingUniqueIdentifiers;
 }
 
-function _processMeasurement(mergedContentSequence) {
+function _processMeasurement(mergedContentSequence, displaySet) {
   if (
     mergedContentSequence.some(
       group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
     )
   ) {
-    return _processTID1410Measurement(mergedContentSequence);
+    return _processTID1410Measurement(mergedContentSequence, displaySet);
   }
 
   return _processNonGeometricallyDefinedMeasurement(mergedContentSequence);
 }
 
-function _processTID1410Measurement(mergedContentSequence) {
+/**
+ * TID 1410 Planar ROI Measurements and Qualitative Evaluations.
+ *
+ * @param {*} mergedContentSequence
+ * @returns
+ */
+function _processTID1410Measurement(mergedContentSequence, displaySet) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
   // TODO -> Look at RelationshipType => Contains means
 
   const graphicItem = mergedContentSequence.find(
-    group => group.ValueType === 'SCOORD'
+    group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
   );
 
   const UIDREFContentItem = mergedContentSequence.find(
@@ -400,13 +396,37 @@ function _processTID1410Measurement(mergedContentSequence) {
   const measurement = {
     loaded: false,
     labels: [],
-    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
+    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem, displaySet)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
 
   NUMContentItems.forEach(item => {
-    const { ConceptNameCodeSequence, MeasuredValueSequence } = item;
+    const {
+      ConceptNameCodeSequence,
+      ContentSequence,
+      MeasuredValueSequence,
+    } = item;
+
+    if (
+      item.ConceptNameCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.Score
+    ) {
+      ContentSequence.forEach(item => {
+        if (
+          [
+            RELATIONSHIP_TYPE.SELECTED_FROM,
+            RELATIONSHIP_TYPE.INFERRED_FROM,
+          ].includes(item.RelationshipType)
+        ) {
+          if (item.ReferencedSOPSequence) {
+            measurement.coords.forEach(coord => {
+              coord.ReferencedSOPSequence = item.ReferencedSOPSequence;
+            });
+          }
+        }
+      });
+    }
 
     if (MeasuredValueSequence) {
       measurement.labels.push(
@@ -498,7 +518,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 
     const { ValueType } = ContentSequence;
 
-    if (!ValueType === 'SCOORD') {
+    if (!ValueType === 'SCOORD' && !ValueType === 'SCOORD3D') {
       console.warn(
         `Graphic ${ValueType} not currently supported, skipping annotation.`
       );
@@ -525,15 +545,13 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   return measurement;
 }
 
-function _getCoordsFromSCOORDOrSCOORD3D(item) {
-  const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
+function _getCoordsFromSCOORDOrSCOORD3D(graphicItem, displaySet) {
+  const { ValueType, RelationshipType, GraphicType, GraphicData } = graphicItem;
 
-  //debugger;
   // if (RelationshipType !== RELATIONSHIP_TYPE.INFERRED_FROM) {
   //   console.warn(
   //     `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM."`
   //   );
-
   //   return;
   // }
 
@@ -541,13 +559,19 @@ function _getCoordsFromSCOORDOrSCOORD3D(item) {
 
   // ContentSequence has length of 1 as RelationshipType === 'INFERRED FROM'
   if (ValueType === 'SCOORD') {
-    const { ReferencedSOPSequence } = item.ContentSequence;
-
+    const { ReferencedSOPSequence } = graphicItem.ContentSequence;
     coords.ReferencedSOPSequence = ReferencedSOPSequence;
   } else if (ValueType === 'SCOORD3D') {
-    const { ReferencedFrameOfReferenceSequence } = item.ContentSequence;
+    if (graphicItem.ReferencedFrameOfReferenceUID) {
+      // todo
+    }
 
-    coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+    if (graphicItem.ContentSequence) {
+      const {
+        ReferencedFrameOfReferenceSequence,
+      } = graphicItem.ContentSequence;
+      coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+    }
   }
 
   return coords;

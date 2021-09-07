@@ -78,8 +78,8 @@ export default class DisplaySetService {
     displaySetCache.splice(displaySetCacheIndex, 1);
     activeDisplaySets.splice(activeDisplaySetsIndex, 1);
 
-    this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
-    this._broadcastEvent(EVENTS.DISPLAY_SETS_REMOVED, {
+    this.publish(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    this.publish(EVENTS.DISPLAY_SETS_REMOVED, {
       displaySetInstanceUIDs: [displaySetInstanceUID],
     });
   }
@@ -141,8 +141,8 @@ export default class DisplaySetService {
     // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
     // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent uneccessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
-      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
-      this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
+      this.publish(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+      this.publish(EVENTS.DISPLAY_SETS_ADDED, {
         displaySetsAdded,
         options,
       });
