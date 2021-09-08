@@ -249,10 +249,7 @@ class StackLoadingListener extends BaseLoadingListener {
 
       /** After checking cache, continue prefetch */
       const studyPrefetcher = StudyPrefetcher.getInstance();
-      studyPrefetcher.prefetch(
-        studyPrefetcher.getElement(),
-        stack.displaySetInstanceUID
-      );
+      studyPrefetcher.prefetch(studyPrefetcher.getElement());
     }, 300);
     const debounced = true;
     this._checkCachedData(debounced);
