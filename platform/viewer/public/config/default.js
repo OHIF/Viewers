@@ -8,7 +8,7 @@ window.config = {
   studyPrefetcher: {
     enabled: true,
     order: 'closest',
-    displaySetCount: 2,
+    displaySetCount: 3,
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
     displayProgress: true,
