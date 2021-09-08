@@ -3,6 +3,7 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import debounce from 'lodash.debounce';
 
 import StackManager from '../utils/StackManager';
+import { StudyPrefetcher } from './StudyPrefetcher';
 
 class BaseLoadingListener {
   constructor(stack, options = {}) {
@@ -243,10 +244,18 @@ class StackLoadingListener extends BaseLoadingListener {
     this.loadedCount = 0;
 
     // Check how many instances has already been download (cached)
-    this._debouncedSetProgressData = debounce(this._setProgressData, 300);
+    this._debouncedSetProgressData = debounce((...args) => {
+      this._setProgressData(...args);
+
+      /** After checking cache, continue prefetch */
+      const studyPrefetcher = StudyPrefetcher.getInstance();
+      studyPrefetcher.prefetch(
+        studyPrefetcher.getElement(),
+        stack.displaySetInstanceUID
+      );
+    }, 300);
     const debounced = true;
     this._checkCachedData(debounced);
-    console.debug('Checking cached data...');
 
     this.startListening();
   }
@@ -276,6 +285,17 @@ class StackLoadingListener extends BaseLoadingListener {
     return array;
   }
 
+  /**
+   * Check if image id is cached in cornerstone.
+   *
+   * @param {string} imageId
+   * @returns
+   */
+  isImageCached(imageId) {
+    const image = cornerstone.imageCache.imageCache[imageId];
+    return image && image.sizeInBytes;
+  }
+
   _checkCachedData(debounced = false) {
     const imageIds = this.stack.imageIds;
 
@@ -283,6 +303,10 @@ class StackLoadingListener extends BaseLoadingListener {
       const imageId = imageIds[i];
 
       const imageObject = cornerstone.imageCache.getImageLoadObject(imageId);
+
+      if (this.isImageCached(imageId)) {
+        this._updateFrameStatus(imageId, true, debounced);
+      }
 
       if (imageObject && imageObject.promise) {
         promiseState(imageObject.promise, state => {

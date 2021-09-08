@@ -72,6 +72,15 @@ export class StudyPrefetcher {
   }
 
   /**
+   * Get previously prefetched element.
+   *
+   * @returns {HTMLElement} Previously prefetched element.
+   */
+  getElement() {
+    return this.element;
+  }
+
+  /**
    * Prefetch related display sets based on cornerstone viewport element
    * with previously set options.
    *
@@ -84,6 +93,7 @@ export class StudyPrefetcher {
       return;
     }
 
+    this.element = element;
     this.enabledElement = cornerstone.getEnabledElement(element);
 
     this.stopPrefetching();
