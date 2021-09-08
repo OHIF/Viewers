@@ -58,7 +58,7 @@ const AboutModal = ({buildNumber, versionNumber}) => {
       {renderRowTitle('Important Links')}
       <div className="flex mb-8">
         <Link
-          href="https://groups.google.com/forum/#!forum/cornerstone-platform"
+          href="https://community.ohif.org/"
           showIcon={true}
         >
           Visit the forum
@@ -82,14 +82,14 @@ const AboutModal = ({buildNumber, versionNumber}) => {
       <div className="flex flex-col">
         <Row
           title="Repository URL"
-          value="https://github.com/OHIF/Viewers/"
-          link="https://github.com/OHIF/Viewers/"
+          value="https://github.com/OHIF/Viewers/tree/v3-stable"
+          link="https://github.com/OHIF/Viewers/tree/v3-stable"
         />
-        <Row
+        {/* <Row
           title="Last Master Commits"
-          value="https://github.com/OHIF/Viewers/commits/master"
-          link="https://github.com/OHIF/Viewers/commits/master"
-        />
+          value="https://github.com/OHIF/Viewers/tree/v3-stable"
+          link="https://github.com/OHIF/Viewers/tree/v3-stable"
+        /> */}
         <Row title="Version number" value={versionNumber} />
         <Row title="Build number" value={buildNumber} />
         <Row title="Browser" value={browser} />
