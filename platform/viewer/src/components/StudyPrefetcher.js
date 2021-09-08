@@ -16,12 +16,7 @@ const StudyPrefetcher = ({ studies, options }) => {
     );
     studyPrefetcher.setStudies(studiesMetadata);
 
-    let lastImageRendered;
-    const onImageRendered = ({ detail }) => {
-      if (lastImageRendered === detail.image) {
-        return;
-      }
-      lastImageRendered = detail.image;
+    const onNewImage = ({ detail }) => {
       console.debug('Prefetching...');
       /**
        * When images are cached the viewport will load instantly and
@@ -57,10 +52,7 @@ const StudyPrefetcher = ({ studies, options }) => {
     };
 
     const onElementEnabled = ({ detail }) => {
-      detail.element.addEventListener(
-        cs.EVENTS.IMAGE_RENDERED,
-        onImageRendered
-      );
+      detail.element.addEventListener(cs.EVENTS.NEW_IMAGE, onNewImage);
     };
 
     cs.events.addEventListener(cs.EVENTS.ELEMENT_ENABLED, onElementEnabled);
