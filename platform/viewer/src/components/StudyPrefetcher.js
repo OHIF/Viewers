@@ -16,7 +16,13 @@ const StudyPrefetcher = ({ studies, options }) => {
     );
     studyPrefetcher.setStudies(studiesMetadata);
 
+    let lastImageRendered;
     const onImageRendered = ({ detail }) => {
+      if (lastImageRendered === detail.image) {
+        return;
+      }
+      lastImageRendered = detail.image;
+      console.debug('Prefetching...');
       /**
        * When images are cached the viewport will load instantly and
        * the display sets will not be available at this point in time.
@@ -46,7 +52,6 @@ const StudyPrefetcher = ({ studies, options }) => {
           study.displaySets,
           instance
         );
-        console.debug('Prefetching...');
         studyPrefetcher.prefetch(detail.element, displaySetInstanceUID);
       }
     };
