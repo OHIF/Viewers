@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.14.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.15...@ohif/core@2.14.0) (2021-09-09)
+
+
+### Features
+
+* OHIF-1000: Study prefetcher ([#2466](https://github.com/OHIF/Viewers/issues/2466)) ([8f26045](https://github.com/OHIF/Viewers/commit/8f2604509d24092b721f1333289d838820d68cac))
+
+
+
+
+
 ## [2.13.15](https://github.com/OHIF/Viewers/compare/@ohif/core@2.13.14...@ohif/core@2.13.15) (2021-09-03)
 
 **Note:** Version bump only for package @ohif/core

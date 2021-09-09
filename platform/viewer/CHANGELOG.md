@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.24...@ohif/viewer@4.10.0) (2021-09-09)
+
+
+### Features
+
+* OHIF-1000: Study prefetcher ([#2466](https://github.com/OHIF/Viewers/issues/2466)) ([8f26045](https://github.com/OHIF/Viewers/commit/8f2604509d24092b721f1333289d838820d68cac))
+
+
+
+
+
 ## [4.9.24](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.23...@ohif/viewer@4.9.24) (2021-09-03)
 
 **Note:** Version bump only for package @ohif/viewer

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
