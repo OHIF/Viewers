@@ -78,8 +78,8 @@
     "react-dropzone": "^10.1.7",
     "react-i18next": "^10.11.0",
     "react-resize-detector": "^4.2.0",
-    "react-router": "6.0.0-beta.1",
-    "react-router-dom": "6.0.0-beta.1"
+    "react-router": "next",
+    "react-router-dom": "next"
   },
   "devDependencies": {
     "webpack": "^5.43.0",
