@@ -5,7 +5,9 @@ import id from './id.js';
 import init from './init';
 
 const Component = React.lazy(() => {
-  return import('./viewports/OHIFCornerstoneSRViewport');
+  return import(
+    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport'
+  );
 });
 
 const OHIFCornerstoneSRViewport = props => {

@@ -4,7 +4,7 @@ import commandsModule from './commandsModule.js';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
 const Component = React.lazy(() => {
-  return import('./OHIFCornerstoneViewport');
+  return import(/* webpackPrefetch: true */ './OHIFCornerstoneViewport');
 });
 
 const OHIFCornerstoneViewport = props => {
