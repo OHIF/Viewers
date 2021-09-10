@@ -1,5 +1,5 @@
 import dcmjs from 'dcmjs';
-import { classes } from '@ohif/core';
+import classes from '../classes';
 
 import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
 
