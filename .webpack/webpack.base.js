@@ -49,6 +49,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
     },
     output: {
       clean: true,
+      publicPath: '',
     },
     context: SRC_DIR,
     stats: {
