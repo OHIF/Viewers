@@ -1,5 +1,6 @@
 import PubSub from './PubSub';
 
+/** Events */
 export const LogEvents = Object.freeze({
   OnLog: 'onLog',
 });
@@ -13,4 +14,5 @@ class LogManager extends PubSub {
   EVENTS = LogEvents;
 }
 
+/** Singleton */
 export default new LogManager();
