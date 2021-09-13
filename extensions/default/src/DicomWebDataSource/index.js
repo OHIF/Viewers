@@ -65,7 +65,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   // TODO -> Two clients sucks, but its better than 1000.
   // TODO -> We'll need to merge auth later.
-  const qidoDicomWebClient = staticWado ? new StaticWadoClient(qidoConfig) : new api.DICOMwebClient(wadoConfig);
+  const qidoDicomWebClient = staticWado ? new StaticWadoClient(qidoConfig) : new api.DICOMwebClient(qidoConfig);
   const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
