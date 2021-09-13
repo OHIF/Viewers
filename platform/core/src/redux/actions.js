@@ -78,17 +78,6 @@ export const setActiveViewportSpecificData = viewportSpecificData => ({
 /**
  * NOT-VIEWPORT
  */
-export const setStudyLoadingProgress = (progressId, progressData) => ({
-  type: 'SET_STUDY_LOADING_PROGRESS',
-  progressId,
-  progressData,
-});
-
-export const clearStudyLoadingProgress = progressId => ({
-  type: 'CLEAR_STUDY_LOADING_PROGRESS',
-  progressId,
-});
-
 export const setUserPreferences = state => ({
   type: SET_USER_PREFERENCES,
   state,
@@ -134,8 +123,6 @@ const actions = {
   /**
    * NOT-VIEWPORT
    */
-  setStudyLoadingProgress,
-  clearStudyLoadingProgress,
   setUserPreferences,
   setExtensionData,
   setTimepoints,

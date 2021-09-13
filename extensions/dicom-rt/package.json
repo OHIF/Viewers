@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-rt",
-  "version": "0.6.13",
+  "version": "0.6.14",
   "description": "OHIF extension for rendering DICOM RTSTRUCTs on top of cornerstone images.",
   "author": "OHIF",
   "license": "MIT",

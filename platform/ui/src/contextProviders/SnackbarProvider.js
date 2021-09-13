@@ -6,9 +6,12 @@ import React, {
   useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
+import { classes } from '@ohif/core';
 
 import SnackbarContainer from '../components/snackbar/SnackbarContainer';
 import SnackbarTypes from '../components/snackbar/SnackbarTypes';
+
+const { LogManager } = classes;
 
 const SnackbarContext = createContext(null);
 
@@ -27,6 +30,20 @@ const SnackbarProvider = ({ children, service }) => {
 
   const [count, setCount] = useState(1);
   const [snackbarItems, setSnackbarItems] = useState([]);
+
+  useEffect(() => {
+    const onLogHandler = ({ type, notify, title, message }) => {
+      if (notify) {
+        show({ type, title, message });
+      }
+    };
+
+    LogManager.subscribe(LogManager.EVENTS.OnLog, onLogHandler);
+
+    return () => {
+      LogManager.subscribe(LogManager.EVENTS.OnLog, onLogHandler);
+    };
+  }, [show]);
 
   const show = useCallback(
     options => {

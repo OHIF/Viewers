@@ -497,6 +497,12 @@ class StudyMetadata extends Metadata {
       }
     }
 
+    if (this._displaySets.some(ds => 
+        ds.displaySetInstanceUID === displaySet.displaySetInstanceUID)
+    ) {
+      return;
+    }
+
     this._displaySets.splice(insertIndex, 0, displaySet);
     this.displaySets = this._displaySets;
   }

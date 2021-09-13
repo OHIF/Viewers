@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Ziegler"
+  given-names: "Erik"
+  orcid: "https://orcid.org/0000-0003-1857-8129"
+- family-names: "Urban"
+  given-names: "Trinity"
+- family-names: "Brown"
+  given-names: "Danny"
+- family-names: "Petts"
+  given-names: "James"
+- family-names: "Pieper"
+  given-names: "Steve D"
+- family-names: "Lewis"
+  given-names: "Rob"
+- family-names: "Hafey"
+  given-names: "Chris"
+- family-names: "Harris"
+  given-names: "Gordon J"
+title: "Open Health Imaging Foundation Viewer: An Extensible Open-Source Framework for Building Web-Based Imaging Applications to Support Cancer Research"
+doi: 10.1200/CCI.19.00131
+version: 1.0.0
+url: "https://github.com/OHIF/Viewers"

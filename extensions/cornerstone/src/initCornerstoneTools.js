@@ -37,8 +37,8 @@ export default function(configuration = {}) {
 
   // Configure stack prefetch
   cornerstoneTools.stackPrefetch.setConfiguration({
-    maxImagesToPrefetch: Infinity,
-    preserveExistingPool: false,
-    maxSimultaneousRequests: 20,
+    maxImagesToPrefetch: configuration.maxImagesToPrefetch,
+    preserveExistingPool: configuration.preserveExistingPool,
+    maxSimultaneousRequests: configuration.maxSimultaneousRequests,
   });
 }
