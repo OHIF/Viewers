@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.10.10...@ohif/extension-cornerstone@2.11.0) (2021-09-09)
+
+
+### Features
+
+* OHIF-1000: Study prefetcher ([#2466](https://github.com/OHIF/Viewers/issues/2466)) ([8f26045](https://github.com/OHIF/Viewers/commit/8f2604509d24092b721f1333289d838820d68cac))
+
+
+
+
+
+## [2.10.10](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.10.9...@ohif/extension-cornerstone@2.10.10) (2021-07-26)
+
+
+### Bug Fixes
+
+* changed new image handler conditional for 0 edge case ([#2338](https://github.com/OHIF/Viewers/issues/2338)) ([b8ae92c](https://github.com/OHIF/Viewers/commit/b8ae92c2d4f733b3ca89826118029685650b396a))
+
+
+
+
+
 ## [2.10.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.10.8...@ohif/extension-cornerstone@2.10.9) (2021-06-02)
 
 
