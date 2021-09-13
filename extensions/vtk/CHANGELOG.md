@@ -43,6 +43,41 @@ All notable changes to this project will be documented in this file. See
 
 
 
+## [1.11.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.11.17...@ohif/extension-vtk@1.11.18) (2021-09-13)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.11.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.11.16...@ohif/extension-vtk@1.11.17) (2021-09-09)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.11.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.11.15...@ohif/extension-vtk@1.11.16) (2021-09-03)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.11.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.11.14...@ohif/extension-vtk@1.11.15) (2021-08-30)
+
+
+### Bug Fixes
+
+* MPR metadata parsing for spacings ([#2517](https://github.com/OHIF/Viewers/issues/2517)) ([715dfc5](https://github.com/OHIF/Viewers/commit/715dfc556a3883de31d74012dcc99e431d91f57d))
+
+
+
+
+
 ## [1.11.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.11.13...@ohif/extension-vtk@1.11.14) (2021-06-03)
 
 **Note:** Version bump only for package @ohif/extension-vtk

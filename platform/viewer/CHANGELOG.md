@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.10.0...@ohif/viewer@4.10.1) (2021-09-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.10.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.24...@ohif/viewer@4.10.0) (2021-09-09)
+
+
+### Features
+
+* OHIF-1000: Study prefetcher ([#2466](https://github.com/OHIF/Viewers/issues/2466)) ([8f26045](https://github.com/OHIF/Viewers/commit/8f2604509d24092b721f1333289d838820d68cac))
+
+
+
+
+
+## [4.9.24](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.23...@ohif/viewer@4.9.24) (2021-09-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.23](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.22...@ohif/viewer@4.9.23) (2021-08-30)
+
+
+### Bug Fixes
+
+* MPR metadata parsing for spacings ([#2517](https://github.com/OHIF/Viewers/issues/2517)) ([715dfc5](https://github.com/OHIF/Viewers/commit/715dfc556a3883de31d74012dcc99e431d91f57d))
+
+
+
+
+
+## [4.9.22](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.21...@ohif/viewer@4.9.22) (2021-08-19)
+
+
+### Bug Fixes
+
+* Remove internet dependency for workbox (addressing [#2109](https://github.com/OHIF/Viewers/issues/2109)) ([#2151](https://github.com/OHIF/Viewers/issues/2151)) ([5f92f6e](https://github.com/OHIF/Viewers/commit/5f92f6ec7faa11d3fdc33ef8f22971a0bab87a36))
+
+
+
+
+
+## [4.9.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.20...@ohif/viewer@4.9.21) (2021-07-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.9.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.19...@ohif/viewer@4.9.20) (2021-06-03)
 
 **Note:** Version bump only for package @ohif/viewer

@@ -72,7 +72,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => {},
+    onScroll: () => { },
   };
 
   static id = 'OHIFVTKViewport';
@@ -271,7 +271,7 @@ class OHIFVTKViewport extends Component {
 
     volumeMapper.setSampleDistance(sampleDistance);
 
-    // Be generous to surpress warnings, as the logging really hurts performance.
+    // Be generous to suppress warnings, as the logging really hurts performance.
     // TODO: maybe we should auto adjust samples to 1000.
     volumeMapper.setMaximumSamplesPerRay(4000);
 
@@ -398,7 +398,7 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
