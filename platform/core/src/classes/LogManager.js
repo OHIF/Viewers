@@ -1,6 +1,6 @@
 import PubSub from './PubSub';
 
-/** Events */
+/** Log Events */
 export const LogEvents = Object.freeze({
   OnLog: 'onLog',
 });
