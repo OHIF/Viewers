@@ -131,6 +131,17 @@ export default function ModeRoute({
     return ViewportGrid({ ...props, dataSource });
   }
 
+  const getAuthorizationHeader = () => {
+    const accessToken = query.get('token');
+    return {
+      Authorization: `Bearer ${accessToken}`,
+    };
+  };
+
+  const handleUnauthenticated = () => {
+    console.log('handleUnauthenticated');
+  };
+
   useEffect(() => {
     // Preventing state update for unmounted component
     isMounted.current = true;
@@ -138,6 +149,11 @@ export default function ModeRoute({
       isMounted.current = false;
     };
   }, []);
+
+  UserAuthenticationService.setServiceImplementation({
+    getAuthorizationHeader,
+    handleUnauthenticated,
+  });
 
   useEffect(() => {
     // Todo: this should not be here, data source should not care about params
@@ -216,7 +232,9 @@ export default function ModeRoute({
     // Adding hanging protocols of extensions after onModeEnter since
     // it will reset the protocols
     hangingProtocols.forEach(extentionProtocols => {
-      const hangingProtocolModule = extensionManager.getModuleEntry(extentionProtocols);
+      const hangingProtocolModule = extensionManager.getModuleEntry(
+        extentionProtocols
+      );
       if (hangingProtocolModule?.protocols) {
         HangingProtocolService.addProtocols(hangingProtocolModule.protocols);
       }
@@ -280,7 +298,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-    // reducer={reducer}
+      // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>

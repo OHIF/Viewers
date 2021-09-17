@@ -25,17 +25,17 @@ function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, i
         <div className="flex items-center">
           {/* // TODO: Should preserve filter/sort
               // Either injected service? Or context (like react router's `useLocation`?) */}
-          <div
+          {/* <div
             className={classNames("inline-flex items-center mr-3", isReturnEnabled && 'cursor-pointer')}
             onClick={onClickReturn}
           >
             {isReturnEnabled && <Icon name="chevron-left" className="w-8 text-primary-active" />}
             <div className="ml-4">{WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}</div>
-          </div>
+          </div> */}
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          <span className="mr-3 text-lg text-common-light">
+          {/* <span className="mr-3 text-lg text-common-light">
             {t('INVESTIGATIONAL USE ONLY')}
           </span>
           <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
@@ -57,7 +57,7 @@ function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, i
             >
               <Icon name="chevron-down" />
             </IconButton>
-          </Dropdown>
+          </Dropdown> */}
         </div>
       </div>
     </NavBar>

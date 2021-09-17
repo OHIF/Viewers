@@ -1,5 +1,6 @@
 {
   "editor.rulers": [80, 120],
+  "editor.formatOnSave": false,
   // ===
   // Spacing
   // ===
@@ -13,7 +14,6 @@
   // ===
   // Event Triggers
   // ===
-  "editor.formatOnSave": true,
   "eslint.autoFixOnSave": true,
   "eslint.run": "onSave",
   "eslint.validate": [
