@@ -333,12 +333,6 @@ describe('OHIF User Preferences', () => {
         .scrollIntoView()
         .click();
 
-      // Close Success Message overlay (if displayed)
-      cy.get('body').then(body => {
-        if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click({ force: true });
-        }
-      });
 
       // Header should be in "English (USA)""
       cy.get('.research-use')
