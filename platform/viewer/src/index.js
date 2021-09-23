@@ -25,26 +25,18 @@ import OHIFMeasurementTrackingExtension from '@ohif/extension-measurement-tracki
 import OHIFDICOMSRExtension from '@ohif/extension-dicom-sr';
 
 /** Combine our appConfiguration and "baked-in" extensions */
-// const appProps = {
-//   config: window ? window.config : {},
-//   defaultExtensions: [
-//     OHIFDefaultExtension,
-//     OHIFCornerstoneExtension,
-//     OHIFMeasurementTrackingExtension,
-//     OHIFDICOMSRExtension,
-//   ],
-// };
+const appProps = {
+  config: window ? window.config : {},
+  defaultExtensions: [
+    OHIFDefaultExtension,
+    OHIFCornerstoneExtension,
+    OHIFMeasurementTrackingExtension,
+    OHIFDICOMSRExtension,
+  ],
+};
 
 /** Create App */
-// const app = React.createElement(App, appProps, null);
+const app = React.createElement(App, appProps, null);
 
 /** Render */
-// ReactDOM.render(app, document.getElementById('root'));
-
-export {
-  OHIFDefaultExtension,
-  OHIFCornerstoneExtension,
-  OHIFMeasurementTrackingExtension,
-  OHIFDICOMSRExtension,
-};
-export default App;
+ReactDOM.render(app, document.getElementById('root'));
