@@ -12,8 +12,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
-const TerserJSPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // ~~ Rules
 const extractStyleChunksRule = require('./rules/extractStyleChunks.js');
 // ~~ Directories
@@ -47,6 +45,16 @@ module.exports = (env, argv) => {
         } else {
           return 'file:///' + encodeURI(info.absoluteResourcePath);
         }
+      },
+    },
+    resolve: {
+      // We use this alias and the CopyPlugin below to support using the dynamic-import version
+      // of WADO Image Loader, but only when building a PWA. When we build a package, we must use the
+      // bundled version of WADO Image Loader so we can produce a single file for the viewer.
+      // (Note: script-tag version of the viewer will no longer be supported in OHIF v3)
+      alias: {
+        'cornerstone-wado-image-loader':
+          'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js',
       },
     },
     module: {
@@ -101,6 +109,13 @@ module.exports = (env, argv) => {
         // Increase the limit to 4mb:
         // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
       }),
+      new CopyWebpackPlugin([
+        {
+          from:
+            '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+          to: DIST_DIR,
+        },
+      ]),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {

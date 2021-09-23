@@ -6052,15 +6052,15 @@ cornerstone-tools@^6.0.0:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.9"
 
-cornerstone-wado-image-loader@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.0.0.tgz#0dcc3121aaa91883757294d9ef87b6a96f3e6457"
-  integrity sha512-rkmOi7MVf/21LZl3BQglmPrxsH5qby5fbZprShe8vvgAsm06juYBkm9CNZDIv7qoRhjLHBs4prIQXNaiGbdiUg==
+cornerstone-wado-image-loader@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.0.2.tgz#225fd3491901ad95783b4dffb56e1646810d9efb"
+  integrity sha512-ZOdKIt16YYBjJO5N5AI3oIVzp58gLNR7oXdxw49RSpZA0WzlbApmvFjCfheunATh19wm4ln0UuflNjx/hS2lGQ==
   dependencies:
     "@cornerstonejs/codec-charls" "^0.1.1"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
     "@cornerstonejs/codec-openjpeg" "^0.1.0"
-    dicom-parser "^1.8.8"
+    dicom-parser "^1.8.9"
     pako "^2.0.4"
 
 cors@^2.8.4:
@@ -6963,10 +6963,10 @@ dicom-microscopy-viewer@^0.6.1:
     dicomweb-client "^0.5.2"
     ol "^5.3.0"
 
-dicom-parser@^1.8.8:
-  version "1.8.8"
-  resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.8.tgz#2eefec545eb47ba3ba6c759a9ed6277dc7eaa6a2"
-  integrity sha512-yTuHYdimnxv+oN1sVZVQlifYlVCYH0B4nHFNvH4vGKxNLz2t4fqisMbeRslcZWBw9rU4NHxI49kGqniFdTC0Dg==
+dicom-parser@^1.8.9:
+  version "1.8.9"
+  resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.9.tgz#c69b036b8234df1cfad9978d0d6f0caad1582e74"
+  integrity sha512-OdLBIh460sy0aVeBZ/XSjbzEvXDS18XWxTdTinYmIHNi2jZfo6UuxscX4/VuYslduQ9LaeY6sdEXe9P9e6qlvA==
 
 dicomweb-client@^0.5.2:
   version "0.5.2"
