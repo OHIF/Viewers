@@ -1,3 +1,4 @@
+import tr_TR from './tr-TR/';
 import de from './de/';
 import en_US from './en-US/';
 import es from './es/';
@@ -10,6 +11,7 @@ import vi from './vi/';
 import zh from './zh/';
 
 export default {
+  ...tr_TR,
   ...de,
   ...en_US,
   ...es,
