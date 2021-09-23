@@ -104,7 +104,7 @@ export class StudyPrefetcher {
    * Stop prefetching images.
    */
   stopPrefetching() {
-    cornerstoneTools.requestPoolManager.clearRequestStack('prefetch');
+    cornerstone.imageLoadPoolManager.clearRequestStack('prefetch');
   }
 
   /**
@@ -143,20 +143,24 @@ export class StudyPrefetcher {
    */
   prefetchImageIds(imageIds) {
     const nonCachedImageIds = this.filterCachedImageIds(imageIds);
-    const requestPoolManager = cornerstoneTools.requestPoolManager;
+    const imageLoadPoolManager = cornerstone.imageLoadPoolManager;
+
+    let requestFn;
+    if (this.options.preventCache) {
+      requestFn = id => cornerstone.loadImage(id);
+    } else {
+      requestFn = id => cornerstone.loadAndCacheImage(id);
+    }
 
     nonCachedImageIds.forEach(imageId => {
-      requestPoolManager.addRequest(
-        {},
-        imageId,
+      imageLoadPoolManager.addRequest(
+        requestFn.bind(this, imageId),
         this.options.requestType,
-        this.options.preventCache,
-        () => {},
-        noop
+        {
+          imageId,
+        }
       );
     });
-
-    requestPoolManager.startGrabbing();
   }
 
   /**
