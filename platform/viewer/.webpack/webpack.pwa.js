@@ -86,6 +86,11 @@ module.exports = (env, argv) => {
           from: `${PUBLIC_DIR}/${APP_CONFIG}`,
           to: `${DIST_DIR}/app-config.js`,
         },
+        {
+          from:
+            '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+          to: DIST_DIR,
+        },
       ]),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
@@ -109,13 +114,6 @@ module.exports = (env, argv) => {
         // Increase the limit to 4mb:
         // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
       }),
-      new CopyWebpackPlugin([
-        {
-          from:
-            '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-          to: DIST_DIR,
-        },
-      ]),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
