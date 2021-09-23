@@ -115,6 +115,15 @@ module.exports = (env, argv) => {
         // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
       }),
     ],
+    optimization: {
+      splitChunks: {
+        // include all types of chunks
+        chunks: 'all',
+      },
+      //runtimeChunk: 'single',
+      minimize: isProdBuild,
+      sideEffects: true,
+    },
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
       // gzip compression of everything served
