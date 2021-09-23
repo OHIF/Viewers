@@ -1,5 +1,5 @@
 import dcmjs from 'dcmjs';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js';
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import FileLoader from './fileLoader';
 
 const DICOMFileLoader = new (class extends FileLoader {
