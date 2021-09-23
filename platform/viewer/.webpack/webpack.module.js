@@ -12,6 +12,9 @@ module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
   return merge(commonConfig, {
+    entry: {
+      app: `${SRC_DIR}/index_module.js`,
+    },
     devtool: 'source-map',
     stats: {
       colors: true,
