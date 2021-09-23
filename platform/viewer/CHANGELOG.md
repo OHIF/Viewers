@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.10.1...@ohif/viewer@4.11.0) (2021-09-23)
+
+
+### Features
+
+* Update to WADO Image Loader 4.0.3 to add dynamically imported WebAssembly codec support 🚀 ([#2537](https://github.com/OHIF/Viewers/issues/2537)) ([489d4b0](https://github.com/OHIF/Viewers/commit/489d4b0584f4657ceda1c5b9b68d5e9733827e47))
+
+
+
+
+
 ## [4.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.10.0...@ohif/viewer@4.10.1) (2021-09-13)
 
 **Note:** Version bump only for package @ohif/viewer
