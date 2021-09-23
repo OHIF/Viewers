@@ -49,6 +49,7 @@ const languagesMap = {
   te: 'Telugu',
   th: 'Thai',
   tr: 'Turkish',
+  'tr-TR': 'Turkish (Turkey)',
   uk: 'Ukrainian',
   vi: 'Vietnamese',
   zh: 'Chinese',
