@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import throttle from 'lodash.throttle';
 import { useDrag } from 'react-dnd';
 import { classes } from '@ohif/core';
 import ImageThumbnail from './ImageThumbnail';
@@ -144,13 +145,13 @@ function Thumbnail(props) {
 
   const [stackPercentComplete, setStackPercentComplete] = useState(0);
   useEffect(() => {
-    const onProgressChange = ({ detail }) => {
+    const onProgressChange = throttle(({ detail }) => {
       const { progressId, progressData } = detail;
       if (`StackProgress:${displaySetInstanceUID}` === progressId) {
         const percent = progressData ? progressData.percentComplete : 0;
         setStackPercentComplete(percent);
       }
-    };
+    }, 100);
 
     document.addEventListener(
       StudyLoadingListener.events.OnProgress,
