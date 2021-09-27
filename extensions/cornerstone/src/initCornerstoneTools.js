@@ -10,6 +10,11 @@ export default function(configuration = {}) {
   // For debugging
   window.cornerstoneTools = cornerstoneTools;
 
+  cornerstone.imageLoadPoolManager.grabDelay = 10;
+  cornerstone.imageRetrievalPoolManager.grabDelay = 10;
+
+  window.cornerstone = cornerstone;
+
   cornerstoneTools.external.cornerstone = cornerstone;
   cornerstoneTools.external.Hammer = Hammer;
   cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
