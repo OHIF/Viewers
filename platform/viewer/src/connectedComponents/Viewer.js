@@ -456,6 +456,7 @@ const _checkForSeriesInconsistencesWarnings = async function(
     // warnings already checked and cached in displaySet
     return displaySet.inconsistencyWarnings;
   }
+
   const inconsistencyWarnings = [];
 
   if (displaySet.Modality !== 'SEG') {
