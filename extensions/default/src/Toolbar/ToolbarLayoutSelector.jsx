@@ -9,18 +9,23 @@ function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
-  const closeOnOutsideClick = () => {
-    if (isOpen) {
-      setIsOpen(false);
-    }
-  };
+  /**
+   * @wen
+   * Disable outside click because of click event conflicts.
+   */
 
-  useEffect(() => {
-    window.addEventListener('click', closeOnOutsideClick);
-    return () => {
-      window.removeEventListener('click', closeOnOutsideClick);
-    };
-  }, [isOpen]);
+  // const closeOnOutsideClick = () => {
+  //   if (isOpen) {
+  //     setIsOpen(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   window.addEventListener('click', closeOnOutsideClick);
+  //   return () => {
+  //     window.removeEventListener('click', closeOnOutsideClick);
+  //   };
+  // }, [isOpen]);
 
   useEffect(() => {
     /* Reset to default layout when component unmounts */
@@ -43,6 +48,7 @@ function LayoutSelector() {
           <DropdownContent
             onSelection={({ numRows, numCols }) => {
               viewportGridService.setLayout({ numCols, numRows });
+              setIsOpen(false);
             }}
           />
         )

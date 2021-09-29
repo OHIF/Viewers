@@ -3,7 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
 import Compose from './routes/Mode/Compose.js';
 
 import {
@@ -19,17 +18,23 @@ import {
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
-import { AppConfigProvider } from '@state';
-import createRoutes from './routes';
+import {
+  AppConfigProvider,
+  AccessTokenProvider,
+  StudyInstanceUIDsProvider,
+} from '@state';
+import ModeRoute from '@routes/Mode';
+
+// import createRoutes from './routes';
 import appInit from './appInit.js';
-import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes.jsx';
+// import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes.jsx';
 
 // TODO: Temporarily for testing
 import '@ohif/mode-longitudinal';
 
 let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
-function App({ config, defaultExtensions }) {
+function App({ config, defaultExtensions, accessToken, studyUID }) {
   const init = appInit(config, defaultExtensions);
 
   // Set above for named export
@@ -40,17 +45,8 @@ function App({ config, defaultExtensions }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { routerBasename, modes, dataSources, oidc } = appConfigState;
+  const { modes } = appConfigState;
 
-  // Use config to create routes
-  const appRoutes = createRoutes({
-    modes,
-    dataSources,
-    extensionManager,
-    servicesManager,
-    hotkeysManager,
-    routerBasename,
-  });
   const {
     UIDialogService,
     UIModalService,
@@ -63,35 +59,30 @@ function App({ config, defaultExtensions }) {
 
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
-    [UserAuthenticationProvider, { service: UserAuthenticationService}],
+    [AccessTokenProvider, { value: accessToken }],
+    [StudyInstanceUIDsProvider, { value: studyUID }],
+    [UserAuthenticationProvider, { service: UserAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapper],
-    [ViewportGridProvider, {service: ViewportGridService}],
-    [ViewportDialogProvider, {service: UIViewportDialogService}],
-    [CineProvider, {service: CineService}],
-    [SnackbarProvider, {service: UINotificationService}],
-    [DialogProvider, {service: UIDialogService}],
-    [ModalProvider, {service: UIModalService, modal: Modal}],
-  ]
+    [ViewportGridProvider, { service: ViewportGridService }],
+    [ViewportDialogProvider, { service: UIViewportDialogService }],
+    [CineProvider, { service: CineService }],
+    [SnackbarProvider, { service: UINotificationService }],
+    [DialogProvider, { service: UIDialogService }],
+    [ModalProvider, { service: UIModalService, modal: Modal }],
+  ];
   const CombinedProviders = ({ children }) =>
     Compose({ components: providers, children });
 
-  let authRoutes = null;
-
-  if (oidc) {
-    authRoutes = (<OpenIdConnectRoutes
-                oidc={oidc}
-                routerBasename={routerBasename}
-                UserAuthenticationService={UserAuthenticationService}
-              />)
-  }
-
   return (
     <CombinedProviders>
-      <BrowserRouter>
-        {authRoutes}
-        {appRoutes}
-      </BrowserRouter>
+      <ModeRoute
+        mode={modes[0]}
+        dataSourceName={extensionManager.defaultDataSourceName}
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+        hotkeysManager={hotkeysManager}
+      />
     </CombinedProviders>
   );
 }
@@ -111,6 +102,8 @@ App.propTypes = {
   /* Extensions that are "bundled" or "baked-in" to the application.
    * These would be provided at build time as part of they entry point. */
   defaultExtensions: PropTypes.array,
+  accessToken: PropTypes.string,
+  studyUID: PropTypes.string,
 };
 
 App.defaultProps = {
