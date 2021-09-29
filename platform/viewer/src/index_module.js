@@ -1,18 +1,25 @@
-/**
- * Entry point for development and production PWA builds.
- */
-import 'regenerator-runtime/runtime';
-import App from './App.jsx';
+import React, { useContext, useEffect } from 'react';
 
 import OHIFDefaultExtension from '@ohif/extension-default';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFMeasurementTrackingExtension from '@ohif/extension-measurement-tracking';
 import OHIFDICOMSRExtension from '@ohif/extension-dicom-sr';
 
-export {
-  OHIFDefaultExtension,
-  OHIFCornerstoneExtension,
-  OHIFMeasurementTrackingExtension,
-  OHIFDICOMSRExtension,
+import App from './App.jsx';
+import appConfig from '../public/config/newlantern';
+
+const appProps = {
+  config: appConfig,
+  defaultExtensions: [
+    OHIFDefaultExtension,
+    OHIFCornerstoneExtension,
+    OHIFMeasurementTrackingExtension,
+    OHIFDICOMSRExtension,
+  ],
 };
-export default App;
+
+const LanternViewer = ({ accessToken }) => (
+  <App {...appProps} accessToken={accessToken} />
+);
+
+export default LanternViewer;

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { DicomMetadataStore } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery } from '@hooks';
+import { useAccessToken } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
@@ -74,6 +75,8 @@ export default function ModeRoute({
   const locationRef = useRef(null);
   const isMounted = useRef(false);
 
+  const [accessToken] = useAccessToken();
+
   if (location !== locationRef.current) {
     layoutTemplateData.current = null;
     locationRef.current = location;
@@ -130,6 +133,30 @@ export default function ModeRoute({
   function ViewportGridWithDataSource(props) {
     return ViewportGrid({ ...props, dataSource });
   }
+
+  const getAuthorizationHeader = () => {
+    if (accessToken) {
+      return {
+        Authorization: `Bearer ${accessToken}`,
+      };
+    }
+
+    return null;
+  };
+
+  const handleUnauthenticated = () => {
+    console.log('unauthenticated');
+    return null;
+  };
+
+  useEffect(() => {
+    UserAuthenticationService.set({ enabled: true });
+
+    UserAuthenticationService.setServiceImplementation({
+      getAuthorizationHeader,
+      handleUnauthenticated,
+    });
+  }, []);
 
   useEffect(() => {
     // Preventing state update for unmounted component
@@ -216,7 +243,9 @@ export default function ModeRoute({
     // Adding hanging protocols of extensions after onModeEnter since
     // it will reset the protocols
     hangingProtocols.forEach(extentionProtocols => {
-      const hangingProtocolModule = extensionManager.getModuleEntry(extentionProtocols);
+      const hangingProtocolModule = extensionManager.getModuleEntry(
+        extentionProtocols
+      );
       if (hangingProtocolModule?.protocols) {
         HangingProtocolService.addProtocols(hangingProtocolModule.protocols);
       }
@@ -280,7 +309,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-    // reducer={reducer}
+      // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>
