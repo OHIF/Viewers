@@ -9,18 +9,18 @@ function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
-  const closeOnOutsideClick = () => {
-    if (isOpen) {
-      setIsOpen(false);
-    }
-  };
+  // const closeOnOutsideClick = () => {
+  //   if (isOpen) {
+  //     setIsOpen(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    window.addEventListener('click', closeOnOutsideClick);
-    return () => {
-      window.removeEventListener('click', closeOnOutsideClick);
-    };
-  }, [isOpen]);
+  // useEffect(() => {
+  //   window.addEventListener('click', closeOnOutsideClick);
+  //   return () => {
+  //     window.removeEventListener('click', closeOnOutsideClick);
+  //   };
+  // }, [isOpen]);
 
   useEffect(() => {
     /* Reset to default layout when component unmounts */
