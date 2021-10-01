@@ -25,7 +25,7 @@ export class StudyPrefetcher {
     }
 
     cornerstone.events.addEventListener(
-      'cornerstoneimagecachefull.StudyPrefetcher',
+      cornerstone.EVENTS.IMAGE_CACHE_FULL + '.StudyPrefetcher',
       this.cacheFullHandler
     );
   }
@@ -36,7 +36,7 @@ export class StudyPrefetcher {
   destroy() {
     this.stopPrefetching();
     cornerstone.events.removeEventListener(
-      'cornerstoneimagecachefull.StudyPrefetcher',
+      cornerstone.EVENTS.IMAGE_CACHE_FULL + '.StudyPrefetcher',
       this.cacheFullHandler
     );
   }
@@ -135,6 +135,8 @@ export class StudyPrefetcher {
       return;
     }
 
+    console.debug(displaySetsToPrefetch.map(a => a.SeriesDescription));
+
     const imageIds = this.getImageIdsFromDisplaySets(displaySetsToPrefetch);
     this.prefetchImageIds(imageIds);
   }
@@ -155,13 +157,18 @@ export class StudyPrefetcher {
       requestFn = id => cornerstone.loadAndCacheImage(id);
     }
 
+    const priority = 5;
+    const addToBeginning = false;
+
     nonCachedImageIds.forEach(imageId => {
       imageLoadPoolManager.addRequest(
         requestFn.bind(this, imageId),
         this.options.requestType,
         {
           imageId,
-        }
+        },
+        priority,
+        addToBeginning
       );
     });
   }

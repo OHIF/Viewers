@@ -50,9 +50,7 @@ export default {
       };
 
       const { studyPrefetcher } = appConfig;
-      const isStackPrefetchEnabled =
-        studyPrefetcher && !studyPrefetcher.enabled;
-      // isStackPrefetchEnabled={isStackPrefetchEnabled}
+
       return (
         <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />
       );
