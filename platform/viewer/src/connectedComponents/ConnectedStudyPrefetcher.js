@@ -7,8 +7,10 @@ const mapStateToProps = (state, ownProps) => {
     state.viewports.viewportSpecificData[state.viewports.activeViewportIndex] ||
     {};
 
+  const { displaySetInstanceUID } = activeViewportData;
+
   return {
-    activeViewportData,
+    activeViewportDisplaySetInstanceUID: displaySetInstanceUID,
   };
 };
 
