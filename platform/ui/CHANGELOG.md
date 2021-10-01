@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.1...@ohif/ui@1.10.2) (2021-09-24)
+
+
+### Bug Fixes
+
+* throttle thumbnail progress updates ([#2557](https://github.com/OHIF/Viewers/issues/2557)) ([66c587b](https://github.com/OHIF/Viewers/commit/66c587b139835201331a64bc24a17901e7583649))
+
+
+
+
+
 ## [1.10.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.0...@ohif/ui@1.10.1) (2021-09-13)
 
 **Note:** Version bump only for package @ohif/ui
