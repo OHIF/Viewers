@@ -20,7 +20,7 @@ import UserManagerContext from '../context/UserManagerContext';
 import AppContext from '../context/AppContext';
 
 import './Viewer.css';
-import StudyPrefetcher from '../components/StudyPrefetcher.js';
+import ConnectedStudyPrefetcher from '../connectedComponents/ConnectedStudyPrefetcher.js';
 import StudyLoadingMonitor from '../components/StudyLoadingMonitor';
 
 class Viewer extends Component {
@@ -389,7 +389,7 @@ class Viewer extends Component {
                   return (
                     studyPrefetcher &&
                     studyPrefetcher.enabled && (
-                      <StudyPrefetcher
+                      <ConnectedStudyPrefetcher
                         studies={studies}
                         options={studyPrefetcher}
                       />

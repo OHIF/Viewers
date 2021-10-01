@@ -151,7 +151,7 @@ function Thumbnail(props) {
         const percent = progressData ? progressData.percentComplete : 0;
         setStackPercentComplete(percent);
       }
-    }, 100);
+    }, 500);
 
     document.addEventListener(
       StudyLoadingListener.events.OnProgress,

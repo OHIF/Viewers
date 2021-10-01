@@ -128,8 +128,7 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
   }
 
   _getImageLoadProgressEventName() {
-    // TODO: Add this event as a constant in Cornerstone
-    return 'cornerstoneimageloadprogress.' + this.id;
+    return cornerstone.EVENTS.IMAGE_LOAD_PROGRESS + '.' + this.id;
   }
 
   startListening() {
@@ -249,7 +248,7 @@ class StackLoadingListener extends BaseLoadingListener {
 
       /** After checking cache, continue prefetch */
       const studyPrefetcher = StudyPrefetcher.getInstance();
-      studyPrefetcher.prefetch(studyPrefetcher.getElement());
+      studyPrefetcher.prefetch();
     }, 300);
     const debounced = true;
     this._checkCachedData(debounced);

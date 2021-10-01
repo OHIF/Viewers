@@ -253,7 +253,6 @@ class OHIFCornerstoneViewport extends Component {
           onNewImageDebounceTime={300}
           viewportOverlayComponent={warningsOverlay}
           stackPrefetch={this.props.stackPrefetch}
-          isStackPrefetchEnabled={this.props.isStackPrefetchEnabled}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}

@@ -71,13 +71,16 @@ export class StudyPrefetcher {
     this.studies = studies;
   }
 
-  /**
-   * Get previously prefetched element.
-   *
-   * @returns {HTMLElement} Previously prefetched element.
-   */
-  getElement() {
-    return this.element;
+  getStudyFromDisplaySet(displaySetInstanceUID) {
+    return this.studies.find(study => {
+      if (!study.displaySets) {
+        return;
+      }
+
+      return study.displaySets.find(
+        ds => ds.displaySetInstanceUID === displaySetInstanceUID
+      );
+    });
   }
 
   /**
@@ -88,13 +91,10 @@ export class StudyPrefetcher {
    * @param {string} displaySetInstanceUID the display set instance uid
    * @returns
    */
-  prefetch(element, displaySetInstanceUID) {
+  prefetch(displaySetInstanceUID) {
     if (!this.studies || !this.studies.length) {
       return;
     }
-
-    this.element = element;
-    this.enabledElement = cornerstone.getEnabledElement(element);
 
     this.stopPrefetching();
     this.prefetchDisplaySets(displaySetInstanceUID);
@@ -114,11 +114,10 @@ export class StudyPrefetcher {
    * @param {number} timeout
    */
   prefetchDisplaySetsAsync(element, timeout) {
-    this.enabledElement = cornerstone.getEnabledElement(element);
     timeout = timeout || this.options.prefetchDisplaySetsTimeout;
     clearTimeout(this.prefetchDisplaySetsHandler);
     this.prefetchDisplaySetsHandler = setTimeout(() => {
-      this.prefetchDisplaySets(element);
+      this.prefetchDisplaySets();
     }, timeout);
   }
 
@@ -132,6 +131,10 @@ export class StudyPrefetcher {
     const displaySetsToPrefetch = this.getDisplaySetsToPrefetch(
       displaySetInstanceUID
     );
+    if (!displaySetsToPrefetch) {
+      return;
+    }
+
     const imageIds = this.getImageIdsFromDisplaySets(displaySetsToPrefetch);
     this.prefetchImageIds(imageIds);
   }
@@ -245,37 +248,19 @@ export class StudyPrefetcher {
   }
 
   /**
-   * Get active viewport image based on cornerstone viewport element.
-   * @returns
-   */
-  getActiveViewportImage() {
-    if (!this.enabledElement) {
-      return;
-    }
-
-    return this.enabledElement.image;
-  }
-
-  /**
    * Prefetch display sets based on cornerstone viewport element image.
    *
    * @param {string} displaySetInstanceUID the display set instance uid
    * @returns {array} displaySets
    */
   getDisplaySetsToPrefetch(displaySetInstanceUID) {
-    const image = this.getActiveViewportImage();
-
-    if (!image) {
-      return [];
+    const study = this.getStudyFromDisplaySet(displaySetInstanceUID);
+    if (!study) {
+      return;
     }
 
-    const study = this.getStudy(image);
-    const series = this.getSeries(study, image);
-    const instance = this.getInstance(series, image);
     const displaySets = study.displaySets;
-    const activeDisplaySet = displaySetInstanceUID
-      ? this.getDisplaySetByUID(displaySetInstanceUID)
-      : this.getDisplaySetBySOPInstanceUID(displaySets, instance);
+    const activeDisplaySet = this.getDisplaySetByUID(displaySetInstanceUID);
 
     const prefetchMethodMap = {
       topdown: 'getFirstDisplaySets',

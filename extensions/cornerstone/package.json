@@ -32,10 +32,10 @@
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
     "@ohif/ui": "^0.50.0",
-    "cornerstone-core": "^2.5.0",
+    "cornerstone-core": "^2.6.0",
     "cornerstone-math": "^0.1.9",
-    "cornerstone-tools": "^6.0.0",
-    "cornerstone-wado-image-loader": "^4.0.3",
+    "cornerstone-tools": "^6.0.2",
+    "cornerstone-wado-image-loader": "^4.0.4",
     "dcmjs": "0.18.9",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
@@ -51,6 +51,6 @@
     "classnames": "^2.2.6",
     "lodash.merge": "^4.6.2",
     "lodash.throttle": "^4.1.1",
-    "react-cornerstone-viewport": "4.1.1"
+    "react-cornerstone-viewport": "4.1.2"
   }
 }
