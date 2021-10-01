@@ -29,12 +29,12 @@
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
     "classnames": "^2.2.6",
-    "cornerstone-core": "^2.5.0",
-    "cornerstone-tools": "6.0.0",
+    "cornerstone-core": "^2.6.0",
+    "cornerstone-tools": "6.0.1",
     "dcmjs": "0.16.1",
     "prop-types": "^15.6.2",
     "react": "^16.13.1",
-    "react-cornerstone-viewport": "^4.1.1",
+    "react-cornerstone-viewport": "^4.1.2",
     "react-dom": "^16.13.1",
     "webpack": "^5.50.0",
     "webpack-merge": "^5.7.3"
