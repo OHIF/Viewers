@@ -247,8 +247,8 @@ class StackLoadingListener extends BaseLoadingListener {
       this._setProgressData(...args);
 
       /** After checking cache, continue prefetch */
-      const studyPrefetcher = StudyPrefetcher.getInstance();
-      studyPrefetcher.prefetch();
+      // const studyPrefetcher = StudyPrefetcher.getInstance();
+      // studyPrefetcher.prefetch();
     }, 300);
     const debounced = true;
     this._checkCachedData(debounced);
