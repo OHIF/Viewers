@@ -14,10 +14,14 @@
       "**/history/**",
       "**/**/history",
       "**/**/history/**",
-      "nl-pacs/react-router",
-      "nl-pacs/react-router/**",
-      "nl-pacs/react-router-dom",
-      "nl-pacs/react-router-dom/**"
+      "**/react-router",
+      "**/react-router/**",
+      "**/**/react-router",
+      "**/**react-router/**",
+      "**/react-router-dom",
+      "**/react-router-dom/**",
+      "**/**/react-router-dom",
+      "**/**/react-router-dom/**"
     ]
   },
   "engines": {
