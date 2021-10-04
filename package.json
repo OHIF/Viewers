@@ -53,7 +53,7 @@
   "dependencies": {
     "@babel/runtime": "7.7.6",
     "core-js": "^3.2.1",
-    "cornerstone-core": "2.5.0",
+    "cornerstone-core": "2.6.0",
     "wslink": "^0.1.8"
   },
   "peerDependencies": {

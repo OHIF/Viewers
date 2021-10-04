@@ -244,7 +244,9 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
         metadata = {
           samplesPerPixel: validNumber(instance.SamplesPerPixel),
-          photometricInterpretation: validNumber(instance.PhotometricInterpretation),
+          photometricInterpretation: validNumber(
+            instance.PhotometricInterpretation
+          ),
           rows: validNumber(instance.Rows),
           columns: validNumber(instance.Columns),
           bitsAllocated: validNumber(instance.BitsAllocated),
@@ -255,23 +257,28 @@ class MetadataProvider {
           pixelAspectRatio: validNumber(instance.PixelAspectRatio),
           smallestPixelValue: validNumber(instance.SmallestPixelValue),
           largestPixelValue: validNumber(instance.LargestPixelValue),
-          redPaletteColorLookupTableDescriptor:
-            validNumber(instance.RedPaletteColorLookupTableDescriptor),
-          greenPaletteColorLookupTableDescriptor:
-            validNumber(instance.GreenPaletteColorLookupTableDescriptor),
-          bluePaletteColorLookupTableDescriptor:
-            validNumber(instance.BluePaletteColorLookupTableDescriptor),
-          redPaletteColorLookupTableData:
-            validNumber(instance.RedPaletteColorLookupTableData),
-          greenPaletteColorLookupTableData:
-            validNumber(instance.GreenPaletteColorLookupTableData),
-          bluePaletteColorLookupTableData:
-            validNumber(instance.BluePaletteColorLookupTableData),
+          redPaletteColorLookupTableDescriptor: validNumber(
+            instance.RedPaletteColorLookupTableDescriptor
+          ),
+          greenPaletteColorLookupTableDescriptor: validNumber(
+            instance.GreenPaletteColorLookupTableDescriptor
+          ),
+          bluePaletteColorLookupTableDescriptor: validNumber(
+            instance.BluePaletteColorLookupTableDescriptor
+          ),
+          redPaletteColorLookupTableData: validNumber(
+            instance.RedPaletteColorLookupTableData
+          ),
+          greenPaletteColorLookupTableData: validNumber(
+            instance.GreenPaletteColorLookupTableData
+          ),
+          bluePaletteColorLookupTableData: validNumber(
+            instance.BluePaletteColorLookupTableData
+          ),
         };
 
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
-        debugger
         const { WindowCenter, WindowWidth } = instance;
         if (WindowCenter === undefined || WindowWidth === undefined) {
           return;
@@ -465,7 +472,6 @@ class MetadataProvider {
 
 const metadataProvider = new MetadataProvider();
 
-
 /**
  * Returns the values as an array of javascript numbers
  *
@@ -479,8 +485,6 @@ const validNumber = val => {
     return val !== undefined ? Number(val) : val;
   }
 };
-
-
 
 export default metadataProvider;
 
