@@ -1,4 +1,5 @@
 import { api } from 'dicomweb-client';
+import StaticWadoClient from './StaticWadoClient';
 import DICOMWeb from '../../../DICOMWeb/';
 
 import errorHandler from '../../../errorHandler';
@@ -115,14 +116,18 @@ function resultDataToStudies(resultData) {
 }
 
 export default function Studies(server, filter) {
+  const { staticWado } = server;
   const config = {
+    ...server,
     url: server.qidoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
     requestHooks: [getXHRRetryRequestHook()],
   };
 
-  const dicomWeb = new api.DICOMwebClient(config);
+  const dicomWeb = staticWado
+    ? new StaticWadoClient(config)
+    : new api.DICOMwebClient(config);
   server.qidoSupportsIncludeField =
     server.qidoSupportsIncludeField === undefined
       ? true
