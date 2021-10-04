@@ -18,8 +18,8 @@ const appProps = {
   ],
 };
 
-const LanternViewer = ({ accessToken }) => (
-  <App {...appProps} accessToken={accessToken} />
+const LanternViewer = ({ accessToken, studyUID }) => (
+  <App {...appProps} accessToken={accessToken} studyUID={studyUID} />
 );
 
 export default LanternViewer;

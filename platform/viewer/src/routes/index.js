@@ -45,7 +45,8 @@ const createRoutes = ({
       hotkeysManager,
     }) || [];
 
-  const allRoutes = [...routes, ...bakedInRoutes];
+  // const allRoutes = [...routes, ...bakedInRoutes];
+  const allRoutes = [...routes];
 
   function RouteWithErrorBoundary({ route, ...rest }) {
     // eslint-disable-next-line react/jsx-props-no-spreading

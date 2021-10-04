@@ -260,8 +260,12 @@ function PanelStudyBrowserTracking({
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
-      const madeInClient = true
-      requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID, madeInClient);
+      const madeInClient = true;
+      requestDisplaySetCreationForStudy(
+        DisplaySetService,
+        StudyInstanceUID,
+        madeInClient
+      );
     }
   }
 
@@ -574,6 +578,12 @@ function _createStudyBrowserTabs(
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
+
+    if (tabStudy.numInstances === 0) {
+      tabStudy.displaySets.forEach(
+        ds => (tabStudy.numInstances += ds.numInstances)
+      );
+    }
 
     // Add the "tab study" to the 'primary', 'recent', and/or 'all' tab group(s)
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {

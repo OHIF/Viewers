@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation } from 'react-router';
+// import { useParams, useLocation } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
-import { useQuery } from '@hooks';
-import { useAccessToken } from '@state';
+// import { useQuery } from '@hooks';
+import { useAccessToken, useStudyInstanceUIDs } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
@@ -64,23 +64,24 @@ export default function ModeRoute({
   hotkeysManager,
 }) {
   // Parse route params/querystring
-  const location = useLocation();
-  const query = useQuery();
-  const params = useParams();
+  // const location = useLocation();
+  // const query = useQuery();
+  // const params = useParams();
 
-  const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
+  // const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
   const layoutTemplateData = useRef(false);
-  const locationRef = useRef(null);
+  // const locationRef = useRef(null);
   const isMounted = useRef(false);
 
   const [accessToken] = useAccessToken();
+  const [studyInstanceUIDs] = useStudyInstanceUIDs();
 
-  if (location !== locationRef.current) {
-    layoutTemplateData.current = null;
-    locationRef.current = location;
-  }
+  // if (location !== locationRef.current) {
+  //   layoutTemplateData.current = null;
+  //   locationRef.current = location;
+  // }
 
   const {
     DisplaySetService,
@@ -103,11 +104,11 @@ export default function ModeRoute({
   // Only handling one route per mode for now
   const route = mode.routes[0];
 
-  const layoutTemplateRouteData = route.layoutTemplate({ location });
-  const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
-    layoutTemplateRouteData.id
-  );
-  const LayoutComponent = layoutTemplateModuleEntry.component;
+  // const layoutTemplateRouteData = route.layoutTemplate({ location });
+  // const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
+  //   layoutTemplateRouteData.id
+  // );
+  // const LayoutComponent = layoutTemplateModuleEntry.component;
 
   // For each extension, look up their context modules
   // TODO: move to extension manager.
@@ -166,26 +167,26 @@ export default function ModeRoute({
     };
   }, []);
 
-  useEffect(() => {
-    // Todo: this should not be here, data source should not care about params
-    const initializeDataSource = async (params, query) => {
-      const studyInstanceUIDs = await dataSource.initialize({
-        params,
-        query,
-      });
-      setStudyInstanceUIDs(studyInstanceUIDs);
-    };
+  // useEffect(() => {
+  //   // Todo: this should not be here, data source should not care about params
+  //   const initializeDataSource = async (params, query) => {
+  //     const studyInstanceUIDs = await dataSource.initialize({
+  //       params,
+  //       query,
+  //     });
+  //     setStudyInstanceUIDs(studyInstanceUIDs);
+  //   };
 
-    initializeDataSource(params, query);
-    return () => {
-      layoutTemplateData.current = null;
-    };
-  }, [location]);
+  //   initializeDataSource(params, query);
+  //   return () => {
+  //     layoutTemplateData.current = null;
+  //   };
+  // }, [location]);
 
   useEffect(() => {
     const retrieveLayoutData = async () => {
       const layoutData = await route.layoutTemplate({
-        location,
+        location: null,
         servicesManager,
         studyInstanceUIDs,
       });
@@ -286,7 +287,7 @@ export default function ModeRoute({
   }, [
     mode,
     dataSourceName,
-    location,
+    // location,
     route,
     servicesManager,
     extensionManager,
