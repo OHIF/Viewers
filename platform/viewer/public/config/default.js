@@ -1,4 +1,4 @@
-window.config = {
+const config = {
   routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
@@ -155,3 +155,5 @@ window.config = {
     },
   ],
 };
+
+export default config;
