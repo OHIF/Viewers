@@ -51,11 +51,26 @@ const JobParameters = () => {
       {toolData && (
         <div>
           <h4>Dimension: </h4>
-          <p>Width: {width}</p> <p>Height: {height} </p>
+          <p>
+            <b>Width:</b> {width}
+          </p>
+          <p>
+            <b>Height:</b> {height}
+          </p>
           <h4>Handles Start</h4>
-          <p>x: {startX}</p> <p>y: {startY}</p>
+          <p>
+            <b>x:</b> {startX}
+          </p>
+          <p>
+            <b>y:</b> {startY}
+          </p>
           <h4>Handles End</h4>
-          <p>x: {endX}</p> <p>y: {endY}</p>
+          <p>
+            <b>x:</b> {endX}
+          </p>
+          <p>
+            <b>y:</b> {endY}
+          </p>
         </div>
       )}
       <br />
