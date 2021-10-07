@@ -11,7 +11,6 @@ import {
 
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
-// import { useNavigate } from 'react-router-dom';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
@@ -90,11 +89,8 @@ function ViewerLayout({
   ViewportGridComp,
 }) {
   const [appConfig] = useAppConfig();
-  // const navigate = useNavigate();
 
-  const onClickReturnButton = () => {
-    // navigate('/');
-  };
+  const onClickReturnButton = () => {};
 
   const onClickSettingButton = () => {
     show({

@@ -3,7 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-// import { BrowserRouter } from 'react-router-dom';
 import Compose from './routes/Mode/Compose.js';
 
 import {
@@ -46,17 +45,7 @@ function App({ config, defaultExtensions, accessToken, studyUID }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { routerBasename, modes, dataSources, oidc } = appConfigState;
-
-  // Use config to create routes
-  // const appRoutes = createRoutes({
-  //   modes,
-  //   dataSources,
-  //   extensionManager,
-  //   servicesManager,
-  //   hotkeysManager,
-  //   routerBasename,
-  // });
+  const { modes } = appConfigState;
 
   const {
     UIDialogService,
@@ -85,24 +74,8 @@ function App({ config, defaultExtensions, accessToken, studyUID }) {
   const CombinedProviders = ({ children }) =>
     Compose({ components: providers, children });
 
-  // let authRoutes = null;
-
-  // if (oidc) {
-  //   authRoutes = (
-  //     <OpenIdConnectRoutes
-  //       oidc={oidc}
-  //       routerBasename={routerBasename}
-  //       UserAuthenticationService={UserAuthenticationService}
-  //     />
-  //   );
-  // }
-
   return (
     <CombinedProviders>
-      {/* <BrowserRouter>
-        {authRoutes}
-        {appRoutes}
-      </BrowserRouter> */}
       <ModeRoute
         mode={modes[0]}
         dataSourceName={extensionManager.defaultDataSourceName}
