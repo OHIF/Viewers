@@ -11,10 +11,17 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
 
   return new Promise(async function(resolve, reject) {
-    let promptResult = await _askTrackMeasurements(
-      UIViewportDialogService,
-      viewportIndex
-    );
+    /**
+     * @wen
+     * Do not show prompt box, and set prompt result always yes.
+     */
+
+    // let promptResult = await _askTrackMeasurements(
+    //   UIViewportDialogService,
+    //   viewportIndex
+    // );
+
+    let promptResult = RESPONSE.SET_STUDY_AND_SERIES;
 
     resolve({
       userResponse: promptResult,
@@ -33,7 +40,7 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
         id: 'prompt-begin-tracking-cancel',
         type: 'cancel',
         text: 'No',
-        value: RESPONSE.CANCEL
+        value: RESPONSE.CANCEL,
       },
       {
         id: 'prompt-begin-tracking-no-do-not-ask-again',
