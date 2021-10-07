@@ -12,27 +12,55 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
     return;
   }
 
-  // retriving cornerstone enable element object
-  const enabled_element = cornerstone.getEnabledElement(element);
-  if (!enabled_element || !enabled_element.image) {
+  const enabledElement = cornerstone.getEnabledElement(element);
+  if (!enabledElement || !enabledElement.image) {
     return;
   }
 
-  // storing viewport to get all necessary data from cornerstone in panel element
-  // localStorage.setItem('viewports', JSON.stringify(viewports));
+  const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
+  const stack = toolData;
 
-  UINotificationService.show({ message: 'AI Algorithm Functionality Triggered' });
-
-  // declaring cornerstone tool for getting RectangleRoi tool coordinates/ dimensions
-  const toolType = 'RectangleRoi';
-  const toolData = cornerstoneTools.getToolState(element, toolType);
-
-  if (toolData) {
-    UINotificationService.show({ message: 'RectangleRoi dimensions found' });
-    console.log({ toolData });
+  // Add our tool, and set it's mode
+  if (!stack) {
+    cornerstoneTools.setToolActive('RectangleRoi', {
+      mouseButtonMask: 1,
+    });
   }
+  // Pull event from cornerstone-tools
+  const { EVENTS } = cornerstoneTools;
 
-  if (!toolData) UINotificationService.show({ message: 'No dimensions found' });
+  // Adding event listener to checking when user is done deriving a measurement
+  element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, function(e) {
+    const eventData = e.detail;
+    const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
+
+    console.log({ eventData });
+
+    if (toolData.data.length > 0) {
+      cornerstoneTools.clearToolState(element, 'RectangleRoi');
+
+      cornerstone.updateImage(element);
+
+      cornerstoneTools.addToolState(
+        element,
+        'RectangleRoi',
+        eventData.measurementData
+      );
+    }
+  });
+
+  // adding event listener for when user starts to get new dimensions
+  element.addEventListener(EVENTS.MEASUREMENT_ADDED, () => {
+    const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
+
+    if (toolData.data.length > 1) {
+      UINotificationService.show({
+        title: 'Overwrite Alert',
+        message: 'Taking new dimensions would remove previous selected ones',
+        type: 'warning',
+      });
+    }
+  });
 };
 
 export default TriggerAlgorithm;

@@ -240,7 +240,7 @@ const definitions = [
   {
     id: 'AiTrigger',
     label: 'AiTrigger',
-    icon: 'user',
+    icon: 'square-o',
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'triggerAlgorithm',
   },
