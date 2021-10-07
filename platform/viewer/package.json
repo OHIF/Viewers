@@ -52,6 +52,7 @@
     "@ohif/extension-debugging": "^0.3.0",
     "@ohif/extension-dicom-html": "^1.3.11",
     "@ohif/extension-dicom-microscopy": "^0.52.0",
+    "@ohif/cobb-angle-tool": "0.1.0",
     "@ohif/extension-dicom-pdf": "^1.1.0",
     "@ohif/extension-dicom-rt": "^0.7.2",
     "@ohif/extension-dicom-segmentation": "^0.7.2",
