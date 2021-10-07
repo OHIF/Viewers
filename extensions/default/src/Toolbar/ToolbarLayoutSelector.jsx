@@ -9,6 +9,11 @@ function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
+  /**
+   * @wen
+   * Disable outside click because of click event conflicts.
+   */
+
   // const closeOnOutsideClick = () => {
   //   if (isOpen) {
   //     setIsOpen(false);
@@ -43,6 +48,7 @@ function LayoutSelector() {
           <DropdownContent
             onSelection={({ numRows, numCols }) => {
               viewportGridService.setLayout({ numCols, numRows });
+              setIsOpen(false);
             }}
           />
         )
