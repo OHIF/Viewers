@@ -165,18 +165,22 @@ function PanelStudyBrowser({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-      [
-        ...expandedStudyInstanceUIDs.filter(
-          stdyUid => stdyUid !== StudyInstanceUID
-        ),
-      ]
+        [
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
-      const madeInClient = true
-      requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID, madeInClient);
+      const madeInClient = true;
+      requestDisplaySetCreationForStudy(
+        DisplaySetService,
+        StudyInstanceUID,
+        madeInClient
+      );
     }
   }
 
@@ -311,6 +315,12 @@ function _createStudyBrowserTabs(
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
+
+    if (tabStudy.numInstances === 0) {
+      tabStudy.displaySets.forEach(
+        ds => (tabStudy.numInstances += ds.numInstances)
+      );
+    }
 
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
