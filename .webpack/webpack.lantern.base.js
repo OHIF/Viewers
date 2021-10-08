@@ -80,6 +80,9 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
         '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
+        "dom-helpers/addClass": path.resolve(__dirname, "../node_modules/dom-helpers/class/addClass"),
+        "react-dates": path.resolve(__dirname, "../platform/ui/node_modules/react-dates"),
+        "react-moment-proptypes": path.resolve(__dirname, "../platform/ui/node_modules/react-moment-proptypes")
       },
       // Which directories to search when resolving modules
       modules: [

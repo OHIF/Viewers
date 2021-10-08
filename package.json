@@ -9,19 +9,7 @@
       "nl-pacs"
     ],
     "nohoist": [
-      "**/html-minifier-terser",
-      "**/history",
-      "**/history/**",
-      "**/**/history",
-      "**/**/history/**",
-      "**/react-router",
-      "**/react-router/**",
-      "**/**/react-router",
-      "**/**react-router/**",
-      "**/react-router-dom",
-      "**/react-router-dom/**",
-      "**/**/react-router-dom",
-      "**/**/react-router-dom/**"
+      "**/html-minifier-terser"
     ]
   },
   "engines": {
