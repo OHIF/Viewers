@@ -5,14 +5,12 @@ import {
   SidePanel,
   ErrorBoundary,
   UserPreferences,
-  AboutModal,
   Header,
   useModal,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
-import { useNavigate } from 'react-router-dom';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
@@ -91,10 +89,35 @@ function ViewerLayout({
   ViewportGridComp,
 }) {
   const [appConfig] = useAppConfig();
-  const navigate = useNavigate();
 
-  const onClickReturnButton = () => {
-    navigate('/')
+  const onClickReturnButton = () => {};
+
+  const onClickSettingButton = () => {
+    show({
+      title: t('UserPreferencesModal:User Preferences'),
+      content: UserPreferences,
+      contentProps: {
+        hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
+          hotkeyDefaults
+        ),
+        hotkeyDefinitions,
+        currentLanguage: currentLanguage(),
+        availableLanguages,
+        defaultLanguage,
+        onCancel: () => {
+          hotkeys.stopRecord();
+          hotkeys.unpause();
+          hide();
+        },
+        onSubmit: ({ hotkeyDefinitions, language }) => {
+          i18n.changeLanguage(language.value);
+          hotkeysManager.setHotkeys(hotkeyDefinitions);
+          hide();
+        },
+        onReset: () => hotkeysManager.restoreDefaultBindings(),
+        hotkeysModule: hotkeys,
+      },
+    });
   };
 
   const { t } = useTranslation();
@@ -103,44 +126,6 @@ function ViewerLayout({
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
   const buildNumber = process.env.BUILD_NUM;
-
-  const menuOptions = [
-    {
-      title: t('Header:About'),
-      icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer', contentProps: { versionNumber, buildNumber } }),
-    },
-    {
-      title: t('Header:Preferences'),
-      icon: 'settings',
-      onClick: () =>
-        show({
-          title: t('UserPreferencesModal:User Preferences'),
-          content: UserPreferences,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
-            hotkeyDefinitions,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onCancel: () => {
-              hotkeys.stopRecord();
-              hotkeys.unpause();
-              hide();
-            },
-            onSubmit: ({ hotkeyDefinitions, language }) => {
-              i18n.changeLanguage(language.value);
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys
-          },
-        }),
-    },
-  ];
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -185,7 +170,11 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header menuOptions={menuOptions} onClickReturnButton={onClickReturnButton} WhiteLabeling={appConfig.whiteLabeling} >
+      <Header
+        onClickSettingButton={onClickSettingButton}
+        onClickReturnButton={onClickReturnButton}
+        WhiteLabeling={appConfig.whiteLabeling}
+      >
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
             <Toolbar servicesManager={servicesManager} />
