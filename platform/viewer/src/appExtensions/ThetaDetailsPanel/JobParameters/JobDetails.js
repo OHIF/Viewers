@@ -3,8 +3,9 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import '../AITriggerComponent.css';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
+import { connect } from 'react-redux';
 
-const JobParameters = () => {
+const JobParameters = (props) => {
   const [isDisabled, setIsDisabled] = React.useState(true);
   const [toolData, setToolData] = React.useState({});
   const [startX, setStartX] = React.useState();
@@ -13,6 +14,8 @@ const JobParameters = () => {
   const [endY, setEndY] = React.useState();
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
+  const [element, setElement] = React.useState();
+  const [user, setUser] = React.useState();
 
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
@@ -24,12 +27,11 @@ const JobParameters = () => {
       return;
     }
 
+    setElement(element);
+
     const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-    console.log(toolData);
-
     if (toolData && toolData.data.length > 0) {
-      console.log(toolData.data[0]);
       setToolData(toolData.data[0]);
       setStartX(toolData.data[0].handles.start.x.toFixed(2));
       setStartY(toolData.data[0].handles.start.y.toFixed(2));
@@ -42,13 +44,18 @@ const JobParameters = () => {
   }, []);
 
   const triggerJob = () => {
-    console.log('Trigger button called');
+    const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const data = toolData.data[0];
+
+    setUser(props.user);
+
+    // console.log('User', props.user);
   };
 
   return (
     <div className="component">
       <div className="title-header">Parameters</div>
-      {toolData && (
+      {Object.keys(toolData).length > 0 && (
         <div>
           <h4>Dimension: </h4>
           <p>
@@ -90,4 +97,15 @@ const JobParameters = () => {
   );
 };
 
-export default JobParameters;
+const mapStateToProps = state => {
+  return {
+    user: state.oidc.user,
+  };
+};
+
+const ConnectedJobParameters = connect(
+  mapStateToProps,
+  null
+)(JobParameters);
+
+export default ConnectedJobParameters;

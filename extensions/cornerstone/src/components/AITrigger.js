@@ -34,8 +34,6 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
     const eventData = e.detail;
     const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-    console.log({ eventData });
-
     if (toolData.data.length > 0) {
       cornerstoneTools.clearToolState(element, 'RectangleRoi');
 
