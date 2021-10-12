@@ -12,13 +12,13 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
     return;
   }
 
-  const enabledElement = cornerstone.getEnabledElement(element);
-  if (!enabledElement || !enabledElement.image) {
+  const enabled_element = cornerstone.getEnabledElement(element);
+  if (!enabled_element || !enabled_element.image) {
     return;
   }
 
-  const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
-  const stack = toolData;
+  const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+  const stack = tool_data;
 
   // Add our tool, and set it's mode
   if (!stack) {
@@ -31,10 +31,10 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
 
   // Adding event listener to checking when user is done deriving a measurement
   element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, function(e) {
-    const eventData = e.detail;
-    const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const event_data = e.detail;
+    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-    if (toolData.data.length > 0) {
+    if (tool_data.data.length > 0) {
       cornerstoneTools.clearToolState(element, 'RectangleRoi');
 
       cornerstone.updateImage(element);
@@ -42,16 +42,25 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
       cornerstoneTools.addToolState(
         element,
         'RectangleRoi',
-        eventData.measurementData
+        event_data.measurementData
       );
     }
   });
 
   // adding event listener for when user starts to get new dimensions
   element.addEventListener(EVENTS.MEASUREMENT_ADDED, () => {
-    const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-    if (toolData.data.length > 1) {
+    console.log({ tool_data });
+
+    // const state_stack_tool = cornerstoneTools.getToolStateForStack(
+    //   element,
+    //   'RectangleRoi'
+    // );
+
+    // console.log({ state_stack_tool });
+
+    if (tool_data.data.length > 1) {
       UINotificationService.show({
         title: 'Overwrite Alert',
         message: 'Taking new dimensions would remove previous selected ones',

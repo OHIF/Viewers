@@ -24,8 +24,8 @@ const LayerControls = () => {
     }
 
     // retrieving cornerstone enable element object
-    const enabledElement = cornerstone.getEnabledElement(element);
-    if (!enabledElement || !enabledElement.image) {
+    const enabled_element = cornerstone.getEnabledElement(element);
+    if (!enabled_element || !enabled_element.image) {
       return;
     }
 
@@ -33,7 +33,7 @@ const LayerControls = () => {
     const allLayers = cornerstone.getLayers(element);
 
     if (allLayers.length <= 0) {
-      createBaseLayerControl(element, enabledElement.image.imageId);
+      createBaseLayerControl(element, enabled_element.image.imageId);
     }
 
     setTimeout(() => {

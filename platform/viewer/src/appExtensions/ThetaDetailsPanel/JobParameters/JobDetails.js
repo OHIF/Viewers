@@ -4,8 +4,9 @@ import cornerstoneTools from 'cornerstone-tools';
 import '../AITriggerComponent.css';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
 import { connect } from 'react-redux';
+import { servicesManager } from './../../../App';
 
-const JobParameters = (props) => {
+const JobParameters = props => {
   const [isDisabled, setIsDisabled] = React.useState(true);
   const [toolData, setToolData] = React.useState({});
   const [startX, setStartX] = React.useState();
@@ -16,6 +17,8 @@ const JobParameters = (props) => {
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
   const [user, setUser] = React.useState();
+
+  const { UINotificationService } = servicesManager.services;
 
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
@@ -29,25 +32,31 @@ const JobParameters = (props) => {
 
     setElement(element);
 
-    const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-    if (toolData && toolData.data.length > 0) {
-      setToolData(toolData.data[0]);
-      setStartX(toolData.data[0].handles.start.x.toFixed(2));
-      setStartY(toolData.data[0].handles.start.y.toFixed(2));
-      setEndX(toolData.data[0].handles.end.x.toFixed(2));
-      setEndY(toolData.data[0].handles.end.y.toFixed(2));
-      setHeight(toolData.data[0].handles.textBox.boundingBox.height.toFixed(2));
-      setWidth(toolData.data[0].handles.textBox.boundingBox.width.toFixed(2));
+    if (tool_data && tool_data.data.length > 0) {
+      setToolData(tool_data.data[0]);
+      setStartX(tool_data.data[0].handles.start.x.toFixed(2));
+      setStartY(tool_data.data[0].handles.start.y.toFixed(2));
+      setEndX(tool_data.data[0].handles.end.x.toFixed(2));
+      setEndY(tool_data.data[0].handles.end.y.toFixed(2));
+      setHeight(
+        tool_data.data[0].handles.textBox.boundingBox.height.toFixed(2)
+      );
+      setWidth(tool_data.data[0].handles.textBox.boundingBox.width.toFixed(2));
       setIsDisabled(false);
     }
   }, []);
 
   const triggerJob = () => {
-    const toolData = cornerstoneTools.getToolState(element, 'RectangleRoi');
-    const data = toolData.data[0];
+    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const data = tool_data.data[0];
 
     setUser(props.user);
+
+    UINotificationService.show({
+      message: 'Job triggered successfully.',
+    });
 
     // console.log('User', props.user);
   };
