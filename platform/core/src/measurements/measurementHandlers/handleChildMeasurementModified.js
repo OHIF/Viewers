@@ -1,6 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import { MeasurementApi } from '../classes';
 import log from '../../log';
+import cornerstoneTools from 'cornerstone-tools';
 
 export default function({ eventData, tool, toolGroupId, toolGroup }) {
   const measurementApi = MeasurementApi.Instance;

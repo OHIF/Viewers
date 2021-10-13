@@ -237,6 +237,13 @@ const definitions = [
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
   },
+  {
+    id: 'AiTrigger',
+    label: 'AiTrigger',
+    icon: 'square-o',
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'triggerAlgorithm',
+  },
 ];
 
 export default {

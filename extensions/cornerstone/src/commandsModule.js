@@ -1,6 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from '@ohif/core';
+import TriggerAlgorithm from './components/AITrigger';
 
 import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
@@ -294,6 +295,10 @@ const commandsModule = ({ servicesManager }) => {
         refreshCornerstoneViewports();
       }
     },
+    // command for triggering AI algorithms
+    triggerAlgorithm: ({ viewports }) => {
+      TriggerAlgorithm({ viewports, servicesManager });
+    },
   };
 
   const definitions = {
@@ -406,6 +411,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    triggerAlgorithm: {
+      commandFn: actions.triggerAlgorithm,
       storeContexts: ['viewports'],
       options: {},
     },
