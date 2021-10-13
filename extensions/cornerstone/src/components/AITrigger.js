@@ -51,15 +51,6 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
   element.addEventListener(EVENTS.MEASUREMENT_ADDED, () => {
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-    console.log({ tool_data });
-
-    // const state_stack_tool = cornerstoneTools.getToolStateForStack(
-    //   element,
-    //   'RectangleRoi'
-    // );
-
-    // console.log({ state_stack_tool });
-
     if (tool_data.data.length > 1) {
       UINotificationService.show({
         title: 'Overwrite Alert',
