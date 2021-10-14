@@ -221,9 +221,13 @@ article header h3 {
   margin-right: 20%;
 }
 
-.DocSearch {
-  display: none;
+.footer_logo {
+  margin-top: 0;
 }
+
+/* .DocSearch {
+  display: none;
+} */
 
 /* Footer logo MGH */
 

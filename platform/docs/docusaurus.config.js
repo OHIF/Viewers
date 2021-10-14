@@ -51,7 +51,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
-  url: 'https://ohif.org',
+  url: 'https://v3-docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
     locales: isDeployPreview
@@ -191,9 +191,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   ],
   presets: [
     [
-      isBootstrapPreset
-        ? '@docusaurus/preset-bootstrap'
-        : '@docusaurus/preset-classic',
+      '@docusaurus/preset-classic',
       {
         debug: true, // force debug plugin usage
         docs: {
@@ -251,11 +249,6 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
       disableSwitch: false,
       // respectPrefersColorScheme: true,
     },
-    // announcementBar: {
-    //   id: 'v1-new-domain',
-    //   content:
-    //     '➡️ Docusaurus v1 documentation has moved to <a target="_blank" rel="noopener noreferrer" href="https://v1.docusaurus.io/">v1.docusaurus.io</a>! 🔄',
-    // },
     /*
     announcementBar: {
       id: 'supportus',
@@ -267,16 +260,15 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
     },
-    image: 'img/docusaurus-soc.png',
     // metadatas: [{name: 'twitter:card', content: 'summary'}],
     gtag: {
       trackingID: 'UA-110573590-2',
     },
-    // algolia: {
-    //   apiKey: '47ecd3b21be71c5822571b9f59e52544',
-    //   indexName: 'docusaurus-2',
-    //   contextualSearch: true,
-    // },
+    algolia: {
+      apiKey: '1960250e38c7655d2bfe0ce8fdaed987',
+      indexName: 'ohif',
+      contextualSearch: true,
+    },
     navbar: {
       hideOnScroll: false,
       logo: {
@@ -349,9 +341,10 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           title: ' ',
           items: [
             {
+              // This doesn't show up on dev for some reason, but displays in build
               html: `
-                <a href="https://viewer.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-                  <img src= 'https://rally.partners.org/study/image/A3C43B37-4BE8-4950-AB00-42B19677D9D2' id="mgh-logo" alt="MGH" />
+                <a href="https://www.massgeneral.org/" target="_blank" rel="noreferrer noopener">
+                  <img src="/img/mgh-logo.png" id="mgh-logo" alt="MGH" />
                 </a>
               `,
             },
@@ -398,21 +391,14 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
               label: 'Twitter',
               to: 'https://twitter.com/OHIFviewer',
             },
-            {
-              html: `
-                <a href="https://v3-demo.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-                  <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
-                </a>
-              `,
-            },
           ],
         },
       ],
-      // logo: {
-      //   alt: 'OHIF ',
-      //   src: 'img/ohif-logo.svg',
-      //   href: 'https://ohif.org',
-      // },
+      logo: {
+        alt: 'OHIF ',
+        src: 'img/netlify-color-accent.svg',
+        href: 'https://v3-demo.ohif.org/',
+      },
       copyright: `OHIF is open source software released under the MIT license.`,
     },
   },

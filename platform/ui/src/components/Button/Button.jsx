@@ -23,10 +23,6 @@ const roundedClasses = {
   full: 'rounded-full',
 };
 
-const disabledClasses = {
-  true: 'cursor-not-allowed',
-  false: '',
-};
 
 const variantClasses = {
   text: {
@@ -66,6 +62,20 @@ const variantClasses = {
       'bg-black text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     light:
       'border bg-primary-light border-primary-light text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+  },
+  disabled: {
+    default:
+      'cursor-not-allowed opacity-50 bg-primary-light text-black',
+    primary:
+      'cursor-not-allowed opacity-50 bg-primary-main text-white',
+    secondary:
+      'cursor-not-allowed opacity-50 bg-secondary-light text-white',
+    white:
+      'cursor-not-allowed opacity-50 bg-white text-black',
+    black:
+      'cursor-not-allowed opacity-50 bg-black text-white',
+    light:
+      'cursor-not-allowed opacity-50 border bg-primary-light border-primary-light text-black',
   },
 };
 
@@ -131,8 +141,8 @@ const Button = ({
         roundedClasses[rounded],
         sizeClasses[size],
         fullWidthClasses[fullWidth],
-        disabledClasses[disabled]
       )}
+      disabled={disabled}
       ref={buttonElement}
       onClick={handleOnClick}
       type={type}

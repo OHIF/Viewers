@@ -21,6 +21,9 @@ Let's break different aspects of the viewer to the main components:
 - Right Panel (measurements): displays annotations details
 - Toolbar: displays tools and logo
 
-![user-viewer-components](../../assets/img/user-viewer-components.png)
+![user-viewer-components](../../assets/img/overview.png)
+
+
+
 
 Now, we explain each component and its sub-elements in detail.

@@ -190,7 +190,7 @@ class MetadataProvider {
         metadata = {
           modality: instance.Modality,
           seriesInstanceUID: instance.SeriesInstanceUID,
-          seriesNumber: getNumberValues(instance.SeriesNumber),
+          seriesNumber: validNumber(instance.SeriesNumber),
           studyInstanceUID: instance.StudyInstanceUID,
           seriesDate,
           seriesTime,
@@ -198,9 +198,9 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_STUDY_MODULE:
         metadata = {
-          patientAge: getNumberValues(instance.PatientAge),
-          patientSize: getNumberValues(instance.PatientSize),
-          patientWeight: getNumberValues(instance.PatientWeight),
+          patientAge: validNumber(instance.PatientAge),
+          patientSize: validNumber(instance.PatientSize),
+          patientWeight: validNumber(instance.PatientWeight),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PLANE_MODULE:
@@ -229,45 +229,53 @@ class MetadataProvider {
 
         metadata = {
           frameOfReferenceUID: instance.FrameOfReferenceUID,
-          rows: getNumberValues(instance.Rows),
-          columns: getNumberValues(instance.Columns),
-          imageOrientationPatient: getNumberValues(ImageOrientationPatient),
-          rowCosines: getNumberValues(rowCosines),
-          columnCosines: getNumberValues(columnCosines),
-          imagePositionPatient: getNumberValues(instance.ImagePositionPatient),
-          sliceThickness: getNumberValues(instance.SliceThickness),
-          sliceLocation: getNumberValues(instance.SliceLocation),
-          pixelSpacing: getNumberValues(PixelSpacing),
-          rowPixelSpacing: getNumberValues(rowPixelSpacing),
-          columnPixelSpacing: getNumberValues(columnPixelSpacing),
+          rows: validNumber(instance.Rows),
+          columns: validNumber(instance.Columns),
+          imageOrientationPatient: validNumber(ImageOrientationPatient),
+          rowCosines: validNumber(rowCosines),
+          columnCosines: validNumber(columnCosines),
+          imagePositionPatient: validNumber(instance.ImagePositionPatient),
+          sliceThickness: validNumber(instance.SliceThickness),
+          sliceLocation: validNumber(instance.SliceLocation),
+          pixelSpacing: validNumber(PixelSpacing),
+          rowPixelSpacing: validNumber(rowPixelSpacing),
+          columnPixelSpacing: validNumber(columnPixelSpacing),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
         metadata = {
-          samplesPerPixel: getNumberValues(instance.SamplesPerPixel),
-          photometricInterpretation: getNumberValues(instance.PhotometricInterpretation),
-          rows: getNumberValues(instance.Rows),
-          columns: getNumberValues(instance.Columns),
-          bitsAllocated: getNumberValues(instance.BitsAllocated),
-          bitsStored: getNumberValues(instance.BitsStored),
-          highBit: getNumberValues(instance.HighBit),
-          pixelRepresentation: getNumberValues(instance.PixelRepresentation),
-          planarConfiguration: getNumberValues(instance.PlanarConfiguration),
-          pixelAspectRatio: getNumberValues(instance.PixelAspectRatio),
-          smallestPixelValue: getNumberValues(instance.SmallestPixelValue),
-          largestPixelValue: getNumberValues(instance.LargestPixelValue),
-          redPaletteColorLookupTableDescriptor:
-            getNumberValues(instance.RedPaletteColorLookupTableDescriptor),
-          greenPaletteColorLookupTableDescriptor:
-            getNumberValues(instance.GreenPaletteColorLookupTableDescriptor),
-          bluePaletteColorLookupTableDescriptor:
-            getNumberValues(instance.BluePaletteColorLookupTableDescriptor),
-          redPaletteColorLookupTableData:
-            getNumberValues(instance.RedPaletteColorLookupTableData),
-          greenPaletteColorLookupTableData:
-            getNumberValues(instance.GreenPaletteColorLookupTableData),
-          bluePaletteColorLookupTableData:
-            getNumberValues(instance.BluePaletteColorLookupTableData),
+          samplesPerPixel: validNumber(instance.SamplesPerPixel),
+          photometricInterpretation: validNumber(
+            instance.PhotometricInterpretation
+          ),
+          rows: validNumber(instance.Rows),
+          columns: validNumber(instance.Columns),
+          bitsAllocated: validNumber(instance.BitsAllocated),
+          bitsStored: validNumber(instance.BitsStored),
+          highBit: validNumber(instance.HighBit),
+          pixelRepresentation: validNumber(instance.PixelRepresentation),
+          planarConfiguration: validNumber(instance.PlanarConfiguration),
+          pixelAspectRatio: validNumber(instance.PixelAspectRatio),
+          smallestPixelValue: validNumber(instance.SmallestPixelValue),
+          largestPixelValue: validNumber(instance.LargestPixelValue),
+          redPaletteColorLookupTableDescriptor: validNumber(
+            instance.RedPaletteColorLookupTableDescriptor
+          ),
+          greenPaletteColorLookupTableDescriptor: validNumber(
+            instance.GreenPaletteColorLookupTableDescriptor
+          ),
+          bluePaletteColorLookupTableDescriptor: validNumber(
+            instance.BluePaletteColorLookupTableDescriptor
+          ),
+          redPaletteColorLookupTableData: validNumber(
+            instance.RedPaletteColorLookupTableData
+          ),
+          greenPaletteColorLookupTableData: validNumber(
+            instance.GreenPaletteColorLookupTableData
+          ),
+          bluePaletteColorLookupTableData: validNumber(
+            instance.BluePaletteColorLookupTableData
+          ),
         };
 
         break;
@@ -284,8 +292,8 @@ class MetadataProvider {
           : [WindowWidth];
 
         metadata = {
-          windowCenter: getNumberValues(windowCenter),
-          windowWidth: getNumberValues(windowWidth),
+          windowCenter: validNumber(windowCenter),
+          windowWidth: validNumber(windowWidth),
         };
 
         break;
@@ -296,8 +304,8 @@ class MetadataProvider {
         }
 
         metadata = {
-          rescaleIntercept: getNumberValues(instance.RescaleIntercept),
-          rescaleSlope: getNumberValues(instance.RescaleSlope),
+          rescaleIntercept: validNumber(instance.RescaleIntercept),
+          rescaleSlope: validNumber(instance.RescaleSlope),
           rescaleType: instance.RescaleType,
         };
         break;
@@ -409,7 +417,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUid: instance.SOPInstanceUID,
-          instanceNumber: getNumberValues(instance.InstanceNumber),
+          instanceNumber: validNumber(instance.InstanceNumber),
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
           lossyImageCompressionMethod: instance.LossyImageCompressionMethod,
@@ -465,30 +473,19 @@ class MetadataProvider {
 
 const metadataProvider = new MetadataProvider();
 
-
 /**
  * Returns the values as an array of javascript numbers
  *
  * @param element - The javascript object for the specified element in the metadata
  * @returns {*}
  */
-function getNumberValues(element) {
-  if (!element) {
-    return;
+const validNumber = val => {
+  if (Array.isArray(val)) {
+    return val.map(v => (v !== undefined ? Number(v) : v));
+  } else {
+    return val !== undefined ? Number(val) : val;
   }
-
-  if (Array.isArray(element)) {
-    const values = [];
-    for (let i = 0; i < element.length; i++) {
-      values.push(parseFloat(element[i]));
-    }
-    return values;
-  }
-
-  return parseFloat(element)
-}
-
-
+};
 
 export default metadataProvider;
 

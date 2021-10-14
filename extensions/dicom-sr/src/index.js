@@ -8,7 +8,9 @@ import init from './init';
 import getToolAlias from './tools/utils/getToolAlias';
 
 const Component = React.lazy(() => {
-  return import('./viewports/OHIFCornerstoneSRViewport');
+  return import(
+    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport'
+  );
 });
 
 const OHIFCornerstoneSRViewport = props => {
