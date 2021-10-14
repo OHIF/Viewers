@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.1...@ohif/extension-dicom-rt@0.7.2) (2021-10-06)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.0...@ohif/extension-dicom-rt@0.7.1) (2021-09-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+# [0.7.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.6.14...@ohif/extension-dicom-rt@0.7.0) (2021-09-23)
+
+
+### Features
+
+* Update to WADO Image Loader 4.0.3 to add dynamically imported WebAssembly codec support 🚀 ([#2537](https://github.com/OHIF/Viewers/issues/2537)) ([489d4b0](https://github.com/OHIF/Viewers/commit/489d4b0584f4657ceda1c5b9b68d5e9733827e47))
+
+
+
+
+
 ## [0.6.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.6.13...@ohif/extension-dicom-rt@0.6.14) (2021-09-03)
 
 **Note:** Version bump only for package @ohif/extension-dicom-rt

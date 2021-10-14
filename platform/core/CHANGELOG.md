@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.15.1...@ohif/core@2.16.0) (2021-10-04)
+
+
+### Features
+
+* Added support for WADO servers built with static hosting (e.g. S3) ([#2566](https://github.com/OHIF/Viewers/issues/2566)) ([a046c6c](https://github.com/OHIF/Viewers/commit/a046c6c9017a84e5ead71d5113b5e892333b4130))
+
+
+
+
+
+## [2.15.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.15.0...@ohif/core@2.15.1) (2021-09-28)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.15.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.14.1...@ohif/core@2.15.0) (2021-09-23)
+
+
+### Features
+
+* Update to WADO Image Loader 4.0.3 to add dynamically imported WebAssembly codec support 🚀 ([#2537](https://github.com/OHIF/Viewers/issues/2537)) ([489d4b0](https://github.com/OHIF/Viewers/commit/489d4b0584f4657ceda1c5b9b68d5e9733827e47))
+
+
+
+
+
 ## [2.14.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.14.0...@ohif/core@2.14.1) (2021-09-13)
 
 **Note:** Version bump only for package @ohif/core
