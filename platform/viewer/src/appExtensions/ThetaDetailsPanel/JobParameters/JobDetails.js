@@ -59,12 +59,32 @@ const JobParameters = props => {
     });
 
     // console.log('User', props.user);
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
+    cornerstone.updateImage(element);
+
+    // clearing all params
+    clearParams();
+  };
+
+  const clearParams = () => {
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.get(element, 'RectangleRoi');
+
+    if (!toolState) {
+      setToolData({});
+      setStartX();
+      setStartY();
+      setEndX();
+      setEndY();
+      setHeight();
+      setWidth();
+      setIsDisabled(true);
+    }
   };
 
   return (
     <div className="component">
       <div className="title-header">Parameters</div>
-      {Object.keys(toolData).length > 0 && (
+      {toolData && Object.keys(toolData).length > 0 && (
         <div>
           <h4>Dimension: </h4>
           <p>
