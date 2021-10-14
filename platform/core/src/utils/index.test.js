@@ -14,6 +14,7 @@ describe('Top level exports', () => {
       'StackManager',
       'formatDate',
       'formatPN',
+      'validNumber',
       //'loadAndCacheDerivedDisplaySets',
       'DicomLoaderService',
       'urlUtil',

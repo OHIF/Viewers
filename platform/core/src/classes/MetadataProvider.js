@@ -473,20 +473,6 @@ class MetadataProvider {
 
 const metadataProvider = new MetadataProvider();
 
-/**
- * Returns the values as an array of javascript numbers
- *
- * @param element - The javascript object for the specified element in the metadata
- * @returns {*}
- */
-const validNumber = val => {
-  if (Array.isArray(val)) {
-    return val.map(v => (v !== undefined ? Number(v) : v));
-  } else {
-    return val !== undefined ? Number(val) : val;
-  }
-};
-
 export default metadataProvider;
 
 const WADO_IMAGE_LOADER_TAGS = {
