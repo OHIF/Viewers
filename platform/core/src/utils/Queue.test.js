@@ -25,10 +25,10 @@ describe('Queue', () => {
     const start = Date.now();
     timer(threshold).then(now => {
       const elapsed = now - start;
-      expect(elapsed >= threshold && elapsed < 2 * threshold).toBe(true);
+      expect(elapsed >= threshold && elapsed <= 2 * threshold).toBe(true);
     });
     const end = await timer(threshold);
-    expect(end - start > 2 * threshold).toBe(true);
+    expect(end - start >= 2 * threshold).toBe(true);
     expect(mockedTimeout).toBeCalledTimes(2);
   });
   it('should prevent task execution when queue limit is reached', async () => {

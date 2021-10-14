@@ -46,7 +46,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 (module.exports = {
   title: 'OHIF',
-  tagline: 'Open-source web-based medical imaging viewer',
+  tagline: 'Open-source web-based medical imaging platform',
   organizationName: 'Open Health Imaging Foundation',
   projectName: 'OHIF',
   baseUrl,
@@ -81,7 +81,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         redirects: [
           {
             // we need this for https://cloud.google.com/healthcare/docs/how-tos/dicom-viewers
-            to: '/deployment/recipes/google-cloud-healthcare',
+            to: '/2.0/deployment/recipes/google-cloud-healthcare',
             from: [
               '/connecting-to-image-archives/google-cloud-healthcare',
               '/connecting-to-image-archives/google-cloud-healthcare.html',
@@ -187,21 +187,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     //       },
     //     ],
     //   },
-    // ],
-    [
-      'docusaurus-plugin-react-docgen',
-      {
-        // pass in a single string or an array of strings
-        //id: 'docgen-button',
-        src: ['../ui/src/components/**/*.jsx'],
-        global: true,
-        /*route: {
-          path: '/docs/api',
-          component: require.resolve('./ComponentDocPage.jsx'),
-          exact: true,
-        },*/
-      },
-    ],
+    // ]
   ],
   presets: [
     [
@@ -215,9 +201,10 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: ({ locale, docPath }) => {
-            if (locale !== 'en') {
+            /*if (locale !== 'en') {
               return `https://crowdin.com/project/docusaurus-v2/${locale}`;
-            }
+            }*/
+
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
             const nextVersionDocsDirPath = 'docs';
@@ -229,19 +216,24 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           //   [require('@docusaurus/remark-plugin-npm2yarn'), { sync: true }],
           // ],
           // disableVersioning: isVersioningDisabled,
-          // lastVersion: 'current',
+          lastVersion: 'current',
           // onlyIncludeVersions:
           //   !isVersioningDisabled && (isDev || isDeployPreview)
           //     ? ['current', ...versions.slice(0, 2)]
           //     : undefined,
-          // versions: {
-          //   current: {
-          //     // label: `${getNextBetaVersionName()} 🚧`,
-          //     // label: `2.0 🎉`,
-          //     label: `2.0`,
-          //     // path: `2.0`,
-          //   },
-          // },
+          versions: {
+            current: {
+              label: 'Version 3.0 🚧',
+            },
+            '2.0': {
+              label: 'Version 2.0',
+              //path: `2.0`,
+            },
+            '1.0': {
+              label: 'Version 1.0',
+              //path: `1.0`,
+            },
+          },
         },
         theme: {
           customCss: [require.resolve('./src/css/custom.css')],
@@ -277,9 +269,9 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     },
     image: 'img/docusaurus-soc.png',
     // metadatas: [{name: 'twitter:card', content: 'summary'}],
-    // gtag: {
-    //   trackingID: 'UA-110573590-2',
-    // },
+    gtag: {
+      trackingID: 'UA-110573590-2',
+    },
     // algolia: {
     //   apiKey: '47ecd3b21be71c5822571b9f59e52544',
     //   indexName: 'docusaurus-2',
@@ -319,8 +311,8 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           position: 'left',
         },
         {
-          to: 'next/help',
-          activeBaseRegex: '(^/help$)|(/next/help)',
+          to: '/help',
+          //activeBaseRegex: '(^/help$)|(/help)',
           label: 'Help',
           position: 'right',
         },
@@ -337,7 +329,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           position: 'right',
           dropdownItemsAfter: [
             {
-              to: 'next/viewer/internationalization',
+              to: '/platform/internationalization',
               label: 'Help Us Translate',
             },
           ],
@@ -396,7 +388,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           items: [
             {
               label: 'Donate',
-              to: 'https://google.com/',
+              to: 'https://giving.massgeneral.org/ohif',
             },
             {
               label: 'GitHub',
@@ -406,13 +398,13 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
               label: 'Twitter',
               to: 'https://twitter.com/OHIFviewer',
             },
-            // {
-            //   html: `
-            //     <a href="https://viewer.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-            //       <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
-            //     </a>
-            //   `,
-            // },
+            {
+              html: `
+                <a href="https://v3-demo.ohif.org/" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
+                  <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
+                </a>
+              `,
+            },
           ],
         },
       ],

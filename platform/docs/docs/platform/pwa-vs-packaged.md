@@ -10,9 +10,6 @@ processes:
 ```bash
 # Static Asset output: For deploying PWAs
 yarn run build
-
-# Single `.js` script, for embedding viewer into existing apps
-yarn run build:package
 ```
 
 ## Progressive Web Application (PWA)

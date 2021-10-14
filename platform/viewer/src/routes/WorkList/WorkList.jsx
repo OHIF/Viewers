@@ -372,12 +372,14 @@ function WorkList({
   });
 
   const hasStudies = numOfStudies > 0;
+  const versionNumber = process.env.VERSION_NUMBER;
+  const buildNumber = process.env.BUILD_NUM;
 
   const menuOptions = [
     {
       title: t('Header:About'),
       icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' }),
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer', contentProps: { versionNumber, buildNumber } }),
     },
     {
       title: t('Header:Preferences'),

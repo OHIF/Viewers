@@ -165,11 +165,11 @@ function PanelStudyBrowser({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+      [
+        ...expandedStudyInstanceUIDs.filter(
+          stdyUid => stdyUid !== StudyInstanceUID
+        ),
+      ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -247,7 +247,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
 
     array.push({
       displaySetInstanceUID: ds.displaySetInstanceUID,
-      description: ds.SeriesDescription,
+      description: ds.SeriesDescription || '',
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
       seriesDate: ds.SeriesDate,

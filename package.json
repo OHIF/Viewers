@@ -19,6 +19,7 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
+    "build:dev": "lerna run build:dev --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:qa": "lerna run build:viewer:qa --stream",
     "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
@@ -26,6 +27,8 @@
     "dev": "lerna run dev:viewer --stream",
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
+    "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
+    "dev:static": "lerna run dev:static --stream",
     "orthanc:up": "docker-compose -f .docker/Nginx-Orthanc/docker-compose.yml up",
     "start": "yarn run dev",
     "test": "yarn run test:unit",

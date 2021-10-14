@@ -3,6 +3,7 @@ module.exports = {
   important: false,
   separator: ':',
   purge: {
+    enabled: true,
     content: [
       './docs/**/*.jsx',
       './docs/**/*.mdx',
