@@ -442,9 +442,7 @@ const _checkForDerivedDisplaySets = async function(displaySet, study) {
   let derivedDisplaySetsNumber = 0;
   if (
     displaySet.Modality &&
-    displaySet.Modality !== 'SEG' &&
-    displaySet.Modality !== 'SR' &&
-    displaySet.Modality !== 'RTSTRUCT'
+    !['SEG', 'SR', 'RTSTRUCT', 'RTDOSE'].includes(displaySet.Modality)
   ) {
     const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
 
@@ -455,7 +453,7 @@ const _checkForDerivedDisplaySets = async function(displaySet, study) {
     derivedDisplaySetsNumber = derivedDisplaySets.length;
   }
 
-  return derivedDisplaySetsNumber > 0 ? true : false;
+  return derivedDisplaySetsNumber > 0;
 };
 
 /**
