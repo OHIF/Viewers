@@ -1,6 +1,6 @@
 {
   "name": "@newlantern/viewer",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "productVersion": "3.0-dev",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
@@ -18,6 +18,7 @@
   },
   "proxy": "http://localhost:8042",
   "scripts": {
+    "prepare": "cross-env NODE_ENV=production yarn run build",
     "build:viewer": "cross-env NODE_ENV=production yarn run build",
     "build:dev": "cross-env NODE_ENV=development yarn run build",
     "build:aws": "cross-env NODE_ENV=development APP_CONFIG=config/aws_static.js yarn run build && gzip -9 -r dist",
@@ -51,12 +52,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "@babel/runtime": "7.7.6",
-    "@ohif/core": "^2.5.1",
-    "@ohif/extension-cornerstone": "^2.4.0",
-    "@ohif/extension-measurement-tracking": "^0.0.1",
-    "@ohif/i18n": "^0.52.8",
-    "@ohif/mode-longitudinal": "^0.0.1",
-    "@ohif/ui": "^2.0.0",
     "@types/react": "^16.0.0",
     "classnames": "^2.2.6",
     "core-js": "^3.2.1",
@@ -82,6 +77,12 @@
     "react-router-dom": "next"
   },
   "devDependencies": {
+    "@ohif/core": "^2.5.1",
+    "@ohif/extension-cornerstone": "^2.4.0",
+    "@ohif/extension-measurement-tracking": "^0.0.1",
+    "@ohif/i18n": "^0.52.8",
+    "@ohif/mode-longitudinal": "^0.0.1",
+    "@ohif/ui": "^2.0.0",
     "webpack": "^5.43.0",
     "webpack-cli": "^4.7.2",
     "@percy/cypress": "^2.3.0",
