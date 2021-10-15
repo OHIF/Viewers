@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
-  "module": "src/index.js",
+  "module": "src/index_module.js",
   "publishConfig": {
     "access": "public"
   },

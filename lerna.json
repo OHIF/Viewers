@@ -1,6 +1,6 @@
 {
   "version": "independent",
-  "packages": ["extensions/*", "platform/*", "modes/*"],
+  "packages": ["extensions/*", "platform/*", "modes/*", "nl-pacs"],
   "npmClient": "yarn",
   "useWorkspaces": true,
   "command": {
