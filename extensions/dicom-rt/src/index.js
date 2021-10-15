@@ -112,6 +112,10 @@ export default {
                   ['RTSTRUCT'].includes(ds.Modality)
                 )
               ) {
+                triggerRTPanelUpdatedEvent({
+                  badgeNumber: referencedDisplaySets.length,
+                  target: 'rt-panel',
+                });
                 return false;
               }
             }

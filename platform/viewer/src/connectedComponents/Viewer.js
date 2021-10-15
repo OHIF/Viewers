@@ -483,6 +483,7 @@ const _checkForSeriesInconsistencesWarnings = async function(
     // warnings already checked and cached in displaySet
     return displaySet.inconsistencyWarnings;
   }
+
   const inconsistencyWarnings = [];
 
   if (displaySet.Modality !== 'SEG') {
@@ -542,7 +543,6 @@ const _checkForSeriesInconsistencesWarnings = async function(
   } else {
     const segMetadata = displaySet.metadata;
     if (!segMetadata) {
-      displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
@@ -551,7 +551,6 @@ const _checkForSeriesInconsistencesWarnings = async function(
       false
     );
     if (!referencedDisplaySet) {
-      displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
@@ -559,7 +558,6 @@ const _checkForSeriesInconsistencesWarnings = async function(
       image.getImageId()
     );
     if (!imageIds || imageIds.length === 0) {
-      displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
