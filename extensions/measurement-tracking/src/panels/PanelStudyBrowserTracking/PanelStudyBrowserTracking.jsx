@@ -581,7 +581,7 @@ function _createStudyBrowserTabs(
 
     if (tabStudy.numInstances === 0) {
       tabStudy.displaySets.forEach(
-        ds => (tabStudy.numInstances += ds.numInstances)
+        ds => (tabStudy.numInstances += ds.numInstances || 0)
       );
     }
 
