@@ -25,11 +25,12 @@ function StudyBrowser(props) {
                 altImageText,
                 displaySetInstanceUID,
                 imageId,
-                InstanceNumber,
+                derivedDisplaySetsNumber,
                 numImageFrames,
                 SeriesDescription,
                 SeriesNumber,
                 hasWarnings,
+                hasDerivedDisplaySets,
               } = thumb;
 
               return (
@@ -48,12 +49,13 @@ function StudyBrowser(props) {
                     // Thumb
                     altImageText={altImageText}
                     imageId={imageId}
-                    InstanceNumber={InstanceNumber}
+                    derivedDisplaySetsNumber={derivedDisplaySetsNumber}
                     displaySetInstanceUID={displaySetInstanceUID} // used by drop
                     numImageFrames={numImageFrames}
                     SeriesDescription={SeriesDescription}
                     SeriesNumber={SeriesNumber}
                     hasWarnings={hasWarnings}
+                    hasDerivedDisplaySets={hasDerivedDisplaySets}
                     // Events
                     onClick={onThumbnailClick.bind(
                       undefined,
@@ -83,7 +85,7 @@ StudyBrowser.propTypes = {
           altImageText: PropTypes.string,
           displaySetInstanceUID: PropTypes.string.isRequired,
           imageId: PropTypes.string,
-          InstanceNumber: PropTypes.number,
+          derivedDisplaySetsNumber: PropTypes.number,
           numImageFrames: PropTypes.number,
           SeriesDescription: PropTypes.string,
           SeriesNumber: PropTypes.number,
