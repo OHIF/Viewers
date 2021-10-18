@@ -8,6 +8,7 @@ import initCornerstoneTools from './initCornerstoneTools.js';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+import enableReferenceLines from './enableReferenceLines';
 import { setEnabledElement } from './state';
 import callInputDialog from './callInputDialog.js';
 
@@ -80,6 +81,8 @@ export default function init({
     MeasurementService,
     DisplaySetService
   );
+
+  enableReferenceLines({ servicesManager, commandsManager });
 
   const onRightClick = event => {
     if (!UIDialogService) {
