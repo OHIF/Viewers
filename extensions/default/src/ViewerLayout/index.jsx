@@ -169,7 +169,7 @@ function ViewerLayout({
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
-    <div>
+    <div className="flex flex-col overflow-hidden h-full">
       <Header
         onClickSettingButton={onClickSettingButton}
         onClickReturnButton={onClickReturnButton}
@@ -182,8 +182,8 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="flex flex-row flex-nowrap items-stretch w-full overflow-hidden"
-        style={{ height: 'calc(100vh - 116px' }}
+        className="flex flex-row flex-nowrap flex-1 items-stretch w-full overflow-hidden"
+
       >
         {/* LEFT SIDEPANELS */}
         {leftPanelComponents.length && (
