@@ -43,3 +43,38 @@
   text-align: left;
   flex: 1;
 }
+
+h1 {
+  text-align: center;
+  margin: 2rem 0 4rem 0;
+}
+
+.accordion {
+  max-width: 90%;
+  margin: 2rem auto;
+}
+
+.accordion-item {
+  width: 100%;
+}
+
+.accordion-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  cursor: pointer;
+  background-color: #152124;
+}
+
+.accordion-title:hover {
+  background-color: #244b53;
+}
+
+.accordion-title,
+.accordion-content {
+  padding: 1rem;
+}
+
+.accordion-content {
+  background-color: #355c64;
+}
