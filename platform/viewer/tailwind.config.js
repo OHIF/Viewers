@@ -230,10 +230,10 @@ module.exports = {
     }),
     borderRadius: {
       none: '0',
-      sm: '0.125rem',
-      DEFAULT: '0.25rem',
-      md: '0.375rem',
-      lg: '0.5rem',
+      sm: '2px',
+      DEFAULT: '2px',
+      md: '2px',
+      lg: '2px',
       full: '9999px',
     },
     borderWidth: {
@@ -242,9 +242,6 @@ module.exports = {
       '2': '2px',
       '4': '4px',
       '8': '8px',
-    },
-    borderRadius: {
-      DEFAULT: '4px',
     },
     boxShadow: {
       xs: '0 0 0 1px rgba(0, 0, 0, 0.05)',
