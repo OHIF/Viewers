@@ -143,6 +143,9 @@ export default {
                       const studyMetadata = studyMetadataManager.get(
                         activeViewport.StudyInstanceUID
                       );
+                      if (!studyMetadata) {
+                        return;
+                      }
                       const referencedDS = studyMetadata.getDerivedDatasets({
                         referencedSeriesInstanceUID:
                           activeViewport.SeriesInstanceUID,

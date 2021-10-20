@@ -217,7 +217,7 @@ class DicomHtmlViewport extends Component {
   };
 
   componentDidMount() {
-    const dataSet = this.setContentFromByteArray(this.props.byteArray);
+    this.setContentFromByteArray(this.props.byteArray);
   }
 
   setContentFromByteArray(byteArray) {

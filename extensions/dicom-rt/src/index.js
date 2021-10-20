@@ -91,17 +91,12 @@ export default {
             }
 
             if (activeViewport) {
-              const study = studies.find(
-                s => s.StudyInstanceUID === activeViewport.StudyInstanceUID
-              );
-              const ds = study.displaySets.find(
-                ds =>
-                  ds.displaySetInstanceUID ===
-                  activeViewport.displaySetInstanceUID
-              );
               const studyMetadata = studyMetadataManager.get(
                 activeViewport.StudyInstanceUID
               );
+              if (!studyMetadata) {
+                return;
+              }
               const referencedDisplaySets = studyMetadata.getDerivedDatasets({
                 referencedSeriesInstanceUID: activeViewport.SeriesInstanceUID,
                 Modality: 'RTSTRUCT',
