@@ -36,25 +36,25 @@ module.exports = {
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#9FA8DA',
+        main: '#3F51B5',
+        dark: '#0F1012',
+        active: '#9FA8DA',
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
-        active: '#1f1f27',
+        light: '#3B3B3E',
+        main: '#1A2667',
+        dark: '#191B1E',
+        active: '#1F1F27',
       },
 
       common: {
-        bright: '#e1e1e1',
-        light: '#a19fad',
-        main: '#fff',
-        dark: '#726f7e',
-        active: '#2c3074',
+        bright: '#E1E1E1',
+        light: '#A19FAD',
+        main: '#fff ',
+        dark: '#726F7E',
+        active: '#2C3074',
       },
 
       customgreen: {
@@ -243,6 +243,9 @@ module.exports = {
       '4': '4px',
       '8': '8px',
     },
+    borderRadius: {
+      DEFAULT: '4px',
+    },
     boxShadow: {
       xs: '0 0 0 1px rgba(0, 0, 0, 0.05)',
       sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -290,12 +293,12 @@ module.exports = {
     },
     fontFamily: {
       sans: [
+        'Roboto',
         'Lato',
         'system-ui',
         '-apple-system',
         'BlinkMacSystemFont',
         '"Segoe UI"',
-        'Roboto',
         '"Helvetica Neue"',
         'Arial',
         '"Noto Sans"',
