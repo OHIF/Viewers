@@ -230,10 +230,10 @@ module.exports = {
     }),
     borderRadius: {
       none: '0',
-      sm: '2px',
-      DEFAULT: '2px',
-      md: '2px',
-      lg: '2px',
+      sm: '4px',
+      DEFAULT: '4px',
+      md: '4px',
+      lg: '4px',
       full: '9999px',
     },
     borderWidth: {
