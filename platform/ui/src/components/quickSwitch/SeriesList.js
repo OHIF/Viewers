@@ -11,7 +11,9 @@ export class SeriesList extends Component {
     activeDisplaySetInstanceUID: PropTypes.string,
   };
 
+
   render() {
+    console.log({ SeriesList });
     return (
       <React.Fragment>
         <div className="study-browser-series clearfix thumbnails-wrapper">

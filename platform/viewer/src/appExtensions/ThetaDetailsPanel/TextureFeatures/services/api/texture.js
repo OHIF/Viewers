@@ -9,7 +9,7 @@ export class TextureApi {
       return data;
     } catch (e) {
       console.log(e);
-    } 
+    }
   }
 
   async TriggerJob(body) {

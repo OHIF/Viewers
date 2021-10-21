@@ -54,6 +54,8 @@ const JobParameters = props => {
 
     setUser(props.user);
 
+    localStorage.setItem('user', JSON.stringify(props.user));
+
     UINotificationService.show({
       message: 'Job triggered successfully.',
     });

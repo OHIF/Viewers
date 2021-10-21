@@ -8,8 +8,9 @@ const TextureFeature = () => {
     <div className="component">
       <div className="title-header">Texture Features</div>
       <div className="accordion">
-        {data.map(({ title, content }) => (
-          <Jobs title={title} content={content} /> ))}
+        {data.map(({ title, content }, index) => (
+          <Jobs key={index} title={title} content={content} />
+        ))}
       </div>
     </div>
   );
