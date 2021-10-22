@@ -11,12 +11,11 @@ const JobParameters = props => {
   const [toolData, setToolData] = React.useState({});
   const [startX, setStartX] = React.useState();
   const [startY, setStartY] = React.useState();
-  const [endX, setEndX] = React.useState();
-  const [endY, setEndY] = React.useState();
+  const [x, setX] = React.useState();
+  const [y, setY] = React.useState();
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
-  const [user, setUser] = React.useState();
 
   const { UINotificationService } = servicesManager.services;
 
@@ -35,11 +34,10 @@ const JobParameters = props => {
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
     if (tool_data && tool_data.data.length > 0) {
+      console.log({ toolData: tool_data.data[0] });
       setToolData(tool_data.data[0]);
-      setStartX(tool_data.data[0].handles.start.x.toFixed(2));
-      setStartY(tool_data.data[0].handles.start.y.toFixed(2));
-      setEndX(tool_data.data[0].handles.end.x.toFixed(2));
-      setEndY(tool_data.data[0].handles.end.y.toFixed(2));
+      setX(tool_data.data[0].handles.textBox.x.toFixed(2));
+      setY(tool_data.data[0].handles.textBox.y.toFixed(2));
       setHeight(
         tool_data.data[0].handles.textBox.boundingBox.height.toFixed(2)
       );
@@ -52,15 +50,10 @@ const JobParameters = props => {
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     const data = tool_data.data[0];
 
-    setUser(props.user);
-
-    localStorage.setItem('user', JSON.stringify(props.user));
-
     UINotificationService.show({
       message: 'Job triggered successfully.',
     });
 
-    // console.log('User', props.user);
     cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
     cornerstone.updateImage(element);
 
@@ -73,10 +66,8 @@ const JobParameters = props => {
 
     if (!toolState) {
       setToolData({});
-      setStartX();
-      setStartY();
-      setEndX();
-      setEndY();
+      setX();
+      setY();
       setHeight();
       setWidth();
       setIsDisabled(true);
@@ -86,28 +77,21 @@ const JobParameters = props => {
   return (
     <div className="component">
       <div className="title-header">Parameters</div>
-      {toolData && Object.keys(toolData).length > 0 && (
+      {Object.keys(toolData).length > 0 && (
         <div>
-          <h4>Dimension: </h4>
+          <h4>Dimensions </h4>
           <p>
             <b>Width:</b> {width}
           </p>
           <p>
             <b>Height:</b> {height}
           </p>
-          <h4>Handles Start</h4>
+          <h4>Coordinates</h4>
           <p>
-            <b>x:</b> {startX}
+            <b>x:</b> {x}
           </p>
           <p>
-            <b>y:</b> {startY}
-          </p>
-          <h4>Handles End</h4>
-          <p>
-            <b>x:</b> {endX}
-          </p>
-          <p>
-            <b>y:</b> {endY}
+            <b>y:</b> {y}
           </p>
         </div>
       )}

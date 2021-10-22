@@ -1,6 +1,4 @@
-import axios from 'axios';
 
-const url = 'https://radcadapi.thetatech.ai';
 
 const Http = axios.create({
   baseURL: url,
