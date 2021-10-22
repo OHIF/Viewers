@@ -44,15 +44,7 @@ export default function mode({ modeConfiguration }) {
 
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'Capture',
-        'Layout',
-        'MoreTools',
-      ]);
+      ToolBarService.createButtonSection('primary', toolbarButtons.map(btn => btn.id));
     },
     onModeExit: () => {},
     validationTags: {

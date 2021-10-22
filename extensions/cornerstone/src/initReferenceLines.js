@@ -12,12 +12,19 @@ const projectPatientPointToImagePlane = csTools.importInternal(
 );
 const getNewContext = csTools.importInternal('drawing/getNewContext');
 
-const enableReferenceLines = ({ servicesManager, commandsManager }) => {
+const intReferenceLines = ({ servicesManager, commandsManager }) => {
   const renderReferenceLines = ({ detail: { enabledElement } }) => {
-    const { ViewportGridService } = servicesManager.services;
+    const {
+      ViewportGridService,
+      ReferenceLinesService,
+    } = servicesManager.services;
     const { activeViewportIndex } = ViewportGridService.getState();
+    const { isReferenceLinesEnabled } = ReferenceLinesService.getState();
 
-    if (getEnabledElement(activeViewportIndex).element !== enabledElement.element)
+    if (
+      !isReferenceLinesEnabled ||
+      getEnabledElement(activeViewportIndex).element !== enabledElement.element
+    )
       return;
 
     const targetImage = enabledElement.image;
@@ -175,4 +182,4 @@ const enableReferenceLines = ({ servicesManager, commandsManager }) => {
   );
 };
 
-export default enableReferenceLines;
+export default intReferenceLines;

@@ -5,10 +5,10 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import getTools, { toolsGroupedByType } from './utils/getTools.js';
 import initCornerstoneTools from './initCornerstoneTools.js';
+import initReferenceLines from './initReferenceLines';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
-import enableReferenceLines from './enableReferenceLines';
 import { setEnabledElement } from './state';
 import callInputDialog from './callInputDialog.js';
 
@@ -82,7 +82,7 @@ export default function init({
     DisplaySetService
   );
 
-  enableReferenceLines({ servicesManager, commandsManager });
+  initReferenceLines({ servicesManager, commandsManager });
 
   const onRightClick = event => {
     if (!UIDialogService) {

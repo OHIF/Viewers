@@ -14,6 +14,7 @@ import defaults from './defaults';
 
 import {
   CineService,
+  ReferenceLinesService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -58,6 +59,7 @@ const OHIF = {
   viewer: {},
   //
   CineService,
+  ReferenceLinesService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -94,6 +96,7 @@ export {
   DICOMSR,
   //
   CineService,
+  ReferenceLinesService,
   UIDialogService,
   UIModalService,
   UINotificationService,

@@ -6,6 +6,7 @@
 export {
   useCine,
   CineProvider,
+  ReferenceLinesProvider,
   DialogProvider,
   useDialog,
   withDialog,

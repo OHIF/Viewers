@@ -14,6 +14,7 @@ import {
   ViewportDialogProvider,
   ViewportGridProvider,
   CineProvider,
+  ReferenceLinesProvider,
   UserAuthenticationProvider,
 } from '@ohif/ui';
 // Viewer Project
@@ -54,6 +55,7 @@ function App({ config, defaultExtensions, accessToken, studyUID }) {
     UIViewportDialogService,
     ViewportGridService,
     CineService,
+    ReferenceLinesService,
     UserAuthenticationService,
   } = servicesManager.services;
 
@@ -67,6 +69,7 @@ function App({ config, defaultExtensions, accessToken, studyUID }) {
     [ViewportGridProvider, { service: ViewportGridService }],
     [ViewportDialogProvider, { service: UIViewportDialogService }],
     [CineProvider, { service: CineService }],
+    [ReferenceLinesProvider, { service: ReferenceLinesService }],
     [SnackbarProvider, { service: UINotificationService }],
     [DialogProvider, { service: UIDialogService }],
     [ModalProvider, { service: UIModalService, modal: Modal }],
