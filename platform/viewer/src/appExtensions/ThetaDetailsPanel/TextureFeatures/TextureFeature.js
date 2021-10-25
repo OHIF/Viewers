@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 const TextureFeature = props => {
   const { user, viewport } = props;
   useEffect(() => {
-    console.log({ user });
+    // console.log({ user });
   }, []);
 
   return (

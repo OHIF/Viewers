@@ -4,7 +4,7 @@ import axios from 'axios';
 const Jobs = ({ title, content, user, viewport }) => {
   const [isActive, setIsActive] = useState(false);
 
-  console.log(user.profile.email);
+  // console.log(user.profile.email);
   const access_token = user.access_token;
 
   const client = axios.create({
