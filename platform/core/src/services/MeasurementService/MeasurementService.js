@@ -108,7 +108,7 @@ class MeasurementService {
   /**
    * Get specific measurement by its id.
    *
-   * @param {string} id If of the measurement
+   * @param {string} id Id of the measurement
    * @return {Measurement} Measurement instance
    */
   getMeasurement(id) {
