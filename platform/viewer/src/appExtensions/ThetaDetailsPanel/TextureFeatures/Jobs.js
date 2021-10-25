@@ -4,6 +4,9 @@ import axios from 'axios';
 const Jobs = ({ title, content, user, viewport }) => {
   const [isActive, setIsActive] = useState(false);
 
+  console.log(user.profile.email);
+  const access_token = user.access_token;
+
   const client = axios.create({
     baseURL: 'https://radcadapi.thetatech.ai',
     timeout: 90000,
@@ -15,20 +18,28 @@ const Jobs = ({ title, content, user, viewport }) => {
   });
 
   client.interceptors.request.use(config => {
-    config.headers.Authorization = `Bearer ${user.access_token}`;
+    config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
 
   useEffect(() => {
     (async () => {
-      // series_uid: viewport.viewportSpecificData[0].SeriesInstanceUID,
+      const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
+      const email = user.profile.email;
 
-      // const data = await APIs.jobs.jobs();
-      // const data = await client.get('/jobs').then(response => {
-      //   console.log(response);
-      // }).catch(error => {
-      //   setError(error);
-      // });
+      const data = await client
+        .get(`/jobs?series=${series}&email=${email}`)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          // setError(error);
+          console.log(error);
+        });
+
+      if (data) {
+        console.log(data);
+      }
     })();
   }, []);
 
