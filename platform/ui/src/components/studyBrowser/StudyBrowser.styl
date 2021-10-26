@@ -1,14 +1,24 @@
+.ohif-scrollbar::-webkit-scrollbar
+    width: 0.5rem
+
+.ohif-scrollbar::-webkit-scrollbar-thumb
+    border-radius: 0.25rem
+    background-color: rgba(9, 68, 179, 1);
+    background-color: #3e5967;
+
+.ohif-scrollbar::-webkit-scrollbar-track
+    border-radius: 0.25rem
+
 .study-browser
   float: left
   height: 100%
   width: 100%
-  overflow: hidden
+  overflow-x: hidden
   background-color: black
   padding-bottom: 20px
   padding-top: 10px
 
   .scrollable-study-thumbnails
-    height: 100%
     overflow-y: auto
     overflow-x: hidden
     padding-bottom: 50px

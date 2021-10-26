@@ -2,7 +2,10 @@ import { connect } from 'react-redux';
 import ViewerRetrieveStudyData from './ViewerRetrieveStudyData.js';
 import OHIF from '@ohif/core';
 
-const { clearViewportSpecificData, setStudyData } = OHIF.redux.actions;
+const {
+  clearViewportSpecificData,
+  setViewportSpecificData,
+} = OHIF.redux.actions;
 const isActive = a => a.active === true;
 
 const mapStateToProps = (state, ownProps) => {
@@ -19,6 +22,9 @@ const mapDispatchToProps = dispatch => {
     },
     clearViewportSpecificData: () => {
       dispatch(clearViewportSpecificData());
+    },
+    setFirstViewportSpecificData: displaySet => {
+      dispatch(setViewportSpecificData(0, displaySet));
     },
   };
 };

@@ -182,6 +182,7 @@ describe('ExtensionManager.js', () => {
           expect(extension[module].mock.calls[0][0]).toEqual({
             servicesManager,
             commandsManager,
+            extensionManager,
             appConfig,
             configuration: extensionConfiguration,
             api: undefined,
@@ -198,6 +199,9 @@ describe('ExtensionManager.js', () => {
           return {};
         },
         getSopClassHandlerModule: () => {
+          return {};
+        },
+        getViewportOverlayModule: () => {
           return {};
         },
         getPanelModule: () => {

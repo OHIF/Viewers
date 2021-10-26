@@ -205,7 +205,7 @@ const createStudyFromSOPInstanceList = async (server, sopInstanceList) => {
     await addInstancesToStudy(server, study, sopInstanceList);
     return study;
   }
-  throw new Error('Failed to create study out of provided SOP instance list');
+  throw new Error(`Failed to create study out of provided SOP instance list: ${sopInstanceList}`);
 };
 
 export { createStudyFromSOPInstanceList, addInstancesToStudy };

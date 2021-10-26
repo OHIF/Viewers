@@ -36,8 +36,11 @@ class Viewer extends Component {
           PropTypes.shape({
             displaySetInstanceUID: PropTypes.string.isRequired,
             SeriesDescription: PropTypes.string,
-            SeriesNumber: PropTypes.number,
-            InstanceNumber: PropTypes.number,
+            SeriesNumber: PropTypes.oneOfType([
+              PropTypes.number,
+              PropTypes.string,
+            ]),
+            InstanceNumber: PropTypes.any,
             numImageFrames: PropTypes.number,
             Modality: PropTypes.string.isRequired,
             images: PropTypes.arrayOf(
@@ -713,10 +716,11 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         SeriesDescription,
         numImageFrames,
         SeriesNumber,
+        thumbnailSrc,
       } = displaySet;
 
       let imageId;
-      let altImageText;
+      let altImageText = displaySet.Modality || 'UN';
 
       if (displaySet.Modality && displaySet.Modality === 'SEG') {
         // TODO: We want to replace this with a thumbnail showing
@@ -726,8 +730,6 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
         imageId = displaySet.images[imageIndex].getImageId();
-      } else {
-        altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
       const hasWarnings = _checkForSeriesInconsistencesWarnings(
@@ -747,6 +749,7 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
           activeDisplaySetInstanceUID
         ),
         imageId,
+        imageSrc: thumbnailSrc,
         altImageText,
         displaySetInstanceUID,
         SeriesDescription,

@@ -128,8 +128,7 @@ class ViewerMain extends Component {
     });
   };
 
-  setViewportData = ({
-    viewportIndex,
+  getDisplaySet = ({
     StudyInstanceUID,
     displaySetInstanceUID,
   }) => {
@@ -138,6 +137,12 @@ class ViewerMain extends Component {
       StudyInstanceUID,
       displaySetInstanceUID
     );
+
+    if (!displaySet) {
+      const msg = `DisplaySet ${displaySetInstanceUID} not found for Study UID ${StudyInstanceUID}`;
+      console.warn(msg, this.props.studies);
+      return;
+    }
 
     if (displaySet.isDerived) {
       const { Modality } = displaySet;
@@ -171,7 +176,21 @@ class ViewerMain extends Component {
       }
     }
 
+    return displaySet;
+  };
+
+  setViewportData = ({
+    viewportIndex,
+    StudyInstanceUID,
+    displaySetInstanceUID,
+  }) => {
+    let displaySet = this.getDisplaySet({ StudyInstanceUID, displaySetInstanceUID });
     this.props.setViewportSpecificData(viewportIndex, displaySet);
+  };
+
+  setActiveViewportData = ({ StudyInstanceUID, displaySetInstanceUID, }) => {
+    let displaySet = this.getDisplaySet({ StudyInstanceUID, displaySetInstanceUID });
+    this.props.setActiveViewportSpecificData(displaySet);
   };
 
   render() {
@@ -185,7 +204,7 @@ class ViewerMain extends Component {
             isStudyLoaded={this.props.isStudyLoaded}
             studies={this.props.studies}
             viewportData={viewportData}
-            setViewportData={this.setViewportData}
+            setViewportData={this.setActiveViewportData}
           >
             {/* Children to add to each viewport that support children */}
           </ConnectedViewportGrid>

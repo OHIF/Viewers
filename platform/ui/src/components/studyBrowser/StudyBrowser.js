@@ -13,7 +13,7 @@ function StudyBrowser(props) {
   } = props;
 
   return (
-    <div className="study-browser">
+    <div className="study-browser ohif-scrollbar">
       <div className="scrollable-study-thumbnails">
         {studies
           .map((study, studyIndex) => {
@@ -30,6 +30,7 @@ function StudyBrowser(props) {
                 SeriesDescription,
                 SeriesNumber,
                 hasWarnings,
+                imageSrc,
                 hasDerivedDisplaySets,
               } = thumb;
 
@@ -49,6 +50,7 @@ function StudyBrowser(props) {
                     // Thumb
                     altImageText={altImageText}
                     imageId={imageId}
+                    imageSrc={imageSrc}
                     derivedDisplaySetsNumber={derivedDisplaySetsNumber}
                     displaySetInstanceUID={displaySetInstanceUID} // used by drop
                     numImageFrames={numImageFrames}
@@ -88,7 +90,10 @@ StudyBrowser.propTypes = {
           derivedDisplaySetsNumber: PropTypes.number,
           numImageFrames: PropTypes.number,
           SeriesDescription: PropTypes.string,
-          SeriesNumber: PropTypes.number,
+          SeriesNumber: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+          ]),
           stackPercentComplete: PropTypes.number,
         })
       ),

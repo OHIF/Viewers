@@ -10,14 +10,28 @@ const { urlUtil: UrlUtil } = utils;
 /**
  * Get array of seriesUIDs from param or from queryString
  * @param {*} seriesInstanceUIDs
+ * @param {*} sopInstanceUID - SOPInstanceUID to be loaded first
  * @param {*} location
  */
-const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
+const getInstanceUIDs = (seriesInstanceUIDs, sopInstanceUID, routeLocation) => {
   const queryFilters = UrlUtil.queryString.getQueryFilters(routeLocation);
   const querySeriesUIDs = queryFilters && queryFilters['seriesInstanceUID'];
-  const _seriesInstanceUIDs = seriesInstanceUIDs || querySeriesUIDs;
+  const querySOPUID = queryFilters && queryFilters['sopInstanceUID'];
+  const seriesUIDs = UrlUtil.paramString.parseParam(
+    seriesInstanceUIDs || querySeriesUIDs
+  );
+  let sopUID = UrlUtil.paramString.parseParam(sopInstanceUID || querySOPUID);
 
-  return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
+  if (sopUID && sopUID.length > 0) {
+    sopUID = sopUID[0];
+  } else {
+    sopUID = undefined;
+  }
+
+  return {
+    seriesUIDs,
+    sopUID,
+  };
 };
 
 function ViewerRouting({ match: routeMatch, location: routeLocation }) {
@@ -28,28 +42,22 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
     dicomStore,
     studyInstanceUIDs,
     seriesInstanceUIDs,
+    sopInstanceUID,
   } = routeMatch.params;
-
-  // Set the user's default authToken for outbound DICOMWeb requests.
-  // Is only applied if target server does not set `requestOptions` property.
-  //
-  // See: `getAuthorizationHeaders.js`
-  let query = useQuery();
-  const authToken = query.get('token');
-
-  if (authToken) {
-    user.getAccessToken = () => authToken;
-  }
-
   const server = useServer({ project, location, dataset, dicomStore });
   const studyUIDs = UrlUtil.paramString.parseParam(studyInstanceUIDs);
-  const seriesUIDs = getSeriesInstanceUIDs(seriesInstanceUIDs, routeLocation);
+  const { seriesUIDs, sopUID } = getInstanceUIDs(
+    seriesInstanceUIDs,
+    sopInstanceUID,
+    routeLocation
+  );
 
   if (server && studyUIDs) {
     return (
       <ConnectedViewerRetrieveStudyData
         studyInstanceUIDs={studyUIDs}
         seriesInstanceUIDs={seriesUIDs}
+        sopInstanceUID={sopUID}
       />
     );
   }

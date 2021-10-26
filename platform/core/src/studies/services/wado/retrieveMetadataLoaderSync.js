@@ -21,9 +21,9 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
       studyInstanceUID,
     };
 
-    const { seriesInstanceUID } = filters;
-    if (seriesInstanceUID) {
-      options['seriesInstanceUID'] = seriesInstanceUID;
+    const { seriesInstanceUIDs = [], isFilterStrategy } = filters;
+    if (isFilterStrategy && seriesInstanceUIDs.length > 0) {
+      options['seriesInstanceUID'] = seriesInstanceUIDs[0];
     }
 
     return options;
@@ -36,15 +36,15 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
     const loaders = [];
     const {
       studyInstanceUID,
-      filters: { seriesInstanceUID } = {},
+      filters: { seriesInstanceUIDs, isFilterStrategy = false } = {},
       client,
     } = this;
 
-    if (seriesInstanceUID) {
+    if (isFilterStrategy && seriesInstanceUIDs && seriesInstanceUIDs.length > 0) {
       loaders.push(
         client.retrieveSeriesMetadata.bind(client, {
           studyInstanceUID,
-          seriesInstanceUID,
+          seriesInstanceUID: seriesInstanceUIDs[0],
         })
       );
     }

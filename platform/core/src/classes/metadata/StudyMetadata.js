@@ -98,6 +98,20 @@ class StudyMetadata extends Metadata {
     return this._displaySets.slice();
   }
 
+  /** Gets the split key, used to group instances into display sets. */
+  getSplitKey(instance) {
+    const metadata = instance.getData().metadata;
+    const { SeriesInstanceUID, NumberOfFrames, SOPClassUID, Rows } = metadata;
+    const { Columns, SOPInstanceUID, Modality } = metadata;
+    let key = `&${SeriesInstanceUID}&${SOPClassUID}`;
+    if (NumberOfFrames && NumberOfFrames > 1 || isSingleImageModality(Modality)) {
+      key += `&${SOPInstanceUID}`;
+    } else {
+      key += `&${Rows - Rows % 64}&${Columns - Columns % 64}`;
+    }
+    return key;
+  }
+
   /**
    * Split a series metadata object into display sets
    * @param {Array} sopClassHandlerModules List of SOP Class Modules
@@ -118,7 +132,7 @@ class StudyMetadata extends Metadata {
         displaySetInstanceUID: displaySet.uid,
         SeriesInstanceUID: seriesData.SeriesInstanceUID,
         SeriesDescription: seriesData.SeriesDescription,
-        SeriesNumber: seriesData.SeriesNumber,
+        SeriesNumber: Number(seriesData.SeriesNumber),
         Modality: seriesData.Modality,
       });
 
@@ -129,24 +143,36 @@ class StudyMetadata extends Metadata {
 
     const sopClassUIDs = getSopClassUIDs(series);
 
+    let _instancesAlreadyMappedIntoADisplaySet = [];
+    console.log('sopClassHandlerModules', sopClassHandlerModules);
     if (sopClassHandlerModules && sopClassHandlerModules.length > 0) {
-      const displaySet = _getDisplaySetFromSopClassModule(
+      const {
+        displaySets: displaySetsFromSopClassModule,
+        instancesAlreadyMappedIntoADisplaySet,
+      } = _getDisplaySetsFromSopClassModule(
         sopClassHandlerModules,
         series,
         study,
         sopClassUIDs
       );
+      _instancesAlreadyMappedIntoADisplaySet = instancesAlreadyMappedIntoADisplaySet;
 
-      if (displaySet) {
-        displaySet.sopClassModule = true;
+      if (Array.isArray(displaySetsFromSopClassModule)
+        && displaySetsFromSopClassModule.length > 0
+      ) {
+        displaySetsFromSopClassModule.forEach(displaySet => {
+          displaySet.sopClassModule = true;
+          if (!displaySet) return;
+          if (displaySet.isDerived) {
+            this._addDerivedDisplaySet(displaySet);
+          }
 
-        if (displaySet.isDerived) {
-          this._addDerivedDisplaySet(displaySet);
+          displaySets.push(displaySet);
+        });
+        /** For now, only avoid early return if video present */
+        if (!displaySets.some(ds => ds.plugin === 'video')) {
+          return displaySets;
         }
-
-        displaySets.push(displaySet);
-
-        return displaySets;
       }
     }
 
@@ -157,8 +183,12 @@ class StudyMetadata extends Metadata {
     // Split Multi-frame instances and Single-image modalities
     // into their own specific display sets. Place the rest of each
     // series into another display set.
-    const stackableInstances = [];
+    const stackableInstances = {};
     series.forEachInstance(instance => {
+      if (_instancesAlreadyMappedIntoADisplaySet.includes(instance)) {
+        return;
+      }
+
       // All imaging modalities must have a valid value for SOPClassUID (x00080016) or Rows (x00280010)
       if (
         !isImage(instance.getTagValue('SOPClassUID')) &&
@@ -169,40 +199,40 @@ class StudyMetadata extends Metadata {
 
       let displaySet;
 
-      if (isMultiFrame(instance)) {
-        displaySet = makeDisplaySet(series, [instance]);
-
-        displaySet.setAttributes({
-          sopClassUIDs,
-          isClip: true,
-          SeriesInstanceUID: series.getSeriesInstanceUID(),
-          StudyInstanceUID: study.getStudyInstanceUID(), // Include the study instance UID for drag/drop purposes
-          numImageFrames: instance.getTagValue('NumberOfFrames'), // Override the default value of instances.length
-          InstanceNumber: instance.getTagValue('InstanceNumber'), // Include the instance number
-          AcquisitionDatetime: instance.getTagValue('AcquisitionDateTime'), // Include the acquisition datetime
-        });
-        displaySets.push(displaySet);
-      } else if (isSingleImageModality(instance.Modality)) {
-        displaySet = makeDisplaySet(series, [instance]);
-        displaySet.setAttributes({
-          sopClassUIDs,
-          StudyInstanceUID: study.getStudyInstanceUID(), // Include the study instance UID
-          SeriesInstanceUID: series.getSeriesInstanceUID(),
-          InstanceNumber: instance.getTagValue('InstanceNumber'), // Include the instance number
-          AcquisitionDatetime: instance.getTagValue('AcquisitionDateTime'), // Include the acquisition datetime
-        });
-        displaySets.push(displaySet);
+      const key = this.getSplitKey(instance, stackableInstances);
+      if (!stackableInstances[key]) {
+        stackableInstances[key] = [instance];
       } else {
-        stackableInstances.push(instance);
+        stackableInstances[key].push(instance);
       }
     });
 
-    if (stackableInstances.length) {
-      const displaySet = makeDisplaySet(series, stackableInstances);
+    for (const key of Object.keys(stackableInstances)) {
+      const instances = stackableInstances[key];
+      const instance = instances[0];
+      const imageId = instance.getImageId();
+      const { thumbnailRendering } = instance.getData();
+      const displaySet = makeDisplaySet(series, instances);
       displaySet.setAttribute('StudyInstanceUID', study.getStudyInstanceUID());
+      const { SOPInstanceUID, SOPClassUID } = instance.getData().metadata;
+      const thumbnailSrc = thumbnailRendering === 'thumbnail'
+        && imageId && imageId.replace('wadors:', '').replace('/frames/1', '/thumbnail')
+        || undefined;
       displaySet.setAttributes({
-        sopClassUIDs,
+        sopClassUIDs: [SOPClassUID], SOPInstanceUID,
+        StudyInstanceUID: study.getStudyInstanceUID(), // Include the study instance UID
+          SeriesInstanceUID: series.getSeriesInstanceUID(),
+        thumbnailSrc,
       });
+      if (instances.length === 1) {
+        const numImageFrames = instance.getTagValue('NumberOfFrames');
+        displaySet.setAttributes({
+          isClip: numImageFrames !== undefined,
+          numImageFrames,
+          InstanceNumber: instance.getTagValue('InstanceNumber'), // Include the instance number
+          AcquisitionDatetime: instance.getTagValue('AcquisitionDateTime'), // Include the acquisition datetime
+        });
+      }
       displaySets.push(displaySet);
     }
 
@@ -272,10 +302,9 @@ class StudyMetadata extends Metadata {
       const referencedDisplaySet = otherDisplaySets.find(ds =>
         referencedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID)
       );
-      ;
       return referencedDisplaySet;
     }
-  };
+  }
 
   /**
    * Returns a list of derived datasets in the study, filtered by the given filter.
@@ -303,7 +332,8 @@ class StudyMetadata extends Metadata {
     if (referencedSeriesInstanceUID) {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet => {
-          return StudyMetadata.getReferencedDisplaySet(displaySet, [this]).SeriesInstanceUID === referencedSeriesInstanceUID;
+          const referencedDS = StudyMetadata.getReferencedDisplaySet(displaySet, [this]);
+          return referencedDS && referencedDS.SeriesInstanceUID === referencedSeriesInstanceUID;
         }
       );
     }
@@ -340,7 +370,7 @@ class StudyMetadata extends Metadata {
     }
 
     // Loop through the series (SeriesMetadata)
-    this.forEachSeries(series => {
+    this._series.map((series, index) => {
       const displaySetsForSeries = this._createDisplaySetsForSeries(
         sopClassHandlerModules,
         series
@@ -376,9 +406,7 @@ class StudyMetadata extends Metadata {
       }
     }
 
-    displaySets.forEach(displaySet => {
-      this.addDisplaySet(displaySet);
-    });
+    displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
 
     return true;
   }
@@ -495,12 +523,6 @@ class StudyMetadata extends Metadata {
           }
         }
       }
-    }
-
-    if (this._displaySets.some(ds => 
-        ds.displaySetInstanceUID === displaySet.displaySetInstanceUID)
-    ) {
-      return;
     }
 
     this._displaySets.splice(insertIndex, 0, displaySet);
@@ -636,6 +658,28 @@ class StudyMetadata extends Metadata {
     return this._series.reduce((sum, series) => {
       return sum + series.getInstanceCount();
     }, 0);
+  }
+
+  /** Finds a given instance object
+   *  @returns the display set, and the instance metadata
+   */
+  getInstance(sopInstanceUID, frameIndex) {
+    if (!sopInstanceUID) return;
+    let image;
+    const displaySet = this.findDisplaySet(ds => {
+      return (
+        ds.images &&
+        ds.images.find(i => {
+          if (i.getSOPInstanceUID() === sopInstanceUID) {
+            image = i;
+            // TODO - check frameIndex
+            return true;
+          }
+        })
+      )
+    });
+    if (!image) return;
+    return { study: this, displaySet, image, metadata: image.getData().metadata };
   }
 
   /**
@@ -911,63 +955,90 @@ function getSopClassUIDs(series) {
  * @param {StudyMetadata} study
  * @param {string[]} sopClassUIDs
  */
-function _getDisplaySetFromSopClassModule(
+function _getDisplaySetsFromSopClassModule(
   sopClassHandlerExtensions, // TODO: Update Usage
   series,
   study,
   sopClassUIDs
 ) {
-  // TODO: For now only use the plugins if all instances have the same SOPClassUID
-  if (sopClassUIDs.length !== 1) {
-    console.warn(
-      'getDisplaySetFromSopClassPlugin: More than one SOPClassUID in the same series is not yet supported.'
+  const displaySets = [];
+  const instancesAlreadyMappedIntoADisplaySet = [];
+
+  let lastHandler;
+
+  sopClassUIDs.map(SOPClassUID => {
+    const sopClassHandlerModules = sopClassHandlerExtensions.map(extension => {
+      return extension.module;
+    });
+
+    console.log('sopClassHandlerModules', sopClassHandlerModules);
+    const handlersForSopClassUID = sopClassHandlerModules.filter(module => {
+      return module.sopClassUIDs && module.sopClassUIDs.includes(SOPClassUID);
+    });
+
+    // TODO: Sort by something, so we can determine which plugin to use
+    if (!handlersForSopClassUID || !handlersForSopClassUID.length) {
+      return;
+    }
+
+    const plugin = handlersForSopClassUID[0];
+    if (plugin === lastHandler) {
+      // TODO - the right behaviour is to run the split beforehand,
+      // and then run the plugin on the split result
+      console.log("Already handled this series by", plugin.id);
+      return;
+    }
+    lastHandler = plugin;
+
+    const headers = DICOMWeb.getAuthorizationHeader();
+    const errorInterceptor = errorHandler.getHTTPErrorHandler();
+    const dicomWebClient = new dwc({
+      url: study.getData().wadoRoot,
+      headers,
+      errorInterceptor,
+      requestHooks: [getXHRRetryRequestHook()],
+    });
+
+    const pluginResult = plugin.getDisplaySetFromSeries(
+      series,
+      study,
+      dicomWebClient,
+      headers
     );
-    return;
-  }
 
-  const SOPClassUID = sopClassUIDs[0];
-  const sopClassHandlerModules = sopClassHandlerExtensions.map(extension => {
-    return extension.module;
+    const results =
+      (Array.isArray(pluginResult) && pluginResult) ||
+      (pluginResult && [pluginResult]) ||
+      [];
+    for (const displaySet of results) {
+      if (!displaySet) continue;
+      if (displaySet.Modality !== null) {
+        const instance = series.getFirstInstance();
+        displaySet.Modality =
+          instance.Modality || instance.getTagValue('Modality');
+      }
+      displaySets.push(displaySet);
+
+      if (displaySet.referenceInstance) {
+        instancesAlreadyMappedIntoADisplaySet.push(
+          displaySet.referenceInstance
+        );
+      }
+    }
   });
 
-  const handlersForSopClassUID = sopClassHandlerModules.filter(module => {
-    return module.sopClassUIDs.includes(SOPClassUID);
-  });
-
-  // TODO: Sort by something, so we can determine which plugin to use
-  if (!handlersForSopClassUID || !handlersForSopClassUID.length) {
-    return;
-  }
-
-  const plugin = handlersForSopClassUID[0];
-  const headers = DICOMWeb.getAuthorizationHeader();
-  const errorInterceptor = errorHandler.getHTTPErrorHandler();
-  const dicomWebClient = new dwc({
-    url: study.getData().wadoRoot,
-    headers,
-    errorInterceptor,
-    requestHooks: [getXHRRetryRequestHook()],
-  });
-
-  let displaySet = plugin.getDisplaySetFromSeries(
-    series,
-    study,
-    dicomWebClient,
-    headers
-  );
-  if (displaySet && !displaySet.Modality) {
-    const instance = series.getFirstInstance();
-    displaySet.Modality = instance.getTagValue('Modality');
-  }
-  return displaySet;
+  return {
+    displaySets,
+    instancesAlreadyMappedIntoADisplaySet,
+  };
 }
 
 /**
-  * Returns the referenced series instance UIDs by searching the information in the
-  * ReferencedSeriesSequence.
-  * @param {object} derivatedDisplaySet.metadata
-  * @return {array[string]} referenced series instance UIDs.
-  */
+ * Returns the referenced series instance UIDs by searching the information in the
+ * ReferencedSeriesSequence.
+ * @param {object} derivatedDisplaySet.metadata
+ * @return {array[string]} referenced series instance UIDs.
+ */
 function _findReferencedSeriesInstanceUIDsFromReferencedSeriesSequence (
   metadata,
 ) {
@@ -988,13 +1059,13 @@ function _findReferencedSeriesInstanceUIDsFromReferencedSeriesSequence (
 };
 
 /**
-  * Returns the referenced series instance UIDs by searching the information in the
-  * ReferencedImageSequence.
-  * @param {object} derivatedDisplaySet.metadata
-  * @param {array[object]} displaysets
-  * @return {array[string]} referenced series instance UIDs.
-  */
-function _findReferencedSeriesInstanceUIDsFromReferencedImageSequence (
+ * Returns the referenced series instance UIDs by searching the information in the
+ * ReferencedImageSequence.
+ * @param {object} derivatedDisplaySet.metadata
+ * @param {array[object]} displaysets
+ * @return {array[string]} referenced series instance UIDs.
+ */
+function _findReferencedSeriesInstanceUIDsFromReferencedImageSequence(
   metadata,
   displaySets
 ) {
@@ -1030,7 +1101,7 @@ function _findReferencedSeriesInstanceUIDsFromReferencedImageSequence (
   * @param {array[object]} displaysets
   * @return {array[string]} referenced series instance UIDs.
   */
-function _findReferencedSeriesInstanceUIDsFromSourceImageSequence (
+function _findReferencedSeriesInstanceUIDsFromSourceImageSequence(
   metadata,
   displaySets
 ) {

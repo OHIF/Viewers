@@ -11,7 +11,8 @@ export default class RetrieveMetadataLoader {
    * @param {Object} server Object with server configuration parameters
    * @param {Array} studyInstanceUID Study instance ui to be retrieved
    * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
-   * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+   * @param {string[]} [filters.seriesInstanceUIDs] - series instance uid to filter results against
+   * @param {boolean} [filters.isFilterStrategy] - if we should use the filter strategy
    */
   constructor(server, studyInstanceUID, filters = {}) {
     this.server = server;
@@ -53,8 +54,8 @@ export default class RetrieveMetadataLoader {
   }
 
   // Methods to be overwrite
-  async configLoad() {}
-  async preLoad() {}
-  async load(preLoadData) {}
-  async posLoad(loadData) {}
+  async configLoad() { }
+  async preLoad() { }
+  async load(preLoadData) { }
+  async posLoad(loadData) { }
 }

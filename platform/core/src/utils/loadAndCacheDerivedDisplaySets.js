@@ -49,8 +49,18 @@ import studyMetadataManager from './studyMetadataManager';
  * @param {object} snackbar
  * @returns void
  */
-async function loadAndCacheDerivedDisplaySets(referencedDisplaySet, studies, logger, snackbar) {
-  const { StudyInstanceUID, SeriesInstanceUID } = referencedDisplaySet;
+async function loadAndCacheDerivedDisplaySets(
+  referencedDisplaySet,
+  studies,
+  logger,
+  snackbar
+) {
+  const {
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    FrameOfReferenceUID,
+  } = referencedDisplaySet;
+
   const promises = [];
   const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
 
@@ -58,9 +68,22 @@ async function loadAndCacheDerivedDisplaySets(referencedDisplaySet, studies, log
     return promises;
   }
 
-  const derivedDisplaySets = studyMetadata.getDerivedDatasets({
-    referencedSeriesInstanceUID: SeriesInstanceUID,
-  });
+  const seriesDerivedDisplaySets = SeriesInstanceUID
+    ? studyMetadata.getDerivedDatasets({
+        referencedSeriesInstanceUID: SeriesInstanceUID,
+      })
+    : [];
+
+  const frameOfReferencedDerivedDisplaySets = FrameOfReferenceUID
+    ? studyMetadata.getDerivedDatasets({
+        referencedFrameOfReferenceUID: FrameOfReferenceUID,
+      })
+    : [];
+
+  const derivedDisplaySets = [
+    ...seriesDerivedDisplaySets,
+    ...frameOfReferencedDerivedDisplaySets,
+  ];
 
   if (!derivedDisplaySets.length) {
     return promises;
@@ -80,60 +103,64 @@ async function loadAndCacheDerivedDisplaySets(referencedDisplaySet, studies, log
   });
 
   // For each type, see if any are loaded, if not load the most recent.
-  await Promise.all(Object.keys(displaySetsPerModality).map(async (key) => {
-    const displaySets = displaySetsPerModality[key];
+  await Promise.all(
+    Object.keys(displaySetsPerModality).map(async key => {
+      const displaySets = displaySetsPerModality[key];
 
-    const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
-    if (isLoaded) {
-      return;
-    }
-
-    if (displaySets.some(displaySet => displaySet.loadError)) {
-      return;
-    }
-
-    // find most recent and load it.
-    let recentDateTime = 0;
-    let recentDisplaySet = displaySets[0];
-
-    displaySets.forEach(displaySet => {
-      const dateTime = Number(
-        `${displaySet.SeriesDate}${displaySet.SeriesTime}`
-      );
-      if (dateTime > recentDateTime) {
-        recentDateTime = dateTime;
-        recentDisplaySet = displaySet;
+      const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
+      if (isLoaded) {
+        return;
       }
-    });
 
-    try {
-      if (recentDisplaySet.hasOwnProperty('getSourceDisplaySet') &&
-        typeof recentDisplaySet.getSourceDisplaySet === 'function') {
-        await recentDisplaySet.getSourceDisplaySet(studies);
-      } else {
-        await recentDisplaySet.load(referencedDisplaySet, studies);
+      if (displaySets.some(displaySet => displaySet.loadError)) {
+        return;
       }
-    } catch (error) {
-      recentDisplaySet.isLoaded = false;
-      recentDisplaySet.loadError = true;
-      logger.error({ error, message: error.message });
-      snackbar.show({
-        title: 'Error loading derived display set:',
-        message: error.message,
-        type: 'error',
-        error,
-        autoClose: false,
+
+      // find most recent and load it.
+      let recentDateTime = 0;
+      let recentDisplaySet = displaySets[0];
+
+      displaySets.forEach(displaySet => {
+        const dateTime = Number(
+          `${displaySet.SeriesDate}${displaySet.SeriesTime}`
+        );
+        if (dateTime > recentDateTime) {
+          recentDateTime = dateTime;
+          recentDisplaySet = displaySet;
+        }
       });
-    }
-  }));
+
+      try {
+        if (
+          recentDisplaySet.hasOwnProperty('getSourceDisplaySet') &&
+          typeof recentDisplaySet.getSourceDisplaySet === 'function'
+        ) {
+          await recentDisplaySet.getSourceDisplaySet(studies);
+        } else {
+          await recentDisplaySet.load(referencedDisplaySet, studies);
+        }
+      } catch (error) {
+        recentDisplaySet.isLoaded = false;
+        recentDisplaySet.loadError = true;
+        logger.error({ error, message: error.message });
+        snackbar.show({
+          title: 'Error loading derived display set:',
+          message: error.message,
+          type: 'error',
+          error,
+          autoClose: false,
+        });
+      }
+    })
+  );
 
   /*
-  * TODO: Improve the way we notify parts of the app
-  * that depends on derived display sets to be loaded.
-  * (Implement pubsub for better tracking of derived display sets)
-  */
+   * TODO: Improve the way we notify parts of the app
+   * that depends on derived display sets to be loaded.
+   * (Implement pubsub for better tracking of derived display sets)
+   */
   const event = new CustomEvent('deriveddisplaysetsloadedandcached');
   document.dispatchEvent(event);
-};
+}
 
 export default loadAndCacheDerivedDisplaySets;

@@ -84,6 +84,16 @@ export class SeriesMetadata extends Metadata {
   }
 
   /**
+   * Set all instances
+   *
+   * @param {array} instances
+   */
+  setInstances(instances) {
+    this._instances.length = 0;
+    instances.forEach(i => this._instances.push(i));
+  }
+
+  /**
    * Get the first instance of the current series retaining a consistent result across multiple calls.
    * @return {InstanceMetadata} An instance of the InstanceMetadata class or null if it does not exist.
    */

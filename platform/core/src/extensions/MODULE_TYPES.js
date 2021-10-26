@@ -4,4 +4,5 @@ export default {
   SOP_CLASS_HANDLER: 'sopClassHandlerModule',
   TOOLBAR: 'toolbarModule',
   VIEWPORT: 'viewportModule',
+  VIEWPORT_OVERLAY: 'viewportOverlayModule',
 };

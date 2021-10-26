@@ -89,12 +89,28 @@ export default class ExtensionManager {
       );
 
       if (extensionModule) {
-        this._initSpecialModuleTypes(moduleType, extensionModule);
+        if (moduleType === MODULE_TYPES.SOP_CLASS_HANDLER) {
+          if (Array.isArray(extensionModule)) {
+            extensionModule.forEach(sopClassHandler => {
+              this.modules[moduleType].push({
+                extensionId,
+                module: sopClassHandler,
+              });
+            });
+          } else {
+            this.modules[moduleType].push({
+              extensionId,
+              module: extensionModule,
+            });
+          }
+        } else {
+          this._initSpecialModuleTypes(moduleType, extensionModule);
 
-        this.modules[moduleType].push({
-          extensionId,
-          module: extensionModule,
-        });
+          this.modules[moduleType].push({
+            extensionId,
+            module: extensionModule,
+          });
+        }
       }
     });
 
@@ -122,6 +138,7 @@ export default class ExtensionManager {
       const extensionModule = getModuleFn({
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
+        extensionManager: this,
         appConfig: this._appConfig,
         configuration,
         api: this._api,

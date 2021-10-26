@@ -41,19 +41,34 @@ function attachSeriesLoader(server, study, seriesLoader) {
  * @param {DICOMWebClient} dicomWebClient The DICOMWebClient instance to be used for series load
  * @param {string} studyInstanceUID The Study Instance UID from which series will be loaded
  * @param {Array} seriesInstanceUIDList A list of Series Instance UIDs
+ * @param {string[]} seriesInstanceUIDs Series Instance UID which has priority to be loaded
  * @returns {Object} Returns an object which supports loading of instances from each of given Series Instance UID
  */
 function makeSeriesAsyncLoader(
   dicomWebClient,
   studyInstanceUID,
-  seriesInstanceUIDList
+  seriesInstanceUIDList,
+  seriesInstanceUIDs = []
 ) {
   return Object.freeze({
     hasNext() {
       return seriesInstanceUIDList.length > 0;
     },
     async next() {
-      const seriesInstanceUID = seriesInstanceUIDList.shift();
+      let seriesInstanceUID =
+        seriesInstanceUIDs.length > 0 && seriesInstanceUIDs.shift();
+
+      if (
+        seriesInstanceUID &&
+        seriesInstanceUIDList.includes(seriesInstanceUID)
+      ) {
+        seriesInstanceUIDList = seriesInstanceUIDList.filter(
+          uid => uid !== seriesInstanceUID
+        );
+      } else {
+        seriesInstanceUID = seriesInstanceUIDList.shift();
+      }
+
       const sopInstances = await dicomWebClient.retrieveSeriesMetadata({
         studyInstanceUID,
         seriesInstanceUID,
@@ -91,14 +106,14 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const preLoaders = [];
     const {
       studyInstanceUID,
-      filters: { seriesInstanceUID } = {},
+      filters: { seriesInstanceUIDs, isFilterStrategy } = {},
       client,
     } = this;
 
-    if (seriesInstanceUID) {
+    if (isFilterStrategy) {
       const options = {
         studyInstanceUID,
-        queryParams: { SeriesInstanceUID: seriesInstanceUID },
+        queryParams: { SeriesInstanceUID: seriesInstanceUIDs[0] },
       };
       preLoaders.push(client.searchForSeries.bind(client, options));
     }
@@ -115,6 +130,9 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     // It's an array of Objects containing DICOM Tag values at the Series level
     const seriesData = await this.runLoaders(preLoaders);
 
+    if (!seriesData || !seriesData.length) {
+      console.warn("No series data found");
+    }
     const seriesSorted = sortStudySeries(
       seriesData,
       sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
@@ -133,7 +151,8 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const seriesAsyncLoader = makeSeriesAsyncLoader(
       client,
       studyInstanceUID,
-      preLoadData.seriesInstanceUIDsMap
+      preLoadData.seriesInstanceUIDsMap,
+      [...this.filters.seriesInstanceUIDs]
     );
 
     const firstSeries = await seriesAsyncLoader.next();
@@ -156,24 +175,40 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const seriesDataNaturalized = seriesData.map(naturalizeDataset);
 
     seriesDataNaturalized.forEach((series, idx) => {
+      const SeriesDescription = Array.isArray(series.SeriesDescription) ?
+        '' : series.SeriesDescription;
+      const { SeriesInstanceUID, SeriesDate, SeriesTime } = series;
       const seriesDataFromQIDO = {
-        SeriesInstanceUID: series.SeriesInstanceUID,
-        SeriesDescription: series.SeriesDescription,
+        SeriesInstanceUID,
+        SeriesDescription,
         SeriesNumber: series.SeriesNumber,
         Modality: series.Modality,
-        instances: [],
+        SeriesDate,
+        SeriesTime,
       };
 
-      if (study.series[idx]) {
-        study.series[idx] = Object.assign(
-          seriesDataFromQIDO,
-          study.series[idx]
-        );
-      } else {
-        study.series[idx] = seriesDataFromQIDO;
+      if (!study.seriesMap) {
+        study.seriesMap = {};
+        if (study.series) {
+          study.series.forEach(series => {
+            if (series.SeriesInstanceUID) {
+              study.seriesMap[series.SeriesInstanceUID] = series;
+            };
+          });
+        }
+      }
+      if (!study.series) {
+        study.series = [];
       }
 
-      study.seriesMap[series.SeriesInstanceUID] = study.series[idx];
+      const studySeries = study.seriesMap[SeriesInstanceUID];
+      if (studySeries) {
+        Object.assign(studySeries, seriesDataFromQIDO);
+      } else {
+        seriesDataFromQIDO.instances = [];
+        study.series.push(seriesDataFromQIDO);
+        study.seriesMap[series.SeriesInstanceUID] = seriesDataFromQIDO;
+      }
     });
 
     if (asyncLoader.hasNext()) {

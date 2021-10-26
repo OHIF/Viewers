@@ -467,10 +467,9 @@ class StudyLoadingListener {
     study.displaySets.forEach(displaySet => {
       const stack = StackManager.findOrCreateStack(study, displaySet);
 
-      // TODO: Make this work for plugins
+      // TODO: Make this work for plugins - need to figure out when it should work
       if (!stack) {
-        console.warn('Skipping adding displaySet to StudyLoadingListener');
-        console.warn(displaySet);
+        console.log('Skipping adding displaySet to StudyLoadingListener');
         return;
       }
 

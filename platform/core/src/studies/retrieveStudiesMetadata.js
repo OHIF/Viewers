@@ -10,6 +10,8 @@ import { retrieveStudyMetadata } from './retrieveStudyMetadata';
  * @param {Object} server Object with server configuration parameters
  * @param {Array} studyInstanceUIDs The UIDs of the Studies to be retrieved
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
+ * @param {string[]} [filters.seriesInstanceUIDs] - series instance uid to filter results against
+ * @param {boolean} [filters.isFilterStrategy] - if we should use the filter strategy
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
  * @param {boolean} [separateSeriesInstanceUIDFilters = false] - If true, split filtered metadata calls into multiple calls,
  * as some DICOMWeb implementations only support single filters.

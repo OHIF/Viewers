@@ -8,7 +8,8 @@ import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
  * @param {Object} server Object with server configuration parameters
  * @param {string} StudyInstanceUID The Study Instance UID of the study which needs to be loaded
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
- * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+ * @param {string[]} [filters.seriesInstanceUIDs] - series instance uid to filter results against
+ * @param {boolean} [filters.isFilterStrategy] - if we should use the filter strategy
  * @returns {Object} A study descriptor object
  */
 async function RetrieveMetadata(server, StudyInstanceUID, filters = {}) {
@@ -20,7 +21,7 @@ async function RetrieveMetadata(server, StudyInstanceUID, filters = {}) {
   const retrieveMetadataLoader = new RetrieveMetadataLoader(
     server,
     StudyInstanceUID,
-    filters
+    filters,
   );
   const studyMetadata = retrieveMetadataLoader.execLoad();
 
