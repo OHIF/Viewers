@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableArea';
+import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
 
 const Jobs = ({ title, content, user, viewport }) => {
   const [isActive, setIsActive] = useState(false);
@@ -11,7 +13,7 @@ const Jobs = ({ title, content, user, viewport }) => {
     baseURL: 'https://radcadapi.thetatech.ai',
     timeout: 90000,
     headers: {
-      'X-Requested-With': 'XMLHttpRequest',
+      'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
@@ -55,7 +57,13 @@ const Jobs = ({ title, content, user, viewport }) => {
         &nbsp; &nbsp; &nbsp;
         <div>{isActive ? '-' : '+'}</div>
       </div>
-      {isActive && <div className="accordion-content">{content}</div>}
+      {isActive && (
+        <div className="accordion-content">
+          <ScrollableArea scrollStep={201} class="series-browser">
+            <ImageThumbnail />
+          </ScrollableArea>
+        </div>
+      )}
     </div>
   );
 };
