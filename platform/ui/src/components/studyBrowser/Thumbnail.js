@@ -15,11 +15,12 @@ const StudyLoadingListener = classes.StudyLoadingListener;
 function ThumbnailFooter({
   SeriesDescription,
   SeriesNumber,
-  InstanceNumber,
   numImageFrames,
   hasWarnings,
+  hasDerivedDisplaySets,
 }) {
   const [inconsistencyWarnings, inconsistencyWarningsSet] = useState([]);
+  const [derivedDisplaySetsActive, derivedDisplaySetsActiveSet] = useState([]);
 
   useEffect(() => {
     let unmounted = false;
@@ -28,10 +29,15 @@ function ThumbnailFooter({
         inconsistencyWarningsSet(response);
       }
     });
+    hasDerivedDisplaySets.then(response => {
+      if (!unmounted) {
+        derivedDisplaySetsActiveSet(response);
+      }
+    });
     return () => {
       unmounted = true;
     };
-  }, [hasWarnings]);
+  }, [hasWarnings, hasDerivedDisplaySets]);
 
   const infoOnly = !SeriesDescription;
 
@@ -88,20 +94,47 @@ function ThumbnailFooter({
       </React.Fragment>
     );
   };
+
+  const getDerivedInfo = derivedDisplaySetsActive => {
+    return (
+      <React.Fragment>
+        {derivedDisplaySetsActive ? (
+          <div className="derived">
+            <Icon name="link" />
+          </div>
+        ) : (
+          <React.Fragment></React.Fragment>
+        )}
+      </React.Fragment>
+    );
+  };
+
   const getSeriesInformation = (
     SeriesNumber,
-    InstanceNumber,
     numImageFrames,
-    inconsistencyWarnings
+    inconsistencyWarnings,
+    derivedDisplaySetsActive
   ) => {
-    if (!SeriesNumber && !InstanceNumber && !numImageFrames) {
+    if (!SeriesNumber && !numImageFrames) {
       return;
     }
     const seriesInformation = (
       <div className="series-information">
-        {getInfo(SeriesNumber, 'S:')}
-        {getInfo(InstanceNumber, 'I:')}
-        {getInfo(numImageFrames, '', 'image-frames')}
+        <React.Fragment>
+          {SeriesNumber !== undefined ? (
+            getInfo(SeriesNumber, 'S:')
+          ) : (
+            <React.Fragment></React.Fragment>
+          )}
+        </React.Fragment>
+        <React.Fragment>
+          {numImageFrames !== undefined ? (
+            getInfo(numImageFrames, '', 'image-frames')
+          ) : (
+            <React.Fragment></React.Fragment>
+          )}
+        </React.Fragment>
+        {getDerivedInfo(derivedDisplaySetsActive)}
         {getWarningInfo(SeriesNumber, inconsistencyWarnings)}
       </div>
     );
@@ -114,9 +147,9 @@ function ThumbnailFooter({
       <div className="series-description">{SeriesDescription}</div>
       {getSeriesInformation(
         SeriesNumber,
-        InstanceNumber,
         numImageFrames,
-        inconsistencyWarnings
+        inconsistencyWarnings,
+        derivedDisplaySetsActive
       )}
     </div>
   );
@@ -130,11 +163,11 @@ function Thumbnail(props) {
     displaySetInstanceUID,
     imageId,
     imageSrc,
-    InstanceNumber,
     numImageFrames,
     SeriesDescription,
     SeriesNumber,
     hasWarnings,
+    hasDerivedDisplaySets,
     StudyInstanceUID,
     onClick,
     onDoubleClick,
@@ -232,8 +265,8 @@ Thumbnail.propTypes = {
   altImageText: PropTypes.string,
   SeriesDescription: PropTypes.string,
   SeriesNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  InstanceNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   hasWarnings: PropTypes.instanceOf(Promise),
+  hasDerivedDisplaySets: PropTypes.instanceOf(Promise),
   numImageFrames: PropTypes.number,
   onDoubleClick: PropTypes.func,
   onClick: PropTypes.func,

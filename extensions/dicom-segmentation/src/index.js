@@ -126,7 +126,7 @@ export default {
           label: 'Segmentations',
           target: 'segmentation-panel',
           stateEvent: SegmentationPanelTabUpdatedEvent,
-          isDisabled: studies => {
+          isDisabled: (studies, activeViewport) => {
             if (!studies) {
               return true;
             }
@@ -139,6 +139,23 @@ export default {
                   const series = study.series[j];
 
                   if (series.Modality === 'SEG') {
+                    if (activeViewport) {
+                      const studyMetadata = studyMetadataManager.get(
+                        activeViewport.StudyInstanceUID
+                      );
+                      if (!studyMetadata) {
+                        return;
+                      }
+                      const referencedDS = studyMetadata.getDerivedDatasets({
+                        referencedSeriesInstanceUID:
+                          activeViewport.SeriesInstanceUID,
+                        Modality: 'SEG',
+                      });
+                      triggerSegmentationPanelTabUpdatedEvent({
+                        badgeNumber: referencedDS.length,
+                        target: 'segmentation-panel',
+                      });
+                    }
                     return false;
                   }
                 }

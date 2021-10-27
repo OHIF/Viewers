@@ -41,7 +41,7 @@ const SnackbarProvider = ({ children, service }) => {
     LogManager.subscribe(LogManager.EVENTS.OnLog, onLogHandler);
 
     return () => {
-      LogManager.subscribe(LogManager.EVENTS.OnLog, onLogHandler);
+      LogManager.unsubscribe(LogManager.EVENTS.OnLog, onLogHandler);
     };
   }, [show]);
 
