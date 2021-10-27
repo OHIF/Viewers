@@ -25,6 +25,8 @@ function ImageThumbnail(props) {
     error: propsError,
   } = props;
 
+  // console.log({ imageId });
+
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [image, setImage] = useState({});

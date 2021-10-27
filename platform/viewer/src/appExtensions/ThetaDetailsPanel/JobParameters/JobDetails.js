@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import axios from 'axios';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import '../AITriggerComponent.css';
@@ -7,6 +8,7 @@ import { connect } from 'react-redux';
 import { servicesManager } from './../../../App';
 
 const JobParameters = props => {
+  const { user, viewport } = props;
   const [isDisabled, setIsDisabled] = React.useState(true);
   const [toolData, setToolData] = React.useState({});
   const [startX, setStartX] = React.useState();
@@ -18,6 +20,23 @@ const JobParameters = props => {
   const [element, setElement] = React.useState();
 
   const { UINotificationService } = servicesManager.services;
+
+  const access_token = user.access_token;
+
+  const client = axios.create({
+    baseURL: 'https://radcadapi.thetatech.ai',
+    timeout: 90000,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+
+  client.interceptors.request.use(config => {
+    config.headers.Authorization = `Bearer ${access_token}`;
+    return config;
+  });
 
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
@@ -49,20 +68,14 @@ const JobParameters = props => {
   const triggerJob = () => {
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     const data = tool_data.data[0];
-
-    UINotificationService.show({
-      message: 'Job triggered successfully.',
-    });
-
-    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
-    cornerstone.updateImage(element);
-
-    // clearing all params
-    clearParams();
+    sendParams(data);
   };
 
   const clearParams = () => {
-    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.get(element, 'RectangleRoi');
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.get(
+      element,
+      'RectangleRoi'
+    );
 
     if (!toolState) {
       setToolData({});
@@ -71,6 +84,53 @@ const JobParameters = props => {
       setHeight();
       setWidth();
       setIsDisabled(true);
+    }
+  };
+
+  const sendParams = async data => {
+    // console.log({ data, viewport });
+    const series_uid = data.SeriesInstanceUID;
+    const study_uid = data.StudyInstanceUID;
+    const email = user.profile.email;
+
+    const body = {
+      study_uid,
+      series_uid,
+      email,
+      parameters: {
+        rectangle: {
+          x: data.handles.textBox.x.toFixed(2),
+          y: data.handles.textBox.y.toFixed(2),
+          w: data.handles.textBox.boundingBox.width.toFixed(2),
+          h: data.handles.textBox.boundingBox.height.toFixed(2),
+        },
+      },
+    };
+
+    console.log({ body });
+
+    const results = await client
+      .post(`/texture?series=${series_uid}`, body)
+      .then(response => {
+        console.log({ response });
+        cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+          {}
+        );
+        cornerstone.updateImage(element);
+
+        UINotificationService.show({
+          message: 'Job triggered successfully.',
+        });
+
+        // clearing all params
+        clearParams();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    if (results) {
+      console.log({ results });
     }
   };
 
@@ -115,6 +175,7 @@ const JobParameters = props => {
 const mapStateToProps = state => {
   return {
     user: state.oidc.user,
+    viewport: state.viewports,
   };
 };
 

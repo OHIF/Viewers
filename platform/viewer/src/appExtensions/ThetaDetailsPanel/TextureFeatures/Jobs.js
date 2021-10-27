@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableArea';
 import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
+import { Thumbnail } from '../../../../../ui/src/components/studyBrowser/Thumbnail';
 
 const Jobs = ({ title, content, user, viewport }) => {
   const [isActive, setIsActive] = useState(false);
@@ -25,24 +26,6 @@ const Jobs = ({ title, content, user, viewport }) => {
   });
 
   useEffect(() => {
-    (async () => {
-      const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
-      const email = user.profile.email;
-
-      const data = await client
-        .get(`/jobs?series=${series}&email=${email}`)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          // setError(error);
-          console.log(error);
-        });
-
-      if (data) {
-        console.log(data);
-      }
-    })();
   }, []);
 
   return (
@@ -60,7 +43,32 @@ const Jobs = ({ title, content, user, viewport }) => {
       {isActive && (
         <div className="accordion-content">
           <ScrollableArea scrollStep={201} class="series-browser">
-            <ImageThumbnail />
+            {/* <ImageThumbnail /> */}
+            <div
+              // key={thumb.displaySetInstanceUID}
+              className="thumbnail-container"
+              data-cy="thumbnail-list"
+            >
+              {/* <Thumbnail
+              // active={active}
+              // supportsDrag={supportsDrag}
+              // key={`${studyIndex}_${thumbIndex}`}
+              // id={`${studyIndex}_${thumbIndex}`} // Unused?
+              // Study
+              // StudyInstanceUID={StudyInstanceUID} // used by drop
+              // Thumb
+              // altImageText={altImageText}
+              // imageId={imageId}
+              // InstanceNumber={InstanceNumber}
+              // displaySetInstanceUID={displaySetInstanceUID} // used by drop
+              // numImageFrames={numImageFrames}
+              // SeriesDescription={SeriesDescription}
+              // SeriesNumber={SeriesNumber}
+              // hasWarnings={hasWarnings}
+              // stackPercentComplete={stackPercentComplete}
+              // Events
+              /> */}
+            </div>
           </ScrollableArea>
         </div>
       )}
