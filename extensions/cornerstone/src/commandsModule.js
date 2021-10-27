@@ -152,6 +152,9 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       ToolBarService.setButton('ReferenceLines', {
         props: { isActive: !isReferenceLinesEnabled },
       });
+      cornerstone.getEnabledElements().forEach(enabledElement => {
+        cornerstone.updateImage(enabledElement.element);
+      });
     },
     invertViewport: ({ element }) => {
       let enabledElement;
