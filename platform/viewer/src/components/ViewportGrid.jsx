@@ -26,9 +26,8 @@ function ViewerViewportGrid(props) {
     HangingProtocolService,
   } = servicesManager.services;
 
-
   const updateDisplaysetForViewports = useCallback(
-    (displaySets) => {
+    displaySets => {
       const [
         matchDetails,
         hpAlreadyApplied,
@@ -44,7 +43,7 @@ function ViewerViewportGrid(props) {
         }
 
         // if current viewport doesn't have a match
-        if (matchDetails[i] === undefined) return
+        if (matchDetails[i] === undefined) return;
 
         const { SeriesInstanceUID } = matchDetails[i];
         const matchingDisplaySet = displaySets.find(ds => {
@@ -63,8 +62,23 @@ function ViewerViewportGrid(props) {
         HangingProtocolService.setHangingProtocolAppliedForViewport(i);
       }
     },
-    [viewportGrid, numRows, numCols],
-  )
+    [viewportGrid, numRows, numCols]
+  );
+
+  useEffect(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    if (!displaySets.length) return;
+
+    const numViewports = numRows * numCols;
+    for (let i = 0; i < numViewports; i++) {
+      const { displaySetInstanceUID } = displaySets[i % displaySets.length];
+      viewportGridService.setDisplaysetForViewport({
+        viewportIndex: i,
+        displaySetInstanceUID,
+      });
+      HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+    }
+  }, [numRows, numCols]);
 
   // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
@@ -72,7 +86,7 @@ function ViewerViewportGrid(props) {
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
       eventData => {
         const { displaySetsAdded } = eventData;
-        updateDisplaysetForViewports(displaySetsAdded)
+        updateDisplaysetForViewports(displaySetsAdded);
       }
     );
 
@@ -81,16 +95,11 @@ function ViewerViewportGrid(props) {
     };
   }, [viewportGrid]);
 
-
-
   // Changing the Hanging protocol while viewing
   useEffect(() => {
     const displaySets = DisplaySetService.getActiveDisplaySets();
-    updateDisplaysetForViewports(displaySets)
-  }, [viewportGrid])
-
-
-
+    updateDisplaysetForViewports(displaySets);
+  }, [viewportGrid]);
 
   // Layout change based on hanging protocols
   useEffect(() => {
@@ -105,7 +114,6 @@ function ViewerViewportGrid(props) {
       unsubscribe();
     };
   }, [viewports]);
-
 
   useEffect(() => {
     const { unsubscribe } = MeasurementService.subscribe(

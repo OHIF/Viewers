@@ -421,6 +421,7 @@ function _mapDisplaySets(
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
       seriesDate: formatDate(ds.SeriesDate),
+      seriesInstanceUID: ds.SeriesInstanceUID,
       numInstances: ds.numImageFrames,
       StudyInstanceUID: ds.StudyInstanceUID,
       componentType,
@@ -557,9 +558,20 @@ function _createStudyBrowserTabs(
     );
 
     // Sort them
-    const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
-      displaySetsForStudy
-    );
+    // const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
+    //   displaySetsForStudy
+    // );
+
+    // Sort series by Instance UID
+    displaySetsForStudy.sort((a, b) => {
+      if (a.seriesInstanceUID < b.seriesInstanceUID) {
+        return -1;
+      }
+      if (a.seriesInstanceUID > b.seriesInstanceUID) {
+        return 1;
+      }
+      return 0;
+    });
 
     /* Sort by series number, then by series date
       displaySetsForStudy.sort((a, b) => {
