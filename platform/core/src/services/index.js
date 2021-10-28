@@ -9,6 +9,7 @@ import DisplaySetService from './DisplaySetService';
 import ToolBarService from './ToolBarService';
 import ViewportGridService from './ViewportGridService';
 import CineService from './CineService';
+import ReferenceLinesService from './ReferenceLinesService';
 import HangingProtocolService from './HangingProtocolService';
 import pubSubServiceInterface from './_shared/pubSubServiceInterface';
 import UserAuthenticationService from './UserAuthenticationService';
@@ -26,6 +27,7 @@ export {
   ViewportGridService,
   HangingProtocolService,
   CineService,
+  ReferenceLinesService,
   pubSubServiceInterface,
   UserAuthenticationService,
 };
