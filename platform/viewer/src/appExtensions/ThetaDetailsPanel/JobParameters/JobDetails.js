@@ -94,15 +94,15 @@ const JobParameters = props => {
     const email = user.profile.email;
 
     const body = {
-      study_uid,
-      series_uid,
-      email,
-      parameters: {
-        rectangle: {
-          x: data.handles.textBox.x.toFixed(2),
-          y: data.handles.textBox.y.toFixed(2),
-          w: data.handles.textBox.boundingBox.width.toFixed(2),
-          h: data.handles.textBox.boundingBox.height.toFixed(2),
+      "study_uid": study_uid,
+      "series_uid": series_uid,
+      "email": email,
+      "parameters": {
+        "rectangle": {
+          "x": parseInt(data.handles.textBox.x.toFixed(2)),
+          "y": parseInt(data.handles.textBox.y.toFixed(2)),
+          "w": parseInt(data.handles.textBox.boundingBox.width.toFixed(2)),
+          "h": parseInt(data.handles.textBox.boundingBox.height.toFixed(2)),
         },
       },
     };
@@ -110,7 +110,7 @@ const JobParameters = props => {
     console.log({ body });
 
     const results = await client
-      .post(`/texture?series=${series_uid}`, body)
+      .post(`/texture`, body)
       .then(response => {
         console.log({ response });
         cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
@@ -118,9 +118,11 @@ const JobParameters = props => {
         );
         cornerstone.updateImage(element);
 
-        UINotificationService.show({
-          message: 'Job triggered successfully.',
-        });
+        if (response.status === 202) {
+          UINotificationService.show({
+            message: 'Job triggered successfully. Please wait for it to be complete.',
+          });
+        }
 
         // clearing all params
         clearParams();

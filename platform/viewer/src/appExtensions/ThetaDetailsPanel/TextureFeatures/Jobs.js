@@ -3,8 +3,10 @@ import axios from 'axios';
 import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableArea';
 import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
 import { Thumbnail } from '../../../../../ui/src/components/studyBrowser/Thumbnail';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 
-const Jobs = ({ title, content, user, viewport }) => {
+const Jobs = ({ data, user, viewport }) => {
   const [isActive, setIsActive] = useState(false);
 
   // console.log(user.profile.email);
@@ -26,18 +28,18 @@ const Jobs = ({ title, content, user, viewport }) => {
   });
 
   useEffect(() => {
+    console.log({ data });
   }, []);
 
   return (
     <div className="accordion-item">
       <div className="accordion-title" onClick={() => setIsActive(!isActive)}>
-        <div>
-          <b>{title}</b>
-        </div>
+        <div>{/* <b>Job {title}</b> */}</div>
         {/* Not the best way to go about this */}
         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         &nbsp; &nbsp; &nbsp;
+        <FontAwesomeIcon icon={faCoffee} />
         <div>{isActive ? '-' : '+'}</div>
       </div>
       {isActive && (

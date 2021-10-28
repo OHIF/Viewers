@@ -49,6 +49,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.17",
+    "@fortawesome/free-solid-svg-icons": "^5.8.1",
+    "@fortawesome/react-fontawesome": "^0.1.4",
     "@ohif/core": "^2.13.13",
     "@ohif/extension-cornerstone": "^2.10.9",
     "@ohif/extension-debugging": "^0.2.2",

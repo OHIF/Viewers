@@ -27,7 +27,6 @@ const TextureFeature = props => {
   });
 
   useEffect(() => {
-
     console.log({ Path: window.location.search });
     (async () => {
       const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
@@ -36,7 +35,8 @@ const TextureFeature = props => {
       const results = await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
-          console.log({ response });
+          // console.log({ JobsData: response.data, response });
+          setJobs(response.data.jobs);
         })
         .catch(error => {
           // setError(error);
@@ -54,14 +54,8 @@ const TextureFeature = props => {
       <div className="title-header">Texture Features</div>
       {jobs.length > 0 && (
         <div className="accordion">
-          {data.map(({ title, content }, index) => (
-            <Jobs
-              key={index}
-              user={user}
-              viewport={viewport}
-              title={title}
-              content={content}
-            />
+          {jobs.map((data, index) => (
+            <Jobs key={index} user={user} viewport={viewport} data={data} />
           ))}
         </div>
       )}
