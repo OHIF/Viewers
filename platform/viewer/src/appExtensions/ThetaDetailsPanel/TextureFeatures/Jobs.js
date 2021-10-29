@@ -38,7 +38,7 @@ const Jobs = ({ data, user, viewport }) => {
 
   return (
     <div className="accordion-item">
-      <div className="accordion-title" onClick={show()}>
+      <div className="accordion-title" onClick={show}>
         <div>
           <b>Job {data.job}</b>
         </div>

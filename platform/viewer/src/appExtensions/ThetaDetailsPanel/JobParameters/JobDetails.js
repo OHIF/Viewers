@@ -73,9 +73,6 @@ const JobParameters = props => {
       const y_max = Math.max(startY, endY);
       const width = x_max - x_min;
       const height = y_max - y_min;
-      // console.log({ startX, endX, startY, endY });
-      // console.log({ x_min, x_max, y_min, y_max });
-      // console.log({ width, height });
       setX(x_min);
       setY(y_min);
       setHeight(height);
