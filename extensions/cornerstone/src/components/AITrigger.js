@@ -45,6 +45,8 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
   element.addEventListener(EVENTS.MEASUREMENT_ADDED, () => {
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
+    console.log({ toolState });
+
     if (Object.keys(toolState).length > 0) {
       UINotificationService.show({
         title: 'Overwrite Alert',

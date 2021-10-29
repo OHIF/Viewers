@@ -13,6 +13,8 @@ const JobParameters = props => {
   const [toolData, setToolData] = React.useState({});
   const [startX, setStartX] = React.useState();
   const [startY, setStartY] = React.useState();
+  const [endX, setEndX] = React.useState();
+  const [endY, setEndY] = React.useState();
   const [x, setX] = React.useState();
   const [y, setY] = React.useState();
   const [width, setWidth] = React.useState();
@@ -52,15 +54,32 @@ const JobParameters = props => {
 
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
+    const image = cornerstone.getImage(element);
+
+    console.log({ image });
+
     if (tool_data && tool_data.data.length > 0) {
-      console.log({ toolData: tool_data.data[0] });
+      // console.log({ toolData: tool_data.data[0] });
       setToolData(tool_data.data[0]);
-      setX(tool_data.data[0].handles.textBox.x.toFixed(2));
-      setY(tool_data.data[0].handles.textBox.y.toFixed(2));
-      setHeight(
-        tool_data.data[0].handles.textBox.boundingBox.height.toFixed(2)
-      );
-      setWidth(tool_data.data[0].handles.textBox.boundingBox.width.toFixed(2));
+
+      let startX = parseInt(tool_data.data[0].handles.start.x.toFixed(2));
+      let startY = parseInt(tool_data.data[0].handles.start.y.toFixed(2));
+      let endX = parseInt(tool_data.data[0].handles.end.x.toFixed(2));
+      let endY = parseInt(tool_data.data[0].handles.end.y.toFixed(2));
+
+      const x_min = Math.min(startX, endX);
+      const x_max = Math.max(startX, endX);
+      const y_min = Math.min(startY, endY);
+      const y_max = Math.max(startY, endY);
+      const width = x_max - x_min;
+      const height = y_max - y_min;
+      // console.log({ startX, endX, startY, endY });
+      // console.log({ x_min, x_max, y_min, y_max });
+      // console.log({ width, height });
+      setX(x_min);
+      setY(y_min);
+      setHeight(height);
+      setWidth(width);
       setIsDisabled(false);
     }
   }, []);
@@ -94,22 +113,22 @@ const JobParameters = props => {
     const email = user.profile.email;
 
     const body = {
-      "study_uid": study_uid,
-      "series_uid": series_uid,
-      "email": email,
-      "parameters": {
-        "rectangle": {
-          "x": parseInt(data.handles.textBox.x.toFixed(2)),
-          "y": parseInt(data.handles.textBox.y.toFixed(2)),
-          "w": parseInt(data.handles.textBox.boundingBox.width.toFixed(2)),
-          "h": parseInt(data.handles.textBox.boundingBox.height.toFixed(2)),
+      study_uid: study_uid,
+      series_uid: series_uid,
+      email: email,
+      parameters: {
+        rectangle: {
+          x: x,
+          y: y,
+          w: width,
+          h: height,
         },
       },
     };
 
     console.log({ body });
 
-    const results = await client
+    await client
       .post(`/texture`, body)
       .then(response => {
         console.log({ response });
@@ -120,7 +139,8 @@ const JobParameters = props => {
 
         if (response.status === 202) {
           UINotificationService.show({
-            message: 'Job triggered successfully. Please wait for it to be complete.',
+            message:
+              'Job triggered successfully. Please wait for it to be complete.',
           });
         }
 
@@ -130,10 +150,6 @@ const JobParameters = props => {
       .catch(error => {
         console.log(error);
       });
-
-    if (results) {
-      console.log({ results });
-    }
   };
 
   return (

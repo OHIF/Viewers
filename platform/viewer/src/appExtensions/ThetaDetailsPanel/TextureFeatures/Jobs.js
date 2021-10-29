@@ -4,11 +4,10 @@ import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableA
 import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
 import { Thumbnail } from '../../../../../ui/src/components/studyBrowser/Thumbnail';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle } from '@fortawesome/fontawesome-svg-core';
 
 const Jobs = ({ data, user, viewport }) => {
-  const [isActive, setIsActive] = useState(false);
-
+  const [isActive, setIsActive] = useState(false);0
   // console.log(user.profile.email);
   const access_token = user.access_token;
 
@@ -27,20 +26,29 @@ const Jobs = ({ data, user, viewport }) => {
     return config;
   });
 
-  useEffect(() => {
-    console.log({ data });
-  }, []);
+  // useEffect(() => {
+  //   console.log({ data });
+  // }, []);
+
+  const show = () => {
+    if (data.status === 'DONE') {
+      setIsActive(!isActive);
+    }
+  };
 
   return (
     <div className="accordion-item">
-      <div className="accordion-title" onClick={() => setIsActive(!isActive)}>
-        <div>{/* <b>Job {title}</b> */}</div>
+      <div className="accordion-title" onClick={show()}>
+        <div>
+          <b>Job {data.job}</b>
+        </div>
         {/* Not the best way to go about this */}
         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-        &nbsp; &nbsp; &nbsp;
-        <FontAwesomeIcon icon={faCoffee} />
-        <div>{isActive ? '-' : '+'}</div>
+        {/* <div>{isActive ? '-' : '+'}</div> */}
+        <div>
+          <b>{data.status}</b>
+        </div>
       </div>
       {isActive && (
         <div className="accordion-content">

@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import '../AITriggerComponent.css';
-import { data } from './Data';
 import Jobs from './Jobs';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
-
   const { user, viewport } = props;
   const access_token = user.access_token;
+  const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
+  const email = user.profile.email;
 
   const client = axios.create({
     baseURL: 'https://radcadapi.thetatech.ai',
@@ -27,25 +27,16 @@ const TextureFeature = props => {
   });
 
   useEffect(() => {
-    console.log({ Path: window.location.search });
+    // console.log({ Path: window.location.pathname });
     (async () => {
-      const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
-      const email = user.profile.email;
-
       const results = await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
-          // console.log({ JobsData: response.data, response });
           setJobs(response.data.jobs);
         })
         .catch(error => {
-          // setError(error);
           console.log(error);
         });
-
-      if (results) {
-        console.log({ results });
-      }
     })();
   }, []);
 
