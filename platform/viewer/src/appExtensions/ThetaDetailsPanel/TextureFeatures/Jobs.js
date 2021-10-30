@@ -6,11 +6,17 @@ import { Thumbnail } from '../../../../../ui/src/components/studyBrowser/Thumbna
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/fontawesome-svg-core';
 
-const Jobs = ({ data, user, viewport }) => {
-  const [isActive, setIsActive] = useState(false);0
+const Jobs = ({ data, user, series, viewport }) => {
+  const [isActive, setIsActive] = useState(false);
+  const [textures, setTextures] = useState([]);
+  const [description, setDescription] = useState([]);
   // console.log(user.profile.email);
   const access_token = user.access_token;
+  const path = window.location.pathname;
 
+  const base_url = process.env.IMAGE_PATH + path;
+
+  // setting up client for API requests (centralize this client)
   const client = axios.create({
     baseURL: 'https://radcadapi.thetatech.ai',
     timeout: 90000,
@@ -26,14 +32,28 @@ const Jobs = ({ data, user, viewport }) => {
     return config;
   });
 
-  // useEffect(() => {
-  //   console.log({ data });
-  // }, []);
+  useEffect(() => {
+    console.log({ data });
 
+    if (data.texture_uids) {
+      setTextures(data.texture_uids);
+      setDescription(data.texture_descriptions);
+    }
+  }, []);
+
+  // Functionality for showing jobs if jobs data is available
   const show = () => {
     if (data.status === 'DONE') {
       setIsActive(!isActive);
     }
+  };
+
+  // Function for setting image id and performing overlay
+  const handleOverlay = instance => {
+    const imageID =
+      base_url + '/series/' + series + '/instance/' + instance + '/frames/1';
+
+    console.log({ imageID });
   };
 
   return (
@@ -78,6 +98,16 @@ const Jobs = ({ data, user, viewport }) => {
               // stackPercentComplete={stackPercentComplete}
               // Events
               /> */}
+
+              {textures.length > 0 && (
+                <div>
+                  {textures.map((texture, index) => (
+                    <li key={index} onClick={handleOverlay(texture)}>
+                      description[index]
+                    </li>
+                  ))}
+                </div>
+              )}
             </div>
           </ScrollableArea>
         </div>

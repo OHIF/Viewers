@@ -6,9 +6,9 @@ import axios from 'axios';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
+  const [series, setSeries] = React.useState();
   const { user, viewport } = props;
   const access_token = user.access_token;
-  const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
   const email = user.profile.email;
 
   const client = axios.create({
@@ -27,12 +27,14 @@ const TextureFeature = props => {
   });
 
   useEffect(() => {
-    // console.log({ Path: window.location.pathname });
+    // getting all jobs for the current series being displayed in viewport
     (async () => {
-      const results = await client
+      await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
           setJobs(response.data.jobs);
+          setSeries(response.data.series);
+          console.log({ response });
         })
         .catch(error => {
           console.log(error);
@@ -46,7 +48,13 @@ const TextureFeature = props => {
       {jobs.length > 0 && (
         <div className="accordion">
           {jobs.map((data, index) => (
-            <Jobs key={index} user={user} viewport={viewport} data={data} />
+            <Jobs
+              key={index}
+              user={user}
+              viewport={viewport}
+              data={data}
+              series={series}
+            />
           ))}
         </div>
       )}
