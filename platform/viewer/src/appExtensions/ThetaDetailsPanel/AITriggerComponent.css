@@ -78,3 +78,7 @@ h1 {
 .accordion-content {
   background-color: #355c64;
 }
+
+.jobs-button {
+  border-radius: 24px;
+}

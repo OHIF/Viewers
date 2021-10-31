@@ -3,8 +3,9 @@ import axios from 'axios';
 import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableArea';
 import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
 import { Thumbnail } from '../../../../../ui/src/components/studyBrowser/Thumbnail';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/fontawesome-svg-core';
+import cornerstone from 'cornerstone-core';
+import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
+import '../AITriggerComponent.css';
 
 const Jobs = ({ data, user, series, viewport }) => {
   const [isActive, setIsActive] = useState(false);
@@ -13,12 +14,14 @@ const Jobs = ({ data, user, series, viewport }) => {
   // console.log(user.profile.email);
   const access_token = user.access_token;
   const path = window.location.pathname;
+  const viewportSpecificData = viewport.viewportSpecificData[0];
 
-  const base_url = process.env.IMAGE_PATH + path;
+  const base_url = `wadors:https://healthcare.googleapis.com/v1${path}`;
 
   // setting up client for API requests (centralize this client)
   const client = axios.create({
-    baseURL: 'https://radcadapi.thetatech.ai',
+    baseURL:
+      'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -33,8 +36,7 @@ const Jobs = ({ data, user, series, viewport }) => {
   });
 
   useEffect(() => {
-    console.log({ data });
-
+    // console.log({ data });
     if (data.texture_uids) {
       setTextures(data.texture_uids);
       setDescription(data.texture_descriptions);
@@ -50,10 +52,62 @@ const Jobs = ({ data, user, series, viewport }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = instance => {
-    const imageID =
-      base_url + '/series/' + series + '/instance/' + instance + '/frames/1';
+    // const imageID = `${base_url}/series/${series}/instances/${instance}/frames/1`;
+    const image_id = `wadors:https://healthcare.googleapis.com/v1/projects/lungradcad-project/locations/us/datasets/Sample_Hospital/dicomStores/Sample_Department/dicomWeb/studies/1.3.6.1.4.1.14519.5.2.1.6450.4012.206382517630164051916496664467/series/1.2.826.0.1.3680043.8.498.11304309571167765720419441848296739121/instances/1.2.826.0.1.3680043.8.498.74644997802360878882857126969140009153/frames/1`;
 
-    console.log({ imageID });
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+    console.log({ viewportSpecificData, view_ports, viewports });
+
+    // getting active viewport reference to element variable
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    if (!element) {
+      return;
+    }
+
+    // retrieving cornerstone enable element object
+    let enabled_element = cornerstone.getEnabledElement(element);
+    if (!enabled_element || !enabled_element.image) {
+      return;
+    }
+
+    cornerstone.loadImage(image_id).then(image => {
+      // adding layer to current viewport
+      const layerId = cornerstone.addLayer(element, image);
+
+      // sync the viewports together(test if you can remove them)
+      enabled_element.syncViewports = true;
+
+      // update the current image on the viewport with the new image
+      cornerstone.updateImage(element);
+
+      // Setting the new image layer as the active layer
+      cornerstone.setActiveLayer(element, layerId);
+
+      // Getting active layer
+      const layer = cornerstone.getActiveLayer(element);
+
+      //** Loop through all layers and set default options to non active layer */
+      const all_layers = cornerstone.getLayers(element);
+
+      for (let other_layer of all_layers) {
+        if (layer.layerId === other_layer.layerId) {
+          // change the opacity and colormap
+          // layer.options.opacity = parseFloat(0.5);
+          layer.viewport.colormap = 'hotIron';
+
+          // update the element to apply new settings
+          cornerstone.updateImage(element);
+        } else {
+          // change the opacity
+          other_layer.options.opacity = parseFloat(0.5);
+          other_layer.viewport.colormap = 'gray';
+
+          // update the element to apply new settings
+          cornerstone.updateImage(element);
+        }
+      }
+    });
   };
 
   return (
@@ -73,38 +127,22 @@ const Jobs = ({ data, user, series, viewport }) => {
       {isActive && (
         <div className="accordion-content">
           <ScrollableArea scrollStep={201} class="series-browser">
-            {/* <ImageThumbnail /> */}
             <div
               // key={thumb.displaySetInstanceUID}
               className="thumbnail-container"
               data-cy="thumbnail-list"
             >
-              {/* <Thumbnail
-              // active={active}
-              // supportsDrag={supportsDrag}
-              // key={`${studyIndex}_${thumbIndex}`}
-              // id={`${studyIndex}_${thumbIndex}`} // Unused?
-              // Study
-              // StudyInstanceUID={StudyInstanceUID} // used by drop
-              // Thumb
-              // altImageText={altImageText}
-              // imageId={imageId}
-              // InstanceNumber={InstanceNumber}
-              // displaySetInstanceUID={displaySetInstanceUID} // used by drop
-              // numImageFrames={numImageFrames}
-              // SeriesDescription={SeriesDescription}
-              // SeriesNumber={SeriesNumber}
-              // hasWarnings={hasWarnings}
-              // stackPercentComplete={stackPercentComplete}
-              // Events
-              /> */}
-
               {textures.length > 0 && (
                 <div>
                   {textures.map((texture, index) => (
-                    <li key={index} onClick={handleOverlay(texture)}>
-                      description[index]
-                    </li>
+                    <ul key={index} onClick={() => handleOverlay(texture)}>
+                      {description[index]}
+                    </ul>
+                    // <ImageThumbnail
+                    //   imageId={`${base_url}/series/${series}/instance/${texture}/frames/1`}
+                    //   key={index}
+                    //   onClick={() => handleOverlay(texture)}
+                    // />
                   ))}
                 </div>
               )}

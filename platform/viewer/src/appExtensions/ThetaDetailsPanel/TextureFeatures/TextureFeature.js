@@ -6,13 +6,14 @@ import axios from 'axios';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
-  const [series, setSeries] = React.useState();
   const { user, viewport } = props;
   const access_token = user.access_token;
   const email = user.profile.email;
+  const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
 
   const client = axios.create({
-    baseURL: 'https://radcadapi.thetatech.ai',
+    baseURL:
+      'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -32,9 +33,8 @@ const TextureFeature = props => {
       await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
-          setJobs(response.data.jobs);
-          setSeries(response.data.series);
           console.log({ response });
+          setJobs([...response.data.jobs]);
         })
         .catch(error => {
           console.log(error);

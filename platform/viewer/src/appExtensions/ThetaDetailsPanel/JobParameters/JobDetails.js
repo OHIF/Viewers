@@ -26,7 +26,7 @@ const JobParameters = props => {
   const access_token = user.access_token;
 
   const client = axios.create({
-    baseURL: 'https://radcadapi.thetatech.ai',
+    baseURL: process.env.DOMAIN,
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -52,6 +52,7 @@ const JobParameters = props => {
 
     setElement(element);
 
+    // retrieving rectangle tool roi data from element
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
     const image = cornerstone.getImage(element);
