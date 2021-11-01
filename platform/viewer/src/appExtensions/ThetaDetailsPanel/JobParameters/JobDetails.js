@@ -26,7 +26,7 @@ const JobParameters = props => {
   const access_token = user.access_token;
 
   const client = axios.create({
-    baseURL: process.env.DOMAIN,
+    baseURL: 'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',

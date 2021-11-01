@@ -25,7 +25,10 @@ const Jobs = ({ data, user, viewport, series }) => {
   const path = window.location.pathname;
   const viewportSpecificData = viewport.viewportSpecificData[0];
 
-  const base_url = `wadors:https://healthcare.googleapis.com/v1${path}`;
+  const base_url = `wadors:https://healthcare.googleapis.com/v1${path.replace(
+    'study',
+    'dicomWeb/studies'
+  )}`;
 
   // setting up client for API requests (centralize this client)
   const client = axios.create({
@@ -61,7 +64,10 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = instance => {
-    // const imageID = `${base_url}/series/${series}/instances/${instance}/frames/1`;
+    // const image_id = `${base_url}/series/${series}/instances/${instance}/frames/1`;
+
+    // console.log({ image_id });
+
     const image_id = `wadors:https://healthcare.googleapis.com/v1/projects/lungradcad-project/locations/us/datasets/Sample_Hospital/dicomStores/Sample_Department/dicomWeb/studies/1.3.6.1.4.1.14519.5.2.1.6450.4012.206382517630164051916496664467/series/1.2.826.0.1.3680043.8.498.11304309571167765720419441848296739121/instances/1.2.826.0.1.3680043.8.498.74644997802360878882857126969140009153/frames/1`;
 
     const view_ports = cornerstone.getEnabledElements();
