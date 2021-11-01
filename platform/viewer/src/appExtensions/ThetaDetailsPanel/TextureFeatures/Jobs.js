@@ -4,13 +4,22 @@ import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableA
 import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
 import { Thumbnail } from '../../../../../ui/src/components/studyBrowser/Thumbnail';
 import cornerstone from 'cornerstone-core';
+import cornerstoneTools from 'cornerstone-tools';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
 import '../AITriggerComponent.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faRunning,
+  faExclamationTriangle,
+  faCheckCircle,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
 
-const Jobs = ({ data, user, series, viewport }) => {
+const Jobs = ({ data, user, viewport, series }) => {
   const [isActive, setIsActive] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
+  const [layerID, setLayerID] = useState();
   // console.log(user.profile.email);
   const access_token = user.access_token;
   const path = window.location.pathname;
@@ -57,7 +66,6 @@ const Jobs = ({ data, user, series, viewport }) => {
 
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
-    console.log({ viewportSpecificData, view_ports, viewports });
 
     // getting active viewport reference to element variable
     const element = getEnabledElement(view_ports.indexOf(viewports));
@@ -72,14 +80,19 @@ const Jobs = ({ data, user, series, viewport }) => {
     }
 
     cornerstone.loadImage(image_id).then(image => {
+      // Getting all layers
+      const all_layers = cornerstone.getLayers(element);
+
+      if (all_layers.length > 1) {
+        cornerstone.removeLayer(element, layerID);
+        cornerstone.updateImage(element);
+        setLayerID();
+      }
+
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(element, image);
 
-      // sync the viewports together(test if you can remove them)
-      enabled_element.syncViewports = true;
-
-      // update the current image on the viewport with the new image
-      cornerstone.updateImage(element);
+      setLayerID(layerId);
 
       // Setting the new image layer as the active layer
       cornerstone.setActiveLayer(element, layerId);
@@ -88,24 +101,25 @@ const Jobs = ({ data, user, series, viewport }) => {
       const layer = cornerstone.getActiveLayer(element);
 
       //** Loop through all layers and set default options to non active layer */
-      const all_layers = cornerstone.getLayers(element);
+      const every_layer = cornerstone.getLayers(element);
 
-      for (let other_layer of all_layers) {
+      for (let other_layer of every_layer) {
         if (layer.layerId === other_layer.layerId) {
           // change the opacity and colormap
-          // layer.options.opacity = parseFloat(0.5);
+          layer.options.opacity = parseFloat(0.5);
           layer.viewport.colormap = 'hotIron';
 
           // update the element to apply new settings
           cornerstone.updateImage(element);
-        } else {
-          // change the opacity
-          other_layer.options.opacity = parseFloat(0.5);
-          other_layer.viewport.colormap = 'gray';
-
-          // update the element to apply new settings
-          cornerstone.updateImage(element);
         }
+        // else {
+        // change the opacity
+        // other_layer.options.opacity = parseFloat(0.5);
+        //   other_layer.viewport.colormap = 'gray';
+
+        // update the element to apply new settings
+        //   cornerstone.updateImage(element);
+        // }
       }
     });
   };
@@ -121,32 +135,26 @@ const Jobs = ({ data, user, series, viewport }) => {
         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         {/* <div>{isActive ? '-' : '+'}</div> */}
         <div>
-          <b>{data.status}</b>
+          {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
+          {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
+          {data.status === 'ERROR' && (
+            <FontAwesomeIcon icon={faExclamationTriangle} />
+          )}
+          {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
         </div>
       </div>
       {isActive && (
         <div className="accordion-content">
           <ScrollableArea scrollStep={201} class="series-browser">
-            <div
-              // key={thumb.displaySetInstanceUID}
-              className="thumbnail-container"
-              data-cy="thumbnail-list"
-            >
-              {textures.length > 0 && (
-                <div>
-                  {textures.map((texture, index) => (
-                    <ul key={index} onClick={() => handleOverlay(texture)}>
-                      {description[index]}
-                    </ul>
-                    // <ImageThumbnail
-                    //   imageId={`${base_url}/series/${series}/instance/${texture}/frames/1`}
-                    //   key={index}
-                    //   onClick={() => handleOverlay(texture)}
-                    // />
-                  ))}
-                </div>
-              )}
-            </div>
+            {textures.length > 0 && (
+              <div className="textures">
+                {textures.map((texture, index) => (
+                  <ul key={index} onClick={() => handleOverlay(texture)}>
+                    {description[index]}
+                  </ul>
+                ))}
+              </div>
+            )}
           </ScrollableArea>
         </div>
       )}

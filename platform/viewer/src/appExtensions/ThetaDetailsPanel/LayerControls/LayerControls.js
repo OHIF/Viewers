@@ -80,7 +80,7 @@ const LayerControls = () => {
   };
 
   // function for syncing all viewports(layers)
-  const onHandleSync = () => {
+  const onHandleSync = event => {
     setSync(!sync);
 
     // toggling between syncing viewports
@@ -135,7 +135,7 @@ const LayerControls = () => {
           />
         </label>
 
-        {layers.length > 1 && (
+        {/* {layers.length > 1 && (
           <div>
             <h4>Sync Viewports</h4>
             <label>
@@ -148,7 +148,7 @@ const LayerControls = () => {
               />
             </label>
           </div>
-        )}
+        )} */}
 
         <h4>Color Maps</h4>
         <label>
@@ -166,7 +166,7 @@ const LayerControls = () => {
           </select>
         </label>
 
-        {layers.length > 0 && (
+        {/* {layers.length > 0 && (
           <div>
             <h4>Select Active Layer</h4>
             <label>
@@ -184,7 +184,7 @@ const LayerControls = () => {
               </select>
             </label>
           </div>
-        )}
+        )} */}
       </form>
     </div>
   );

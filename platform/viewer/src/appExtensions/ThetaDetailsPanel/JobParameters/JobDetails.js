@@ -57,8 +57,6 @@ const JobParameters = props => {
 
     const image = cornerstone.getImage(element);
 
-    console.log({ image });
-
     if (tool_data && tool_data.data.length > 0) {
       // console.log({ toolData: tool_data.data[0] });
       setToolData(tool_data.data[0]);
@@ -129,7 +127,7 @@ const JobParameters = props => {
     await client
       .post(`/texture`, body)
       .then(response => {
-        console.log({ response });
+        // console.log({ response });
         cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
           {}
         );
