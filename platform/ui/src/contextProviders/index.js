@@ -22,6 +22,12 @@ export {
 export { CineContext, default as CineProvider, useCine } from './CineProvider';
 
 export {
+  ReferenceLinesContext,
+  default as ReferenceLinesProvider,
+  useReferenceLines,
+} from './ReferenceLinesProvider';
+
+export {
   default as SnackbarProvider,
   useSnackbar,
   withSnackbar,

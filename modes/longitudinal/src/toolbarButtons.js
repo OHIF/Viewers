@@ -176,6 +176,16 @@ export default [
     id: 'Layout',
     type: 'ohif.layoutSelector',
   },
+  {
+    id: 'ReferenceLines',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'list-bullets',
+      label: 'Reference Lines',
+      commandName: 'toggleReferenceLines',
+    }
+  },
   // More...
   {
     id: 'MoreTools',

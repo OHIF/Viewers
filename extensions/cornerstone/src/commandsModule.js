@@ -34,7 +34,11 @@ function onElementDisabledRemoveFromSync(event) {
 }
 
 const commandsModule = ({ servicesManager, commandsManager }) => {
-  const { ViewportGridService } = servicesManager.services;
+  const {
+    ViewportGridService,
+    ReferenceLinesService,
+    ToolBarService,
+  } = servicesManager.services;
 
   function _getActiveViewportsEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
@@ -139,6 +143,18 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         });
       });
       return unsubscribe;
+    },
+    toggleReferenceLines: () => {
+      const { isReferenceLinesEnabled } = ReferenceLinesService.getState();
+      ReferenceLinesService.setIsReferenceLinesEnabled(
+        !isReferenceLinesEnabled
+      );
+      ToolBarService.setButton('ReferenceLines', {
+        props: { isActive: !isReferenceLinesEnabled },
+      });
+      cornerstone.getEnabledElements().forEach(enabledElement => {
+        cornerstone.updateImage(enabledElement.element);
+      });
     },
     invertViewport: ({ element }) => {
       let enabledElement;
@@ -411,6 +427,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     toggleSynchronizer: {
       commandFn: actions.toggleSynchronizer,
+      storeContexts: [],
+      options: {},
+    },
+    toggleReferenceLines: {
+      commandFn: actions.toggleReferenceLines,
       storeContexts: [],
       options: {},
     },
