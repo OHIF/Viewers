@@ -11,6 +11,7 @@ export class SeriesList extends Component {
     activeDisplaySetInstanceUID: PropTypes.string,
   };
 
+
   render() {
     return (
       <React.Fragment>

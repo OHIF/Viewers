@@ -32,26 +32,22 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
   // Adding event listener to checking when user is done deriving a measurement
   element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, function(e) {
     const event_data = e.detail;
-    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
-    if (tool_data.data.length > 0) {
-      cornerstoneTools.clearToolState(element, 'RectangleRoi');
-
+    if (Object.keys(toolState).length > 0) {
+      cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
       cornerstone.updateImage(element);
-
-      cornerstoneTools.addToolState(
-        element,
-        'RectangleRoi',
-        event_data.measurementData
-      );
+      cornerstoneTools.addToolState(element,'RectangleRoi', event_data.measurementData);
     }
   });
 
   // adding event listener for when user starts to get new dimensions
   element.addEventListener(EVENTS.MEASUREMENT_ADDED, () => {
-    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
-    if (tool_data.data.length > 1) {
+    console.log({ toolState });
+
+    if (Object.keys(toolState).length > 0) {
       UINotificationService.show({
         title: 'Overwrite Alert',
         message: 'Taking new dimensions would remove previous selected ones',

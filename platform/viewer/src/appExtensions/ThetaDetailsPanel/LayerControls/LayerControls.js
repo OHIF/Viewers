@@ -51,6 +51,7 @@ const LayerControls = () => {
     }, 700);
   }, []);
 
+  // function for creating a base layer if non exists
   const createBaseLayerControl = (element, image_id) => {
     cornerstone.loadImage(image_id).then(image => {
       // adding layer for the first stack of images
@@ -64,6 +65,7 @@ const LayerControls = () => {
     });
   };
 
+  // function for changing opacity of active layer
   const onHandleOpacuty = event => {
     setOpacity(event.target.value);
 
@@ -77,7 +79,8 @@ const LayerControls = () => {
     cornerstone.updateImage(element);
   };
 
-  const onHandleSync = () => {
+  // function for syncing all viewports(layers)
+  const onHandleSync = event => {
     setSync(!sync);
 
     // toggling between syncing viewports
@@ -89,6 +92,7 @@ const LayerControls = () => {
     cornerstone.updateImage(element);
   };
 
+  // function for changing the colormap for an active layer
   const onHandleColorChange = event => {
     setColorMap(event.target.value);
 
@@ -102,6 +106,7 @@ const LayerControls = () => {
     cornerstone.updateImage(element);
   };
 
+  // function for changing the active layer
   const onHandleLayerChange = event => {
     setAcLayer(event.target.value);
 
@@ -130,7 +135,7 @@ const LayerControls = () => {
           />
         </label>
 
-        {layers.length > 1 && (
+        {/* {layers.length > 1 && (
           <div>
             <h4>Sync Viewports</h4>
             <label>
@@ -143,7 +148,7 @@ const LayerControls = () => {
               />
             </label>
           </div>
-        )}
+        )} */}
 
         <h4>Color Maps</h4>
         <label>
@@ -161,7 +166,7 @@ const LayerControls = () => {
           </select>
         </label>
 
-        {layers.length > 0 && (
+        {/* {layers.length > 0 && (
           <div>
             <h4>Select Active Layer</h4>
             <label>
@@ -179,7 +184,7 @@ const LayerControls = () => {
               </select>
             </label>
           </div>
-        )}
+        )} */}
       </form>
     </div>
   );
