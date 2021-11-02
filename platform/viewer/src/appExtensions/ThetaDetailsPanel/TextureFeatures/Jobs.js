@@ -63,12 +63,10 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
 
   // Function for setting image id and performing overlay
-  const handleOverlay = instance => {
+  const handleOverlay = async instance => {
     // const image_id = `${base_url}/series/${series}/instances/${instance}/frames/1`;
-
     // console.log({ image_id });
-
-    const image_id = `wadors:https://healthcare.googleapis.com/v1/projects/lungradcad-project/locations/us/datasets/Sample_Hospital/dicomStores/Sample_Department/dicomWeb/studies/1.3.6.1.4.1.14519.5.2.1.6450.4012.206382517630164051916496664467/series/1.2.826.0.1.3680043.8.498.11304309571167765720419441848296739121/instances/1.2.826.0.1.3680043.8.498.74644997802360878882857126969140009153/frames/1`;
+    // console.log({ instance, data, user, viewport, series });
 
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
@@ -78,6 +76,29 @@ const Jobs = ({ data, user, viewport, series }) => {
     if (!element) {
       return;
     }
+
+    const image = cornerstone.getImage(element);
+
+    const source_uid = image.imageId.split('/')[18];
+
+    try {
+      await client
+        .get(`/instance?source=${source_uid}&texture=${instance}`)
+        .then(response => {
+          // console.log({ TextureImage: response });
+          const image_id = response['data']['texture_instance_uid'];
+          console.log({ ImageInstance: image_id });
+          performOverlay(element, image_id);
+        });
+    } catch (err) {
+      console.log(error);
+    }
+  };
+
+  const performOverlay = (element, instance) => {
+    const image_id = `${base_url}/series/${series}/instances/${instance}/frames/1`;
+
+    console.log({ ImageUrls: image_id });
 
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(element);
@@ -112,8 +133,9 @@ const Jobs = ({ data, user, viewport, series }) => {
       for (let other_layer of every_layer) {
         if (layer.layerId === other_layer.layerId) {
           // change the opacity and colormap
+          console.log({ layer });
           layer.options.opacity = parseFloat(0.5);
-          layer.viewport.colormap = 'hotIron';
+          // layer.viewport.colormap = 'hotIron';
 
           // update the element to apply new settings
           cornerstone.updateImage(element);
@@ -137,8 +159,8 @@ const Jobs = ({ data, user, viewport, series }) => {
           <b>Job {data.job}</b>
         </div>
         {/* Not the best way to go about this */}
-        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        {/* &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; */}
+        {/* &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; */}
         {/* <div>{isActive ? '-' : '+'}</div> */}
         <div>
           {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
@@ -155,9 +177,9 @@ const Jobs = ({ data, user, viewport, series }) => {
             {textures.length > 0 && (
               <div className="textures">
                 {textures.map((texture, index) => (
-                  <ul key={index} onClick={() => handleOverlay(texture)}>
+                  <a className="texture_uids" key={index} onClick={() => handleOverlay(texture)}>
                     {description[index]}
-                  </ul>
+                  </a>
                 ))}
               </div>
             )}

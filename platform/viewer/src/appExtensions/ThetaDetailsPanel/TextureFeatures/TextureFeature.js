@@ -28,21 +28,23 @@ const TextureFeature = props => {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    // const interval = setInterval(() => {
       getJobs();
-    }, 2500);
-    return () => clearInterval(interval);
+    // }, 1000);
+    // return () => clearInterval(interval);
   }, []);
 
   // getting all jobs for the current series being displayed in viewport
   const getJobs = async () => {
-    await client
-      .get(`/jobs?series=${series}&email=${email}`)
-      .then(response => {
-        setJobs([...response.data.jobs]);
-      }).catch(error => {
-        console.log(error);
-    });
+    try {
+      await client
+        .get(`/jobs?series=${series}&email=${email}`)
+        .then(response => {
+          setJobs([...response.data.jobs]);
+        });
+    } catch (err) {
+      console.log(error);
+    }
   };
 
   return (
