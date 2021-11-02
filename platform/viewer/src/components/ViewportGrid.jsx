@@ -66,15 +66,32 @@ function ViewerViewportGrid(props) {
   );
 
   useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
+    let displaySets = DisplaySetService.getActiveDisplaySets();
+    displaySets = displaySets.filter(
+      displaySet => displaySet.Modality !== 'SR'
+    );
+
     if (!displaySets.length) return;
+
+    const uids = displaySets
+      .sort((a, b) => {
+        if (a.SeriesInstanceUID < b.SeriesInstanceUID) {
+          return -1;
+        }
+        if (a.SeriesInstanceUID > b.SeriesInstanceUID) {
+          return 1;
+        }
+        return 0;
+      })
+      .map(displaySet => displaySet.displaySetInstanceUID);
+
+    uids.unshift(viewportGrid.viewports[0].displaySetInstanceUID);
 
     const numViewports = numRows * numCols;
     for (let i = 0; i < numViewports; i++) {
-      const { displaySetInstanceUID } = displaySets[i % displaySets.length];
       viewportGridService.setDisplaysetForViewport({
         viewportIndex: i,
-        displaySetInstanceUID,
+        displaySetInstanceUID: uids[i % uids.length],
       });
       HangingProtocolService.setHangingProtocolAppliedForViewport(i);
     }
