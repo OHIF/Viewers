@@ -30,7 +30,7 @@ const TextureFeature = props => {
   useEffect(() => {
     const interval = setInterval(() => {
       getJobs();
-    }, 3500);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -39,7 +39,6 @@ const TextureFeature = props => {
     await client
       .get(`/jobs?series=${series}&email=${email}`)
       .then(response => {
-        setJobs([]);
         setJobs([...response.data.jobs]);
       }).catch(error => {
         console.log(error);
