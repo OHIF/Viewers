@@ -73,28 +73,19 @@ function ViewerViewportGrid(props) {
 
     if (!displaySets.length) return;
 
-    const uids = displaySets
-      .sort((a, b) => {
-        if (a.SeriesInstanceUID < b.SeriesInstanceUID) {
-          return -1;
-        }
-        if (a.SeriesInstanceUID > b.SeriesInstanceUID) {
-          return 1;
-        }
-        return 0;
-      })
-      .map(displaySet => displaySet.displaySetInstanceUID);
+    let uidIndex = 0;
+    const uids = displaySets.map(ds => ds.displaySetInstanceUID);
 
-    uids.unshift(viewportGrid.viewports[0].displaySetInstanceUID);
-
-    const numViewports = numRows * numCols;
-    for (let i = 0; i < numViewports; i++) {
-      viewportGridService.setDisplaysetForViewport({
-        viewportIndex: i,
-        displaySetInstanceUID: uids[i % uids.length],
-      });
-      HangingProtocolService.setHangingProtocolAppliedForViewport(i);
-    }
+    viewportGrid.viewports.forEach((viewport, i) => {
+      if (!viewport.displaySetInstanceUID) {
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: i,
+          displaySetInstanceUID: uids[uidIndex],
+        });
+        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+        uidIndex = (uidIndex + 1) % uids.length;
+      }
+    });
   }, [numRows, numCols]);
 
   // Using Hanging protocol engine to match the displaySets

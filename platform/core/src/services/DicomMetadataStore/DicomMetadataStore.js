@@ -175,6 +175,9 @@ const BaseImplementation = {
       _model.studies.push(newStudy);
     }
   },
+  studyLoaded(study) {
+    this._broadcastEvent(EVENTS.STUDY_LOADED, study);
+  },
   getStudyInstanceUIDs: _getStudyInstanceUIDs,
   getStudy: _getStudy,
   getSeries: _getSeries,

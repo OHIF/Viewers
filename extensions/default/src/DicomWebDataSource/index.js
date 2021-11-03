@@ -265,6 +265,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
           madeInClient
         );
         study.isLoaded = true;
+        DicomMetadataStore.studyLoaded(study);
       }
 
       // Google Cloud Healthcare doesn't return StudyInstanceUID, so we need to add

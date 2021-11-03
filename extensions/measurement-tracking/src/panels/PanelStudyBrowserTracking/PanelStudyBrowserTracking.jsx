@@ -558,20 +558,9 @@ function _createStudyBrowserTabs(
     );
 
     // Sort them
-    // const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
-    //   displaySetsForStudy
-    // );
-
-    // Sort series by Instance UID
-    displaySetsForStudy.sort((a, b) => {
-      if (a.seriesInstanceUID < b.seriesInstanceUID) {
-        return -1;
-      }
-      if (a.seriesInstanceUID > b.seriesInstanceUID) {
-        return 1;
-      }
-      return 0;
-    });
+    const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
+      displaySetsForStudy
+    );
 
     /* Sort by series number, then by series date
       displaySetsForStudy.sort((a, b) => {
