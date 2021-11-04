@@ -48,7 +48,6 @@ const Jobs = ({ data, user, viewport, series }) => {
   });
 
   useEffect(() => {
-    // console.log({ data });
     if (data.texture_uids) {
       setTextures(data.texture_uids);
       setDescription(data.texture_descriptions);
@@ -64,9 +63,7 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-    // const image_id = `${base_url}/series/${series}/instances/${instance}/frames/1`;
-    // console.log({ image_id });
-    // console.log({ instance, data, user, viewport, series });
+    console.log({ instance });
 
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
@@ -85,18 +82,18 @@ const Jobs = ({ data, user, viewport, series }) => {
       await client
         .get(`/instance?source=${source_uid}&texture=${instance}`)
         .then(response => {
-          // console.log({ TextureImage: response });
           const image_id = response['data']['texture_instance_uid'];
-          console.log({ ImageInstance: image_id });
-          performOverlay(element, image_id);
+          performOverlay(element, instance, image_id);
         });
     } catch (err) {
-      console.log(error);
+      console.log(err);
     }
   };
 
-  const performOverlay = (element, instance) => {
-    const image_id = `${base_url}/series/${series}/instances/${instance}/frames/1`;
+  const performOverlay = (element, series_uid, image_uid) => {
+    console.log({ image_uid, OldLayerID: layerID });
+
+    const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
     console.log({ ImageUrls: image_id });
 
@@ -107,48 +104,41 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
 
     cornerstone.loadImage(image_id).then(image => {
+      // console.log({ image });
+
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
 
+      console.log({ all_layers }, all_layers[1]);
+
       if (all_layers.length > 1) {
-        cornerstone.removeLayer(element, layerID);
+        console.log(all_layers[1].layerId);
+        cornerstone.removeLayer(element, all_layers[1].layerId);
         cornerstone.updateImage(element);
         setLayerID();
       }
 
-      // adding layer to current viewport
-      const layerId = cornerstone.addLayer(element, image);
+      // Getting all layers
+      const every_layers = cornerstone.getLayers(element);
 
+      console.log({ every_layers });
+
+      const options = {
+        opacity: 0.5,
+        viewport: {
+          colormap: 'hotIron',
+        },
+      };
+
+      // adding layer to current viewport
+      const layerId = cornerstone.addLayer(element, image, options);
+
+      // set new layer id from above added layer
       setLayerID(layerId);
 
-      // Setting the new image layer as the active layer
-      cornerstone.setActiveLayer(element, layerId);
+      console.log({ NewLayerID: layerId, layerID });
 
-      // Getting active layer
-      const layer = cornerstone.getActiveLayer(element);
-
-      //** Loop through all layers and set default options to non active layer */
-      const every_layer = cornerstone.getLayers(element);
-
-      for (let other_layer of every_layer) {
-        if (layer.layerId === other_layer.layerId) {
-          // change the opacity and colormap
-          console.log({ layer });
-          layer.options.opacity = parseFloat(0.5);
-          // layer.viewport.colormap = 'hotIron';
-
-          // update the element to apply new settings
-          cornerstone.updateImage(element);
-        }
-        // else {
-        // change the opacity
-        // other_layer.options.opacity = parseFloat(0.5);
-        //   other_layer.viewport.colormap = 'gray';
-
-        // update the element to apply new settings
-        //   cornerstone.updateImage(element);
-        // }
-      }
+      cornerstone.updateImage(element);
     });
   };
 
@@ -159,8 +149,8 @@ const Jobs = ({ data, user, viewport, series }) => {
           <b>Job {data.job}</b>
         </div>
         {/* Not the best way to go about this */}
-        {/* &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; */}
-        {/* &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; */}
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         {/* <div>{isActive ? '-' : '+'}</div> */}
         <div>
           {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
@@ -177,9 +167,13 @@ const Jobs = ({ data, user, viewport, series }) => {
             {textures.length > 0 && (
               <div className="textures">
                 {textures.map((texture, index) => (
-                  <a className="texture_uids" key={index} onClick={() => handleOverlay(texture)}>
+                  <li
+                    className="texture_uids"
+                    key={index}
+                    onClick={() => handleOverlay(texture)}
+                  >
                     {description[index]}
-                  </a>
+                  </li>
                 ))}
               </div>
             )}

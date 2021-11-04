@@ -81,7 +81,11 @@ h1 {
 
 .textures {
   margin: 0;
-  padding: 0
+  padding: 0;
+  cursor: pointer;
+  a {
+    color: #fff;
+  }
 }
 
 .texture_uids {

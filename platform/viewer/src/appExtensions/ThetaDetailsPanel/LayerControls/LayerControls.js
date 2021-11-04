@@ -43,7 +43,7 @@ const LayerControls = () => {
       if (!layer) return;
 
       // updating all state variables to their new values
-      setSync(enabledElement.syncViewports);
+      setSync(enabled_element.syncViewports);
       setAcLayer(layer.layerId);
       setLayers([...allLayers]);
       setElement(viewports.element);

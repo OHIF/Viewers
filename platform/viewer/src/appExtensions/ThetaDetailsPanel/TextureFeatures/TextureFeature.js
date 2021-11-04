@@ -28,10 +28,10 @@ const TextureFeature = props => {
   });
 
   useEffect(() => {
-    // const interval = setInterval(() => {
+    const interval = setInterval(() => {
       getJobs();
-    // }, 1000);
-    // return () => clearInterval(interval);
+    }, 3500);
+    return () => clearInterval(interval);
   }, []);
 
   // getting all jobs for the current series being displayed in viewport
