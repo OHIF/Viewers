@@ -36,16 +36,18 @@ async function defaultRouteInit({
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.SERIES_ADDED,
-    ({ StudyInstanceUID, madeInClient }) => {
-      const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-      if (!madeInClient) {
-        HangingProtocolService.run(studyMetadata);
-      }
+  const { unsubscribe: studyLoadedUnsubscribe } = DicomMetadataStore.subscribe(
+    DicomMetadataStore.EVENTS.STUDY_LOADED,
+    study => {
+      study.series.sort((a, b) => {
+        const firstInstance = a.instances[0] || {};
+        const secondInstance = b.instances[0] || {};
+        return firstInstance.SeriesNumber - secondInstance.SeriesNumber;
+      });
+      HangingProtocolService.run(study);
     }
   );
-  unsubscriptions.push(seriesAddedUnsubscribe);
+  unsubscriptions.push(studyLoadedUnsubscribe);
 
   studyInstanceUIDs.forEach(StudyInstanceUID => {
     dataSource.retrieveSeriesMetadata({ StudyInstanceUID });

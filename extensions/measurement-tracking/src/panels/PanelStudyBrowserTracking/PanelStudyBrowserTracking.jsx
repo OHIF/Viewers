@@ -421,6 +421,7 @@ function _mapDisplaySets(
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
       seriesDate: formatDate(ds.SeriesDate),
+      seriesInstanceUID: ds.SeriesInstanceUID,
       numInstances: ds.numImageFrames,
       StudyInstanceUID: ds.StudyInstanceUID,
       componentType,

@@ -3960,37 +3960,10 @@
     outvariant "^1.2.0"
     strict-event-emitter "^0.2.0"
 
-"@newlantern/viewer@4.1.3":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.1.3.tgz#9f50d62d1e5de83182a2c9f7c9848c229242b039"
-  integrity sha512-LVAkWzhyTlQSa7oaKAKb4JBxJvpOGksQ1157EjOj/r9AHhfAcRRyF5INL/Zrg50fqGrhu49EQhDFJBRBEGhFCA==
-  dependencies:
-    "@babel/runtime" "7.7.6"
-    "@types/react" "^16.0.0"
-    classnames "^2.2.6"
-    core-js "^3.2.1"
-    cornerstone-math "^0.1.9"
-    cornerstone-tools "5.1.2"
-    cornerstone-wado-image-loader "^3.1.2"
-    dcmjs "0.16.1"
-    dicom-parser "^1.8.3"
-    dotenv-webpack "^1.7.0"
-    hammerjs "^2.0.8"
-    history "5.0.0"
-    i18next "^17.0.3"
-    i18next-browser-languagedetector "^3.0.1"
-    lodash.isequal "4.5.0"
-    moment "^2.24.0"
-    oidc-client "1.11.5"
-    prop-types "^15.7.2"
-    query-string "^6.12.1"
-    react "^17.0.2"
-    react-dom "^17.0.2"
-    react-dropzone "^10.1.7"
-    react-i18next "^10.11.0"
-    react-resize-detector "^4.2.0"
-    react-router next
-    react-router-dom next
+"@newlantern/viewer@4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.1.5.tgz#7526d11c36b64f6769db17601bf76e8b8622c24d"
+  integrity sha512-7NKSqPXs7b4yEQexzYe70r0OOvx0e4YGE/nlDUaGzB/6+zUYl+zmTVINJ66kwOV9N39+I2Rd/Qhd+O8KE3TV2Q==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
