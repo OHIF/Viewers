@@ -13,6 +13,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     "PatientName": "00100010",
     "00100020": "mrn",
     "StudyDescription": "00081030",
+    "StudyDate": "00080020",
     "ModalitiesInStudy": "00080061",
   };
 
@@ -36,6 +37,32 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     return filtered;
   }
 
+  compareValues(desired, actual) {
+    if (Array.isArray(desired)) {
+      return desired.find(item => this.compareValues(item, actual));
+    }
+    if (Array.isArray(actual)) {
+      return actual.find(actualItem => this.compareValues(desired, actualItem));
+    }
+    if (actual?.Alphabetic) {
+      actual = actual.Alphabetic;
+    }
+    if (typeof (actual) == 'string') {
+      return actual.indexOf(desired) != -1;
+    }
+    return desired === actual;
+  }
+
+  compareDateRange(range, value) {
+    if (!value) return true;
+    const dash = range.indexOf('-');
+    if (dash == -1) return this.compareValues(range, value);
+    const start = range.substring(0, dash);
+    const end = range.substring(dash + 1);
+    return (!start || value >= start) &&
+      (!end || value <= end);
+  }
+
   filterItem(key, queryParams, study) {
     const altKey = StaticWadoClient.filterKeys[key] || key;
     if (!queryParams) return true;
@@ -43,7 +70,8 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     if (!testValue) return true;
     const valueElem = study[key] || study[altKey];
     if (!valueElem) return false;
+    if (valueElem.vr == 'DA') return this.compareDateRange(testValue, valueElem.Value[0]);
     const value = valueElem.Value;
-    return value === testValue || (value.indexOf && value.indexOf(testValue) >= 0);
+    return this.compareValues(testValue, value) && true;
   }
 }
