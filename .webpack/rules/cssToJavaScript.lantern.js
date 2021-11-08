@@ -1,12 +1,14 @@
 const autoprefixer = require('autoprefixer');
 const path = require('path');
 const tailwindcss = require('tailwindcss');
-const tailwindConfigPath = path.resolve('../platform/viewer/tailwind.config.js');
+const tailwindConfigPath = path.resolve(
+  '../platform/viewer/tailwind.config.js'
+);
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const devMode = process.env.NODE_ENV !== 'production';
 
 const cssToJavaScript = {
-  test: /\.css$/,
+  test: [/.css$|.scss$/],
   use: [
     //'style-loader',
     devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -21,6 +23,12 @@ const cssToJavaScript = {
             [autoprefixer('last 2 version', 'ie >= 11')],
           ],
         },
+      },
+    },
+    {
+      loader: 'sass-loader',
+      options: {
+        sourceMap: true,
       },
     },
   ],
