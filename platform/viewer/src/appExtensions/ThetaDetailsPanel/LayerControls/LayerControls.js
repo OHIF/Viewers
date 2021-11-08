@@ -43,7 +43,7 @@ const LayerControls = () => {
       if (!layer) return;
 
       // updating all state variables to their new values
-      setSync(enabledElement.syncViewports);
+      setSync(enabled_element.syncViewports);
       setAcLayer(layer.layerId);
       setLayers([...allLayers]);
       setElement(viewports.element);
@@ -166,7 +166,7 @@ const LayerControls = () => {
           </select>
         </label>
 
-        {/* {layers.length > 0 && (
+        {layers.length > 0 && (
           <div>
             <h4>Select Active Layer</h4>
             <label>
@@ -184,7 +184,7 @@ const LayerControls = () => {
               </select>
             </label>
           </div>
-        )} */}
+        )}
       </form>
     </div>
   );

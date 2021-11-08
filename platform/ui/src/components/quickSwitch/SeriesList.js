@@ -13,6 +13,7 @@ export class SeriesList extends Component {
 
 
   render() {
+    console.log({ seriesItems });
     return (
       <React.Fragment>
         <div className="study-browser-series clearfix thumbnails-wrapper">

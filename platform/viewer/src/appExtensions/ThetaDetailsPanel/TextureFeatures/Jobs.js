@@ -48,7 +48,6 @@ const Jobs = ({ data, user, viewport, series }) => {
   });
 
   useEffect(() => {
-    // console.log({ data });
     if (data.texture_uids) {
       setTextures(data.texture_uids);
       setDescription(data.texture_descriptions);
@@ -63,12 +62,7 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
 
   // Function for setting image id and performing overlay
-  const handleOverlay = instance => {
-    // const image_id = `${base_url}/series/${series}/instances/${instance}/frames/1`;
-
-    // console.log({ image_id });
-
-    const image_id = `wadors:https://healthcare.googleapis.com/v1/projects/lungradcad-project/locations/us/datasets/Sample_Hospital/dicomStores/Sample_Department/dicomWeb/studies/1.3.6.1.4.1.14519.5.2.1.6450.4012.206382517630164051916496664467/series/1.2.826.0.1.3680043.8.498.11304309571167765720419441848296739121/instances/1.2.826.0.1.3680043.8.498.74644997802360878882857126969140009153/frames/1`;
+  const handleOverlay = async instance => {
 
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
@@ -79,54 +73,60 @@ const Jobs = ({ data, user, viewport, series }) => {
       return;
     }
 
+    const image = cornerstone.getImage(element);
+
+    const source_uid = image.imageId.split('/')[18];
+
+    try {
+      await client
+        .get(`/instance?source=${source_uid}&texture=${instance}`)
+        .then(response => {
+          const image_id = response['data']['texture_instance_uid'];
+          performOverlay(element, instance, image_id);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const performOverlay = (element, series_uid, image_uid) => {
+
+    const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
+
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(element);
     if (!enabled_element || !enabled_element.image) {
       return;
     }
 
-    cornerstone.loadImage(image_id).then(image => {
+    cornerstone.loadAndCacheImage(image_id).then(image => {
+
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
 
       if (all_layers.length > 1) {
-        cornerstone.removeLayer(element, layerID);
+        cornerstone.removeLayer(element, all_layers[1].layerId);
         cornerstone.updateImage(element);
         setLayerID();
       }
 
-      // adding layer to current viewport
-      const layerId = cornerstone.addLayer(element, image);
+      // Getting all layers
+      const every_layers = cornerstone.getLayers(element);
 
+      const options = {
+        opacity: 0.5,
+        viewport: {
+          colormap: 'hotIron',
+        },
+      };
+
+      // adding layer to current viewport
+      const layerId = cornerstone.addLayer(element, image, options);
+
+      // set new layer id from above added layer
       setLayerID(layerId);
 
-      // Setting the new image layer as the active layer
-      cornerstone.setActiveLayer(element, layerId);
-
-      // Getting active layer
-      const layer = cornerstone.getActiveLayer(element);
-
-      //** Loop through all layers and set default options to non active layer */
-      const every_layer = cornerstone.getLayers(element);
-
-      for (let other_layer of every_layer) {
-        if (layer.layerId === other_layer.layerId) {
-          // change the opacity and colormap
-          layer.options.opacity = parseFloat(0.5);
-          layer.viewport.colormap = 'hotIron';
-
-          // update the element to apply new settings
-          cornerstone.updateImage(element);
-        }
-        // else {
-        // change the opacity
-        // other_layer.options.opacity = parseFloat(0.5);
-        //   other_layer.viewport.colormap = 'gray';
-
-        // update the element to apply new settings
-        //   cornerstone.updateImage(element);
-        // }
-      }
+      cornerstone.updateImage(element);
     });
   };
 
@@ -155,9 +155,13 @@ const Jobs = ({ data, user, viewport, series }) => {
             {textures.length > 0 && (
               <div className="textures">
                 {textures.map((texture, index) => (
-                  <ul key={index} onClick={() => handleOverlay(texture)}>
+                  <li
+                    className="texture_uids"
+                    key={index}
+                    onClick={() => handleOverlay(texture)}
+                  >
                     {description[index]}
-                  </ul>
+                  </li>
                 ))}
               </div>
             )}

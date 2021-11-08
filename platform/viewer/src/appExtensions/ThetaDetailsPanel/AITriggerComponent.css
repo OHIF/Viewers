@@ -80,5 +80,18 @@ h1 {
 }
 
 .textures {
-  margin-left: -10px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  a {
+    color: #fff;
+  }
+}
+
+.texture_uids {
+  cursor: pointer
+  a {
+    color: #fff;
+  }
 }
