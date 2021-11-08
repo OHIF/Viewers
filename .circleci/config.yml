@@ -7,7 +7,7 @@ commands:
           name: 'Set the Tier'
           command: |
             TIER=DEV
-            if [[ ${CIRCLE_BRANCH} =~ idc-viewer-(prod|test).* ]]; then
+            if [[ ${CIRCLE_BRANCH} =~ idc-viewer-(prod|test|public).* ]]; then
               TIER=$(awk -F- '{print toupper($3)}' \<<< ${CIRCLE_BRANCH})
             fi
             echo "export TIER=${TIER}" >> $BASH_ENV
@@ -37,6 +37,12 @@ commands:
               PROJECT_ID=${DEPLOYMENT_PROJECT_ID_IDC_TEST}
               BUCKET=${DEPLOYMENT_BUCKET_IDC_TEST}
               echo "Using test project and related deployment SA and bucket."
+            elif [[ ${TIER} == "PUBLIC" ]]; then
+              KEY=${DEPLOYMENT_KEY_IDC_PUBLIC}
+              CLIENT_EMAIL=${DEPLOYMENT_CLIENT_EMAIL_IDC_PUBLIC}
+              PROJECT_ID=${DEPLOYMENT_PROJECT_ID_IDC_PUBLIC}
+              BUCKET=${DEPLOYMENT_BUCKET_IDC_PUBLIC}
+              echo "Using public project and related deployment SA and bucket."
             elif [[ ${TIER} == "DEV" ]]; then
               echo "Using development/default project and related deployment SA and bucket."
             else
@@ -100,9 +106,11 @@ jobs:
       - run:
           name: Copy in IDC favicons
           command: |
-            cp ~/Viewers/idc-assets/favicon-nci.ico ~/Viewers/platform/viewer/public/assets/favicon.ico
-            cp ~/Viewers/idc-assets/favicon-nci-16x16.png ~/Viewers/platform/viewer/public/assets/favicon-16x16.png
-            cp ~/Viewers/idc-assets/favicon-nci-32x32.png ~/Viewers/platform/viewer/public/assets/favicon-32x32.png
+            if [[ ${TIER} != "PUBLIC" ]]; then
+              cp ~/Viewers/idc-assets/favicon-nci.ico ~/Viewers/platform/viewer/public/assets/favicon.ico
+              cp ~/Viewers/idc-assets/favicon-nci-16x16.png ~/Viewers/platform/viewer/public/assets/favicon-16x16.png
+              cp ~/Viewers/idc-assets/favicon-nci-32x32.png ~/Viewers/platform/viewer/public/assets/favicon-32x32.png
+            fi
       - run:
           name: Build Viewer
           command: |
@@ -136,8 +144,12 @@ jobs:
       - run:
           name: Customize Config
           command: |
-            /bin/bash ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
-            cp ~/Viewers/idc-assets/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
+            if [[ ${TIER} == "PUBLIC" ]]; then
+              /bin/bash ./idc-deploy-shell/public_prepare_config.sh > platform/viewer/dist/app-config.js
+            else
+              /bin/bash ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
+              cp ~/Viewers/idc-assets/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
+            fi
       - run:
           name: Copy to cloud
           command: |
@@ -154,6 +166,7 @@ workflows:
                 - master
                 - idc-viewer-prod
                 - idc-viewer-test
+                - idc-viewer-public
       - deploy_job:
           requires:
             - build_job
@@ -163,6 +176,7 @@ workflows:
                 - master
                 - idc-viewer-prod
                 - idc-viewer-test
+                - idc-viewer-public
 #version: 2.1
 #
 #### ABOUT
