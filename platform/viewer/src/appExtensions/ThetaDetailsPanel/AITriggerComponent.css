@@ -83,6 +83,7 @@ h1 {
   margin: 0;
   padding: 0;
   cursor: pointer;
+  text-decoration: underline;
   a {
     color: #fff;
   }

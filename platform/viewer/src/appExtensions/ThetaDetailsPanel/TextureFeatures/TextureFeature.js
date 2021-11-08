@@ -6,6 +6,7 @@ import axios from 'axios';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const { user, viewport } = props;
   const access_token = user.access_token;
   const email = user.profile.email;
@@ -40,16 +41,25 @@ const TextureFeature = props => {
       await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
+          setIsLoading(false);
           setJobs([...response.data.jobs]);
         });
     } catch (err) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="component">
       <div className="title-header">Texture Features</div>
+
+      {isLoading && (
+        <div style={{ alignItems: 'center' }}>
+          <h1>Loading...</h1>
+        </div>
+      )}
+
       {jobs.length > 0 && (
         <div className="accordion">
           {jobs.map((data, index) => (

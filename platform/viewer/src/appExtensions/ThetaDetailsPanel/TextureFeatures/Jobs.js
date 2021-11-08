@@ -63,7 +63,6 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-    console.log({ instance });
 
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
@@ -91,11 +90,8 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
 
   const performOverlay = (element, series_uid, image_uid) => {
-    console.log({ image_uid, OldLayerID: layerID });
 
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
-
-    console.log({ ImageUrls: image_id });
 
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(element);
@@ -103,16 +99,12 @@ const Jobs = ({ data, user, viewport, series }) => {
       return;
     }
 
-    cornerstone.loadImage(image_id).then(image => {
-      // console.log({ image });
+    cornerstone.loadAndCacheImage(image_id).then(image => {
 
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
 
-      console.log({ all_layers }, all_layers[1]);
-
       if (all_layers.length > 1) {
-        console.log(all_layers[1].layerId);
         cornerstone.removeLayer(element, all_layers[1].layerId);
         cornerstone.updateImage(element);
         setLayerID();
@@ -120,8 +112,6 @@ const Jobs = ({ data, user, viewport, series }) => {
 
       // Getting all layers
       const every_layers = cornerstone.getLayers(element);
-
-      console.log({ every_layers });
 
       const options = {
         opacity: 0.5,
@@ -135,8 +125,6 @@ const Jobs = ({ data, user, viewport, series }) => {
 
       // set new layer id from above added layer
       setLayerID(layerId);
-
-      console.log({ NewLayerID: layerId, layerID });
 
       cornerstone.updateImage(element);
     });

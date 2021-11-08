@@ -17,6 +17,9 @@ function StudyBrowser(props) {
         {studies
           .map((study, studyIndex) => {
             const { StudyInstanceUID } = study;
+
+            console.log({ study });
+
             return study.thumbnails.map((thumb, thumbIndex) => {
 
               // console.log({ thumb });

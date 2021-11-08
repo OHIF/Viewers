@@ -166,7 +166,7 @@ const LayerControls = () => {
           </select>
         </label>
 
-        {/* {layers.length > 0 && (
+        {layers.length > 0 && (
           <div>
             <h4>Select Active Layer</h4>
             <label>
@@ -184,7 +184,7 @@ const LayerControls = () => {
               </select>
             </label>
           </div>
-        )} */}
+        )}
       </form>
     </div>
   );
