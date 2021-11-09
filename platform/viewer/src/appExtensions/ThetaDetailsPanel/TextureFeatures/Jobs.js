@@ -17,6 +17,7 @@ import {
 
 const Jobs = ({ data, user, viewport, series }) => {
   const [isActive, setIsActive] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState();
@@ -61,6 +62,12 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
 
+  const showError = () => {
+    if (data.status === 'ERROR') {
+      setIsError(!isError);
+    }
+  }
+
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
 
@@ -101,6 +108,10 @@ const Jobs = ({ data, user, viewport, series }) => {
 
     cornerstone.loadAndCacheImage(image_id).then(image => {
 
+      // const stack = {
+      //   currentIndex
+      // };
+
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
 
@@ -111,7 +122,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       }
 
       // Getting all layers
-      const every_layers = cornerstone.getLayers(element);
+      // const every_layers = cornerstone.getLayers(element);
 
       const options = {
         opacity: 0.5,
@@ -144,11 +155,13 @@ const Jobs = ({ data, user, viewport, series }) => {
           {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
           {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
           {data.status === 'ERROR' && (
-            <FontAwesomeIcon icon={faExclamationTriangle} />
+            <FontAwesomeIcon icon={faExclamationTriangle} onClick={showError} />
           )}
           {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
         </div>
       </div>
+
+      {/* Accordion content when Job is Done */}
       {isActive && (
         <div className="accordion-content">
           <ScrollableArea scrollStep={201} class="series-browser">
@@ -165,6 +178,18 @@ const Jobs = ({ data, user, viewport, series }) => {
                 ))}
               </div>
             )}
+          </ScrollableArea>
+        </div>
+      )}
+
+
+      {/* Accordion content when job has an error */}
+      {isError && (
+        <div className="accordion-content">
+          <ScrollableArea scrollStep={201} class="series-browser">
+            <div className="jobError">
+              <p>{data.error_message.exception.match(/'(.*?)'/g)}</p>
+            </div>
           </ScrollableArea>
         </div>
       )}

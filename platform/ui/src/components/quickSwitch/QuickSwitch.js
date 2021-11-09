@@ -94,6 +94,7 @@ export class QuickSwitch extends Component {
 
     if (this.props.seriesData) {
       seriesData = this.props.seriesData;
+      console.log({ QSseriesData: this.props.seriesData });
     } else if (this.state.activeStudyInstanceUID) {
       const study = this.props.studyListData.find(
         study => study.StudyInstanceUID === this.state.activeStudyInstanceUID
@@ -130,6 +131,7 @@ export class QuickSwitch extends Component {
   };
 
   onSeriesClick = seriesDataSelected => {
+    console.log({ seriesDataSelected });
     this.setState({
       activeDisplaySetInstanceUID: seriesDataSelected.displaySetInstanceUID,
     });

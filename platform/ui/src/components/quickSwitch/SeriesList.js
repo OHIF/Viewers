@@ -13,7 +13,6 @@ export class SeriesList extends Component {
 
 
   render() {
-    console.log({ seriesItems });
     return (
       <React.Fragment>
         <div className="study-browser-series clearfix thumbnails-wrapper">
@@ -24,6 +23,7 @@ export class SeriesList extends Component {
   }
 
   getSeriesItems = () => {
+    console.log({ seriesItems });
     return this.props.seriesItems.map((seriesData, index) => {
       return (
         <Thumbnail
