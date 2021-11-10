@@ -66,11 +66,10 @@ const Jobs = ({ data, user, viewport, series }) => {
     if (data.status === 'ERROR') {
       setIsError(!isError);
     }
-  }
+  };
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
 
@@ -97,7 +96,6 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
 
   const performOverlay = (element, series_uid, image_uid) => {
-
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
     // retrieving cornerstone enable element object
@@ -107,7 +105,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
 
     cornerstone.loadAndCacheImage(image_id).then(image => {
-
       // const stack = {
       //   currentIndex
       // };
@@ -181,7 +178,6 @@ const Jobs = ({ data, user, viewport, series }) => {
           </ScrollableArea>
         </div>
       )}
-
 
       {/* Accordion content when job has an error */}
       {isError && (

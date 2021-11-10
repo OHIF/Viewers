@@ -124,7 +124,7 @@ const JobParameters = props => {
       },
     };
 
-    console.log({ body });
+    // console.log({ body });
 
     await client
       .post(`/texture`, body)
@@ -138,7 +138,7 @@ const JobParameters = props => {
         if (response.status === 202) {
           UINotificationService.show({
             message:
-              'Job triggered successfully. Please wait for it to be complete.',
+              'Job triggered successfully. Please wait for it to be completed',
           });
         }
 
