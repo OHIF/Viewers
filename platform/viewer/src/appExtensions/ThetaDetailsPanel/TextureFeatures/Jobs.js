@@ -22,12 +22,16 @@ const Jobs = ({ data, user, viewport, series }) => {
   const [layerID, setLayerID] = useState();
   // console.log(user.profile.email);
   const access_token = user.access_token;
+
   const path = window.location.pathname;
+
   const viewportSpecificData = viewport.viewportSpecificData[0];
+
   const base_url = `wadors:https://healthcare.googleapis.com/v1${path.replace(
     'study',
     'dicomWeb/studies'
   )}`;
+
   // setting up client for API requests (centralize this client)
   const client = axios.create({
     baseURL:
@@ -39,22 +43,27 @@ const Jobs = ({ data, user, viewport, series }) => {
       Accept: 'application/json',
     },
   });
+
   client.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
+
   useEffect(() => {
     if (data.texture_uids) {
       setTextures(data.texture_uids);
       setDescription(data.texture_descriptions);
     }
   }, []);
+
   // Functionality for showing jobs if jobs data is available
   const show = () => {
     if (data.status === 'DONE') {
       setIsActive(!isActive);
     }
   };
+
+  // function for displaying error message for the job
   const showError = () => {
     if (data.status === 'ERROR') {
       setIsError(!isError);
@@ -63,14 +72,19 @@ const Jobs = ({ data, user, viewport, series }) => {
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
     const view_ports = cornerstone.getEnabledElements();
+
     const viewports = view_ports[0];
+
     // getting active viewport reference to element variable
     const element = getEnabledElement(view_ports.indexOf(viewports));
     if (!element) {
       return;
     }
+
     const image = cornerstone.getImage(element);
+
     const source_uid = image.imageId.split('/')[18];
+
     try {
       await client
         .get(`/instance?source=${source_uid}&texture=${instance}`)
@@ -83,16 +97,29 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
   const performOverlay = (element, series_uid, image_uid) => {
+    const imageIds = [];
+
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
+
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(element);
     if (!enabled_element || !enabled_element.image) {
       return;
     }
+
+    imageIds.push(image_id);
+
+    const stack = {
+      currentImageIdIndex: 0,
+      imageIds: imageIds,
+    };
+
+    const synchronizerImage = new cornerstoneTools.Synchronizer(
+      'cornerstonenewimage',
+      cornerstoneTools.stackImagePositionSynchronizer
+    );
+
     cornerstone.loadAndCacheImage(image_id).then(image => {
-      // const stack = {
-      //   currentIndex
-      // };
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
       if (all_layers.length > 1) {
@@ -100,16 +127,29 @@ const Jobs = ({ data, user, viewport, series }) => {
         cornerstone.updateImage(element);
         setLayerID();
       }
-      // Getting all layers
-      // const every_layers = cornerstone.getLayers(element);
+
       const options = {
         opacity: 0.5,
         viewport: {
           colormap: 'hotIron',
         },
       };
+
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(element, image, options);
+
+      synchronizerImage.add(element);
+      cornerstoneTools.addStackStateManager(element, ['stack']);
+      cornerstoneTools.addToolState(element, 'stack', stack);
+      cornerstoneTools.setToolActive('StackScrollMouseWheel', {
+        mouseButtonMask: 1,
+        synchronizationContext: synchronizerImage,
+      });
+
+      const toolState = cornerstoneTools.getToolState(element, 'stack');
+
+      console.log({ toolState });
+
       // set new layer id from above added layer
       setLayerID(layerId);
       cornerstone.updateImage(element);

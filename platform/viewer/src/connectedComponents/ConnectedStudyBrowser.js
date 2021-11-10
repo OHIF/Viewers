@@ -19,6 +19,27 @@ const mapStateToProps = (state, ownProps) => {
   const stackLoadingProgressMap = state.loading.progress;
   const studiesWithLoadingData = cloneDeep(ownProps.studies);
 
+  console.log('OwnProps ', ownProps);
+  const arrayData = [
+    '1.2.826.0.1.3680043.8.498.10031006246927161484336020711146240912',
+    '1.2.826.0.1.3680043.8.498.10087421879118072452449276016359906881',
+    '1.2.826.0.1.3680043.8.498.10119949327043978941194839918912828180',
+  ];
+
+  if (ownProps.studyMetadata.length > 0) {
+    const allSeries = ownProps.studyMetadata[0].series;
+    const newData = arrayData.map(data => {
+      console.log({ data, allSeries });
+      const filtered = allSeries.filter(series => {
+        return series.SeriesInstanceUID === data;
+      });
+      console.log({ filtered });
+      return filtered;
+    });
+
+    console.log({ newData });
+  }
+
   studiesWithLoadingData.forEach(study => {
     study.thumbnails.forEach(data => {
       const { displaySetInstanceUID } = data;
@@ -50,7 +71,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       if (displaySet.isDerived) {
         const { Modality } = displaySet;
         if (Modality === 'SEG' && servicesManager) {
-          const {LoggerService, UINotificationService} = servicesManager.services;
+          const {
+            LoggerService,
+            UINotificationService,
+          } = servicesManager.services;
           const onDisplaySetLoadFailureHandler = error => {
             LoggerService.error({ error, message: error.message });
             UINotificationService.show({
@@ -61,20 +85,25 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             });
           };
 
-          const {referencedDisplaySet, activatedLabelmapPromise} = displaySet.getSourceDisplaySet(
+          const {
+            referencedDisplaySet,
+            activatedLabelmapPromise,
+          } = displaySet.getSourceDisplaySet(
             ownProps.studyMetadata,
             true,
             onDisplaySetLoadFailureHandler
           );
           displaySet = referencedDisplaySet;
 
-          activatedLabelmapPromise.then((activatedLabelmapIndex) => {
-            const selectionFired = new CustomEvent("extensiondicomsegmentationsegselected", {
-              "detail": {"activatedLabelmapIndex":activatedLabelmapIndex}
-            });
+          activatedLabelmapPromise.then(activatedLabelmapIndex => {
+            const selectionFired = new CustomEvent(
+              'extensiondicomsegmentationsegselected',
+              {
+                detail: { activatedLabelmapIndex: activatedLabelmapIndex },
+              }
+            );
             document.dispatchEvent(selectionFired);
           });
-
         } else {
           displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
         }
