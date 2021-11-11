@@ -182,8 +182,6 @@ const Jobs = ({ data, user, viewport, series }) => {
       cornerstone.updateImage(element);
       setLayerID();
     }
-
-    cornerstoneTools.addStackStateManager(element, ['stack']);
   };
 
   return (
