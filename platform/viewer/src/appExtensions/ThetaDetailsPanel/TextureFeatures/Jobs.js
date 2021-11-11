@@ -14,6 +14,8 @@ import {
   faCheckCircle,
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
+import Images from './data';
+
 const Jobs = ({ data, user, viewport, series }) => {
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -54,7 +56,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       setTextures(data.texture_uids);
       setDescription(data.texture_descriptions);
     }
-  }, []);
+  }, [data.texture_descriptions, data.texture_uids]);
 
   // Functionality for showing jobs if jobs data is available
   const show = () => {
@@ -101,11 +103,18 @@ const Jobs = ({ data, user, viewport, series }) => {
 
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
+    console.log({ image_id });
+
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(element);
     if (!enabled_element || !enabled_element.image) {
       return;
     }
+
+    Images.map(data => {
+      const newImage = 'wadors:' + data + '/frames/1';
+      imageIds.push(newImage);
+    });
 
     imageIds.push(image_id);
 
@@ -119,7 +128,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       cornerstoneTools.stackImagePositionSynchronizer
     );
 
-    cornerstone.loadAndCacheImage(image_id).then(image => {
+    cornerstone.loadImage(image_id).then(image => {
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
       if (all_layers.length > 1) {
@@ -138,7 +147,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(element, image, options);
 
-      synchronizerImage.add(element);
+      // synchronizerImage.add(element);
       cornerstoneTools.addStackStateManager(element, ['stack']);
       cornerstoneTools.addToolState(element, 'stack', stack);
       cornerstoneTools.setToolActive('StackScrollMouseWheel', {
@@ -148,62 +157,101 @@ const Jobs = ({ data, user, viewport, series }) => {
 
       const toolState = cornerstoneTools.getToolState(element, 'stack');
 
-      console.log({ toolState });
+      // console.log({ toolState });
 
       // set new layer id from above added layer
       setLayerID(layerId);
       cornerstone.updateImage(element);
     });
   };
+
+  const removeOverlay = () => {
+    const view_ports = cornerstone.getEnabledElements();
+
+    const viewports = view_ports[0];
+
+    // getting active viewport reference to element variable
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    if (!element) {
+      return;
+    }
+
+    const all_layers = cornerstone.getLayers(element);
+    if (all_layers.length > 1) {
+      cornerstone.removeLayer(element, all_layers[1].layerId);
+      cornerstone.updateImage(element);
+      setLayerID();
+    }
+
+    cornerstoneTools.addStackStateManager(element, ['stack']);
+  };
+
   return (
-    <div className="accordion-item">
-      <div className="accordion-title" onClick={show}>
-        <div>
-          <b>Job {data.job}</b>
-        </div>
-        {/* Not the best way to go about this */}
-        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-        {/* <div>{isActive ? '-' : '+'}</div> */}
-        <div>
-          {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
-          {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
-          {data.status === 'ERROR' && (
-            <FontAwesomeIcon icon={faExclamationTriangle} onClick={showError} />
-          )}
-          {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
-        </div>
-      </div>
-      {/* Accordion content when Job is Done */}
-      {isActive && (
-        <div className="accordion-content">
-          <ScrollableArea scrollStep={201} class="series-browser">
-            {textures.length > 0 && (
-              <div className="textures">
-                {textures.map((texture, index) => (
-                  <li
-                    className="texture_uids"
-                    key={index}
-                    onClick={() => handleOverlay(texture)}
-                  >
-                    {description[index]}
-                  </li>
-                ))}
-              </div>
+    <div>
+      <div className="accordion-item">
+        <div className="accordion-title" onClick={show}>
+          <div>
+            <b>Job {data.job}</b>
+          </div>
+          {/* Not the best way to go about this */}
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          {/* <div>{isActive ? '-' : '+'}</div> */}
+          <div>
+            {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
+            {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
+            {data.status === 'ERROR' && (
+              <FontAwesomeIcon
+                icon={faExclamationTriangle}
+                onClick={showError}
+              />
             )}
-          </ScrollableArea>
+            {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
+          </div>
         </div>
-      )}
-      {/* Accordion content when job has an error */}
-      {isError && (
-        <div className="accordion-content">
-          <ScrollableArea scrollStep={201} class="series-browser">
-            <div className="jobError">
-              <p>{data.error_message.exception.match(/'(.*?)'/g)}</p>
+        {/* Accordion content when Job is Done */}
+        {isActive && (
+          <div className="accordion-content">
+            <ScrollableArea scrollStep={201} class="series-browser">
+              {textures.length > 0 && (
+                <div className="textures">
+                  {textures.map((texture, index) => (
+                    <li
+                      className="texture_uids"
+                      key={index}
+                      onClick={() => handleOverlay(texture)}
+                    >
+                      {description[index]}
+                    </li>
+                  ))}
+                </div>
+              )}
+            </ScrollableArea>
+          </div>
+        )}
+        {/* Accordion content when job has an error */}
+        {isError && (
+          <div className="accordion-content">
+            <ScrollableArea scrollStep={201} class="series-browser">
+              <div className="jobError">
+                <p>{data.error_message.exception.match(/'(.*?)'/g)}</p>
+              </div>
+            </ScrollableArea>
+          </div>
+        )}
+        {layerID && (
+          <label>
+            <br></br>
+            <div className="triggerButton">
+              <button onClick={removeOverlay} className="syncButton">
+                Remove Overlay
+              </button>
+              <br></br>
             </div>
-          </ScrollableArea>
-        </div>
-      )}
+            <br></br>
+          </label>
+        )}
+      </div>
     </div>
   );
 };
