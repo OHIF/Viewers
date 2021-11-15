@@ -99,36 +99,42 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
   const performOverlay = (element, series_uid, image_uid) => {
-    const imageIds = [];
+    // const imageIds = [];
 
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
-    console.log({ image_id });
-
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(element);
+
+    const currentImageIndex =
+      enabled_element.toolStateManager.toolState.stack.data[0]
+        .currentImageIdIndex;
+
+    console.log({ CurrentMainImageIndex: currentImageIndex });
+
     if (!enabled_element || !enabled_element.image) {
       return;
     }
 
-    Images.map(data => {
-      const newImage = 'wadors:' + data + '/frames/1';
-      imageIds.push(newImage);
-    });
+    // Images.map(data => {
+    //   const newImage = 'wadors:' + data + '/frames/1';
+    //   imageIds.push(newImage);
+    // });
 
-    imageIds.push(image_id);
+    // imageIds.push(image_id);
 
-    const stack = {
-      currentImageIdIndex: 0,
-      imageIds: imageIds,
-    };
+    // const stack = {
+    //   currentImageIdIndex: 0,
+    //   imageIds: imageIds,
+    // };
 
-    const synchronizerImage = new cornerstoneTools.Synchronizer(
-      'cornerstonenewimage',
-      cornerstoneTools.stackImagePositionSynchronizer
-    );
+    // const synchronizerImage = new cornerstoneTools.Synchronizer(
+    //   'cornerstonenewimage',
+    //   cornerstoneTools.stackImagePositionSynchronizer
+    // );
 
     cornerstone.loadImage(image_id).then(image => {
+
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
       if (all_layers.length > 1) {
@@ -147,21 +153,41 @@ const Jobs = ({ data, user, viewport, series }) => {
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(element, image, options);
 
-      // synchronizerImage.add(element);
-      cornerstoneTools.addStackStateManager(element, ['stack']);
-      cornerstoneTools.addToolState(element, 'stack', stack);
-      cornerstoneTools.setToolActive('StackScrollMouseWheel', {
-        mouseButtonMask: 1,
-        synchronizationContext: synchronizerImage,
-      });
-
-      const toolState = cornerstoneTools.getToolState(element, 'stack');
-
-      // console.log({ toolState });
-
       // set new layer id from above added layer
       setLayerID(layerId);
+
+      // synchronizerImage.add(element);
+      // cornerstoneTools.addStackStateManager(element, ['stack']);
+      // cornerstoneTools.addToolState(element, 'stack', stack);
+      // cornerstoneTools.setToolActive('StackScrollMouseWheel', {
+      //   mouseButtonMask: 1,
+      //   synchronizationContext: synchronizerImage,
+      // });
+
       cornerstone.updateImage(element);
+    });
+
+    element.addEventListener('cornerstonenewimage', function(event) {
+      const eventData = event.detail;
+
+      let counter = 0;
+      const checkLayerID = () => {
+        setTimeout(() => {
+          // console.log({ layerID });
+          if (layerID) {
+            const currentImageIdIndex = eventData.enabledElement.toolStateManager.toolState.stack.data[0].currentImageIdIndex;
+            console.log({ eventCurrentImageIdIndex: currentImageIdIndex });
+          } else {
+            if (counter < 5) {
+              counter++;
+              checkLayerID();
+            } else {
+              console.log('Failed to get layer ID');
+            }
+          }
+        }, 2000);
+      };
+      checkLayerID();
     });
   };
 

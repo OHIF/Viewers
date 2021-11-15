@@ -19,6 +19,8 @@ const mapStateToProps = (state, ownProps) => {
   const stackLoadingProgressMap = state.loading.progress;
   const studiesWithLoadingData = cloneDeep(ownProps.studies);
 
+  // console.log({ series: ownProps.studyMetadata });
+
   // console.log('OwnProps ', ownProps);
   // const arrayData = [
   //   '1.2.826.0.1.3680043.8.498.10031006246927161484336020711146240912',
