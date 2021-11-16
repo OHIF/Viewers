@@ -14,16 +14,19 @@ import {
   faCheckCircle,
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
+import Images from './data';
 
-const Jobs = ({ data, user, viewport, series }) => {
+const Jobs = ({ data, user, viewport, series, allSeries }) => {
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState();
-  // console.log(user.profile.email);
   const access_token = user.access_token;
+  const all_series = allSeries;
+
   const path = window.location.pathname;
+
   const viewportSpecificData = viewport.viewportSpecificData[0];
 
   const base_url = `wadors:https://healthcare.googleapis.com/v1${path.replace(
@@ -53,7 +56,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       setTextures(data.texture_uids);
       setDescription(data.texture_descriptions);
     }
-  }, []);
+  }, [data.texture_descriptions, data.texture_uids]);
 
   // Functionality for showing jobs if jobs data is available
   const show = () => {
@@ -62,15 +65,19 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
 
+  // function for displaying error message for the job
   const showError = () => {
     if (data.status === 'ERROR') {
       setIsError(!isError);
     }
   };
-
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
+
+    console.log({ series });
+
     const view_ports = cornerstone.getEnabledElements();
+
     const viewports = view_ports[0];
 
     // getting active viewport reference to element variable
@@ -94,32 +101,49 @@ const Jobs = ({ data, user, viewport, series }) => {
       console.log(err);
     }
   };
-
   const performOverlay = (element, series_uid, image_uid) => {
+    // const imageIds = [];
+
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(element);
+
+    const currentImageIndex =
+      enabled_element.toolStateManager.toolState.stack.data[0]
+        .currentImageIdIndex;
+
+    console.log({ CurrentMainImageIndex: currentImageIndex });
+
     if (!enabled_element || !enabled_element.image) {
       return;
     }
 
-    cornerstone.loadAndCacheImage(image_id).then(image => {
-      // const stack = {
-      //   currentIndex
-      // };
+    // Images.map(data => {
+    //   const newImage = 'wadors:' + data + '/frames/1';
+    //   imageIds.push(newImage);
+    // });
 
+    // imageIds.push(image_id);
+
+    // const stack = {
+    //   currentImageIdIndex: 0,
+    //   imageIds: imageIds,
+    // };
+
+    // const synchronizerImage = new cornerstoneTools.Synchronizer(
+    //   'cornerstonenewimage',
+    //   cornerstoneTools.stackImagePositionSynchronizer
+    // );
+
+    cornerstone.loadImage(image_id).then(image => {
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
-
       if (all_layers.length > 1) {
         cornerstone.removeLayer(element, all_layers[1].layerId);
         cornerstone.updateImage(element);
         setLayerID();
       }
-
-      // Getting all layers
-      // const every_layers = cornerstone.getLayers(element);
 
       const options = {
         opacity: 0.5,
@@ -134,63 +158,144 @@ const Jobs = ({ data, user, viewport, series }) => {
       // set new layer id from above added layer
       setLayerID(layerId);
 
+      // synchronizerImage.add(element);
+      // cornerstoneTools.addStackStateManager(element, ['stack']);
+      // cornerstoneTools.addToolState(element, 'stack', stack);
+      // cornerstoneTools.setToolActive('StackScrollMouseWheel', {
+      //   mouseButtonMask: 1,
+      //   synchronizationContext: synchronizerImage,
+      // });
+
       cornerstone.updateImage(element);
+    });
+
+    element.addEventListener('cornerstonenewimage', function(event) {
+      const eventData = event.detail;
+
+      let counter = 0;
+      const checkLayerID = () => {
+        setTimeout(() => {
+          console.log({ CurrentLayerID: layerID });
+          if (layerID) {
+            const currentImageIdIndex =
+              eventData.enabledElement.toolStateManager.toolState.stack.data[0]
+                .currentImageIdIndex;
+            console.log({ eventCurrentImageIdIndex: currentImageIdIndex });
+          } else {
+            if (counter < 5) {
+              counter++;
+              checkLayerID();
+            } else {
+              console.log('Failed to get layer ID');
+            }
+          }
+        }, 2000);
+      };
+      checkLayerID();
     });
   };
 
+  const removeOverlay = () => {
+    const view_ports = cornerstone.getEnabledElements();
+
+    const viewports = view_ports[0];
+
+    // getting active viewport reference to element variable
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    if (!element) {
+      return;
+    }
+
+    const all_layers = cornerstone.getLayers(element);
+    if (all_layers.length > 1) {
+      cornerstone.removeLayer(element, all_layers[1].layerId);
+      cornerstone.updateImage(element);
+      setLayerID();
+    }
+
+    // removing event listener for the cornerstone added new image
+    element.removeEventListener('cornerstonenewimage', null);
+  };
+
+  const getImageUrl = () => {
+    console.log({ CurrentSeriesUID: series });
+
+    const chosen_series = all_series.map(new_data => {
+      return new_data.SeriesInstanceUID === series;
+    });
+
+    if (chosen_series) {
+      console.log({ chosen_series });
+    }
+  };
+
   return (
-    <div className="accordion-item">
-      <div className="accordion-title" onClick={show}>
-        <div>
-          <b>Job {data.job}</b>
-        </div>
-        {/* Not the best way to go about this */}
-        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-        {/* <div>{isActive ? '-' : '+'}</div> */}
-        <div>
-          {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
-          {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
-          {data.status === 'ERROR' && (
-            <FontAwesomeIcon icon={faExclamationTriangle} onClick={showError} />
-          )}
-          {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
-        </div>
-      </div>
-
-      {/* Accordion content when Job is Done */}
-      {isActive && (
-        <div className="accordion-content">
-          <ScrollableArea scrollStep={201} class="series-browser">
-            {textures.length > 0 && (
-              <div className="textures">
-                {textures.map((texture, index) => (
-                  <li
-                    className="texture_uids"
-                    key={index}
-                    onClick={() => handleOverlay(texture)}
-                  >
-                    {description[index]}
-                  </li>
-                ))}
-              </div>
+    <div>
+      <div className="accordion-item">
+        <div className="accordion-title" onClick={show}>
+          <div>
+            <b>Job {data.job}</b>
+          </div>
+          {/* Not the best way to go about this */}
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          {/* <div>{isActive ? '-' : '+'}</div> */}
+          <div>
+            {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
+            {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
+            {data.status === 'ERROR' && (
+              <FontAwesomeIcon
+                icon={faExclamationTriangle}
+                onClick={showError}
+              />
             )}
-          </ScrollableArea>
+            {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
+          </div>
         </div>
-      )}
-
-      {/* Accordion content when job has an error */}
-      {isError && (
-        <div className="accordion-content">
-          <ScrollableArea scrollStep={201} class="series-browser">
-            <div className="jobError">
-              <p>{data.error_message.exception.match(/'(.*?)'/g)}</p>
+        {/* Accordion content when Job is Done */}
+        {isActive && (
+          <div className="accordion-content">
+            <ScrollableArea scrollStep={201} class="series-browser">
+              {textures.length > 0 && (
+                <div className="textures">
+                  {textures.map((texture, index) => (
+                    <li
+                      className="texture_uids"
+                      key={index}
+                      onClick={() => handleOverlay(texture)}
+                    >
+                      {description[index]}
+                    </li>
+                  ))}
+                </div>
+              )}
+            </ScrollableArea>
+          </div>
+        )}
+        {/* Accordion content when job has an error */}
+        {isError && (
+          <div className="accordion-content">
+            <ScrollableArea scrollStep={201} class="series-browser">
+              <div className="jobError">
+                <p>{data.error_message.exception.match(/'(.*?)'/g)}</p>
+              </div>
+            </ScrollableArea>
+          </div>
+        )}
+        {layerID && (
+          <label>
+            <br></br>
+            <div className="triggerButton">
+              <button onClick={removeOverlay} className="syncButton">
+                Remove Overlay
+              </button>
+              <br></br>
             </div>
-          </ScrollableArea>
-        </div>
-      )}
+            <br></br>
+          </label>
+        )}
+      </div>
     </div>
   );
 };
-
 export default Jobs;

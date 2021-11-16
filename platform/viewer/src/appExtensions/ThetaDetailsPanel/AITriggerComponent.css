@@ -90,7 +90,7 @@ h1 {
 }
 
 .texture_uids {
-  cursor: pointer
+  cursor: pointer;
   a {
     color: #fff;
   }
