@@ -16,14 +16,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Images from './data';
 
-const Jobs = ({ data, user, viewport, series }) => {
+const Jobs = ({ data, user, viewport, series, allSeries }) => {
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState();
-  // console.log(user.profile.email);
   const access_token = user.access_token;
+  const all_series = allSeries;
 
   const path = window.location.pathname;
 
@@ -73,6 +73,9 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
+
+    console.log({ series });
+
     const view_ports = cornerstone.getEnabledElements();
 
     const viewports = view_ports[0];
@@ -134,7 +137,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     // );
 
     cornerstone.loadImage(image_id).then(image => {
-
       // Getting all layers
       const all_layers = cornerstone.getLayers(element);
       if (all_layers.length > 1) {
@@ -173,9 +175,11 @@ const Jobs = ({ data, user, viewport, series }) => {
       let counter = 0;
       const checkLayerID = () => {
         setTimeout(() => {
-          // console.log({ layerID });
+          console.log({ CurrentLayerID: layerID });
           if (layerID) {
-            const currentImageIdIndex = eventData.enabledElement.toolStateManager.toolState.stack.data[0].currentImageIdIndex;
+            const currentImageIdIndex =
+              eventData.enabledElement.toolStateManager.toolState.stack.data[0]
+                .currentImageIdIndex;
             console.log({ eventCurrentImageIdIndex: currentImageIdIndex });
           } else {
             if (counter < 5) {
@@ -207,6 +211,21 @@ const Jobs = ({ data, user, viewport, series }) => {
       cornerstone.removeLayer(element, all_layers[1].layerId);
       cornerstone.updateImage(element);
       setLayerID();
+    }
+
+    // removing event listener for the cornerstone added new image
+    element.removeEventListener('cornerstonenewimage', null);
+  };
+
+  const getImageUrl = () => {
+    console.log({ CurrentSeriesUID: series });
+
+    const chosen_series = all_series.map(new_data => {
+      return new_data.SeriesInstanceUID === series;
+    });
+
+    if (chosen_series) {
+      console.log({ chosen_series });
     }
   };
 

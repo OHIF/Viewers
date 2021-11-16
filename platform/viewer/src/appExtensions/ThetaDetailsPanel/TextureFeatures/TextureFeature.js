@@ -7,7 +7,7 @@ import axios from 'axios';
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
-  const { user, viewport } = props;
+  const { user, viewport, allSeries } = props;
   const access_token = user.access_token;
   const email = user.profile.email;
   const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
@@ -69,6 +69,7 @@ const TextureFeature = props => {
               viewport={viewport}
               series={series}
               data={data}
+              allSeries={allSeries}
             />
           ))}
         </div>
@@ -81,6 +82,7 @@ const mapStateToProps = state => {
   return {
     user: state.oidc.user,
     viewport: state.viewports,
+    allSeries: state.allSeries,
   };
 };
 
