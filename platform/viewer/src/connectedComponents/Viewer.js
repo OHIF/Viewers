@@ -24,6 +24,7 @@ import AppContext from '../context/AppContext';
 import './Viewer.css';
 import { finished } from 'stream';
 import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
+import JobsContextProvider, { JobsContext } from '../context/JobsContext.js';
 
 class Viewer extends Component {
   static propTypes = {
@@ -226,7 +227,6 @@ class Viewer extends Component {
       activeViewportIndex !== prevProps.activeViewportIndex ||
       activeDisplaySetInstanceUID !== prevActiveDisplaySetInstanceUID
       ) {
-
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
       });
@@ -260,6 +260,7 @@ class Viewer extends Component {
 
     return (
       <>
+        <JobsContextProvider series={this.props.studies && this.props.studies.length > 0 ? this.props.studies[0].series : []} />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>
           {whiteLabeling => (

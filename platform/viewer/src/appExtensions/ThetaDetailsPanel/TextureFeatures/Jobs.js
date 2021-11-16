@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableArea';
 import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
@@ -15,15 +15,16 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import Images from './data';
+import { JobsContext } from '../../../context/JobsContext';
 
-const Jobs = ({ data, user, viewport, series, allSeries }) => {
+const Jobs = ({ data, user, viewport, series }) => {
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState();
+  const {allSeriesState, setSeries} = useContext(JobsContext)
   const access_token = user.access_token;
-  const all_series = allSeries;
 
   const path = window.location.pathname;
 
@@ -33,6 +34,10 @@ const Jobs = ({ data, user, viewport, series, allSeries }) => {
     'study',
     'dicomWeb/studies'
   )}`;
+
+  useEffect(() => {
+    console.log('jobs series', {allSeriesState})
+  },[allSeriesState])
 
   // setting up client for API requests (centralize this client)
   const client = axios.create({
@@ -74,7 +79,6 @@ const Jobs = ({ data, user, viewport, series, allSeries }) => {
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
 
-    console.log({ series });
 
     const view_ports = cornerstone.getEnabledElements();
 

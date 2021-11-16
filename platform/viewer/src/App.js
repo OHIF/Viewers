@@ -57,6 +57,7 @@ import store from './store';
 import WhiteLabelingContext from './context/WhiteLabelingContext';
 import UserManagerContext from './context/UserManagerContext';
 import { AppProvider, useAppContext, CONTEXTS } from './context/AppContext';
+import JobsContextProvider from './context/JobsContext'
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
@@ -209,6 +210,7 @@ class App extends Component {
       <ErrorBoundary context="App">
         <Provider store={store}>
           <AppProvider config={this._appConfig}>
+          <JobsContextProvider>
             <I18nextProvider i18n={i18n}>
               <Router basename={routerBasename}>
                 <WhiteLabelingContext.Provider value={whiteLabeling}>
@@ -227,6 +229,7 @@ class App extends Component {
                 </WhiteLabelingContext.Provider>
               </Router>
             </I18nextProvider>
+            </JobsContextProvider>
           </AppProvider>
         </Provider>
       </ErrorBoundary>
