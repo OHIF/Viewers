@@ -58,13 +58,17 @@ class ExpandableToolMenu extends React.Component {
 
   getButtons = () => {
     return this.props.buttons.map((button, index) => {
-      return (
-        <ToolbarButton
-          key={index}
-          {...button}
-          isActive={button.id === this.props.activeCommand}
-        />
-      );
+      if (button.buttons && button.buttons.length) {
+        return (
+          <ExpandableToolMenu
+            key={`expandable-${index}`}
+            {...button}
+            activeCommand={button.activeButton}
+          />
+        );
+      } else {
+        return button;
+      }
     });
   };
 

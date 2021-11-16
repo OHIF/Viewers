@@ -28,6 +28,7 @@ class ToolbarRow extends Component {
     selectedRightSidePanel: PropTypes.string.isRequired,
     handleSidePanelChange: PropTypes.func.isRequired,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
+    activeViewport: PropTypes.any,
     studies: PropTypes.array,
     t: PropTypes.func.isRequired,
     // NOTE: withDialog, withModal HOCs
@@ -81,8 +82,8 @@ class ToolbarRow extends Component {
 
       panelModule.menuOptions.forEach(menuOption => {
         const contexts = Array.from(menuOption.context || defaultContexts);
-        const hasActiveContext = this.props.activeContexts.some(actx =>
-          contexts.includes(actx)
+        const hasActiveContext = this.props.activeContexts.some(activeContext =>
+          contexts.includes(activeContext)
         );
 
         // It's a bit beefy to pass studies; probably only need to be reactive on `studyInstanceUIDs` and activeViewport?
@@ -186,9 +187,7 @@ class ToolbarRow extends Component {
     const { dialog } = this.props;
     let { dialogId, activeButtons, toolbarButtons } = this.state;
     if (dialogId) {
-      const cineButtonPresent = toolbarButtons.find(
-        button => button.options && button.options.behavior === 'CINE'
-      );
+      const cineButtonPresent = _checkForCineButton(toolbarButtons);
       if (!cineButtonPresent) {
         dialog.dismiss({ id: dialogId });
         activeButtons = activeButtons.filter(
@@ -236,10 +235,37 @@ class ToolbarRow extends Component {
               />
             )}
           </div>
+
         </div>
       </>
     );
   }
+}
+
+function _checkForCineButton(buttonCollection) {
+  let cineButtonPresent = false;
+
+  // Check each button in the buttonCollection for the CINE button recursively
+  buttonCollection.forEach(button => {
+    // If we have already found the CINE button, no need to continue looking
+    // for it.
+    if (cineButtonPresent) {
+      return cineButtonPresent;
+    }
+    // If the current button is an ExpandableToolMenu with buttons below it,
+    // we need to check those as well.
+    if (button.buttons && button.buttons.length) {
+      cineButtonPresent = _checkForCineButton(button.buttons);
+    }
+    // Once we find the CINE button, we don't want to set the bool back to false.
+    if (cineButtonPresent === false) {
+      if (button.options && button.options.behavior === 'CINE') {
+        cineButtonPresent = true;
+      }
+    }
+  });
+
+  return cineButtonPresent;
 }
 
 function _getCustomButtonComponent(button, activeButtons) {
@@ -268,15 +294,13 @@ function _getCustomButtonComponent(button, activeButtons) {
 function _getExpandableButtonComponent(button, activeButtons) {
   // Iterate over button definitions and update `onClick` behavior
   let activeCommand;
-  const childButtons = button.buttons.map(childButton => {
-    childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
 
-    if (activeButtons.map(button => button.id).indexOf(childButton.id) > -1) {
-      activeCommand = childButton.id;
-    }
-
-    return childButton;
-  });
+  // Build child elements recursively ( as many expandable sub-menus as desired )
+  const childButtons = _getButtonComponents.call(
+    this,
+    button.buttons,
+    activeButtons
+  );
 
   return (
     <ExpandableToolMenu
@@ -309,7 +333,6 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
   return toolbarButtons.map(button => {
     const hasCustomComponent = button.CustomComponent;
     const hasNestedButtonDefinitions = button.buttons && button.buttons.length;
-
     if (hasCustomComponent) {
       return _getCustomButtonComponent.call(_this, button, activeButtons);
     }
@@ -346,10 +369,10 @@ function _handleToolbarButtonClick(button, evt, props) {
   // TODO: We can update this to be a `getter` on the extension to query
   //       For the active tools after we apply our updates?
   if (button.type === 'setToolActive') {
-    const toggables = activeButtons.filter(
+    const toggleableButtons = activeButtons.filter(
       ({ options }) => options && !options.togglable
     );
-    this.setState({ activeButtons: [...toggables, button] });
+    this.setState({ activeButtons: [...toggleableButtons, button] });
   } else if (button.type === 'builtIn') {
     this._handleBuiltIn(button);
   }
