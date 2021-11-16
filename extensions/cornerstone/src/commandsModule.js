@@ -36,8 +36,7 @@ function onElementDisabledRemoveFromSync(event) {
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
     ViewportGridService,
-    ReferenceLinesService,
-    ToolBarService,
+    ViewerToolsetService,
   } = servicesManager.services;
 
   function _getActiveViewportsEnabledElement() {
@@ -145,15 +144,17 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       return unsubscribe;
     },
     toggleReferenceLines: () => {
-      const { isReferenceLinesEnabled } = ReferenceLinesService.getState();
-      ReferenceLinesService.setIsReferenceLinesEnabled(
-        !isReferenceLinesEnabled
-      );
-      ToolBarService.setButton('ReferenceLines', {
-        props: { isActive: !isReferenceLinesEnabled },
-      });
+      const { isReferenceLinesEnabled } = ViewerToolsetService.getState();
+      ViewerToolsetService.setIsReferenceLinesEnabled(!isReferenceLinesEnabled);
       cornerstone.getEnabledElements().forEach(enabledElement => {
         cornerstone.updateImage(enabledElement.element);
+      });
+    },
+    activateCrosshairs: () => {
+      commandsManager.runCommand('toggleSynchronizer', { toggledState: true });
+      cornerstoneTools.setToolActive('Crosshairs', {
+        mouseButtonMask: 1,
+        synchronizationContext: imagePositionSynchronizer,
       });
     },
     invertViewport: ({ element }) => {
@@ -190,6 +191,8 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       if (!toolName) {
         console.warn('No toolname provided to setToolActive command');
       }
+
+      commandsManager.runCommand('toggleSynchronizer', { toggledState: false });
 
       // Find total number of tool indexes
       const { viewports } = ViewportGridService.getState() || { viewports: [] };
@@ -432,6 +435,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+      storeContexts: [],
+      options: {},
+    },
+    activateCrosshairs: {
+      commandFn: actions.activateCrosshairs,
       storeContexts: [],
       options: {},
     },

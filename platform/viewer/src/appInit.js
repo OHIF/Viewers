@@ -13,7 +13,7 @@ import {
   ViewportGridService,
   HangingProtocolService,
   CineService,
-  ReferenceLinesService,
+  ViewerToolsetService,
   UserAuthenticationService,
   errorHandler
   // utils,
@@ -61,7 +61,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     ViewportGridService,
     HangingProtocolService,
     CineService,
-    ReferenceLinesService,
+    ViewerToolsetService,
     UserAuthenticationService,
   ]);
 

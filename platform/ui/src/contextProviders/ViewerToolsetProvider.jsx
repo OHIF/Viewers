@@ -9,15 +9,19 @@ import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
   isReferenceLinesEnabled: false,
+  isCrosshairsEnabled: false,
 };
 
-export const ReferenceLinesContext = createContext(DEFAULT_STATE);
+export const ViewerToolsetContext = createContext(DEFAULT_STATE);
 
-export default function ReferenceLinesProvider({ children, service }) {
+export default function ViewerToolsetProvider({ children, service }) {
   const reducer = (state, action) => {
     switch (action.type) {
       case 'SET_IS_REFERENCE_LINES_ENABLED': {
         return { ...state, ...{ isReferenceLinesEnabled: action.payload } };
+      }
+      case 'SET_IS_CROSSHAIRS_ENABLED': {
+        return { ...state, ...{ isCrosshairsEnabled: action.payload } };
       }
       default:
         return action.payload;
@@ -36,6 +40,11 @@ export default function ReferenceLinesProvider({ children, service }) {
     [dispatch]
   );
 
+  const setIsCrosshairsEnabled = useCallback(
+    isCrosshairsEnabled => dispatch({ type: 'SET_IS_CROSSHAIRS_ENABLED', payload: isCrosshairsEnabled }),
+    [dispatch]
+  );
+
   /**
    * Sets the implementation of a modal service that can be used by extensions.
    *
@@ -43,31 +52,33 @@ export default function ReferenceLinesProvider({ children, service }) {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ getState, setIsReferenceLinesEnabled });
+      service.setServiceImplementation({ getState, setIsReferenceLinesEnabled, setIsCrosshairsEnabled });
     }
   }, [
     getState,
     service,
     setIsReferenceLinesEnabled,
+    setIsCrosshairsEnabled,
   ]);
 
   const api = {
     getState,
     setIsReferenceLinesEnabled,
+    setIsCrosshairsEnabled,
   };
 
   return (
-    <ReferenceLinesContext.Provider value={[state, api]}>
+    <ViewerToolsetContext.Provider value={[state, api]}>
       {children}
-    </ReferenceLinesContext.Provider>
+    </ViewerToolsetContext.Provider>
   );
 }
 
-ReferenceLinesProvider.propTypes = {
+ViewerToolsetProvider.propTypes = {
   children: PropTypes.any,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }).isRequired,
 };
 
-export const useReferenceLines = () => useContext(ReferenceLinesContext);
+export const useViewerToolset = () => useContext(ViewerToolsetContext);

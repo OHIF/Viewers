@@ -44,7 +44,10 @@ export default function mode({ modeConfiguration }) {
 
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', toolbarButtons.map(btn => btn.id));
+      ToolBarService.createButtonSection(
+        'primary',
+        toolbarButtons.map(btn => btn.id)
+      );
     },
     onModeExit: () => {},
     validationTags: {

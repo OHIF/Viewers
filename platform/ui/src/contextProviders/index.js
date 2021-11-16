@@ -22,10 +22,10 @@ export {
 export { CineContext, default as CineProvider, useCine } from './CineProvider';
 
 export {
-  ReferenceLinesContext,
-  default as ReferenceLinesProvider,
-  useReferenceLines,
-} from './ReferenceLinesProvider';
+  ViewerToolsetContext,
+  default as ViewerToolsetProvider,
+  useViewerToolset,
+} from './ViewerToolsetProvider';
 
 export {
   default as SnackbarProvider,

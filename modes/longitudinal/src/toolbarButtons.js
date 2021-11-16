@@ -186,6 +186,16 @@ export default [
       commandName: 'toggleReferenceLines',
     }
   },
+  {
+    id: 'Crosshairs',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-crosshairs',
+      label: 'Crosshairs',
+      commandName: 'activateCrosshairs',
+    }
+  },
   // More...
   {
     id: 'MoreTools',

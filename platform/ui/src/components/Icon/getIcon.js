@@ -59,6 +59,7 @@ import toolProbe from './../../assets/icons/tool-probe.svg';
 import toolAngle from './../../assets/icons/tool-angle.svg';
 import toolReset from './../../assets/icons/tool-reset.svg';
 import toolRectangle from './../../assets/icons/tool-rectangle.svg';
+import toolCrosshairs from './../../assets/icons/tool-crosshairs.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -124,6 +125,7 @@ const ICONS = {
   'tool-angle': toolAngle,
   'tool-reset': toolReset,
   'tool-rectangle': toolRectangle,
+  'tool-crosshairs': toolCrosshairs,
 
   /** Old OHIF */
   'old-trash': oldTrash,
