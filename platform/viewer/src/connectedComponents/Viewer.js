@@ -25,6 +25,7 @@ import './Viewer.css';
 import { finished } from 'stream';
 import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextProvider, { JobsContext } from '../context/JobsContext.js';
+import JobsContextUtil from './JobsContextUtil.js';
 
 class Viewer extends Component {
   static propTypes = {
@@ -260,7 +261,7 @@ class Viewer extends Component {
 
     return (
       <>
-        <JobsContextProvider series={this.props.studies && this.props.studies.length > 0 ? this.props.studies[0].series : []} />
+        <JobsContextUtil series={this.props.studies && this.props.studies.length > 0 ? this.props.studies[0].series : []} />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>
           {whiteLabeling => (

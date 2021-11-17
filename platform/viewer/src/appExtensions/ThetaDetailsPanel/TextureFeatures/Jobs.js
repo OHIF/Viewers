@@ -63,6 +63,10 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   }, [data.texture_descriptions, data.texture_uids]);
 
+  useEffect(() => {
+    console.log({layerID})
+  }, [layerID])
+
   // Functionality for showing jobs if jobs data is available
   const show = () => {
     if (data.status === 'DONE') {
@@ -158,6 +162,7 @@ const Jobs = ({ data, user, viewport, series }) => {
 
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(element, image, options);
+      console.log({layerId})
 
       // set new layer id from above added layer
       setLayerID(layerId);
@@ -177,6 +182,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       const eventData = event.detail;
 
       let counter = 0;
+      console.log('counter', {counter})
       const checkLayerID = () => {
         setTimeout(() => {
           console.log({ CurrentLayerID: layerID });
@@ -188,6 +194,7 @@ const Jobs = ({ data, user, viewport, series }) => {
           } else {
             if (counter < 5) {
               counter++;
+              console.log({counter})
               checkLayerID();
             } else {
               console.log('Failed to get layer ID');

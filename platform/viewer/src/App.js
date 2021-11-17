@@ -176,6 +176,8 @@ class App extends Component {
         <ErrorBoundary context="App">
           <Provider store={store}>
             <AppProvider config={this._appConfig}>
+          <JobsContextProvider>
+
               <I18nextProvider i18n={i18n}>
                 <OidcProvider store={store} userManager={this._userManager}>
                   <UserManagerContext.Provider value={this._userManager}>
@@ -200,6 +202,7 @@ class App extends Component {
                   </UserManagerContext.Provider>
                 </OidcProvider>
               </I18nextProvider>
+          </JobsContextProvider>
             </AppProvider>
           </Provider>
         </ErrorBoundary>

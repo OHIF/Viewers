@@ -7,13 +7,13 @@ export const JobsContext = React.createContext({});
 const JobsContextProvider= ({ children, series }) => {
   const [allSeriesState, setSeries] = useState([]);
 
-  useEffect(() => {
-    console.log({series})
-    if (series && series.length > 0) {
-      console.log('set series', allSeriesState)
-      setSeries([...series])
-    }
-  }, [series])
+  // useEffect(() => {
+  //   console.log({series})
+  //   if (series && series.length > 0) {
+  //     console.log('set series', allSeriesState)
+  //     // setSeries([...series])
+  //   }
+  // }, [series])
 
   return (
     <JobsContext.Provider
