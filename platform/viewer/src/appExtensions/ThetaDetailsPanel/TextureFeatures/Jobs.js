@@ -211,11 +211,9 @@ const Jobs = ({ data, user, viewport, series }) => {
 
     if (chosen_series && chosen_series.length > 0) {
       const images = chosen_series[0].instances.filter((instance, index) => {
-        console.log({ index, instance });
+        console.log({ imageIndex, index, instance });
         return index === imageIndex;
       });
-
-      // console.log({ images[0] });
 
       const image_id = 'wadors:' + images[0].baseWadoRsUri + '/frames/1';
 
