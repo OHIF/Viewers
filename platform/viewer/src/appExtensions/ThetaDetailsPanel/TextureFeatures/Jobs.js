@@ -23,7 +23,7 @@ const Jobs = ({ data, user, viewport, series }) => {
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState();
-  const {allSeriesState, setSeries} = useContext(JobsContext)
+  const { allSeriesState, setSeries } = useContext(JobsContext);
   const access_token = user.access_token;
 
   const path = window.location.pathname;
@@ -34,10 +34,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     'study',
     'dicomWeb/studies'
   )}`;
-
-  useEffect(() => {
-    console.log('jobs series', {allSeriesState})
-  },[allSeriesState])
 
   // setting up client for API requests (centralize this client)
   const client = axios.create({
@@ -63,10 +59,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   }, [data.texture_descriptions, data.texture_uids]);
 
-  useEffect(() => {
-    console.log({layerID})
-  }, [layerID])
-
   // Functionality for showing jobs if jobs data is available
   const show = () => {
     if (data.status === 'DONE') {
@@ -82,8 +74,6 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-
-
     const view_ports = cornerstone.getEnabledElements();
 
     const viewports = view_ports[0];
@@ -162,7 +152,7 @@ const Jobs = ({ data, user, viewport, series }) => {
 
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(element, image, options);
-      console.log({layerId})
+      // console.log({ layerId });
 
       // set new layer id from above added layer
       setLayerID(layerId);
@@ -178,31 +168,15 @@ const Jobs = ({ data, user, viewport, series }) => {
       cornerstone.updateImage(element);
     });
 
-    element.addEventListener('cornerstonenewimage', function(event) {
+    element.addEventListener('cornerstonenewimage', event => {
       const eventData = event.detail;
 
-      let counter = 0;
-      console.log('counter', {counter})
-      const checkLayerID = () => {
-        setTimeout(() => {
-          console.log({ CurrentLayerID: layerID });
-          if (layerID) {
-            const currentImageIdIndex =
-              eventData.enabledElement.toolStateManager.toolState.stack.data[0]
-                .currentImageIdIndex;
-            console.log({ eventCurrentImageIdIndex: currentImageIdIndex });
-          } else {
-            if (counter < 5) {
-              counter++;
-              console.log({counter})
-              checkLayerID();
-            } else {
-              console.log('Failed to get layer ID');
-            }
-          }
-        }, 2000);
-      };
-      checkLayerID();
+      const currentImageIdIndex =
+        eventData.enabledElement.toolStateManager.toolState.stack.data[0]
+          .currentImageIdIndex;
+
+      console.log({ currentImageIdIndex });
+      getImageUrl(element, currentImageIdIndex);
     });
   };
 
@@ -225,18 +199,48 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
 
     // removing event listener for the cornerstone added new image
-    element.removeEventListener('cornerstonenewimage', null);
+    element.removeEventListener('cornerstonenewimage', event => {
+      console.log({ removeListener: event });
+    });
   };
 
-  const getImageUrl = () => {
-    console.log({ CurrentSeriesUID: series });
-
-    const chosen_series = all_series.map(new_data => {
+  const getImageUrl = (element, imageIndex) => {
+    const chosen_series = allSeriesState.filter(new_data => {
       return new_data.SeriesInstanceUID === series;
     });
 
-    if (chosen_series) {
-      console.log({ chosen_series });
+    if (chosen_series && chosen_series.length > 0) {
+      const images = chosen_series[0].instances.filter((instance, index) => {
+        console.log({ index, instance });
+        return index === imageIndex;
+      });
+
+      // console.log({ images[0] });
+
+      const image_id = 'wadors:' + images[0].baseWadoRsUri + '/frames/1';
+
+      cornerstone.loadImage(image_id).then(image => {
+        // Getting all layers
+        const all_layers = cornerstone.getLayers(element);
+        if (all_layers.length > 1) {
+          cornerstone.removeLayer(element, all_layers[1].layerId);
+          cornerstone.updateImage(element);
+          setLayerID();
+        }
+
+        const options = {
+          opacity: 0.5,
+          viewport: {
+            colormap: 'hotIron',
+          },
+        };
+
+        const layerId = cornerstone.addLayer(element, image, options);
+
+        setLayerID(layerId);
+
+        cornerstone.updateImage(element);
+      });
     }
   };
 
@@ -250,7 +254,6 @@ const Jobs = ({ data, user, viewport, series }) => {
           {/* Not the best way to go about this */}
           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          {/* <div>{isActive ? '-' : '+'}</div> */}
           <div>
             {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
             {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
