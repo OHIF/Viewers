@@ -111,8 +111,6 @@ const Jobs = ({ data, user, viewport, series }) => {
       enabled_element.toolStateManager.toolState.stack.data[0]
         .currentImageIdIndex;
 
-    console.log({ CurrentMainImageIndex: currentImageIndex });
-
     if (!enabled_element || !enabled_element.image) {
       return;
     }
@@ -152,7 +150,6 @@ const Jobs = ({ data, user, viewport, series }) => {
 
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(element, image, options);
-      // console.log({ layerId });
 
       // set new layer id from above added layer
       setLayerID(layerId);
@@ -175,8 +172,7 @@ const Jobs = ({ data, user, viewport, series }) => {
         eventData.enabledElement.toolStateManager.toolState.stack.data[0]
           .currentImageIdIndex;
 
-      console.log({ currentImageIdIndex });
-      getImageUrl(element, currentImageIdIndex);
+      getImageUrl(element, currentImageIdIndex, series_uid);
     });
   };
 
@@ -204,18 +200,21 @@ const Jobs = ({ data, user, viewport, series }) => {
     });
   };
 
-  const getImageUrl = (element, imageIndex) => {
+  const getImageUrl = (element, imageIndex, series_uid) => {
     const chosen_series = allSeriesState.filter(new_data => {
-      return new_data.SeriesInstanceUID === series;
+      if (new_data.SeriesInstanceUID === series_uid) {
+        return new_data;
+      }
     });
 
     if (chosen_series && chosen_series.length > 0) {
       const images = chosen_series[0].instances.filter((instance, index) => {
-        console.log({ imageIndex, index, instance });
-        return index === imageIndex;
+        if (index === imageIndex) {
+          // console.log({ imageIndex, index, instance });
+          return instance;
+        }
       });
 
-      // const image_id = 'wadors:' + images[0].wadorsuri + '/frames/1';
       const image_id = 'wadors:' + images[0].wadorsuri;
 
       cornerstone.loadImage(image_id).then(image => {
