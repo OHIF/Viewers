@@ -215,7 +215,8 @@ const Jobs = ({ data, user, viewport, series }) => {
         return index === imageIndex;
       });
 
-      const image_id = 'wadors:' + images[0].baseWadoRsUri + '/frames/1';
+      // const image_id = 'wadors:' + images[0].wadorsuri + '/frames/1';
+      const image_id = 'wadors:' + images[0].wadorsuri;
 
       cornerstone.loadImage(image_id).then(image => {
         // Getting all layers
