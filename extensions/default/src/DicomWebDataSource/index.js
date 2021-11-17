@@ -164,7 +164,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
 
           const storeInstances = instances => {
-            const naturalizedInstances = instances.map(addFetchBulkData);
+            const naturalizedInstances = instances.map(naturalizeDataset);
             DicomMetadataStore.addInstances(naturalizedInstances);
             callback(naturalizedInstances);
           };
