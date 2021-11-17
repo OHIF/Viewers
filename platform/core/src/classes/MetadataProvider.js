@@ -1,8 +1,6 @@
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
-import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
-import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 
 class MetadataProvider {
@@ -103,14 +101,6 @@ class MetadataProvider {
   //   }
 
   //   return instance;
-  // }
-
-  // async _checkBulkDataAndInlineBinaries(instance, server) {
-  //   await fetchOverlayData(instance, server);
-
-  //   if (instance.PhotometricInterpretation === 'PALETTE COLOR') {
-  //     await fetchPaletteColorLookupTableData(instance, server);
-  //   }
   // }
 
   _getInstance(imageId) {
@@ -508,4 +498,3 @@ const WADO_IMAGE_LOADER_TAGS = {
 };
 
 const INSTANCE = 'instance';
-const DICOMWEB = 'dicomweb';

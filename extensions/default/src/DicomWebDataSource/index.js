@@ -162,9 +162,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
             );
           }
 
-          const storeInstances = instances => {
-            const naturalizedInstances = instances.map(naturalizeDataset);
 
+          const storeInstances = instances => {
+            const naturalizedInstances = instances.map(addFetchBulkData);
             DicomMetadataStore.addInstances(naturalizedInstances);
             callback(naturalizedInstances);
           };
@@ -252,9 +252,38 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         sortFunction
       );
 
+      /**
+       * naturalizes the dataset, and adds a retrieve bulkdata method
+       * to any values containing BulkDataURI.
+       * @param {*} instance
+       * @returns naturalized dataset, with retrieveBulkData methods
+       */
+      const addRetrieveBulkData = instance => {
+        const naturalized = naturalizeDataset(instance);
+        Object.keys(naturalized).forEach(key => {
+          const value = naturalized[key];
+          if (value && value.BulkDataURI && !value.Value) {
+            // Provide a method to fetch this
+            value.retrieveBulkData = () => {
+              const options = {
+                multipart: false,
+                BulkDataURI: value.BulkDataURI,
+                StudyInstanceUID: naturalized.StudyInstanceUID,
+              };
+              return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+                const ret = val && val[0] || undefined;
+                value.Value = ret;
+                return ret;
+              });
+            };
+          }
+        });
+        return naturalized
+      };
+
       // Async load series, store as retrieved
       function storeInstances(instances) {
-        const naturalizedInstances = instances.map(naturalizeDataset);
+        const naturalizedInstances = instances.map(addRetrieveBulkData);
 
         DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);
       }
