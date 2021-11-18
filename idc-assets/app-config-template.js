@@ -4,6 +4,7 @@ window.config = {
   extensions: [],
   disableMeasurementPanel: true,
   splitQueryParameterCalls: true,
+  disableServersCache: true,
   showStudyList: false,
   filterQueryParam: true,
   httpErrorHandler: error => {
