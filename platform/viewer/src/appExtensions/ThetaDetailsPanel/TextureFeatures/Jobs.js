@@ -100,7 +100,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
   const performOverlay = (element, series_uid, image_uid) => {
-    // const imageIds = [];
 
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
@@ -114,23 +113,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     if (!enabled_element || !enabled_element.image) {
       return;
     }
-
-    // Images.map(data => {
-    //   const newImage = 'wadors:' + data + '/frames/1';
-    //   imageIds.push(newImage);
-    // });
-
-    // imageIds.push(image_id);
-
-    // const stack = {
-    //   currentImageIdIndex: 0,
-    //   imageIds: imageIds,
-    // };
-
-    // const synchronizerImage = new cornerstoneTools.Synchronizer(
-    //   'cornerstonenewimage',
-    //   cornerstoneTools.stackImagePositionSynchronizer
-    // );
 
     cornerstone.loadImage(image_id).then(image => {
       // Getting all layers
@@ -153,14 +135,6 @@ const Jobs = ({ data, user, viewport, series }) => {
 
       // set new layer id from above added layer
       setLayerID(layerId);
-
-      // synchronizerImage.add(element);
-      // cornerstoneTools.addStackStateManager(element, ['stack']);
-      // cornerstoneTools.addToolState(element, 'stack', stack);
-      // cornerstoneTools.setToolActive('StackScrollMouseWheel', {
-      //   mouseButtonMask: 1,
-      //   synchronizationContext: synchronizerImage,
-      // });
 
       cornerstone.updateImage(element);
     });
