@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-tag-browser",
-  "version": "0.2.11",
+  "version": "0.2.13",
   "description": "OHIF extension for checking DICOM headers.",
   "author": "OHIF",
   "license": "MIT",
@@ -28,7 +28,7 @@
   },
   "peerDependencies": {
     "@ohif/core": "^2.6.0",
-    "dcmjs": "0.18.8",
+    "dcmjs": "0.18.10",
     "react": "^16.8.6"
   },
   "dependencies": {

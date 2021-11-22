@@ -53,7 +53,7 @@ RUN yarn run build
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginx:1.15.5-alpine
+FROM nginx:1.21.1-alpine
 RUN apk add --no-cache bash
 RUN rm -rf /etc/nginx/conf.d
 COPY .docker/Viewer-v2.x /etc/nginx/conf.d
