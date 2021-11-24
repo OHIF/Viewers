@@ -130,6 +130,9 @@ const storeMeasurements = async (
     );
     const { StudyInstanceUID } = naturalizedReport;
 
+    delete naturalizedReport['StudyDate'];
+    delete naturalizedReport['StudyTime'];
+
     await dataSource.store.dicom(naturalizedReport);
 
     if (StudyInstanceUID) {
