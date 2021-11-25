@@ -57,7 +57,7 @@ const mapStateToProps = (state, ownProps) => {
     });
   });
 
-  console.log({studiesWithLoadingData});
+  // console.log({studiesWithLoadingData});
 
   return {
     studies: studiesWithLoadingData,

@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { ScrollableArea } from '../../../../../ui/src/ScrollableArea/ScrollableArea';
-import ImageThumbnail from '../../../../../ui/src/components/studyBrowser/ImageThumbnail';
-import { Thumbnail } from '../../../../../ui/src/components/studyBrowser/Thumbnail';
 import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
 import '../AITriggerComponent.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,13 +12,12 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
-import ViewportLoadingIndicator from '../../../../../ui/src/viewer/ViewportLoadingIndicator';
 
 const Jobs = ({ data, user, viewport, series }) => {
   const elementRef = useRef();
+  const overlayRef = useRef(false);
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [isListener, setIsListener] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState('');
@@ -54,9 +50,22 @@ const Jobs = ({ data, user, viewport, series }) => {
     return config;
   });
 
+  // setting up useEffect for adding and removing an event listener
   useEffect(() => {
-    console.log({ layerID });
-  }, [layerID]);
+    const view_ports = cornerstone.getEnabledElements();
+
+    const viewports = view_ports[0];
+
+    // getting active viewport reference to element variable
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    elementRef.current = element;
+
+    window.addEventListener('cornerstonenewimage', eventFunction);
+
+    return () => {
+      window.removeEventListener('cornerstonenewimage', eventFunction);
+    };
+  }, [overlayRef.current]);
 
   useEffect(() => {
     if (data.texture_uids) {
@@ -81,13 +90,15 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-    const view_ports = cornerstone.getEnabledElements();
+    // const view_ports = cornerstone.getEnabledElements();
 
-    const viewports = view_ports[0];
+    // const viewports = view_ports[0];
 
-    // getting active viewport reference to element variable
-    const element = getEnabledElement(view_ports.indexOf(viewports));
-    elementRef.current = element;
+    overlayRef.current = false;
+
+    // // getting active viewport reference to element variable
+    // const element = getEnabledElement(view_ports.indexOf(viewports));
+    const element = elementRef.current;
     if (!element) {
       return;
     }
@@ -109,6 +120,9 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
 
   const eventFunction = event => {
+    console.log({ Overlay: overlayRef.current });
+    if (overlayRef.current === false) return;
+
     const eventData = event.detail;
 
     console.log({ layerID });
@@ -132,11 +146,12 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
 
     addImageLayer(image_id).then(() => {
-      elementRef.current.addEventListener('cornerstonenewimage', eventFunction);
+      // elementRef.current.addEventListener('cornerstonenewimage', eventFunction);
+      console.log('Added Image to The Layer');
     });
   };
 
-  const addImageLayer = async (image_id) => {
+  const addImageLayer = async image_id => {
     await cornerstone.loadImage(image_id).then(image => {
       // Getting all layers
       const all_layers = cornerstone.getLayers(elementRef.current);
@@ -160,6 +175,9 @@ const Jobs = ({ data, user, viewport, series }) => {
       setLayerID(layerId);
 
       cornerstone.updateImage(elementRef.current);
+
+      // update overlay reference
+      overlayRef.current = true;
     });
   };
 
@@ -184,9 +202,9 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
 
   const removeOverlay = () => {
-    const view_ports = cornerstone.getEnabledElements();
+    // const view_ports = cornerstone.getEnabledElements();
 
-    const viewports = view_ports[0];
+    // const viewports = view_ports[0];
 
     // getting active viewport reference to element variable
     const element = elementRef.current;
@@ -194,15 +212,20 @@ const Jobs = ({ data, user, viewport, series }) => {
       return;
     }
 
-    const all_layers = cornerstone.getLayers(elementRef.current);
+    const all_layers = cornerstone.getLayers(element);
     if (all_layers.length > 1) {
-      cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
-      cornerstone.updateImage(elementRef.current);
+      cornerstone.removeLayer(element, all_layers[1].layerId);
+      cornerstone.updateImage(element);
       setLayerID('');
     }
 
+    overlayRef.current = false;
+
     // removing event listener for the cornerstone added new image
-    elementRef.current.removeEventListener('cornerstonenewimage', eventFunction);
+    elementRef.current.removeEventListener(
+      'cornerstonenewimage',
+      eventFunction
+    );
   };
 
   return (
