@@ -16,6 +16,8 @@ import { JobsContext } from '../../../context/JobsContext';
 const Jobs = ({ data, user, viewport, series }) => {
   const elementRef = useRef();
   const overlayRef = useRef(false);
+  const instanceRef = useRef();
+  const layerRef = useRef();
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [textures, setTextures] = useState([]);
@@ -60,12 +62,15 @@ const Jobs = ({ data, user, viewport, series }) => {
     const element = getEnabledElement(view_ports.indexOf(viewports));
     elementRef.current = element;
 
-    window.addEventListener('cornerstonenewimage', eventFunction);
+    elementRef.current.addEventListener('cornerstonenewimage', eventFunction);
 
     return () => {
-      window.removeEventListener('cornerstonenewimage', eventFunction);
+      elementRef.current.removeEventListener(
+        'cornerstonenewimage',
+        eventFunction
+      );
     };
-  }, [overlayRef.current]);
+  }, []);
 
   useEffect(() => {
     if (data.texture_uids) {
@@ -90,14 +95,10 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-    // const view_ports = cornerstone.getEnabledElements();
-
-    // const viewports = view_ports[0];
+    removeOverlay();
 
     overlayRef.current = false;
 
-    // // getting active viewport reference to element variable
-    // const element = getEnabledElement(view_ports.indexOf(viewports));
     const element = elementRef.current;
     if (!element) {
       return;
@@ -119,22 +120,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
 
-  const eventFunction = event => {
-    console.log({ Overlay: overlayRef.current });
-    if (overlayRef.current === false) return;
-
-    const eventData = event.detail;
-
-    console.log({ layerID });
-
-    const currentImageIdIndex =
-      eventData.enabledElement.toolStateManager.toolState.stack.data[0]
-        .currentImageIdIndex;
-
-    console.log({ currentImageIdIndex, eventDetails: event.detail });
-    // getImageUrl(element, currentImageIdIndex, series_uid);
-  };
-
   const performOverlay = (series_uid, image_uid) => {
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
@@ -145,14 +130,15 @@ const Jobs = ({ data, user, viewport, series }) => {
       return;
     }
 
+    instanceRef.current = series_uid;
+
     addImageLayer(image_id).then(() => {
-      // elementRef.current.addEventListener('cornerstonenewimage', eventFunction);
       console.log('Added Image to The Layer');
     });
   };
 
   const addImageLayer = async image_id => {
-    await cornerstone.loadImage(image_id).then(image => {
+    await cornerstone.loadAndCacheImage(image_id).then(image => {
       // Getting all layers
       const all_layers = cornerstone.getLayers(elementRef.current);
       if (all_layers.length > 1) {
@@ -171,14 +157,36 @@ const Jobs = ({ data, user, viewport, series }) => {
       // adding layer to current viewport
       const layerId = cornerstone.addLayer(elementRef.current, image, options);
 
+      // set new layer as active layer
+      cornerstone.setActiveLayer(elementRef.current, layerId);
+
       // set new layer id from above added layer
       setLayerID(layerId);
-
-      cornerstone.updateImage(elementRef.current);
+      layerRef.current = layerId;
 
       // update overlay reference
       overlayRef.current = true;
+
+      cornerstone.updateImage(elementRef.current);
+
     });
+  };
+
+  const eventFunction = event => {
+    if (overlayRef.current === false) {
+      return;
+    } else {
+      const eventData = event.detail;
+
+      console.log({ layerID: layerRef.current });
+
+      const currentImageIdIndex =
+        eventData.enabledElement.toolStateManager.toolState.stack.data[0]
+          .currentImageIdIndex;
+
+      console.log({ currentImageIdIndex, eventDetails: event.detail });
+      getImageUrl(currentImageIdIndex, instanceRef.current);
+    }
   };
 
   const getImageUrl = (imageIndex, series_uid) => {
@@ -202,11 +210,6 @@ const Jobs = ({ data, user, viewport, series }) => {
   };
 
   const removeOverlay = () => {
-    // const view_ports = cornerstone.getEnabledElements();
-
-    // const viewports = view_ports[0];
-
-    // getting active viewport reference to element variable
     const element = elementRef.current;
     if (!element) {
       return;
@@ -220,12 +223,7 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
 
     overlayRef.current = false;
-
-    // removing event listener for the cornerstone added new image
-    elementRef.current.removeEventListener(
-      'cornerstonenewimage',
-      eventFunction
-    );
+    instanceRef.current = undefined;
   };
 
   return (
@@ -280,7 +278,7 @@ const Jobs = ({ data, user, viewport, series }) => {
             </ScrollableArea>
           </div>
         )}
-        {layerID && (
+        {layerRef.current && (
           <label>
             <br></br>
             <div className="triggerButton">
