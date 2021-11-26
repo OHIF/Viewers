@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
   isReferenceLinesEnabled: false,
-  isCrosshairsEnabled: false,
+  isSeriesLinkingEnabled: false,
 };
 
 export const ViewerToolsetContext = createContext(DEFAULT_STATE);
@@ -20,8 +20,8 @@ export default function ViewerToolsetProvider({ children, service }) {
       case 'SET_IS_REFERENCE_LINES_ENABLED': {
         return { ...state, ...{ isReferenceLinesEnabled: action.payload } };
       }
-      case 'SET_IS_CROSSHAIRS_ENABLED': {
-        return { ...state, ...{ isCrosshairsEnabled: action.payload } };
+      case 'SET_IS_SERIES_LINKING_ENABLED': {
+        return { ...state, ...{ isSeriesLinkingEnabled: action.payload } };
       }
       default:
         return action.payload;
@@ -40,8 +40,8 @@ export default function ViewerToolsetProvider({ children, service }) {
     [dispatch]
   );
 
-  const setIsCrosshairsEnabled = useCallback(
-    isCrosshairsEnabled => dispatch({ type: 'SET_IS_CROSSHAIRS_ENABLED', payload: isCrosshairsEnabled }),
+  const setIsSeriesLinkingEnabled = useCallback(
+    isSeriesLinkingEnabled => dispatch({ type: 'SET_IS_SERIES_LINKING_ENABLED', payload: isSeriesLinkingEnabled }),
     [dispatch]
   );
 
@@ -52,19 +52,19 @@ export default function ViewerToolsetProvider({ children, service }) {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ getState, setIsReferenceLinesEnabled, setIsCrosshairsEnabled });
+      service.setServiceImplementation({ getState, setIsReferenceLinesEnabled, setIsSeriesLinkingEnabled });
     }
   }, [
     getState,
     service,
     setIsReferenceLinesEnabled,
-    setIsCrosshairsEnabled,
+    setIsSeriesLinkingEnabled,
   ]);
 
   const api = {
     getState,
     setIsReferenceLinesEnabled,
-    setIsCrosshairsEnabled,
+    setIsSeriesLinkingEnabled,
   };
 
   return (

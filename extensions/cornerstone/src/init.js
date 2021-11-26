@@ -6,6 +6,7 @@ import merge from 'lodash.merge';
 import getTools, { toolsGroupedByType } from './utils/getTools.js';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import initReferenceLines from './initReferenceLines';
+import initSeriesLinking from './initSeriesLinking';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
@@ -83,6 +84,7 @@ export default function init({
   );
 
   initReferenceLines({ servicesManager, commandsManager });
+  initSeriesLinking({ servicesManager, commandsManager });
 
   const onRightClick = event => {
     if (!UIDialogService) {

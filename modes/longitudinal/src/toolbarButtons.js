@@ -196,6 +196,16 @@ export default [
       commandName: 'activateCrosshairs',
     }
   },
+  {
+    id: 'SeriesLinking',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'tool-series-linking',
+      label: 'Series Linking',
+      commandName: 'toggleSeriesLinking',
+    }
+  },
   // More...
   {
     id: 'MoreTools',

@@ -150,6 +150,13 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         cornerstone.updateImage(enabledElement.element);
       });
     },
+    toggleSeriesLinking: () => {
+      const { isSeriesLinkingEnabled } = ViewerToolsetService.getState();
+      ViewerToolsetService.setIsSeriesLinkingEnabled(!isSeriesLinkingEnabled);
+      // cornerstone.getEnabledElements().forEach(enabledElement => {
+      //   cornerstone.updateImage(enabledElement.element);
+      // });
+    },
     activateCrosshairs: () => {
       commandsManager.runCommand('toggleSynchronizer', { toggledState: true });
       cornerstoneTools.setToolActive('Crosshairs', {
@@ -435,6 +442,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+      storeContexts: [],
+      options: {},
+    },
+    toggleSeriesLinking: {
+      commandFn: actions.toggleSeriesLinking,
       storeContexts: [],
       options: {},
     },

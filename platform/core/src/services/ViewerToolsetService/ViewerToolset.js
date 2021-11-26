@@ -4,7 +4,7 @@ const publicAPI = {
   name,
   getState: _getState,
   setIsReferenceLinesEnabled: _setIsReferenceLinesEnabled,
-  setIsCrosshairsEnabled: _setIsCrosshairsEnabled,
+  setIsSeriesLinkingEnabled: _setIsSeriesLinkingEnabled,
   setServiceImplementation,
 };
 
@@ -12,8 +12,8 @@ const serviceImplementation = {
   _getState: () => console.warn('getState() NOT IMPLEMENTED'),
   _setIsReferenceLinesEnabled: () =>
     console.warn('setIsReferenceLinesEnabled() NOT IMPLEMENTED'),
-  _setIsCrosshairsEnabled: () =>
-    console.warn('setIsCrosshairsEnabled() NOT IMPLEMENTED'),
+  _setIsSeriesLinkingEnabled: () =>
+    console.warn('setIsSeriesLinkingEnabled() NOT IMPLEMENTED'),
 };
 
 function _getState() {
@@ -24,14 +24,14 @@ function _setIsReferenceLinesEnabled(isReferneceLinesEnabled) {
   return serviceImplementation._setIsReferenceLinesEnabled(isReferneceLinesEnabled);
 }
 
-function _setIsCrosshairsEnabled(isCrosshairsEnabled) {
-  return serviceImplementation._setIsCrosshairsEnabled(isCrosshairsEnabled);
+function _setIsSeriesLinkingEnabled(isSeriesLinkingEnabled) {
+  return serviceImplementation._setIsSeriesLinkingEnabled(isSeriesLinkingEnabled);
 }
 
 function setServiceImplementation({
   getState: getStateImplementation,
   setIsReferenceLinesEnabled: setIsReferenceLinesEnabledImplementation,
-  setIsCrosshairsEnabled: setIsCrosshairsEnabledImplementation,
+  setIsSeriesLinkingEnabled: setIsSeriesLinkingEnabledImplementation,
 }) {
   if (getStateImplementation) {
     serviceImplementation._getState = getStateImplementation;
@@ -39,8 +39,8 @@ function setServiceImplementation({
   if (setIsReferenceLinesEnabledImplementation) {
     serviceImplementation._setIsReferenceLinesEnabled = setIsReferenceLinesEnabledImplementation;
   }
-  if (setIsCrosshairsEnabledImplementation) {
-    serviceImplementation._setIsCrosshairsEnabled = setIsCrosshairsEnabledImplementation;
+  if (setIsSeriesLinkingEnabledImplementation) {
+    serviceImplementation._setIsSeriesLinkingEnabled = setIsSeriesLinkingEnabledImplementation;
   }
 }
 
