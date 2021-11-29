@@ -540,6 +540,10 @@ const _checkForSeriesInconsistencesWarnings = async function(
         'The datasets is missing frames: ' + displaySet.missingFrames + '.'
       );
     }
+
+    if (!displaySet.isModalitySupported) {
+      inconsistencyWarnings.push('The datasets modality is not supported.');
+    }
   } else {
     const segMetadata = displaySet.metadata;
     if (!segMetadata) {

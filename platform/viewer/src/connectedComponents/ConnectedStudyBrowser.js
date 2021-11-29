@@ -59,10 +59,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             `Referenced series for ${Modality} dataset not present.`
           );
         }
+      }
 
-        if (!displaySet) {
-          throw new Error('Source data not present');
-        }
+      if (!displaySet) {
+        throw new Error('Source data not present');
+      }
+
+      if (!displaySet.isModalitySupported) {
+        throw new Error('Modality not supported');
       }
 
       dispatch(setActiveViewportSpecificData(displaySet));

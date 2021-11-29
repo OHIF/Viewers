@@ -142,7 +142,10 @@ class ViewerMain extends Component {
     if (displaySet.isDerived) {
       const { Modality } = displaySet;
       if (Modality === 'SEG' && servicesManager) {
-        const {LoggerService, UINotificationService} = servicesManager.services;
+        const {
+          LoggerService,
+          UINotificationService,
+        } = servicesManager.services;
         const onDisplaySetLoadFailureHandler = error => {
           LoggerService.error({ error, message: error.message });
           UINotificationService.show({
@@ -153,13 +156,12 @@ class ViewerMain extends Component {
           });
         };
 
-        const {referencedDisplaySet} = displaySet.getSourceDisplaySet(
+        const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
           this.props.studies,
           true,
           onDisplaySetLoadFailureHandler
         );
         displaySet = referencedDisplaySet;
-
       } else {
         displaySet = displaySet.getSourceDisplaySet(this.props.studies);
       }
@@ -169,6 +171,10 @@ class ViewerMain extends Component {
           `Referenced series for ${Modality} dataset not present.`
         );
       }
+    }
+
+    if (!displaySet.isModalitySupported) {
+      throw new Error('Modality not supported');
     }
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
