@@ -87,13 +87,9 @@ h1 {
 }
 
 .texture_uids {
-   a {
-    color: #ffffff;
-  }
+  color: #ffffff;
 }
 
 .selected-instance {
-  a {
-    color: blue;
-  }
+  color: blue;
 }

@@ -98,7 +98,6 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-
     // remove previous overlay if it exists
     removeOverlay();
 
@@ -149,7 +148,6 @@ const Jobs = ({ data, user, viewport, series }) => {
   // functionality for loading an image and setting it as an added layer
   const addImageLayer = async image_id => {
     await cornerstone.loadAndCacheImage(image_id).then(image => {
-
       // Getting all layers
       const all_layers = cornerstone.getLayers(elementRef.current);
 
@@ -229,6 +227,8 @@ const Jobs = ({ data, user, viewport, series }) => {
       return;
     }
 
+    setIsInstance('');
+
     const all_layers = cornerstone.getLayers(element);
     if (all_layers.length > 1) {
       cornerstone.removeLayer(element, all_layers[1].layerId);
@@ -272,12 +272,13 @@ const Jobs = ({ data, user, viewport, series }) => {
                 <div className="textures">
                   {textures.map((texture, index) => (
                     <li
-                      style={{
-                        color: isInstance === texture ? 'blue !important' : '',
-                      }}
                       key={index}
                       onClick={() => handleOverlay(texture)}
-                      className="texture_uids"
+                      className={
+                        isInstance === texture
+                          ? 'selected-instance'
+                          : 'texture_uids'
+                      }
                     >
                       {description[index]}
                     </li>
