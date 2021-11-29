@@ -23,6 +23,7 @@ const Jobs = ({ data, user, viewport, series }) => {
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState('');
+  const [isInstance, setIsInstance] = useState('');
   const { allSeriesState, setSeries } = useContext(JobsContext);
   const access_token = user.access_token;
 
@@ -55,6 +56,8 @@ const Jobs = ({ data, user, viewport, series }) => {
   // setting up useEffect for adding and removing an event listener
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
+
+    console.log({ view_ports });
 
     const viewports = view_ports[0];
 
@@ -95,17 +98,26 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
+
+    // remove previous overlay if it exists
     removeOverlay();
 
+    // changing overlay status to false
     overlayRef.current = false;
 
+    instanceRef.current = instance;
+    setIsInstance(instance);
+
+    // getting current canvas element
     const element = elementRef.current;
     if (!element) {
       return;
     }
 
+    // get current image
     const image = cornerstone.getImage(element);
 
+    // extract source id from the derived image data
     const source_uid = image.imageId.split('/')[18];
 
     try {
@@ -120,6 +132,7 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
 
+  // functionality for deriving image id and then adding image
   const performOverlay = (series_uid, image_uid) => {
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
@@ -130,23 +143,24 @@ const Jobs = ({ data, user, viewport, series }) => {
       return;
     }
 
-    instanceRef.current = series_uid;
-
-    addImageLayer(image_id).then(() => {
-      console.log('Added Image to The Layer');
-    });
+    addImageLayer(image_id);
   };
 
+  // functionality for loading an image and setting it as an added layer
   const addImageLayer = async image_id => {
     await cornerstone.loadAndCacheImage(image_id).then(image => {
+
       // Getting all layers
       const all_layers = cornerstone.getLayers(elementRef.current);
+
+      // remove any previous layer if it exists so we don`t have multiple layers
       if (all_layers.length > 1) {
         cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
         cornerstone.updateImage(elementRef.current);
         setLayerID('');
       }
 
+      // new image options for the layer to be added
       const options = {
         opacity: 0.5,
         viewport: {
@@ -155,41 +169,40 @@ const Jobs = ({ data, user, viewport, series }) => {
       };
 
       // adding layer to current viewport
-      const layerId = cornerstone.addLayer(elementRef.current, image, options);
+      const layer_id = cornerstone.addLayer(elementRef.current, image, options);
 
       // set new layer as active layer
-      cornerstone.setActiveLayer(elementRef.current, layerId);
+      cornerstone.setActiveLayer(elementRef.current, layer_id);
 
       // set new layer id from above added layer
-      setLayerID(layerId);
-      layerRef.current = layerId;
+      setLayerID(layer_id);
+      layerRef.current = layer_id;
 
       // update overlay reference
       overlayRef.current = true;
 
+      // update the canvase with the all new data
       cornerstone.updateImage(elementRef.current);
-
     });
   };
 
+  // functionality for getting new image during overlay scroll activity
   const eventFunction = event => {
     if (overlayRef.current === false) {
       return;
     } else {
       const eventData = event.detail;
 
-      console.log({ layerID: layerRef.current });
-
-      const currentImageIdIndex =
+      // getting the current index of the image in the stack
+      const current_image_index =
         eventData.enabledElement.toolStateManager.toolState.stack.data[0]
           .currentImageIdIndex;
-
-      console.log({ currentImageIdIndex, eventDetails: event.detail });
-      getImageUrl(currentImageIdIndex, instanceRef.current);
+      getImageUrl(current_image_index, instanceRef.current);
     }
   };
 
-  const getImageUrl = (imageIndex, series_uid) => {
+  // functionality for getting image from list series available in the server
+  const getImageUrl = (image_index, series_uid) => {
     const chosen_series = allSeriesState.filter(new_data => {
       if (new_data.SeriesInstanceUID === series_uid) {
         return new_data;
@@ -198,7 +211,7 @@ const Jobs = ({ data, user, viewport, series }) => {
 
     if (chosen_series && chosen_series.length > 0) {
       const images = chosen_series[0].instances.filter((instance, index) => {
-        if (index === imageIndex) {
+        if (index === image_index) {
           return instance;
         }
       });
@@ -209,6 +222,7 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   };
 
+  // functionality for removing all overlays added to the base image / canvas
   const removeOverlay = () => {
     const element = elementRef.current;
     if (!element) {
@@ -222,7 +236,9 @@ const Jobs = ({ data, user, viewport, series }) => {
       setLayerID('');
     }
 
+    // set overlay and instance status to defaults
     overlayRef.current = false;
+
     instanceRef.current = undefined;
   };
 
@@ -256,9 +272,12 @@ const Jobs = ({ data, user, viewport, series }) => {
                 <div className="textures">
                   {textures.map((texture, index) => (
                     <li
-                      className="texture_uids"
+                      style={{
+                        color: isInstance === texture ? 'blue !important' : '',
+                      }}
                       key={index}
                       onClick={() => handleOverlay(texture)}
+                      className="texture_uids"
                     >
                       {description[index]}
                     </li>
@@ -278,7 +297,7 @@ const Jobs = ({ data, user, viewport, series }) => {
             </ScrollableArea>
           </div>
         )}
-        {layerRef.current && (
+        {layerID && (
           <label>
             <br></br>
             <div className="triggerButton">
