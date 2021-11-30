@@ -199,11 +199,17 @@ class Viewer extends Component {
         ]);
       }
 
-      const activeViewport = this.props.viewports[this.props.activeViewportIndex];
-      const activeDisplaySetInstanceUID =
-        activeViewport ? activeViewport.displaySetInstanceUID : undefined;
+      const activeViewport = this.props.viewports[
+        this.props.activeViewportIndex
+      ];
+      const activeDisplaySetInstanceUID = activeViewport
+        ? activeViewport.displaySetInstanceUID
+        : undefined;
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
+        thumbnails: _mapStudiesToThumbnails(
+          studies,
+          activeDisplaySetInstanceUID
+        ),
       });
     }
   }
@@ -213,23 +219,30 @@ class Viewer extends Component {
       studies,
       isStudyLoaded,
       activeViewportIndex,
-      viewports
+      viewports,
     } = this.props;
 
     const activeViewport = viewports[activeViewportIndex];
-    const activeDisplaySetInstanceUID =
-      activeViewport ? activeViewport.displaySetInstanceUID : undefined;
+    const activeDisplaySetInstanceUID = activeViewport
+      ? activeViewport.displaySetInstanceUID
+      : undefined;
 
-    const prevActiveViewport = prevProps.viewports[prevProps.activeViewportIndex];
-    const prevActiveDisplaySetInstanceUID =
-      prevActiveViewport ? prevActiveViewport.displaySetInstanceUID : undefined;
+    const prevActiveViewport =
+      prevProps.viewports[prevProps.activeViewportIndex];
+    const prevActiveDisplaySetInstanceUID = prevActiveViewport
+      ? prevActiveViewport.displaySetInstanceUID
+      : undefined;
 
-    if (studies !== prevProps.studies ||
+    if (
+      studies !== prevProps.studies ||
       activeViewportIndex !== prevProps.activeViewportIndex ||
       activeDisplaySetInstanceUID !== prevActiveDisplaySetInstanceUID
-      ) {
+    ) {
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
+        thumbnails: _mapStudiesToThumbnails(
+          studies,
+          activeDisplaySetInstanceUID
+        ),
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
@@ -267,7 +280,8 @@ class Viewer extends Component {
               ? this.props.studies[0].series
               : []
           }
-          overlay={false} />
+          overlay={false}
+        />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>
           {whiteLabeling => (
@@ -418,7 +432,10 @@ export default withDialog(Viewer);
  * @param {*object} displaySet
  * @returns {[string]} an array of strings containing the warnings
  */
-const _checkForSeriesInconsistencesWarnings = async function (displaySet, studies) {
+const _checkForSeriesInconsistencesWarnings = async function(
+  displaySet,
+  studies
+) {
   if (displaySet.inconsistencyWarnings) {
     // warnings already checked and cached in displaySet
     return displaySet.inconsistencyWarnings;
@@ -426,23 +443,34 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
   const inconsistencyWarnings = [];
 
   if (displaySet.Modality !== 'SEG') {
-    if (displaySet.reconstructionIssues && displaySet.reconstructionIssues.length !== 0) {
+    if (
+      displaySet.reconstructionIssues &&
+      displaySet.reconstructionIssues.length !== 0
+    ) {
       displaySet.reconstructionIssues.forEach(warning => {
         switch (warning) {
           case ReconstructionIssues.DATASET_4D:
             inconsistencyWarnings.push('The dataset is 4D.');
             break;
           case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
-            inconsistencyWarnings.push('The dataset frames have different dimensions (rows, columns).');
+            inconsistencyWarnings.push(
+              'The dataset frames have different dimensions (rows, columns).'
+            );
             break;
           case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
-            inconsistencyWarnings.push('The dataset frames have different components (Sample per pixel).');
+            inconsistencyWarnings.push(
+              'The dataset frames have different components (Sample per pixel).'
+            );
             break;
           case ReconstructionIssues.VARYING_IMAGESORIENTATION:
-            inconsistencyWarnings.push('The dataset frames have different orientation.');
+            inconsistencyWarnings.push(
+              'The dataset frames have different orientation.'
+            );
             break;
           case ReconstructionIssues.IRREGULAR_SPACING:
-            inconsistencyWarnings.push('The dataset frames have different pixel spacing.');
+            inconsistencyWarnings.push(
+              'The dataset frames have different pixel spacing.'
+            );
             break;
           case ReconstructionIssues.MULTIFFRAMES:
             inconsistencyWarnings.push('The dataset is a multiframes.');
@@ -451,13 +479,22 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
             break;
         }
       });
-      inconsistencyWarnings.push('The datasets is not a reconstructable 3D volume. MPR mode is not available.');
+      inconsistencyWarnings.push(
+        'The datasets is not a reconstructable 3D volume. MPR mode is not available.'
+      );
     }
 
-    if (displaySet.missingFrames &&
+    if (
+      displaySet.missingFrames &&
       (!displaySet.reconstructionIssues ||
-        (displaySet.reconstructionIssues && !displaySet.reconstructionIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
-          inconsistencyWarnings.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
+        (displaySet.reconstructionIssues &&
+          !displaySet.reconstructionIssues.find(
+            warn => warn === ReconstructionIssues.DATASET_4D
+          )))
+    ) {
+      inconsistencyWarnings.push(
+        'The datasets is missing frames: ' + displaySet.missingFrames + '.'
+      );
     }
   } else {
     const segMetadata = displaySet.metadata;
@@ -466,24 +503,31 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
       return inconsistencyWarnings;
     }
 
-    const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
+    const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
+      studies,
+      false
+    );
     if (!referencedDisplaySet) {
       displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
-    const imageIds = referencedDisplaySet.images.map(image => image.getImageId());
+    const imageIds = referencedDisplaySet.images.map(image =>
+      image.getImageId()
+    );
     if (!imageIds || imageIds.length === 0) {
       displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
     for (
-      let i = 0, groupsLen = segMetadata.PerFrameFunctionalGroupsSequence.length;
+      let i = 0,
+        groupsLen = segMetadata.PerFrameFunctionalGroupsSequence.length;
       i < groupsLen;
       ++i
     ) {
-      const PerFrameFunctionalGroups = segMetadata.PerFrameFunctionalGroupsSequence[i];
+      const PerFrameFunctionalGroups =
+        segMetadata.PerFrameFunctionalGroupsSequence[i];
       if (!PerFrameFunctionalGroups) {
         continue;
       }
@@ -493,29 +537,27 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
         SourceImageSequence = segMetadata.SourceImageSequence[i];
       } else if (PerFrameFunctionalGroups.DerivationImageSequence) {
         SourceImageSequence =
-          PerFrameFunctionalGroups.DerivationImageSequence
-            .SourceImageSequence;
+          PerFrameFunctionalGroups.DerivationImageSequence.SourceImageSequence;
       }
       if (!SourceImageSequence) {
         if (inconsistencyWarnings.length === 0) {
-          const warningMessage = 'The segmentation ' +
+          const warningMessage =
+            'The segmentation ' +
             'has frames out of plane respect to the source images.';
-            inconsistencyWarnings.push(warningMessage);
+          inconsistencyWarnings.push(warningMessage);
         }
         continue;
       }
 
-      const {
-        ReferencedSOPInstanceUID,
-      } = SourceImageSequence;
+      const { ReferencedSOPInstanceUID } = SourceImageSequence;
 
       const imageId = imageIds.find(imageId => {
         const sopCommonModule = cornerstone.metaData.get(
-            "sopCommonModule",
-            imageId
+          'sopCommonModule',
+          imageId
         );
         if (!sopCommonModule) {
-            return;
+          return;
         }
 
         return sopCommonModule.sopInstanceUID === ReferencedSOPInstanceUID;
@@ -525,33 +567,32 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
         continue;
       }
 
-      const sourceImageMetadata = cornerstone.metaData.get(
-        "instance",
-        imageId
-      );
+      const sourceImageMetadata = cornerstone.metaData.get('instance', imageId);
       if (
         segMetadata.Rows !== sourceImageMetadata.Rows ||
         segMetadata.Columns !== sourceImageMetadata.Columns
       ) {
-        const warningMessage = 'The segmentation ' +
+        const warningMessage =
+          'The segmentation ' +
           'has frames with different geometry ' +
           'dimensions (Rows and Columns) respect to the source images.';
-          inconsistencyWarnings.push(warningMessage);
+        inconsistencyWarnings.push(warningMessage);
         break;
       }
     }
 
     if (inconsistencyWarnings.length !== 0) {
-      const warningMessage = 'The segmentation format is not supported yet. ' +
+      const warningMessage =
+        'The segmentation format is not supported yet. ' +
         'The segmentation data (segments) could not be loaded.';
-        inconsistencyWarnings.push(warningMessage);
+      inconsistencyWarnings.push(warningMessage);
     }
   }
 
   // cache the warnings
   displaySet.inconsistencyWarnings = inconsistencyWarnings;
   return inconsistencyWarnings;
-}
+};
 
 /**
  * Checks if display set is active, i.e. if the series is currently shown
@@ -570,30 +611,42 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
  * @param {string} activeDisplaySetInstanceUID
  * @returns {boolean} is active.
  */
- const _isDisplaySetActive = function(displaySet, studies, activeDisplaySetInstanceUID) {
+const _isDisplaySetActive = function(
+  displaySet,
+  studies,
+  activeDisplaySetInstanceUID
+) {
   let active = false;
 
-  const {
-    displaySetInstanceUID,
-  } = displaySet;
+  const { displaySetInstanceUID } = displaySet;
 
   // TO DO: in the future, we could possibly support new modalities
   // we should have a list of all modalities here, instead of having hard coded checks
-  if (displaySet.Modality !== 'SEG' &&
+  if (
+    displaySet.Modality !== 'SEG' &&
     displaySet.Modality !== 'RTSTRUCT' &&
-    displaySet.Modality !== 'RTDOSE') {
+    displaySet.Modality !== 'RTDOSE'
+  ) {
     active = activeDisplaySetInstanceUID === displaySetInstanceUID;
-  } else if (displaySet.getSourceDisplaySet){
+  } else if (displaySet.getSourceDisplaySet) {
     if (displaySet.Modality === 'SEG') {
-      const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
-      active = referencedDisplaySet ?
-        activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
-          false;
+      const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
+        studies,
+        false
+      );
+      active = referencedDisplaySet
+        ? activeDisplaySetInstanceUID ===
+          referencedDisplaySet.displaySetInstanceUID
+        : false;
     } else {
-      const referencedDisplaySet = displaySet.getSourceDisplaySet(studies, false);
-      active = referencedDisplaySet ?
-        activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
-          false;
+      const referencedDisplaySet = displaySet.getSourceDisplaySet(
+        studies,
+        false
+      );
+      active = referencedDisplaySet
+        ? activeDisplaySetInstanceUID ===
+          referencedDisplaySet.displaySetInstanceUID
+        : false;
     }
   }
 
@@ -637,8 +690,15 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
-      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet, studies);
-      const active = _isDisplaySetActive(displaySet, studies, activeDisplaySetInstanceUID)
+      const hasWarnings = _checkForSeriesInconsistencesWarnings(
+        displaySet,
+        studies
+      );
+      const active = _isDisplaySetActive(
+        displaySet,
+        studies,
+        activeDisplaySetInstanceUID
+      );
 
       return {
         active,

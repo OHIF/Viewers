@@ -1,4 +1,3 @@
-//chatcontextprovider
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -6,7 +5,7 @@ export const JobsContext = React.createContext({});
 
 const JobsContextProvider = ({ children, series, overlay }) => {
   const [allSeriesState, setSeries] = useState([]);
-  const [overlayStatus, setOverlayStatus] = useState(false);
+  const [overlayStatus, setOverlayStatus] = useState(overlay);
 
   return (
     <JobsContext.Provider

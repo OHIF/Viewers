@@ -10,7 +10,7 @@ export default function JobsContextUtil({ series, overlay }) {
   }, [series]);
 
   useEffect(() => {
-    console.log({ overlay});
+    console.log({ overlay });
     setOverlayStatus(overlay);
   }, [overlay]);
 

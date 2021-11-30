@@ -74,12 +74,27 @@ const Jobs = ({ data, user, viewport, series }) => {
     };
   }, []);
 
+  // this is for checking and setting textures and description
   useEffect(() => {
     if (data.texture_uids) {
       setTextures(data.texture_uids);
       setDescription(data.texture_descriptions);
     }
   }, [data.texture_descriptions, data.texture_uids]);
+
+  // useEffect function for removing overlay when status changes
+  useEffect(() => {
+    console.log({ overlayStatus });
+    if (overlayStatus === false) {
+      removeOverlay();
+    } else {
+      return;
+    }
+  }, [overlayStatus]);
+
+  useEffect(() => {
+    console.log({ isInstance });
+  }, [isInstance]);
 
   // Functionality for showing jobs if jobs data is available
   const show = () => {
@@ -98,10 +113,11 @@ const Jobs = ({ data, user, viewport, series }) => {
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
     // remove previous overlay if it exists
-    removeOverlay();
-
-    // changing overlay status to false
-    overlayRef.current = false;
+    if (overlayRef.current === true) {
+      removeOverlay();
+      // changing overlay status to false
+      overlayRef.current = false;
+    }
 
     instanceRef.current = instance;
     setIsInstance(instance);
@@ -303,7 +319,7 @@ const Jobs = ({ data, user, viewport, series }) => {
             </ScrollableArea>
           </div>
         )}
-        {layerID && (
+        {/* {layerID && (
           <label>
             <br></br>
             <div className="triggerButton">
@@ -314,7 +330,7 @@ const Jobs = ({ data, user, viewport, series }) => {
             </div>
             <br></br>
           </label>
-        )}
+        )} */}
       </div>
     </div>
   );

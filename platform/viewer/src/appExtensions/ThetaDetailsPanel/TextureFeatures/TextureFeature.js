@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import '../AITriggerComponent.css';
 import Jobs from './Jobs';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { JobsContext } from '../../../context/JobsContext';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
@@ -11,6 +12,7 @@ const TextureFeature = props => {
   const access_token = user.access_token;
   const email = user.profile.email;
   const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
+  const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
 
   const client = axios.create({
     baseURL:
@@ -35,6 +37,10 @@ const TextureFeature = props => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    console.log({ overlayStatus });
+  }, [overlayStatus]);
+
   // getting all jobs for the current series being displayed in viewport
   const getJobs = async () => {
     try {
@@ -50,6 +56,10 @@ const TextureFeature = props => {
     }
   };
 
+  const removeOverlay = () => {
+    setOverlayStatus(false);
+  };
+
   return (
     <div className="component">
       <div className="title-header">Texture Features</div>
@@ -57,6 +67,20 @@ const TextureFeature = props => {
       {isLoading && (
         <div style={{ alignItems: 'center' }}>
           <h1>Loading...</h1>
+        </div>
+      )}
+
+      {overlayStatus && (
+        <div>
+          <br></br>
+          <label>
+            <div className="triggerButton">
+              <button onClick={removeOverlay} className="syncButton">
+                Remove Overlay
+              </button>
+              <br></br>
+            </div>
+          </label>
         </div>
       )}
 
