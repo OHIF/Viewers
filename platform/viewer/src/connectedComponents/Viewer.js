@@ -541,7 +541,7 @@ const _checkForSeriesInconsistencesWarnings = async function(
       );
     }
 
-    if (!displaySet.isModalitySupported) {
+    if (displaySet.isModalitySupported === false) {
       inconsistencyWarnings.push('The datasets modality is not supported.');
     }
   } else {
