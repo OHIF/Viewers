@@ -189,7 +189,7 @@ class StudyMetadata extends Metadata {
           AcquisitionDatetime: instance.getTagValue('AcquisitionDateTime'), // Include the acquisition datetime
           isReconstructable: false,
           isModalitySupported: false,
-          metadata: instance._instance.metadata,
+          metadata: instance.getData().metadata,
         });
 
         displaySets.push(displaySet);
