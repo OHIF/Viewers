@@ -57,9 +57,10 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     });
 
     let metadata;
-    const isImageStack = activeDisplaySet instanceof ImageSet;
+    const isImageStack =
+      activeDisplaySet instanceof ImageSet &&
+      activeDisplaySet.isModalitySupported === true;
 
-    let selectedInstanceValue;
     let instanceList;
 
     if (isImageStack) {
@@ -91,7 +92,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     setInstanceList(instanceList);
     setDisplaySetList(newDisplaySetList);
     setIsImageStack(isImageStack);
-  }, [activeDisplaySetInstanceUID, activeInstance]);
+  }, [activeDisplaySetInstanceUID, activeInstance, displaySets]);
 
   const selectedDisplaySetValue = displaySetList.find(
     ds => ds.value === activeDisplaySetInstanceUID

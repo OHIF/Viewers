@@ -139,10 +139,11 @@ class ViewerMain extends Component {
       displaySetInstanceUID
     );
 
+    const { LoggerService, UINotificationService } = servicesManager.services;
+
     if (displaySet.isDerived) {
       const { Modality } = displaySet;
       if (Modality === 'SEG' && servicesManager) {
-        const {LoggerService, UINotificationService} = servicesManager.services;
         const onDisplaySetLoadFailureHandler = error => {
           LoggerService.error({ error, message: error.message });
           UINotificationService.show({
@@ -153,22 +154,39 @@ class ViewerMain extends Component {
           });
         };
 
-        const {referencedDisplaySet} = displaySet.getSourceDisplaySet(
+        const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
           this.props.studies,
           true,
           onDisplaySetLoadFailureHandler
         );
         displaySet = referencedDisplaySet;
-
       } else {
         displaySet = displaySet.getSourceDisplaySet(this.props.studies);
       }
 
       if (!displaySet) {
-        throw new Error(
-          `Referenced series for ${Modality} dataset not present.`
-        );
+        const error = new Error('Source data not present');
+        const message = 'Source data not present';
+        LoggerService.error({ error, message });
+        UINotificationService.show({
+          autoClose: false,
+          title: 'Fail to load series',
+          message,
+          type: 'error',
+        });
       }
+    }
+
+    if (displaySet.isModalitySupported === false) {
+      const error = new Error('Modality not supported');
+      const message = 'Modality not supported';
+      LoggerService.error({ error, message });
+      UINotificationService.show({
+        autoClose: false,
+        title: 'Fail to load series',
+        message,
+        type: 'error',
+      });
     }
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
