@@ -261,7 +261,13 @@ class Viewer extends Component {
 
     return (
       <>
-        <JobsContextUtil series={this.props.studies && this.props.studies.length > 0 ? this.props.studies[0].series : []} />
+        <JobsContextUtil
+          series={
+            this.props.studies && this.props.studies.length > 0
+              ? this.props.studies[0].series
+              : []
+          }
+          overlay={false} />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>
           {whiteLabeling => (

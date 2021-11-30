@@ -25,6 +25,7 @@ const Jobs = ({ data, user, viewport, series }) => {
   const [layerID, setLayerID] = useState('');
   const [isInstance, setIsInstance] = useState('');
   const { allSeriesState, setSeries } = useContext(JobsContext);
+  const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const access_token = user.access_token;
 
   const path = window.location.pathname;
@@ -56,8 +57,6 @@ const Jobs = ({ data, user, viewport, series }) => {
   // setting up useEffect for adding and removing an event listener
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
-
-    console.log({ view_ports });
 
     const viewports = view_ports[0];
 
@@ -179,6 +178,9 @@ const Jobs = ({ data, user, viewport, series }) => {
       // update overlay reference
       overlayRef.current = true;
 
+      // update the overlay status in the jobs context api
+      setOverlayStatus(true);
+
       // update the canvase with the all new data
       cornerstone.updateImage(elementRef.current);
     });
@@ -235,6 +237,9 @@ const Jobs = ({ data, user, viewport, series }) => {
       cornerstone.updateImage(element);
       setLayerID('');
     }
+
+    // update overlay status in the jobs context api
+    setOverlayStatus(false);
 
     // set overlay and instance status to defaults
     overlayRef.current = false;
