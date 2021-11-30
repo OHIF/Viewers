@@ -175,6 +175,7 @@ function TrackedCornerstoneViewport(props) {
     SeriesDescription,
     SeriesInstanceUID,
     SeriesNumber,
+    studyInstanceUid,
   } = displaySet;
 
   const {
@@ -256,8 +257,9 @@ function TrackedCornerstoneViewport(props) {
           isTracked,
           isLocked: false,
           isRehydratable: false,
+          studyInstanceUid,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
-          currentSeries: SeriesNumber,  // TODO - switch entire currentSeries to be UID based or actual position based
+          currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
