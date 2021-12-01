@@ -281,6 +281,7 @@ class Viewer extends Component {
               : []
           }
           overlay={false}
+          instance=""
         />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>

@@ -23,7 +23,7 @@ const Jobs = ({ data, user, viewport, series }) => {
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   const [layerID, setLayerID] = useState('');
-  const [isInstance, setIsInstance] = useState('');
+  const [isInstance, setIsInstance] = useContext(JobsContext);
   const { allSeriesState, setSeries } = useContext(JobsContext);
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const access_token = user.access_token;
@@ -84,7 +84,6 @@ const Jobs = ({ data, user, viewport, series }) => {
 
   // useEffect function for removing overlay when status changes
   useEffect(() => {
-    console.log({ overlayStatus });
     if (overlayStatus === false) {
       removeOverlay();
     } else {
