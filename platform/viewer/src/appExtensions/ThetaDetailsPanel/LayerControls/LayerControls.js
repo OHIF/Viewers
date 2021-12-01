@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import cornerstone from 'cornerstone-core';
 import '../AITriggerComponent.css';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
+import { JobsContext } from '../../../context/JobsContext';
 
 const LayerControls = () => {
   const [opacity, setOpacity] = React.useState(0.5);
@@ -12,6 +13,9 @@ const LayerControls = () => {
   const [layers, setLayers] = React.useState([]);
   const [acLayer, setAcLayer] = React.useState('');
   const colors = cornerstone.colors.getColormapsList();
+  const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
+
+
 
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
@@ -53,7 +57,7 @@ const LayerControls = () => {
 
   // function for creating a base layer if non exists
   const createBaseLayerControl = (element, image_id) => {
-    cornerstone.loadImage(image_id).then(image => {
+    cornerstone.loadAndCacheImage(image_id).then(image => {
       // adding layer for the first stack of images
       const layer_id = cornerstone.addLayer(element, image);
 
@@ -68,53 +72,34 @@ const LayerControls = () => {
   // function for changing opacity of active layer
   const onHandleOpacuty = event => {
     setOpacity(event.target.value);
+    const all_layers = cornerstone.getLayers(element);
+    if (all_layers.length > 1) {
+      const layer = cornerstone.getLayer(element, all_layers[1].layerId);
 
-    // getting active layer for modification
-    const layer = cornerstone.getActiveLayer(element);
+      // setting prefered opacity for active layer
+      layer.options.opacity = event.target.value;
 
-    // setting prefered opacity for active layer
-    layer.options.opacity = event.target.value;
-
-    // update the element to apply new settings
-    cornerstone.updateImage(element);
-  };
-
-  // function for syncing all viewports(layers)
-  const onHandleSync = event => {
-    setSync(!sync);
-
-    // toggling between syncing viewports
-    enabledElement.syncViewports = !sync;
-
-    setEnabledElement(enabledElement);
-
-    // update the element to apply new settings
-    cornerstone.updateImage(element);
+      // update the element to apply new settings
+      cornerstone.updateImage(element);
+    }
   };
 
   // function for changing the colormap for an active layer
   const onHandleColorChange = event => {
     setColorMap(event.target.value);
 
-    // getting the active layer for the viewport for modification
-    const layer = cornerstone.getActiveLayer(element);
+    // getting all active layers in the current element
+    const all_layers = cornerstone.getLayers(element);
 
-    // setting colormap to selected color
-    layer.viewport.colormap = event.target.value;
+    if (all_layers.length > 1) {
+      const layer = cornerstone.getLayer(element, all_layers[1].layerId);
 
-    // update the element to apply new settings
-    cornerstone.updateImage(element);
-  };
+      // setting colormap to selected color
+      layer.viewport.colormap = event.target.value;
 
-  // function for changing the active layer
-  const onHandleLayerChange = event => {
-    setAcLayer(event.target.value);
-
-    // setting active layer with the selected layer
-    cornerstone.setActiveLayer(element, event.target.value);
-
-    // update the element to apply new settings
-    cornerstone.updateImage(element);
+      // update the element to apply new settings
+      cornerstone.updateImage(element);
+    }
   };
 
   return (
@@ -132,23 +117,9 @@ const LayerControls = () => {
             step="0.1"
             value={opacity}
             onChange={onHandleOpacuty}
+            disabled={overlayStatus === true ? false : true}
           />
         </label>
-
-        {/* {layers.length > 1 && (
-          <div>
-            <h4>Sync Viewports</h4>
-            <label>
-              <input
-                id="syncViewports"
-                type="checkbox"
-                checked={sync}
-                onChange={onHandleSync}
-                className="syncButton"
-              />
-            </label>
-          </div>
-        )} */}
 
         <h4>Color Maps</h4>
         <label>
@@ -157,6 +128,7 @@ const LayerControls = () => {
             className="select-container"
             onChange={onHandleColorChange}
             value={colorMap}
+            disabled={overlayStatus === true ? false : true}
           >
             {colors.map((color, index) => (
               <option key={index} value={color.id}>
@@ -165,26 +137,6 @@ const LayerControls = () => {
             ))}
           </select>
         </label>
-
-        {/* {layers.length > 0 && (
-          <div>
-            <h4>Select Active Layer</h4>
-            <label>
-              <select
-                id="layers"
-                className="select-container"
-                onChange={onHandleLayerChange}
-                value={acLayer}
-              >
-                {layers.map((layer, index) => (
-                  <option key={index} value={layer.layerId}>
-                    Layer {index + 1}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        )} */}
       </form>
     </div>
   );
