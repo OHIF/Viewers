@@ -37,10 +37,6 @@ const TextureFeature = props => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    console.log({ overlayStatus });
-  }, [overlayStatus]);
-
   // getting all jobs for the current series being displayed in viewport
   const getJobs = async () => {
     try {

@@ -91,10 +91,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     }
   }, [overlayStatus]);
 
-  useEffect(() => {
-    console.log({ isInstance });
-  }, [isInstance]);
-
   // Functionality for showing jobs if jobs data is available
   const show = () => {
     if (data.status === 'DONE') {
@@ -184,7 +180,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       const layer_id = cornerstone.addLayer(elementRef.current, image, options);
 
       // set new layer as active layer
-      cornerstone.setActiveLayer(elementRef.current, layer_id);
+      // cornerstone.setActiveLayer(elementRef.current, layer_id);
 
       // set new layer id from above added layer
       // setLayerID(layer_id);
