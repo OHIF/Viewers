@@ -84,14 +84,12 @@ h1 {
   padding: 0;
   cursor: pointer;
   text-decoration: underline;
-  a {
-    color: #fff;
-  }
 }
 
 .texture_uids {
-  cursor: pointer;
-  a {
-    color: #fff;
-  }
+  color: #ffffff;
+}
+
+.selected-instance {
+  color: rgb(155, 155, 255);
 }
