@@ -33,7 +33,7 @@ const TextureFeature = props => {
   useEffect(() => {
     const interval = setInterval(() => {
       getJobs();
-    }, 3500);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
