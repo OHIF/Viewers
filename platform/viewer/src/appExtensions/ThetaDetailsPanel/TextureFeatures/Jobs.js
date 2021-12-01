@@ -22,8 +22,8 @@ const Jobs = ({ data, user, viewport, series }) => {
   const [isError, setIsError] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
-  const [layerID, setLayerID] = useState('');
-  const [isInstance, setIsInstance] = useContext(JobsContext);
+  // const [layerID, setLayerID] = useState('');
+  const { isInstance, setIsInstance } = useContext(JobsContext);
   const { allSeriesState, setSeries } = useContext(JobsContext);
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const access_token = user.access_token;
@@ -169,7 +169,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       if (all_layers.length > 1) {
         cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
         cornerstone.updateImage(elementRef.current);
-        setLayerID('');
+        // setLayerID('');
       }
 
       // new image options for the layer to be added
@@ -187,7 +187,7 @@ const Jobs = ({ data, user, viewport, series }) => {
       cornerstone.setActiveLayer(elementRef.current, layer_id);
 
       // set new layer id from above added layer
-      setLayerID(layer_id);
+      // setLayerID(layer_id);
       layerRef.current = layer_id;
 
       // update overlay reference
@@ -250,7 +250,7 @@ const Jobs = ({ data, user, viewport, series }) => {
     if (all_layers.length > 1) {
       cornerstone.removeLayer(element, all_layers[1].layerId);
       cornerstone.updateImage(element);
-      setLayerID('');
+      // setLayerID('');
     }
 
     // update overlay status in the jobs context api

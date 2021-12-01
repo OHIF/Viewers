@@ -272,6 +272,8 @@ class Viewer extends Component {
       });
     });
 
+    const text = '';
+
     return (
       <>
         <JobsContextUtil
@@ -281,7 +283,7 @@ class Viewer extends Component {
               : []
           }
           overlay={false}
-          instance=""
+          instance={text}
         />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>
