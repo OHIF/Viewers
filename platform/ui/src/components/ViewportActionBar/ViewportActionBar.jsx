@@ -249,7 +249,7 @@ const ViewportActionBar = ({
     ? '#020424'
     : null;
 
-  const textColor = isPrimary ? 'text-study-primary' : 'text-study-secondary';
+  const textColor = isPrimary ? 'text-white' : 'text-study-secondary';
 
   return (
     <div
