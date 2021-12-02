@@ -6034,28 +6034,28 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
-cornerstone-core@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-core/-/cornerstone-core-2.5.0.tgz#1051ffc34420ad7484e61d2f3bdbc41a5ebc1956"
-  integrity sha512-mJzvRJh8J7d5FJutjaL9cT8ZNnmj6l5PHROsyktZq1ojh4vkXfHECQ2izIQu8nmtJ9A6SyQRj4v5Uxn7hijzKw==
+cornerstone-core@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-core/-/cornerstone-core-2.6.1.tgz#f9a29a49057f286e8c969c7020e979d567449d42"
+  integrity sha512-LAXjXwNnK2W65ZxpE7phVLjbijkYUrAQIGv5xqKjK8+dmIGlBxqvPHnyGwEqVDyKOWVrpXP6ymUPwrGGRwzgMg==
 
 cornerstone-math@0.1.9, cornerstone-math@^0.1.9:
   version "0.1.9"
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.9.tgz#7ce5509e8b9f465b01f7c548470725e7569859fc"
   integrity sha512-NxdooV73asEQgav1S+0e+a4K+W3CXJdLXyFkVN24qqCtmIpzZzwtw3F9KWPCekzSAJmbhtQ3HicOQj3d4vRtuw==
 
-cornerstone-tools@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-6.0.0.tgz#6840658f4508e60cd206b17d6e56160367f616f1"
-  integrity sha512-VU4MrsO2NcQK6CUxuYFdiNvdWjF/NV/fs8jCePazYCoFDDKIYcUM9UmoYXAapFE2mon65p4u9wUAvuIuLeBQwA==
+cornerstone-tools@^6.0.6:
+  version "6.0.6"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-6.0.6.tgz#61db62a9eb3d197acea297f60fc610c918a38be0"
+  integrity sha512-t+yksdByljoP/X7CBHfSzmZmLk1o9QCg4CmzspIG6mkRRmZeMf5hxgaM3u0pBdjK1JyxZwzMbavbyl5DG7KxpA==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.9"
 
-cornerstone-wado-image-loader@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.0.3.tgz#4848a238af9b10742af6d08e204527acf5260c25"
-  integrity sha512-0KuMC6+hEFsCwVOBH4idKwPpbLdccPzP7i5Ja4q7E/kfwCE71uL8AzHhx96XcLeFN8oR8T+nzv8X6j0lyY32SA==
+cornerstone-wado-image-loader@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.1.0.tgz#a85c206eb23e188181ed3f1dcf3ec715e65efcb4"
+  integrity sha512-QRoMqBE5xEc1Jttg3eH6RB4jFY2aIEjd9rcbvJszefl0isow+JwcLv2kh1xkSvqGfHGozcz+F4mrORyTNNLuFQ==
   dependencies:
     "@cornerstonejs/codec-charls" "^0.1.1"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
@@ -6647,10 +6647,10 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@0.18.10:
-  version "0.18.10"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.18.10.tgz#9e293a20dc359c7eba6c81b6afaf5a52fa841288"
-  integrity sha512-GLW1KJmzs+1ye8WA29wDy+cOHa4dYv2Q5XPQuX33X4bK5AqzS+56IzuCH+WkQXnvALZZDBFgbPztOVdUwnN4uw==
+dcmjs@0.19.1:
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.19.1.tgz#3a418f908e34cb80eb4efc1feaccc6268c7c5910"
+  integrity sha512-yCqccv0OwnteryNEcloXwKsY6RpQJNvSdsQPHhmggKxBb9w1uFwkBM9j3MboW4+xLL9JTm/q0+rhLS1WOjJSiA==
   dependencies:
     "@babel/polyfill" "^7.8.3"
     "@babel/runtime" "^7.8.4"
@@ -6963,6 +6963,11 @@ dicom-microscopy-viewer@^0.6.1:
     dicomweb-client "^0.5.2"
     ol "^5.3.0"
 
+dicom-parser@^1.8.11:
+  version "1.8.11"
+  resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.11.tgz#ffd86289a6b85bb0047379084b57fcc1b28fe7f8"
+  integrity sha512-KbxEDqv4Stynv5AxDh90+jY7MtPvI2uyOG62yD8zKu/pcZqoQYfPX44rB0ULjpxt6YIfXfajrs7B1L97RbjNsg==
+
 dicom-parser@^1.8.9:
   version "1.8.9"
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.9.tgz#c69b036b8234df1cfad9978d0d6f0caad1582e74"
@@ -6973,10 +6978,10 @@ dicomweb-client@^0.5.2:
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.2.tgz#aa5a4a6a5044b0702bb0a8a2662c86cd16901951"
   integrity sha512-e11n2+g7HfBuMyopWq76W11eSZJ707g4U1XiO8URA+23aoe0g1kGAtlPB29NKXl7zX7RznTJ7wfRBxFkW6EJDA==
 
-dicomweb-client@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.8.1.tgz#12bdf0e9698bcf82730f38829ac30158164bb3fd"
-  integrity sha512-5EbK8epfSuonSnCW3nr2tkA1CcO1aFT3grEVvKXqv0tVyHsBvbEcEmBcPEbu1m/cF6t7+3uQRLOQ4dw4CodxFg==
+dicomweb-client@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.8.3.tgz#4a5ad49c76415ccc894bec57f9267197432e534b"
+  integrity sha512-24l6ZnU3y6QIb6LUOmT2wJaptvM+oxQQa1btcViwmIok0pi7jjZf8tGSSclOvTKuwX408/qlpg3uWcKU0Y/uDw==
 
 diff-sequences@^24.9.0:
   version "24.9.0"
