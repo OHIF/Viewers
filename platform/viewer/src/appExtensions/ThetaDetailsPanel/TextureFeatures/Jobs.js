@@ -13,7 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
 
-const Jobs = ({ data, user, viewport, series }) => {
+const Jobs = ({ data, user, viewport, series, instances }) => {
   const elementRef = useRef();
   const overlayRef = useRef(false);
   const instanceRef = useRef();
@@ -26,6 +26,8 @@ const Jobs = ({ data, user, viewport, series }) => {
   const { isInstance, setIsInstance } = useContext(JobsContext);
   const { allSeriesState, setSeries } = useContext(JobsContext);
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
+  const { opacityStatus, setOpacityStatus } = useContext(JobsContext);
+  const { colorMapStatus, setColorMapStatus } = useContext(JobsContext);
   const access_token = user.access_token;
 
   const path = window.location.pathname;
@@ -73,6 +75,14 @@ const Jobs = ({ data, user, viewport, series }) => {
       );
     };
   }, []);
+
+  useEffect(() => {
+    console.log({ colorMapStatus, data, instances });
+  }, [colorMapStatus]);
+
+  // useEffect(() => {
+  //   console.log({ opacityStatus });
+  // }, [opacityStatus]);
 
   // this is for checking and setting textures and description
   useEffect(() => {
@@ -165,25 +175,22 @@ const Jobs = ({ data, user, viewport, series }) => {
       if (all_layers.length > 1) {
         cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
         cornerstone.updateImage(elementRef.current);
-        // setLayerID('');
       }
+
+      console.log({ colorMapStatus, opacityStatus });
 
       // new image options for the layer to be added
       const options = {
-        opacity: 0.5,
+        opacity: opacityStatus,
         viewport: {
-          colormap: 'hotIron',
+          colormap: colorMapStatus,
         },
       };
 
       // adding layer to current viewport
       const layer_id = cornerstone.addLayer(elementRef.current, image, options);
 
-      // set new layer as active layer
-      // cornerstone.setActiveLayer(elementRef.current, layer_id);
-
       // set new layer id from above added layer
-      // setLayerID(layer_id);
       layerRef.current = layer_id;
 
       // update overlay reference
@@ -246,7 +253,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     if (all_layers.length > 1) {
       cornerstone.removeLayer(element, all_layers[1].layerId);
       cornerstone.updateImage(element);
-      // setLayerID('');
     }
 
     // update overlay status in the jobs context api
@@ -314,18 +320,6 @@ const Jobs = ({ data, user, viewport, series }) => {
             </ScrollableArea>
           </div>
         )}
-        {/* {layerID && (
-          <label>
-            <br></br>
-            <div className="triggerButton">
-              <button onClick={removeOverlay} className="syncButton">
-                Remove Overlay
-              </button>
-              <br></br>
-            </div>
-            <br></br>
-          </label>
-        )} */}
       </div>
     </div>
   );
