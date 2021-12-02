@@ -20,6 +20,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const layerRef = useRef();
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   // const [layerID, setLayerID] = useState('');
@@ -76,14 +77,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log({ colorMapStatus, data, instances });
-  }, [colorMapStatus]);
-
-  // useEffect(() => {
-  //   console.log({ opacityStatus });
-  // }, [opacityStatus]);
-
   // this is for checking and setting textures and description
   useEffect(() => {
     if (data.texture_uids) {
@@ -111,6 +104,18 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   // function for displaying error message for the job
   const showError = () => {
     if (data.status === 'ERROR') {
+      setIsError(!isError);
+      setErrorMessage(false);
+    }
+  };
+
+  // function for displaying error message for the developer
+  const showErrorMessage = () => {
+    if (isError === true) {
+      setErrorMessage(!errorMessage);
+      setIsError(!isError);
+    } else {
+      setErrorMessage(!errorMessage);
       setIsError(!isError);
     }
   };
@@ -176,8 +181,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
         cornerstone.updateImage(elementRef.current);
       }
-
-      console.log({ colorMapStatus, opacityStatus });
 
       // new image options for the layer to be added
       const options = {
@@ -273,9 +276,14 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
           </div>
           {/* Not the best way to go about this */}
           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
           <div>
-            {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
+            {data.status === 'RUNNING' && (
+              <div>
+                <FontAwesomeIcon icon={faRunning} />
+                &nbsp; `{data.instances_done}/{instances}`
+              </div>
+            )}
             {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
             {data.status === 'ERROR' && (
               <FontAwesomeIcon
@@ -315,7 +323,29 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
           <div className="accordion-content">
             <ScrollableArea scrollStep={201} class="series-browser">
               <div className="jobError">
-                <p>{data.error_message.exception.match(/'(.*?)'/g)}</p>
+                <p>
+                  There is an error creating this job. Please{' '}
+                  <a className="reveal-error" onClick={showErrorMessage}>
+                    click here
+                  </a>{' '}
+                  for more details
+                </p>
+              </div>
+            </ScrollableArea>
+          </div>
+        )}
+
+        {/* Accordion content when job has an error */}
+        {errorMessage && (
+          <div className="accordion-content">
+            <ScrollableArea scrollStep={201} class="series-browser">
+              <div className="jobError">
+                <p>
+                  {data.error_message.exception.match(/'(.*?)'/g)}. 
+                  <a className="reveal-error" onClick={showErrorMessage}>
+                    Go Back
+                  </a>
+                </p>
               </div>
             </ScrollableArea>
           </div>
