@@ -308,6 +308,14 @@ export default [
           { toolName: 'RectangleRoi' },
           'Rectangle'
         ),
+        _createToolButton(
+          'Rotate',
+          'tool-rotate',
+          'Free Rotate',
+          undefined,
+          { toolName: 'Rotate' },
+          'Free Rotate'
+        ),
       ],
     },
   },

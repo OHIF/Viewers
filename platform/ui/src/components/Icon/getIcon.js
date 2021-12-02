@@ -61,6 +61,7 @@ import toolReset from './../../assets/icons/tool-reset.svg';
 import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolCrosshairs from './../../assets/icons/tool-crosshairs.svg';
 import toolSeriesLinking from './../../assets/icons/tool-series-linking.svg';
+import toolRotate from './../../assets/icons/tool-rotate.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -128,6 +129,7 @@ const ICONS = {
   'tool-rectangle': toolRectangle,
   'tool-crosshairs': toolCrosshairs,
   'tool-series-linking': toolSeriesLinking,
+  'tool-rotate': toolRotate,
 
   /** Old OHIF */
   'old-trash': oldTrash,
