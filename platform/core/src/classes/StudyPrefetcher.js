@@ -12,10 +12,12 @@ export class StudyPrefetcher {
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
     includeActiveDisplaySet: false,
+    retryableStatusCodes: [429],
   };
 
   constructor(studies, options) {
     this.studies = studies || [];
+    this.failedPrefetchImageIds = [];
 
     if (options) {
       this.options = { ...this.options, ...options };
@@ -148,17 +150,28 @@ export class StudyPrefetcher {
    * @param {array} imageIds
    */
   prefetchImageIds(imageIds) {
-    const nonCachedImageIds = this.filterCachedImageIds(imageIds);
+    const fetchableImageIds = this.filterFetchableImageIds(imageIds);
     const imageLoadPoolManager = cornerstone.imageLoadPoolManager;
+
+    const catchNonRetryable = id => xhr => {
+      if (xhr && !this.options.retryableStatusCodes.includes(xhr.status)) {
+        // An image that failed to be prefetched would be requested again and again, on every stack scroll
+        // Avoid further requests for those image ids
+        this.failedPrefetchImageIds.push(id);
+      }
+
+      return Promise.reject(xhr);
+    };
 
     let requestFn;
     if (this.options.preventCache) {
-      requestFn = id => cornerstone.loadImage(id);
+      requestFn = id => cornerstone.loadImage(id).catch(catchNonRetryable(id));
     } else {
-      requestFn = id => cornerstone.loadAndCacheImage(id);
+      requestFn = id =>
+        cornerstone.loadAndCacheImage(id).catch(catchNonRetryable(id));
     }
 
-    nonCachedImageIds.forEach(imageId => {
+    fetchableImageIds.forEach(imageId => {
       imageLoadPoolManager.addRequest(
         requestFn.bind(this, imageId),
         this.options.requestType,
@@ -504,13 +517,17 @@ export class StudyPrefetcher {
   }
 
   /**
-   * Filter cached image ids from a set of image ids.
+   * Keep only the image ids that can be prefetched from a list.
    *
    * @param {array} imageIds
-   * @returns {array} images not cached
+   * @returns {array} images not cached, and not part of {@link failedPrefetchImageIds}
    */
-  filterCachedImageIds(imageIds) {
-    return imageIds.filter(imageId => !this.isImageCached(imageId));
+  filterFetchableImageIds(imageIds) {
+    return imageIds.filter(
+      imageId =>
+        !this.isImageCached(imageId) &&
+        this.failedPrefetchImageIds.indexOf(imageId) === -1
+    );
   }
 
   /**
