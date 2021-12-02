@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-segmentation",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "OHIF extension for viewing segmentations in the 2D MPR view",
   "author": "OHIF",
   "license": "MIT",
@@ -29,9 +29,9 @@
   },
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
-    "cornerstone-core": "^2.5.0",
-    "cornerstone-tools": "^6.0.0",
-    "dcmjs": "0.18.10",
+    "cornerstone-core": "^2.6.1",
+    "cornerstone-tools": "^6.0.6",
+    "dcmjs": "0.19.1",
     "prop-types": "^15.6.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"

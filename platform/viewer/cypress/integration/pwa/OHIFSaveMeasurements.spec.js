@@ -85,7 +85,7 @@ describe('OHIF Save Measurements', function() {
   //   cy.get('.sb-closeIcon').click();
   // });
 
-  it('checks if warning message is displayed on measurements of unsupported tools', function() {
+  /*it('checks if warning message is displayed on measurements of unsupported tools', function() {
     // Add measurement for unsupported tool in the viewport
     cy.addAngleMeasurement();
 
@@ -108,7 +108,7 @@ describe('OHIF Save Measurements', function() {
 
     // Close Measurements panel
     cy.get('@measurementsBtn').click();
-  });
+  });*/
 
   /*it('checks if measurements of unsupported tools were not saved', function() {
     // Add measurement for supported tool in the viewport
