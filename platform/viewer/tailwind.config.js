@@ -42,6 +42,11 @@ module.exports = {
         active: '#9FA8DA',
       },
 
+      study: {
+        primary: '#9FA8DA',
+        secondary: '#fc8181',
+      },
+
       secondary: {
         light: '#3B3B3E',
         main: '#1A2667',

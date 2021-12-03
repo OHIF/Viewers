@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip, CinePlayer } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { useTranslation } from 'react-i18next';
+import { useStudyInstanceUIDs } from '@state';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -24,8 +25,8 @@ const ViewportActionBar = ({
   //
   onPillClick,
 }) => {
+  const [studyInstanceUIDs] = useStudyInstanceUIDs();
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
-
   // TODO -> Remake this component with a bunch of generic slots that can be filled,
   // Its not generic at all, isTracked etc shouldn't be parts of this component.
   // It shouldn't care that a tracking mode or SR exists.
@@ -40,11 +41,14 @@ const ViewportActionBar = ({
     isRehydratable,
     useAltStyling,
     modality,
+    studyInstanceUid,
     studyDate,
     currentSeries,
     seriesDescription,
     patientInformation,
   } = studyData;
+
+  const isPrimary = studyInstanceUIDs.includes(studyInstanceUid);
 
   const {
     patientName,
@@ -245,6 +249,8 @@ const ViewportActionBar = ({
     ? '#020424'
     : null;
 
+  const textColor = isPrimary ? 'text-white' : 'text-study-secondary';
+
   return (
     <div
       className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
@@ -261,7 +267,7 @@ const ViewportActionBar = ({
         </div>
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
-            <span className="text-base text-white">{studyDate}</span>
+            <span className={`text-base ${textColor}`}>{studyDate}</span>
             <span className="pl-2 ml-2 text-base border-l border-primary-light text-primary-light">
               S: {currentSeries}
             </span>
@@ -370,7 +376,7 @@ function PatientInfo({
   isOpen,
   showPatientInfoRef,
 }) {
-  const { t } = useTranslation("PatientInfo")
+  const { t } = useTranslation('PatientInfo');
 
   while (patientAge.charAt(0) === '0') {
     patientAge = patientAge.substr(1);
@@ -397,7 +403,9 @@ function PatientInfo({
                 </span>
                 <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
                   <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>{t('Sex')}</span>
+                    <span className={classnames(classes.infoHeader)}>
+                      {t('Sex')}
+                    </span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientSex}
@@ -406,7 +414,9 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>{t('Age')}</span>
+                    <span className={classnames(classes.infoHeader)}>
+                      {t('Age')}
+                    </span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientAge}
@@ -415,7 +425,9 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>{t('MRN')}</span>
+                    <span className={classnames(classes.infoHeader)}>
+                      {t('MRN')}
+                    </span>
                     <span className={classnames(classes.infoText)} title={MRN}>
                       {MRN}
                     </span>
