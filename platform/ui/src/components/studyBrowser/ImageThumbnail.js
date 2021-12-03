@@ -93,12 +93,13 @@ function ImageThumbnail(props) {
   }, [canvasRef, image, image.imageId]);
 
   useEffect(() => {
-    if (!image.imageId || image.imageId !== imageId) {
+    if (!error && (!image.imageId || image.imageId !== imageId)) {
       purgeCancelablePromise();
       setImagePromise();
       fetchImagePromise();
     }
   }, [
+    error,
     fetchImagePromise,
     image.imageId,
     imageId,
@@ -130,7 +131,9 @@ function ImageThumbnail(props) {
           />
         </div>
       )}
-      {isLoading && <div className="image-thumbnail-loading-indicator"></div>}
+      {!error && isLoading && (
+        <div className="image-thumbnail-loading-indicator"></div>
+      )}
     </div>
   );
 }
