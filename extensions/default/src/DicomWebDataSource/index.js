@@ -17,6 +17,13 @@ import {
 } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient.js';
 
+import axios from "axios";
+
+const nlApi = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "",
+  withCredentials: process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.includes("http://localhost") : false,
+});
+
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
@@ -85,25 +92,21 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
-          const headers = UserAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            qidoDicomWebClient.headers = headers;
+
+          // Sometimes Ohif does Fuzzy searching which is a dicom standard
+          // GCP supports it. Fuzzy searching is searching the patient name using the
+          // fuzzy method. Fo us we extract the patient name and filter studies by that
+          // UID.
+          const { patientId, studyInstanceUid } = origParams;
+          let queryParams = ""
+          if(patientId) {
+            queryParams = { patient_id: patientId }
+          } else {
+            queryParams = { uid : studyInstanceUid }
           }
+          const studyResponse = await nlApi.get("/api/studies/", { params: queryParams });
 
-          const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-            mapParams(origParams, {
-              supportsFuzzyMatching,
-              supportsWildcard,
-            }) || {};
-
-          const results = await qidoSearch(
-            qidoDicomWebClient,
-            undefined,
-            undefined,
-            mappedParams
-          );
-
-          return processResults(results);
+          return studyResponse.data.results;
         },
         processResults: processResults.bind(),
       },
@@ -238,26 +241,40 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
           'Unable to query for SeriesMetadata without StudyInstanceUID'
         );
       }
-
-      // Get Series
-      const {
-        seriesSummaryMetadata,
-        seriesPromises,
-      } = await retrieveStudyMetadata(
-        wadoDicomWebClient,
-        StudyInstanceUID,
-        enableStudyLazyLoad,
-        filters,
-        sortCriteria,
-        sortFunction
+      const studyResponse = await nlApi.get("/api/studies/", {
+        params: {
+          uid: StudyInstanceUID
+        }}
       );
-
-      // Async load series, store as retrieved
-      function storeInstances(instances) {
-        const naturalizedInstances = instances.map(naturalizeDataset);
-
-        DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);
+      if(studyResponse.status !== 200){
+        throw new Error(
+          'Unable to fetch study metadata'
+        );
       }
+
+      const patientResponse = await nlApi.get("/api/patients/", {
+        params: {
+          id: studyResponse.data.results[0].patient_id
+        }}
+      );
+      if(patientResponse.status !== 200){
+        throw new Error(
+          'Unable to fetch patient metadata'
+        );
+      }
+
+      const seriesResponse = await nlApi.get("/api/series/", {
+        params: {
+          study_id: studyResponse.data.results[0].id
+        }}
+      );
+      if(seriesResponse.status !== 200){
+        throw new Error(
+          'Unable to fetch series metadata'
+        );
+      }
+
+      const seriesSummaryMetadata = seriesResponse.data.results
 
       function setSuccessFlag() {
         const study = DicomMetadataStore.getStudy(
@@ -268,16 +285,22 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         DicomMetadataStore.studyLoaded(study);
       }
 
-      // Google Cloud Healthcare doesn't return StudyInstanceUID, so we need to add
-      // it manually here
-      seriesSummaryMetadata.forEach(aSeries => { aSeries.StudyInstanceUID = StudyInstanceUID })
-
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
-      const numberOfSeries = seriesPromises.length;
-      seriesPromises.forEach(async (seriesPromise, index) => {
-        const instances = await seriesPromise;
-        storeInstances(instances);
+      const numberOfSeries = seriesSummaryMetadata.length;
+      seriesSummaryMetadata.forEach(async (series, index) => {
+        const instancesResponse = await nlApi.get("/api/instances/", {
+          params: {
+            series_id: series.id
+          }}
+        );
+        const instances = instancesResponse.data.results.map(instance => ({...instance, ...series, ...patientResponse.data.results[0], ...studyResponse.data.results[0], ...instance.overlay_data }))
+        if(instancesResponse.status !== 200){
+          throw new Error(
+            'Unable to fetch instance metadata'
+          );
+        }
+        DicomMetadataStore.addInstances(instances, madeInClient);
         if (index === numberOfSeries - 1) setSuccessFlag();
       });
     },
