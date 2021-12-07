@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import axios from 'axios';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
@@ -6,6 +6,7 @@ import '../AITriggerComponent.css';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
 import { connect } from 'react-redux';
 import { servicesManager } from './../../../App';
+import { JobsContext } from '../../../context/JobsContext';
 
 const JobParameters = props => {
   const { user, viewport } = props;
@@ -20,6 +21,7 @@ const JobParameters = props => {
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
+  const { jobDetails, setJobDetails } = useContext(JobsContext);
 
   const { UINotificationService } = servicesManager.services;
 
@@ -41,6 +43,10 @@ const JobParameters = props => {
   });
 
   useEffect(() => {
+    console.log({ jobDetails });
+  }, [jobDetails]);
+
+  useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
 
@@ -54,8 +60,6 @@ const JobParameters = props => {
 
     // retrieving rectangle tool roi data from element
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
-
-    const image = cornerstone.getImage(element);
 
     if (tool_data && tool_data.data.length > 0) {
       setToolData(tool_data.data[0]);
@@ -133,6 +137,7 @@ const JobParameters = props => {
           UINotificationService.show({
             message:
               'Job triggered successfully. Please wait for it to be completed',
+            duration: 5000,
           });
         }
 
