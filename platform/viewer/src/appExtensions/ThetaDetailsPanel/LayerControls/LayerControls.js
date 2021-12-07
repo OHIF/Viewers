@@ -14,6 +14,8 @@ const LayerControls = () => {
   const [acLayer, setAcLayer] = React.useState('');
   const colors = cornerstone.colors.getColormapsList();
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
+  const { opacityStatus, setOpacityStatus } = useContext(JobsContext);
+  const { colorMapStatus, setColorMapStatus } = useContext(JobsContext);
 
 
 
@@ -79,6 +81,8 @@ const LayerControls = () => {
       // setting prefered opacity for active layer
       layer.options.opacity = event.target.value;
 
+      setOpacityStatus(event.target.value);
+
       // update the element to apply new settings
       cornerstone.updateImage(element);
     }
@@ -96,6 +100,8 @@ const LayerControls = () => {
 
       // setting colormap to selected color
       layer.viewport.colormap = event.target.value;
+
+      setColorMapStatus(event.target.value);
 
       // update the element to apply new settings
       cornerstone.updateImage(element);

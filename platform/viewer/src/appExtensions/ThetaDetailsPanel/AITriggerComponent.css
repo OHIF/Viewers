@@ -93,3 +93,16 @@ h1 {
 .selected-instance {
   color: rgb(155, 155, 255);
 }
+
+.reveal-error {
+  color: rgb(155, 155, 255);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.loader {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}

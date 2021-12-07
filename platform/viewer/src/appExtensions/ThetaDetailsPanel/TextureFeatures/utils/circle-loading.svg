@@ -1,0 +1,19 @@
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="150px" height="150px" viewBox="0 0 150 150" enable-background="new 0 0 150 150" xml:space="preserve">
+
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="31.7194" y1="44.6398" x2="84.4073" y2="44.6398" gradientTransform="matrix(0.9892 -0.1463 0.1463 0.9892 -8.8842 9.2243)">
+	<stop  offset="0" style="stop-color:#2484C6"/>
+	<stop  offset="1" style="stop-color:#2484C6;stop-opacity:0"/>
+</linearGradient>
+<path fill="url(#SVGID_1_)" d="M73.123,24.558c-11.726,1.726-22.878,7.496-30.958,16.203c-4.357,4.695-8.958,10.676-10.877,16.856
+	c-1.312,4.226,0.26,9.016,5.194,7.629c4.528-1.273,5.571-9.971,7.75-13.222c6.843-10.205,17.971-17.158,30.107-18.956
+	C81.294,32.038,80.79,23.43,73.123,24.558z">
+	<animateTransform attributeName="transform"
+                  attributeType="XML"
+                  type="rotate"
+                  from="0 75 75"
+                  to="-360 75 75"
+                  dur="1s"
+                  repeatCount="indefinite"/>
+</path>
+</svg>

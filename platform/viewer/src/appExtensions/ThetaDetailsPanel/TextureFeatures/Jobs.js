@@ -13,19 +13,22 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
 
-const Jobs = ({ data, user, viewport, series }) => {
+const Jobs = ({ data, user, viewport, series, instances }) => {
   const elementRef = useRef();
   const overlayRef = useRef(false);
   const instanceRef = useRef();
   const layerRef = useRef();
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
   // const [layerID, setLayerID] = useState('');
   const { isInstance, setIsInstance } = useContext(JobsContext);
   const { allSeriesState, setSeries } = useContext(JobsContext);
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
+  const { opacityStatus, setOpacityStatus } = useContext(JobsContext);
+  const { colorMapStatus, setColorMapStatus } = useContext(JobsContext);
   const access_token = user.access_token;
 
   const path = window.location.pathname;
@@ -102,6 +105,18 @@ const Jobs = ({ data, user, viewport, series }) => {
   const showError = () => {
     if (data.status === 'ERROR') {
       setIsError(!isError);
+      setErrorMessage(false);
+    }
+  };
+
+  // function for displaying error message for the developer
+  const showErrorMessage = () => {
+    if (isError === true) {
+      setErrorMessage(!errorMessage);
+      setIsError(!isError);
+    } else {
+      setErrorMessage(!errorMessage);
+      setIsError(!isError);
     }
   };
 
@@ -165,25 +180,20 @@ const Jobs = ({ data, user, viewport, series }) => {
       if (all_layers.length > 1) {
         cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
         cornerstone.updateImage(elementRef.current);
-        // setLayerID('');
       }
 
       // new image options for the layer to be added
       const options = {
-        opacity: 0.5,
+        opacity: opacityStatus,
         viewport: {
-          colormap: 'hotIron',
+          colormap: colorMapStatus,
         },
       };
 
       // adding layer to current viewport
       const layer_id = cornerstone.addLayer(elementRef.current, image, options);
 
-      // set new layer as active layer
-      // cornerstone.setActiveLayer(elementRef.current, layer_id);
-
       // set new layer id from above added layer
-      // setLayerID(layer_id);
       layerRef.current = layer_id;
 
       // update overlay reference
@@ -246,7 +256,6 @@ const Jobs = ({ data, user, viewport, series }) => {
     if (all_layers.length > 1) {
       cornerstone.removeLayer(element, all_layers[1].layerId);
       cornerstone.updateImage(element);
-      // setLayerID('');
     }
 
     // update overlay status in the jobs context api
@@ -267,9 +276,14 @@ const Jobs = ({ data, user, viewport, series }) => {
           </div>
           {/* Not the best way to go about this */}
           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
           <div>
-            {data.status === 'RUNNING' && <FontAwesomeIcon icon={faRunning} />}
+            {data.status === 'RUNNING' && (
+              <div>
+                <FontAwesomeIcon icon={faRunning} />
+                &nbsp; `{data.instances_done}/{instances}`
+              </div>
+            )}
             {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
             {data.status === 'ERROR' && (
               <FontAwesomeIcon
@@ -309,23 +323,33 @@ const Jobs = ({ data, user, viewport, series }) => {
           <div className="accordion-content">
             <ScrollableArea scrollStep={201} class="series-browser">
               <div className="jobError">
-                <p>{data.error_message.exception.match(/'(.*?)'/g)}</p>
+                <p>
+                  There is an error creating this job. Please{' '}
+                  <a className="reveal-error" onClick={showErrorMessage}>
+                    click here
+                  </a>{' '}
+                  for more details
+                </p>
               </div>
             </ScrollableArea>
           </div>
         )}
-        {/* {layerID && (
-          <label>
-            <br></br>
-            <div className="triggerButton">
-              <button onClick={removeOverlay} className="syncButton">
-                Remove Overlay
-              </button>
-              <br></br>
-            </div>
-            <br></br>
-          </label>
-        )} */}
+
+        {/* Accordion content when job has an error */}
+        {errorMessage && (
+          <div className="accordion-content">
+            <ScrollableArea scrollStep={201} class="series-browser">
+              <div className="jobError">
+                <p>
+                  {data.error_message.exception.match(/'(.*?)'/g)}. 
+                  <a className="reveal-error" onClick={showErrorMessage}>
+                    Go Back
+                  </a>
+                </p>
+              </div>
+            </ScrollableArea>
+          </div>
+        )}
       </div>
     </div>
   );

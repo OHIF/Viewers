@@ -273,6 +273,9 @@ class Viewer extends Component {
     });
 
     const text = '';
+    const opacityStatus = 0.5;
+    const colormapStatus = 'hotIron';
+    const jobDetails = {};
 
     return (
       <>
@@ -284,6 +287,9 @@ class Viewer extends Component {
           }
           overlay={false}
           instance={text}
+          opacity={opacityStatus}
+          colormap={colormapStatus}
+          job={jobDetails}
         />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>

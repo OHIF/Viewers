@@ -10,6 +10,8 @@ const {
 const mapStateToProps = state => {
   const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
 
+  // console.log({ state, viewportSpecificData });
+
   return {
     activeViewportIndex,
     layout,

@@ -1,9 +1,10 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import '../AITriggerComponent.css';
 import Jobs from './Jobs';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { JobsContext } from '../../../context/JobsContext';
+import Loader from './utils/circle-loading.svg';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
@@ -13,6 +14,7 @@ const TextureFeature = props => {
   const email = user.profile.email;
   const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
+  const instancesRef = useRef();
 
   const client = axios.create({
     baseURL:
@@ -33,7 +35,7 @@ const TextureFeature = props => {
   useEffect(() => {
     const interval = setInterval(() => {
       getJobs();
-    }, 3500);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -43,6 +45,7 @@ const TextureFeature = props => {
       await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
+          instancesRef.current = response.data.instances;
           setIsLoading(false);
           setJobs([...response.data.jobs]);
         });
@@ -61,8 +64,9 @@ const TextureFeature = props => {
       <div className="title-header">Texture Features</div>
 
       {isLoading && (
-        <div style={{ alignItems: 'center' }}>
-          <h1>Loading...</h1>
+        <div className='loader'>
+          <h2>Loading...</h2>
+          {/* <img height={40} src={Loader} alt="Loading..." /> */}
         </div>
       )}
 
@@ -89,8 +93,15 @@ const TextureFeature = props => {
               viewport={viewport}
               series={series}
               data={data}
+              instances={instancesRef.current}
             />
           ))}
+        </div>
+      )}
+
+      {!isLoading && jobs.length <= 0 && (
+        <div className="accordion">
+         <p>There are current no jobs created. Kindly select the AiTrigger button on the toolbar to begin the job creation process</p>
         </div>
       )}
     </div>
