@@ -16,6 +16,7 @@ const toolsGroupedByType = {
   other: [
     csTools.PanTool,
     csTools.ZoomTool,
+    csTools.RotateTool,
     csTools.WwwcTool,
     csTools.WwwcRegionTool,
     csTools.MagnifyTool,
