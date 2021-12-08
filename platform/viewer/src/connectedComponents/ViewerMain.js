@@ -28,6 +28,9 @@ class ViewerMain extends Component {
   }
 
   getDisplaySets(studies) {
+
+    // console.log({ studies });
+
     const displaySets = [];
     studies.forEach(study => {
       study.displaySets.forEach(dSet => {

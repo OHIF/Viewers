@@ -10,14 +10,12 @@ const JobsContextProvider = ({
   instance,
   opacity,
   colormap,
-  job
 }) => {
   const [allSeriesState, setSeries] = useState([]);
   const [overlayStatus, setOverlayStatus] = useState(overlay);
   const [isInstance, setIsInstance] = useState(instance);
   const [opacityStatus, setOpacityStatus] = useState(opacity);
   const [colorMapStatus, setColorMapStatus] = useState(colormap);
-  const [jobDetails, setJobDetails] = useState(job);
 
   return (
     <JobsContext.Provider
@@ -32,8 +30,6 @@ const JobsContextProvider = ({
         setOpacityStatus,
         colorMapStatus,
         setColorMapStatus,
-        jobDetails,
-        setJobDetails,
       }}
     >
       {children}

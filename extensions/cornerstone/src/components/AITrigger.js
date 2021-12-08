@@ -55,7 +55,7 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
     // retrieving rectangle tool roi data from element
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-    console.log({ ToolData: tool_data.data });
+    // console.log({ ToolData: tool_data.data });
 
     // if (tool_data && tool_data.data.length > 0) {
     //   let startX = parseInt(tool_data.data[0].handles.start.x.toFixed(2));
@@ -89,6 +89,7 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
           title: 'Overwrite Alert',
           message: 'Taking new dimensions would remove previous selected ones',
           type: 'warning',
+          duration: 10000,
         });
         count++;
       }

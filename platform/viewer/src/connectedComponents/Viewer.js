@@ -275,8 +275,6 @@ class Viewer extends Component {
     const text = '';
     const opacityStatus = 0.5;
     const colormapStatus = 'hotIron';
-    const jobDetails = {};
-
     return (
       <>
         <JobsContextUtil
@@ -289,7 +287,6 @@ class Viewer extends Component {
           instance={text}
           opacity={opacityStatus}
           colormap={colormapStatus}
-          job={jobDetails}
         />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>
@@ -378,12 +375,11 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
+              ) : // <ConnectedStudyBrowser
+              //   studies={this.state.thumbnails}
+              //   studyMetadata={this.props.studies}
+              // />
+              null}
             </SidePanel>
           </ErrorBoundaryDialog>
 

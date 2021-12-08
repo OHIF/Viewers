@@ -141,6 +141,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     // get current image
     const image = cornerstone.getImage(element);
 
+    console.log({ image });
+
     // extract source id from the derived image data
     const source_uid = image.imageId.split('/')[18];
 
@@ -172,39 +174,48 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // functionality for loading an image and setting it as an added layer
   const addImageLayer = async image_id => {
-    await cornerstone.loadAndCacheImage(image_id).then(image => {
-      // Getting all layers
-      const all_layers = cornerstone.getLayers(elementRef.current);
+    await cornerstone
+      .loadAndCacheImage(image_id)
+      .then(image => {
+        // Getting all layers
+        const all_layers = cornerstone.getLayers(elementRef.current);
 
-      // remove any previous layer if it exists so we don`t have multiple layers
-      if (all_layers.length > 1) {
-        cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
+        // remove any previous layer if it exists so we don`t have multiple layers
+        if (all_layers.length > 1) {
+          cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
+          cornerstone.updateImage(elementRef.current);
+        }
+
+        // new image options for the layer to be added
+        const options = {
+          opacity: opacityStatus,
+          viewport: {
+            colormap: colorMapStatus,
+          },
+        };
+
+        // adding layer to current viewport
+        const layer_id = cornerstone.addLayer(
+          elementRef.current,
+          image,
+          options
+        );
+
+        // set new layer id from above added layer
+        layerRef.current = layer_id;
+
+        // update overlay reference
+        overlayRef.current = true;
+
+        // update the overlay status in the jobs context api
+        setOverlayStatus(true);
+
+        // update the canvase with the all new data
         cornerstone.updateImage(elementRef.current);
-      }
-
-      // new image options for the layer to be added
-      const options = {
-        opacity: opacityStatus,
-        viewport: {
-          colormap: colorMapStatus,
-        },
-      };
-
-      // adding layer to current viewport
-      const layer_id = cornerstone.addLayer(elementRef.current, image, options);
-
-      // set new layer id from above added layer
-      layerRef.current = layer_id;
-
-      // update overlay reference
-      overlayRef.current = true;
-
-      // update the overlay status in the jobs context api
-      setOverlayStatus(true);
-
-      // update the canvase with the all new data
-      cornerstone.updateImage(elementRef.current);
-    });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   // functionality for getting new image during overlay scroll activity
@@ -281,7 +292,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             {data.status === 'RUNNING' && (
               <div>
                 <FontAwesomeIcon icon={faRunning} />
-                &nbsp; `{data.instances_done}/{instances}`
+                &nbsp; {data.instances_done}/{instances}
               </div>
             )}
             {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
@@ -341,7 +352,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             <ScrollableArea scrollStep={201} class="series-browser">
               <div className="jobError">
                 <p>
-                  {data.error_message.exception.match(/'(.*?)'/g)}. 
+                  {data.error_message.exception.match(/'(.*?)'/g)}.
                   <a className="reveal-error" onClick={showErrorMessage}>
                     Go Back
                   </a>
