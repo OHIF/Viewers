@@ -177,6 +177,12 @@ class Viewer extends Component {
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
+    // console.log({
+    //   studies: this.props.studies,
+    //   thumbnails: this.state.thumbnails,
+    // });
+
+
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
     });
@@ -221,6 +227,12 @@ class Viewer extends Component {
       activeViewportIndex,
       viewports,
     } = this.props;
+
+    // console.log({
+    //   studies: this.props.studies,
+    //   thumbnails: this.state.thumbnails,
+    //   isStudyLoaded: this.props.isStudyLoaded
+    // });
 
     const activeViewport = viewports[activeViewportIndex];
     const activeDisplaySetInstanceUID = activeViewport
@@ -273,8 +285,6 @@ class Viewer extends Component {
     });
 
     const text = '';
-    const opacityStatus = 0.5;
-    const colormapStatus = 'hotIron';
     return (
       <>
         <JobsContextUtil
@@ -285,8 +295,6 @@ class Viewer extends Component {
           }
           overlay={false}
           instance={text}
-          opacity={opacityStatus}
-          colormap={colormapStatus}
         />
         {/* HEADER */}
         <WhiteLabelingContext.Consumer>
@@ -376,10 +384,11 @@ class Viewer extends Component {
                   activeIndex={this.props.activeViewportIndex}
                 />
               ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
+                // <ConnectedStudyBrowser
+                //   studies={this.state.thumbnails}
+                //   studyMetadata={this.props.studies}
+                // />
+                null
               )}
             </SidePanel>
           </ErrorBoundaryDialog>

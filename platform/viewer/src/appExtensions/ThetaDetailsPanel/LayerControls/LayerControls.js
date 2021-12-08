@@ -118,6 +118,8 @@ const LayerControls = () => {
     if (all_layers.length > 1) {
       const layer = cornerstone.getLayer(element, all_layers[1].layerId);
 
+      console.log({ layer });
+
       // setting colormap to selected color
       layer.viewport.colormap = event.target.value;
 

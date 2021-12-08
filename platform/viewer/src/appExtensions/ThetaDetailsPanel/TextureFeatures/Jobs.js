@@ -94,9 +94,9 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
   }, [overlayStatus]);
 
-  // useEffect(() => {
-  //   console.log({ opacityStatus, colorMapStatus });
-  // }, [opacityStatus, colorMapStatus]);
+  useEffect(() => {
+    console.log({ opacityStatus, colorMapStatus });
+  }, [opacityStatus, colorMapStatus]);
 
   // Functionality for showing jobs if jobs data is available
   const show = () => {
@@ -187,6 +187,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
           cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
           cornerstone.updateImage(elementRef.current);
         }
+        console.log({ opacityStatus, colorMapStatus });
 
         // new image options for the layer to be added
         const options = {
@@ -195,6 +196,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             colormap: colorMapStatus,
           },
         };
+
+        console.log({ options });
 
         // adding layer to current viewport
         const layer_id = cornerstone.addLayer(

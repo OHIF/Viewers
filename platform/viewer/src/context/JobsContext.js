@@ -8,14 +8,12 @@ const JobsContextProvider = ({
   series,
   overlay,
   instance,
-  opacity,
-  colormap,
 }) => {
   const [allSeriesState, setSeries] = useState([]);
   const [overlayStatus, setOverlayStatus] = useState(overlay);
   const [isInstance, setIsInstance] = useState(instance);
-  const [opacityStatus, setOpacityStatus] = useState(opacity);
-  const [colorMapStatus, setColorMapStatus] = useState(colormap);
+  const [opacityStatus, setOpacityStatus] = useState(0.5);
+  const [colorMapStatus, setColorMapStatus] = useState('hotIron');
 
   return (
     <JobsContext.Provider
