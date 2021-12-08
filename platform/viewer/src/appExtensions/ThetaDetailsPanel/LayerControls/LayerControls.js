@@ -53,25 +53,7 @@ const LayerControls = () => {
       setElement(viewports.element);
       setEnabledElement(viewports);
     }, 700);
-
-    // adding event listeners for color and opacity changes
-    element.addEventListener('opacityEvent', opacityEventHandler);
-    element.addEventListener('colorEvent', colorEventHandler);
-
-    // removing event listeners for color and opacity changes
-    return () => {
-      element.removeEventListener('opacityEvent', opacityEventHandler);
-      element.removeEventListener('colorEvent', colorEventHandler);
-    };
   }, []);
-
-  const colorEventHandler = event => {
-    // console.log({ ColorValue: event});
-  };
-
-  const opacityEventHandler = event => {
-    // console.log({ OpacityValue: event });
-  };
 
   // function for creating a base layer if non exists
   const createBaseLayerControl = (element, image_id) => {
@@ -102,10 +84,6 @@ const LayerControls = () => {
       // update the element to apply new settings
       cornerstone.updateImage(element);
     }
-
-    // Trigger a change event
-    const opacityEvent = new Event('opacityEvent');
-    element.dispatchEvent(opacityEvent);
   };
 
   // function for changing the colormap for an active layer
@@ -126,10 +104,6 @@ const LayerControls = () => {
       // update the element to apply new settings
       cornerstone.updateImage(element);
     }
-
-    // Trigger a change event
-    const colorEvent = new Event('colorEvent');
-    element.dispatchEvent(colorEvent);
   };
 
   return (
