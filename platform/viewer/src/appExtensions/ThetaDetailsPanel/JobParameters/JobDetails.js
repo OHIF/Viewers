@@ -28,7 +28,8 @@ const JobParameters = props => {
   const access_token = user.access_token;
 
   const client = axios.create({
-    baseURL: 'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
+    baseURL:
+      'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -41,10 +42,6 @@ const JobParameters = props => {
     config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
-
-  useEffect(() => {
-    console.log({ jobDetails });
-  }, [jobDetails]);
 
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
@@ -81,7 +78,40 @@ const JobParameters = props => {
       setWidth(width);
       setIsDisabled(false);
     }
+
+    // Pull event from cornerstone-tools
+    const { EVENTS } = cornerstoneTools;
+    element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
+
+    return () =>
+      element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
   }, []);
+
+  const eventhandler = event => {
+    setIsDisabled(true);
+    console.log({ eventCall: event.detail.measurementData });
+    setToolData(event.detail.measurementData);
+    let startX = parseInt(
+      event.detail.measurementData.handles.start.x.toFixed(2)
+    );
+    let startY = parseInt(
+      event.detail.measurementData.handles.start.y.toFixed(2)
+    );
+    let endX = parseInt(event.detail.measurementData.handles.end.x.toFixed(2));
+    let endY = parseInt(event.detail.measurementData.handles.end.y.toFixed(2));
+
+    const x_min = Math.min(startX, endX);
+    const x_max = Math.max(startX, endX);
+    const y_min = Math.min(startY, endY);
+    const y_max = Math.max(startY, endY);
+    const width = x_max - x_min;
+    const height = y_max - y_min;
+    setX(x_min);
+    setY(y_min);
+    setHeight(height);
+    setWidth(width);
+    setIsDisabled(false);
+  };
 
   const triggerJob = () => {
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
@@ -106,7 +136,6 @@ const JobParameters = props => {
   };
 
   const sendParams = async data => {
-    // console.log({ data, viewport });
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
     const email = user.profile.email;
