@@ -89,7 +89,6 @@ const JobParameters = props => {
 
   const eventhandler = event => {
     setIsDisabled(true);
-    console.log({ eventCall: event.detail.measurementData });
     setToolData(event.detail.measurementData);
     let startX = parseInt(
       event.detail.measurementData.handles.start.x.toFixed(2)

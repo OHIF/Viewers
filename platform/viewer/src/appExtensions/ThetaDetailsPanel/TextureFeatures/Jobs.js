@@ -141,6 +141,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     // get current image
     const image = cornerstone.getImage(element);
 
+    console.log({ image });
+
     // extract source id from the derived image data
     const source_uid = image.imageId.split('/')[18];
 
@@ -290,7 +292,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             {data.status === 'RUNNING' && (
               <div>
                 <FontAwesomeIcon icon={faRunning} />
-                &nbsp; `{data.instances_done}/{instances}`
+                &nbsp; {data.instances_done}/{instances}
               </div>
             )}
             {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
