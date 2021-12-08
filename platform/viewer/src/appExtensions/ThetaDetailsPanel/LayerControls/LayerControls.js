@@ -66,13 +66,11 @@ const LayerControls = () => {
   }, []);
 
   const colorEventHandler = event => {
-    console.log({ ColorValue: event });
+    // console.log({ ColorValue: event});
   };
 
   const opacityEventHandler = event => {
-    console.log({
-      OpacityValue: event,
-    });
+    // console.log({ OpacityValue: event });
   };
 
   // function for creating a base layer if non exists
