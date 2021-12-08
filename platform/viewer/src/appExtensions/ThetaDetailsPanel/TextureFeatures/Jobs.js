@@ -94,6 +94,10 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
   }, [overlayStatus]);
 
+  // useEffect(() => {
+  //   console.log({ opacityStatus, colorMapStatus });
+  // }, [opacityStatus, colorMapStatus]);
+
   // Functionality for showing jobs if jobs data is available
   const show = () => {
     if (data.status === 'DONE') {
@@ -140,8 +144,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
     // get current image
     const image = cornerstone.getImage(element);
-
-    console.log({ image });
 
     // extract source id from the derived image data
     const source_uid = image.imageId.split('/')[18];
