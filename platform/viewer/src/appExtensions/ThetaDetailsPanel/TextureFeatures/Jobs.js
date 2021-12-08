@@ -18,22 +18,25 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const overlayRef = useRef(false);
   const instanceRef = useRef();
   const layerRef = useRef();
+  const opacityRef = useRef();
+  const colorMapRef = useRef();
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
-  // const [layerID, setLayerID] = useState('');
-  const { isInstance, setIsInstance } = useContext(JobsContext);
-  const { allSeriesState, setSeries } = useContext(JobsContext);
-  const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
-  const { opacityStatus, setOpacityStatus } = useContext(JobsContext);
-  const { colorMapStatus, setColorMapStatus } = useContext(JobsContext);
+  const {
+    opacityStatus,
+    colorMapStatus,
+    allSeriesState,
+    isInstance,
+    setIsInstance,
+    overlayStatus,
+    setOverlayStatus,
+  } = useContext(JobsContext);
   const access_token = user.access_token;
 
   const path = window.location.pathname;
-
-  const viewportSpecificData = viewport.viewportSpecificData[0];
 
   const base_url = `wadors:https://healthcare.googleapis.com/v1${path.replace(
     'study',
@@ -95,7 +98,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   }, [overlayStatus]);
 
   useEffect(() => {
-    console.log({ opacityStatus, colorMapStatus });
+    opacityRef.current = opacityStatus;
+    colorMapRef.current = colorMapStatus;
   }, [opacityStatus, colorMapStatus]);
 
   // Functionality for showing jobs if jobs data is available
@@ -187,17 +191,13 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
           cornerstone.removeLayer(elementRef.current, all_layers[1].layerId);
           cornerstone.updateImage(elementRef.current);
         }
-        console.log({ opacityStatus, colorMapStatus });
 
-        // new image options for the layer to be added
         const options = {
-          opacity: opacityStatus,
+          opacity: opacityRef.current,
           viewport: {
-            colormap: colorMapStatus,
+            colormap: colorMapRef.current,
           },
         };
-
-        console.log({ options });
 
         // adding layer to current viewport
         const layer_id = cornerstone.addLayer(
