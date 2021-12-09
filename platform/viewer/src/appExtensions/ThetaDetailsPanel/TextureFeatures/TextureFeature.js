@@ -5,6 +5,10 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { JobsContext } from '../../../context/JobsContext';
 import Loader from './utils/circle-loading.svg';
+import lottie from 'lottie-web';
+import circularLoading from './utils/circular-loading.json';
+import handLoading from './utils/hand-loading.json';
+
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
@@ -31,6 +35,17 @@ const TextureFeature = props => {
     config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
+
+  // loading loader animation during component call
+  useEffect(() => {
+    lottie.loadAnimation({
+      container: document.querySelector('#loader-svg'),
+      animationData: circularLoading,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+    });
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,9 +79,10 @@ const TextureFeature = props => {
       <div className="title-header">Texture Features</div>
 
       {isLoading && (
-        <div className='loader'>
-          <h2>Loading...</h2>
+        <div className="loader">
+          {/* <h2>Loading...</h2> */}
           {/* <img height={40} src={Loader} alt="Loading..." /> */}
+          <div id="loader-svg" />
         </div>
       )}
 
@@ -101,7 +117,10 @@ const TextureFeature = props => {
 
       {!isLoading && jobs.length <= 0 && (
         <div className="accordion">
-         <p>There are current no jobs created. Kindly select the AiTrigger button on the toolbar to begin the job creation process</p>
+          <p>
+            There are current no jobs created. Kindly select the AiTrigger
+            button on the toolbar to begin the job creation process
+          </p>
         </div>
       )}
     </div>

@@ -12,6 +12,8 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
+import lottie from 'lottie-web';
+import progressLoading from './utils/progress-loading.json';
 
 const Jobs = ({ data, user, viewport, series, instances }) => {
   const elementRef = useRef();
@@ -20,8 +22,10 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const layerRef = useRef();
   const opacityRef = useRef();
   const colorMapRef = useRef();
+  // const loadingRef = useRef(false);
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
@@ -59,6 +63,17 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
+
+  // loading loader animation during component call
+  useEffect(() => {
+    lottie.loadAnimation({
+      container: document.querySelector('#loader-svg'),
+      animationData: progressLoading,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+    });
+  }, []);
 
   // setting up useEffect for adding and removing an event listener
   useEffect(() => {
@@ -130,6 +145,9 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
+    // set loading to true
+    setIsLoading(true);
+
     // remove previous overlay if it exists
     if (overlayRef.current === true) {
       removeOverlay();
@@ -221,6 +239,9 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
         // update the canvase with the all new data
         cornerstone.updateImage(elementRef.current);
+
+        // set loader to false
+        setIsLoading(false);
       })
       .catch(error => {
         console.log(error);
@@ -229,6 +250,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // functionality for getting new image during overlay scroll activity
   const eventFunction = event => {
+    setIsLoading(true);
     if (overlayRef.current === false) {
       return;
     } else {
@@ -279,18 +301,12 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   // }
 
   const cacheEntireSeries = series => {
-    // console.log({ Chosen: series });
-
     const instances = series[0].instances;
-
-    // console.log({ instances });
 
     const promises = [];
 
     instances.map(instance => {
       const image_id = 'wadors:' + instance.wadorsuri;
-
-      console.log({ image_id });
 
       const loadPromise = cornerstone.loadAndCacheImage(image_id);
       promises.push(loadPromise);
@@ -326,32 +342,41 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   return (
     <div>
       <div className="accordion-item">
-        <div className="accordion-title" onClick={show}>
-          <div>
-            <b>Job {data.job}</b>
+        {isLoading === true && <div id="loader-svg" />}
+
+        {isActive && isLoading === false && (
+          <div className="accordion-title" onClick={show}>
+            <div>
+              <b>Job {data.job}</b>
+            </div>
+            {/* Not the best way to go about this */}
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            <div>
+              {data.status === 'RUNNING' && (
+                <div>
+                  <FontAwesomeIcon icon={faRunning} />
+                  &nbsp; {data.instances_done}/{instances}
+                </div>
+              )}
+              {data.status === 'PENDING' && (
+                <FontAwesomeIcon icon={faSpinner} />
+              )}
+              {data.status === 'ERROR' && (
+                <FontAwesomeIcon
+                  icon={faExclamationTriangle}
+                  onClick={showError}
+                />
+              )}
+              {data.status === 'DONE' && (
+                <FontAwesomeIcon icon={faCheckCircle} />
+              )}
+            </div>
           </div>
-          {/* Not the best way to go about this */}
-          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          <div>
-            {data.status === 'RUNNING' && (
-              <div>
-                <FontAwesomeIcon icon={faRunning} />
-                &nbsp; {data.instances_done}/{instances}
-              </div>
-            )}
-            {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
-            {data.status === 'ERROR' && (
-              <FontAwesomeIcon
-                icon={faExclamationTriangle}
-                onClick={showError}
-              />
-            )}
-            {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
-          </div>
-        </div>
+        )}
+
         {/* Accordion content when Job is Done */}
-        {isActive && (
+        {isActive && isLoading === false && (
           <div className="accordion-content">
             <ScrollableArea scrollStep={201} class="series-browser">
               {textures.length > 0 && (
