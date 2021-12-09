@@ -384,11 +384,11 @@ class Viewer extends Component {
                   activeIndex={this.props.activeViewportIndex}
                 />
               ) : (
-                // <ConnectedStudyBrowser
-                //   studies={this.state.thumbnails}
-                //   studyMetadata={this.props.studies}
-                // />
-                null
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+                // null
               )}
             </SidePanel>
           </ErrorBoundaryDialog>
