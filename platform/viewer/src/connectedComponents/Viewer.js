@@ -182,7 +182,6 @@ class Viewer extends Component {
     //   thumbnails: this.state.thumbnails,
     // });
 
-
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
     });
@@ -383,13 +382,13 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-                // null
-              )}
+              ) :
+              (<ConnectedStudyBrowser
+                studies={this.state.thumbnails}
+                studyMetadata={this.props.studies}
+              />)
+              // null
+              }
             </SidePanel>
           </ErrorBoundaryDialog>
 

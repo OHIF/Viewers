@@ -166,7 +166,11 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // functionality for deriving image id and then adding image
   const performOverlay = (series_uid, image_uid) => {
+    // console.log({ series_uid });
+
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
+
+    // console.log({ image_id });
 
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(elementRef.current);
@@ -247,6 +251,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     });
 
     if (chosen_series && chosen_series.length > 0) {
+      cacheEntireSeries(chosen_series);
+
       const images = chosen_series[0].instances.filter((instance, index) => {
         if (index === image_index) {
           return instance;
@@ -257,6 +263,40 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
       addImageLayer(image_id);
     }
+  };
+
+  // This method loads the image of each layer and resolve the
+  // promise only after getting all of them loaded
+  // function loadImages() {
+  //   const promises = [];
+
+  //   layers.forEach(function(layer) {
+  //     const loadPromise = cornerstone.loadAndCacheImage(layer.imageId);
+  //     promises.push(loadPromise);
+  //   });
+
+  //   return Promise.all(promises);
+  // }
+
+  const cacheEntireSeries = series => {
+    // console.log({ Chosen: series });
+
+    const instances = series[0].instances;
+
+    // console.log({ instances });
+
+    const promises = [];
+
+    instances.map(instance => {
+      const image_id = 'wadors:' + instance.wadorsuri;
+
+      console.log({ image_id });
+
+      const loadPromise = cornerstone.loadAndCacheImage(image_id);
+      promises.push(loadPromise);
+    });
+
+    Promise.all(promises);
   };
 
   // functionality for removing all overlays added to the base image / canvas
