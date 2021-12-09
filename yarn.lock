@@ -3487,6 +3487,11 @@
     outvariant "^1.2.0"
     strict-event-emitter "^0.2.0"
 
+"@newlantern/viewer@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.2.0.tgz#76d75cb7ec631333502cad4efe1ab3e091967368"
+  integrity sha512-YKykJ9q0oXuVnb3lShrpe3ge8ZDUJ5dGP/NA8KGR5Pj5gPs35m6clSSUOTi+dTwlKuBbNjiyJPYA9ob1rXtMHw==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -18517,10 +18522,10 @@ public-encrypt@^4.0.0:
     randombytes "^2.0.1"
     safe-buffer "^5.1.2"
 
-pubnub-react@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/pubnub-react/-/pubnub-react-2.1.0.tgz#8b0f028fc2dbc37925e62fdc35ce34d3e06848ff"
-  integrity sha512-enIgKld/ywphi/HXThAPdAhrCU+bNGbzOkKKmBO7vnYFBw2BLiNtRTgU/EcqdMBJqeUJzrHCQj0I3/Yu9yVNMw==
+pubnub-react@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/pubnub-react/-/pubnub-react-2.1.1.tgz#0382837523dc83fef238bddbd5da5124b2f90b51"
+  integrity sha512-0KP+C/hFcL1J0d99B/0tg3fpBW1CPjV2VeVApxu8p5y57c0a4yL/AisvBlBLX+wk3uYXm2+GmdBCF9XatheT3g==
   dependencies:
     ts-invariant "^0.4.4"
 
