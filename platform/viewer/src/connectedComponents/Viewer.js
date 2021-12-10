@@ -15,6 +15,7 @@ import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
 import dcmjs from 'dcmjs';
+import axios from 'axios';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -177,10 +178,28 @@ class Viewer extends Component {
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
-    // console.log({
-    //   studies: this.props.studies,
-    //   thumbnails: this.state.thumbnails,
-    // });
+    const client = axios.create({
+      baseURL:
+        'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
+      timeout: 90000,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    client.interceptors.request.use(config => {
+      config.headers.Authorization = `Bearer ${this.props.user.access_token}`;
+      return config;
+    });
+
+    getSourceSeries(client, this.props.studyInstanceUIDs[0]);
+
+    console.log({
+      studyID: this.props.studyInstanceUIDs[0],
+      // thumbnails: this.state.thumbnails,
+    });
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -228,10 +247,12 @@ class Viewer extends Component {
     } = this.props;
 
     // console.log({
+    //   props: this.props,
     //   studies: this.props.studies,
     //   thumbnails: this.state.thumbnails,
-    //   isStudyLoaded: this.props.isStudyLoaded
     // });
+
+    // console.log('Component Did Update: ', _removeUnwantedSeries(this.props));
 
     const activeViewport = viewports[activeViewportIndex];
     const activeDisplaySetInstanceUID = activeViewport
@@ -382,23 +403,22 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) : (
-                // <ConnectedStudyBrowser
-                //   studies={this.state.thumbnails}
-                //   studyMetadata={this.props.studies}
-                // />
-                null
-              )}
+              ) : // <ConnectedStudyBrowser
+              //   studies={this.state.thumbnails}
+              //   studyMetadata={this.props.studies}
+              // />
+              null}
             </SidePanel>
           </ErrorBoundaryDialog>
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
             <ErrorBoundaryDialog context="ViewerMain">
-              <ConnectedViewerMain
+              {/* <ConnectedViewerMain
                 studies={this.props.studies}
                 isStudyLoaded={this.props.isStudyLoaded}
-              />
+              /> */}
+              null
             </ErrorBoundaryDialog>
           </div>
 
@@ -732,4 +752,24 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       thumbnails,
     };
   });
+};
+
+const _removeUnwantedSeries = function(studies) {
+  // console.log('Remove Unwanted Series: ', studies);
+
+  return studies;
+};
+
+const getSourceSeries = async function(client, study_id) {
+
+  const newID = study_id.replace(/['"]+/g, '');
+  console.log({ ID: newID });
+
+  try {
+    await client.get(`/series?study=${newID}`).then(response => {
+      console.log({ GetSources: response });
+    });
+  } catch (err) {
+    console.log(error);
+  }
 };
