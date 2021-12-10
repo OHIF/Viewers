@@ -2,9 +2,11 @@ window.config = function(props) {
   var servicesManager = props.servicesManager;
 
   return {
+    disableServersCache: true,
     disableMeasurementPanel: true,
     routerBasename: '/',
     enableGoogleCloudAdapter: true,
+    disableMeasurementPanel: true,
     splitQueryParameterCalls: true, // Allows the user to split QIDO SeriesInstanceUID filters into multiple calls, if the server does not support multi-valued query parameters.
     enableGoogleCloudAdapterUI: false,
     showStudyList: true,

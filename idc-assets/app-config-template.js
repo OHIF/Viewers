@@ -2,30 +2,31 @@ window.config = {
   // default: '/'
   routerBasename: '/',
   extensions: [],
-  showStudyList: true,
-  filterQueryParam: false,
-  disableServersCache: false,
-  studyPrefetcher: {
-    enabled: true,
-    order: 'closest',
-    displaySetCount: 3,
-    preventCache: false,
-    prefetchDisplaySetsTimeout: 300,
-    displayProgress: true,
-    includeActiveDisplaySet: true,
+  disableMeasurementPanel: true,
+  splitQueryParameterCalls: true,
+  disableServersCache: true,
+  showStudyList: false,
+  filterQueryParam: true,
+  httpErrorHandler: error => {
+    // This is 429 when rejected from the public idc sandbox too often.
+    console.warn(error.status);
+    if (error.status == 429) {
+      // Could use services manager here to bring up a dialog/modal if needed.
+      // console.warn('test, navigate to https://ohif.org/');
+      window.location = '_X___IDC__Z__QUOTA___Y_';
+    }
   },
   servers: {
     dicomWeb: [
       {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        name: 'IDC',
+        wadoUriRoot: '_X___IDC__Z__ROOT___Y_',
+        qidoRoot: '_X___IDC__Z__ROOT___Y_',
+        wadoRoot: '_X___IDC__Z__ROOT___Y_',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
       },
     ],
   },
@@ -127,12 +128,25 @@ window.config = {
     },
   ],
   cornerstoneExtensionConfig: {},
-  // Following property limits number of simultaneous series metadata requests.
-  // For http/1.x-only servers, set this to 5 or less to improve
-  //  on first meaningful display in viewer
-  // If the server is particularly slow to respond to series metadata
-  //  requests as it extracts the metadata from raw files everytime,
-  //  try setting this to even lower value
-  // Leave it undefined for no limit, suitable for HTTP/2 enabled servers
-  // maxConcurrentMetadataRequests: 5,
+
+  whiteLabeling: {
+  /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
+    createLogoComponentFn: function(React) {
+      return React.createElement('a', {
+        target: '_self',
+        rel: 'noopener noreferrer',
+        className: 'header-brand',
+        href: '_X___IDC__LOGO__LINK___Y_',
+        style: {
+          display: 'block',
+          textIndent: '-9999px',
+          background: 'url(/IDC-Logo-WHITE.svg)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          width: '200px',
+          height: '45px',
+        },
+      });
+    },
+  },
 };

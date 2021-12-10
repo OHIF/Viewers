@@ -54,15 +54,6 @@ const definitions = [
     commandOptions: { toolName: 'Zoom' },
   },
   {
-    id: 'Wwwc',
-    label: 'Levels',
-    icon: 'level',
-    //
-    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'Wwwc' },
-  },
-  {
     id: 'Pan',
     label: 'Pan',
     icon: 'arrows',
@@ -72,31 +63,30 @@ const definitions = [
     commandOptions: { toolName: 'Pan' },
   },
   {
-    id: 'Length',
-    label: 'Length',
-    icon: 'measure-temp',
+    id: 'Wwwc',
+    label: 'Levels',
+    icon: 'level',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'Length' },
+    commandOptions: { toolName: 'Wwwc' },
   },
   {
-    id: 'ArrowAnnotate',
-    label: 'Annotate',
-    icon: 'measure-non-target',
+    id: 'WwwcRegion',
+    label: 'ROI Window',
+    icon: 'stop',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'ArrowAnnotate' },
+    commandOptions: { toolName: 'WwwcRegion' },
   },
   {
-    id: 'Angle',
-    label: 'Angle',
-    icon: 'angle-left',
+    id: 'Invert',
+    label: 'Invert',
+    icon: 'adjust',
     //
-    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'Angle' },
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'invertViewport',
   },
   {
     id: 'Reset',
@@ -131,50 +121,6 @@ const definitions = [
         commandOptions: { toolName: 'Magnify' },
       },
       {
-        id: 'WwwcRegion',
-        label: 'ROI Window',
-        icon: 'stop',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'WwwcRegion' },
-      },
-      {
-        id: 'DragProbe',
-        label: 'Probe',
-        icon: 'dot-circle',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'DragProbe' },
-      },
-      {
-        id: 'EllipticalRoi',
-        label: 'Ellipse',
-        icon: 'circle-o',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'EllipticalRoi' },
-      },
-      {
-        id: 'RectangleRoi',
-        label: 'Rectangle',
-        icon: 'square-o',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'RectangleRoi' },
-      },
-      {
-        id: 'Invert',
-        label: 'Invert',
-        icon: 'adjust',
-        //
-        type: TOOLBAR_BUTTON_TYPES.COMMAND,
-        commandName: 'invertViewport',
-      },
-      {
         id: 'RotateRight',
         label: 'Rotate Right',
         icon: 'rotate-right',
@@ -197,23 +143,6 @@ const definitions = [
         //
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'flipViewportVertical',
-      },
-      {
-        id: 'Clear',
-        label: 'Clear',
-        icon: 'trash',
-        //
-        type: TOOLBAR_BUTTON_TYPES.COMMAND,
-        commandName: 'clearAnnotations',
-      },
-      {
-        id: 'Bidirectional',
-        label: 'Bidirectional',
-        icon: 'measure-target',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'Bidirectional' },
       },
       {
         id: 'Download',

@@ -1,6 +1,7 @@
 window.config = {
   routerBasename: '/',
   showStudyList: true,
+  disableServersCache: true,
   servers: {
     dicomWeb: [
       {
