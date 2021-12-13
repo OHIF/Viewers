@@ -62,17 +62,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     return config;
   });
 
-  // loading loader animation during component call
-  useEffect(() => {
-    lottie.loadAnimation({
-      container: document.querySelector('#loader-svg'),
-      animationData: progressLoading,
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-    });
-  }, []);
-
   // setting up useEffect for adding and removing an event listener
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
@@ -91,7 +80,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         eventFunction
       );
     };
-  }, [eventFunction]);
+  }, []);
 
   // this is for checking and setting textures and description
   useEffect(() => {
@@ -182,11 +171,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // functionality for deriving image id and then adding image
   const performOverlay = (series_uid, image_uid) => {
-    // console.log({ series_uid });
-
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
-
-    // console.log({ image_id });
 
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(elementRef.current);
@@ -326,38 +311,30 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   return (
     <div>
       <div className="accordion-item">
-        {isLoading === true && <div id="loader-svg" />}
-
-        {isActive && isLoading === false && (
-          <div className="accordion-title" onClick={show}>
-            <div>
-              <b>Job {data.job}</b>
-            </div>
-            {/* Not the best way to go about this */}
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-            <div>
-              {data.status === 'RUNNING' && (
-                <div>
-                  <FontAwesomeIcon icon={faRunning} />
-                  &nbsp; {data.instances_done}/{instances}
-                </div>
-              )}
-              {data.status === 'PENDING' && (
-                <FontAwesomeIcon icon={faSpinner} />
-              )}
-              {data.status === 'ERROR' && (
-                <FontAwesomeIcon
-                  icon={faExclamationTriangle}
-                  onClick={showError}
-                />
-              )}
-              {data.status === 'DONE' && (
-                <FontAwesomeIcon icon={faCheckCircle} />
-              )}
-            </div>
+        <div className="accordion-title" onClick={show}>
+          <div>
+            <b>Job {data.job}</b>
           </div>
-        )}
+          {/* Not the best way to go about this */}
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          <div>
+            {data.status === 'RUNNING' && (
+              <div>
+                <FontAwesomeIcon icon={faRunning} />
+                &nbsp; {data.instances_done}/{instances}
+              </div>
+            )}
+            {data.status === 'PENDING' && <FontAwesomeIcon icon={faSpinner} />}
+            {data.status === 'ERROR' && (
+              <FontAwesomeIcon
+                icon={faExclamationTriangle}
+                onClick={showError}
+              />
+            )}
+            {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
+          </div>
+        </div>
 
         {/* Accordion content when Job is Done */}
         {isActive && isLoading === false && (
@@ -389,11 +366,11 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             <ScrollableArea scrollStep={201} class="series-browser">
               <div className="jobError">
                 <p>
-                  There is an error creating this job. Please{' '}
+                  There is an error creating this job. Please &nbsp;
                   <a className="reveal-error" onClick={showErrorMessage}>
                     click here
-                  </a>{' '}
-                  for more details
+                  </a>
+                  &nbsp; for more details
                 </p>
               </div>
             </ScrollableArea>
