@@ -24,7 +24,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const colorMapRef = useRef();
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [textures, setTextures] = useState([]);
   const [description, setDescription] = useState([]);
@@ -80,7 +79,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         eventFunction
       );
     };
-  }, []);
+  }, [eventFunction]);
 
   // this is for checking and setting textures and description
   useEffect(() => {
@@ -132,9 +131,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
-    // set loading to true
-    setIsLoading(true);
-
     // remove previous overlay if it exists
     if (overlayRef.current === true) {
       removeOverlay();
@@ -222,9 +218,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
         // update the canvase with the all new data
         cornerstone.updateImage(elementRef.current);
-
-        // set loader to false
-        setIsLoading(false);
       })
       .catch(error => {
         console.log(error);
@@ -233,7 +226,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // functionality for getting new image during overlay scroll activity
   const eventFunction = event => {
-    setIsLoading(true);
     if (overlayRef.current === false) {
       return;
     } else {
@@ -243,6 +235,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
       const current_image_index =
         eventData.enabledElement.toolStateManager.toolState.stack.data[0]
           .currentImageIdIndex;
+
       getImageUrl(current_image_index, instanceRef.current);
     }
   };
@@ -337,7 +330,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         </div>
 
         {/* Accordion content when Job is Done */}
-        {isActive && isLoading === false && (
+        {isActive && (
           <div className="accordion-content">
             <ScrollableArea scrollStep={201} class="series-browser">
               {textures.length > 0 && (
@@ -383,7 +376,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             <ScrollableArea scrollStep={201} class="series-browser">
               <div className="jobError">
                 <p>
-                  {data.error_message.exception.match(/'(.*?)'/g)}.
+                  {data.error_message.exception.match(/'(.*?)'/g)}. &nbsp;
                   <a className="reveal-error" onClick={showErrorMessage}>
                     Go Back
                   </a>

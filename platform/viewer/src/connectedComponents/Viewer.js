@@ -760,6 +760,7 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
 };
 
 const _removeUnwantedSeries = function(studies) {
+
   const allData = studies;
 
   const filteredDatasets = [];
@@ -770,13 +771,13 @@ const _removeUnwantedSeries = function(studies) {
 
   if (allData.length > 0) {
     // filtering through the series for source data
-    allData[0].series.filter(data => {
-      source_series.filter(seriesUID => {
-        if (data.SeriesInstanceUID === seriesUID) {
-          filteredSeries.push(data);
-        }
-      });
-    });
+    // allData[0].series.filter(data => {
+    //   source_series.filter(seriesUID => {
+    //     if (data.SeriesInstanceUID === seriesUID) {
+    //       filteredSeries.push(data);
+    //     }
+    //   });
+    // });
 
     // filtering through the displaySets for source data
     allData[0].displaySets.filter(data => {
@@ -790,16 +791,13 @@ const _removeUnwantedSeries = function(studies) {
     // remapping the data to have the filtered series
     allData.map(data => {
       data.displaySets = filteredDatasets;
-      data.series = filteredSeries;
+      // data.series = filteredSeries;
     });
   }
 
   return allData;
 };
 
-const _removeUnwantedThumbnails = function(thumbnails) {
-  console.log({ thumbnails });
-};
 
 const getSourceSeries = async function(study_id, studies) {
   const newID = study_id.replace(/['"]+/g, '');
@@ -807,10 +805,6 @@ const getSourceSeries = async function(study_id, studies) {
   const source_series = [
     '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
   ];
-
-  const propStudies = studies;
-
-  console.log({ propStudies, source_series });
 
   // try {
   //   await client.get(`/series?study=${newID}`).then(response => {
