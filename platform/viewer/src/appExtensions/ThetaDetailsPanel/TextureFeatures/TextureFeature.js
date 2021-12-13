@@ -9,7 +9,6 @@ import lottie from 'lottie-web';
 import circularLoading from './utils/circular-loading.json';
 import handLoading from './utils/hand-loading.json';
 
-
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -21,8 +20,7 @@ const TextureFeature = props => {
   const instancesRef = useRef();
 
   const client = axios.create({
-    baseURL:
-      'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
+    baseURL: 'https://radcadapi.thetatech.ai',
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -52,7 +50,7 @@ const TextureFeature = props => {
       getJobs();
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [getJobs]);
 
   // getting all jobs for the current series being displayed in viewport
   const getJobs = async () => {

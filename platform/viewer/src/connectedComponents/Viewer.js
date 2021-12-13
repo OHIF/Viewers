@@ -179,8 +179,7 @@ class Viewer extends Component {
     const currentTimepointId = 'TimepointId';
 
     const client = axios.create({
-      baseURL:
-        'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
+      baseURL: 'https://radcadapi.thetatech.ai',
       timeout: 90000,
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -414,11 +413,11 @@ class Viewer extends Component {
           {/* MAIN */}
           <div className={classNames('main-content')}>
             <ErrorBoundaryDialog context="ViewerMain">
-              {/* <ConnectedViewerMain
+              <ConnectedViewerMain
                 studies={this.props.studies}
                 isStudyLoaded={this.props.isStudyLoaded}
-              /> */}
-              null
+              />
+              {/* null */}
             </ErrorBoundaryDialog>
           </div>
 
@@ -761,7 +760,6 @@ const _removeUnwantedSeries = function(studies) {
 };
 
 const getSourceSeries = async function(client, study_id) {
-
   const newID = study_id.replace(/['"]+/g, '');
   console.log({ ID: newID });
 

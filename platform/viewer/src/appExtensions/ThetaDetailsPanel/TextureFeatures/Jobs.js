@@ -49,8 +49,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // setting up client for API requests (centralize this client)
   const client = axios.create({
-    baseURL:
-      'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
+    baseURL: 'https://radcadapi.thetatech.ai',
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -93,7 +92,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         eventFunction
       );
     };
-  }, []);
+  }, [eventFunction]);
 
   // this is for checking and setting textures and description
   useEffect(() => {
@@ -110,7 +109,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     } else {
       return;
     }
-  }, [overlayStatus]);
+  }, [overlayStatus, removeOverlay]);
 
   useEffect(() => {
     opacityRef.current = opacityStatus;
@@ -274,7 +273,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
     if (chosen_series && chosen_series.length > 0) {
       cacheEntireSeries(chosen_series);
-
       const images = chosen_series[0].instances.filter((instance, index) => {
         if (index === image_index) {
           return instance;
@@ -286,19 +284,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
       addImageLayer(image_id);
     }
   };
-
-  // This method loads the image of each layer and resolve the
-  // promise only after getting all of them loaded
-  // function loadImages() {
-  //   const promises = [];
-
-  //   layers.forEach(function(layer) {
-  //     const loadPromise = cornerstone.loadAndCacheImage(layer.imageId);
-  //     promises.push(loadPromise);
-  //   });
-
-  //   return Promise.all(promises);
-  // }
 
   const cacheEntireSeries = series => {
     const instances = series[0].instances;
