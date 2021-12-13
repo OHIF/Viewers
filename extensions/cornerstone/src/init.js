@@ -5,6 +5,9 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+import initSRTools from './tools/initSRTools';
+import dicomSRModule from './tools/modules/dicomSRModule';
+import srModuleId from './tools/id';
 
 /**
  *
@@ -14,6 +17,8 @@ import measurementServiceMappingsFactory from './utils/measurementServiceMapping
  */
 export default function init({ servicesManager, configuration }) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
+
+  csTools.register('module', srModuleId, dicomSRModule);
 
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
@@ -215,6 +220,11 @@ const _connectToolsToMeasurementService = measurementService => {
         MEASUREMENT_ADDED,
         MEASUREMENT_UPDATED,
       } = measurementService.EVENTS;
+
+      /**
+       * Initialize SR cornerstone tools.
+       */
+      initSRTools(event.detail.element);
 
       measurementService.subscribe(
         MEASUREMENT_ADDED,

@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 
 import OHIFCornerstoneViewportOverlay from './components/OHIFCornerstoneViewportOverlay';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
+import csTools from 'cornerstone-tools';
 
-const { StackManager } = OHIF.utils;
+const { StackManager, studyMetadataManager } = OHIF.utils;
 
 class OHIFCornerstoneViewport extends Component {
   state = {
@@ -174,6 +175,45 @@ class OHIFCornerstoneViewport extends Component {
   }
 
   componentDidMount() {
+    const onEnabledElementHandler = ({ detail }) => {
+      const { displaySet } = this.props.viewportData;
+      const { StudyInstanceUID } = displaySet;
+
+      const srModule = csTools.getModule('org.ohif.dicom-sr');
+
+      const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+      if (!studyMetadata) {
+        return;
+      }
+
+      const srDisplaySets = studyMetadata.getDisplaySets().filter(ds => ds.Modality === 'SR');
+
+      const { measurements: _measurements } = srDisplaySets[0];
+      if (!_measurements || _measurements.length < 1) {
+        return;
+      }
+
+      const measurements = _measurements.filter(m => m.loaded === true);
+      const measurement = measurements[0];
+
+      srModule.setters.trackingUniqueIdentifiersForElement(
+        detail.element,
+        measurements.map(measurement => measurement.TrackingUniqueIdentifier),
+        measurement
+      );
+
+      const { TrackingUniqueIdentifier } = measurement;
+      srModule.setters.activeTrackingUniqueIdentifierForElement(
+        detail.element,
+        TrackingUniqueIdentifier
+      );
+    };
+
+    cornerstone.events.addEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      onEnabledElementHandler
+    );
+
     this.setStateFromProps();
   }
 
