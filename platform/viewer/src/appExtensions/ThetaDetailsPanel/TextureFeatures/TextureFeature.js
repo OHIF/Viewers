@@ -4,7 +4,6 @@ import Jobs from './Jobs';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { JobsContext } from '../../../context/JobsContext';
-import Loader from './utils/circle-loading.svg';
 import lottie from 'lottie-web';
 import circularLoading from './utils/circular-loading.json';
 import handLoading from './utils/hand-loading.json';
@@ -35,15 +34,15 @@ const TextureFeature = props => {
   });
 
   // loading loader animation during component call
-  useEffect(() => {
-    lottie.loadAnimation({
-      container: document.querySelector('#loader-svg'),
-      animationData: circularLoading,
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-    });
-  }, []);
+  // useEffect(() => {
+  //   lottie.loadAnimation({
+  //     container: document.querySelector('#loader-svg'),
+  //     animationData: circularLoading,
+  //     renderer: 'svg',
+  //     loop: true,
+  //     autoplay: true,
+  //   });
+  // }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,9 +57,10 @@ const TextureFeature = props => {
       await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
+          // console.log({ Jobs: response });
           instancesRef.current = response.data.instances;
-          setIsLoading(false);
           setJobs([...response.data.jobs]);
+          setIsLoading(false);
         });
     } catch (err) {
       console.log(error);
@@ -78,9 +78,9 @@ const TextureFeature = props => {
 
       {isLoading && (
         <div className="loader">
-          {/* <h2>Loading...</h2> */}
+          <h2>Loading...</h2>
           {/* <img height={40} src={Loader} alt="Loading..." /> */}
-          <div id="loader-svg" />
+          {/* <div id="loader-svg" /> */}
         </div>
       )}
 

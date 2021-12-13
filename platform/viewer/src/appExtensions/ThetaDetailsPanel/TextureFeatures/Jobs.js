@@ -22,7 +22,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const layerRef = useRef();
   const opacityRef = useRef();
   const colorMapRef = useRef();
-  // const loadingRef = useRef(false);
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
