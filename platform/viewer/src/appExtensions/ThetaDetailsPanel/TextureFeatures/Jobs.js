@@ -12,6 +12,8 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
+import lottie from 'lottie-web';
+import progressLoading from './utils/progress-loading.json';
 
 const Jobs = ({ data, user, viewport, series, instances }) => {
   const elementRef = useRef();
@@ -45,8 +47,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // setting up client for API requests (centralize this client)
   const client = axios.create({
-    baseURL:
-      'https://lqcbek7tjb.execute-api.us-east-2.amazonaws.com/2021-10-26_Deployment',
+    baseURL: 'https://radcadapi.thetatech.ai',
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -78,7 +79,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         eventFunction
       );
     };
-  }, []);
+  }, [eventFunction]);
 
   // this is for checking and setting textures and description
   useEffect(() => {
@@ -95,7 +96,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     } else {
       return;
     }
-  }, [overlayStatus]);
+  }, [overlayStatus, removeOverlay]);
 
   useEffect(() => {
     opacityRef.current = opacityStatus;
@@ -166,11 +167,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // functionality for deriving image id and then adding image
   const performOverlay = (series_uid, image_uid) => {
-    // console.log({ series_uid });
-
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
-
-    // console.log({ image_id });
 
     // retrieving cornerstone enable element object
     let enabled_element = cornerstone.getEnabledElement(elementRef.current);
@@ -238,6 +235,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
       const current_image_index =
         eventData.enabledElement.toolStateManager.toolState.stack.data[0]
           .currentImageIdIndex;
+
       getImageUrl(current_image_index, instanceRef.current);
     }
   };
@@ -252,7 +250,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
     if (chosen_series && chosen_series.length > 0) {
       cacheEntireSeries(chosen_series);
-
       const images = chosen_series[0].instances.filter((instance, index) => {
         if (index === image_index) {
           return instance;
@@ -265,32 +262,13 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
   };
 
-  // This method loads the image of each layer and resolve the
-  // promise only after getting all of them loaded
-  // function loadImages() {
-  //   const promises = [];
-
-  //   layers.forEach(function(layer) {
-  //     const loadPromise = cornerstone.loadAndCacheImage(layer.imageId);
-  //     promises.push(loadPromise);
-  //   });
-
-  //   return Promise.all(promises);
-  // }
-
   const cacheEntireSeries = series => {
-    // console.log({ Chosen: series });
-
     const instances = series[0].instances;
-
-    // console.log({ instances });
 
     const promises = [];
 
     instances.map(instance => {
       const image_id = 'wadors:' + instance.wadorsuri;
-
-      console.log({ image_id });
 
       const loadPromise = cornerstone.loadAndCacheImage(image_id);
       promises.push(loadPromise);
@@ -350,6 +328,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             {data.status === 'DONE' && <FontAwesomeIcon icon={faCheckCircle} />}
           </div>
         </div>
+
         {/* Accordion content when Job is Done */}
         {isActive && (
           <div className="accordion-content">
@@ -380,11 +359,11 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             <ScrollableArea scrollStep={201} class="series-browser">
               <div className="jobError">
                 <p>
-                  There is an error creating this job. Please{' '}
+                  There is an error creating this job. Please &nbsp;
                   <a className="reveal-error" onClick={showErrorMessage}>
                     click here
-                  </a>{' '}
-                  for more details
+                  </a>
+                  &nbsp; for more details
                 </p>
               </div>
             </ScrollableArea>
@@ -397,7 +376,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
             <ScrollableArea scrollStep={201} class="series-browser">
               <div className="jobError">
                 <p>
-                  {data.error_message.exception.match(/'(.*?)'/g)}.
+                  {data.error_message.exception.match(/'(.*?)'/g)}. &nbsp;
                   <a className="reveal-error" onClick={showErrorMessage}>
                     Go Back
                   </a>

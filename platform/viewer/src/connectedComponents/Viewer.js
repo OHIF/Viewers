@@ -15,6 +15,7 @@ import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
 import dcmjs from 'dcmjs';
+import axios from 'axios';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -26,6 +27,22 @@ import { finished } from 'stream';
 import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextProvider, { JobsContext } from '../context/JobsContext.js';
 import JobsContextUtil from './JobsContextUtil.js';
+
+// axios client import
+const client = axios.create({
+  baseURL: 'https://radcadapi.thetatech.ai',
+  timeout: 90000,
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+});
+
+client.interceptors.request.use(config => {
+  config.headers.Authorization = `Bearer ${this.props.user.access_token}`;
+  return config;
+});
 
 class Viewer extends Component {
   static propTypes = {
@@ -178,9 +195,12 @@ class Viewer extends Component {
     const currentTimepointId = 'TimepointId';
 
     // console.log({
-    //   studies: this.props.studies,
-    //   thumbnails: this.state.thumbnails,
+    //   studyID: this.props.studyInstanceUIDs[0],
+    //   user: this.props.user,
+    //   // thumbnails: this.state.thumbnails,
     // });
+
+    getSourceSeries(this.props.studyInstanceUIDs[0], this.props.studies);
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -228,10 +248,15 @@ class Viewer extends Component {
     } = this.props;
 
     // console.log({
+    //   props: this.props,
     //   studies: this.props.studies,
     //   thumbnails: this.state.thumbnails,
-    //   isStudyLoaded: this.props.isStudyLoaded
     // });
+
+    // console.log(
+    //   'Component Did Update: ',
+    //   _removeUnwantedSeries(this.props.studies)
+    // );
 
     const activeViewport = viewports[activeViewportIndex];
     const activeDisplaySetInstanceUID = activeViewport
@@ -382,13 +407,12 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) :
-              (<ConnectedStudyBrowser
-                studies={this.state.thumbnails}
-                studyMetadata={this.props.studies}
-              />)
-              // null
-              }
+              ) : (
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
             </SidePanel>
           </ErrorBoundaryDialog>
 
@@ -396,9 +420,10 @@ class Viewer extends Component {
           <div className={classNames('main-content')}>
             <ErrorBoundaryDialog context="ViewerMain">
               <ConnectedViewerMain
-                studies={this.props.studies}
+                studies={_removeUnwantedSeries(this.props.studies)}
                 isStudyLoaded={this.props.isStudyLoaded}
               />
+              {/* null */}
             </ErrorBoundaryDialog>
           </div>
 
@@ -732,4 +757,60 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       thumbnails,
     };
   });
+};
+
+const _removeUnwantedSeries = function(studies) {
+
+  const allData = studies;
+
+  const filteredDatasets = [];
+  const filteredSeries = [];
+  const source_series = [
+    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+  ];
+
+  if (allData.length > 0) {
+    // filtering through the series for source data
+    // allData[0].series.filter(data => {
+    //   source_series.filter(seriesUID => {
+    //     if (data.SeriesInstanceUID === seriesUID) {
+    //       filteredSeries.push(data);
+    //     }
+    //   });
+    // });
+
+    // filtering through the displaySets for source data
+    allData[0].displaySets.filter(data => {
+      source_series.filter(seriesUID => {
+        if (data.SeriesInstanceUID === seriesUID) {
+          filteredDatasets.push(data);
+        }
+      });
+    });
+
+    // remapping the data to have the filtered series
+    allData.map(data => {
+      data.displaySets = filteredDatasets;
+      // data.series = filteredSeries;
+    });
+  }
+
+  return allData;
+};
+
+
+const getSourceSeries = async function(study_id, studies) {
+  const newID = study_id.replace(/['"]+/g, '');
+
+  const source_series = [
+    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+  ];
+
+  // try {
+  //   await client.get(`/series?study=${newID}`).then(response => {
+  //     console.log({ GetSources: response });
+  //   });
+  // } catch (err) {
+  //   console.log(error);
+  // }
 };
