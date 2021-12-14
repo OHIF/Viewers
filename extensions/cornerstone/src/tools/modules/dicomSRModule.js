@@ -23,7 +23,6 @@ function setActiveTrackingUniqueIdentifierForElement(
   element,
   TrackingUniqueIdentifier
 ) {
-  debugger
   const enabledElement = cornerstone.getEnabledElement(element);
   const { uuid } = enabledElement;
 

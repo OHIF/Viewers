@@ -1,4 +1,5 @@
 import csTools from 'cornerstone-tools';
+import OHIF from '@ohif/core';
 
 /** Internal imports */
 import TOOL_NAMES from '../constants/toolNames';
@@ -60,6 +61,8 @@ export default function addMeasurement(
 
   toolData.data.push(measurementData);
 
+  addToMeasurementApi({ measurementData, toolName, imageId });
+
   measurement.loaded = true;
   measurement.imageId = imageId;
   measurement.displaySetInstanceUID = displaySetInstanceUID;
@@ -72,3 +75,27 @@ export default function addMeasurement(
 
   return measurement;
 }
+
+const addToMeasurementApi = ({ measurementData, toolName, imageId }) => {
+  const measurementApi = OHIF.measurements.MeasurementApi.Instance;
+
+  const toolType = toolName;
+  const collection = measurementApi.tools[toolType];
+  if (!collection) return;
+  if (!measurementData || measurementData.cancelled) return;
+
+  const imageAttributes = OHIF.measurements.getImageAttributes(null, imageId);
+  const measurement = Object.assign({}, measurementData, imageAttributes, {
+    lesionNamingNumber: measurementData.lesionNamingNumber,
+    userId: OHIF.user.getUserId(),
+    toolType,
+  });
+
+  const addedMeasurement = measurementApi.addMeasurement(toolType, measurement);
+  Object.assign(measurementData, addedMeasurement);
+
+  const measurementLabel = OHIF.measurements.getLabel(measurementData);
+  if (measurementLabel) {
+    measurementData.labels = [measurementLabel];
+  }
+};
