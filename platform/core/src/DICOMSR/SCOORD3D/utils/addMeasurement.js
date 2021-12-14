@@ -59,6 +59,8 @@ export default function addMeasurement(
 
   const toolData = imageIdToolState[toolName];
 
+  measurementData.description = `Read-only annotation`;
+  measurementData.isReadOnly = true;
   toolData.data.push(measurementData);
 
   addToMeasurementApi({ measurementData, toolName, imageId });
