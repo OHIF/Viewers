@@ -200,7 +200,9 @@ about installing extensions in the
 After you installed the extension, you need to run `yarn install` in the root
 folder of the OHIF repository to install the registered extension and modes.
 
-Running `yarn dev` will then start the application with the installed mode.
-Congrats! 🎉
+Running `yarn dev` will then start the application with the installed mode, by
+navigating to the `/template` route (e.g.,
+http://localhost:3000/template?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.2744.7002.150059977302243314164020079415)
+you can see the clock panel. Congrats! 🎉
 
 ![](../../assets/img/template-mode-ui.png)
