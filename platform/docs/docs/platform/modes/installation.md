@@ -5,112 +5,175 @@ sidebar_label: Installation
 
 # Mode: Installation
 
-> Note: This is a temporary documentation for installation. In the future, we
-> will update this page with more information of how you can install a mode at
-> runtime. In the following you will find a simple example, and you can follow
-> the steps below to add your mode to OHIF. More complex modes follow the same
-> steps.
+OHIF-v3 provides the ability to utilize external modes and extensions. In this
+document we will describe how to add/install external modes.
 
-Imagine you find a new mode that you want to add to OHIF. You can follow the
-steps below to add the mode to OHIF. For instnace, someone has created a mode
-called ["Clock" mode](https://github.com/sedghi/OHIF-mode-clock) which uses one
-tool to show the current time, and has a panel that updates the time every
-second.
+> Our long-term plan is to make OHIF-v3 capable of installing modes at runtime,
+> however in the meantime, please use the instructions below to manually install
+> modes and their extensions.
 
-## Mode
+## Installing a Mode
 
-### Mode Files Copy
+### 1) Mode Files Copy
 
-As you can see in the mode repository, each mode has a folder structure that is
-similar to the OHIF-maintained modes. Let's look at the Clock mode:
+We use a [Template Mode](https://github.com/OHIF/mode-template) repository to
+demonstrate how to install an external mode. This repository also includes all
+the files required to create a new mode. You can use this repository as a
+starting point to create your own mode.
 
-- src/index.js: The most important file in the mode. This file is where the
-  developer has defined the mode configurations such as which layout to use,
-  which panels for left and right side, etc.
-- Other files/folders: .webpack, LICENSE, README.md, babel.config.js
+As you can see in the Template mode
+[code base](https://github.com/OHIF/mode-template), folders structure are
+similar to the OHIF-maintained modes. Let's have more detailed look at the
+structure of the `Template mode`:
 
-Note: It is highly recommended to copy and paste the code for `babel.config.js`
-and `.webpack` files from the OHIF longitudinal mode.
+- `src/index.js`: The most important file in any mode. This file is where modes'
+  authors hav defined the mode configurations such as:
+  - The layout and the panels for left and right side.
+  - LifeCycle hooks such as `onModeEnter` and `onModeExit`
+- Other files/folders/configs: .webpack, LICENSE, README.md, babel.config.js
+
+Note: It is highly recommended to use the `Template Mode` as a starting point
+for your own mode. This way, you can easily reuse the necessary files and
+folders.
 
 #### Package.json
 
 Mode name is defined in the `package.json` file. The `package.json` file is a
 JSON file that defines the mode name, version, and dependencies. For instance
-for the Clock mode, the `package.json` file looks like this:
+for the Template mode, the `package.json` file looks like this:
 
-```js {2} title="clockMode/package.json"
+```js {2} title="templateMode/package.json"
 {
-  "name": "@ohif/mode-clock",
+  "name": "@ohif/mode-template",
   "version": "0.0.1",
-  "description": "A test mode for installation demonstration",
+  "description": "A template mode for installation demonstration",
   ...
 }
 ```
 
-Note 1: We will use the `@ohif/mode-clock` inside OHIF to let it know about
+Note 1: We will use the `@ohif/mode-template` inside OHIF to let OHIF know about
 existence of this mode.
 
-Note 2: You don't need to use the `@ohif` scope for your modes/extensions.
+Note 2: You don't need to use the `@ohif` scope for your modes/extensions. You
+can use any scope you want or none at all.
 
-![Clock Mode](../../assets/img/clockMode-file.png)
+Note 3: Although folders names are not important and the `package.json` file
+contains the mode name, we recommend to use the same name for the folder name.
 
-### Configuring OHIF
+![Template Mode](../../assets/img/template-mode-files.png)
 
-There are couple of places inside OHIF which we need to modify in order to add
-the mode.
+### 2) Configuring OHIF
 
-The following lines of code have been added to the OHIF:
+In order to install/register the mode, we must make changes to a few areas
+inside OHIF. The OHIF should be updated using the following lines of code:
+
+#### Viewer's package.json
+
+```js {6} titl="platform/viewer/package.json"
+/* ... */
+"dependencies": {
+  /* ... */
+  "@ohif/i18n": "^0.52.8",
+  "@ohif/mode-longitudinal": "^0.0.1",
+  "@ohif/mode-template": "^0.0.1",
+  "@ohif/ui": "^2.0.0",
+  "@types/react": "^16.0.0",
+  /* ... */
+}
+```
 
 #### App.jsx
 
-```js {2} title="Viewers/platform/viewer/src/App.jsx"
+```js {3} title="platform/viewer/src/App.jsx"
+/* ... */
 import '@ohif/mode-longitudinal';
-import '@ohif/mode-clock';
+import '@ohif/mode-template';
+/* ... */
 ```
 
 #### appInit.js
 
-```js {3} title="Viewers/platform/viewer/src/appInit.js"
+```js {4} title="platform/viewer/src/appInit.js"
+/* ... */
 if (!appConfig.modes.length) {
   appConfig.modes.push(window.longitudinalMode);
-  appConfig.modes.push(window.clockMode);
+  appConfig.modes.push(window.templateMode);
+}
+/* ... */
+```
+
+Note that we are assigning mode configuration objects from the `window` object;
+therefore, we should use the reference to the name of the mode which were
+defined in the last line of `src/index.js` file in mode configuration
+
+```js {8} title="templateMode/src/index.js"
+/* ... */
+export default function mode({ modeConfiguration }) {
+  return {
+    /** */
+  };
+}
+
+window.templateMode = mode({});
+```
+
+### Required Extensions for a Mode
+
+Some modes require external extensions to be installed. For instance, the
+`@ohif/mode-longitudinal` mode requires the `@ohif/cornerstone` extension to be
+registered/installed in OHIF which is available in the OHIF-v3 repository.
+
+How do we know that a mode requires an extension? (Until we have a more proper
+dependency management for modes and extensions) you can take a look inside the
+mode itself. Mode is a configuration file that defines the layout
+(layoutModule), panels (panelModule), viewport (viewportModule), and tools
+(commands) that are used to create an application at a given route. By looking
+inside the mode configuration file (`index.js`), you can see which extensions
+are required by the mode in the `extensions` property.
+
+```js {12-16} title="platform/viewer/src/appInit.js"
+export default function mode({ modeConfiguration }) {
+  return {
+    id: 'template',
+    displayName: 'Template Mode',
+    /** ... */
+
+    routes: [
+      {
+        /** ... */
+      },
+    ],
+    extensions: [
+      'extension.template',
+      'org.ohif.default',
+      'org.ohif.cornerstone',
+    ],
+    /** ... */
+  };
 }
 ```
 
-#### Viewer package.json
+As seen, our `Template Mode` requires the `org.ohif.default`,
+`org.ohif.cornerstone` and `extension.template` extensions.
 
-```js {6} titl="Viewers/platform/viewer/package.json"
-// ...
-"dependencies": {
-  // ...
-  "@ohif/i18n": "^0.52.8",
-  "@ohif/mode-longitudinal": "^0.0.1",
-  "@ohif/mode-clock": "^0.0.1",
-  "@ohif/ui": "^2.0.0",
-  "@types/react": "^16.0.0",
-  // ...
-}
-```
+> Note: Currently extensions dependencies are not handled by OHIF from the
+> `extensions` property. We will be adding this feature in the future.
 
-### Required OHIF Extensions for Mode
-
-How did we understand that a mode requires an extension? Good question! The
-answer is that the mode is a configuratoin file that defines the layout, panels,
-viewport, and tools that are used to render a route. By looking inside the mode
-configuration file (`index.js`), you can actually see that the Clock mode
-requires a panel called `ClockPanel` from `extension.clock`'s panel module.
+In addition to the `extensions` property, the `mode` configuration object also
+has the reference for each module that is used. For instance, the `index.js`
+file in the `@ohif/mode-template` mode looks like this:
 
 ```js {10} title="clockMode/src/index.js"
 // ....
 routes: [
   {
-    path: "clock",
+    path: "template",
     layoutTemplate: ({ location, servicesManager }) => {
       return {
         id: ohif.layout,
         props: {
           leftPanels: [],
-          rightPanels: ["extension.clock.panelModule.clockPanel"],
+          rightPanels: ["extension.template.panelModule.clockPanel"],
           viewports: [
             {
               namespace: "org.ohif.cornerstone.viewportModule.cornerstone",
@@ -125,12 +188,19 @@ routes: [
 // ....
 ```
 
-Let's add this extension to OHIF as well.
+As seen, the right panel is defined as
+`"extension.template.panelModule.clockPanel"` which means that the
+`@ohif/mode-template` mode requires the `extension.template`. You can read more
+about installing extensions in the
+[Extension Installation](../extensions/installation.md)
 
-## Adding Extension
+> Additionally you can check the commands that the toolbar buttons will execute
+> in the `toolbarButtons` and see if any of them requires an extension.
 
-### Extension Files Copy
+After you installed the extension, you need to run `yarn install` in the root
+folder of the OHIF repository to install the registered extension and modes.
 
-### Configuring OHIF
+Running `yarn dev` will then start the application with the installed mode.
+Congrats! 🎉
 
-### Dependencies
+![](../../assets/img/template-mode-ui.png)
