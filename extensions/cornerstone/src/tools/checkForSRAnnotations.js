@@ -35,6 +35,10 @@ const checkForSRAnnotations = ({ viewportIndex, displaySet }) => {
   const measurements = _measurements.filter(m => m.loaded === true);
   const measurement = measurements[0];
 
+  if (!measurement) {
+    return;
+  }
+
   srModule.setters.trackingUniqueIdentifiersForElement(
     element,
     measurements.map(measurement => measurement.TrackingUniqueIdentifier),
