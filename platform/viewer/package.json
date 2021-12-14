@@ -79,6 +79,7 @@
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
+    "lottie-react": "^2.1.0",
     "lottie-web": "^5.7.11",
     "moment": "^2.24.0",
     "oidc-client": "1.7.x",

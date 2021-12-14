@@ -194,8 +194,6 @@ class Viewer extends Component {
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
-    // getSourceSeries(this.props.studyInstanceUIDs[0], this.props.studies);
-
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
     });
@@ -239,18 +237,8 @@ class Viewer extends Component {
       isStudyLoaded,
       activeViewportIndex,
       viewports,
+      studyInstanceUIDs
     } = this.props;
-
-    // console.log({
-    //   props: this.props,
-    //   studies: this.props.studies,
-    //   thumbnails: this.state.thumbnails,
-    // });
-
-    // console.log(
-    //   'Component Did Update: ',
-    //   _removeUnwantedSeries(this.props.studies)
-    // );
 
     const activeViewport = viewports[activeViewportIndex];
     const activeDisplaySetInstanceUID = activeViewport
@@ -282,6 +270,12 @@ class Viewer extends Component {
       this.timepointApi.retrieveTimepoints({ PatientID });
       this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
+
+    // console.log({ Props: this.props });
+
+    // if (studyInstanceUIDs) {
+    //   getSourceSeries(studyInstanceUIDs[0], studies);
+    // }
   }
 
   _getActiveViewport() {
@@ -780,15 +774,14 @@ const _removeUnwantedSeries = function(studies) {
   return allData;
 };
 
-
 // const getSourceSeries = async function(study_id, studies) {
 //   const newID = study_id.replace(/['"]+/g, '');
 
-//   // try {
-//   //   await client.get(`/series?study=${newID}`).then(response => {
-//   //     console.log({ GetSources: response });
-//   //   });
-//   // } catch (err) {
-//   //   console.log(error);
-//   // }
+//   try {
+//     await client.get(`/series?study=${newID}`).then(response => {
+//       console.log({ GetSources: response });
+//     });
+//   } catch (err) {
+//     console.log({ err });
+//   }
 // };

@@ -103,7 +103,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     colorMapRef.current = colorMapStatus;
   }, [opacityStatus, colorMapStatus]);
 
-  // Functionality for showing jobs if jobs data is available
+  // function for showing jobs if jobs data is available
   const show = () => {
     if (data.status === 'DONE') {
       setIsActive(!isActive);
@@ -131,6 +131,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async instance => {
+    console.log({ instance });
+
     // remove previous overlay if it exists
     if (overlayRef.current === true) {
       removeOverlay();
@@ -153,6 +155,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     // extract source id from the derived image data
     const source_uid = image.imageId.split('/')[18];
 
+    console.log({ source_uid });
+
     try {
       await client
         .get(`/instance?source=${source_uid}&texture=${instance}`)
@@ -165,7 +169,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
   };
 
-  // functionality for deriving image id and then adding image
+  // function for deriving image id and then adding image
   const performOverlay = (series_uid, image_uid) => {
     const image_id = `${base_url}/series/${series_uid}/instances/${image_uid}/frames/1`;
 
@@ -179,7 +183,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     addImageLayer(image_id);
   };
 
-  // functionality for loading an image and setting it as an added layer
+  // function for loading an image and setting it as an added layer
   const addImageLayer = async image_id => {
     await cornerstone
       .loadAndCacheImage(image_id)
@@ -224,7 +228,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
       });
   };
 
-  // functionality for getting new image during overlay scroll activity
+  // function for getting new image during overlay scroll activity
   const eventFunction = event => {
     if (overlayRef.current === false) {
       return;
@@ -240,17 +244,19 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
   };
 
-  // functionality for getting image from list series available in the server
+  // function for getting image from list series available in the server
   const getImageUrl = (image_index, series_uid) => {
-    const chosen_series = allSeriesState.filter(new_data => {
+    console.log({ current_image_index: image_index, instance_uid: series_uid });
+
+    const selectedTexture = allSeriesState.filter(new_data => {
       if (new_data.SeriesInstanceUID === series_uid) {
         return new_data;
       }
     });
 
-    if (chosen_series && chosen_series.length > 0) {
-      cacheEntireSeries(chosen_series);
-      const images = chosen_series[0].instances.filter((instance, index) => {
+    if (selectedTexture && selectedTexture.length > 0) {
+      cacheEntireSeries(selectedTexture);
+      const images = selectedTexture[0].instances.filter((instance, index) => {
         if (index === image_index) {
           return instance;
         }
@@ -262,8 +268,11 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
   };
 
+  // function for caching all texture image instances using cornerstone
   const cacheEntireSeries = series => {
     const instances = series[0].instances;
+
+    console.log({ SelectedTextureInstances: instances });
 
     const promises = [];
 
@@ -277,7 +286,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     Promise.all(promises);
   };
 
-  // functionality for removing all overlays added to the base image / canvas
+  // function for removing all overlays added to the base image / canvas
   const removeOverlay = () => {
     const element = elementRef.current;
     if (!element) {
