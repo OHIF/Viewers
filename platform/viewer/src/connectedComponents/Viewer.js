@@ -194,13 +194,7 @@ class Viewer extends Component {
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
-    // console.log({
-    //   studyID: this.props.studyInstanceUIDs[0],
-    //   user: this.props.user,
-    //   // thumbnails: this.state.thumbnails,
-    // });
-
-    getSourceSeries(this.props.studyInstanceUIDs[0], this.props.studies);
+    // getSourceSeries(this.props.studyInstanceUIDs[0], this.props.studies);
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -760,26 +754,15 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
 };
 
 const _removeUnwantedSeries = function(studies) {
-
   const allData = studies;
 
   const filteredDatasets = [];
-  const filteredSeries = [];
   const source_series = [
     '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
   ];
 
   if (allData.length > 0) {
-    // filtering through the series for source data
-    // allData[0].series.filter(data => {
-    //   source_series.filter(seriesUID => {
-    //     if (data.SeriesInstanceUID === seriesUID) {
-    //       filteredSeries.push(data);
-    //     }
-    //   });
-    // });
-
-    // filtering through the displaySets for source data
+    // filtering through the displaySets for source data (same can be done for the series)
     allData[0].displaySets.filter(data => {
       source_series.filter(seriesUID => {
         if (data.SeriesInstanceUID === seriesUID) {
@@ -788,10 +771,9 @@ const _removeUnwantedSeries = function(studies) {
       });
     });
 
-    // remapping the data to have the filtered series
+    // remapping the data to have the filtered displaySets
     allData.map(data => {
       data.displaySets = filteredDatasets;
-      // data.series = filteredSeries;
     });
   }
 
@@ -799,18 +781,14 @@ const _removeUnwantedSeries = function(studies) {
 };
 
 
-const getSourceSeries = async function(study_id, studies) {
-  const newID = study_id.replace(/['"]+/g, '');
+// const getSourceSeries = async function(study_id, studies) {
+//   const newID = study_id.replace(/['"]+/g, '');
 
-  const source_series = [
-    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-  ];
-
-  // try {
-  //   await client.get(`/series?study=${newID}`).then(response => {
-  //     console.log({ GetSources: response });
-  //   });
-  // } catch (err) {
-  //   console.log(error);
-  // }
-};
+//   // try {
+//   //   await client.get(`/series?study=${newID}`).then(response => {
+//   //     console.log({ GetSources: response });
+//   //   });
+//   // } catch (err) {
+//   //   console.log(error);
+//   // }
+// };
