@@ -4,13 +4,20 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from '@ohif/core';
-import ViewportLoadingIndicator from './ViewportLoadingIndicator';
-import setCornerstoneMeasurementActive from './_shared/setCornerstoneMeasurementActive';
-import ViewportOverlay from './ViewportOverlay';
-
 import { useCine, useViewportGrid } from '@ohif/ui';
 
+import ViewportLoadingIndicator from './ViewportLoadingIndicator';
+import setCornerstoneMeasurementActive from './_shared/setCornerstoneMeasurementActive';
+import setActiveAndPassiveToolsForElement from './_shared/setActiveAndPassiveToolsForElement';
+import getTools from './_shared/getTools';
+
+import ViewportOverlay from './ViewportOverlay';
+
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
+
+const BaseAnnotationTool = cornerstoneTools.importInternal(
+  'base/BaseAnnotationTool'
+);
 
 const { StackManager } = OHIF.utils;
 
@@ -43,6 +50,42 @@ function OHIFCornerstoneViewport({
       callback(element, ToolBarService);
     };
     element.addEventListener(cornerstone.EVENTS.IMAGE_RENDERED, handler);
+  };
+
+  const defaultOnElementEnabled = evt => {
+    const eventData = evt.detail;
+    const targetElement = eventData.element;
+    const tools = getTools();
+    const toolAlias = ToolBarService.state.primaryToolId;
+
+    // Activate appropriate tool bindings for element
+    setActiveAndPassiveToolsForElement(targetElement, tools);
+    cornerstoneTools.setToolActiveForElement(targetElement, toolAlias, {
+      mouseButtonMask: 1,
+    });
+
+    // Set dashed, based on tracking, for this viewport
+    const allTools = cornerstoneTools.store.state.tools;
+    const toolsForElement = allTools.filter(
+      tool => tool.element === targetElement
+    );
+
+    toolsForElement.forEach(tool => {
+      if (tool instanceof BaseAnnotationTool) {
+        const configuration = tool.configuration;
+
+        configuration.renderDashed = true;
+
+        tool.configuration = configuration;
+      }
+    });
+
+    // Update image after setting tool config
+    const enabledElement = cornerstone.getEnabledElement(targetElement);
+
+    if (enabledElement.image) {
+      cornerstone.updateImage(targetElement);
+    }
   };
 
   useEffect(() => {
@@ -174,7 +217,9 @@ function OHIFCornerstoneViewport({
   return (
     <div className="relative flex flex-row w-full h-full overflow-hidden">
       <CornerstoneViewport
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={
+          onElementEnabled ? onElementEnabled : defaultOnElementEnabled
+        }
         viewportIndex={viewportIndex}
         imageIds={imageIds}
         imageIdIndex={initialImageIdIndex}

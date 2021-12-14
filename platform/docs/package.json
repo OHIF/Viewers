@@ -15,6 +15,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 8001",
+    "dev": "docusaurus start --port 8001",
     "docs": "docusaurus start --port 8001",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
