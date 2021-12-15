@@ -85,7 +85,13 @@ const checkIfCanAddMeasurementsToDisplaySet = (
       );
       if (imageIndex > -1) {
         const imageId = imageIds[imageIndex];
-        addMeasurement(measurement, imageId, imageDisplaySet.displaySetInstanceUID);
+        const imageMetadata = images[imageIndex].getData().metadata;
+        addMeasurement(
+          measurement,
+          imageId,
+          imageMetadata,
+          imageDisplaySet.displaySetInstanceUID
+        );
       }
     });
   });

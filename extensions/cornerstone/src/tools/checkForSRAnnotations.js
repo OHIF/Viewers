@@ -27,6 +27,10 @@ const checkForSRAnnotations = ({ viewportIndex, displaySet }) => {
     .getDisplaySets()
     .filter(ds => ds.Modality === 'SR');
 
+  if (srDisplaySets.length === 0) {
+    return;
+  }
+
   const { measurements: _measurements } = srDisplaySets[0];
   if (!_measurements || _measurements.length < 1) {
     return;

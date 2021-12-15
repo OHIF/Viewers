@@ -18,10 +18,10 @@ const globalImageIdSpecificToolStateManager =
 export default function addMeasurement(
   measurement,
   imageId,
+  imageMetadata,
   displaySetInstanceUID
 ) {
   // TODO -> Render rotated ellipse .
-
   const toolName = TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
 
   const measurementData = {
@@ -36,9 +36,8 @@ export default function addMeasurement(
     if (measurementData.renderableData[GraphicType] === undefined) {
       measurementData.renderableData[GraphicType] = [];
     }
-
     measurementData.renderableData[GraphicType].push(
-      getRenderableData(GraphicType, GraphicData, ValueType)
+      getRenderableData(GraphicType, GraphicData, ValueType, imageMetadata)
     );
   });
 

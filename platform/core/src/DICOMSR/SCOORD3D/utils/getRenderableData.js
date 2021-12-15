@@ -1,9 +1,24 @@
 import csMath from 'cornerstone-math';
 import SCOORD_TYPES from '../constants/scoordTypes';
 
-const getRenderableData = (GraphicType, GraphicData, ValueType) => {
+const getRenderableData = (
+  GraphicType,
+  GraphicData,
+  ValueType,
+  imageMetadata
+) => {
   let renderableData;
 
+  // Question for Steve and Andrey, with study 1.3.6.1.4.1.14519.5.2.1.6279.6001.100063870746088919758706456900
+  // (the one with ~1000 polygons), looks like the SCOORD3D coordinates are given respect to the
+  // center of the image, however in the dicom refers that the coordinates are given respect to
+  // the reference. Should we use then ImagePositionPatient from the metadata as center?
+  const center = [
+    parseInt(imageMetadata.Rows) * 0.5,
+    parseInt(imageMetadata.Columns) * 0.5,
+  ];
+
+  // NOTE: assuming that ImageOriatationPatient is [1,0,0,0,1,0], should we consider different values?
   switch (GraphicType) {
     case SCOORD_TYPES.POINT:
     case SCOORD_TYPES.MULTIPOINT:
@@ -13,8 +28,8 @@ const getRenderableData = (GraphicType, GraphicData, ValueType) => {
       if (ValueType === 'SCOORD3D') {
         for (let i = 0; i < GraphicData.length; i += 3) {
           renderableData.push({
-            x: GraphicData[i],
-            y: GraphicData[i + 1],
+            x: GraphicData[i] + center[0],
+            y: GraphicData[i + 1] + center[1],
             z: GraphicData[i + 2],
           });
         }
@@ -26,12 +41,12 @@ const getRenderableData = (GraphicType, GraphicData, ValueType) => {
 
       break;
     case SCOORD_TYPES.POLYGON:
+      // is this only SCOORD3D?
       renderableData = [];
-
       for (let i = 0; i < GraphicData.length; i += 3) {
         renderableData.push({
-          x: GraphicData[i],
-          y: GraphicData[i + 1],
+          x: GraphicData[i] + center[0],
+          y: GraphicData[i + 1] + center[1],
           z: GraphicData[i + 2],
         });
       }
