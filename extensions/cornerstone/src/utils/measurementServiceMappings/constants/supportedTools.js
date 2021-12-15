@@ -1,1 +1,1 @@
-export default ['Length', 'EllipticalRoi', 'FreehandRoi', 'Bidirectional', 'ArrowAnnotate'];
+export default ['Length', 'EllipticalRoi', 'NLFreehandRoi', 'Bidirectional', 'ArrowAnnotate'];

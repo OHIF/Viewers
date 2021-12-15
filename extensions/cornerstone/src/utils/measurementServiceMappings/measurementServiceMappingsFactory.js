@@ -2,7 +2,7 @@ import Length from './Length';
 import Bidirectional from './Bidirectional';
 import ArrowAnnotate from './ArrowAnnotate';
 import EllipticalRoi from './EllipticalRoi';
-import FreehandRoi from './FreehandRoi';
+import NLFreehandRoi from './NLFreehandRoi';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
@@ -33,7 +33,7 @@ const measurementServiceMappingsFactory = (
       EllipticalRoi: ELLIPSE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
-      FreehandRoi: FREEHAND,
+      NLFreehandRoi: FREEHAND,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -105,10 +105,10 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-    FreehandRoi: {
-      toAnnotation: FreehandRoi.toAnnotation,
+    NLFreehandRoi: {
+      toAnnotation: NLFreehandRoi.toAnnotation,
       toMeasurement: csToolsAnnotation =>
-        FreehandRoi.toMeasurement(
+        NLFreehandRoi.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
           _getValueTypeFromToolType

@@ -10,7 +10,7 @@ const {
 
 const calculateSUV = cornerstoneTools.importInternal('util/calculateSUV');
 
-const FreehandRoi = {
+const NLFreehandRoi = {
   toAnnotation: (measurement, definition) => {},
   toMeasurement: (
     csToolsAnnotation,
@@ -159,4 +159,4 @@ const FreehandRoi = {
   },
 };
 
-export default FreehandRoi;
+export default NLFreehandRoi;

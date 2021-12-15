@@ -8,7 +8,6 @@ const toolsGroupedByType = {
     csTools.BidirectionalTool,
     csTools.LengthTool,
     csTools.AngleTool,
-    csTools.FreehandRoiTool,
     csTools.EllipticalRoiTool,
     csTools.DragProbeTool,
     csTools.RectangleRoiTool,

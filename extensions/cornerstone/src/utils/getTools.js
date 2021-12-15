@@ -1,4 +1,5 @@
 import csTools from 'cornerstone-tools';
+import NLFreehandRoiTool from '../tools/NLFreehandRoiTool';
 
 const toolsGroupedByType = {
   touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
@@ -8,7 +9,7 @@ const toolsGroupedByType = {
     csTools.BidirectionalTool,
     csTools.LengthTool,
     csTools.AngleTool,
-    csTools.FreehandRoiTool,
+    NLFreehandRoiTool,
     csTools.EllipticalRoiTool,
     csTools.DragProbeTool,
     csTools.RectangleRoiTool,

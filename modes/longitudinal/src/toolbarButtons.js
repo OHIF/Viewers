@@ -107,12 +107,12 @@ export default [
           'Ellipse Tool'
         ),
         _createToolButton(
-          'FreehandRoi',
-          'tool-elipse',
+          'NLFreehandRoi',
+          'tool-freehand',
           'Freehand',
           undefined,
           {
-            toolName: 'FreehandRoi',
+            toolName: 'NLFreehandRoi',
           },
           'Freehand Tool'
         ),
