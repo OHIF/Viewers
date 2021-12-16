@@ -22,6 +22,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const layerRef = useRef();
   const opacityRef = useRef();
   const colorMapRef = useRef();
+  const statusRef = useRef();
   const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
@@ -60,6 +61,20 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
+
+  // useEffect for checking data status
+  useEffect(() => {
+    console.log({ Status: data.status });
+    if (data.status === 'RUNNING') {
+      statusRef.current = data.status;
+      console.log('Changed job status to running');
+    }
+
+    if (statusRef.current === 'RUNNING' && data.status === 'DONE') {
+      console.log('Updated job status to done');
+      window.location.reload();
+    }
+  }, [data.status]);
 
   // setting up useEffect for adding and removing an event listener
   useEffect(() => {
