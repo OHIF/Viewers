@@ -9,16 +9,12 @@ const getRenderableData = (
 ) => {
   let renderableData;
 
-  // Question for Steve and Andrey, with study 1.3.6.1.4.1.14519.5.2.1.6279.6001.100063870746088919758706456900
-  // (the one with ~1000 polygons), looks like the SCOORD3D coordinates are given respect to the
-  // center of the image, however in the dicom refers that the coordinates are given respect to
-  // the reference. Should we use then ImagePositionPatient from the metadata as center?
   const center = [
     parseInt(imageMetadata.Rows) * 0.5,
     parseInt(imageMetadata.Columns) * 0.5,
   ];
 
-  // NOTE: assuming that ImageOriatationPatient is [1,0,0,0,1,0], should we consider different values?
+  // To Do: double-check non SCOORD3D, since 2D image-coordinates SCOORDs need to be mapped to patient space (ImagePositionPatient)
   switch (GraphicType) {
     case SCOORD_TYPES.POINT:
     case SCOORD_TYPES.MULTIPOINT:
