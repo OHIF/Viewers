@@ -378,12 +378,11 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
+              ) : // <ConnectedStudyBrowser
+              //   studies={this.state.thumbnails}
+              //   studyMetadata={this.props.studies}
+              // />
+              null}
             </SidePanel>
           </ErrorBoundaryDialog>
 
@@ -734,31 +733,31 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   });
 };
 
-const _removeUnwantedSeries = function(studies, instanceUID, user) {
-  // axios client import
-  const client = axios.create({
-    baseURL: 'https://radcadapi.thetatech.ai',
-    timeout: 90000,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
-
-  client.interceptors.request.use(config => {
-    config.headers.Authorization = `Bearer ${user.access_token}`;
-    return config;
-  });
+const _removeUnwantedSeries = async function(studies, instanceUID, user) {
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+  };
 
   const allData = studies;
+  const source_series = [];
 
-  let count = 0;
+  try {
+    const response = await fetch(
+      `https://radcadapi.thetatech.ai/series?study=${instanceUID[0]}`,
+      requestOptions
+    );
+    const result = await response.json();
+    result.series.forEach(element => {
+      source_series.push(element);
+    });
+  } catch (err) {
+    console.log(err);
+  }
 
   const filteredDatasets = [];
-  const source_series = [
-    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-  ];
+
+  console.log({ source_series });
 
   if (allData.length > 0) {
     // filtering through the displaySets for source data (same can be done for the series)

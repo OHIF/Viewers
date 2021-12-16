@@ -64,14 +64,11 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // useEffect for checking data status
   useEffect(() => {
-    console.log({ Status: data.status });
     if (data.status === 'RUNNING') {
       statusRef.current = data.status;
-      console.log('Changed job status to running');
     }
 
     if (statusRef.current === 'RUNNING' && data.status === 'DONE') {
-      console.log('Updated job status to done');
       window.location.reload();
     }
   }, [data.status]);
