@@ -28,22 +28,6 @@ import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextProvider, { JobsContext } from '../context/JobsContext.js';
 import JobsContextUtil from './JobsContextUtil.js';
 
-// axios client import
-const client = axios.create({
-  baseURL: 'https://radcadapi.thetatech.ai',
-  timeout: 90000,
-  headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-});
-
-client.interceptors.request.use(config => {
-  config.headers.Authorization = `Bearer ${this.props.user.access_token}`;
-  return config;
-});
-
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -237,7 +221,7 @@ class Viewer extends Component {
       isStudyLoaded,
       activeViewportIndex,
       viewports,
-      studyInstanceUIDs
+      studyInstanceUIDs,
     } = this.props;
 
     const activeViewport = viewports[activeViewportIndex];
@@ -271,10 +255,9 @@ class Viewer extends Component {
       this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
 
-    // console.log({ Props: this.props });
-
-    // if (studyInstanceUIDs) {
-    //   getSourceSeries(studyInstanceUIDs[0], studies);
+    // if (studyInstanceUIDs.length > 0 && studies.length > 0) {
+    //   console.log({ studyInstanceUIDs, studies, props });
+    //   // getSourceSeries(studyInstanceUIDs[0], studies);
     // }
   }
 
@@ -408,7 +391,11 @@ class Viewer extends Component {
           <div className={classNames('main-content')}>
             <ErrorBoundaryDialog context="ViewerMain">
               <ConnectedViewerMain
-                studies={_removeUnwantedSeries(this.props.studies)}
+                studies={_removeUnwantedSeries(
+                  this.props.studies,
+                  this.props.studyInstanceUIDs,
+                  this.props.user
+                )}
                 isStudyLoaded={this.props.isStudyLoaded}
               />
               {/* null */}
@@ -773,15 +760,3 @@ const _removeUnwantedSeries = function(studies) {
 
   return allData;
 };
-
-// const getSourceSeries = async function(study_id, studies) {
-//   const newID = study_id.replace(/['"]+/g, '');
-
-//   try {
-//     await client.get(`/series?study=${newID}`).then(response => {
-//       console.log({ GetSources: response });
-//     });
-//   } catch (err) {
-//     console.log({ err });
-//   }
-// };
