@@ -378,11 +378,12 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) : // <ConnectedStudyBrowser
-              //   studies={this.state.thumbnails}
-              //   studyMetadata={this.props.studies}
-              // />
-              null}
+              ) : (
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
             </SidePanel>
           </ErrorBoundaryDialog>
 
@@ -733,31 +734,13 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   });
 };
 
-const _removeUnwantedSeries = async function(studies, instanceUID, user) {
-  var requestOptions = {
-    method: 'GET',
-    redirect: 'follow',
-  };
-
+const _removeUnwantedSeries = function(studies) {
   const allData = studies;
-  const source_series = [];
-
-  try {
-    const response = await fetch(
-      `https://radcadapi.thetatech.ai/series?study=${instanceUID[0]}`,
-      requestOptions
-    );
-    const result = await response.json();
-    result.series.forEach(element => {
-      source_series.push(element);
-    });
-  } catch (err) {
-    console.log(err);
-  }
 
   const filteredDatasets = [];
-
-  console.log({ source_series });
+  const source_series = [
+    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+  ];
 
   if (allData.length > 0) {
     // filtering through the displaySets for source data (same can be done for the series)
