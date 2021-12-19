@@ -77,12 +77,25 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
+    setMica: ({ toolName, viewports }) => {
+      console.warn('mica clicked');
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+      if (enabledElement) {
+        // const viewport = cornerstone.getViewport(enabledElement);
+        const specificData = viewports.viewportSpecificData;
+        const serisID = specificData[0].SeriesInstanceUID;
+        const studyId = specificData[0].StudyInstanceUID;
+        const instanceID = specificData[0].SOPInstanceUID;
+        //fetch.get()
+      }
+    },
     // TODO: this is receiving `evt` from `ToolbarRow`. We could use it to have
     //       better mouseButtonMask sets.
     setToolActive: ({ toolName }) => {
       if (!toolName) {
         console.warn('No toolname provided to setToolActive command');
       }
+
       cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
     },
     clearAnnotations: ({ viewports }) => {
@@ -397,6 +410,11 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.setToolActive,
       storeContexts: [],
       options: { toolName: 'Zoom' },
+    },
+    setMica: {
+      commandFn: actions.setMica,
+      storeContexts: ['viewports'],
+      options: { toolName: 'mica' },
     },
     setCornerstoneLayout: {
       commandFn: actions.setCornerstoneLayout,
