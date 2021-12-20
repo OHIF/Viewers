@@ -318,7 +318,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
     // set overlay and instance status to defaults
     overlayRef.current = false;
-
     instanceRef.current = undefined;
   };
 

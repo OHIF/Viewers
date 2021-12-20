@@ -1,11 +1,8 @@
-import { useContext } from 'react';
 import { getEnabledElement } from '../state';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-// import { JobsContext } from '../../../../platform/viewer/src/context/JobsContext';
 
 const TriggerAlgorithm = ({ viewports, servicesManager }) => {
-  // const { jobDetails, setJobDetails } = useContext(JobsContext);
   let count = 0;
 
   // pass all the data here and configure them
@@ -15,6 +12,13 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
   const element = getEnabledElement(viewports.activeViewportIndex);
   if (!element) {
     return;
+  }
+
+  // Check if there are multiple layers and remove the main one
+  const all_layers = cornerstone.getLayers(element);
+  if (all_layers.length > 1) {
+    cornerstone.removeLayer(element, all_layers[1].layerId);
+    cornerstone.updateImage(element);
   }
 
   const enabled_element = cornerstone.getEnabledElement(element);
@@ -87,7 +91,8 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
       } else {
         UINotificationService.show({
           title: 'Overwrite Alert',
-          message: 'Taking new dimensions would remove previously selected ones',
+          message:
+            'Taking new dimensions would remove previously selected ones',
           type: 'warning',
           duration: 7000,
         });
