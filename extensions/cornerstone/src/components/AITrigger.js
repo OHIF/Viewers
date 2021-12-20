@@ -55,29 +55,6 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
         event_data.measurementData
       );
     }
-
-    // retrieving rectangle tool roi data from element
-    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
-
-    // console.log({ ToolData: tool_data.data });
-
-    // if (tool_data && tool_data.data.length > 0) {
-    //   let startX = parseInt(tool_data.data[0].handles.start.x.toFixed(2));
-    //   let startY = parseInt(tool_data.data[0].handles.start.y.toFixed(2));
-    //   let endX = parseInt(tool_data.data[0].handles.end.x.toFixed(2));
-    //   let endY = parseInt(tool_data.data[0].handles.end.y.toFixed(2));
-
-    //   const x_min = Math.min(startX, endX);
-    //   const x_max = Math.max(startX, endX);
-    //   const y_min = Math.min(startY, endY);
-    //   const y_max = Math.max(startY, endY);
-    //   const width = x_max - x_min;
-    //   const height = y_max - y_min;
-
-    //   const data = {x_min, y_min, width, height };
-
-    //   setJobDetails(data);
-    // }
   });
 
   // adding event listener for when user starts to get new dimensions
