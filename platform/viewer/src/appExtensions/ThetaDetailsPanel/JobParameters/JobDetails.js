@@ -170,6 +170,9 @@ const JobParameters = props => {
 
         // clearing all params
         clearParams();
+
+        // set stackscroll as active tool
+        cornerstoneTools.setToolActive('StackScroll', { mouseButtonMask: 1 });
       })
       .catch(error => {
         console.log(error);
