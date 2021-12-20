@@ -181,9 +181,9 @@ const JobParameters = props => {
 
   return (
     <div className="component">
-      <div className="title-header">Parameters</div>
       {Object.keys(toolData).length > 0 && (
         <div>
+          <div className="title-header">Parameters</div>
           <h4>Dimensions </h4>
           <p>
             <b>Width:</b> {width}
@@ -198,21 +198,21 @@ const JobParameters = props => {
           <p>
             <b>y:</b> {y}
           </p>
+          <br />
+
+          <label>
+            <div className="triggerButton">
+              <button
+                onClick={triggerJob}
+                disabled={isDisabled}
+                className="syncButton"
+              >
+                Trigger Job
+              </button>
+            </div>
+          </label>
         </div>
       )}
-      <br />
-
-      <label>
-        <div className="triggerButton">
-          <button
-            onClick={triggerJob}
-            disabled={isDisabled}
-            className="syncButton"
-          >
-            Trigger Job
-          </button>
-        </div>
-      </label>
     </div>
   );
 };
