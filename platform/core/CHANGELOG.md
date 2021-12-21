@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.2...@ohif/core@2.16.3) (2021-12-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.1...@ohif/core@2.16.2) (2021-11-30)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 ## [2.16.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.0...@ohif/core@2.16.1) (2021-10-26)
 
 **Note:** Version bump only for package @ohif/core

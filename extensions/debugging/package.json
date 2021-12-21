@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-debugging",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "OHIF extension for debugging.",
   "author": "OHIF",
   "license": "MIT",
@@ -28,12 +28,12 @@
   },
   "peerDependencies": {
     "@ohif/core": "^2.6.0",
-    "dicom-parser": "^1.8.9"
+    "dicom-parser": "^1.8.11"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "detect-browser": "5.1.1",
-    "dicomweb-client": "^0.8.1",
+    "dicomweb-client": "^0.8.3",
     "file-saver": "^2.0.2",
     "jszip": "^3.2.2"
   }
