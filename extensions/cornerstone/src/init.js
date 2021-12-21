@@ -27,6 +27,7 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
   'EllipticalRoi',
   'CircleRoi',
   'RectangleRoi',
+  'NLFreehandRoi',
   // SR Viewport...
   'SRLength',
   'SRBidirectional',
