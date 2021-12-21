@@ -21,7 +21,6 @@ const panZoomSynchronizer = new cornerstoneTools.Synchronizer(
 
 function onElementEnabledAddToSync(event) {
   const { element } = event.detail;
-
   imagePositionSynchronizer.add(element);
   // panZoomSynchronizer.add(element);
 }
@@ -153,9 +152,6 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     toggleSeriesLinking: () => {
       const { isSeriesLinkingEnabled } = ViewerToolsetService.getState();
       ViewerToolsetService.setIsSeriesLinkingEnabled(!isSeriesLinkingEnabled);
-      // cornerstone.getEnabledElements().forEach(enabledElement => {
-      //   cornerstone.updateImage(enabledElement.element);
-      // });
     },
     activateCrosshairs: () => {
       commandsManager.runCommand('toggleSynchronizer', { toggledState: true });

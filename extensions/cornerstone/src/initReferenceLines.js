@@ -35,6 +35,8 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
         if (!referenceElement.image)
           await waitForTheImageToBeRendered(referenceElement.element);
 
+        cornerstone.updateImage(referenceElement.element);
+
         const referenceImage = referenceElement.image;
 
         if (!referenceImage || !targetImage) {
