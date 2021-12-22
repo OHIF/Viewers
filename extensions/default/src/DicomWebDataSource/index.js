@@ -262,12 +262,21 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         const naturalized = naturalizeDataset(instance);
         Object.keys(naturalized).forEach(key => {
           const value = naturalized[key];
+          // The value.Value will be set with the bulkdata read value
+          // in which case it isn't necessary to re-read this.
           if (value && value.BulkDataURI && !value.Value) {
-            // Provide a method to fetch this
+            // Provide a method to fetch bulkdata
             value.retrieveBulkData = () => {
               const options = {
+                // The bulkdata fetches work with either multipart or
+                // singlepart, so set multipart to false to let the server
+                // decide which type to respond with.
                 multipart: false,
                 BulkDataURI: value.BulkDataURI,
+                // The study instance UID is required if the bulkdata uri
+                // is relative - that isn't disallowed by DICOMweb, but
+                // isn't well specified in the standard, but is needed in
+                // any implementation that stores static copies of the metadata
                 StudyInstanceUID: naturalized.StudyInstanceUID,
               };
               return qidoDicomWebClient.retrieveBulkData(options).then(val => {
