@@ -82,7 +82,6 @@ export default function ModeRoute({
   const {
     DisplaySetService,
     HangingProtocolService,
-    UserAuthenticationService,
   } = servicesManager.services;
 
   const { extensions, sopClassHandlers, hotkeys, hangingProtocols } = mode;
@@ -104,7 +103,6 @@ export default function ModeRoute({
   const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
     layoutTemplateRouteData.id
   );
-  const LayoutComponent = layoutTemplateModuleEntry.component;
 
   // For each extension, look up their context modules
   // TODO: move to extension manager.

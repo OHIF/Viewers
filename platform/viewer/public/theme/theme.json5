@@ -1,0 +1,38 @@
+{
+  // This is an example hanging protocol definition.  See theme-configuration.md
+  // for more details on custom configurations:
+  ThemeProtocols: {
+    protocols: {
+      '2x3': {
+        id: '2x3',
+        hasUpdatedPriorsInformation: false,
+        protocolMatchingRules: [
+          {
+            id: 'NumberOfStudyRelatedSeries>4',
+            weight: 20,
+            attribute: 'NumberOfStudyRelatedSeries',
+            constraint: {
+              greaterThan: {
+                value: 4,
+              },
+            },
+            required: true,
+          },
+        ],
+        stages: [
+          {
+            name: 'TwoByThree',
+            viewportStructure: {
+              type: 'grid',
+              properties: {
+                rows: 2,
+                columns: 3,
+              },
+            },
+          },
+        ],
+      },
+      numberOfPriorsReferenced: 0,
+    },
+  },
+}

@@ -111,7 +111,7 @@ export default class ProtocolEngine {
     return HPMatcher.match(
       metaData,
       rules,
-      this.customAttributeRetrievalCallbacks
+      this.customAttributeRetrievalCallbacks,
     );
   }
 

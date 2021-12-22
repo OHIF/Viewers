@@ -17,6 +17,7 @@ import {
   errorHandler
   // utils,
 } from '@ohif/core';
+import ConfigPoint from 'config-point';
 
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
@@ -48,6 +49,12 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     hotkeysManager,
     appConfig,
   });
+
+  if (window) {
+    // Load the default theme settings
+    const defaultTheme = config && config.defaultTheme || 'theme';
+    ConfigPoint.load(defaultTheme, '/theme', 'theme');
+  }
 
   servicesManager.registerServices([
     UINotificationService,
