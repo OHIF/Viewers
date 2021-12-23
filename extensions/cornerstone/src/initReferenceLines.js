@@ -24,8 +24,10 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
     if (
       !isReferenceLinesEnabled ||
       getEnabledElement(activeViewportIndex).element !== enabledElement.element
-    )
+    ) {
+      cornerstone.updateImage(getEnabledElement(activeViewportIndex).element);
       return;
+    }
 
     const targetImage = enabledElement.image;
     cornerstone
