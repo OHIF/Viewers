@@ -9,6 +9,10 @@ src/version.js
 junit.xml
 coverage/
 .docz/
+*.js.map
+.yarn
+platform/docs/.docusaurus
+platform/ui/storybook-static
 
 # YALC (for Erik)
 .yalc
@@ -34,3 +38,4 @@ screenshots/
 
 # Locize settings
 .locize
+
