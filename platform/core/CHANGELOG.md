@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.4...@ohif/core@2.16.5) (2021-12-23)
+
+
+### Bug Fixes
+
+* DICOMFileLoadingListener typo in method name ([#2647](https://github.com/OHIF/Viewers/issues/2647)) ([761d54f](https://github.com/OHIF/Viewers/commit/761d54fbbfb376c20ee15794ef7bb7111f64a06f))
+
+
+
+
+
 ## [2.16.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.3...@ohif/core@2.16.4) (2021-12-23)
 
 
