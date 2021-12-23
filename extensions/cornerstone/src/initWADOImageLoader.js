@@ -38,6 +38,9 @@ export default function initWADOImageLoader(UserAuthenticationService) {
       // For now we use image/jls and image/x-jls because some servers still use the old type
       // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
       const xhrRequestHeaders = {
+        // To prevent Preflight requests:
+        accept: 'multipart/related; type=application/octet-stream',
+        //
         //accept: 'multipart/related; type="image/x-jls"',
         // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
       };
