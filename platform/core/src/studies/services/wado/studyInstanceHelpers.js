@@ -116,6 +116,11 @@ async function makeSOPInstance(server, study, instance) {
     };
     study.seriesMap[SeriesInstanceUID] = series;
     study.series.push(series);
+  } else {
+    if (series.SeriesDate === undefined)
+      series.SeriesDate = naturalizedInstance.SeriesDate;
+    if (series.SeriesTime === undefined)
+      series.SeriesTime = naturalizedInstance.SeriesTime;
   }
 
   const wadouri = buildInstanceWadoUrl(
