@@ -64,8 +64,17 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         metadata,
       };
 
-      segDisplaySet.getSourceDisplaySet = function(studies, activateLabelMap = true, onDisplaySetLoadFailureHandler) {
-        return getSourceDisplaySet(studies, segDisplaySet, activateLabelMap, onDisplaySetLoadFailureHandler);
+      segDisplaySet.getSourceDisplaySet = function(
+        studies,
+        activateLabelMap = true,
+        onDisplaySetLoadFailureHandler
+      ) {
+        return getSourceDisplaySet(
+          studies,
+          segDisplaySet,
+          activateLabelMap,
+          onDisplaySetLoadFailureHandler
+        );
       };
 
       segDisplaySet.load = async function(referencedDisplaySet, studies) {
@@ -98,6 +107,9 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         if (labelmapBufferArray.length > 1) {
           let labelmapIndexes = [];
           for (let i = 0; i < labelmapBufferArray.length; ++i) {
+            segMetadata.segmentationSeriesInstanceUID =
+              segDisplaySet.SeriesInstanceUID;
+            segMetadata.hasOverlapping = true;
             labelmapIndexes.push(
               await loadSegmentation(
                 imageIds,
@@ -118,6 +130,9 @@ export default function getSopClassHandlerModule({ servicesManager }) {
           labelmapIndex = labelmapIndexes[0];
           console.warn('Overlapping segments!');
         } else {
+          segMetadata.segmentationSeriesInstanceUID =
+            segDisplaySet.SeriesInstanceUID;
+          segMetadata.hasOverlapping = false;
           labelmapIndex = await loadSegmentation(
             imageIds,
             segDisplaySet,

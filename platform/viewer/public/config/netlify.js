@@ -1,6 +1,15 @@
 window.config = {
   routerBasename: '/pwa',
   showStudyList: true,
+  studyPrefetcher: {
+    enabled: true,
+    order: 'closest',
+    displaySetCount: 3,
+    preventCache: false,
+    prefetchDisplaySetsTimeout: 300,
+    displayProgress: true,
+    includeActiveDisplaySet: true,
+  },
   servers: {
     dicomWeb: [
       {

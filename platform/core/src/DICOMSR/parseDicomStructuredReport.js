@@ -1,6 +1,9 @@
 import dcmjs from 'dcmjs';
+import classes from '../classes';
 
 import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
+
+const { LogManager } = classes;
 
 /**
  * Function to parse the part10 array buffer that comes from a DICOM Structured report into measurementData
@@ -20,9 +23,21 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
   );
 
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
-  const storedMeasurementByToolType = MeasurementReport.generateToolState(
-    dataset
-  );
+
+  let storedMeasurementByToolType;
+  try {
+    storedMeasurementByToolType = MeasurementReport.generateToolState(dataset);
+  } catch (error) {
+    const seriesDescription = dataset.SeriesDescription || '';
+    LogManager.publish(LogManager.EVENTS.OnLog, {
+      title: `Failed to parse ${seriesDescription} measurement report`,
+      type: 'warning',
+      message: error.message || '',
+      notify: true,
+    });
+    return;
+  }
+
   const measurementData = {};
   let measurementNumber = 0;
 

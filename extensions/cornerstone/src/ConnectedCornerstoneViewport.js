@@ -53,7 +53,11 @@ const mapStateToProps = (state, ownProps) => {
     // Currently justing using escape hatch + commands
     // activeTool: activeButton && activeButton.command,
     ...dataFromStore,
-    isStackPrefetchEnabled: isActive,
+    isStackPrefetchEnabled: ownProps.hasOwnProperty('isStackPrefetchEnabled')
+      ? ownProps.isStackPrefetchEnabled
+      : ownProps.stackPrefetch
+      ? ownProps.stackPrefetch.enabled
+      : isActive,
     isPlaying,
     frameRate,
     //stack: viewportSpecificData.stack,

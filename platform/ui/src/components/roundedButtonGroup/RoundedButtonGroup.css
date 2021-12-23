@@ -4,6 +4,29 @@
   z-index: 0;
 }
 
+.RoundedButtonGroup .badgeNumber-container {
+  background-color: var(--ui-border-color-dark);
+  width: 21px;
+  height: 21px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  bottom: 10px;
+  left: 5px;
+  color: white;
+  position: absolute;
+}
+
+.RoundedButtonGroup .badgeNumber {
+  font-size: 10px;
+  font-weight: bold;
+  display: block;
+  width: 25px;
+}
+
 .roundedButtonWrapper {
   cursor: pointer;
   display: inline-block;
@@ -36,7 +59,12 @@
   z-index: 1;
 }
 
-.roundedButtonWrapper .roundedButton svg .roundedButtonWrapper .roundedButton span {
+.roundedButtonWrapper
+  .roundedButton
+  svg
+  .roundedButtonWrapper
+  .roundedButton
+  span {
   margin: 0 2px;
 }
 
