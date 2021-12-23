@@ -14,6 +14,11 @@ import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
+import { Icon } from '@ohif/ui';
+import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
+import '../googleCloud/googleCloud.css';
+// import Lottie from 'lottie-react';
+
 import dcmjs from 'dcmjs';
 import axios from 'axios';
 
@@ -27,7 +32,6 @@ import { finished } from 'stream';
 import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextProvider, { JobsContext } from '../context/JobsContext.js';
 import JobsContextUtil from './JobsContextUtil.js';
-
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -92,6 +96,11 @@ class Viewer extends Component {
     });
 
     this._getActiveViewport = this._getActiveViewport.bind(this);
+    this.state = {
+      loading: true,
+    };
+    this.fetchSeriesRef = false;
+    this.source_series_ref = [];
   }
 
   state = {
@@ -174,9 +183,19 @@ class Viewer extends Component {
   };
 
   componentDidMount() {
-    const { studies, isStudyLoaded } = this.props;
+    const { studies, isStudyLoaded, ...rest } = this.props;
+    console.warn(
+      'mount',
+      JSON.stringify(
+        { studies, isStudyLoaded, rest, ref: this.source_series_ref },
+        null,
+        2
+      )
+    );
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
+
+    this.handleFetchAndSetSeries(rest.studyInstanceUIDs[0]);
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -206,6 +225,7 @@ class Viewer extends Component {
       const activeDisplaySetInstanceUID = activeViewport
         ? activeViewport.displaySetInstanceUID
         : undefined;
+
       this.setState({
         thumbnails: _mapStudiesToThumbnails(
           studies,
@@ -215,7 +235,36 @@ class Viewer extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  async handleFetchAndSetSeries(studyInstanceUID) {
+    console.log('fetching', studyInstanceUID);
+    const fetchedSeries = await (async () => {
+      try {
+        var requestOptions = {
+          method: 'GET',
+          redirect: 'follow',
+        };
+
+        const response = await fetch(
+          `https://radcadapi.thetatech.ai/series?study=${studyInstanceUID}`,
+          requestOptions
+        );
+        const result = await response.json();
+        return result.series;
+      } catch (error) {
+        console.error('fetcheSeries caught', { error });
+        return [];
+      }
+    })();
+    // console.warn('fetchedSeries', { fetchedSeries });
+    this.fetchSeriesRef = false;
+    this.source_series_ref = fetchedSeries;
+    this.setState({
+      loading: false,
+      series: fetchedSeries,
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     const {
       studies,
       isStudyLoaded,
@@ -266,6 +315,38 @@ class Viewer extends Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return (
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <p style={{ color: 'white' }}>Loading...</p>
+          {/* <Icon
+            name="circle-notch"
+            className="loading-icon-spin loading-icon"
+          /> */}
+          {/* <Lottie
+            options={{
+              loop: true,
+              autoplay: true,
+              animationData: circularLoading,
+              rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice',
+              },
+            }}
+            height={400}
+            width={400}
+          /> */}
+        </div>
+      );
+    }
+
     let VisiblePanelLeft, VisiblePanelRight;
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
@@ -393,12 +474,12 @@ class Viewer extends Component {
               <ConnectedViewerMain
                 studies={_removeUnwantedSeries(
                   this.props.studies,
+                  this.source_series_ref,
                   this.props.studyInstanceUIDs,
                   this.props.user
                 )}
                 isStudyLoaded={this.props.isStudyLoaded}
               />
-              {/* null */}
             </ErrorBoundaryDialog>
           </div>
 
@@ -734,13 +815,18 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   });
 };
 
-const _removeUnwantedSeries = function(studies) {
+const _removeUnwantedSeries = function(studies, source_series) {
+  console.warn('refval', source_series);
   const allData = studies;
+  // console.warn('studies', JSON.stringify(allData, null, 2));
 
   const filteredDatasets = [];
-  const source_series = [
-    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-  ];
+
+  // const source_series = [
+  //   '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+  // ];
+
+  // console.log(JSON.stringify(source_series, null, 2));
 
   if (allData.length > 0) {
     // filtering through the displaySets for source data (same can be done for the series)
@@ -757,6 +843,8 @@ const _removeUnwantedSeries = function(studies) {
       data.displaySets = filteredDatasets;
     });
   }
+
+  // console.warn(JSON.stringify(allData, null, 2));
 
   return allData;
 };
