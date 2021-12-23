@@ -1,6 +1,4 @@
 import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
-
 import getImageId from '../utils/getImageId.js';
 
 const noop = () => {};
@@ -94,7 +92,11 @@ export class StudyPrefetcher {
     }
 
     this.element = element;
-    this.enabledElement = cornerstone.getEnabledElement(element);
+    try {
+      this.enabledElement = cornerstone.getEnabledElement(element);
+    } catch {
+      throw new Error('Failed to find the enabled element');
+    }
 
     this.stopPrefetching();
     this.prefetchDisplaySets(displaySetInstanceUID);
@@ -114,7 +116,11 @@ export class StudyPrefetcher {
    * @param {number} timeout
    */
   prefetchDisplaySetsAsync(element, timeout) {
-    this.enabledElement = cornerstone.getEnabledElement(element);
+    try {
+      this.enabledElement = cornerstone.getEnabledElement(element);
+    } catch {
+      throw new Error('Failed to find the enabled element');
+    }
     timeout = timeout || this.options.prefetchDisplaySetsTimeout;
     clearTimeout(this.prefetchDisplaySetsHandler);
     this.prefetchDisplaySetsHandler = setTimeout(() => {
