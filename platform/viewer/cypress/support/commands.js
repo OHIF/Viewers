@@ -504,6 +504,9 @@ Cypress.Commands.add('resetUserHotkeyPreferences', () => {
     cy.get('@restoreBtn').click();
   });
 
+  // Click on Save Button
+  cy.get('@saveBtn').click();
+
   // Close Success Message overlay (if displayed)
   cy.get('body').then(body => {
     if (body.find('.sb-closeIcon').length > 0) {
@@ -511,8 +514,6 @@ Cypress.Commands.add('resetUserHotkeyPreferences', () => {
         .first()
         .click({ force: true });
     }
-    // Click on Save Button
-    cy.get('@saveBtn').click();
   });
 });
 
@@ -525,6 +526,9 @@ Cypress.Commands.add('resetUserGeneralPreferences', () => {
     cy.get('@restoreBtn').click();
   });
 
+  // Click on Save Button
+  cy.get('@saveBtn').click();
+
   // Close Success Message overlay (if displayed)
   cy.get('body').then(body => {
     if (body.find('.sb-closeIcon').length > 0) {
@@ -532,8 +536,6 @@ Cypress.Commands.add('resetUserGeneralPreferences', () => {
         .first()
         .click({ force: true });
     }
-    // Click on Save Button
-    cy.get('@saveBtn').click();
   });
 });
 

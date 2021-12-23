@@ -1,6 +1,4 @@
 import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
-
 import getImageId from '../utils/getImageId.js';
 
 const noop = () => {};
@@ -94,7 +92,11 @@ export class StudyPrefetcher {
     }
 
     this.element = element;
-    this.enabledElement = cornerstone.getEnabledElement(element);
+    try {
+      this.enabledElement = cornerstone.getEnabledElement(element);
+    } catch {
+      throw new Error('Failed to find the enabled element');
+    }
 
     this.stopPrefetching();
     this.prefetchDisplaySets(displaySetInstanceUID);
@@ -104,7 +106,7 @@ export class StudyPrefetcher {
    * Stop prefetching images.
    */
   stopPrefetching() {
-    cornerstoneTools.requestPoolManager.clearRequestStack('prefetch');
+    cornerstone.imageLoadPoolManager.clearRequestStack('prefetch');
   }
 
   /**
@@ -114,7 +116,11 @@ export class StudyPrefetcher {
    * @param {number} timeout
    */
   prefetchDisplaySetsAsync(element, timeout) {
-    this.enabledElement = cornerstone.getEnabledElement(element);
+    try {
+      this.enabledElement = cornerstone.getEnabledElement(element);
+    } catch {
+      throw new Error('Failed to find the enabled element');
+    }
     timeout = timeout || this.options.prefetchDisplaySetsTimeout;
     clearTimeout(this.prefetchDisplaySetsHandler);
     this.prefetchDisplaySetsHandler = setTimeout(() => {
@@ -143,20 +149,24 @@ export class StudyPrefetcher {
    */
   prefetchImageIds(imageIds) {
     const nonCachedImageIds = this.filterCachedImageIds(imageIds);
-    const requestPoolManager = cornerstoneTools.requestPoolManager;
+    const imageLoadPoolManager = cornerstone.imageLoadPoolManager;
+
+    let requestFn;
+    if (this.options.preventCache) {
+      requestFn = id => cornerstone.loadImage(id);
+    } else {
+      requestFn = id => cornerstone.loadAndCacheImage(id);
+    }
 
     nonCachedImageIds.forEach(imageId => {
-      requestPoolManager.addRequest(
-        {},
-        imageId,
+      imageLoadPoolManager.addRequest(
+        requestFn.bind(this, imageId),
         this.options.requestType,
-        this.options.preventCache,
-        () => {},
-        noop
+        {
+          imageId,
+        }
       );
     });
-
-    requestPoolManager.startGrabbing();
   }
 
   /**

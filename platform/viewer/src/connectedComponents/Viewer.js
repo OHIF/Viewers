@@ -23,6 +23,8 @@ import './Viewer.css';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import StudyLoadingMonitor from '../components/StudyLoadingMonitor';
 
+const { studyMetadataManager } = OHIF.utils;
+
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -430,6 +432,31 @@ class Viewer extends Component {
 export default withDialog(Viewer);
 
 /**
+ * Async function to check if the displaySet has any derived one
+ *
+ * @param {*object} displaySet
+ * @param {*object} study
+ * @returns {bool}
+ */
+const _checkForDerivedDisplaySets = async function(displaySet, study) {
+  let derivedDisplaySetsNumber = 0;
+  if (
+    displaySet.Modality &&
+    !['SEG', 'SR', 'RTSTRUCT', 'RTDOSE'].includes(displaySet.Modality)
+  ) {
+    const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
+
+    const derivedDisplaySets = studyMetadata.getDerivedDatasets({
+      referencedSeriesInstanceUID: displaySet.SeriesInstanceUID,
+    });
+
+    derivedDisplaySetsNumber = derivedDisplaySets.length;
+  }
+
+  return derivedDisplaySetsNumber > 0;
+};
+
+/**
  * Async function to check if there are any inconsistences in the series.
  *
  * For segmentation checks that the geometry is consistent with the source images:
@@ -456,6 +483,7 @@ const _checkForSeriesInconsistencesWarnings = async function(
     // warnings already checked and cached in displaySet
     return displaySet.inconsistencyWarnings;
   }
+
   const inconsistencyWarnings = [];
 
   if (displaySet.Modality !== 'SEG') {
@@ -512,10 +540,13 @@ const _checkForSeriesInconsistencesWarnings = async function(
         'The datasets is missing frames: ' + displaySet.missingFrames + '.'
       );
     }
+
+    if (displaySet.isModalitySupported === false) {
+      inconsistencyWarnings.push('The datasets modality is not supported.');
+    }
   } else {
     const segMetadata = displaySet.metadata;
     if (!segMetadata) {
-      displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
@@ -524,7 +555,6 @@ const _checkForSeriesInconsistencesWarnings = async function(
       false
     );
     if (!referencedDisplaySet) {
-      displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
@@ -532,7 +562,6 @@ const _checkForSeriesInconsistencesWarnings = async function(
       image.getImageId()
     );
     if (!imageIds || imageIds.length === 0) {
-      displaySet.inconsistencyWarnings = inconsistencyWarnings;
       return inconsistencyWarnings;
     }
 
@@ -686,7 +715,6 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       const {
         displaySetInstanceUID,
         SeriesDescription,
-        InstanceNumber,
         numImageFrames,
         SeriesNumber,
       } = displaySet;
@@ -711,6 +739,11 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         studies
       );
 
+      const hasDerivedDisplaySets = _checkForDerivedDisplaySets(
+        displaySet,
+        study
+      );
+
       return {
         active: _isDisplaySetActive(
           displaySet,
@@ -721,10 +754,10 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         altImageText,
         displaySetInstanceUID,
         SeriesDescription,
-        InstanceNumber,
         numImageFrames,
         SeriesNumber,
         hasWarnings,
+        hasDerivedDisplaySets,
       };
     });
 
