@@ -187,7 +187,7 @@ export default [
     }
   },
   {
-    id: 'Crosshairs',
+    id: 'NLCrosshairs',
     type: 'ohif.radioGroup',
     props: {
       type: 'tool',

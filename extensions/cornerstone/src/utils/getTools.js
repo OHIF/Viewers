@@ -1,8 +1,9 @@
 import csTools from 'cornerstone-tools';
+import NLCrosshairsTool from '../tools/NLCrosshairs';
 
 const toolsGroupedByType = {
   touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
-  series: [csTools.CrosshairsTool],
+  series: [NLCrosshairsTool],
   annotations: [
     csTools.ArrowAnnotateTool,
     csTools.BidirectionalTool,

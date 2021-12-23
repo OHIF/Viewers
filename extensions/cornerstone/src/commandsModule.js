@@ -159,7 +159,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     activateCrosshairs: () => {
       commandsManager.runCommand('toggleSynchronizer', { toggledState: true });
-      cornerstoneTools.setToolActive('Crosshairs', {
+      cornerstoneTools.setToolActive('NLCrosshairs', {
         mouseButtonMask: 1,
         synchronizationContext: imagePositionSynchronizer,
       });
