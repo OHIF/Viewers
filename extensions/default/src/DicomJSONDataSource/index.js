@@ -3,7 +3,7 @@ import OHIF from '@ohif/core';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 
-const metadataProvider = OHIF.classes.metadataProvider;
+const metadataProvider = OHIF.classes.MetadataProvider;
 
 const mappings = {
   studyInstanceUid: 'StudyInstanceUID',
@@ -93,7 +93,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     query: {
       studies: {
-        mapParams: () => { },
+        mapParams: () => {},
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
