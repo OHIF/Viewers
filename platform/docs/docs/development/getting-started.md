@@ -53,7 +53,7 @@ following commands:
 
 ```bash
 # Switch to the v3 branch
-git switch feat/v2-main
+git switch v3-stable
 
 # Restore dependencies
 yarn install
