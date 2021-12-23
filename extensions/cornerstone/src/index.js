@@ -36,7 +36,7 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getViewportModule({ commandsManager }) {
+  getViewportModule({ commandsManager, appConfig }) {
     const ExtendedOHIFCornerstoneViewport = props => {
       /**
        * TODO: This appears to be used to set the redux parameters for
@@ -48,8 +48,17 @@ export default {
         jumpData.refreshViewports = false;
         commandsManager.runCommand('jumpToImage', jumpData);
       };
+
+      const { studyPrefetcher } = appConfig;
+      const isStackPrefetchEnabled =
+        studyPrefetcher && !studyPrefetcher.enabled;
+
       return (
-        <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />
+        <OHIFCornerstoneViewport
+          {...props}
+          onNewImage={onNewImageHandler}
+          isStackPrefetchEnabled={isStackPrefetchEnabled}
+        />
       );
     };
 

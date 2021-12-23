@@ -18,7 +18,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     activeDisplaySetInstanceUID,
     setActiveDisplaySetInstanceUID,
   ] = useState(displaySetInstanceUID);
-  const [activeInstance, setActiveInstance] = useState(0);
+  const [activeInstance, setActiveInstance] = useState(1);
   const [tags, setTags] = useState([]);
   const [meta, setMeta] = useState('');
   const [instanceList, setInstanceList] = useState([]);
@@ -51,20 +51,21 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
         description: displayDate,
         onClick: () => {
           setActiveDisplaySetInstanceUID(displaySetInstanceUID);
-          setActiveInstance(0);
+          setActiveInstance(1);
         },
       };
     });
 
     let metadata;
-    const isImageStack = activeDisplaySet instanceof ImageSet;
+    const isImageStack =
+      activeDisplaySet instanceof ImageSet &&
+      activeDisplaySet.isModalitySupported === true;
 
-    let selectedInstanceValue;
     let instanceList;
 
     if (isImageStack) {
       const { images } = activeDisplaySet;
-      const image = images[activeInstance];
+      const image = images[activeInstance - 1];
 
       instanceList = images.map((image, index) => {
         const metadata = image.getData().metadata;
@@ -91,7 +92,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     setInstanceList(instanceList);
     setDisplaySetList(newDisplaySetList);
     setIsImageStack(isImageStack);
-  }, [activeDisplaySetInstanceUID, activeInstance]);
+  }, [activeDisplaySetInstanceUID, activeInstance, displaySets]);
 
   const selectedDisplaySetValue = displaySetList.find(
     ds => ds.value === activeDisplaySetInstanceUID
@@ -106,7 +107,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
           showValue
           step={1}
           min={1}
-          max={instanceList.length - 1}
+          max={instanceList.length}
           value={activeInstance}
           valueRenderer={value => <p>Instance Number: {value}</p>}
           onChange={({ target }) => {
