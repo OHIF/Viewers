@@ -59,7 +59,16 @@ export default async function loadSegmentation(
    * without subscribing to external events.
    */
   console.log('Segmentation loaded.');
-  const event = new CustomEvent('extensiondicomsegmentationsegloaded');
+  const event = new CustomEvent('extensiondicomsegmentationsegloaded', {
+    detail: {
+      imageIds,
+      segDisplaySet,
+      labelmapBuffer,
+      segMetadata,
+      segmentsOnFrame,
+      labelmapSegments,
+    },
+  });
   document.dispatchEvent(event);
 
   return labelmapIndex;

@@ -67,6 +67,33 @@ window.config = {
   extensions: [],
   showStudyList: true,
   filterQueryParam: false,
+  /**
+   * Disable caching of servers configuration.
+   *
+   * There will be no effect if you update the servers property of this config
+   * while your application is running because this property is cached in local storage.
+   */
+  disableServersCache: false,
+  /**
+   * OHIF's study prefetcher configuration.
+   *
+   * @param {boolean} enabled Whether to enable/disable OHIF's study prefetcher
+   * @param {('all'|'closest'|'downward'|'upward'|'topdown')} order Fetching order: all display sets, the closest ones, downward or top down fashion based on the currently selected display set
+   * @param {number} displaySetCount How much display sets should be prefetched at once (note: this attribute is ignored if order was set to 'all')
+   * @param {boolean} preventCache Prevent images to be cached in Cornerstone Tools's request pool manager
+   * @param {number} prefetchDisplaySetsTimeout Prefetch timeout
+   * @param {boolean} displayProgress Whether to display or not the progress bar in the display set
+   * @param {boolean} includeActiveDisplaySet Include or not the active display set while prefetching
+   */
+  studyPrefetcher: {
+    enabled: true,
+    order: 'all',
+    displaySetCount: 1,
+    preventCache: false,
+    prefetchDisplaySetsTimeout: 300,
+    displayProgress: false,
+    includeActiveDisplaySet: true,
+  },
   servers: {
     dicomWeb: [
       {
@@ -81,7 +108,14 @@ window.config = {
       },
     ],
   },
-  // Supported Keys: https://craig.is/killing/mice
+  /**
+   * Hotkey definitions.
+   * Supported Keys: https://craig.is/killing/mice
+   *
+   * @param {string} commandName
+   * @param {string} label
+   * @param {array} keys
+   */
   hotkeys: [
     { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
     { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
@@ -97,14 +131,16 @@ window.config = {
       keys: ['v'],
     },
   ],
-  /* Configuration passed to the bundled cornerstone extension
+  /**
+   * Configuration passed to the bundled cornerstone extension
    *
    * The cornerstone extension is currently tightly coupled to the platform.
    * Until we're able to decouple it, this key will serve as a workaround to
    * pass it configuration.
+   *
+   * @param {boolean} hideHandles Whether to show/hide annotation "handles"
    */
   cornerstoneExtensionConfig: {
-    /* Whether to show/hide annotation "handles" */
     hideHandles: true,
   },
 };

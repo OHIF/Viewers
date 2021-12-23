@@ -5,6 +5,15 @@ window.config = {
   showStudyList: true,
   filterQueryParam: false,
   disableServersCache: false,
+  studyPrefetcher: {
+    enabled: true,
+    order: 'closest',
+    displaySetCount: 3,
+    preventCache: false,
+    prefetchDisplaySetsTimeout: 300,
+    displayProgress: true,
+    includeActiveDisplaySet: true,
+  },
   servers: {
     dicomWeb: [
       {
