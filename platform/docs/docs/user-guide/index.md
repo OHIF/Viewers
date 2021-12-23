@@ -31,7 +31,7 @@ desired criteria.
 
 - Patient Name: Searches between patients names
 - MRN: Searches between patients Medical Record Number
-- Study Data: Filters the date of the acquisition
+- Study Date: Filters the date of the acquisition
 - Description: Searches between study descriptions
 - Modality: Filters the modalities
 - Accession: Searches between patients accession number
