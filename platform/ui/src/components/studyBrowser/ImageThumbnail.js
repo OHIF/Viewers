@@ -2,7 +2,8 @@
 import './ImageThumbnail.styl';
 
 import { utils } from '@ohif/core';
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect, createRef, useCallback } from 'react';
+import classNames from 'classnames';
 
 import PropTypes from 'prop-types';
 import ViewportErrorIndicator from '../../viewer/ViewportErrorIndicator';
@@ -15,12 +16,14 @@ import ViewportLoadingIndicator from '../../viewer/ViewportLoadingIndicator';
 //import cornerstone from 'cornerstone-core';
 function ImageThumbnail(props) {
   const {
+    active,
     width,
     height,
     imageSrc,
     imageId,
     stackPercentComplete,
     error: propsError,
+    showProgressBar,
   } = props;
 
   const [isLoading, setLoading] = useState(false);
@@ -37,7 +40,8 @@ function ImageThumbnail(props) {
     loadingOrError = <ViewportLoadingIndicator />;
   }
 
-  const showStackLoadingProgressBar = stackPercentComplete !== undefined;
+  const showStackLoadingProgressBar =
+    showProgressBar && stackPercentComplete !== undefined;
 
   const shouldRenderToCanvas = () => {
     return imageId && !imageSrc;
@@ -69,11 +73,11 @@ function ImageThumbnail(props) {
     }
   };
 
-  const purgeCancelablePromise = () => {
+  const purgeCancelablePromise = useCallback(() => {
     if (cancelablePromise) {
       cancelablePromise.cancel();
     }
-  };
+  });
 
   useEffect(() => {
     return () => {
@@ -94,22 +98,28 @@ function ImageThumbnail(props) {
       setImagePromise();
       fetchImagePromise();
     }
-  }, [fetchImagePromise, image.imageId, imageId, purgeCancelablePromise, setImagePromise]);
+  }, [
+    fetchImagePromise,
+    image.imageId,
+    imageId,
+    purgeCancelablePromise,
+    setImagePromise,
+  ]);
 
   return (
-    <div className="ImageThumbnail">
+    <div className={classNames('ImageThumbnail', { active: active })}>
       <div className="image-thumbnail-canvas">
         {shouldRenderToCanvas() ? (
           <canvas ref={canvasRef} width={width} height={height} />
         ) : (
-            <img
-              className="static-image"
-              src={imageSrc}
-              //width={this.props.width}
-              height={height}
-              alt={''}
-            />
-          )}
+          <img
+            className="static-image"
+            src={imageSrc}
+            //width={this.props.width}
+            height={height}
+            alt={''}
+          />
+        )}
       </div>
       {loadingOrError}
       {showStackLoadingProgressBar && (
@@ -126,19 +136,23 @@ function ImageThumbnail(props) {
 }
 
 ImageThumbnail.propTypes = {
+  active: PropTypes.bool,
   imageSrc: PropTypes.string,
   imageId: PropTypes.string,
   error: PropTypes.bool,
   width: PropTypes.number,
   height: PropTypes.number,
   stackPercentComplete: PropTypes.number.isRequired,
+  showProgressBar: PropTypes.bool,
 };
 
 ImageThumbnail.defaultProps = {
+  active: false,
   error: false,
   stackPercentComplete: 0,
   width: 217,
   height: 123,
+  showProgressBar: true,
 };
 
 export default ImageThumbnail;

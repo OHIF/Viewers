@@ -333,6 +333,7 @@ describe('OHIF User Preferences', () => {
         .scrollIntoView()
         .click();
 
+
       // Header should be in "English (USA)""
       cy.get('.research-use')
         .scrollIntoView()
@@ -560,6 +561,13 @@ describe('OHIF User Preferences', () => {
         .scrollIntoView()
         .click();
 
+      // Close Success Message overlay (if displayed)
+      cy.get('body').then(body => {
+        if (body.find('.sb-closeIcon').length > 0) {
+          cy.get('.sb-closeIcon').click({ force: true });
+        }
+      });
+
       // Open User Preferences modal again
       cy.openPreferences();
 
@@ -668,6 +676,13 @@ describe('OHIF User Preferences', () => {
 
       // Save changes
       cy.get('@saveBtn').click();
+      // Close Success Message overlay (if displayed)
+      cy.get('body').then(body => {
+        if (body.find('.sb-closeIcon').length > 0) {
+          cy.get('.sb-closeIcon').click({ force: true });
+        }
+      });
+
       // Open User Preferences modal
       cy.openPreferences();
       // Navigate to Window Level tab
@@ -741,7 +756,7 @@ describe('OHIF User Preferences', () => {
 
       // Overlay information from 2nd viewport
       let second_viewport_overlay =
-        'div:nth-child(2) > div > div.viewport-element > div.ViewportOverlay > div.bottom-right.overlay-element > div';
+        'div:nth-child(2) > div > div.viewport-element > div.OHIFCornerstoneViewportOverlay > div.bottom-right.overlay-element > div';
 
       // Shift active viewport to Viewport #2
       cy.get('body').type('{rightarrow}');

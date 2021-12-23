@@ -1,4 +1,4 @@
-import { api } from 'dicomweb-client';
+import StaticWadoClient from '../qido/StaticWadoClient';
 import dcmjs from 'dcmjs';
 import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
@@ -10,6 +10,7 @@ import {
 } from './studyInstanceHelpers';
 
 import errorHandler from '../../../errorHandler';
+import { getXHRRetryRequestHook } from '../../../utils/xhrRetryRequestHook';
 
 const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 
@@ -72,10 +73,12 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
   configLoad() {
     const { server } = this;
 
-    const client = new api.DICOMwebClient({
+    const client = new StaticWadoClient({
+      ...server,
       url: server.qidoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
       errorInterceptor: errorHandler.getHTTPErrorHandler(),
+      requestHooks: [getXHRRetryRequestHook()],
     });
 
     this.client = client;

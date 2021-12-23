@@ -9,6 +9,7 @@ function StudyBrowser(props) {
     onThumbnailClick,
     onThumbnailDoubleClick,
     supportsDrag,
+    showThumbnailProgressBar,
   } = props;
 
   return (
@@ -20,15 +21,16 @@ function StudyBrowser(props) {
             return study.thumbnails.map((thumb, thumbIndex) => {
               // TODO: Thumb has more props than we care about?
               const {
+                active,
                 altImageText,
                 displaySetInstanceUID,
                 imageId,
-                InstanceNumber,
+                derivedDisplaySetsNumber,
                 numImageFrames,
                 SeriesDescription,
                 SeriesNumber,
-                stackPercentComplete,
                 hasWarnings,
+                hasDerivedDisplaySets,
               } = thumb;
 
               return (
@@ -38,6 +40,7 @@ function StudyBrowser(props) {
                   data-cy="thumbnail-list"
                 >
                   <Thumbnail
+                    active={active}
                     supportsDrag={supportsDrag}
                     key={`${studyIndex}_${thumbIndex}`}
                     id={`${studyIndex}_${thumbIndex}`} // Unused?
@@ -46,19 +49,20 @@ function StudyBrowser(props) {
                     // Thumb
                     altImageText={altImageText}
                     imageId={imageId}
-                    InstanceNumber={InstanceNumber}
+                    derivedDisplaySetsNumber={derivedDisplaySetsNumber}
                     displaySetInstanceUID={displaySetInstanceUID} // used by drop
                     numImageFrames={numImageFrames}
                     SeriesDescription={SeriesDescription}
                     SeriesNumber={SeriesNumber}
                     hasWarnings={hasWarnings}
-                    stackPercentComplete={stackPercentComplete}
+                    hasDerivedDisplaySets={hasDerivedDisplaySets}
                     // Events
                     onClick={onThumbnailClick.bind(
                       undefined,
                       displaySetInstanceUID
                     )}
                     onDoubleClick={onThumbnailDoubleClick}
+                    showProgressBar={showThumbnailProgressBar}
                   />
                 </div>
               );
@@ -81,7 +85,7 @@ StudyBrowser.propTypes = {
           altImageText: PropTypes.string,
           displaySetInstanceUID: PropTypes.string.isRequired,
           imageId: PropTypes.string,
-          InstanceNumber: PropTypes.number,
+          derivedDisplaySetsNumber: PropTypes.number,
           numImageFrames: PropTypes.number,
           SeriesDescription: PropTypes.string,
           SeriesNumber: PropTypes.number,
@@ -93,6 +97,7 @@ StudyBrowser.propTypes = {
   supportsDrag: PropTypes.bool,
   onThumbnailClick: PropTypes.func,
   onThumbnailDoubleClick: PropTypes.func,
+  showThumbnailProgressBar: PropTypes.bool,
 };
 
 StudyBrowser.defaultProps = {
@@ -100,6 +105,7 @@ StudyBrowser.defaultProps = {
   supportsDrag: true,
   onThumbnailClick: noop,
   onThumbnailDoubleClick: noop,
+  showThumbnailProgressBar: true,
 };
 
 export { StudyBrowser };
