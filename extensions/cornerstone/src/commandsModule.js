@@ -160,9 +160,6 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     toggleSeriesLinking: () => {
       const { isSeriesLinkingEnabled } = ViewerToolsetService.getState();
       ViewerToolsetService.setIsSeriesLinkingEnabled(!isSeriesLinkingEnabled);
-      // cornerstone.getEnabledElements().forEach(enabledElement => {
-      //   cornerstone.updateImage(enabledElement.element);
-      // });
     },
     activateCrosshairs: () => {
       commandsManager.runCommand('toggleSynchronizer', { toggledState: true });

@@ -24,8 +24,10 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
     if (
       !isReferenceLinesEnabled ||
       getEnabledElement(activeViewportIndex).element !== enabledElement.element
-    )
+    ) {
+      cornerstone.updateImage(getEnabledElement(activeViewportIndex).element);
       return;
+    }
 
     const targetImage = enabledElement.image;
     cornerstone
@@ -34,6 +36,8 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
       .forEach(async referenceElement => {
         if (!referenceElement.image)
           await waitForTheImageToBeRendered(referenceElement.element);
+
+        cornerstone.updateImage(referenceElement.element);
 
         const referenceImage = referenceElement.image;
 
