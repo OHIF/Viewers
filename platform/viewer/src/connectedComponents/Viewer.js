@@ -14,13 +14,11 @@ import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
-import { Icon } from '@ohif/ui';
 import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 
 import dcmjs from 'dcmjs';
-import axios from 'axios';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -30,7 +28,6 @@ import AppContext from '../context/AppContext';
 import './Viewer.css';
 import { finished } from 'stream';
 import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
-import JobsContextProvider, { JobsContext } from '../context/JobsContext.js';
 import JobsContextUtil from './JobsContextUtil.js';
 class Viewer extends Component {
   static propTypes = {
@@ -184,14 +181,6 @@ class Viewer extends Component {
 
   componentDidMount() {
     const { studies, isStudyLoaded, ...rest } = this.props;
-    console.warn(
-      'mount',
-      JSON.stringify(
-        { studies, isStudyLoaded, rest, ref: this.source_series_ref },
-        null,
-        2
-      )
-    );
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
@@ -236,7 +225,6 @@ class Viewer extends Component {
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
-    console.log('fetching', studyInstanceUID);
     const fetchedSeries = await (async () => {
       try {
         var requestOptions = {
@@ -255,7 +243,6 @@ class Viewer extends Component {
         return [];
       }
     })();
-    // console.warn('fetchedSeries', { fetchedSeries });
     this.fetchSeriesRef = false;
     this.source_series_ref = fetchedSeries;
     this.setState({
@@ -270,7 +257,6 @@ class Viewer extends Component {
       isStudyLoaded,
       activeViewportIndex,
       viewports,
-      studyInstanceUIDs,
     } = this.props;
 
     const activeViewport = viewports[activeViewportIndex];
@@ -303,11 +289,6 @@ class Viewer extends Component {
       this.timepointApi.retrieveTimepoints({ PatientID });
       this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
-
-    // if (studyInstanceUIDs.length > 0 && studies.length > 0) {
-    //   console.log({ studyInstanceUIDs, studies, props });
-    //   // getSourceSeries(studyInstanceUIDs[0], studies);
-    // }
   }
 
   _getActiveViewport() {
@@ -326,7 +307,7 @@ class Viewer extends Component {
             alignItems: 'center',
           }}
         >
-          <p style={{ color: 'white' }}>Loading...</p>
+          <p style={{ color: 'white', fontSize: '70px' }}>Loading...</p>
           {/* <Icon
             name="circle-notch"
             className="loading-icon-spin loading-icon"
@@ -474,9 +455,7 @@ class Viewer extends Component {
               <ConnectedViewerMain
                 studies={_removeUnwantedSeries(
                   this.props.studies,
-                  this.source_series_ref,
-                  this.props.studyInstanceUIDs,
-                  this.props.user
+                  this.source_series_ref
                 )}
                 isStudyLoaded={this.props.isStudyLoaded}
               />
@@ -818,15 +797,8 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
 const _removeUnwantedSeries = function(studies, source_series) {
   console.warn('refval', source_series);
   const allData = studies;
-  // console.warn('studies', JSON.stringify(allData, null, 2));
 
   const filteredDatasets = [];
-
-  // const source_series = [
-  //   '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-  // ];
-
-  // console.log(JSON.stringify(source_series, null, 2));
 
   if (allData.length > 0) {
     // filtering through the displaySets for source data (same can be done for the series)
@@ -843,8 +815,6 @@ const _removeUnwantedSeries = function(studies, source_series) {
       data.displaySets = filteredDatasets;
     });
   }
-
-  // console.warn(JSON.stringify(allData, null, 2));
 
   return allData;
 };
