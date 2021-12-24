@@ -75,8 +75,6 @@ export default function init({
   } = servicesManager.services;
   const tools = getTools();
 
-  console.log(servicesManager.services);
-
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
     MeasurementService,
