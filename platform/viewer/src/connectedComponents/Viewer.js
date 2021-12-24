@@ -14,8 +14,11 @@ import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
+import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
+import '../googleCloud/googleCloud.css';
+// import Lottie from 'lottie-react';
+
 import dcmjs from 'dcmjs';
-import axios from 'axios';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -25,9 +28,7 @@ import AppContext from '../context/AppContext';
 import './Viewer.css';
 import { finished } from 'stream';
 import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
-import JobsContextProvider, { JobsContext } from '../context/JobsContext.js';
 import JobsContextUtil from './JobsContextUtil.js';
-
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -92,6 +93,11 @@ class Viewer extends Component {
     });
 
     this._getActiveViewport = this._getActiveViewport.bind(this);
+    this.state = {
+      loading: true,
+    };
+    this.fetchSeriesRef = false;
+    this.source_series_ref = [];
   }
 
   state = {
@@ -174,9 +180,11 @@ class Viewer extends Component {
   };
 
   componentDidMount() {
-    const { studies, isStudyLoaded } = this.props;
+    const { studies, isStudyLoaded, ...rest } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
+
+    this.handleFetchAndSetSeries(rest.studyInstanceUIDs[0]);
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -206,6 +214,7 @@ class Viewer extends Component {
       const activeDisplaySetInstanceUID = activeViewport
         ? activeViewport.displaySetInstanceUID
         : undefined;
+
       this.setState({
         thumbnails: _mapStudiesToThumbnails(
           studies,
@@ -215,13 +224,39 @@ class Viewer extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  async handleFetchAndSetSeries(studyInstanceUID) {
+    const fetchedSeries = await (async () => {
+      try {
+        var requestOptions = {
+          method: 'GET',
+          redirect: 'follow',
+        };
+
+        const response = await fetch(
+          `https://radcadapi.thetatech.ai/series?study=${studyInstanceUID}`,
+          requestOptions
+        );
+        const result = await response.json();
+        return result.series;
+      } catch (error) {
+        console.error('fetcheSeries caught', { error });
+        return [];
+      }
+    })();
+    this.fetchSeriesRef = false;
+    this.source_series_ref = fetchedSeries;
+    this.setState({
+      loading: false,
+      series: fetchedSeries,
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     const {
       studies,
       isStudyLoaded,
       activeViewportIndex,
       viewports,
-      studyInstanceUIDs,
     } = this.props;
 
     const activeViewport = viewports[activeViewportIndex];
@@ -254,11 +289,6 @@ class Viewer extends Component {
       this.timepointApi.retrieveTimepoints({ PatientID });
       this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
-
-    // if (studyInstanceUIDs.length > 0 && studies.length > 0) {
-    //   console.log({ studyInstanceUIDs, studies, props });
-    //   // getSourceSeries(studyInstanceUIDs[0], studies);
-    // }
   }
 
   _getActiveViewport() {
@@ -266,6 +296,38 @@ class Viewer extends Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return (
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <p style={{ color: 'white', fontSize: '70px' }}>Loading...</p>
+          {/* <Icon
+            name="circle-notch"
+            className="loading-icon-spin loading-icon"
+          /> */}
+          {/* <Lottie
+            options={{
+              loop: true,
+              autoplay: true,
+              animationData: circularLoading,
+              rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice',
+              },
+            }}
+            height={400}
+            width={400}
+          /> */}
+        </div>
+      );
+    }
+
     let VisiblePanelLeft, VisiblePanelRight;
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
@@ -393,12 +455,10 @@ class Viewer extends Component {
               <ConnectedViewerMain
                 studies={_removeUnwantedSeries(
                   this.props.studies,
-                  this.props.studyInstanceUIDs,
-                  this.props.user
+                  this.source_series_ref
                 )}
                 isStudyLoaded={this.props.isStudyLoaded}
               />
-              {/* null */}
             </ErrorBoundaryDialog>
           </div>
 
@@ -734,13 +794,11 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   });
 };
 
-const _removeUnwantedSeries = function(studies) {
+const _removeUnwantedSeries = function(studies, source_series) {
+  console.warn('refval', source_series);
   const allData = studies;
 
   const filteredDatasets = [];
-  const source_series = [
-    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-  ];
 
   if (allData.length > 0) {
     // filtering through the displaySets for source data (same can be done for the series)
