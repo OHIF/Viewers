@@ -308,7 +308,7 @@ class Viewer extends Component {
             alignItems: 'center',
           }}
         >
-          <p style={{ color: 'white', fontSize: '70px' }}>Loading...</p>
+          <p style={{ color: 'white', fontSize: '40px' }}>Loading...</p>
           {/* <Icon
             name="circle-notch"
             className="loading-icon-spin loading-icon"
@@ -796,7 +796,6 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
 };
 
 const _removeUnwantedSeries = function(studies, source_series) {
-  // console.warn('refval', source_series);
   const allData = studies;
 
   const filteredDatasets = [];
