@@ -14,7 +14,7 @@ const ExpandableToolbarButton = ({
   icon,
   className,
   content: Content,
-  contentProps
+  contentProps,
 }) => {
   const classes = {
     type: {
@@ -54,7 +54,12 @@ const ExpandableToolbarButton = ({
         <Icon name={icon} />
       </IconButton>
       <div className="absolute z-10 pt-4">
-        <div className={classnames("ExpandableToolbarButton__content w-48", className)}>
+        <div
+          className={classnames(
+            'ExpandableToolbarButton__content w-48',
+            className
+          )}
+        >
           <Content {...contentProps} onClick={onChildClickHandler} />
         </div>
       </div>
@@ -62,9 +67,11 @@ const ExpandableToolbarButton = ({
   );
 };
 
-const noop = () => { };
+const noop = () => {};
 
 ExpandableToolbarButton.defaultProps = {
+  id: '',
+  icon: 'clipboard',
   isActive: false,
   type: 'primary',
   content: null,
