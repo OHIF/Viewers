@@ -803,7 +803,6 @@ const _removeUnwantedSeries = function(studies, source_series) {
   const filteredDatasets = [];
 
   // const source_series = [
-  // '1.3.6.1.4.1.14519.5.2.1.6450.4012.206382517630164051916496664467',
   //   '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
   // ];
 
@@ -818,10 +817,14 @@ const _removeUnwantedSeries = function(studies, source_series) {
     });
 
     // remapping the data to have the filtered displaySets
-    allData.map(data => {
-      data.displaySets = filteredDatasets;
-    });
+    if (filteredDatasets.length > 0) {
+      allData.map(data => {
+        data.displaySets = filteredDatasets;
+      });
+    }
   }
+
+  console.log({ filteredDatasets });
 
   return allData;
 };
