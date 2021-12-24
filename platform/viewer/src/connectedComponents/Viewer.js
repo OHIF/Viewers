@@ -803,7 +803,7 @@ const _removeUnwantedSeries = function(studies) {
   const filteredDatasets = [];
 
   const source_series = [
-    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+    '1.3.6.1.4.1.14519.5.2.1.6450.4012.206382517630164051916496664467',
   ];
 
   if (allData.length > 0) {
