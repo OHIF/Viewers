@@ -93,14 +93,15 @@ class Viewer extends Component {
     });
 
     this._getActiveViewport = this._getActiveViewport.bind(this);
-    this.state = {
-      loading: true,
-    };
+    // this.state = {
+    //   loading: true,
+    // };
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
   }
 
   state = {
+    loading: true,
     isLeftSidePanelOpen: true,
     isRightSidePanelOpen: false,
     selectedRightSidePanel: '',
@@ -795,7 +796,7 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
 };
 
 const _removeUnwantedSeries = function(studies, source_series) {
-  console.warn('refval', source_series);
+  // console.warn('refval', source_series);
   const allData = studies;
 
   const filteredDatasets = [];
