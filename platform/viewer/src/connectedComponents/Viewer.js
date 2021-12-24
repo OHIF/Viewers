@@ -796,15 +796,16 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   });
 };
 
-const _removeUnwantedSeries = function(studies) {
+const _removeUnwantedSeries = function(studies, source_series) {
   // console.log({ source_series });
   const allData = studies;
 
   const filteredDatasets = [];
 
-  const source_series = [
-    '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-  ];
+  // const source_series = [
+  // '1.3.6.1.4.1.14519.5.2.1.6450.4012.206382517630164051916496664467',
+  //   '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+  // ];
 
   if (allData.length > 0) {
     // filtering through the displaySets for source data (same can be done for the series)
