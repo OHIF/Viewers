@@ -4,16 +4,12 @@ import CinePlayer from './CinePlayer';
 export default {
   component: CinePlayer,
   title: 'Components/CinePlayer',
-  argTypes: {
-    argTypes: { onPlayPauseChange: { action: 'onPlayPauseChange' } },
-  },
+  argTypes: { onPlayPauseChange: { action: 'onPlayPauseChange' } },
 };
 
 const Template = args => (
-  <div className="flex flex-col flex-1 p-4 items-center">
-    <div className="w-56">
-      <CinePlayer {...args} />
-    </div>
+  <div className="w-56">
+    <CinePlayer {...args} />
   </div>
 );
 

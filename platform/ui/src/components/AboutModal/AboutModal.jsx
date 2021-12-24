@@ -13,7 +13,7 @@ const Link = ({ href, children, showIcon = false }) => {
       >
         {children}
         {!!showIcon && (
-          <Icon name="external-link" className="w-5 text-white ml-2" />
+          <Icon name="external-link" className="w-5 ml-2 text-white" />
         )}
       </Typography>
     </a>
@@ -23,31 +23,31 @@ const Link = ({ href, children, showIcon = false }) => {
 const Row = ({ title, value, link }) => {
   return (
     <div className="flex mb-4">
-      <Typography variant="subtitle" component="p" className="text-white w-48">
+      <Typography variant="subtitle" component="p" className="w-48 text-white">
         {title}
       </Typography>
 
       {link ? (
         <Link href={link}>{value}</Link>
       ) : (
-          <Typography
-            variant="subtitle"
-            component="p"
-            className="text-white w-48"
-          >
-            {value}
-          </Typography>
-        )}
+        <Typography
+          variant="subtitle"
+          component="p"
+          className="w-48 text-white"
+        >
+          {value}
+        </Typography>
+      )}
     </div>
   );
 };
 
-const AboutModal = ({buildNumber, versionNumber}) => {
+const AboutModal = ({ buildNumber, versionNumber }) => {
   const { os, version, name } = detect();
   const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
 
   const renderRowTitle = title => (
-    <div className="border-b-2 border-black pb-3 mb-3">
+    <div className="pb-3 mb-3 border-b-2 border-black">
       <Typography variant="h6" className="text-primary-light">
         {title}
       </Typography>
@@ -57,10 +57,7 @@ const AboutModal = ({buildNumber, versionNumber}) => {
     <div>
       {renderRowTitle('Important Links')}
       <div className="flex mb-8">
-        <Link
-          href="https://community.ohif.org/"
-          showIcon={true}
-        >
+        <Link href="https://community.ohif.org/" showIcon={true}>
           Visit the forum
         </Link>
         <span className="ml-4">
@@ -102,6 +99,6 @@ const AboutModal = ({buildNumber, versionNumber}) => {
 AboutModal.propTypes = {
   buildNumber: PropTypes.string,
   versionNumber: PropTypes.string,
-}
+};
 
 export default AboutModal;
