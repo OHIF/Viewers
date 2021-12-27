@@ -11,7 +11,7 @@ export class StudyPrefetcher {
     requestType: 'prefetch',
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
-    maxPrefetchRequestsNum: 1000,
+    maxNumPrefetchRequests: 100,
     includeActiveDisplaySet: false,
   };
 
@@ -154,7 +154,7 @@ export class StudyPrefetcher {
 
     imageLoadPoolManager.maxNumRequests = {
       ...imageLoadPoolManager.maxNumRequests,
-      prefetch: this.options.maxPrefetchRequestsNum,
+      prefetch: this.options.maxNumPrefetchRequests,
     };
 
     let requestFn;

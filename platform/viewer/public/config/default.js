@@ -11,7 +11,7 @@ window.config = {
     displaySetCount: 3,
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
-    maxPrefetchRequestsNum: 1000,
+    maxNumPrefetchRequests: 100,
     displayProgress: true,
     includeActiveDisplaySet: true,
   },
