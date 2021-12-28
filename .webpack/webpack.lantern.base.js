@@ -80,27 +80,9 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
         '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
-        'dom-helpers/addClass': path.resolve(
-          __dirname,
-          '../node_modules/dom-helpers/class/addClass'
-        ),
-        'react-dates': path.resolve(__dirname, '../node_modules/react-dates'),
-        'react-moment-proptypes': path.resolve(
-          __dirname,
-          '../node_modules/react-moment-proptypes'
-        ),
-        'date-fns': path.resolve(
-          __dirname,
-          '../platform/viewer/node_modules/date-fns'
-        ),
-        '@date-io/date-fns': path.resolve(
-          __dirname,
-          '../node_modules/material-table/node_modules/@date-io/date-fns'
-        ),
-        '@material-ui/pickers': path.resolve(
-          __dirname,
-          '../node_modules/material-table/node_modules/@material-ui/pickers'
-        ),
+        "dom-helpers/addClass": path.resolve(__dirname, "../node_modules/dom-helpers/class/addClass"),
+        "react-dates": path.resolve(__dirname, "../node_modules/react-dates"),
+        "react-moment-proptypes": path.resolve(__dirname, "../node_modules/react-moment-proptypes")
       },
       // Which directories to search when resolving modules
       modules: [

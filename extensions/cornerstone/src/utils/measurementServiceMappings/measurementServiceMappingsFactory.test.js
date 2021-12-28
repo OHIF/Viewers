@@ -34,6 +34,7 @@ describe('measurementServiceMappings.js', () => {
         ELLIPSE: 'value_type::ellipse',
         MULTIPOINT: 'value_type::multipoint',
         CIRCLE: 'value_type::circle',
+        FREEHAND: 'value_type::freehand',
       },
     };
     displaySetServiceMock = {
