@@ -161,4 +161,5 @@ function _createAndDownloadFile(csvContent) {
   link.setAttribute('download', 'MeasurementReport.csv');
   document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
 }
