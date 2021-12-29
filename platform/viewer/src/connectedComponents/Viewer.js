@@ -226,6 +226,7 @@ class Viewer extends Component {
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
+    console.log({ studyInstanceUID });
     const fetchedSeries = await (async () => {
       try {
         var requestOptions = {
@@ -442,12 +443,11 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
+              ) : // <ConnectedStudyBrowser
+              //   studies={this.state.thumbnails}
+              //   studyMetadata={this.props.studies}
+              // />
+              null}
             </SidePanel>
           </ErrorBoundaryDialog>
 
@@ -797,31 +797,35 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
 };
 
 const _removeUnwantedSeries = function(studies, source_series) {
-  // console.log({ source_series });
+  console.log({ source_series });
+
   const allData = studies;
+
+  console.log({ allData });
 
   const filteredDatasets = [];
 
   // const source_series = [
-  //   '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+  // '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
+  // '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217'
   // ];
 
   if (allData.length > 0) {
     // filtering through the displaySets for source data (same can be done for the series)
     allData[0].displaySets.filter(data => {
       source_series.filter(seriesUID => {
+        // console.log({ seriesUID, dataSeries: data.SeriesInstanceUID });
         if (data.SeriesInstanceUID === seriesUID) {
+          console.log({ Found: 'Found series!!!' });
           filteredDatasets.push(data);
         }
       });
     });
 
     // remapping the data to have the filtered displaySets
-    if (filteredDatasets.length > 0) {
-      allData.map(data => {
-        data.displaySets = filteredDatasets;
-      });
-    }
+    allData.map(data => {
+      data.displaySets = filteredDatasets;
+    });
   }
 
   console.log({ filteredDatasets });
