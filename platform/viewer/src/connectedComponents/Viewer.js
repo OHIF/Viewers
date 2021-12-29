@@ -226,7 +226,7 @@ class Viewer extends Component {
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
-    console.log({ studyInstanceUID });
+    // console.log({ studyInstanceUID });
     const fetchedSeries = await (async () => {
       try {
         var requestOptions = {
@@ -443,11 +443,12 @@ class Viewer extends Component {
                   studies={this.props.studies}
                   activeIndex={this.props.activeViewportIndex}
                 />
-              ) : // <ConnectedStudyBrowser
-              //   studies={this.state.thumbnails}
-              //   studyMetadata={this.props.studies}
-              // />
-              null}
+              ) : (
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
             </SidePanel>
           </ErrorBoundaryDialog>
 
