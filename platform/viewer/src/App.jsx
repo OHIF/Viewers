@@ -46,7 +46,9 @@ function App({ config, defaultExtensions, accessToken, studyUID }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { modes } = appConfigState;
+  const { modes, hotkeys } = appConfigState;
+
+  const defaultMode = { ...modes[0], hotkeys };
 
   const {
     UIDialogService,
@@ -80,7 +82,7 @@ function App({ config, defaultExtensions, accessToken, studyUID }) {
   return (
     <CombinedProviders>
       <ModeRoute
-        mode={modes[0]}
+        mode={defaultMode}
         dataSourceName={extensionManager.defaultDataSourceName}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
