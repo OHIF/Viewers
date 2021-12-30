@@ -14,8 +14,9 @@ const VIEWPORT_SETTING_TYPES = {
 };
 
 class HangingProtocolService {
-  constructor(commandsManager) {
+  constructor(commandsManager, servicesManager) {
     this._commandsManager = commandsManager;
+    this._servicesManager = servicesManager;
     this.protocols = [];
     this.ProtocolEngine = undefined;
     this.protocol = undefined;
@@ -199,6 +200,12 @@ class HangingProtocolService {
     // If no such layout properties exist, stop here.
     const layoutProps = stageModel.viewportStructure.properties;
     if (!layoutProps) {
+      return;
+    }
+
+    const { ViewportGridService } = this._servicesManager.services;
+    const { numCols: prevNumCols, numRows: prevNumRows } = ViewportGridService.getState();
+    if (prevNumCols && prevNumRows) {
       return;
     }
 

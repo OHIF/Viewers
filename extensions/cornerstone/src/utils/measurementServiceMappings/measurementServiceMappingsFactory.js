@@ -2,7 +2,6 @@ import Length from './Length';
 import Bidirectional from './Bidirectional';
 import ArrowAnnotate from './ArrowAnnotate';
 import EllipticalRoi from './EllipticalRoi';
-import NLFreehandRoi from './NLFreehandRoi';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
@@ -22,7 +21,6 @@ const measurementServiceMappingsFactory = (
       ELLIPSE,
       POINT,
       BIDIRECTIONAL,
-      FREEHAND,
     } = MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attemped, but its not nearly flexible enough.
@@ -33,7 +31,6 @@ const measurementServiceMappingsFactory = (
       EllipticalRoi: ELLIPSE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
-      NLFreehandRoi: FREEHAND,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -103,20 +100,6 @@ const measurementServiceMappingsFactory = (
         {
           valueType: MeasurementService.VALUE_TYPES.ELLIPSE,
         },
-      ],
-    },
-    NLFreehandRoi: {
-      toAnnotation: NLFreehandRoi.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
-        NLFreehandRoi.toMeasurement(
-          csToolsAnnotation,
-          DisplaySetService,
-          _getValueTypeFromToolType
-        ),
-      matchingCriteria: [
-        {
-          valueType: MeasurementService.VALUE_TYPES.FREEHAND
-        }
       ],
     },
   };

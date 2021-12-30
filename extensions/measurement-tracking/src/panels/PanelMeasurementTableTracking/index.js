@@ -394,14 +394,6 @@ function _getDisplayText(
       const { text } = measurement; // Will display in "short description"
       return [`(S:${seriesNumber}, I:${instanceNumber})`];
     }
-    case types.FREEHAND: {
-      const { area } = measurement;
-      const roundedArea = _round(area, 2);
-
-      return [
-        `${roundedArea} ${unit}<sup>2</sup> (S:${seriesNumber}, I:${instanceNumber})`,
-      ];
-    }
   }
 }
 

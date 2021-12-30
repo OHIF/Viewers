@@ -106,16 +106,6 @@ export default [
           },
           'Ellipse Tool'
         ),
-        _createToolButton(
-          'NLFreehandRoi',
-          'tool-freehand',
-          'Freehand',
-          undefined,
-          {
-            toolName: 'NLFreehandRoi',
-          },
-          'Freehand Tool'
-        ),
       ],
     },
   },
@@ -197,7 +187,7 @@ export default [
     }
   },
   {
-    id: 'Crosshairs',
+    id: 'NLCrosshairs',
     type: 'ohif.radioGroup',
     props: {
       type: 'tool',

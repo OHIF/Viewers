@@ -67,7 +67,6 @@ const VALUE_TYPES = {
   ELLIPSE: 'value_type::ellipse',
   MULTIPOINT: 'value_type::multipoint',
   CIRCLE: 'value_type::circle',
-  FREEHAND: 'value_type::freehand',
 };
 
 class MeasurementService {
