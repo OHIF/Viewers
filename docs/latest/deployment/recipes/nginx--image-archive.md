@@ -40,7 +40,7 @@ resources from our image archive (Orthanc), and when accessing its web admin.
 
 ### CORS Issues
 
-[Cross-Origin Resource Sharing](https://medium.com/@baphemot/understanding-cors-18ad6b478e2b) (CORS) is a mechanism that uses HTTP headers to
+[Cross-Origin Resource Sharing][understanding-cors] (CORS) is a mechanism that uses HTTP headers to
 tell a browser which web applications have permission to access selected
 resources from a server at a different origin (domain, protocol, port). IE. By
 default, a Web App located at `http://my-website.com` can't access resources
