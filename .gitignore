@@ -3,7 +3,6 @@ node_modules
 
 # Output
 build
-dist
 docs/_book
 src/version.js
 junit.xml
