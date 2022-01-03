@@ -106,6 +106,16 @@ export default [
           },
           'Ellipse Tool'
         ),
+        _createToolButton(
+          'NLFreehandRoi',
+          'tool-freehand',
+          'Freehand',
+          undefined,
+          {
+            toolName: 'NLFreehandRoi',
+          },
+          'Freehand Tool'
+        ),
       ],
     },
   },
