@@ -1,9 +1,16 @@
 import { parameters } from '@storybook/addon-docs/dist/esm/frameworks/react/config';
 import { addParameters } from '@storybook/react';
 import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
-import { ComponentName } from '../src/storybook/components';
+import {
+  Heading,
+  SectionName,
+  AnchorListItem,
+  LinkComponent,
+} from '../src/storybook/components';
+
 import '../src/tailwind.css';
 
+// https://github.com/mondaycom/monday-ui-react-core/tree/master/.storybook
 addParameters({
   docs: {
     ...parameters.docs,
@@ -13,7 +20,13 @@ addParameters({
     ),
     page: DocsPage,
     components: {
-      h1: ComponentName,
+      Heading,
+      h2: SectionName,
+      li: AnchorListItem,
+      a: LinkComponent,
+      p: ({ children }) => (
+        <p className="text-gray-800 font-inter">{children}</p>
+      ),
     },
   },
   viewMode: 'docs',

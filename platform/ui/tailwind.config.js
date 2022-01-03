@@ -13,6 +13,9 @@ module.exports = {
       lg: '1024px',
       xl: '1280px',
     },
+    fontFamily: {
+      inter: ['Inter', 'sans-serif'],
+    },
     colors: {
       overlay: 'rgba(0, 0, 0, 0.8)',
       transparent: 'transparent',

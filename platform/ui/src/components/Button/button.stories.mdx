@@ -12,29 +12,30 @@ export const argTypes = {
 
 <Meta title="Components/Button" component={Button} />
 
-# Button
+export const buttonTemplate = createComponentTemplate(Button);
+
+<Heading title="Button" relativeComponentPath="Button/Button.jsx"/>
 
 - [Overview](#overview)
+- [Props](#props)
+- [Usage](#usage)
+- [Variants](#variants)
+- [Feedback](#feedback)
+
 
 ## Overview
 
-Buttons allow userssss take actions with a single click. They should be clear
-indications that they triggering an action, buttons should be easy to find among
-other UI.
+Overview for the button UI class.
+
+<Canvas>
+  <Story name="Overview"
+         args={{children: "Button", color:"default"}}>
+    {buttonTemplate.bind({})}
+  </Story>
+</Canvas>
 
 ## Props
 
 <ArgsTable of={Button} />
 
 ## Usage
-
-<Canvas>
-  <Story name="Overview">
-    <div className="flex space-x-2">
-      <Button>Default</Button>
-      <Button>Primary</Button>
-      <Button>Secondary</Button>
-      <Button>Disabled</Button>
-    </div>
-  </Story>
-</Canvas>
