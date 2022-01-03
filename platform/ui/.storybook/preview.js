@@ -4,6 +4,7 @@ import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
 import {
   Heading,
   SectionName,
+  Footer,
   AnchorListItem,
   LinkComponent,
 } from '../src/storybook/components';
@@ -21,12 +22,17 @@ addParameters({
     page: DocsPage,
     components: {
       Heading,
+      Footer,
       h2: SectionName,
+      h3: ({ children }) => (
+        <h3 className="my-2 text-xl to-blue-900">{children}</h3>
+      ),
       li: AnchorListItem,
       a: LinkComponent,
       p: ({ children }) => (
-        <p className="text-gray-800 font-inter">{children}</p>
+        <p className="my-2 text-gray-800 font-inter">{children}</p>
       ),
+      // todo: add pre and code
     },
   },
   viewMode: 'docs',

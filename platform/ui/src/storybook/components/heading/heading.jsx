@@ -21,7 +21,7 @@ function GitHubLogo() {
   );
 }
 
-export const Heading = ({ title, relativeComponentPath }) => {
+export const Heading = ({ title, componentRelativePath }) => {
   return (
     <div className="flex items-center w-full">
       <div>
@@ -29,10 +29,10 @@ export const Heading = ({ title, relativeComponentPath }) => {
           {title}
         </h1>
       </div>
-      {relativeComponentPath && (
+      {componentRelativePath && (
         <div className="ml-4">
           <a
-            href={`https://github.com/OHIF/Viewers/blob/v3-stable/platform/ui/src/components/${relativeComponentPath}`}
+            href={`https://github.com/OHIF/Viewers/blob/v3-stable/platform/ui/src/components/${componentRelativePath}`}
             className="text-sm font-normal text-blue-600"
             target="_blank"
             rel="noopener noreferrer"

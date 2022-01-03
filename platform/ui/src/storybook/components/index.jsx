@@ -4,5 +4,6 @@ import { Heading } from './heading/heading';
 import { AnchorListItem } from './anchor-list-item/anchor-list-item';
 import { LinkComponent } from './link-component/link-component';
 import { SectionName } from './section-name/section-name';
+import { Footer } from './footer/footer';
 
-export { Heading, AnchorListItem, LinkComponent, SectionName };
+export { Heading, AnchorListItem, LinkComponent, SectionName, Footer };

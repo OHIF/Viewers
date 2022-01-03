@@ -20,7 +20,7 @@ export const LinkComponent = ({
   };
   return (
     <a
-      style={{ color: 'var(--link-color)', textDecoration: 'none' }}
+      className="text-blue-800"
       onClick={onClick}
       target={originalTarget}
       rel={rel}

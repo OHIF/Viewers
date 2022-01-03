@@ -23,7 +23,6 @@ const roundedClasses = {
   full: 'rounded-full',
 };
 
-
 const variantClasses = {
   text: {
     default:
@@ -64,16 +63,11 @@ const variantClasses = {
       'border bg-primary-light border-primary-light text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   disabled: {
-    default:
-      'cursor-not-allowed opacity-50 bg-primary-light text-black',
-    primary:
-      'cursor-not-allowed opacity-50 bg-primary-main text-white',
-    secondary:
-      'cursor-not-allowed opacity-50 bg-secondary-light text-white',
-    white:
-      'cursor-not-allowed opacity-50 bg-white text-black',
-    black:
-      'cursor-not-allowed opacity-50 bg-black text-white',
+    default: 'cursor-not-allowed opacity-50 bg-primary-light text-black',
+    primary: 'cursor-not-allowed opacity-50 bg-primary-main text-white',
+    secondary: 'cursor-not-allowed opacity-50 bg-secondary-light text-white',
+    white: 'cursor-not-allowed opacity-50 bg-white text-black',
+    black: 'cursor-not-allowed opacity-50 bg-black text-white',
     light:
       'cursor-not-allowed opacity-50 border bg-primary-light border-primary-light text-black',
   },
@@ -140,7 +134,7 @@ const Button = ({
         variantClasses[variant][color],
         roundedClasses[rounded],
         sizeClasses[size],
-        fullWidthClasses[fullWidth],
+        fullWidthClasses[fullWidth]
       )}
       disabled={disabled}
       ref={buttonElement}
@@ -156,11 +150,25 @@ const Button = ({
   );
 };
 
+Button.defaultProps = {
+  color: defaults.color,
+  disabled: false,
+  children: '',
+  onClick: () => {},
+};
+
 Button.propTypes = {
+  /** What is inside the button, can be text or react component */
   children: PropTypes.node,
+  /** Callback to be called when the button is clicked  */
+  onClick: PropTypes.func.isRequired,
+  /** Button size  */
   size: PropTypes.oneOf(['small', 'medium', 'large', 'initial', 'inherit']),
+  /** Button corner roundness  */
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
+  /** Button variants  */
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
+  /** Button color  */
   color: PropTypes.oneOf([
     'default',
     'primary',
@@ -168,16 +176,21 @@ Button.propTypes = {
     'white',
     'black',
     'inherit',
-    'light'
+    'light',
   ]),
+  /** Whether the button should have full width  */
   fullWidth: PropTypes.bool,
+  /** Whether the button should be disabled  */
   disabled: PropTypes.bool,
+  /** Button type  */
   type: PropTypes.string,
   name: PropTypes.string,
+  /** Button start icon name - if any icon is specified  */
   startIcon: PropTypes.node,
+  /** Button end icon name - if any icon is specified  */
   endIcon: PropTypes.node,
+  /** Additional TailwindCSS classnames */
   className: PropTypes.string,
-  onClick: PropTypes.func.isRequired,
 };
 
 export default Button;
