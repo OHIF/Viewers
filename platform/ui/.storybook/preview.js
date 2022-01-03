@@ -1,4 +1,28 @@
-export const parameters = {
+import { parameters } from '@storybook/addon-docs/dist/esm/frameworks/react/config';
+import { addParameters } from '@storybook/react';
+import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
+import { ComponentName } from '../src/storybook/components';
+import '../src/tailwind.css';
+
+addParameters({
+  docs: {
+    ...parameters.docs,
+    inlineStories: true,
+    container: ({ children, context }) => (
+      <DocsContainer context={context}>{children}</DocsContainer>
+    ),
+    page: DocsPage,
+    components: {
+      h1: ComponentName,
+    },
+  },
+  viewMode: 'docs',
+  previewTabs: {
+    'storybook/docs/panel': {
+      index: -1,
+    },
+    canvas: { title: 'Sandbox' },
+  },
   actions: { argTypesRegex: '^on[A-Z].*' },
   controls: {
     matchers: {
@@ -30,6 +54,6 @@ export const parameters = {
       },
     ],
   },
-};
+});
 
 export const decorators = [];

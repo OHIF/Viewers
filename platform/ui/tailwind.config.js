@@ -3,7 +3,7 @@ module.exports = {
   important: false,
   separator: ':',
   purge: {
-    content: ['./src/**/*.{jsx,js,ts,tsx,css}'],
+    content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
     safelist: [],
   },
   theme: {

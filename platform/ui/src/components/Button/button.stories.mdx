@@ -1,0 +1,40 @@
+import Button from './Button';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import {
+  createComponentTemplate,
+  createStoryMetaSettings,
+} from '../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: Button,
+  title: 'Components/Button',
+};
+
+<Meta title="Components/Button" component={Button} />
+
+# Button
+
+- [Overview](#overview)
+
+## Overview
+
+Buttons allow userssss take actions with a single click. They should be clear
+indications that they triggering an action, buttons should be easy to find among
+other UI.
+
+## Props
+
+<ArgsTable of={Button} />
+
+## Usage
+
+<Canvas>
+  <Story name="Overview">
+    <div className="flex space-x-2">
+      <Button>Default</Button>
+      <Button>Primary</Button>
+      <Button>Secondary</Button>
+      <Button>Disabled</Button>
+    </div>
+  </Story>
+</Canvas>

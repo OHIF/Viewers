@@ -54,6 +54,7 @@
     "@storybook/builder-webpack5": "^6.4.9",
     "@storybook/manager-webpack5": "^6.4.9",
     "@storybook/react": "^6.4.9",
+    "@storybook/source-loader": "^6.4.9",
     "autoprefixer": "9.7.4",
     "babel-loader": "^8.2.2",
     "dotenv-webpack": "6.0.4",
