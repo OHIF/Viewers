@@ -12,7 +12,11 @@ export const argTypes = {
 
 <Meta title="Modals/About" component={AboutModal} />
 
-export const aboutTemplate = createComponentTemplate(AboutModal);
+export const aboutTemplate = args => (
+  <div className="bg-primary-dark">
+    <AboutModal {...args} />
+  </div>
+);
 
 <Heading
   title="About Modal"
