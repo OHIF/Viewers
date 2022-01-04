@@ -12,6 +12,9 @@ export default class NLCrosshairsTool extends csTools.CrosshairsTool {
       name: 'NLCrosshairs',
       supportedInteractionTypes: ['Mouse', 'Touch'],
     });
+
+    this.postMouseDownCallback = this._chooseLocation.bind(this);
+    this.postTouchStartCallback = this._chooseLocation.bind(this);
   }
 
   _chooseLocation(evt) {
