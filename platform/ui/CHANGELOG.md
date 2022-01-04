@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.5](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.4...@ohif/ui@1.10.5) (2021-11-30)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.10.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.3...@ohif/ui@1.10.4) (2021-10-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.10.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.2...@ohif/ui@1.10.3) (2021-10-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.10.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.1...@ohif/ui@1.10.2) (2021-09-24)
+
+
+### Bug Fixes
+
+* throttle thumbnail progress updates ([#2557](https://github.com/OHIF/Viewers/issues/2557)) ([66c587b](https://github.com/OHIF/Viewers/commit/66c587b139835201331a64bc24a17901e7583649))
+
+
+
+
+
+## [1.10.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.0...@ohif/ui@1.10.1) (2021-09-13)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [1.10.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.9.3...@ohif/ui@1.10.0) (2021-09-09)
+
+
+### Features
+
+* OHIF-1000: Study prefetcher ([#2466](https://github.com/OHIF/Viewers/issues/2466)) ([8f26045](https://github.com/OHIF/Viewers/commit/8f2604509d24092b721f1333289d838820d68cac))
+
+
+
+
+
+## [1.9.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.9.2...@ohif/ui@1.9.3) (2021-09-03)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
 ## [1.9.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.9.1...@ohif/ui@1.9.2) (2021-05-17)
 
 **Note:** Version bump only for package @ohif/ui

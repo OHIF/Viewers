@@ -1,11 +1,12 @@
 import React from 'react';
+import { utils } from '@ohif/core';
+
 import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
 import RTPanel from './components/RTPanel/RTPanel';
 import { version } from '../package.json';
 
-import { utils } from '@ohif/core';
 const { studyMetadataManager } = utils;
 
 export default {
@@ -42,29 +43,60 @@ export default {
       );
     };
 
+    const RTPanelTabChangedEvent = 'rt-panel-tab-updated';
+
+    /**
+     * Trigger's an event to update the state of the panel's RoundedButtonGroup.
+     *
+     * This is required to avoid extension state
+     * coupling with the viewer's ToolbarRow component.
+     *
+     * @param {object} data
+     */
+    const triggerRTPanelUpdatedEvent = data => {
+      const event = new CustomEvent(RTPanelTabChangedEvent, {
+        detail: data,
+      });
+      document.dispatchEvent(event);
+    };
+
+    const onRTStructsLoaded = ({ detail }) => {
+      const { rtStructDisplaySet, referencedDisplaySet } = detail;
+
+      const studyMetadata = studyMetadataManager.get(
+        rtStructDisplaySet.StudyInstanceUID
+      );
+      const referencedDisplaysets = studyMetadata.getDerivedDatasets({
+        referencedSeriesInstanceUID: referencedDisplaySet.SeriesInstanceUID,
+        Modality: 'RTSTRUCT',
+      });
+      triggerRTPanelUpdatedEvent({
+        badgeNumber: referencedDisplaysets.length,
+        target: 'rt-panel',
+      });
+    };
+
+    document.addEventListener('extensiondicomrtrtloaded', onRTStructsLoaded);
+
     return {
       menuOptions: [
         {
           icon: 'list',
           label: 'RTSTRUCT',
           target: 'rt-panel',
+          stateEvent: RTPanelTabChangedEvent,
           isDisabled: (studies, activeViewport) => {
             if (!studies) {
               return true;
             }
 
             if (activeViewport) {
-              const study = studies.find(
-                s => s.StudyInstanceUID === activeViewport.StudyInstanceUID
-              );
-              const ds = study.displaySets.find(
-                ds =>
-                  ds.displaySetInstanceUID ===
-                  activeViewport.displaySetInstanceUID
-              );
               const studyMetadata = studyMetadataManager.get(
                 activeViewport.StudyInstanceUID
               );
+              if (!studyMetadata) {
+                return;
+              }
               const referencedDisplaySets = studyMetadata.getDerivedDatasets({
                 referencedSeriesInstanceUID: activeViewport.SeriesInstanceUID,
                 Modality: 'RTSTRUCT',
@@ -75,6 +107,10 @@ export default {
                   ['RTSTRUCT'].includes(ds.Modality)
                 )
               ) {
+                triggerRTPanelUpdatedEvent({
+                  badgeNumber: referencedDisplaySets.length,
+                  target: 'rt-panel',
+                });
                 return false;
               }
             }
