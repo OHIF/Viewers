@@ -12,6 +12,8 @@ export default class NLCrosshairsTool extends csTools.CrosshairsTool {
       name: 'NLCrosshairs',
       supportedInteractionTypes: ['Mouse', 'Touch'],
     });
+
+    this.synchronizationContext = null;
   }
 
   _chooseLocation(evt) {
@@ -22,9 +24,14 @@ export default class NLCrosshairsTool extends csTools.CrosshairsTool {
     evt.stopImmediatePropagation();
 
     // If we have no toolData for this element, return immediately as there is nothing to do
+    let syncContext = this.synchronizationContext;
     const toolData = csTools.getToolState(element, this.name);
 
-    if (!toolData) {
+    if (toolData) {
+      syncContext = toolData.data[0].synchronizationContext;
+    }
+
+    if (!syncContext) {
       return;
     }
 
@@ -51,7 +58,6 @@ export default class NLCrosshairsTool extends csTools.CrosshairsTool {
     );
 
     // Get the enabled elements associated with this synchronization context
-    const syncContext = toolData.data[0].synchronizationContext;
     const enabledElements = syncContext.getSourceElements();
 
     // Iterate over each synchronized element
@@ -170,5 +176,11 @@ export default class NLCrosshairsTool extends csTools.CrosshairsTool {
         );
       }
     });
+  }
+
+  activeCallback(element, { mouseButtonMask, synchronizationContext }) {
+    super.activeCallback(element, { mouseButtonMask, synchronizationContext });
+
+    this.synchronizationContext = synchronizationContext;
   }
 }
