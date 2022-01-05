@@ -143,24 +143,16 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async seriesUID => {
-    console.log({ overlayStatus: overlayRef.current });
-
     // remove previous overlay if it exists
     if (overlayRef.current === true) {
       const removed = await removeOverlay();
       if (removed) {
-        console.log('Overlay removed with AWAIT', {
-          instance: instanceRef.current,
-          removed,
-        });
         instanceRef.current = seriesUID;
       }
       // changing overlay status to false
       overlayRef.current = false;
     }
 
-    console.log({ seriesUID, instance: instanceRef.current });
-    console.log('Called after if overlay condition!!!');
     instanceRef.current = seriesUID;
 
     setIsInstance(seriesUID);
@@ -178,8 +170,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     const source_uid = image.imageId.split('/')[18];
 
     const source_series_uid = image.imageId.split('/')[16];
-
-    // sourceAndInstance(source_series_uid, seriesUID);
 
     try {
       await client
@@ -276,8 +266,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
       const source_series_uid = image.imageId.split('/')[16];
 
-      // console.log({ instance: instanceRef.current });
-
       sourceAndInstance(
         source_series_uid,
         instanceRef.current,
@@ -366,6 +354,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
     // update overlay status in the jobs context api
     setOverlayStatus(false);
+    cachedRef.current = false;
 
     return true;
   };
@@ -434,15 +423,15 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
       } else {
         addImageLayer(texture_image);
       }
-      console.log({
-        selectedSourceSeries,
-        selectedInstanceSeries,
-        image_id,
-        foundCurrentImage,
-        foundTextureImage,
-        source_slice_location,
-        texture_slice_location,
-      });
+      // console.log({
+      //   selectedSourceSeries,
+      //   selectedInstanceSeries,
+      //   image_id,
+      //   foundCurrentImage,
+      //   foundTextureImage,
+      //   source_slice_location,
+      //   texture_slice_location,
+      // });
     }
   };
 
