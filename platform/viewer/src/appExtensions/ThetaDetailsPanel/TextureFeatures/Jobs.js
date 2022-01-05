@@ -68,7 +68,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
 
     if (statusRef.current === 'RUNNING' && data.status === 'DONE') {
-      // cornerstone.imageCache.purgeCache();
+      cornerstone.imageCache.purgeCache();
       window.location.reload();
     }
   }, [data.status]);
@@ -333,7 +333,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // function for removing all overlays added to the base image / canvas
   const removeOverlay = () => {
-    // cornerstone.imageCache.purgeCache();
 
     const element = elementRef.current;
     if (!element) {
@@ -355,6 +354,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     // update overlay status in the jobs context api
     setOverlayStatus(false);
     cachedRef.current = false;
+    // cornerstone.imageCache.purgeCache();
 
     return true;
   };
