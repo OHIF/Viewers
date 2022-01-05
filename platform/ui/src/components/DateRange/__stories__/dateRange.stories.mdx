@@ -8,18 +8,13 @@ export const argTypes = {
 
 <Meta title="Components/DateRange" component={DateRange} />
 
-export const DateRangeTemplate = args => (
+export const DateRangeTemplate = (args) => (
   <div className="h-96">
     <DateRange {...args} />
   </div>
 );
 
-
-
-<Heading
-  title="DateRange"
-  componentRelativePath="DateRange/DateRange.jsx"
-/>
+<Heading title="DateRange" componentRelativePath="DateRange/DateRange.jsx" />
 
 - [Overview](#overview)
 - [Props](#props)
@@ -29,24 +24,23 @@ export const DateRangeTemplate = args => (
 
 DateRange is a component that allows you to select a range of dates.
 
-
 <Canvas>
-  <Story name="Overview"
-  args={{
-   id: 'date-range-1',
-  startDate: '1990-05-01',
-  endDate: '2022-01-01'
-}}
->
-  {DateRangeTemplate.bind({})}
-</Story>
+  <Story
+    name="Overview"
+    args={{
+      id: 'date-range-1',
+      startDate: '1990-05-01',
+      endDate: '2022-01-01',
+    }}
+  >
+    {DateRangeTemplate.bind({})}
+  </Story>
 </Canvas>
 
 ## Props
 
 <ArgsTable of={DateRange} />
 
-
 ## Contribute
 
-<Footer componentRelativePath="DateRange/__stories__/DateRange.stories.mdx" />
+<Footer componentRelativePath="DateRange/__stories__/dateRange.stories.mdx" />

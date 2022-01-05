@@ -1,22 +1,22 @@
-import Icon from "../Icon";
+import Icon from '../Icon';
 import { ICONS } from '../getIcon';
 
-import { ArgsTable, Story, Canvas, Meta } from "@storybook/addon-docs";
-import { createComponentTemplate } from "../../../storybook/functions/create-component-story";
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
 
 export const argTypes = {
   component: Icon,
-  title: "Components/Icon",
+  title: 'Components/Icon',
 };
 
 <Meta title="Components/Icon" component={Icon} />
 
-export const IconTemplate = args => (
+export const IconTemplate = (args) => (
   // Todo: Icon colors
   <div className="w-8 h-8">
     <Icon {...args} />
   </div>
-)
+);
 
 <Heading title="Icon" componentRelativePath="Icon/Icon.jsx" />
 
@@ -45,10 +45,9 @@ Icon is a component that renders the Icons.
 <ArgsTable of={Icon} />
 
 ## Usage
-You can choose the icon from the list of icons. Here we have render
-all the icons.
 
-
+You can choose the icon from the list of icons. Here we have render all the
+icons.
 
 <Canvas>
   <Story name="All Icons">
@@ -56,22 +55,24 @@ all the icons.
       const icons = Object.keys(ICONS);
       return (
         <div className="flex flex-wrap">
-          {icons.filter(ic => ic !=="magnifier").map(icon => (
-            <div className="m-4 flex flex-col justify-center items-center">
-              <div class="w-8 h-8">
-                <Icon name={icon} />
+          {icons
+            .filter((ic) => ic !== 'magnifier')
+            .map((icon) => (
+              <div className="m-4 flex flex-col justify-center items-center">
+                <div class="w-8 h-8">
+                  <Icon name={icon} />
+                </div>
+                <div className="text-gray-600">{icon}</div>
               </div>
-              <div className="text-gray-600">{icon}</div>
-            </div>
-          ))}
+            ))}
         </div>
       );
     }}
   </Story>
 </Canvas>
 
-
 ## Color
+
 Icon colors can be changed by wrapping the icon in a div with the class name
 
 <Canvas>
@@ -86,7 +87,6 @@ Icon colors can be changed by wrapping the icon in a div with the class name
   </Story>
 </Canvas>
 
-
 ## Contribute
 
-<Footer componentRelativePath="Icon/__stories__/Icon.stories.mdx" />
+<Footer componentRelativePath="Icon/__stories__/icon.stories.mdx" />

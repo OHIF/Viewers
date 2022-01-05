@@ -1,10 +1,10 @@
-import Dropdown from "../Dropdown";
-import { ArgsTable, Story, Canvas, Meta } from "@storybook/addon-docs";
-import { createComponentTemplate } from "../../../storybook/functions/create-component-story";
+import Dropdown from '../Dropdown';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
 
 export const argTypes = {
   component: Dropdown,
-  title: "Components/Dropdown",
+  title: 'Components/Dropdown',
 };
 
 <Meta title="Components/Dropdown" component={Dropdown} />
@@ -28,7 +28,7 @@ export const DropdownTemplate = (args) => (
 Dropdown is a modal Dropdown component which enabled to show a modal Dropdown.
 
 <Canvas>
-  <Story name="Overview" args={{ id: "dropdown-d", list: [] }}>
+  <Story name="Overview" args={{ id: 'dropdown-d', list: [] }}>
     {DropdownTemplate.bind({})}
   </Story>
 </Canvas>
@@ -45,22 +45,22 @@ You can list the items in the dropdown.
   <Story
     name="List"
     args={{
-      id: "dropdown-1",
+      id: 'dropdown-1',
       children: <div className="text-black">Drop Down</div>,
       showDropdownIcon: true,
       list: [
         {
-          title: "Item 1",
-          icon: "clipboard",
+          title: 'Item 1',
+          icon: 'clipboard',
           onClick: () => {
-            alert("Item 1 clicked");
+            alert('Item 1 clicked');
           },
         },
         {
-          title: "Item 2",
-          icon: "tracked",
+          title: 'Item 2',
+          icon: 'tracked',
           onClick: () => {
-            alert("Item 2 clicked");
+            alert('Item 2 clicked');
           },
         },
       ],
@@ -72,4 +72,4 @@ You can list the items in the dropdown.
 
 ## Contribute
 
-<Footer componentRelativePath="Dropdown/__stories__/Dropdown.stories.mdx" />
+<Footer componentRelativePath="Dropdown/__stories__/dropdown.stories.mdx" />

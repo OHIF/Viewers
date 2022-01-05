@@ -1,10 +1,10 @@
-import Header from "../Header";
-import { ArgsTable, Story, Canvas, Meta } from "@storybook/addon-docs";
-import { createComponentTemplate } from "../../../storybook/functions/create-component-story";
+import Header from '../Header';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
 
 export const argTypes = {
   component: Header,
-  title: "Components/Header",
+  title: 'Components/Header',
 };
 
 <Meta title="Components/Header" component={Header} />
@@ -28,14 +28,14 @@ Header is a component that renders the header of the application.
     args={{
       menuOptions: [
         {
-          title: "About",
-          icon: "info",
-          onClick: () => window.alert("About clicked"),
+          title: 'About',
+          icon: 'info',
+          onClick: () => window.alert('About clicked'),
         },
       ],
       isReturnEnabled: true,
       isSticky: false,
-      onClickReturnButton: () => window.alert("Return clicked"),
+      onClickReturnButton: () => window.alert('Return clicked'),
     }}
   >
     {HeaderTemplate.bind({})}
@@ -48,4 +48,4 @@ Header is a component that renders the header of the application.
 
 ## Contribute
 
-<Footer componentRelativePath="Header/__stories__/Header.stories.mdx" />
+<Footer componentRelativePath="Header/__stories__/header.stories.mdx" />

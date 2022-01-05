@@ -35,29 +35,33 @@ Dialog is a modal dialog component which enabled to show a modal dialog.
 It can be used to show a modal dialog to submit a form or show a message.
 
 <Canvas>
-  <Story name="Submit" args={{
-    title: 'Dialog Title',
-    text: 'Dialog Text',
-    onClose: () => {
-      window.alert('Dialog closed');
-    },
-    noCloseButton: false,
-    actions: [
-      {
-        id: 'cancel',
-        text: 'Cancel',
-        type: 'cancel',
+  <Story
+    name="Submit"
+    args={{
+      title: 'Dialog Title',
+      text: 'Dialog Text',
+      onClose: () => {
+        window.alert('Dialog closed');
       },
-      {
-        id: 'submit',
-        text: 'Submit',
-        type: 'primary',
-      }
-  ]
-  }}
-  >{DialogTemplate.bind({})}</Story>
+      noCloseButton: false,
+      actions: [
+        {
+          id: 'cancel',
+          text: 'Cancel',
+          type: 'cancel',
+        },
+        {
+          id: 'submit',
+          text: 'Submit',
+          type: 'primary',
+        },
+      ],
+    }}
+  >
+    {DialogTemplate.bind({})}
+  </Story>
 </Canvas>
 
 ## Contribute
 
-<Footer componentRelativePath="Dialog/__stories__/Dialog.stories.mdx" />
+<Footer componentRelativePath="Dialog/__stories__/dialog.stories.mdx" />

@@ -22,38 +22,42 @@ export const contextMenueTemplate = createComponentTemplate(ContextMenu);
 
 ## Overview
 
-Context Menu is a component that is used to display a list of options to the user.
-This component can be used for use cases such as opening a list of options
+Context Menu is a component that is used to display a list of options to the
+user. This component can be used for use cases such as opening a list of options
 on user right click.
 
 <Canvas>
-  <Story name="Overview" args={{
-  items: [
-    {
-      label: 'Delete measurement',
-      actionType: 'Delete',
-      action: item => {
-        window.alert(`${item.label} clicked`);
-      },
-      value: {},
-    },
-    {
-      label: 'Add Label',
-      actionType: 'setLabel',
-      action: item => {
-        window.alert(`${item.label} clicked`);
-      },
-      value: {},
-    },
-  ],
-}}>{contextMenueTemplate.bind({})}</Story>
+  <Story
+    name="Overview"
+    args={{
+      items: [
+        {
+          label: 'Delete measurement',
+          actionType: 'Delete',
+          action: (item) => {
+            window.alert(`${item.label} clicked`);
+          },
+          value: {},
+        },
+        {
+          label: 'Add Label',
+          actionType: 'setLabel',
+          action: (item) => {
+            window.alert(`${item.label} clicked`);
+          },
+          value: {},
+        },
+      ],
+    }}
+  >
+    {contextMenueTemplate.bind({})}
+  </Story>
 </Canvas>
 
 ## Props
 
 <ArgsTable of={ContextMenu} />
 
-
 ## Contribute
 
-<Footer componentRelativePath="ContextMenu/__stories__/ContextMenu.stories.mdx" />
+<Footer componentRelativePath="ContextMenu/__stories__/contextMenu.stories.mdx" />
