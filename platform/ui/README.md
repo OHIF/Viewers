@@ -10,3 +10,5 @@ yarn install
 yarn storybook
 
 ```
+
+Stories are available default at `http://localhost:6006/`

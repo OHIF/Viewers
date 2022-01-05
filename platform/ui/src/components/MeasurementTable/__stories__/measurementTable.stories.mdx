@@ -1,17 +1,20 @@
-import MeasurementTable from "../MeasurementTable";
+import MeasurementTable from '../MeasurementTable';
 
-import { ArgsTable, Story, Canvas, Meta } from "@storybook/addon-docs";
-import { createComponentTemplate } from "../../../storybook/functions/create-component-story";
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
 
 export const argTypes = {
   component: MeasurementTable,
-  title: "Components/MeasurementTable",
+  title: 'Components/MeasurementTable',
 };
 
 <Meta title="Components/MeasurementTable" component={MeasurementTable} />
 
-export const MeasurementTableTemplate =
-  createComponentTemplate(MeasurementTable);
+export const MeasurementTableTemplate = (args) => (
+  <div className="w-64 h-64 bg-primary-dark">
+    <MeasurementTable {...args} />
+  </div>
+);
 
 <Heading
   title="MeasurementTable"
@@ -30,7 +33,7 @@ MeasurementTable is a component that renders the MeasurementTables.
   <Story
     name="Overview"
     args={{
-      title: "Measurements",
+      title: 'Measurements',
     }}
   >
     {MeasurementTableTemplate.bind({})}
@@ -40,6 +43,30 @@ MeasurementTable is a component that renders the MeasurementTables.
 ## Props
 
 <ArgsTable of={MeasurementTable} />
+
+## Usage
+
+With data
+
+<Canvas>
+  <Story
+    name="With Data"
+    args={{
+      title: 'Measurements',
+      amount: 1,
+      data: [
+        {
+          id: 1,
+          label: '(empty)',
+          displayText: ['193.1 mm (S:6, I:5)'],
+          isActive: false,
+        },
+      ],
+    }}
+  >
+    {MeasurementTableTemplate.bind({})}
+  </Story>
+</Canvas>
 
 ## Contribute
 
