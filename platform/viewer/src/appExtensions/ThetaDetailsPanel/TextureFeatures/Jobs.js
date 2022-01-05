@@ -16,6 +16,7 @@ import { JobsContext } from '../../../context/JobsContext';
 const Jobs = ({ data, user, viewport, series, instances }) => {
   const elementRef = useRef();
   const overlayRef = useRef(false);
+  const cachedRef = useRef(false);
   const instanceRef = useRef();
   const layerRef = useRef();
   const opacityRef = useRef();
@@ -38,7 +39,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const access_token = user.access_token;
 
   const path = window.location.pathname;
-  const pathUrl = window.location.href;
 
   const base_url = `wadors:https://healthcare.googleapis.com/v1${path.replace(
     'study',
@@ -68,7 +68,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
 
     if (statusRef.current === 'RUNNING' && data.status === 'DONE') {
-      cornerstone.imageCache.purgeCache();
+      // cornerstone.imageCache.purgeCache();
       window.location.reload();
     }
   }, [data.status]);
@@ -143,16 +143,26 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // Function for setting image id and performing overlay
   const handleOverlay = async seriesUID => {
-    // cornerstone.imageCache.purgeCache();
+    console.log({ overlayStatus: overlayRef.current });
 
     // remove previous overlay if it exists
     if (overlayRef.current === true) {
-      removeOverlay();
+      const removed = await removeOverlay();
+      if (removed) {
+        console.log('Overlay removed with AWAIT', {
+          instance: instanceRef.current,
+          removed,
+        });
+        instanceRef.current = seriesUID;
+      }
       // changing overlay status to false
       overlayRef.current = false;
     }
 
+    console.log({ seriesUID, instance: instanceRef.current });
+    console.log('Called after if overlay condition!!!');
     instanceRef.current = seriesUID;
+
     setIsInstance(seriesUID);
 
     // getting current canvas element
@@ -169,7 +179,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
     const source_series_uid = image.imageId.split('/')[16];
 
-    sourceAndInstance(source_series_uid, seriesUID);
+    // sourceAndInstance(source_series_uid, seriesUID);
 
     try {
       await client
@@ -255,22 +265,31 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
           .currentImageIdIndex;
 
       // getting the current object of the image in the stack
-      const current_image_object =
+      const current_image_array =
         eventData.enabledElement.toolStateManager.toolState.stack.data[0];
 
-      console.log({
-        current_image_index,
-        current_image_object,
-      });
+      const current_image_id =
+        current_image_array.imageIds[current_image_index];
 
-      getImageUrl(current_image_index, instanceRef.current);
+      // get current image
+      const image = cornerstone.getImage(elementRef.current);
+
+      const source_series_uid = image.imageId.split('/')[16];
+
+      // console.log({ instance: instanceRef.current });
+
+      sourceAndInstance(
+        source_series_uid,
+        instanceRef.current,
+        current_image_id
+      );
+
+      // getImageUrl(current_image_index, instanceRef.current);
     }
   };
 
   // function for getting image from list series available in the server
   const getImageUrl = (image_index, instance_uid) => {
-    console.log({ current_image_index: image_index });
-
     const selectedTexture = allSeriesState.filter(new_data => {
       if (new_data.SeriesInstanceUID === instance_uid) {
         return new_data;
@@ -285,31 +304,48 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         }
       });
 
-      const image_id = 'wadors:' + images[0].wadorsuri;
-
-      addImageLayer(image_id);
+      if (images[0].wadorsuri.includes('wadors:') === false) {
+        const image_id = 'wadors:' + images[0].wadorsuri;
+        addImageLayer(image_id);
+      } else {
+        const image_id = images[0].wadorsuri;
+        addImageLayer(image_id);
+      }
     }
   };
 
   // function for caching all texture image instances using cornerstone
   const cacheEntireSeries = series => {
-    const instances = series[0].instances;
+    if (
+      cachedRef.current === true &&
+      series[0].SeriesInstanceUID === instanceRef.current
+    ) {
+      return;
+    } else {
+      const instances = series[0].instances;
 
-    const promises = [];
+      const promises = [];
 
-    instances.map(instance => {
-      const image_id = 'wadors:' + instance.wadorsuri;
+      instances.map(instance => {
+        if (instance.wadorsuri.includes('wadors:') === false) {
+          const image_id = 'wadors:' + instance.wadorsuri;
+          instance.wadorsuri = image_id;
+          const loadPromise = cornerstone.loadAndCacheImage(image_id);
+          promises.push(loadPromise);
+        } else {
+          const loadPromise = cornerstone.loadAndCacheImage(instance.wadorsuri);
+          promises.push(loadPromise);
+        }
+      });
 
-      const loadPromise = cornerstone.loadAndCacheImage(image_id);
-      promises.push(loadPromise);
-    });
-
-    Promise.all(promises);
+      cachedRef.current = true;
+      Promise.all(promises);
+    }
   };
 
   // function for removing all overlays added to the base image / canvas
   const removeOverlay = () => {
-    cornerstone.imageCache.purgeCache();
+    // cornerstone.imageCache.purgeCache();
 
     const element = elementRef.current;
     if (!element) {
@@ -317,6 +353,10 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     }
 
     setIsInstance('');
+
+    // set overlay and instance status to defaults
+    overlayRef.current = false;
+    instanceRef.current = null;
 
     const all_layers = cornerstone.getLayers(element);
     if (all_layers.length > 1) {
@@ -327,13 +367,11 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     // update overlay status in the jobs context api
     setOverlayStatus(false);
 
-    // set overlay and instance status to defaults
-    overlayRef.current = false;
-    instanceRef.current = undefined;
+    return true;
   };
 
   // Getting all source and instance
-  const sourceAndInstance = (source, instance) => {
+  const sourceAndInstance = (source, instance, image_id) => {
     // getting the current source series with metadata
     const selectedSourceSeries = allSeriesState.filter(new_data => {
       if (new_data.SeriesInstanceUID === source) {
@@ -348,35 +386,64 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
       }
     });
 
-    // adding a wadors to all instances wadorsuri to allow comparism
-    if (selectedSourceSeries && selectedSourceSeries.length > 0) {
-      const images = selectedSourceSeries[0].instances.map(instance => {
-        const image_id = 'wadors:' + instance.wadorsuri;
-        instance.wadorsuri = image_id;
-        return instance;
+    if (selectedInstanceSeries && selectedInstanceSeries.length > 0) {
+      cacheEntireSeries(selectedInstanceSeries);
+
+      // adding a wadors to all instances wadorsuri to allow comparism
+      if (selectedSourceSeries && selectedSourceSeries.length > 0) {
+        const images = selectedSourceSeries[0].instances.map(instance => {
+          if (instance.wadorsuri.includes('wadors:') === false) {
+            const image_id = 'wadors:' + instance.wadorsuri;
+            instance.wadorsuri = image_id;
+          }
+          return instance;
+        });
+        selectedSourceSeries[0].instances = images;
+      }
+
+      // comparing the instances selected source series and matching to image
+      const foundCurrentImage = selectedSourceSeries[0].instances.filter(
+        instance => {
+          if (instance.wadorsuri === image_id) {
+            return instance;
+          }
+        }
+      );
+
+      // getting the slicelocation of the current image from the source series
+      const source_slice_location = foundCurrentImage[0].metadata.SliceLocation;
+
+      // comparing the instances selected source series and matching to image
+      const foundTextureImage = selectedInstanceSeries[0].instances.filter(
+        instance => {
+          if (instance.metadata.SliceLocation === source_slice_location) {
+            return instance;
+          }
+        }
+      );
+
+      // getting the slicelocation of the current image from the source series
+      const texture_slice_location =
+        foundTextureImage[0].metadata.SliceLocation;
+
+      const texture_image = foundTextureImage[0].wadorsuri;
+
+      if (texture_image.includes('wadors:') === false) {
+        const image_id = 'wadors:' + texture_image;
+        addImageLayer(image_id);
+      } else {
+        addImageLayer(texture_image);
+      }
+      console.log({
+        selectedSourceSeries,
+        selectedInstanceSeries,
+        image_id,
+        foundCurrentImage,
+        foundTextureImage,
+        source_slice_location,
+        texture_slice_location,
       });
-
-      selectedSourceSeries[0].instances = images;
     }
-
-    // get current image
-    const image = cornerstone.getImage(elementRef.current);
-
-    // console.log({ image });
-
-    // comparing the instances selected source series and matching to image
-    // const found = selectedSourceSeries[0].instances.filter(instance => {
-    //   if (instance.wadorsuri === image.imageId) {
-    //     console.log('Series with metadata found!!!');
-    //   }
-
-    //   return instance;
-    // });
-
-    console.log({
-      selectedSourceSeries,
-      selectedInstanceSeries,
-    });
   };
 
   return (
