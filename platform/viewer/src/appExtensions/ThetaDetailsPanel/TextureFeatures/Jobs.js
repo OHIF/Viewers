@@ -108,7 +108,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     } else {
       return;
     }
-  }, [overlayStatus, removeOverlay]);
+    // console.log({ overlayStatus, overlayRef: overlayRef.current });
+  }, [overlayStatus]);
 
   useEffect(() => {
     opacityRef.current = opacityStatus;
@@ -145,12 +146,10 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const handleOverlay = async seriesUID => {
     // remove previous overlay if it exists
     if (overlayRef.current === true) {
-      const removed = await removeOverlay();
-      if (removed) {
-        instanceRef.current = seriesUID;
-      }
+      await removeOverlay();
       // changing overlay status to false
       overlayRef.current = false;
+      instanceRef.current = seriesUID;
     }
 
     instanceRef.current = seriesUID;
@@ -332,8 +331,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   };
 
   // function for removing all overlays added to the base image / canvas
-  const removeOverlay = () => {
-
+  const removeOverlay = async () => {
     const element = elementRef.current;
     if (!element) {
       return;
@@ -355,6 +353,8 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
     setOverlayStatus(false);
     cachedRef.current = false;
     // cornerstone.imageCache.purgeCache();
+
+    console.log('Finished calling removeOverlay', { currentInstance: instanceRef.current });
 
     return true;
   };
