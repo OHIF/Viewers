@@ -200,7 +200,7 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   // function for loading an image and setting it as an added layer
   const addImageLayer = async image_id => {
     await cornerstone
-      .loadAndCacheImage(image_id)
+      .loadImage(image_id)
       .then(image => {
         // Getting all layers
         const all_layers = cornerstone.getLayers(elementRef.current);
