@@ -4,6 +4,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
+  TOOL_BAR_HOTKEY_TRIGGERED: 'event::toolBarService:toolBarHotkeyTriggered',
 };
 
 export default class ToolBarService {
@@ -105,6 +106,10 @@ export default class ToolBarService {
     }
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, {});
+  }
+
+  triggerHotkey(args) {
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_HOTKEY_TRIGGERED, args);
   }
 
   getButtons() {

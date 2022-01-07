@@ -24,6 +24,7 @@ function Toolbar({ servicesManager }) {
     toggles: {},
     groups: {},
   });
+  const [hotkeyButtonId, setHotkeyButtonId] = useState(null);
 
   // Could track buttons and state separately...?
   useEffect(() => {
@@ -35,10 +36,15 @@ function Toolbar({ servicesManager }) {
       ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
       () => setButtonState({ ...ToolBarService.state })
     );
+    const { unsubscribe: unsub3 } = ToolBarService.subscribe(
+      ToolBarService.EVENTS.TOOL_BAR_HOTKEY_TRIGGERED,
+      id => setHotkeyButtonId(id)
+    );
 
     return () => {
       unsub1();
       unsub2();
+      unsub3();
     };
   }, [ToolBarService]);
 
@@ -68,6 +74,7 @@ function Toolbar({ servicesManager }) {
             {...componentProps}
             bState={buttonState}
             isActive={isActive}
+            hotkeyButtonId={hotkeyButtonId}
             onInteraction={args => ToolBarService.recordInteraction(args)}
           />
         );
@@ -181,10 +188,7 @@ function ViewerLayout({
           </div>
         </ErrorBoundary>
       </Header>
-      <div
-        className="flex flex-row flex-nowrap flex-1 items-stretch w-full overflow-hidden"
-
-      >
+      <div className="flex flex-row flex-nowrap flex-1 items-stretch w-full overflow-hidden">
         {/* LEFT SIDEPANELS */}
         {leftPanelComponents.length && (
           <ErrorBoundary context="Left Panel">
