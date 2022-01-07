@@ -8,15 +8,19 @@ window.config = {
   servers: {
     dicomWeb: [
       {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
+        name: 'Orthanc',
+        wadoUriRoot: 'http://127.0.0.1:8080/wado',
+        qidoRoot: 'http://127.0.0.1:8080/dicom-web',
+        wadoRoot: 'http://127.0.0.1:8080/dicom-web',
+        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
+	      requestOptions: {
+        // undefined to use JWT + Bearer auth
+          auth: (_options) => {
+            return `${PRODUCTION_PWD_AUTH}`
+          }
+        },
       },
     ],
   },
