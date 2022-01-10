@@ -10,6 +10,7 @@ import {
 } from '../src/storybook/components';
 
 import '../src/tailwind.css';
+import './custom.css';
 
 // https://github.com/mondaycom/monday-ui-react-core/tree/master/.storybook
 addParameters({
@@ -72,6 +73,11 @@ addParameters({
         value: '#333333',
       },
     ],
+  },
+  options: {
+    storySort: {
+      order: ['Welcome', 'Contribute', 'Foundations', 'Modals', '*'],
+    },
   },
 });
 
