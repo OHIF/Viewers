@@ -20,7 +20,7 @@ const panZoomSynchronizer = new cornerstoneTools.Synchronizer(
 );
 
 const updateImageSynchronizer = new cornerstoneTools.Synchronizer(
-  cornerstone.EVENTS.IMAGE_RENDERED,
+  cornerstone.EVENTS.NEW_IMAGE,
   cornerstoneTools.updateImageSynchronizer
 );
 
