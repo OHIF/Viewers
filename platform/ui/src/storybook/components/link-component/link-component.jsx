@@ -6,7 +6,7 @@ export const LinkComponent = ({
   target: originalTarget,
   rel,
 }) => {
-  const onClick = event => {
+  const onClick = (event) => {
     if (originalTarget) {
       return;
     }
@@ -20,7 +20,7 @@ export const LinkComponent = ({
   };
   return (
     <a
-      className="text-blue-800"
+      className="text-blue-600"
       onClick={onClick}
       target={originalTarget}
       rel={rel}

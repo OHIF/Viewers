@@ -5,5 +5,13 @@ import { AnchorListItem } from './anchor-list-item/anchor-list-item';
 import { LinkComponent } from './link-component/link-component';
 import { SectionName } from './section-name/section-name';
 import { Footer } from './footer/footer';
+import { WithImage } from './image/image';
 
-export { Heading, AnchorListItem, LinkComponent, SectionName, Footer };
+export {
+  Heading,
+  AnchorListItem,
+  LinkComponent,
+  SectionName,
+  Footer,
+  WithImage,
+};
