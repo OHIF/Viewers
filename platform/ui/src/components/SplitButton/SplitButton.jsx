@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import OutsideClickHandler from 'react-outside-click-handler';
@@ -83,8 +83,31 @@ const SplitButton = ({
   items: _items,
   renderer,
   onInteraction,
+  hotkeyButtonId,
 }) => {
   const { t } = useTranslation('Buttons');
+
+  const splitButtonItemOnClick = (item, index) => {
+    onInteraction({
+      groupId,
+      //
+      itemId: item.id,
+      interactionType: item.type,
+      // splitButtonId? (so we can track group?)
+      // info to fire item's command/event?
+      commandName: item.commandName,
+      commandOptions: item.commandOptions,
+    });
+
+    setState(state => ({
+      ...state,
+      primary: !isAction ? { ...item, index } : state.primary,
+      isExpanded: false,
+      items: getSplitButtonItems(_items).filter(item =>
+        isRadio && !isAction ? item.index !== index : true
+      ),
+    }));
+  };
 
   const { primaryToolId, toggles } = bState;
   /* Bubbles up individual item clicks */
@@ -92,27 +115,7 @@ const SplitButton = ({
     items.map((item, index) => ({
       ...item,
       index,
-      onClick: () => {
-        onInteraction({
-          groupId,
-          //
-          itemId: item.id,
-          interactionType: item.type,
-          // splitButtonId? (so we can track group?)
-          // info to fire item's command/event?
-          commandName: item.commandName,
-          commandOptions: item.commandOptions,
-        });
-
-        setState(state => ({
-          ...state,
-          primary: !isAction ? { ...item, index } : state.primary,
-          isExpanded: false,
-          items: getSplitButtonItems(_items).filter(item =>
-            isRadio && !isAction ? item.index !== index : true
-          ),
-        }));
-      },
+      onClick: () => splitButtonItemOnClick(item, index),
     }));
 
   const [state, setState] = useState({
@@ -148,6 +151,14 @@ const SplitButton = ({
   const isPrimaryActive =
     (state.primary.type === 'tool' && primaryToolId === state.primary.id) ||
     (state.primary.type === 'toggle' && toggles[state.primary.id] === true);
+
+  useEffect(() => {
+    const item = state.items.find(x => x.id === hotkeyButtonId);
+    const index = state.items.findIndex(x => x.id === hotkeyButtonId);
+    if (item && index >= 0) {
+      splitButtonItemOnClick(item, index);
+    }
+  }, [hotkeyButtonId]);
 
   return (
     <OutsideClickHandler onOutsideClick={outsideClickHandler}>
@@ -224,7 +235,10 @@ const SplitButton = ({
           className={classes.Content({ ...state })}
           data-cy={`${groupId}-list-menu`}
         >
-          <ListMenu items={state.items} renderer={(args) => renderer({ ...args, t })} />
+          <ListMenu
+            items={state.items}
+            renderer={args => renderer({ ...args, t })}
+          />
         </div>
       </div>
     </OutsideClickHandler>

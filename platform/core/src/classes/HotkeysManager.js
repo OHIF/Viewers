@@ -2,6 +2,8 @@ import objectHash from 'object-hash';
 import log from './../log.js';
 import { hotkeys } from '../utils';
 
+import measurementTools from '../../../../extensions/cornerstone/src/utils/measurementServiceMappings/constants/supportedTools';
+
 /**
  *
  *
@@ -238,6 +240,22 @@ export class HotkeysManager {
     hotkeys.bind(combinedKeys, evt => {
       evt.preventDefault();
       evt.stopPropagation();
+
+      if (commandName === 'setToolActive') {
+        const { ToolBarService } = this._servicesManager.services;
+        const itemId = commandOptions.toolName;
+        if (measurementTools.includes(itemId)) {
+          ToolBarService.triggerHotkey(itemId);
+        } else {
+          ToolBarService.recordInteraction({
+            interactionType: 'tool',
+            groupId: 'primary',
+            itemId,
+            commandOptions,
+          });
+        }
+      }
+
       this._commandsManager.runCommand(commandName, { evt, ...commandOptions });
     });
   }
