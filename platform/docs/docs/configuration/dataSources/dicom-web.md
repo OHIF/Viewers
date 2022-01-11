@@ -1,9 +1,9 @@
 ---
-sidebar_position: 2
-sidebar_label: Data Sources
+sidebar_position: 1
+sidebar_label: DICOMweb
 ---
 
-# Data Sources
+# DICOMweb
 
 ## Set up a local DICOM server
 
@@ -97,7 +97,7 @@ yarn run dev:orthanc
 #### Configuration: Learn More
 
 > For more configuration fun, check out the
-> [Essentials Configuration](./index.md) guide.
+> [Essentials Configuration](../index.md) guide.
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
 is running the `dev:orthanc` script in our project's `package.json` (inside
@@ -154,7 +154,7 @@ window.config = {
 ```
 
 To learn more about how you can configure the OHIF Viewer, check out our
-[Configuration Guide](./index.md).
+[Configuration Guide](../index.md).
 
 ### Running DCM4CHEE
 
@@ -189,42 +189,3 @@ below:
   https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/html-templates
 [config-files]:
   https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/config
-
-## Static Files
-
-There is a binay DICOM to static file generator, which provides easily served
-binary files.  The files are all compressed in order to reduce space signifcantly,
-and are pre-computed for the files required for OHIF, so that the performance
-of serving the files is just the read from disk/write to http stream time, without
-any extra processing time.
-
-The project for the static wado files is located here:
-[static-wado]: https://github.com/wayfarer3130/static-wado
-
-It can be compiled with Java and Gradle, and then run against a set of dicom,
-in the example located in /dicom/study1 outputting to /dicomweb, and then a
-server run against that data, like this:
-```
-git clone https://github.com/wayfarer3130/static-wado.git
-cd static-wado
-./gradlew installDist
-StaticWado/build/install/StaticWado/bin/StaticWado -d /dicomweb /dicom/study1
-cd /dicomweb
-npx http-server -p 5000 --cors -g
-```
-
-There is then a dev environment in the platform/viewer directory which can be run
-against those files, like this:
-```
-cd platform/viewer
-yarn dev:static
-```
-
-Additional studies can be added to the dicomweb by re-running the StaticWado command.
-It will create a single studies.gz index file (JSON DICOM file, compressed)
-containing an index of all studies created.  There is then a small extension
-to OHIF which performs client side indexing.
-
-The StaticWado command also knows how to deploy a client and dicomweb directory
-to Amazon s3, which can then server files up directly.  There is another
-build setup build:aws in the viewer package.json to create such a deployment.
