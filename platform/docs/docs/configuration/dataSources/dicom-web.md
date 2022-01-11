@@ -97,7 +97,7 @@ yarn run dev:orthanc
 #### Configuration: Learn More
 
 > For more configuration fun, check out the
-> [Essentials Configuration](./index.md) guide.
+> [Essentials Configuration](../index.md) guide.
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
 is running the `dev:orthanc` script in our project's `package.json` (inside
@@ -154,7 +154,7 @@ window.config = {
 ```
 
 To learn more about how you can configure the OHIF Viewer, check out our
-[Configuration Guide](./index.md).
+[Configuration Guide](../index.md).
 
 ### Running DCM4CHEE
 
