@@ -98,7 +98,7 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
   constructor(stack, options) {
     super(stack, options);
 
-    this.imageLoadProgressEventHandler = this._imageLoadProgressEventHandle.bind(
+    this.imageLoadProgressEventHandler = this._imageLoadProgressEventHandler.bind(
       this
     );
 
