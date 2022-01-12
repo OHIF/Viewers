@@ -103,12 +103,18 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
 
   // useEffect function for removing overlay when status changes
   useEffect(() => {
-    if (overlayStatus === false) {
-      removeOverlay();
-    } else {
-      return;
-    }
-  }, [overlayStatus, removeOverlay]);
+    (async () => {
+      if (
+        overlayStatus === false &&
+        overlayRef.current === true &&
+        instanceRef.current !== null
+      ) {
+        await removeOverlay();
+      } else {
+        return;
+      }
+    })();
+  }, [overlayStatus]);
 
   useEffect(() => {
     opacityRef.current = opacityStatus;
@@ -271,34 +277,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
         instanceRef.current,
         current_image_id
       );
-
-      // getImageUrl(current_image_index, instanceRef.current);
-    }
-  };
-
-  // function for getting image from list series available in the server
-  const getImageUrl = (image_index, instance_uid) => {
-    const selectedTexture = allSeriesState.filter(new_data => {
-      if (new_data.SeriesInstanceUID === instance_uid) {
-        return new_data;
-      }
-    });
-
-    if (selectedTexture && selectedTexture.length > 0) {
-      cacheEntireSeries(selectedTexture);
-      const images = selectedTexture[0].instances.filter((instance, index) => {
-        if (index === image_index) {
-          return instance;
-        }
-      });
-
-      if (images[0].wadorsuri.includes('wadors:') === false) {
-        const image_id = 'wadors:' + images[0].wadorsuri;
-        addImageLayer(image_id);
-      } else {
-        const image_id = images[0].wadorsuri;
-        addImageLayer(image_id);
-      }
     }
   };
 
@@ -332,31 +310,39 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   };
 
   // function for removing all overlays added to the base image / canvas
-  const removeOverlay = () => {
+  const removeOverlay = async () => {
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        try {
 
-    const element = elementRef.current;
-    if (!element) {
-      return;
-    }
+          const element = elementRef.current;
+          if (!element) {
+            res(true);
+          }
 
-    setIsInstance('');
+          setIsInstance('');
 
-    // set overlay and instance status to defaults
-    overlayRef.current = false;
-    instanceRef.current = null;
+          // set overlay and instance status to defaults
+          overlayRef.current = false;
+          instanceRef.current = null;
 
-    const all_layers = cornerstone.getLayers(element);
-    if (all_layers.length > 1) {
-      cornerstone.removeLayer(element, all_layers[1].layerId);
-      cornerstone.updateImage(element);
-    }
+          const all_layers = cornerstone.getLayers(element);
+          if (all_layers.length > 1) {
+            cornerstone.removeLayer(element, all_layers[1].layerId);
+            cornerstone.updateImage(element);
+          }
 
-    // update overlay status in the jobs context api
-    setOverlayStatus(false);
-    cachedRef.current = false;
-    // cornerstone.imageCache.purgeCache();
-
-    return true;
+          // update overlay status in the jobs context api
+          setOverlayStatus(false);
+          cachedRef.current = false;
+          // cornerstone.imageCache.purgeCache();
+          res(true);
+        } catch (error) {
+          console.warn('removeOverlay caught', { error });
+          rej(false);
+        }
+      }, 1500);
+    });
   };
 
   // Getting all source and instance
