@@ -1,21 +1,23 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef, useState } from 'react';
 import '../AITriggerComponent.css';
 import Jobs from './Jobs';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { JobsContext } from '../../../context/JobsContext';
 import circularLoading from './utils/circular-loading.json';
-import { useLottie } from "lottie-react";
+import { useLottie } from 'lottie-react';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const { user, viewport } = props;
+  const [isActive, setIsActive] = useState(false);
   const access_token = user.access_token;
   const email = user.profile.email;
   const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const instancesRef = useRef();
+  const jobsLengthRef = useRef(0);
 
   const options = {
     animationData: circularLoading,
@@ -24,7 +26,6 @@ const TextureFeature = props => {
   };
 
   const { View: Loader } = useLottie(options);
-
 
   const client = axios.create({
     baseURL: 'https://radcadapi.thetatech.ai',
@@ -43,19 +44,23 @@ const TextureFeature = props => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      getJobs();
+      getJobs(jobs);
     }, 2000);
     return () => clearInterval(interval);
-  }, [getJobs]);
+  }, [getJobs, jobs]);
 
   // getting all jobs for the current series being displayed in viewport
-  const getJobs = async () => {
+  const getJobs = async jobsArr => {
     try {
       await client
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
           instancesRef.current = response.data.instances;
-          setJobs([...response.data.jobs]);
+          if (response.data.jobs.length !== jobsLengthRef.current) {
+            setIsActive(false);
+            setJobs([...response.data.jobs]);
+            jobsLengthRef.current = response.data.jobs.length;
+          }
           setIsLoading(false);
         });
     } catch (err) {
@@ -72,11 +77,7 @@ const TextureFeature = props => {
     <div className="component">
       <div className="title-header">Texture Features</div>
 
-      {isLoading && (
-        <div className="loader">
-          { Loader }
-        </div>
-      )}
+      {isLoading && <div className="loader">{Loader}</div>}
 
       {overlayStatus && (
         <div>
@@ -102,6 +103,14 @@ const TextureFeature = props => {
               series={series}
               data={data}
               instances={instancesRef.current}
+              isActive={isActive === index}
+              setIsActive={() => {
+                if (isActive === index) {
+                  setIsActive(false);
+                } else {
+                  setIsActive(index);
+                }
+              }}
             />
           ))}
         </div>

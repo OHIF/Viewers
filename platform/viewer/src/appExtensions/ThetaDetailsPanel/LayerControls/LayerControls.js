@@ -21,7 +21,7 @@ const LayerControls = () => {
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
 
-    // console.log({ viewports, view_ports });
+    console.log({ viewports, view_ports });
 
     // setting active viewport reference to element variable
     const element = getEnabledElement(view_ports.indexOf(viewports));
