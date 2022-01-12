@@ -13,7 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
 
-const Jobs = ({ data, user, viewport, series, instances }) => {
+const Jobs = ({ data, user, viewport, series, instances, isActive, setIsActive }) => {
   const elementRef = useRef();
   const overlayRef = useRef(false);
   const cachedRef = useRef(false);
@@ -22,7 +22,6 @@ const Jobs = ({ data, user, viewport, series, instances }) => {
   const opacityRef = useRef();
   const colorMapRef = useRef();
   const statusRef = useRef();
-  const [isActive, setIsActive] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [textures, setTextures] = useState([]);
