@@ -19,7 +19,6 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
 
     srDisplaySet.referencedImages = getReferencedImagesList(ContentSequence);
     srDisplaySet.measurements = getMeasurements(ContentSequence, srDisplaySet);
-
     const mappings = MeasurementService.getSourceMappings(
       'CornerstoneTools',
       '4'
@@ -58,6 +57,10 @@ const checkIfCanAddMeasurementsToDisplaySet = (
    */
   measurements = measurements.filter(measurement => {
     return measurement.coords.some(coord => {
+      if (coord.ReferencedSOPSequence === undefined) {
+        return false;
+      }
+
       return sopClassUIDs.includes(
         coord.ReferencedSOPSequence.ReferencedSOPClassUID
       );
@@ -78,20 +81,22 @@ const checkIfCanAddMeasurementsToDisplaySet = (
     const { coords } = measurement;
 
     coords.forEach(coord => {
-      const imageIndex = SOPInstanceUIDs.findIndex(
-        SOPInstanceUID =>
-          SOPInstanceUID ===
-          coord.ReferencedSOPSequence.ReferencedSOPInstanceUID
-      );
-      if (imageIndex > -1) {
-        const imageId = imageIds[imageIndex];
-        const imageMetadata = images[imageIndex].getData().metadata;
-        addMeasurement(
-          measurement,
-          imageId,
-          imageMetadata,
-          imageDisplaySet.displaySetInstanceUID
+      if (coord.ReferencedSOPSequence !== undefined) {
+        const imageIndex = SOPInstanceUIDs.findIndex(
+          SOPInstanceUID =>
+            SOPInstanceUID ===
+            coord.ReferencedSOPSequence.ReferencedSOPInstanceUID
         );
+        if (imageIndex > -1) {
+          const imageId = imageIds[imageIndex];
+          const imageMetadata = images[imageIndex].getData().metadata;
+          addMeasurement(
+            measurement,
+            imageId,
+            imageMetadata,
+            imageDisplaySet.displaySetInstanceUID
+          );
+        }
       }
     });
   });

@@ -14,10 +14,44 @@ const getRenderableData = (
     parseInt(imageMetadata.Columns) * 0.5,
   ];
 
-  // To Do: double-check non SCOORD3D, since 2D image-coordinates SCOORDs need to be mapped to patient space (ImagePositionPatient)
+  // https://dicom.innolitics.com/ciods/procedure-log/sr-document-content/00700023
   switch (GraphicType) {
     case SCOORD_TYPES.POINT:
+      renderableData = [];
+
+      if (ValueType === 'SCOORD3D') {
+        for (let i = 0; i < GraphicData.length; i += 3) {
+          renderableData.push({
+            x: GraphicData[i] + center[0],
+            y: GraphicData[i + 1] + center[1],
+            z: GraphicData[i + 2],
+          });
+        }
+      } else {
+        for (let i = 0; i < GraphicData.length; i += 2) {
+          renderableData.push({ x: GraphicData[i], y: GraphicData[i + 1] });
+        }
+      }
+
+      break;
     case SCOORD_TYPES.MULTIPOINT:
+      renderableData = [];
+
+      if (ValueType === 'SCOORD3D') {
+        for (let i = 0; i < GraphicData.length; i += 3) {
+          renderableData.push({
+            x: GraphicData[i] + center[0],
+            y: GraphicData[i + 1] + center[1],
+            z: GraphicData[i + 2],
+          });
+        }
+      } else {
+        for (let i = 0; i < GraphicData.length; i += 2) {
+          renderableData.push({ x: GraphicData[i], y: GraphicData[i + 1] });
+        }
+      }
+
+      break;
     case SCOORD_TYPES.POLYLINE:
       renderableData = [];
 
@@ -37,7 +71,6 @@ const getRenderableData = (
 
       break;
     case SCOORD_TYPES.POLYGON:
-      // is this only SCOORD3D?
       renderableData = [];
       for (let i = 0; i < GraphicData.length; i += 3) {
         renderableData.push({

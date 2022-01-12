@@ -4,6 +4,8 @@ import csTools, {
   toolColors,
 } from 'cornerstone-tools';
 
+import cornerstone from 'cornerstone-core';
+
 /** Internal imports */
 import TOOL_NAMES from './constants/toolNames';
 import SCOORD_TYPES from './constants/scoordTypes';
@@ -240,8 +242,8 @@ export default class DICOMSRDisplayTool extends BaseTool {
       const point = points[0]; // The SCOORD type is POINT so the array length is 1.
       draw(context, context => {
         // Draw the arrow
-        const handleStartCanvas = pixelToCanvas(element, point);
-        const handleEndCanvas = pixelToCanvas(element, {
+        const handleStartCanvas = cornerstone.pixelToCanvas(element, point);
+        const handleEndCanvas = cornerstone.pixelToCanvas(element, {
           x: point.x + xOffset,
           y: point.y + yOffset,
         });
