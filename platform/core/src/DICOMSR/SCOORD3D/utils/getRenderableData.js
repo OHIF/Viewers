@@ -9,10 +9,24 @@ const getRenderableData = (
 ) => {
   let renderableData;
 
-  const center = [
-    parseInt(imageMetadata.Rows) * 0.5,
-    parseInt(imageMetadata.Columns) * 0.5,
-  ];
+  const worldToIJK = (imageMetadata, point) => {
+    const pixelSpacing = [
+      imageMetadata.PixelSpacing[0],
+      imageMetadata.PixelSpacing[1],
+    ];
+    const origin = [
+      imageMetadata.ImagePositionPatient[0],
+      imageMetadata.ImagePositionPatient[1],
+      imageMetadata.ImagePositionPatient[2],
+    ];
+    // lps coordinate reference
+    const worldPoint = {
+      x: (point.x - origin[0]) / pixelSpacing[0],
+      y: (point.y - origin[1]) / pixelSpacing[1],
+      z: point.z,
+    };
+    return worldPoint;
+  };
 
   // https://dicom.innolitics.com/ciods/procedure-log/sr-document-content/00700023
   switch (GraphicType) {
@@ -21,11 +35,13 @@ const getRenderableData = (
 
       if (ValueType === 'SCOORD3D') {
         for (let i = 0; i < GraphicData.length; i += 3) {
-          renderableData.push({
-            x: GraphicData[i] + center[0],
-            y: GraphicData[i + 1] + center[1],
+          const point = {
+            x: GraphicData[i],
+            y: GraphicData[i + 1],
             z: GraphicData[i + 2],
-          });
+          };
+
+          renderableData.push(worldToIJK(imageMetadata, point));
         }
       } else {
         for (let i = 0; i < GraphicData.length; i += 2) {
@@ -39,11 +55,13 @@ const getRenderableData = (
 
       if (ValueType === 'SCOORD3D') {
         for (let i = 0; i < GraphicData.length; i += 3) {
-          renderableData.push({
-            x: GraphicData[i] + center[0],
-            y: GraphicData[i + 1] + center[1],
+          const point = {
+            x: GraphicData[i],
+            y: GraphicData[i + 1],
             z: GraphicData[i + 2],
-          });
+          };
+
+          renderableData.push(worldToIJK(imageMetadata, point));
         }
       } else {
         for (let i = 0; i < GraphicData.length; i += 2) {
@@ -57,11 +75,13 @@ const getRenderableData = (
 
       if (ValueType === 'SCOORD3D') {
         for (let i = 0; i < GraphicData.length; i += 3) {
-          renderableData.push({
-            x: GraphicData[i] + center[0],
-            y: GraphicData[i + 1] + center[1],
+          const point = {
+            x: GraphicData[i],
+            y: GraphicData[i + 1],
             z: GraphicData[i + 2],
-          });
+          };
+
+          renderableData.push(worldToIJK(imageMetadata, point));
         }
       } else {
         for (let i = 0; i < GraphicData.length; i += 2) {
@@ -71,16 +91,20 @@ const getRenderableData = (
 
       break;
     case SCOORD_TYPES.POLYGON:
+      // this is only scoord3d
       renderableData = [];
       for (let i = 0; i < GraphicData.length; i += 3) {
-        renderableData.push({
-          x: GraphicData[i] + center[0],
-          y: GraphicData[i + 1] + center[1],
+        const point = {
+          x: GraphicData[i],
+          y: GraphicData[i + 1],
           z: GraphicData[i + 2],
-        });
+        };
+
+        renderableData.push(worldToIJK(imageMetadata, point));
       }
       break;
     case SCOORD_TYPES.CIRCLE: {
+      // this is only scoord
       const center = { x: GraphicData[0], y: GraphicData[1] };
       const onPerimeter = { x: GraphicData[2], y: GraphicData[3] };
 
@@ -94,7 +118,7 @@ const getRenderableData = (
     }
     case SCOORD_TYPES.ELLIPSE: {
       console.warn('ROTATED ELLIPSE NOT YET SUPPORTED!');
-
+      // To Do: scoord3d ellips, need data for testing
       const majorAxis = [
         { x: GraphicData[0], y: GraphicData[1] },
         { x: GraphicData[2], y: GraphicData[3] },
