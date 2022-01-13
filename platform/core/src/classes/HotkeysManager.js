@@ -241,8 +241,8 @@ export class HotkeysManager {
       evt.preventDefault();
       evt.stopPropagation();
 
+      const { ToolBarService } = this._servicesManager.services;
       if (commandName === 'setToolActive') {
-        const { ToolBarService } = this._servicesManager.services;
         const itemId = commandOptions.toolName;
         if (measurementTools.includes(itemId)) {
           ToolBarService.triggerHotkey(itemId);
@@ -254,6 +254,39 @@ export class HotkeysManager {
             commandOptions,
           });
         }
+      } else if (commandName === 'activateCrosshairs') {
+        ToolBarService.recordInteraction({
+          interactionType: 'tool',
+          groupId: 'primary',
+          itemId: 'NLCrosshairs',
+          commandOptions,
+        });
+      } else if (commandName === 'setWindowLevel') {
+        ToolBarService.recordInteraction({
+          interactionType: 'tool',
+          groupId: 'Wwwc',
+          itemId: 'Wwwc',
+          commandOptions,
+        });
+      } else if (
+        commandName === 'toggleReferenceLines' ||
+        commandName === 'toggleSeriesLinking'
+      ) {
+        const itemId =
+          commandName === 'toggleReferenceLines'
+            ? 'ReferenceLines'
+            : 'SeriesLinking';
+        const allButtons = ToolBarService.getButtons();
+        const thisButton = allButtons[itemId];
+
+        thisButton.props.isActive = !thisButton.props.isActive;
+        ToolBarService.setButtons(allButtons);
+
+        ToolBarService.recordInteraction({
+          itemId,
+          interactionType: 'toggle',
+          commandName,
+        });
       }
 
       this._commandsManager.runCommand(commandName, { evt, ...commandOptions });
