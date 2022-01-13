@@ -1,44 +1,53 @@
-import toolbarButtons from "./toolbarButtons.js";
-import { hotkeys } from "@ohif/core";
-
-const ohif = {
-  layout: "org.ohif.default.layoutTemplateModule.viewerLayout",
-  sopClassHandler: "org.ohif.default.sopClassHandlerModule.stack",
-  hangingProtocols: "org.ohif.default.hangingProtocolModule.default",
-  viewport: "org.ohif.cornerstone.viewportModule.cornerstone",
-};
-
-const clock = {
-  panel: "extension.template.panelModule.clockPanel",
-};
-
-export default function mode({ modeConfiguration }) {
+/**
+ * Mode Template
+ */
+export default function mode({}) {
   return {
-    id: "template",
-    displayName: "Template Mode",
     /**
-     * Lifecycle hooks
+     * Mode ID, which should be unique among modes used by the viewer. This ID
+     * is used to identify the mode in the viewer's state.
      */
-    onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { ToolBarService } = servicesManager.services;
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection("primary", ["Time"]);
-    },
+    id: 'template',
+    /**
+     * Mode name, which is displayed in the viewer's UI in the worklist, for the
+     * user to select the mode.
+     */
+    displayName: 'Template Mode',
+    /**
+     * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
+     * Services and other resources.
+     */
+    onModeEnter: ({ servicesManager, extensionManager }) => {},
+    /**
+     * Runs when the Mode Route is unmounted from the DOM. Usually used to clean
+     * up resources and states
+     */
     onModeExit: () => {},
+    /** */
     validationTags: {
       study: [],
       series: [],
     },
-    isValidMode: ({ modalities }) => {
-      const modalities_list = modalities.split("\\");
-
-      // Slide Microscopy modality not supported by basic mode yet
-      return !modalities_list.includes("SM");
-    },
+    /**
+     * A boolean return value that indicates whether the mode is valid for the
+     * modalities of the selected studies. For instance a PET/CT mode should be
+     */
+    isValidMode: ({ modalities }) => {},
+    /**
+     * Mode Routes are used to define the mode's behavior. A list of Mode Route
+     * that includes the mode's path and the layout to be used. The layout will
+     * include the components that are used in the layout. For instance, if the
+     * default layoutTemplate is used (id: 'org.ohif.default.layoutTemplateModule.viewerLayout')
+     * it will include the leftPanels, rightPanels, and viewports. However, if
+     * you define another layoutTemplate that includes a Footer for instance,
+     * you should provide the Footer component here too. Note: We use Strings
+     * to reference the component's ID as they are registered in the internal
+     * ExtensionManager. The template for the string is:
+     * `${extensionId}.{moduleType}.${componentId}`.
+     */
     routes: [
       {
-        path: "template",
+        path: 'template',
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
@@ -56,15 +65,18 @@ export default function mode({ modeConfiguration }) {
         },
       },
     ],
-    extensions: [
-      "extension.template",
-      "org.ohif.default",
-      "org.ohif.cornerstone",
-    ],
-    hangingProtocols: [ohif.hangingProtocols],
-    sopClassHandlers: [ohif.sopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    /** List of extensions that are used by the modde */
+    extensions: [],
+    /** HangingProtocols used by the mode */
+    hangingProtocols: [],
+    /** SopClassHandlers used by the mode */
+    sopClassHandlers: [],
+    /** hotkeys for mode */
+    hotkeys: [],
   };
 }
 
+/**
+ * Register the mode template
+ */
 window.templateMode = mode({});
