@@ -10,19 +10,12 @@ import {
   validateOptions,
   access,
   createLicense,
+  createReadme,
 } from '../lib';
 
 const copyExtensionTemplate = async options => {
-  const {
-    name,
-    version = '0.0.1',
-    description = '',
-    author = '',
-    license = 'MIT',
-  } = options;
-
   const currentFileUrl = import.meta.url;
-  const targetDir = path.resolve(process.cwd(), name);
+  const targetDir = path.resolve(process.cwd(), options.name);
 
   const templateDir = path.resolve(
     fileURLToPath(currentFileUrl),
@@ -60,6 +53,10 @@ const createExtension = async options => {
       {
         title: 'Creating a license file',
         task: () => createLicense(options),
+      },
+      {
+        title: 'Creating a Readme file',
+        task: () => createReadme(options),
       },
     ],
     {

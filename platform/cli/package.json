@@ -17,6 +17,7 @@
     "gitignore": "^0.7.0",
     "inquirer": "^8.2.0",
     "listr": "^0.14.3",
+    "mustache": "^4.2.0",
     "ncp": "^2.0.0",
     "pkg-install": "^1.0.0",
     "spdx-license-list": "^6.4.0",
