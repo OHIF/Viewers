@@ -4,29 +4,17 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-import {
-  copyTemplate,
-  editPackageJson,
-  validateOptions,
-  access,
-  createLicense,
-} from '../lib';
+import { copyTemplate, editPackageJson, validateOptions, access } from '../lib';
 
-const copyExtensionTemplate = async options => {
-  const {
-    name,
-    version = '0.0.1',
-    description = '',
-    author = '',
-    license = 'MIT',
-  } = options;
+const copyModeTemplate = async options => {
+  const { name, version, description, author, license } = options;
 
   const currentFileUrl = import.meta.url;
-  const targetDir = path.resolve(process.cwd(), name);
+  const targetDir = path.resolve(process.cwd(), options.name);
 
   const templateDir = path.resolve(
     fileURLToPath(currentFileUrl),
-    '../../../templates/extension'
+    '../../../templates/mode'
   );
 
   try {
@@ -39,9 +27,8 @@ const copyExtensionTemplate = async options => {
   return await copyTemplate(templateDir, targetDir);
 };
 
-const createExtension = async options => {
+const createMode = async options => {
   const targetDir = path.resolve(process.cwd(), options.name);
-  options.targetDir = targetDir;
 
   const tasks = new Listr(
     [
@@ -51,15 +38,11 @@ const createExtension = async options => {
       },
       {
         title: 'Copy template files',
-        task: () => copyExtensionTemplate(options),
+        task: () => copyModeTemplate(options),
       },
       {
         title: 'Editing Package.json with provided information',
-        task: () => editPackageJson(options),
-      },
-      {
-        title: 'Creating a license file',
-        task: () => createLicense(options),
+        task: () => editPackageJson(targetDir, options),
       },
     ],
     {
@@ -68,8 +51,8 @@ const createExtension = async options => {
   );
 
   await tasks.run();
-  console.log('%s Extension is ready', chalk.green.bold('DONE'));
+  console.log('%s Mode is ready', chalk.green.bold('DONE'));
   return true;
 };
 
-export { createExtension };
+export { createMode };

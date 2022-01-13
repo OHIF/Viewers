@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Debug OHIF CLI",
       "program": "${workspaceFolder}/platform/cli/bin/ohif-cli",
-      "args": ["create-extension", "my-extension"]
+      "args": ["debug", "my-extension", "MIT"]
     }
   ]
 }
