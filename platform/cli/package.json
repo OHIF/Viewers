@@ -1,0 +1,24 @@
+{
+  "name": "ohif-cli",
+  "version": "0.0.1",
+  "description": "A CLI tool for OHIF",
+  "main": "src/index.js",
+  "bin": "bin/ohif-cli",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "esm": "^3.2.25",
+    "execa": "^6.0.0",
+    "gitignore": "^0.7.0",
+    "inquirer": "^8.2.0",
+    "listr": "^0.14.3",
+    "ncp": "^2.0.0",
+    "pkg-install": "^1.0.0",
+    "util": "^0.12.4"
+  }
+}
