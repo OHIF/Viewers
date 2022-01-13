@@ -4,12 +4,34 @@ import ncp from 'ncp';
 import path from 'path';
 import { promisify } from 'util';
 import spdxLicenseList from 'spdx-license-list/full';
+import { render } from 'mustache';
 
 const copy = promisify(ncp);
 const mkdir = promisify(fs.mkdir);
 const writeFile = promisify(fs.writeFile);
 const exists = promisify(fs.exists);
 const access = promisify(fs.access);
+
+/**
+ * Options include
+ * - name
+ * - version
+ * - initialize git
+ * - install dependencies
+ * - description
+ * - author
+ * - license
+ * @param {*} param0
+ */
+const validateOptions = options => {
+  const { name, version, description, author, license } = options;
+
+  if (!name) {
+    throw new Error('Missing name');
+  }
+
+  return true;
+};
 
 async function createLicense(options) {
   const { targetDir, name, email } = options;
@@ -61,27 +83,20 @@ async function editPackageJson(options) {
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
-/**
- * Options include
- * - name
- * - version
- * - initialize git
- * - install dependencies
- * - description
- * - author
- * - license
- * @param {*} param0
- */
+async function createReadme(options) {
+  let template = `# {{name}} \n## Description \n{{description}} \n## Author \n{{author}} \n## License \n{{license}}`;
+  const { name, description, author, license, targetDir } = options;
+  const targetPath = path.join(targetDir, 'README.md');
 
-const validateOptions = options => {
-  const { name, version, description, author, license } = options;
+  const readmeContent = render(template, {
+    name,
+    description,
+    author,
+    license,
+  });
 
-  if (!name) {
-    throw new Error('Missing name');
-  }
-
-  return true;
-};
+  return writeFile(targetPath, readmeContent, 'utf8');
+}
 
 export {
   copyTemplate,
@@ -89,4 +104,5 @@ export {
   access,
   validateOptions,
   createLicense,
+  createReadme,
 };

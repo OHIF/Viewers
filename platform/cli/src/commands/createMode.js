@@ -4,11 +4,16 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-import { copyTemplate, editPackageJson, validateOptions, access } from '../lib';
+import {
+  copyTemplate,
+  editPackageJson,
+  validateOptions,
+  access,
+  createReadme,
+  createLicense,
+} from '../lib';
 
 const copyModeTemplate = async options => {
-  const { name, version, description, author, license } = options;
-
   const currentFileUrl = import.meta.url;
   const targetDir = path.resolve(process.cwd(), options.name);
 
@@ -29,6 +34,7 @@ const copyModeTemplate = async options => {
 
 const createMode = async options => {
   const targetDir = path.resolve(process.cwd(), options.name);
+  options.targetDir = targetDir;
 
   const tasks = new Listr(
     [
@@ -42,7 +48,15 @@ const createMode = async options => {
       },
       {
         title: 'Editing Package.json with provided information',
-        task: () => editPackageJson(targetDir, options),
+        task: () => editPackageJson(options),
+      },
+      {
+        title: 'Creating a license file',
+        task: () => createLicense(options),
+      },
+      {
+        title: 'Creating a Readme file',
+        task: () => createReadme(options),
       },
     ],
     {
