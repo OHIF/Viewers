@@ -1,6 +1,10 @@
 import Listr from 'listr';
 import chalk from 'chalk';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
+import { copyTemplate, editPackageJson } from '../lib';
 /**
  * Options include
  * - name
@@ -13,7 +17,7 @@ import chalk from 'chalk';
  * @param {*} param0
  */
 
-const validateOptions = (options) => {
+const validateOptions = options => {
   const { name, version, description, author, license } = options;
 
   if (!name) {
@@ -23,13 +27,23 @@ const validateOptions = (options) => {
   return true;
 };
 
-const createExtension = async (options) => {
-  // console.log(`Creating extension ${name}`);
-  // console.log(`Version: ${version}`);
-  // console.log(`Description: ${description}`);
-  // console.log(`Author: ${author}`);
-  // console.log(`License: ${license}`);
-  debugger;
+const copyExtensionTemplate = async options => {
+  const { name, version, description, author, license } = options;
+
+  const currentFileUrl = import.meta.url;
+  const targetDir = path.resolve(process.cwd(), options.name);
+
+  const templateDir = path.resolve(
+    fileURLToPath(currentFileUrl),
+    '../../../templates/extension'
+  );
+
+  return await copyTemplate(templateDir, targetDir);
+};
+
+const createExtension = async options => {
+  const targetDir = path.resolve(process.cwd(), options.name);
+
   const tasks = new Listr(
     [
       {
@@ -37,12 +51,16 @@ const createExtension = async (options) => {
         task: () => validateOptions(options),
       },
       {
-        title: 'Copy project files',
-        task: () => {},
+        title: 'Copy template files',
+        task: () => copyExtensionTemplate(options),
+      },
+      {
+        title: 'Editing Package.json with provided information',
+        task: () => editPackageJson(targetDir, options),
       },
     ],
     {
-      exitOnError: false,
+      exitOnError: true,
     }
   );
 
