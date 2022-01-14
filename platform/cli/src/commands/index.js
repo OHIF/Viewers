@@ -1,4 +1,4 @@
-import { createExtension } from './createExtension';
-import { createMode } from './createMode';
+import { createExtension } from './createExtension.js';
+import { createMode } from './createMode.js';
 
 export { createExtension, createMode };

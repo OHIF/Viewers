@@ -1,18 +1,27 @@
 {
-  "name": "ohif-cli",
-  "version": "0.0.1",
-  "description": "A CLI tool for OHIF",
+  "name": "@ohif/ohif-cli",
+  "version": "2.0.0",
+  "description": "A CLI to bootstrap new OHIF extenion or mode",
+  "type": "module",
   "main": "src/index.js",
-  "bin": "bin/ohif-cli",
+  "bin": {
+    "ohif-cli": "src/index.js",
+    "@ohif/ohif-cli": "src/index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "cli",
+    "ohif",
+    "ohif-mode",
+    "ohif-extension"
+  ],
+  "author": "OHIF Contributors",
   "license": "MIT",
   "dependencies": {
     "chalk": "^5.0.0",
-    "esm": "^3.2.25",
+    "commander": "^8.3.0",
     "execa": "^6.0.0",
     "gitignore": "^0.7.0",
     "inquirer": "^8.2.0",
@@ -21,6 +30,12 @@
     "ncp": "^2.0.0",
     "pkg-install": "^1.0.0",
     "spdx-license-list": "^6.4.0",
-    "util": "^0.12.4"
-  }
+    "util": "^0.12.4",
+    "@babel/core": "^7.13.10"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/"
+  ]
 }

@@ -5,36 +5,16 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import {
-  copyTemplate,
+  createDirectoryContents,
   editPackageJson,
   validateOptions,
   access,
   createReadme,
   createLicense,
-} from '../lib';
-
-const copyModeTemplate = async options => {
-  const currentFileUrl = import.meta.url;
-  const targetDir = path.resolve(process.cwd(), options.name);
-
-  const templateDir = path.resolve(
-    fileURLToPath(currentFileUrl),
-    '../../../templates/mode'
-  );
-
-  try {
-    await access(templateDir, fs.constants.R_OK);
-  } catch (err) {
-    console.error('%s Template not found', chalk.red.bold('ERROR'));
-    process.exit(1);
-  }
-
-  return await copyTemplate(templateDir, targetDir);
-};
+} from '../lib.js';
 
 const createMode = async options => {
-  const targetDir = path.resolve(process.cwd(), options.name);
-  options.targetDir = targetDir;
+  fs.mkdirSync(options.targetDir);
 
   const tasks = new Listr(
     [
@@ -44,14 +24,15 @@ const createMode = async options => {
       },
       {
         title: 'Copy template files',
-        task: () => copyModeTemplate(options),
+        task: () =>
+          createDirectoryContents(options.templateDir, options.targetDir),
       },
       {
         title: 'Editing Package.json with provided information',
         task: () => editPackageJson(options),
       },
       {
-        title: 'Creating a license file',
+        title: 'Creating a License file',
         task: () => createLicense(options),
       },
       {
