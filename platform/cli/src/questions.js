@@ -15,6 +15,12 @@ const QUESTIONS = {
     },
     {
       type: 'input',
+      name: 'gitRepository',
+      message: 'Should it be a git repository?',
+      default: 'Y',
+    },
+    {
+      type: 'input',
       name: 'version',
       message: 'What is the version of your extension?',
       default: '0.0.1',

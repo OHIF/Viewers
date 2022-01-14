@@ -14,6 +14,14 @@ import {
 } from '../lib.js';
 
 const createMode = async options => {
+  if (fs.existsSync(options.targetDir)) {
+    console.error(
+      '%s Mode with the same name already exists in this directory, either delete it or choose a different name',
+      chalk.red.bold('ERROR')
+    );
+    process.exit(1);
+  }
+
   fs.mkdirSync(options.targetDir);
 
   const tasks = new Listr(
