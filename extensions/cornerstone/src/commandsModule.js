@@ -9,16 +9,6 @@ const scroll = cornerstoneTools.import('util/scroll');
 
 const { studyMetadataManager } = OHIF.utils;
 
-const imagePositionSynchronizer = new cornerstoneTools.Synchronizer(
-  cornerstone.EVENTS.NEW_IMAGE,
-  cornerstoneTools.stackImagePositionSynchronizer
-);
-
-const panZoomSynchronizer = new cornerstoneTools.Synchronizer(
-  cornerstone.EVENTS.IMAGE_RENDERED,
-  cornerstoneTools.panZoomSynchronizer
-);
-
 const updateImageSynchronizer = new cornerstoneTools.Synchronizer(
   cornerstone.EVENTS.NEW_IMAGE,
   cornerstoneTools.updateImageSynchronizer
@@ -27,16 +17,12 @@ const updateImageSynchronizer = new cornerstoneTools.Synchronizer(
 function onElementEnabledAddToSync(event) {
   const { element } = event.detail;
 
-  // imagePositionSynchronizer.add(element);
-  // panZoomSynchronizer.add(element);
   updateImageSynchronizer.add(element);
 }
 
 function onElementDisabledRemoveFromSync(event) {
   const { element } = event.detail;
 
-  imagePositionSynchronizer.remove(element);
-  panZoomSynchronizer.remove(element);
   updateImageSynchronizer.remove(element);
 }
 
