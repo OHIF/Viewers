@@ -1,7 +1,7 @@
 import React from 'react';
 import init from './init.js';
 import commandsModule from './commandsModule.js';
-import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
+// import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './OHIFCornerstoneViewport');
@@ -59,5 +59,3 @@ export default {
     return commandsModule({ servicesManager, commandsManager });
   },
 };
-
-export { CornerstoneViewportDownloadForm };

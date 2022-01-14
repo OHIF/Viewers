@@ -24,13 +24,10 @@ import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes.jsx';
 
-// TODO: Temporarily for testing
-import '@ohif/mode-longitudinal';
-
 let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
-function App({ config, defaultExtensions }) {
-  const init = appInit(config, defaultExtensions);
+function App({ config, defaultExtensions, defaultModes }) {
+  const init = appInit(config, defaultExtensions, defaultModes);
 
   // Set above for named export
   commandsManager = init.commandsManager;
@@ -63,27 +60,29 @@ function App({ config, defaultExtensions }) {
 
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
-    [UserAuthenticationProvider, { service: UserAuthenticationService}],
+    [UserAuthenticationProvider, { service: UserAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapper],
-    [ViewportGridProvider, {service: ViewportGridService}],
-    [ViewportDialogProvider, {service: UIViewportDialogService}],
-    [CineProvider, {service: CineService}],
-    [SnackbarProvider, {service: UINotificationService}],
-    [DialogProvider, {service: UIDialogService}],
-    [ModalProvider, {service: UIModalService, modal: Modal}],
-  ]
+    [ViewportGridProvider, { service: ViewportGridService }],
+    [ViewportDialogProvider, { service: UIViewportDialogService }],
+    [CineProvider, { service: CineService }],
+    [SnackbarProvider, { service: UINotificationService }],
+    [DialogProvider, { service: UIDialogService }],
+    [ModalProvider, { service: UIModalService, modal: Modal }],
+  ];
   const CombinedProviders = ({ children }) =>
     Compose({ components: providers, children });
 
   let authRoutes = null;
 
   if (oidc) {
-    authRoutes = (<OpenIdConnectRoutes
-                oidc={oidc}
-                routerBasename={routerBasename}
-                UserAuthenticationService={UserAuthenticationService}
-              />)
+    authRoutes = (
+      <OpenIdConnectRoutes
+        oidc={oidc}
+        routerBasename={routerBasename}
+        UserAuthenticationService={UserAuthenticationService}
+      />
+    );
   }
 
   return (
