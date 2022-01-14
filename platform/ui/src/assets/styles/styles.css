@@ -1,6 +1,11 @@
 /* CUSTOM OHIF SCROLLBAR */
 .ohif-scrollbar {
   scrollbar-color: #3E5967 transparent;
+  scrollbar-gutter: stable;
+}
+
+.ohif-scrollbar:hover {
+  overflow-y: auto;
 }
 
 .ohif-scrollbar::-webkit-scrollbar {

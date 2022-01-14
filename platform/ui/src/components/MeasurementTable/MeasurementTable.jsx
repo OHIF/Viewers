@@ -15,7 +15,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
         </span>
         <span className="text-base font-bold text-white">{amount}</span>
       </div>
-      <div className="overflow-x-hidden overflow-y-auto ohif-scrollbar max-h-112">
+      <div className="overflow-hidden ohif-scrollbar max-h-112">
         {data.length !== 0 &&
           data.map((measurementItem, index) => (
             <MeasurementItem
