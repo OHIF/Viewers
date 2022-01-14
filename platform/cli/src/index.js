@@ -6,8 +6,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import QUESTIONS from './questions.js';
-import { createExtension } from './commands/createExtension.js';
-import { createMode } from './commands/createMode.js';
+import {
+  createExtension,
+  createMode,
+  addExtension,
+  removeExtension,
+} from './commands/index.js';
 
 const currentDirectory = process.cwd();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -52,6 +56,20 @@ program
       };
       createMode(options);
     });
+  });
+
+program
+  .command('add-extension <packageName> [version]')
+  .description('Adds an ohif extension')
+  .action((packageName, version) => {
+    addExtension(packageName, version);
+  });
+
+program
+  .command('remove-extension <packageName>')
+  .description('removes an ohif extension')
+  .action(packageName => {
+    removeExtension(packageName);
   });
 
 program.parse(process.argv);
