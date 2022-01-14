@@ -1,17 +1,12 @@
 import Listr from 'listr';
 import chalk from 'chalk';
-import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 
-import {
-  createDirectoryContents,
-  editPackageJson,
-  validateOptions,
-  initGit,
-  createReadme,
-  createLicense,
-} from '../lib.js';
+import createDirectoryContents from './utils/createDirectoryContents.js';
+import editPackageJson from './utils/editPackageJson.js';
+import createLicense from './utils/createLicense.js';
+import createReadme from './utils/createReadme.js';
+import initGit from './utils/initGit.js';
 
 const createMode = async options => {
   if (fs.existsSync(options.targetDir)) {
@@ -26,10 +21,6 @@ const createMode = async options => {
 
   const tasks = new Listr(
     [
-      {
-        title: 'Validating options',
-        task: () => validateOptions(options),
-      },
       {
         title: 'Copying template files',
         task: () =>
