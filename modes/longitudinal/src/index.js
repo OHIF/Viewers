@@ -18,11 +18,13 @@ const dicomsr = {
   viewport: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
 };
 
-export default function mode({ modeConfiguration }) {
+const id = 'viewer';
+
+function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
     // We should not be.
-    id: 'viewer',
+    id,
     displayName: 'Basic Viewer',
     /**
      * Lifecycle hooks
@@ -63,7 +65,7 @@ export default function mode({ modeConfiguration }) {
       const modalities_list = modalities.split('\\');
 
       // Slide Microscopy modality not supported by basic mode yet
-      return !modalities_list.includes('SM')
+      return !modalities_list.includes('SM');
     },
     routes: [
       {
@@ -105,4 +107,9 @@ export default function mode({ modeConfiguration }) {
   };
 }
 
-window.longitudinalMode = mode({});
+const mode = {
+  id,
+  modeFactory,
+};
+
+export default mode;
