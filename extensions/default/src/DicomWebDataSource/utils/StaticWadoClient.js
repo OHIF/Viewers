@@ -22,6 +22,12 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     this.staticWado = qidoConfig.staticWado;
   }
 
+  /**
+   * Replace the search for studies remote query with a local version which
+   * retrieves a complete query list and then sub-selects from it locally.
+   * @param {*} options
+   * @returns
+   */
   async searchForStudies(options) {
     if (!this.staticWado) return super.searchForStudies(options);
 
@@ -37,6 +43,18 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     return filtered;
   }
 
+  /**
+   * Compares values, matching any instance of desired to any instance of
+   * actual by recursively go through the paired set of values.  That is,
+   * this is O(m*n) where m is how many items in desired and n is the length of actual
+   * Then, at the individual item node, compares the Alphabetic name if present,
+   * and does a sub-string matching on string values, and otherwise does an
+   * exact match comparison.
+   *
+   * @param {*} desired
+   * @param {*} actual
+   * @returns true if the values match
+   */
   compareValues(desired, actual) {
     if (Array.isArray(desired)) {
       return desired.find(item => this.compareValues(item, actual));
@@ -53,16 +71,25 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     return desired === actual;
   }
 
+  /** Compares a pair of dates to see if the value is within the range */
   compareDateRange(range, value) {
     if (!value) return true;
     const dash = range.indexOf('-');
-    if (dash == -1) return this.compareValues(range, value);
+    if (dash === -1) return this.compareValues(range, value);
     const start = range.substring(0, dash);
     const end = range.substring(dash + 1);
     return (!start || value >= start) &&
       (!end || value <= end);
   }
 
+  /**
+   * Filters the return list by the query parameters.
+   *
+   * @param {*} key
+   * @param {*} queryParams
+   * @param {*} study
+   * @returns
+   */
   filterItem(key, queryParams, study) {
     const altKey = StaticWadoClient.filterKeys[key] || key;
     if (!queryParams) return true;
