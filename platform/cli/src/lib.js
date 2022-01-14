@@ -3,14 +3,44 @@ import fs from 'fs';
 import ncp from 'ncp';
 import path from 'path';
 import { promisify } from 'util';
-import spdxLicenseList from 'spdx-license-list/full';
-import { render } from 'mustache';
+import spdxLicenseList from 'spdx-license-list/full.js';
+import mustache from 'mustache';
 
 const copy = promisify(ncp);
 const mkdir = promisify(fs.mkdir);
 const writeFile = promisify(fs.writeFile);
 const exists = promisify(fs.exists);
 const access = promisify(fs.access);
+
+// https://github.dev/leoroese/template-cli/blob/628dd24db7df399ebb520edd0bc301bc7b5e8b66/index.js#L19
+const createDirectoryContents = (templatePath, targetDirPath) => {
+  const filesToCreate = fs.readdirSync(templatePath);
+
+  filesToCreate.forEach(file => {
+    const origFilePath = `${templatePath}/${file}`;
+
+    // get stats about the current file
+    const stats = fs.statSync(origFilePath);
+
+    if (stats.isFile()) {
+      const contents = fs.readFileSync(origFilePath, 'utf8');
+
+      // Rename
+      if (file === '.npmignore') file = '.gitignore';
+
+      const writePath = `${targetDirPath}/${file}`;
+      fs.writeFileSync(writePath, contents, 'utf8');
+    } else if (stats.isDirectory()) {
+      fs.mkdirSync(`${targetDirPath}/${file}`);
+
+      // recursive call
+      createDirectoryContents(
+        `${templatePath}/${file}`,
+        `${targetDirPath}/${file}`
+      );
+    }
+  });
+};
 
 /**
  * Options include
@@ -88,7 +118,7 @@ async function createReadme(options) {
   const { name, description, author, license, targetDir } = options;
   const targetPath = path.join(targetDir, 'README.md');
 
-  const readmeContent = render(template, {
+  const readmeContent = mustache.render(template, {
     name,
     description,
     author,
@@ -105,4 +135,5 @@ export {
   validateOptions,
   createLicense,
   createReadme,
+  createDirectoryContents,
 };
