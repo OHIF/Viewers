@@ -1,9 +1,4 @@
 {
-  "name": "@ohif/mode-template",
-  "version": "0.0.1",
-  "description": "A template mode for installation demonstration",
-  "author": "OHIF",
-  "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.js",
@@ -11,13 +6,6 @@
     "node": ">=10",
     "npm": ">=6",
     "yarn": ">=1.16.0"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "publishConfig": {
-    "access": "public"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",

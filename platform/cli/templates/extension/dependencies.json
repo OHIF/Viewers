@@ -1,24 +1,12 @@
 {
-  "name": "@ohif/extension-template",
-  "version": "0.0.1",
-  "description": "A template extension to show extension installation",
-  "author": "OHIF Core Team",
-  "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.js",
-  "publishConfig": {
-    "access": "public"
-  },
   "engines": {
     "node": ">=10",
     "npm": ">=6",
     "yarn": ">=1.18.0"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:dicom-pdf": "yarn run dev",
