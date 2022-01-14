@@ -50,11 +50,9 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     appConfig,
   });
 
-  if (window) {
-    // Load the default theme settings
-    const defaultTheme = config && config.defaultTheme || 'theme';
-    ConfigPoint.load(defaultTheme, '/theme', 'theme');
-  }
+  // Load the default theme settings
+  const defaultTheme = config && config.defaultTheme || 'theme';
+  ConfigPoint.load(defaultTheme, '/theme', 'theme');
 
   servicesManager.registerServices([
     UINotificationService,
