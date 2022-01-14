@@ -1,65 +1,32 @@
 import installNPMPackage from './utils/installNPMPackage.js';
-import fs from 'fs';
-import { info } from 'yarn-programmatic';
+import getPackageVersion from './utils/getPackageVersion.js';
+import readPluginConfigFile from './utils/readPluginConfigFile.js';
+import { addModeToConfig } from './utils/manipulatePluginConfigFile.js';
+import writePluginConfig from './utils/writePluginConfig.js';
 
 export default async function addMode(packageName, version) {
   console.log('Adding ohif mode...');
   console.log(
     'Note: There is currently no validation that this npm package is an ohif-extension.'
   );
-  await installNPMPackage(packageName, version);
+  await await installNPMPackage(packageName, version);
 
-  if (!version) {
-    // Find the version actually installed using yarn info.
-    const packageInfo = await info(packageName);
+  // Find the version actually installed using yarn info, as version is optional
+  version = await getPackageVersion(packageName);
 
-    version = packageInfo.version;
-  }
+  const pluginConfig = readPluginConfigFile();
 
-  let fileContents;
-
-  fileContents = fs.readFileSync('./pluginConfig.json', { flag: 'r' }, function(
-    err
-  ) {
-    if (err) {
-      return; // File doesn't exist yet.
-    }
-  });
-
-  if (fileContents) {
-    fileContents = JSON.parse(fileContents);
-  } else {
-    fileContents = {
+  if (!pluginConfig) {
+    pluginConfig = {
       extensions: [],
       modes: [],
     };
   }
 
-  const modes = fileContents.modes;
+  addModeToConfig(pluginConfig, { packageName, version });
+  writePluginConfig(pluginConfig);
 
-  const indexOfExistingEntry = modes.findIndex(
-    modeEntry => modeEntry.packageName === packageName
-  );
-
-  if (indexOfExistingEntry !== -1) {
-    fileContents.modes.splice(indexOfExistingEntry, 1);
-  }
-
-  fileContents.modes.push({ packageName, version });
-
-  const jsonStringOfFileContents = JSON.stringify(fileContents, null, 4);
-
-  fs.writeFileSync(
-    `./pluginConfig.json`,
-    jsonStringOfFileContents,
-    { flag: 'w+' },
-    err => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    }
-  );
+  // TODO parse mode and add extensions
 
   console.log('Mode Added');
 }

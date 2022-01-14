@@ -1,5 +1,7 @@
 import uninstallNPMPackage from './utils/uninstallNPMPackage.js';
-import fs from 'fs';
+import readPluginConfigFile from './utils/readPluginConfigFile.js';
+import { removeExtensionFromConfig } from './utils/manipulatePluginConfigFile.js';
+import writePluginConfig from './utils/writePluginConfig.js';
 
 export default async function removeExtension(packageName) {
   console.log('Removing ohif extension...');
@@ -8,43 +10,12 @@ export default async function removeExtension(packageName) {
   );
   await uninstallNPMPackage(packageName);
 
-  let fileContents;
-
-  fileContents = fs.readFileSync('./pluginConfig.json', { flag: 'r' }, function(
-    err
-  ) {
-    if (err) {
-      return; // File doesn't exist yet.
-    }
-  });
+  const pluginConfig = readPluginConfigFile();
 
   // Note: if file is not found, nothing to remove.
-  if (fileContents) {
-    fileContents = JSON.parse(fileContents);
-
-    const extensions = fileContents.extensions;
-
-    const indexOfExistingEntry = extensions.findIndex(
-      extensionEntry => extensionEntry.packageName === packageName
-    );
-
-    if (indexOfExistingEntry !== -1) {
-      fileContents.extensions.splice(indexOfExistingEntry, 1);
-    }
-
-    const jsonStringOfFileContents = JSON.stringify(fileContents, null, 4);
-
-    fs.writeFileSync(
-      `./pluginConfig.json`,
-      jsonStringOfFileContents,
-      { flag: 'w+' },
-      err => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      }
-    );
+  if (pluginConfig) {
+    removeExtensionFromConfig(pluginConfig, { packageName });
+    writePluginConfig(pluginConfig);
   }
 
   console.log('Extension Removed');

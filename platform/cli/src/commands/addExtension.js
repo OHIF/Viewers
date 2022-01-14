@@ -1,6 +1,8 @@
 import installNPMPackage from './utils/installNPMPackage.js';
-import fs from 'fs';
-import { info } from 'yarn-programmatic';
+import readPluginConfigFile from './utils/readPluginConfigFile.js';
+import getPackageVersion from './utils/getPackageVersion.js';
+import { addExtensionToConfig } from './utils/manipulatePluginConfigFile.js';
+import writePluginConfig from './utils/writePluginConfig.js';
 
 export default async function addExtension(packageName, version) {
   console.log('Adding ohif extension...');
@@ -9,57 +11,20 @@ export default async function addExtension(packageName, version) {
   );
   await installNPMPackage(packageName, version);
 
-  if (!version) {
-    // Find the version actually installed using yarn info.
-    const packageInfo = await info(packageName);
+  // Find the version actually installed using yarn info, as version is optional
+  version = await getPackageVersion(packageName);
 
-    version = packageInfo.version;
-  }
+  const pluginConfig = readPluginConfigFile();
 
-  let fileContents;
-
-  fileContents = fs.readFileSync('./pluginConfig.json', { flag: 'r' }, function(
-    err
-  ) {
-    if (err) {
-      return; // File doesn't exist yet.
-    }
-  });
-
-  if (fileContents) {
-    fileContents = JSON.parse(fileContents);
-  } else {
-    fileContents = {
+  if (!pluginConfig) {
+    pluginConfig = {
       extensions: [],
       modes: [],
     };
   }
 
-  const extensions = fileContents.extensions;
-
-  const indexOfExistingEntry = extensions.findIndex(
-    extensionEntry => extensionEntry.packageName === packageName
-  );
-
-  if (indexOfExistingEntry !== -1) {
-    fileContents.extensions.splice(indexOfExistingEntry, 1);
-  }
-
-  fileContents.extensions.push({ packageName, version });
-
-  const jsonStringOfFileContents = JSON.stringify(fileContents, null, 4);
-
-  fs.writeFileSync(
-    `./pluginConfig.json`,
-    jsonStringOfFileContents,
-    { flag: 'w+' },
-    err => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    }
-  );
+  addExtensionToConfig(pluginConfig, { packageName, version });
+  writePluginConfig(pluginConfig);
 
   console.log('Extension Added');
 }
