@@ -10,6 +10,7 @@ import {
   validateOptions,
   createLicense,
   createReadme,
+  initGit,
 } from '../lib.js';
 
 const createExtension = async options => {
@@ -22,7 +23,7 @@ const createExtension = async options => {
         task: () => validateOptions(options),
       },
       {
-        title: 'Copy template files',
+        title: 'Copying template files',
         task: () =>
           createDirectoryContents(options.templateDir, options.targetDir),
       },
@@ -37,6 +38,11 @@ const createExtension = async options => {
       {
         title: 'Creating a Readme file',
         task: () => createReadme(options),
+      },
+      {
+        title: 'Initializing a Git Repository',
+        enabled: () => options.gitRepository,
+        task: () => initGit(options),
       },
     ],
     {

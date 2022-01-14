@@ -5,6 +5,7 @@ import path from 'path';
 import { promisify } from 'util';
 import spdxLicenseList from 'spdx-license-list/full.js';
 import mustache from 'mustache';
+import { execa } from 'execa';
 
 const copy = promisify(ncp);
 const mkdir = promisify(fs.mkdir);
@@ -117,6 +118,21 @@ async function editPackageJson(options) {
   fs.unlinkSync(dependenciesPath);
 }
 
+async function initGit(options) {
+  const { targetDir } = options;
+  const targetPath = path.join(targetDir, '.git');
+
+  if (!(await exists(targetPath))) {
+    try {
+      await execa('git', ['init'], { cwd: targetDir });
+    } catch (err) {
+      console.error('%s Failed to initialize git', chalk.red.bold('ERROR'));
+      console.error(err);
+      process.exit(1);
+    }
+  }
+}
+
 async function createReadme(options) {
   let template = `# {{name}} \n## Description \n{{description}} \n## Author \n{{author}} \n## License \n{{license}}`;
   const { name, description, author, license, targetDir } = options;
@@ -140,4 +156,5 @@ export {
   createLicense,
   createReadme,
   createDirectoryContents,
+  initGit,
 };

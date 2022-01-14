@@ -8,7 +8,7 @@ import {
   createDirectoryContents,
   editPackageJson,
   validateOptions,
-  access,
+  initGit,
   createReadme,
   createLicense,
 } from '../lib.js';
@@ -23,7 +23,7 @@ const createMode = async options => {
         task: () => validateOptions(options),
       },
       {
-        title: 'Copy template files',
+        title: 'Copying template files',
         task: () =>
           createDirectoryContents(options.templateDir, options.targetDir),
       },
@@ -38,6 +38,11 @@ const createMode = async options => {
       {
         title: 'Creating a Readme file',
         task: () => createReadme(options),
+      },
+      {
+        title: 'Initializing a Git Repository',
+        enabled: () => options.gitRepository,
+        task: () => initGit(options),
       },
     ],
     {
