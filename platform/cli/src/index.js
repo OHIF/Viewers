@@ -11,6 +11,8 @@ import {
   createMode,
   addExtension,
   removeExtension,
+  addMode,
+  removeMode,
 } from './commands/index.js';
 
 const currentDirectory = process.cwd();
@@ -70,6 +72,20 @@ program
   .description('removes an ohif extension')
   .action(packageName => {
     removeExtension(packageName);
+  });
+
+program
+  .command('add-mode <packageName> [version]')
+  .description('Removes an ohif mode')
+  .action((packageName, version) => {
+    addMode(packageName, version);
+  });
+
+program
+  .command('remove-mode <packageName>')
+  .description('Removes an ohif mode')
+  .action(packageName => {
+    removeMode(packageName);
   });
 
 program.parse(process.argv);

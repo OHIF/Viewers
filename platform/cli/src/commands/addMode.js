@@ -2,8 +2,8 @@ import installNPMPackage from './utils/installNPMPackage.js';
 import fs from 'fs';
 import { info } from 'yarn-programmatic';
 
-export default async function addExtension(packageName, version) {
-  console.log('Adding ohif extension...');
+export default async function addMode(packageName, version) {
+  console.log('Adding ohif mode...');
   console.log(
     'Note: There is currently no validation that this npm package is an ohif-extension.'
   );
@@ -35,17 +35,17 @@ export default async function addExtension(packageName, version) {
     };
   }
 
-  const extensions = fileContents.extensions;
+  const modes = fileContents.modes;
 
-  const indexOfExistingEntry = extensions.findIndex(
-    extensionEntry => extensionEntry.packageName === packageName
+  const indexOfExistingEntry = modes.findIndex(
+    modeEntry => modeEntry.packageName === packageName
   );
 
   if (indexOfExistingEntry !== -1) {
-    fileContents.extensions.splice(indexOfExistingEntry, 1);
+    fileContents.modes.splice(indexOfExistingEntry, 1);
   }
 
-  fileContents.extensions.push({ packageName, version });
+  fileContents.modes.push({ packageName, version });
 
   const jsonStringOfFileContents = JSON.stringify(fileContents, null, 4);
 
@@ -61,5 +61,5 @@ export default async function addExtension(packageName, version) {
     }
   );
 
-  console.log('Extension Added');
+  console.log('Mode Added');
 }
