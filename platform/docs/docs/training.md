@@ -1,24 +1,87 @@
 ---
 sidebar_position: 9
-sidebar_label: Training
+sidebar_label: Resources
 ---
 
-# Training
+# Resources
 
 Throughout the development of the OHIF Viewer, we have had the chance to
 participate in various conferences and "hackathons". In this page, we will
-provide the presentations and other training materials that we have provided to
-the OHIF community in the past:
+provide the presentations and other resources that we have provided to the
+community in the past:
 
-## Presentations
+## 2022
 
 ### [Upcoming: NA-MIC Project Week 36th 2022 - Remote](https://github.com/NA-MIC/ProjectWeek/blob/master/PW36_2022_Virtual/README.md)
 
-We will attend the upcoming NA-MIC Project Week 36th remotely.
+The Project Week is a week-long hackathon of hands on activity in which medical
+image computing researchers. OHIF team participated in the 35th Project Week
+in 2021. OHIF team will attend the upcoming NA-MIC Project Week 36th remotely.
+
+## 2021
 
 ### [NA-MIC Project Week 35th 2021 - Remote](https://github.com/NA-MIC/ProjectWeek/tree/master/PW35_2021_Virtual)
 
-Presentation can be find
-[here](https://docs.google.com/presentation/d/1KYNjuiI8lT1foQ4P9TGNV0lBhM6H-5KBs0wkYj4JJbk/edit?usp=sharing)
+The Project Week is a week-long hackathon of hands on activity in which medical
+image computing researchers. OHIF team participated in the 35th Project Week
+in 2021.
+[[Slides]](https://docs.google.com/presentation/d/1KYNjuiI8lT1foQ4P9TGNV0lBhM6H-5KBs0wkYj4JJbk/edit?usp=sharing)
 
-<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vSgcExpfSxCjglmdWlHkGcIJH5GctLKT9sxvdbJKyiLPMfNGP0aS0IzNSwMDvbFGxC9bsLU-xCq8M2_/embed?start=false&loop=false" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+### Chan Zuckerberg Initiative (CZI)
+
+Project presentations and demonstrations of Essential Open Source Software for
+Science (EOSS) grantees
+[[Slides]](https://docs.google.com/presentation/d/1_CLtG2hsL3ZxOtV2olVnzBOzq-TMLrHLomOy3FiU4NE/edit?usp=sharing)
+[[Video]](https://youtu.be/0FjKkTJO0Rc?t=3737)
+
+## 2019
+
+### OHIF and VTK.js Training Course
+
+OHIF and Kitware collaboration to create a training course for OHIF and VTK.js
+developers. Funding for this work was provided by Kitware (NIH NINDS
+R44NS081792, NIH NINDS R42NS086295, NIH NIBIB and NIGMS R01EB021396, NIH NIBIB
+R01EB014955), Isomics (NIH P41 EB015902), and Massachusetts General Hospital
+(NIH U24 CA199460).
+
+1. Introduction to VTK.js and OHIF
+   [[Slides]](https://docs.google.com/presentation/d/1NCJxpfx_qUGJI_2DhbECzaOg0k-Z6b65QlUptCofN-A/edit#slide=id.p)
+   [[Video]](https://vimeo.com/375520781)
+2. Developing with VTK.js
+   [[Slides]](https://docs.google.com/presentation/d/17TCS6EhFi6SWFIrcAJ-DFdFzFFL-WD9BBTv-owmMdDU/edit#slide=id.p)
+   [[Video]](https://vimeo.com/375521036)
+3. VTK.js Architecture and Tooling
+   [[Slides]](https://docs.google.com/presentation/d/1Sr1OGxMSw0oCt46koKQbmwSIE11Kqq8MGtyW3W0ASpk/edit?usp=gmail_thread)
+   [[Video]](https://vimeo.com/375521810)
+4. OHIF + VTK.js Integration
+   [[Slides]](https://docs.google.com/presentation/d/1Iwg-u01HGVf1CgC6NbcBD3gm3uHN9WhjU59FSz55TN8/edit?ts=5d9c9ce4#slide=id.g59aa99cda4_0_131)
+   [[Video]](https://vimeo.com/375521206)
+
+## 2017
+
+### Lesion Tracker
+
+LesionTracker: Extensible Open-Source Zero-Footprint Web Viewer for Cancer
+Imaging Research and Clinical Trials. This project was supported in part by
+grant U24 CA199460 from the National Cancer Institute (NCI) Informatics
+Technology for Cancer Research (ITCR) Program.
+[[Video]](https://www.youtube.com/watch?v=gUIPtoSBL-Q)
+
+### OHIF Community Meeting - June
+
+[[Slides]](https://docs.google.com/presentation/d/1K9Y6eP5DYTXoDlfwCZE6GkCUp83AK4_40YQS0dlzVBo/edit?usp=sharing)
+
+## 2016
+
+### Imaging Community Call
+
+Open Source Oncology Web Viewer; Presentation by Gordon J. Harris
+[[Slides]](https://www.slideshare.net/imgcommcall/lesiontracker)
+
+### OHIF Community Meeting - June
+
+[[Slides]](https://docs.google.com/presentation/d/1Ai25mBG0ZWUPhaadp3VnbCVmkYs9K51sQ8osMixrvJ0/edit?usp=sharing)
+
+### OHIF Community Meeting - September
+
+[[Slides]](https://docs.google.com/presentation/d/1iYZoU7v7KHSLHiKwH1_9_wweAkG7RGnyxrWeeHva4zQ/edit?usp=sharing)
