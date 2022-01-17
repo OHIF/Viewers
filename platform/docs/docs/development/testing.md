@@ -24,26 +24,21 @@ Running unit test will generate a report at the end showing the successful and
 unsuccessful tests with detailed explanations.
 
 ## End-to-end test
-
 For running the OHIF e2e test you need to run the following steps:
 
-- Create a mini-pacs for OHIF to access the images for testing. We download and
-  run our lightweight implementation which provides a collection of DICOM
-  studies ([source code][mini-pacs]).
+- Store the dicomweb static webpages into ~/viewer-testdata via the following steps:
 
   ```bash
-  docker run -p 5985:5985 -p 5984:5984 -e USE_POUCHDB=true -e DB_SERVER=http://0.0.0.0 ohif/viewer-testdata:0.1-test
+  git clone https://github.com/OHIF/viewer-testdata.git
+  cd viewer-testdata
+  npx --package=dicomp10-to-dicomweb -- mkdicomweb -d ~/viewer-testdata dcm
   ```
-
-  Successful execution should be
-
-  ![](../assets/img/docker-pacs.png)
 
 - Open a new terminal, navigate to the OHIF project, and run OHIF with the
   dicom-server config
 
   ```bash
-  APP_CONFIG=config/dicomweb-server.js yarn start
+  APP_CONFIG=config/e2e.js yarn start
   ```
 
   You should be able to see test studies in the study list
