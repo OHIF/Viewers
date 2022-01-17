@@ -18,6 +18,17 @@ import {
 const currentDirectory = process.cwd();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+function getOptionsFromAnswers(answers) {
+  const targetDir = path.join(currentDirectory, answers.name);
+  const gitRepository = answers.gitRepository.toLowerCase() === 'y';
+
+  return {
+    ...answers,
+    targetDir,
+    gitRepository,
+  };
+}
+
 program.version('0.0.1').description('OHIF CLI');
 
 // For debugging
@@ -34,12 +45,10 @@ program
   .action(() => {
     inquirer.prompt(QUESTIONS.createExtension).then(answers => {
       const templateDir = path.join(__dirname, '../templates/extension');
-      const targetDir = path.join(currentDirectory, answers.name);
-      const options = {
-        ...answers,
-        targetDir,
-        templateDir,
-      };
+      const options = getOptionsFromAnswers(answers);
+
+      options.templateDir = templateDir;
+
       createExtension(options);
     });
   });
@@ -50,12 +59,9 @@ program
   .action(name => {
     inquirer.prompt(QUESTIONS.createMode).then(answers => {
       const templateDir = path.join(__dirname, '../templates/mode');
-      const targetDir = path.join(currentDirectory, answers.name);
-      const options = {
-        ...answers,
-        targetDir,
-        templateDir,
-      };
+      const options = getOptionsFromAnswers(answers);
+
+      options.templateDir = templateDir;
       createMode(options);
     });
   });
