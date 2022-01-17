@@ -1,13 +1,16 @@
 /**
  * Mode Template
  */
-export default function mode({}) {
+
+const id = 'templateMode';
+
+export default function modeFactory({ modeConfiguration }) {
   return {
     /**
      * Mode ID, which should be unique among modes used by the viewer. This ID
      * is used to identify the mode in the viewer's state.
      */
-    id: 'template',
+    id,
     /**
      * Mode name, which is displayed in the viewer's UI in the worklist, for the
      * user to select the mode.
@@ -52,12 +55,12 @@ export default function mode({}) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [],
-              rightPanels: [clock.panel],
+              leftPanels: [''],
+              rightPanels: [''],
               viewports: [
                 {
-                  namespace: ohif.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  namespace: '',
+                  displaySetsToDisplay: [''],
                 },
               ],
             },
@@ -66,17 +69,19 @@ export default function mode({}) {
       },
     ],
     /** List of extensions that are used by the modde */
-    extensions: [],
+    extensions: [''],
     /** HangingProtocols used by the mode */
-    hangingProtocols: [],
+    hangingProtocols: [''],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [],
+    sopClassHandlers: [''],
     /** hotkeys for mode */
-    hotkeys: [],
+    hotkeys: [''],
   };
 }
 
-/**
- * Register the mode template
- */
-window.templateMode = mode({});
+const mode = {
+  id,
+  modeFactory,
+};
+
+export default mode;
