@@ -6,7 +6,7 @@ import writePluginConfig from './utils/writePluginConfig.js';
 export default async function removeMode(packageName) {
   console.log('Removing ohif mode...');
   console.log(
-    'Note: There is currently no validation that this extension is an ohif-extension.'
+    'Note: There is currently no validation that this npm package is an ohif-mode.'
   );
   await uninstallNPMPackage(packageName);
 

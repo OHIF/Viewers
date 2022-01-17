@@ -10,7 +10,7 @@ import writePluginConfig from './utils/writePluginConfig.js';
 export default async function addMode(packageName, version) {
   console.log('Adding ohif mode...');
   console.log(
-    '%s There is currently no validation that this npm package is an ohif-extension.',
+    '%s There is currently no validation that this npm package is an ohif-mode.',
     chalk.yellow.bold('Warning')
   );
 
