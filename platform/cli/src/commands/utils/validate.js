@@ -3,13 +3,45 @@ import keywords from '../enums/keywords.js';
 import getPackageNameAndScope from './getPackageNameAndScope.js';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
+import { info } from 'yarn-programmatic';
+import NOT_FOUND from '../constants/notFound.js';
 
 export async function validateMode(packageName, version) {
   return validate(packageName, version, keywords.MODE);
 }
 
 export async function validateExtension(packageName, version) {
-  return validate(packageName, version, keywords.MODE);
+  return validate(packageName, version, keywords.EXTENSION);
+}
+
+export async function validateModeYarnInfo(packageName) {
+  return validateYarnInfo(packageName, keywords.MODE);
+}
+
+export async function validateExtensionYarnInfo(packageName) {
+  return validateYarnInfo(packageName, keywords.EXTENSION);
+}
+
+function validateYarnInfo(packageName, keyword) {
+  return new Promise(async (resolve, reject) => {
+    const packageInfo = await info(packageName).catch(() => {
+      const error = new Error(
+        `${chalk.red.bold('Error')} extension ${packageName} not installed`
+      );
+      reject(error);
+    });
+
+    const isValid = packageInfo.keywords.includes(keyword);
+
+    if (isValid) {
+      resolve(true);
+    } else {
+      const error = new Error(
+        `${chalk.red.bold('Error')} package ${packageName} is not an ${keyword}`
+      );
+      reject(error);
+    }
+  });
 }
 
 function validate(packageName, version, keyword) {
@@ -19,26 +51,44 @@ function validate(packageName, version, keyword) {
     // Gets the registry of the package. Scoped packages may not be using the global default.
     const registryUrlOfPackage = registryUrl(scope);
 
-    console.log(`${registryUrlOfPackage}${packageName}`);
-
     const response = await fetch(`${registryUrlOfPackage}${packageName}`);
     const json = await response.json();
+
+    if (json.error && json.error === NOT_FOUND) {
+      const error = new Error(
+        `${chalk.red.bold('Error')} package ${packageName} not found`
+      );
+      reject(error);
+      return;
+    }
 
     if (version === undefined) {
       // Get latest
       version = json['dist-tags'].latest;
     }
 
-    const versionedJson = json.versions[version];
-    const keywords = versionedJson.keywords;
+    if (json.versions[version]) {
+      const versionedJson = json.versions[version];
+      const keywords = versionedJson.keywords;
 
-    const isValid = keywords.includes(keyword);
+      const isValid = keywords && keywords.includes(keyword);
 
-    if (isValid) {
-      resolve(true);
+      if (isValid) {
+        resolve(true);
+      } else {
+        const error = new Error(
+          `${chalk.red.bold(
+            'Error'
+          )} package ${packageName} is not an ${keyword}`
+        );
+        reject(error);
+      }
     } else {
+      // Particular version undefined
       const error = new Error(
-        `${chalk.red.bold('Error')} package ${packageName} is not an ${keyword}`
+        `${chalk.red.bold(
+          'Error'
+        )} verson ${version} of package ${packageName} not found`
       );
       reject(error);
     }

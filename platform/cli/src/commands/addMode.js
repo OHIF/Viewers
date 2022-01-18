@@ -18,16 +18,40 @@ import { validateMode } from './utils/validate.js';
 // - If not correct, uninstall the package if it was not installed before.
 // -- This prevents the user from deleting e.g. React by using ohif-cli install-mode react.
 
+// async function findExtensionDependencies() {
+//   // Check installed node modules and fetch file.
+//   let importString = '';
+//   if (packageName.includes('@')) {
+//     const [scope, packageNameLessScope] = packageName.split('/');
+//     importString = `../../../../node_modules/${scope}/${packageNameLessScope}/${extensionIndexURL}`;
+//   } else {
+//     importString = `../../../../node_modules/${packageName}/${extensionIndexURL}`;
+//   }
+
+// let extensionDependencies = [];
+
+// // TODO -> DERIVE THIS FROM THE PACKAGE.JSON
+
+// // TODO -> Actually installation seems to have broken for modes.
+// const extensionIndexURL = 'dist/index.umd.js';
+
+//   console.log('TODO... fetch the data');
+//   //const mode = await import(importString);
+
+//   const mode = await import(packageName);
+//   extensionDependencies = mode.extensionDependencies;
+//   for (let i = 0; i < extensionDependencies.length; i++) {
+//     console.log(extensionDependencies[i]);
+//   }
+// }
+
 export default async function addMode(packageName, version) {
-  let extensionDependencies = [];
+  console.log(chalk.green.bold(`Adding ohif-mode ${packageName}...`));
 
-  // TODO -> DERIVE THIS FROM THE PACKAGE.JSON
-
-  // TODO -> Actually installation seems to have broken for modes.
-  const extensionIndexURL = 'dist/index.umd.js';
+  let installedVersion;
 
   async function addModeToConfigFile() {
-    const installedVersion = await getPackageVersion(packageName);
+    installedVersion = await getPackageVersion(packageName);
     const pluginConfig = readPluginConfigFile();
 
     if (!pluginConfig) {
@@ -44,26 +68,6 @@ export default async function addMode(packageName, version) {
     writePluginConfig(pluginConfig);
   }
 
-  // async function findExtensionDependencies() {
-  //   // Check installed node modules and fetch file.
-  //   let importString = '';
-  //   if (packageName.includes('@')) {
-  //     const [scope, packageNameLessScope] = packageName.split('/');
-  //     importString = `../../../../node_modules/${scope}/${packageNameLessScope}/${extensionIndexURL}`;
-  //   } else {
-  //     importString = `../../../../node_modules/${packageName}/${extensionIndexURL}`;
-  //   }
-
-  //   console.log('TODO... fetch the data');
-  //   //const mode = await import(importString);
-
-  //   const mode = await import(packageName);
-  //   extensionDependencies = mode.extensionDependencies;
-  //   for (let i = 0; i < extensionDependencies.length; i++) {
-  //     console.log(extensionDependencies[i]);
-  //   }
-  // }
-
   const packageNameAndVersion =
     version === undefined ? packageName : `${packageName}@${version}`;
 
@@ -71,32 +75,34 @@ export default async function addMode(packageName, version) {
     [
       {
         title: `Searching for mode: ${packageNameAndVersion}`,
-        task: async () =>
-          await validateMode(packageName, version).catch(error => {
-            console.log(error.message);
-            throw error;
-          }),
+        task: async () => await validateMode(packageName, version),
       },
       {
         title: `Installing npm package: ${packageNameAndVersion}`,
         task: async () => await installNPMPackage(packageName, version),
       },
       {
-        title: 'Adding Mode to the Config file',
+        title: 'Adding ohif-mode to the configuration file',
         task: addModeToConfigFile,
       },
-      // { // TODO
-      //   title: 'Finding extension dependencies',
-      //   task: findExtensionDependencies,
-      // },
     ],
     {
       exitOnError: true,
     }
   );
 
-  await tasks.run().catch(() => {});
-
   // TODO parse mode and add extensions
-  console.log('%s Mode Added', chalk.green.bold('DONE'));
+
+  await tasks
+    .run()
+    .then(() => {
+      console.log(
+        `${chalk.green.bold(
+          `Added ohif-mode ${packageName}@${installedVersion}`
+        )} `
+      );
+    })
+    .catch(error => {
+      console.log(error.message);
+    });
 }
