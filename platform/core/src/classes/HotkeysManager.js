@@ -242,8 +242,8 @@ export class HotkeysManager {
       evt.stopPropagation();
 
       const { ToolBarService } = this._servicesManager.services;
+      const itemId = commandOptions.toolName;
       if (commandName === 'setToolActive') {
-        const itemId = commandOptions.toolName;
         if (measurementTools.includes(itemId)) {
           ToolBarService.triggerHotkey(itemId);
         } else {
@@ -287,6 +287,8 @@ export class HotkeysManager {
           interactionType: 'toggle',
           commandName,
         });
+      } else if (measurementTools.includes(itemId)) {
+        ToolBarService.triggerHotkey(itemId);
       }
 
       this._commandsManager.runCommand(commandName, { evt, ...commandOptions });
