@@ -16,10 +16,8 @@ import addExtension from './addExtension.js';
 export default async function addMode(packageName, version) {
   console.log(chalk.green.bold(`Adding ohif-mode ${packageName}...`));
 
-  let yarnInfo;
-
-  async function addModeToConfigFile() {
-    yarnInfo = await getYarnInfo(packageName);
+  async function getYarnInfoAndAddModeToConfigFile() {
+    const yarnInfo = await getYarnInfo(packageName);
 
     const installedVersion = yarnInfo.version;
     const pluginConfig = readPluginConfigFile();
@@ -36,9 +34,11 @@ export default async function addMode(packageName, version) {
       version: installedVersion,
     });
     writePluginConfigFile(pluginConfig);
+
+    return yarnInfo;
   }
 
-  async function findOhifExtensions() {
+  async function findOhifExtensions(yarnInfo) {
     // Get yarn info file and get peer dependencies
     if (!yarnInfo.peerDependencies) {
       // No ohif-extension dependencies
@@ -92,12 +92,14 @@ export default async function addMode(packageName, version) {
       },
       {
         title: 'Adding ohif-mode to the configuration file',
-        task: addModeToConfigFile,
+        task: async ctx => {
+          ctx.yarnInfo = await getYarnInfoAndAddModeToConfigFile();
+        },
       },
       {
         title: 'Detecting required ohif-extensions...',
         task: async ctx => {
-          ctx.ohifExtensions = await findOhifExtensions();
+          ctx.ohifExtensions = await findOhifExtensions(ctx.yarnInfo);
         },
       },
     ],
@@ -106,14 +108,12 @@ export default async function addMode(packageName, version) {
     }
   );
 
-  // TODO parse mode and add extensions
-
   await tasks
     .run()
     .then(async ctx => {
       console.log(
         `${chalk.green.bold(
-          `Added ohif-mode ${packageName}@${yarnInfo.version}`
+          `Added ohif-mode ${packageName}@${ctx.yarnInfo.version}`
         )} `
       );
 
@@ -135,26 +135,26 @@ export default async function addMode(packageName, version) {
           });
         });
 
-        debugger;
-
         const tasks = new Listr(taskEntries, {
           exitOnError: true,
         });
 
-        await tasks.run().then(() => {
-          let extensonsString = '';
+        await tasks
+          .run()
+          .then(() => {
+            let extensonsString = '';
 
-          ctx.ohifExtensions.forEach(({ packageName, version }) => {
-            extensonsString += ` ${packageName}@${version}`;
+            ctx.ohifExtensions.forEach(({ packageName, version }) => {
+              extensonsString += ` ${packageName}@${version}`;
+            });
+
+            console.log(
+              `${chalk.green.bold(`Extensions added:${extensonsString}`)} `
+            );
+          })
+          .catch(error => {
+            console.log(error.message);
           });
-
-          console.log(
-            `${chalk.green.bold(`Extensions added:${extensonsString}`)} `
-          );
-        });
-        // .catch(error => {
-        //   console.log(error.message);
-        // });
       }
     })
     .catch(error => {

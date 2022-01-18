@@ -14,10 +14,8 @@ import {
 export default async function addExtension(packageName, version) {
   console.log(chalk.green.bold(`Adding ohif-extension ${packageName}...`));
 
-  let yarnInfo;
-
-  async function addExtensionToConfigFile() {
-    yarnInfo = await getYarnInfo(packageName);
+  async function getYarnInfoAndAddExtensionToConfigFile() {
+    const yarnInfo = await getYarnInfo(packageName);
 
     const installedVersion = yarnInfo.version;
     const pluginConfig = readPluginConfigFile();
@@ -34,6 +32,8 @@ export default async function addExtension(packageName, version) {
       version: installedVersion,
     });
     writePluginConfigFile(pluginConfig);
+
+    return yarnInfo;
   }
 
   const versionedPackageName = getVersionedPackageName(packageName, version);
@@ -50,7 +50,9 @@ export default async function addExtension(packageName, version) {
       },
       {
         title: 'Adding ohif-extension to the configuration file',
-        task: addExtensionToConfigFile,
+        task: async ctx => {
+          ctx.yarnInfo = await getYarnInfoAndAddExtensionToConfigFile();
+        },
       },
     ],
     {
@@ -60,10 +62,10 @@ export default async function addExtension(packageName, version) {
 
   await tasks
     .run()
-    .then(() => {
+    .then(ctx => {
       console.log(
         `${chalk.green.bold(
-          `Added ohif-extension ${packageName}@${yarnInfo.version}`
+          `Added ohif-extension ${packageName}@${ctx.yarnInfo.version}`
         )} `
       );
     })

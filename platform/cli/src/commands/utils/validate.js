@@ -24,14 +24,24 @@ async function validateExtensionYarnInfo(packageName) {
 
 function validateYarnInfo(packageName, keyword) {
   return new Promise(async (resolve, reject) => {
-    const packageInfo = await getYarnInfo(packageName).catch(() => {
+    function rejectIfNotFound() {
       const error = new Error(
         `${chalk.red.bold('Error')} extension ${packageName} not installed`
       );
       reject(error);
+    }
+
+    const packageInfo = await getYarnInfo(packageName).catch(() => {
+      rejectIfNotFound();
     });
 
-    const isValid = packageInfo.keywords.includes(keyword);
+    if (!packageInfo) {
+      rejectIfNotFound();
+      return;
+    }
+
+    const { keywords } = packageInfo;
+    const isValid = keywords && keywords.includes(keyword);
 
     if (isValid) {
       resolve(true);

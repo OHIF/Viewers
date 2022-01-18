@@ -25,10 +25,6 @@
         {
             "packageName": "@ohif/mode-longitudinal",
             "version": "0.0.1"
-        },
-        {
-            "packageName": "@ohif-test/mode-clock",
-            "version": "1.0.5"
         }
     ]
 }
