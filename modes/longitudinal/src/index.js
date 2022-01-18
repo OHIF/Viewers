@@ -20,6 +20,13 @@ const dicomsr = {
 
 const id = 'viewer';
 
+const extensionDependencies = [
+  'org.ohif.default',
+  'org.ohif.cornerstone',
+  'org.ohif.measurement-tracking',
+  'org.ohif.dicom-sr',
+];
+
 function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
@@ -95,12 +102,7 @@ function modeFactory({ modeConfiguration }) {
         },
       },
     ],
-    extensions: [
-      'org.ohif.default',
-      'org.ohif.cornerstone',
-      'org.ohif.measurement-tracking',
-      'org.ohif.dicom-sr',
-    ],
+    extensions: extensionDependencies,
     hangingProtocols: [ohif.hangingProtocols],
     sopClassHandlers: [ohif.sopClassHandler, dicomsr.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
@@ -110,6 +112,7 @@ function modeFactory({ modeConfiguration }) {
 const mode = {
   id,
   modeFactory,
+  extensionDependencies,
 };
 
 export default mode;
