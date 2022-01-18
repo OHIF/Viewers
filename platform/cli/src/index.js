@@ -13,6 +13,7 @@ import {
   removeExtension,
   addMode,
   removeMode,
+  listPlugins,
 } from './commands/index.js';
 
 const currentDirectory = process.cwd();
@@ -92,6 +93,15 @@ program
   .description('Removes an ohif mode')
   .action(packageName => {
     removeMode(packageName);
+  });
+
+program
+  .command('list')
+  .description('List Added Extensions and Modes')
+  .action(() => {
+    // TODO: The command should be able to run from the root of the project
+    const configPath = path.join(__dirname, '../../viewer/pluginConfig.json');
+    listPlugins(configPath);
   });
 
 program.parse(process.argv);
