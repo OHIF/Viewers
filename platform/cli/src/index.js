@@ -99,6 +99,7 @@ program
   .command('list')
   .description('List Added Extensions and Modes')
   .action(() => {
+    // TODO: The command should be able to run from the root of the project
     const configPath = path.join(__dirname, '../../viewer/pluginConfig.json');
     listPlugins(configPath);
   });
