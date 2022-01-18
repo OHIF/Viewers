@@ -1,57 +1,27 @@
 import Listr from 'listr';
 import chalk from 'chalk';
 
-import installNPMPackage from './utils/installNPMPackage.js';
-import getPackageVersion from './utils/getPackageVersion.js';
-import readPluginConfigFile from './utils/readPluginConfigFile.js';
-import { addModeToConfig } from './utils/manipulatePluginConfigFile.js';
-import writePluginConfig from './utils/writePluginConfig.js';
-import { validateMode } from './utils/validate.js';
-
-// Validation -> We have the version from the yarn info.
-// Fetch the json from the registry (check version, get latest if not specified).
-// Need to check we are using the correct repository.
-// Check if this is.
-// - Check if the package is already installed and flag this.
-// - TODO: Download and install the lib.
-// - TODO: Validate .
-// - If not correct, uninstall the package if it was not installed before.
-// -- This prevents the user from deleting e.g. React by using ohif-cli install-mode react.
-
-// async function findExtensionDependencies() {
-//   // Check installed node modules and fetch file.
-//   let importString = '';
-//   if (packageName.includes('@')) {
-//     const [scope, packageNameLessScope] = packageName.split('/');
-//     importString = `../../../../node_modules/${scope}/${packageNameLessScope}/${extensionIndexURL}`;
-//   } else {
-//     importString = `../../../../node_modules/${packageName}/${extensionIndexURL}`;
-//   }
-
-// let extensionDependencies = [];
-
-// // TODO -> DERIVE THIS FROM THE PACKAGE.JSON
-
-// // TODO -> Actually installation seems to have broken for modes.
-// const extensionIndexURL = 'dist/index.umd.js';
-
-//   console.log('TODO... fetch the data');
-//   //const mode = await import(importString);
-
-//   const mode = await import(packageName);
-//   extensionDependencies = mode.extensionDependencies;
-//   for (let i = 0; i < extensionDependencies.length; i++) {
-//     console.log(extensionDependencies[i]);
-//   }
-// }
+import {
+  installNPMPackage,
+  readPluginConfigFile,
+  getYarnInfo,
+  writePluginConfigFile,
+  getVersionedPackageName,
+  addModeToConfig,
+  validateMode,
+  validateExtension,
+} from './utils/index.js';
+import addExtension from './addExtension.js';
 
 export default async function addMode(packageName, version) {
   console.log(chalk.green.bold(`Adding ohif-mode ${packageName}...`));
 
-  let installedVersion;
+  let yarnInfo;
 
   async function addModeToConfigFile() {
-    installedVersion = await getPackageVersion(packageName);
+    yarnInfo = await getYarnInfo(packageName);
+
+    const installedVersion = yarnInfo.version;
     const pluginConfig = readPluginConfigFile();
 
     if (!pluginConfig) {
@@ -65,25 +35,70 @@ export default async function addMode(packageName, version) {
       packageName,
       version: installedVersion,
     });
-    writePluginConfig(pluginConfig);
+    writePluginConfigFile(pluginConfig);
   }
 
-  const packageNameAndVersion =
-    version === undefined ? packageName : `${packageName}@${version}`;
+  async function findOhifExtensions() {
+    // Get yarn info file and get peer dependencies
+    if (!yarnInfo.peerDependencies) {
+      // No ohif-extension dependencies
+      return;
+    }
+
+    const peerDependencies = yarnInfo.peerDependencies;
+    const dependencies = []; // TODO -> Can probably skip this mapping step
+    const ohifExtensions = [];
+
+    Object.keys(peerDependencies).forEach(packageName => {
+      dependencies.push({
+        packageName,
+        version: peerDependencies[packageName],
+      });
+    });
+
+    const promises = [];
+
+    // Fetch each npm json and check which are ohif extensions
+    for (let i = 0; i < dependencies.length; i++) {
+      const dependency = dependencies[i];
+      const { packageName, version } = dependency;
+      const promise = validateExtension(packageName, version)
+        .then(() => {
+          ohifExtensions.push({ packageName, version });
+        })
+        .catch(() => {});
+
+      promises.push(promise);
+    }
+
+    // Await all the extensions // TODO -> Improve so we async install each
+    // extension and await all of those promises instead.
+    await Promise.all(promises);
+
+    return ohifExtensions;
+  }
+
+  const versionedPackageName = getVersionedPackageName(packageName, version);
 
   const tasks = new Listr(
     [
       {
-        title: `Searching for mode: ${packageNameAndVersion}`,
+        title: `Searching for mode: ${versionedPackageName}`,
         task: async () => await validateMode(packageName, version),
       },
       {
-        title: `Installing npm package: ${packageNameAndVersion}`,
+        title: `Installing npm package: ${versionedPackageName}`,
         task: async () => await installNPMPackage(packageName, version),
       },
       {
         title: 'Adding ohif-mode to the configuration file',
         task: addModeToConfigFile,
+      },
+      {
+        title: 'Detecting required ohif-extensions...',
+        task: async ctx => {
+          ctx.ohifExtensions = await findOhifExtensions();
+        },
       },
     ],
     {
@@ -95,12 +110,52 @@ export default async function addMode(packageName, version) {
 
   await tasks
     .run()
-    .then(() => {
+    .then(async ctx => {
       console.log(
         `${chalk.green.bold(
-          `Added ohif-mode ${packageName}@${installedVersion}`
+          `Added ohif-mode ${packageName}@${yarnInfo.version}`
         )} `
       );
+
+      const ohifExtensions = ctx.ohifExtensions;
+
+      if (ohifExtensions.length) {
+        console.log(`${chalk.green.bold(`Installing dependent extensions`)} `);
+
+        // Auto generate Listr tasks...
+
+        const taskEntries = [];
+
+        ohifExtensions.forEach(({ packageName, version }) => {
+          const title = `Adding ohif-extension ${packageName}`;
+
+          taskEntries.push({
+            title,
+            task: async () => await addExtension(packageName, version),
+          });
+        });
+
+        debugger;
+
+        const tasks = new Listr(taskEntries, {
+          exitOnError: true,
+        });
+
+        await tasks.run().then(() => {
+          let extensonsString = '';
+
+          ctx.ohifExtensions.forEach(({ packageName, version }) => {
+            extensonsString += ` ${packageName}@${version}`;
+          });
+
+          console.log(
+            `${chalk.green.bold(`Extensions added:${extensonsString}`)} `
+          );
+        });
+        // .catch(error => {
+        //   console.log(error.message);
+        // });
+      }
     })
     .catch(error => {
       console.log(error.message);

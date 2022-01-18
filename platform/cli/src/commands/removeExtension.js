@@ -1,10 +1,13 @@
-import uninstallNPMPackage from './utils/uninstallNPMPackage.js';
-import readPluginConfigFile from './utils/readPluginConfigFile.js';
-import { removeExtensionFromConfig } from './utils/manipulatePluginConfigFile.js';
-import writePluginConfig from './utils/writePluginConfig.js';
-import { validateExtensionYarnInfo } from './utils/validate.js';
 import chalk from 'chalk';
 import Listr from 'listr';
+
+import {
+  uninstallNPMPackage,
+  readPluginConfigFile,
+  removeExtensionFromConfig,
+  writePluginConfigFile,
+  validateExtensionYarnInfo,
+} from './utils/index.js';
 
 export default async function removeExtension(packageName) {
   console.log(chalk.green.bold(`Removing ohif-extension ${packageName}...`));
@@ -15,7 +18,7 @@ export default async function removeExtension(packageName) {
     // Note: if file is not found, nothing to remove.
     if (pluginConfig) {
       removeExtensionFromConfig(pluginConfig, { packageName });
-      writePluginConfig(pluginConfig);
+      writePluginConfigFile(pluginConfig);
     }
   }
 

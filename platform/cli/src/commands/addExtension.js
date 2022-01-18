@@ -1,20 +1,25 @@
 import Listr from 'listr';
 import chalk from 'chalk';
 
-import installNPMPackage from './utils/installNPMPackage.js';
-import readPluginConfigFile from './utils/readPluginConfigFile.js';
-import getPackageVersion from './utils/getPackageVersion.js';
-import { addExtensionToConfig } from './utils/manipulatePluginConfigFile.js';
-import writePluginConfig from './utils/writePluginConfig.js';
-import { validateExtension } from './utils/validate.js';
+import {
+  installNPMPackage,
+  readPluginConfigFile,
+  getYarnInfo,
+  addExtensionToConfig,
+  writePluginConfigFile,
+  validateExtension,
+  getVersionedPackageName,
+} from './utils/index.js';
 
 export default async function addExtension(packageName, version) {
   console.log(chalk.green.bold(`Adding ohif-extension ${packageName}...`));
 
-  let installedVersion;
+  let yarnInfo;
 
   async function addExtensionToConfigFile() {
-    installedVersion = await getPackageVersion(packageName);
+    yarnInfo = await getYarnInfo(packageName);
+
+    const installedVersion = yarnInfo.version;
     const pluginConfig = readPluginConfigFile();
 
     if (!pluginConfig) {
@@ -28,30 +33,25 @@ export default async function addExtension(packageName, version) {
       packageName,
       version: installedVersion,
     });
-    writePluginConfig(pluginConfig);
+    writePluginConfigFile(pluginConfig);
   }
 
-  const packageNameAndVersion =
-    version === undefined ? packageName : `${packageName}@${version}`;
+  const versionedPackageName = getVersionedPackageName(packageName, version);
 
   const tasks = new Listr(
     [
       {
-        title: `Searching for extension: ${packageNameAndVersion}`,
+        title: `Searching for extension: ${versionedPackageName}`,
         task: async () => await validateExtension(packageName, version),
       },
       {
-        title: `Installing npm package: ${packageNameAndVersion}`,
+        title: `Installing npm package: ${versionedPackageName}`,
         task: async () => await installNPMPackage(packageName, version),
       },
       {
         title: 'Adding ohif-extension to the configuration file',
         task: addExtensionToConfigFile,
       },
-      // { // TODO
-      //   title: 'Finding extension dependencies',
-      //   task: findExtensionDependencies,
-      // },
     ],
     {
       exitOnError: true,
@@ -63,7 +63,7 @@ export default async function addExtension(packageName, version) {
     .then(() => {
       console.log(
         `${chalk.green.bold(
-          `Added ohif-extension ${packageName}@${installedVersion}`
+          `Added ohif-extension ${packageName}@${yarnInfo.version}`
         )} `
       );
     })

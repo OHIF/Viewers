@@ -15,6 +15,10 @@
         {
             "packageName": "@ohif/extension-default",
             "version": "1.0.1"
+        },
+        {
+            "packageName": "@ohif-test/extension-clock",
+            "version": "1.0.2"
         }
     ],
     "modes": [
@@ -24,7 +28,7 @@
         },
         {
             "packageName": "@ohif-test/mode-clock",
-            "version": "1.0.3"
+            "version": "1.0.5"
         }
     ]
 }

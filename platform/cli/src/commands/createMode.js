@@ -1,14 +1,11 @@
 import Listr from 'listr';
 import chalk from 'chalk';
-import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 
 import {
   createDirectoryContents,
   editPackageJson,
   validateOptions,
-  access,
   createReadme,
   createLicense,
 } from '../lib.js';

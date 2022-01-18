@@ -1,24 +1,27 @@
 import Listr from 'listr';
 import chalk from 'chalk';
 
-import { validateModeYarnInfo } from './utils/validate.js';
-
-import uninstallNPMPackage from './utils/uninstallNPMPackage.js';
-import readPluginConfigFile from './utils/readPluginConfigFile.js';
-import { removeModeFromConfig } from './utils/manipulatePluginConfigFile.js';
-import writePluginConfig from './utils/writePluginConfig.js';
+import {
+  uninstallNPMPackage,
+  readPluginConfigFile,
+  removeModeFromConfig,
+  writePluginConfigFile,
+  validateModeYarnInfo,
+  getYarnInfo,
+} from './utils/index.js';
 
 export default async function removeMode(packageName) {
   console.log(chalk.green.bold(`Removing ohif-mode ${packageName}...`));
 
   async function removeModeFromConfigFile() {
-    installedVersion = await getPackageVersion(packageName);
+    yarnInfo = await getYarnInfo(packageName);
+
     const pluginConfig = readPluginConfigFile();
 
     // Note: if file is not found, nothing to remove.
     if (pluginConfig) {
       removeModeFromConfig(pluginConfig, { packageName });
-      writePluginConfig(pluginConfig);
+      writePluginConfigFile(pluginConfig);
     }
   }
 

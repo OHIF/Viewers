@@ -3,28 +3,28 @@ import keywords from '../enums/keywords.js';
 import getPackageNameAndScope from './getPackageNameAndScope.js';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
-import { info } from 'yarn-programmatic';
+import getYarnInfo from './getYarnInfo.js';
 import NOT_FOUND from '../constants/notFound.js';
 
-export async function validateMode(packageName, version) {
+async function validateMode(packageName, version) {
   return validate(packageName, version, keywords.MODE);
 }
 
-export async function validateExtension(packageName, version) {
+async function validateExtension(packageName, version) {
   return validate(packageName, version, keywords.EXTENSION);
 }
 
-export async function validateModeYarnInfo(packageName) {
+async function validateModeYarnInfo(packageName) {
   return validateYarnInfo(packageName, keywords.MODE);
 }
 
-export async function validateExtensionYarnInfo(packageName) {
+async function validateExtensionYarnInfo(packageName) {
   return validateYarnInfo(packageName, keywords.EXTENSION);
 }
 
 function validateYarnInfo(packageName, keyword) {
   return new Promise(async (resolve, reject) => {
-    const packageInfo = await info(packageName).catch(() => {
+    const packageInfo = await getYarnInfo(packageName).catch(() => {
       const error = new Error(
         `${chalk.red.bold('Error')} extension ${packageName} not installed`
       );
@@ -94,3 +94,10 @@ function validate(packageName, version, keyword) {
     }
   });
 }
+
+export {
+  validateMode,
+  validateExtension,
+  validateModeYarnInfo,
+  validateExtensionYarnInfo,
+};
