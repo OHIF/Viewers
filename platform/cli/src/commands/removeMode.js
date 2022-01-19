@@ -9,6 +9,7 @@ import {
   validateModeYarnInfo,
   getYarnInfo,
 } from './utils/index.js';
+import removeExtensions from './removeExtensions.js';
 
 export default async function removeMode(packageName) {
   console.log(chalk.green.bold(`Removing ohif-mode ${packageName}...`));
@@ -36,11 +37,10 @@ export default async function removeMode(packageName) {
     const registeredExtensions = extensions.map(
       extension => extension.packageName
     );
-
     // TODO this is not a function
-    const ohifExtensionsOfMode = yarnInfo.peerDependencies.filter(
-      peerDependency => registeredExtensions.includes(peerDependency)
-    );
+    const ohifExtensionsOfMode = Object.keys(
+      yarnInfo.peerDependencies
+    ).filter(peerDependency => registeredExtensions.includes(peerDependency));
 
     const ohifExtensionsUsedInOtherModes = ohifExtensionsOfMode.map(
       packageName => {
@@ -52,10 +52,10 @@ export default async function removeMode(packageName) {
     );
 
     // Check if other modes use each extension used by this mode
-    const otherModes = modes.filter(mode.packageName !== yarnInfo.name);
+    const otherModes = modes.filter(mode => mode.packageName !== yarnInfo.name);
 
     for (let i = 0; i < otherModes.length; i++) {
-      const mode = modes[i];
+      const mode = otherModes[i];
       const yarnInfo = await getYarnInfo(mode);
 
       const peerDependencies = yarnInfo.peerDependencies;
@@ -64,14 +64,14 @@ export default async function removeMode(packageName) {
         continue;
       }
 
-      for (let j = 0; j < ohifExtensionsUsedInOtherModes; j++) {
+      for (let j = 0; j < ohifExtensionsUsedInOtherModes.length; j++) {
         const ohifExtension = ohifExtensionsUsedInOtherModes[j];
         if (ohifExtension.used) {
           // Already accounted that we can't delete this, so don't waste effort
           return;
         }
 
-        if (peerDependencies.includes(ohifExtension.packageName)) {
+        if (Object.keys(peerDependencies).includes(ohifExtension.packageName)) {
           ohifExtension.used = true;
         }
       }
@@ -105,7 +105,9 @@ export default async function removeMode(packageName) {
       {
         title: 'Detecting extensions that can be removed...',
         task: async ctx => {
-          ctx.ohifExtensions = await findOhifExtensionsToRemove(ctx.yarnInfo);
+          ctx.ohifExtensionsToRemove = await findOhifExtensionsToRemove(
+            ctx.yarnInfo
+          );
         },
       },
     ],
@@ -114,17 +116,23 @@ export default async function removeMode(packageName) {
     }
   );
 
-  // TODO - Remove extensions if they aren't used by any other mode??
-
   await tasks
     .run()
-    .then(ctx => {
-      if (ctx.ohifExtensions && ctx.ohifExtensions.length) {
-        console.log(
-          `I have ${ctx.ohifExtensions.length} extensions to remove!!`
-        );
-      }
+    .then(async ctx => {
+      // Remove extensions if they aren't used by any other mode.
       console.log(`${chalk.green.bold(`Removed ohif-mode ${packageName}`)} `);
+
+      const ohifExtensionsToRemove = ctx.ohifExtensionsToRemove;
+
+      if (ohifExtensionsToRemove.length) {
+        console.log(
+          `${chalk.green.bold(
+            `Removing ${ohifExtensionsToRemove.length} extensions no longer used by any installed mode`
+          )}`
+        );
+
+        await removeExtensions(ohifExtensionsToRemove);
+      }
     })
     .catch(error => {
       console.log(error.message);

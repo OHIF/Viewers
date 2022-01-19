@@ -3319,14 +3319,6 @@
   dependencies:
     "@octokit/openapi-types" "^8.3.0"
 
-"@ohif-test/extension-clock@1.0.2":
-  version "1.0.2"
-  resolved "http://localhost:4873/@ohif-test%2fextension-clock/-/extension-clock-1.0.2.tgz#6b63b5a0c1a5dee090e68c4c0de752c58246d042"
-  integrity sha512-H/2Z/vW5YQyC7yqFcIJBHxWNAzUpSBGbguOZRLBm024tKWF7bOsnVUo+nykCrrnfRjZEmFEVHQZrHP4SoZKLRg==
-  dependencies:
-    "@babel/runtime" "7.7.6"
-    cross-env "^7.0.3"
-
 "@ohif/extension-cornerstone@^2.4.0":
   version "2.10.9"
   resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-2.10.9.tgz#f25a53330bc216f1636eb621e1f29e3d1fed9639"
@@ -6425,13 +6417,6 @@ cross-env@^5.2.0:
   dependencies:
     cross-spawn "^6.0.5"
 
-cross-env@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
-  integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
-  dependencies:
-    cross-spawn "^7.0.1"
-
 cross-fetch@^3.0.4:
   version "3.1.4"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
@@ -6439,7 +6424,7 @@ cross-fetch@^3.0.4:
   dependencies:
     node-fetch "2.6.1"
 
-cross-spawn@7.0.3, cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+cross-spawn@7.0.3, cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==

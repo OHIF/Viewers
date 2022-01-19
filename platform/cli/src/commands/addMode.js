@@ -11,7 +11,7 @@ import {
   validateMode,
   validateExtension,
 } from './utils/index.js';
-import addExtension from './addExtension.js';
+import addExtensions from './addExtensions.js';
 
 export default async function addMode(packageName, version) {
   console.log(chalk.green.bold(`Adding ohif-mode ${packageName}...`));
@@ -121,40 +121,7 @@ export default async function addMode(packageName, version) {
 
       if (ohifExtensions.length) {
         console.log(`${chalk.green.bold(`Installing dependent extensions`)} `);
-
-        // Auto generate Listr tasks...
-
-        const taskEntries = [];
-
-        ohifExtensions.forEach(({ packageName, version }) => {
-          const title = `Adding ohif-extension ${packageName}`;
-
-          taskEntries.push({
-            title,
-            task: async () => await addExtension(packageName, version),
-          });
-        });
-
-        const tasks = new Listr(taskEntries, {
-          exitOnError: true,
-        });
-
-        await tasks
-          .run()
-          .then(() => {
-            let extensonsString = '';
-
-            ctx.ohifExtensions.forEach(({ packageName, version }) => {
-              extensonsString += ` ${packageName}@${version}`;
-            });
-
-            console.log(
-              `${chalk.green.bold(`Extensions added:${extensonsString}`)} `
-            );
-          })
-          .catch(error => {
-            console.log(error.message);
-          });
+        await addExtensions(ohifExtensions);
       }
     })
     .catch(error => {
