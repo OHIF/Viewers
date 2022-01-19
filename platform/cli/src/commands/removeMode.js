@@ -28,7 +28,7 @@ export default async function removeMode(packageName) {
     const pluginConfig = readPluginConfigFile();
 
     if (!pluginConfig) {
-      // No other modes
+      // No other modes or extensions, no action item.
       return [];
     }
 
@@ -56,7 +56,7 @@ export default async function removeMode(packageName) {
 
     for (let i = 0; i < otherModes.length; i++) {
       const mode = otherModes[i];
-      const yarnInfo = await getYarnInfo(mode);
+      const yarnInfo = await getYarnInfo(mode.packageName);
 
       const peerDependencies = yarnInfo.peerDependencies;
 
