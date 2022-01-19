@@ -3333,7 +3333,7 @@
   dependencies:
     "@octokit/openapi-types" "^8.3.0"
 
-"@ohif-test/extension-clock@1.0.2":
+"@ohif-test/extension-clock@^1.0.2":
   version "1.0.2"
   resolved "http://localhost:4873/@ohif-test%2fextension-clock/-/extension-clock-1.0.2.tgz#6b63b5a0c1a5dee090e68c4c0de752c58246d042"
   integrity sha512-H/2Z/vW5YQyC7yqFcIJBHxWNAzUpSBGbguOZRLBm024tKWF7bOsnVUo+nykCrrnfRjZEmFEVHQZrHP4SoZKLRg==

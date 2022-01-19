@@ -17,6 +17,7 @@ import {
   validateExtensionYarnInfo,
 } from './validate.js';
 import getYarnInfo from './getYarnInfo.js';
+import writeExtensionToConfig from './writeExtensionToConfig.js';
 
 export {
   getPackageNameAndScope,
@@ -34,4 +35,5 @@ export {
   validateModeYarnInfo,
   validateExtensionYarnInfo,
   writePluginConfigFile,
+  writeExtensionToConfig,
 };

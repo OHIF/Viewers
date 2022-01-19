@@ -3,38 +3,14 @@ import chalk from 'chalk';
 
 import {
   installNPMPackage,
-  readPluginConfigFile,
   getYarnInfo,
-  addExtensionToConfig,
-  writePluginConfigFile,
   validateExtension,
   getVersionedPackageName,
+  writeExtensionToConfig,
 } from './utils/index.js';
 
 export default async function addExtension(packageName, version) {
   console.log(chalk.green.bold(`Adding ohif-extension ${packageName}...`));
-
-  async function getYarnInfoAndAddExtensionToConfigFile() {
-    const yarnInfo = await getYarnInfo(packageName);
-
-    const installedVersion = yarnInfo.version;
-    const pluginConfig = readPluginConfigFile();
-
-    if (!pluginConfig) {
-      pluginConfig = {
-        extensions: [],
-        modes: [],
-      };
-    }
-
-    addExtensionToConfig(pluginConfig, {
-      packageName,
-      version: installedVersion,
-    });
-    writePluginConfigFile(pluginConfig);
-
-    return yarnInfo;
-  }
 
   const versionedPackageName = getVersionedPackageName(packageName, version);
 
@@ -51,7 +27,13 @@ export default async function addExtension(packageName, version) {
       {
         title: 'Adding ohif-extension to the configuration file',
         task: async ctx => {
-          ctx.yarnInfo = await getYarnInfoAndAddExtensionToConfigFile();
+          const yarnInfo = await getYarnInfo(packageName);
+
+          debugger;
+
+          writeExtensionToConfig(packageName, yarnInfo);
+
+          ctx.yarnInfo = yarnInfo;
         },
       },
     ],
