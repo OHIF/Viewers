@@ -21,7 +21,9 @@ import writeExtensionToConfig from './writeExtensionToConfig.js';
 import writeModeToConfig from './writeModeToConfig.js';
 import findRequiredOhifExtensionsForMode from './findRequiredOhifExtensionsForMode.js';
 import removeExtensionFromConfigFile from './removeExtensionFromConfigFile.js';
+import removeModeFromConfigFile from './removeModeFromConfigFile.js';
 import throwIfExtensionUsedByInstalledMode from './throwIfExtensionUsedByInstalledMode.js';
+import findOhifExtensionsToRemoveAfterRemovingMode from './findOhifExtensionsToRemoveAfterRemovingMode.js';
 
 export {
   getPackageNameAndScope,
@@ -44,4 +46,6 @@ export {
   findRequiredOhifExtensionsForMode,
   removeExtensionFromConfigFile,
   throwIfExtensionUsedByInstalledMode,
+  removeModeFromConfigFile,
+  findOhifExtensionsToRemoveAfterRemovingMode,
 };
