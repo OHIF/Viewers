@@ -21,7 +21,7 @@ const JobParameters = props => {
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
-  const { jobDetails, setJobDetails } = useContext(JobsContext);
+  const { allSeriesState } = useContext(JobsContext);
 
   const { UINotificationService } = servicesManager.services;
 
@@ -114,7 +114,17 @@ const JobParameters = props => {
   const triggerJob = () => {
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     const data = tool_data.data[0];
-    sendParams(data);
+
+    if (allSeriesState.length >= 1000) {
+      UINotificationService.show({
+        message: `Cannot create more than a 1000 textures as texture number limit has been reached. Please contact Tech Support for further assistance`,
+        duration: 5000,
+        type: 'error',
+      });
+      return;
+    } else {
+      sendParams(data);
+    }
   };
 
   const clearParams = () => {
