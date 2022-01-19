@@ -3,80 +3,16 @@ import chalk from 'chalk';
 
 import {
   installNPMPackage,
-  readPluginConfigFile,
   getYarnInfo,
-  writePluginConfigFile,
   getVersionedPackageName,
-  addModeToConfig,
   validateMode,
-  validateExtension,
+  writeModeToConfig,
+  findRequiredOhifExtensionsForMode,
 } from './utils/index.js';
 import addExtensions from './addExtensions.js';
 
 export default async function addMode(packageName, version) {
   console.log(chalk.green.bold(`Adding ohif-mode ${packageName}...`));
-
-  async function getYarnInfoAndAddModeToConfigFile() {
-    const yarnInfo = await getYarnInfo(packageName);
-
-    const installedVersion = yarnInfo.version;
-    const pluginConfig = readPluginConfigFile();
-
-    if (!pluginConfig) {
-      pluginConfig = {
-        extensions: [],
-        modes: [],
-      };
-    }
-
-    addModeToConfig(pluginConfig, {
-      packageName,
-      version: installedVersion,
-    });
-    writePluginConfigFile(pluginConfig);
-
-    return yarnInfo;
-  }
-
-  async function findOhifExtensions(yarnInfo) {
-    // Get yarn info file and get peer dependencies
-    if (!yarnInfo.peerDependencies) {
-      // No ohif-extension dependencies
-      return;
-    }
-
-    const peerDependencies = yarnInfo.peerDependencies;
-    const dependencies = []; // TODO -> Can probably skip this mapping step
-    const ohifExtensions = [];
-
-    Object.keys(peerDependencies).forEach(packageName => {
-      dependencies.push({
-        packageName,
-        version: peerDependencies[packageName],
-      });
-    });
-
-    const promises = [];
-
-    // Fetch each npm json and check which are ohif extensions
-    for (let i = 0; i < dependencies.length; i++) {
-      const dependency = dependencies[i];
-      const { packageName, version } = dependency;
-      const promise = validateExtension(packageName, version)
-        .then(() => {
-          ohifExtensions.push({ packageName, version });
-        })
-        .catch(() => {});
-
-      promises.push(promise);
-    }
-
-    // Await all the extensions // TODO -> Improve so we async install each
-    // extension and await all of those promises instead.
-    await Promise.all(promises);
-
-    return ohifExtensions;
-  }
 
   const versionedPackageName = getVersionedPackageName(packageName, version);
 
@@ -93,13 +29,19 @@ export default async function addMode(packageName, version) {
       {
         title: 'Adding ohif-mode to the configuration file',
         task: async ctx => {
-          ctx.yarnInfo = await getYarnInfoAndAddModeToConfigFile();
+          const yarnInfo = await getYarnInfo(packageName);
+
+          writeModeToConfig(packageName, yarnInfo);
+
+          ctx.yarnInfo = yarnInfo;
         },
       },
       {
         title: 'Detecting required ohif-extensions...',
         task: async ctx => {
-          ctx.ohifExtensions = await findOhifExtensions(ctx.yarnInfo);
+          ctx.ohifExtensions = await findRequiredOhifExtensionsForMode(
+            ctx.yarnInfo
+          );
         },
       },
     ],

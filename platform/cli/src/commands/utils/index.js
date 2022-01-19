@@ -18,6 +18,10 @@ import {
 } from './validate.js';
 import getYarnInfo from './getYarnInfo.js';
 import writeExtensionToConfig from './writeExtensionToConfig.js';
+import writeModeToConfig from './writeModeToConfig.js';
+import findRequiredOhifExtensionsForMode from './findRequiredOhifExtensionsForMode.js';
+import removeExtensionFromConfigFile from './removeExtensionFromConfigFile.js';
+import throwIfExtensionUsedByInstalledMode from './throwIfExtensionUsedByInstalledMode.js';
 
 export {
   getPackageNameAndScope,
@@ -36,4 +40,8 @@ export {
   validateExtensionYarnInfo,
   writePluginConfigFile,
   writeExtensionToConfig,
+  writeModeToConfig,
+  findRequiredOhifExtensionsForMode,
+  removeExtensionFromConfigFile,
+  throwIfExtensionUsedByInstalledMode,
 };

@@ -29,8 +29,6 @@ export default async function addExtension(packageName, version) {
         task: async ctx => {
           const yarnInfo = await getYarnInfo(packageName);
 
-          debugger;
-
           writeExtensionToConfig(packageName, yarnInfo);
 
           ctx.yarnInfo = yarnInfo;
