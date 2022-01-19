@@ -6,7 +6,7 @@ import {
   getYarnInfo,
   getVersionedPackageName,
   validateMode,
-  writeModeToConfig,
+  addModeToConfig,
   findRequiredOhifExtensionsForMode,
 } from './utils/index.js';
 import addExtensions from './addExtensions.js';
@@ -31,7 +31,7 @@ export default async function addMode(packageName, version) {
         task: async ctx => {
           const yarnInfo = await getYarnInfo(packageName);
 
-          writeModeToConfig(packageName, yarnInfo);
+          addModeToConfig(packageName, yarnInfo);
 
           ctx.yarnInfo = yarnInfo;
         },

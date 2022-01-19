@@ -4,7 +4,7 @@ import Listr from 'listr';
 import {
   uninstallNPMPackage,
   throwIfExtensionUsedByInstalledMode,
-  removeExtensionFromConfigFile,
+  removeExtensionFromConfig,
   validateExtensionYarnInfo,
 } from './utils/index.js';
 
@@ -28,7 +28,7 @@ export default async function removeExtension(packageName) {
       },
       {
         title: 'Removing ohif-extension from the configuration file',
-        task: async () => removeExtensionFromConfigFile(packageName),
+        task: async () => removeExtensionFromConfig(packageName),
       },
     ],
     {

@@ -1,6 +1,6 @@
 import registryUrl from 'registry-url';
 import keywords from '../enums/keywords.js';
-import getPackageNameAndScope from './getPackageNameAndScope.js';
+import { getPackageNameAndScope } from './private/index.js';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import getYarnInfo from './getYarnInfo.js';

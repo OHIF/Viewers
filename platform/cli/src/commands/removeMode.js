@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import {
   uninstallNPMPackage,
   findOhifExtensionsToRemoveAfterRemovingMode,
-  removeModeFromConfigFile,
+  removeModeFromConfig,
   validateModeYarnInfo,
   getYarnInfo,
 } from './utils/index.js';
@@ -28,7 +28,7 @@ export default async function removeMode(packageName) {
       },
       {
         title: 'Removing ohif-mode from the configuration file',
-        task: removeModeFromConfigFile,
+        task: async () => await removeModeFromConfig(packageName),
       },
       {
         title: 'Detecting extensions that can be removed...',

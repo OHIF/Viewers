@@ -1,5 +1,6 @@
+import { readPluginConfigFile } from './private/index.js';
 import getYarnInfo from './getYarnInfo.js';
-import readPluginConfigFile from './readPluginConfigFile.js';
+import chalk from 'chalk';
 
 export default async function throwIfExtensionUsedByInstalledMode(packageName) {
   const pluginConfig = readPluginConfigFile();

@@ -6,7 +6,7 @@ import {
   getYarnInfo,
   validateExtension,
   getVersionedPackageName,
-  writeExtensionToConfig,
+  addExtensionToConfig,
 } from './utils/index.js';
 
 export default async function addExtension(packageName, version) {
@@ -29,7 +29,7 @@ export default async function addExtension(packageName, version) {
         task: async ctx => {
           const yarnInfo = await getYarnInfo(packageName);
 
-          writeExtensionToConfig(packageName, yarnInfo);
+          addExtensionToConfig(packageName, yarnInfo);
 
           ctx.yarnInfo = yarnInfo;
         },

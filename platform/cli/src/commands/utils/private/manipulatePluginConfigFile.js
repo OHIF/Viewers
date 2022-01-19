@@ -1,16 +1,16 @@
-function addExtensionToConfig(pluginConfig, { packageName, version }) {
+function addExtensionToConfigJson(pluginConfig, { packageName, version }) {
   addToList('extensions', pluginConfig, { packageName, version });
 }
 
-function addModeToConfig(pluginConfig, { packageName, version }) {
+function addModeToConfigJson(pluginConfig, { packageName, version }) {
   addToList('modes', pluginConfig, { packageName, version });
 }
 
-function removeExtensionFromConfig(pluginConfig, { packageName }) {
+function removeExtensionFromConfigJson(pluginConfig, { packageName }) {
   removeFromList('extensions', pluginConfig, { packageName });
 }
 
-function removeModeFromConfig(pluginConfig, { packageName }) {
+function removeModeFromConfigJson(pluginConfig, { packageName }) {
   removeFromList('modes', pluginConfig, { packageName });
 }
 
@@ -33,8 +33,8 @@ function addToList(listName, pluginConfig, { packageName, version }) {
 }
 
 export {
-  addExtensionToConfig,
-  removeExtensionFromConfig,
-  addModeToConfig,
-  removeModeFromConfig,
+  addExtensionToConfigJson,
+  addModeToConfigJson,
+  removeExtensionFromConfigJson,
+  removeModeFromConfigJson,
 };

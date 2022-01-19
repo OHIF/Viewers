@@ -16,6 +16,9 @@
     "dist",
     "README.md"
   ],
+  "keywords": [
+    "ohif-extension"
+  ],
   "publishConfig": {
     "access": "public"
   },

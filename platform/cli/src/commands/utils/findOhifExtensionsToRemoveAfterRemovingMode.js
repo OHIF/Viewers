@@ -1,4 +1,4 @@
-import readPluginConfigFile from './readPluginConfigFile.js';
+import { readPluginConfigFile } from './private/index.js';
 import getYarnInfo from './getYarnInfo.js';
 
 export default async function findOhifExtensionsToRemoveAfterRemovingMode(

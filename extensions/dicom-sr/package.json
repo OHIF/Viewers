@@ -19,6 +19,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "ohif-extension"
+  ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:cornerstone": "yarn run dev",

@@ -13,9 +13,7 @@
   },
   "keywords": [
     "cli",
-    "ohif",
-    "ohif-mode",
-    "ohif-extension"
+    "ohif"
   ],
   "author": "OHIF Contributors",
   "license": "MIT",
