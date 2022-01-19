@@ -16,6 +16,11 @@ import {
 } from './removeFromConfig.js';
 import throwIfExtensionUsedByInstalledMode from './throwIfExtensionUsedByInstalledMode.js';
 import findOhifExtensionsToRemoveAfterRemovingMode from './findOhifExtensionsToRemoveAfterRemovingMode.js';
+import initGit from './initGit.js';
+import createDirectoryContents from './createDirectoryContents.js';
+import editPackageJson from './editPackageJson.js';
+import createLicense from './createLicense.js';
+import createReadme from './createReadme.js';
 
 export {
   getYarnInfo,
@@ -33,4 +38,9 @@ export {
   throwIfExtensionUsedByInstalledMode,
   removeModeFromConfig,
   findOhifExtensionsToRemoveAfterRemovingMode,
+  initGit,
+  createDirectoryContents,
+  editPackageJson,
+  createLicense,
+  createReadme,
 };
