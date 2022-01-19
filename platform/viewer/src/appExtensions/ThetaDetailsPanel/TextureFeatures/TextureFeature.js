@@ -56,7 +56,11 @@ const TextureFeature = props => {
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
           instancesRef.current = response.data.instances;
-          if (response.data.jobs.length !== jobsLengthRef.current) {
+          console.log({ lastJob: response.data.jobs[0] });
+          if (
+            response.data.jobs.length !== jobsLengthRef.current ||
+            response.data.jobs[0].status !== 'DONE'
+          ) {
             setIsActive(false);
             setJobs([...response.data.jobs]);
             jobsLengthRef.current = response.data.jobs.length;
