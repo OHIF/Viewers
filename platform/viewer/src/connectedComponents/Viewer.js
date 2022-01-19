@@ -93,9 +93,6 @@ class Viewer extends Component {
     });
 
     this._getActiveViewport = this._getActiveViewport.bind(this);
-    // this.state = {
-    //   loading: true,
-    // };
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
   }
@@ -226,7 +223,6 @@ class Viewer extends Component {
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
-    // console.log({ studyInstanceUID });
     const fetchedSeries = await (async () => {
       try {
         var requestOptions = {
@@ -239,7 +235,6 @@ class Viewer extends Component {
           requestOptions
         );
         const result = await response.json();
-        console.log({ result });
         return result.series;
       } catch (error) {
         console.error('fetcheSeries caught', { error });
@@ -311,22 +306,6 @@ class Viewer extends Component {
           }}
         >
           <p style={{ color: 'white', fontSize: '40px' }}>Loading...</p>
-          {/* <Icon
-            name="circle-notch"
-            className="loading-icon-spin loading-icon"
-          /> */}
-          {/* <Lottie
-            options={{
-              loop: true,
-              autoplay: true,
-              animationData: circularLoading,
-              rendererSettings: {
-                preserveAspectRatio: 'xMidYMid slice',
-              },
-            }}
-            height={400}
-            width={400}
-          /> */}
         </div>
       );
     }
@@ -798,17 +777,12 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
 };
 
 const _removeUnwantedSeries = function(studies, source_series) {
-  console.log({ source_series });
-
   const allData = studies;
-
-  console.log({ allData });
 
   const filteredDatasets = [];
 
   // const source_series = [
   // '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-  // '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217'
   // ];
 
   if (allData.length > 0) {
@@ -817,7 +791,7 @@ const _removeUnwantedSeries = function(studies, source_series) {
       source_series.filter(seriesUID => {
         // console.log({ seriesUID, dataSeries: data.SeriesInstanceUID });
         if (data.SeriesInstanceUID === seriesUID) {
-          console.log({ Found: 'Found series!!!' });
+          // console.log({ Found: 'Found series!!!' });
           filteredDatasets.push(data);
         }
       });
@@ -828,8 +802,6 @@ const _removeUnwantedSeries = function(studies, source_series) {
       data.displaySets = filteredDatasets;
     });
   }
-
-  console.log({ filteredDatasets });
 
   return allData;
 };
