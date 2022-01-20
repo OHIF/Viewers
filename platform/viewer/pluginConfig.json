@@ -15,9 +15,6 @@
         {
             "packageName": "@ohif/extension-default",
             "version": "1.0.1"
-        },
-        {
-            "version": "4.12.11"
         }
     ],
     "modes": [
