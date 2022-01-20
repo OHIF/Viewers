@@ -2,11 +2,13 @@ import Listr from 'listr';
 import chalk from 'chalk';
 import fs from 'fs';
 
-import createDirectoryContents from './utils/createDirectoryContents.js';
-import editPackageJson from './utils/editPackageJson.js';
-import createLicense from './utils/createLicense.js';
-import createReadme from './utils/createReadme.js';
-import initGit from './utils/initGit.js';
+import {
+  createDirectoryContents,
+  editPackageJson,
+  createLicense,
+  createReadme,
+  initGit,
+} from './utils/index.js';
 
 const createExtension = async options => {
   if (fs.existsSync(options.targetDir)) {
