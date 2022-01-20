@@ -3342,6 +3342,13 @@
     locize-lastused "^1.1.0"
     rollup-plugin-json "^4.0.0"
 
+"@ohif/mode-longitudinal@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@ohif/mode-longitudinal/-/mode-longitudinal-0.0.1.tgz#a2f8fe9042971e7ca3ab20d71fea0d4e0fe0e484"
+  integrity sha512-DFHuZ00AYxW1rzYxuEqEJcYm14Q0V3DPPKZF3PcEg6Gj+AAHyPv04rp+p7B51qIHrj1sWu5G1PTlb3soFhC/wQ==
+  dependencies:
+    "@babel/runtime" "7.7.6"
+
 "@ohif/ui@^1.8.2":
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/@ohif/ui/-/ui-1.9.2.tgz#8eaef005dae6c50c127d5f2baa9ca3a7a0bb4769"

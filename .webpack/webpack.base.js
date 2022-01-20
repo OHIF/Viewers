@@ -3,17 +3,20 @@ const dotenv = require('dotenv');
 //
 const path = require('path');
 const webpack = require('webpack');
+
+// ~~ PLUGINS
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
+const TerserJSPlugin = require('terser-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
+// ~~ PackageJSON
 const PACKAGE = require('../platform/viewer/package.json');
 // ~~ RULES
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
-// ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
-const TerserJSPlugin = require('terser-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
