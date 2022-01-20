@@ -89,6 +89,8 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   for (let i = 0; i < defaultModes.length; i++) {
     const { modeFactory, id } = defaultModes[i];
 
+    debugger;
+
     // If the appConfig contains configuration for this mode, use it.
     const modeConfig =
       appConfig.modeConfig && appConfig.modeConfig[i]

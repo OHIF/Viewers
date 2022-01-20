@@ -1,7 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import onModeEnter from './onModeEnter';
-import id from './id.js';
 import init from './init';
 
 const Component = React.lazy(() => {
@@ -18,23 +17,30 @@ const OHIFCornerstoneSRViewport = props => {
   );
 };
 
+// TODO -> Inject these using webpack from package.json
+const id = '@ohif/extension-dicom-sr';
+const version = '0.0.1';
+
 /**
  *
  */
 export default {
   /**
-   * Only required property. Should be a unique value across all extensions.
+   * Only two required properties. Should be a unique value across all extensions.
    */
   id,
+  version,
   dependencies: [
     // TODO -> This isn't used anywhere yet, but we do have a hard dependency, and need to check for these in the future.
+    // TODO #2 -> When ohif-cli installs this, we should check if these dependencies are installed and install them if not
+    //         -> Added these to peer dependencies in preperation for this.
     // OHIF-229
     {
-      id: 'org.ohif.cornerstone',
-      version: '3.0.0',
+      id: '@ohif/extension-cornerstone',
+      version: '^3.0.0',
     },
     {
-      id: 'org.ohif.measurement-tracking',
+      id: '@ohif/extension-measurement-tracking',
       version: '^0.0.1',
     },
   ],

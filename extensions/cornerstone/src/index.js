@@ -15,14 +15,19 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
+// TODO -> Inject these using webpack from package.json
+const id = '@ohif/extension-cornerstone';
+const version = '3.0.0';
+
 /**
  *
  */
 export default {
   /**
-   * Only required property. Should be a unique value across all extensions.
+   * Only two required properties. Should be a unique value across all extensions.
    */
-  id: 'org.ohif.cornerstone',
+  id,
+  version,
 
   /**
    *

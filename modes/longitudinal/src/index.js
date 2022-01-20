@@ -18,20 +18,26 @@ const dicomsr = {
   viewport: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
 };
 
-const id = 'viewer';
-
-const extensionDependencies = [
-  'org.ohif.default',
-  'org.ohif.cornerstone',
-  'org.ohif.measurement-tracking',
-  'org.ohif.dicom-sr',
-];
+// TODO -> We should inject these with webpack from the package.json
+// for id -> process.env.npm_package_name
+// for version -> process.env.npm_package_version
+// For extension Dependencies, can at least get the versions from process.env.npm_package_peerDependencies
+const id = '@ohif/mode-longitudinal'; //
+const version = '1.0.1';
+const extensionDependencies = {
+  // Can derive the versions at least process.env.from npm_package_version
+  '@ohif/extension-default': '^1.0.1',
+  '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-measurement-tracking': '^0.0.1',
+  '@ohif/extension-dicom-sr': '^0.0.1',
+};
 
 function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
     // We should not be.
     id,
+    version,
     displayName: 'Basic Viewer',
     /**
      * Lifecycle hooks

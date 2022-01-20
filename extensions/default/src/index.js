@@ -5,13 +5,18 @@ import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getToolbarModule from './getToolbarModule.js';
 import commandsModule from './commandsModule';
-import id from './id';
+import id from './id.js';
+
+// TODO -> Inject these from package.json at build time.
+const version = '1.0.1';
 
 export default {
   /**
-   * Only required property. Should be a unique value across all extensions.
+   * Only two required properties. Should be a unique value across all extensions.
    */
   id,
+  version,
+
   getDataSourcesModule,
   getHangingProtocolModule,
   getLayoutTemplateModule,
