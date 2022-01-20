@@ -134,15 +134,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       }),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
-      new CopyPlugin({
-        patterns: [
-          {
-            from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
-        ],
-      }),
     ],
   };
 

@@ -103,6 +103,15 @@ module.exports = (env, argv) => {
         // Increase the limit to 4mb:
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from:
+              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
+          },
+        ],
+      }),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
