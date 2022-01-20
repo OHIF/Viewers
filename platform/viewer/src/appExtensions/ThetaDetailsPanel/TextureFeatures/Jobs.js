@@ -13,7 +13,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
 
-const Jobs = ({ data, user, viewport, series, instances, isActive, setIsActive }) => {
+const Jobs = ({
+  data,
+  user,
+  viewport,
+  series,
+  instances,
+  isActive,
+  setIsActive,
+}) => {
   const elementRef = useRef();
   const overlayRef = useRef(false);
   const cachedRef = useRef(false);
@@ -188,16 +196,15 @@ const Jobs = ({ data, user, viewport, series, instances, isActive, setIsActive }
 
   // function for deriving image id and then adding image
   const performOverlay = (series_uid, instance_uid) => {
-    const image_id = `${base_url}/series/${series_uid}/instances/${instance_uid}/frames/1`;
-
-    // retrieving cornerstone enable element object
-    let enabled_element = cornerstone.getEnabledElement(elementRef.current);
-
-    if (!enabled_element || !enabled_element.image) {
-      return;
+    if (base_url.endsWith('/')) {
+      const image_id = `${base_url}series/${series_uid}/instances/${instance_uid}/frames/1`;
+      console.log('WithSlash', { image_id });
+      addImageLayer(image_id);
+    } else {
+      const image_id = `${base_url}/series/${series_uid}/instances/${instance_uid}/frames/1`;
+      console.log('WithoutSlash', { image_id });
+      addImageLayer(image_id);
     }
-
-    addImageLayer(image_id);
   };
 
   // function for loading an image and setting it as an added layer
@@ -311,7 +318,6 @@ const Jobs = ({ data, user, viewport, series, instances, isActive, setIsActive }
     return new Promise((res, rej) => {
       setTimeout(() => {
         try {
-
           const element = elementRef.current;
           if (!element) {
             res(true);

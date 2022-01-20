@@ -18,6 +18,7 @@ const TextureFeature = props => {
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const instancesRef = useRef();
   const jobsLengthRef = useRef(0);
+  const jobsStatusRef = useRef('');
 
   const options = {
     animationData: circularLoading,
@@ -56,10 +57,12 @@ const TextureFeature = props => {
         .get(`/jobs?series=${series}&email=${email}`)
         .then(response => {
           instancesRef.current = response.data.instances;
-          console.log({ lastJob: response.data.jobs[0] });
+          // console.log({ lastJob: response.data });
           if (
             response.data.jobs.length !== jobsLengthRef.current ||
-            response.data.jobs[0].status !== 'DONE'
+            response.data.jobs[0].status !== 'DONE' ||
+            (response.data.jobs[0].status === 'DONE' &&
+              jobs[0].status !== 'DONE')
           ) {
             setIsActive(false);
             setJobs([...response.data.jobs]);
