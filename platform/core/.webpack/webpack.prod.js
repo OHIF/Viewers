@@ -2,6 +2,7 @@ const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 
+const pkg = require('./../package.json');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
@@ -29,8 +30,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       library: 'ohifCore',
       libraryTarget: 'umd',
-      filename: '[name].[chunkhash].js',
-      chunkFilename: '[id].[chunkhash].js',
+      filename: pkg.main,
     },
     externals: [
       {
