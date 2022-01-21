@@ -46,8 +46,7 @@ export default function buildModeRoutes({
   modes.forEach(mode => {
     // todo: for each route. add route to path.
     dataSourceNames.forEach(dataSourceName => {
-      // TODO: name vs id
-      const path = `/${mode.id}/${dataSourceName}`;
+      const path = `/${mode.routeName}/${dataSourceName}`;
 
       // TODO move up.
       const children = () => (
@@ -69,7 +68,7 @@ export default function buildModeRoutes({
     const defaultDataSourceName = extensionManager.defaultDataSourceName;
 
     // Add default DataSource route.
-    const path = `/${mode.id}`;
+    const path = `/${mode.routeName}`;
 
     // TODO move up.
     const children = () => (

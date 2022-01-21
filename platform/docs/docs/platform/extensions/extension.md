@@ -6,6 +6,7 @@ sidebar_label: Extension Manager
 # Extension Manager
 
 ## Overview
+
 The `ExtensionManager` is a class made available to us via the `@ohif/core`
 project (platform/core). Our application instantiates a single instance of it,
 and provides a `ServicesManager` and `CommandsManager` along with the
@@ -28,16 +29,15 @@ The `ExtensionManager` only has a few public members:
 - `getActiveDataSource` - Returns the currently active data source
 - `getModuleEntry` - Returns the module entry by the give id.
 
-
 ## Accessing Modules
 
-We use `getModuleEntry` in our `ViewerLayout` logic to find the panels based on the
-provided IDs in the mode's configuration.
+We use `getModuleEntry` in our `ViewerLayout` logic to find the panels based on
+the provided IDs in the mode's configuration.
 
-
-For instance: `extensionManager.getModuleEntry("org.ohif.measurement-tracking.panelModule.seriesList")`
-accesses the `seriesList` panel from `panelModule` of the `org.ohif.measurement-tracking` extension.
-
+For instance:
+`extensionManager.getModuleEntry("@ohif/extension-measurement-tracking.panelModule.seriesList")`
+accesses the `seriesList` panel from `panelModule` of the
+`@ohif/extension-measurement-tracking` extension.
 
 ```js
 const getPanelData = id => {

@@ -6,7 +6,7 @@ window.config = {
   dataSources: [
     {
       friendlyName: 'Orthanc Server',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
         name: 'Orthanc',

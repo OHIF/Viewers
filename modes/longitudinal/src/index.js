@@ -2,20 +2,22 @@ import toolbarButtons from './toolbarButtons.js';
 import { hotkeys } from '@ohif/core';
 
 const ohif = {
-  layout: 'org.ohif.default.layoutTemplateModule.viewerLayout',
-  sopClassHandler: 'org.ohif.default.sopClassHandlerModule.stack',
-  hangingProtocols: 'org.ohif.default.hangingProtocolModule.default',
+  layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
+  sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
 };
 
 const tracked = {
-  measurements: 'org.ohif.measurement-tracking.panelModule.trackedMeasurements',
-  thumbnailList: 'org.ohif.measurement-tracking.panelModule.seriesList',
-  viewport: 'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
+  measurements:
+    '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+  thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
+  viewport:
+    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
 };
 
 const dicomsr = {
-  sopClassHandler: 'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',
-  viewport: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr',
+  viewport: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
 };
 
 // TODO -> We should inject these with webpack from the package.json
@@ -37,6 +39,7 @@ function modeFactory({ modeConfiguration }) {
     // TODO: We're using this as a route segment
     // We should not be.
     id,
+    routeName: 'viewer',
     version,
     displayName: 'Basic Viewer',
     /**

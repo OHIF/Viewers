@@ -23,7 +23,8 @@ const globalImageIdSpecificToolStateManager =
 
 const { StackManager, guid } = OHIF.utils;
 
-const MEASUREMENT_TRACKING_EXTENSION_ID = 'org.ohif.measurement-tracking';
+const MEASUREMENT_TRACKING_EXTENSION_ID =
+  '@ohif/extension-measurement-tracking';
 
 function OHIFCornerstoneSRViewport({
   children,
@@ -81,7 +82,7 @@ function OHIFCornerstoneSRViewport({
     )
   ) {
     const contextModule = extensionManager.getModuleEntry(
-      'org.ohif.measurement-tracking.contextModule.TrackedMeasurementsContext'
+      '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
     );
 
     const useTrackedMeasurements = () => useContext(contextModule.context);
