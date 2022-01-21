@@ -19,6 +19,8 @@ import {
 
 const currentDirectory = process.cwd();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const viewerDirectory = path.resolve(__dirname, '../../viewer');
+process.chdir(viewerDirectory);
 
 function getOptionsFromAnswers(answers) {
   const targetDir = path.join(currentDirectory, answers.name);
@@ -32,6 +34,12 @@ function getOptionsFromAnswers(answers) {
 }
 
 program.version('0.0.1').description('OHIF CLI');
+
+program.command('debug').action(() => {
+  process.chdir(viewerDirectory);
+
+  console.log('current dir', process.cwd());
+});
 
 program
   .command('create-extension')
@@ -92,8 +100,7 @@ program
   .command('list')
   .description('List Added Extensions and Modes')
   .action(() => {
-    // TODO: The command should be able to run from the root of the project
-    const configPath = path.join(__dirname, '../../viewer/pluginConfig.json');
+    const configPath = path.resolve(process.cwd(), './pluginConfig.json');
     listPlugins(configPath);
   });
 
