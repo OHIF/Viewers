@@ -45,8 +45,6 @@ const createRoutes = ({
       hotkeysManager,
     }) || [];
 
-  debugger;
-
   const allRoutes = [...routes, ...bakedInRoutes];
 
   function RouteWithErrorBoundary({ route, ...rest }) {
