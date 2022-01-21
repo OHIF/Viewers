@@ -112,7 +112,7 @@ export default function ModeRoute({
 
   // TODO - JAMES -> Extensions now objects not arrays -> Fix.
 
-  extensions.forEach(extensionId => {
+  Object.keys(extensions).forEach(extensionId => {
     const allRegisteredModuleIds = Object.keys(extensionManager.modulesMap);
     const moduleIds = allRegisteredModuleIds.filter(id =>
       id.includes(`${extensionId}.contextModule.`)
