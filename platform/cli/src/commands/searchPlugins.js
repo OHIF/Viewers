@@ -22,7 +22,7 @@ async function searchPlugins(options) {
   const modes = await searchRegistry(keywords.MODE);
 
   const titleOptions = { color: colors.LIGHT, bold: true };
-  const itemsOptions = { color: colors.ACTIVE, bold: true };
+  const itemsOptions = {};
 
   const extensionsItems = extensions.map(extension => {
     const item = [

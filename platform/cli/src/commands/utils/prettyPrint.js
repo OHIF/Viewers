@@ -57,7 +57,7 @@ function prettyPrint(
   title,
   titleOptions = { color: colors.MAIN, bold: true },
   itemsArray = [[]],
-  itemOptions = { color: colors.ACTIVE, bold: true }
+  itemOptions = {}
 ) {
   console.log('');
   console.log(getStyle(titleOptions)(title));
@@ -72,7 +72,8 @@ function prettyPrint(
     }
   });
 
-  console.log(getStyle(itemOptions)(output));
+  const itmeStyle = itemOptions.color ? getStyle(itemOptions)(output) : output;
+  console.log(itmeStyle);
 }
 
 export default prettyPrint;
