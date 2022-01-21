@@ -131,7 +131,7 @@ describe('ExtensionManager.js', () => {
     });
 
     it('logs a warning if the extension has an id that has already been registered', () => {
-      const extension = { id: 'hello-world' };
+      const extension = { id: 'hello-world', version: '1.0.0' };
       extensionManager.registerExtension(extension);
 
       // SUT
