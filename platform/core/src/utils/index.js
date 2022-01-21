@@ -21,7 +21,7 @@ import hierarchicalListUtils from './hierarchicalListUtils';
 import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 import { isImage } from './isImage';
-import isDisplaySetReconstructable from '.isDisplaySetReconstructable';
+import isDisplaySetReconstructable from './isDisplaySetReconstructable';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for dervived displaySets using the displaySetManager.
