@@ -2,13 +2,12 @@ const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
-const pkg = require('./../package.json');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
+const fileName = 'index.umd.js';
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
@@ -30,11 +29,11 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
-      path: ROOT_DIR,
-      library: 'OHIFExtDefault',
+      path: DIST_DIR,
+      library: 'OHIFExtCornerstone',
       libraryTarget: 'umd',
       libraryExport: 'default',
-      filename: pkg.main,
+      filename: fileName,
     },
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
