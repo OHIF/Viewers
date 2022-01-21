@@ -21,6 +21,7 @@ import createDirectoryContents from './createDirectoryContents.js';
 import editPackageJson from './editPackageJson.js';
 import createLicense from './createLicense.js';
 import createReadme from './createReadme.js';
+import prettyPrint from './prettyPrint.js';
 
 export {
   getYarnInfo,
@@ -43,4 +44,5 @@ export {
   editPackageJson,
   createLicense,
   createReadme,
+  prettyPrint,
 };

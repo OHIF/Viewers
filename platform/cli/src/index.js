@@ -14,6 +14,7 @@ import {
   addMode,
   removeMode,
   listPlugins,
+  searchPlugins,
 } from './commands/index.js';
 
 const currentDirectory = process.cwd();
@@ -32,17 +33,9 @@ function getOptionsFromAnswers(answers) {
 
 program.version('0.0.1').description('OHIF CLI');
 
-// For debugging
-program
-  .command('debug <name> <license>')
-  .description('Create a new extension')
-  .action((name, license) => {
-    createExtension({ name, license });
-  });
-
 program
   .command('create-extension')
-  .description('Create a new extension')
+  .description('Create a new template extension')
   .action(() => {
     inquirer.prompt(QUESTIONS.createExtension).then(answers => {
       const templateDir = path.join(__dirname, '../templates/extension');
@@ -56,7 +49,7 @@ program
 
 program
   .command('create-mode')
-  .description('Create a new Mode')
+  .description('Create a new template Mode')
   .action(name => {
     inquirer.prompt(QUESTIONS.createMode).then(answers => {
       const templateDir = path.join(__dirname, '../templates/mode');
@@ -102,6 +95,14 @@ program
     // TODO: The command should be able to run from the root of the project
     const configPath = path.join(__dirname, '../../viewer/pluginConfig.json');
     listPlugins(configPath);
+  });
+
+program
+  .command('search')
+  .option('-v, --verbose', 'Verbose output')
+  .description('Search NPM for the list of Modes and Extensions')
+  .action(options => {
+    searchPlugins(options);
   });
 
 program.parse(process.argv);
