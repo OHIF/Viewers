@@ -9,7 +9,7 @@ export default class ExtensionManager {
     appConfig = {},
   }) {
     this.modules = {};
-    this.registeredExtensionIds = [];
+    this.registeredExtensions = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
     this._commandsManager = commandsManager;
@@ -33,7 +33,7 @@ export default class ExtensionManager {
 
   onModeEnter() {
     const {
-      registeredExtensionIds,
+      registeredExtensions,
       _servicesManager,
       _commandsManager,
       _hotkeysManager,
@@ -50,7 +50,7 @@ export default class ExtensionManager {
     ViewportGridService.reset();
     HangingProtocolService.reset();
 
-    registeredExtensionIds.forEach(extensionId => {
+    registeredExtensions.forEach(({ extensionId }) => {
       const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
 
       if (typeof onModeEnter === 'function') {
@@ -65,7 +65,7 @@ export default class ExtensionManager {
 
   onModeExit() {
     const {
-      registeredExtensionIds,
+      registeredExtensions,
       _servicesManager,
       _commandsManager,
       _extensionLifeCycleHooks,
@@ -81,7 +81,7 @@ export default class ExtensionManager {
     ViewportGridService.reset();
     HangingProtocolService.reset();
 
-    registeredExtensionIds.forEach(extensionId => {
+    registeredExtensions.forEach(({ extensionId }) => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
 
       if (typeof onModeExit === 'function') {
@@ -102,8 +102,6 @@ export default class ExtensionManager {
   registerExtensions = (extensions, dataSources = []) => {
     extensions.forEach(extension => {
       const hasConfiguration = Array.isArray(extension);
-
-      debugger;
 
       if (hasConfiguration) {
         const [ohifExtension, configuration] = extension;
@@ -133,7 +131,7 @@ export default class ExtensionManager {
       throw new Error(`Extension ID not set`);
     }
 
-    if (this.registeredExtensionIds.includes(extensionId)) {
+    if (this.getExtensionVersion(extensionId)) {
       log.warn(
         `Extension ID ${extensionId} has already been registered. Exiting before duplicating modules.`
       );
@@ -209,7 +207,7 @@ export default class ExtensionManager {
     });
 
     // Track extension registration
-    this.registeredExtensionIds.push(extensionId);
+    this.registeredExtensions.push({ extensionId, version: extension.version });
   };
 
   getModuleEntry = stringEntry => {
@@ -232,6 +230,18 @@ export default class ExtensionManager {
 
   getDataSource = () => {
     return this.dataSourceMap[this.activeDataSource];
+  };
+
+  getExtensionVersion = extensionId => {
+    const registeredExtension = this.registeredExtensions.find(
+      extension => extension.extensionId === extensionId
+    );
+
+    if (!registeredExtension) {
+      return;
+    }
+
+    return registeredExtension.version;
   };
 
   /**
