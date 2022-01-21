@@ -69,7 +69,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     /** List of extensions that are used by the modde */
-    extensions: [''],
+    extensions: ['org.ohif.default'],
     /** HangingProtocols used by the mode */
     hangingProtocols: [''],
     /** SopClassHandlers used by the mode */
