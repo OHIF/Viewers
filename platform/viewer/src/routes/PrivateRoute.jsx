@@ -1,15 +1,14 @@
-import React from "react";
-import { Route } from "react-router-dom";
-import { useUserAuthentication } from "@ohif/ui";
+import React from 'react';
+import { useUserAuthentication } from '@ohif/ui';
 
-export const PrivateRoute = ({ ...rest }) => {
-    const [{ user, enabled }, userAuthenticationService] = useUserAuthentication();
+export const PrivateRoute = ({ children, handleUnauthenticated }) => {
+  const [{ user, enabled }] = useUserAuthentication();
 
-    if (enabled && !user) {
-      return userAuthenticationService.handleUnauthenticated();
-    }
+  if (enabled && !user) {
+    return handleUnauthenticated();
+  }
 
-    return <Route {...rest}/>;
-}
+  return children;
+};
 
 export default PrivateRoute;

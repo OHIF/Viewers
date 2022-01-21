@@ -337,15 +337,15 @@ function WorkList({
 
             // TODO: Modes need a default/target route? We mostly support a single one for now.
             // We should also be using the route path, but currently are not
-            // mode.id
+            // mode.routeName
             // mode.routes[x].path
             // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
             // How do we know which params to pass? Today, it's just StudyInstanceUIDs
             return (
               <Link
                 key={i}
-                to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+                to={`${mode.routeName}?StudyInstanceUIDs=${studyInstanceUid}`}
+                // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"

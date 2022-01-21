@@ -1,4 +1,4 @@
-const id = 'org.ohif.dicom-sr';
+const id = '@ohif/extension-dicom-sr';
 
 export default id;
 

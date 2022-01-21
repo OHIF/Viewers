@@ -103,6 +103,8 @@ export default class ExtensionManager {
     extensions.forEach(extension => {
       const hasConfiguration = Array.isArray(extension);
 
+      debugger;
+
       if (hasConfiguration) {
         const [ohifExtension, configuration] = extension;
         this.registerExtension(ohifExtension, configuration, dataSources);

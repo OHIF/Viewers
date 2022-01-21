@@ -109,7 +109,10 @@ export default function ModeRoute({
   // For each extension, look up their context modules
   // TODO: move to extension manager.
   let contextModules = [];
-  extensions.forEach(extensionId => {
+
+  // TODO - JAMES -> Extensions now objects not arrays -> Fix.
+
+  Object.keys(extensions).forEach(extensionId => {
     const allRegisteredModuleIds = Object.keys(extensionManager.modulesMap);
     const moduleIds = allRegisteredModuleIds.filter(id =>
       id.includes(`${extensionId}.contextModule.`)
@@ -216,7 +219,9 @@ export default function ModeRoute({
     // Adding hanging protocols of extensions after onModeEnter since
     // it will reset the protocols
     hangingProtocols.forEach(extentionProtocols => {
-      const hangingProtocolModule = extensionManager.getModuleEntry(extentionProtocols);
+      const hangingProtocolModule = extensionManager.getModuleEntry(
+        extentionProtocols
+      );
       if (hangingProtocolModule?.protocols) {
         HangingProtocolService.addProtocols(hangingProtocolModule.protocols);
       }
@@ -280,7 +285,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-    // reducer={reducer}
+      // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>

@@ -45,6 +45,8 @@ const createRoutes = ({
       hotkeysManager,
     }) || [];
 
+  debugger;
+
   const allRoutes = [...routes, ...bakedInRoutes];
 
   function RouteWithErrorBoundary({ route, ...rest }) {
@@ -64,18 +66,26 @@ const createRoutes = ({
 
   const { UserAuthenticationService } = servicesManager.services;
 
+  // Note: PrivateRoutes in react-router-dom 6.x should be defined within
+  // a Route element
   return (
     <Routes basename={routerBasename}>
       {allRoutes.map((route, i) => {
         return route.private === true ? (
-          <PrivateRoute
+          <Route
             key={i}
+            exact
             path={route.path}
-            handleUnauthenticated={
-              UserAuthenticationService.handleUnauthenticated
+            element={
+              <PrivateRoute
+                handleUnauthenticated={
+                  UserAuthenticationService.handleUnauthenticated
+                }
+              >
+                <RouteWithErrorBoundary route={route} />
+              </PrivateRoute>
             }
-            element={<RouteWithErrorBoundary route={route} />}
-          />
+          ></Route>
         ) : (
           <Route
             key={i}

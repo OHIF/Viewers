@@ -2,11 +2,17 @@ import getContextModule from './getContextModule.js';
 import getPanelModule from './getPanelModule.js';
 import getViewportModule from './getViewportModule.js';
 
+// TODO -> Inject these using webpack from package.json
+const id = '@ohif/extension-measurement-tracking';
+const version = '0.0.1';
+
 export default {
   /**
-   * Only required property. Should be a unique value across all extensions.
+   * Only two required properties. Should be a unique value across all extensions.
    */
-  id: 'org.ohif.measurement-tracking',
+  id,
+  version,
+
   getContextModule,
   getPanelModule,
   getViewportModule,

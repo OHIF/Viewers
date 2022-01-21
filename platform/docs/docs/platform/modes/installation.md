@@ -145,16 +145,16 @@ export default function mode({ modeConfiguration }) {
     ],
     extensions: [
       'extension.template',
-      'org.ohif.default',
-      'org.ohif.cornerstone',
+      '@ohif/extension-default',
+      '@ohif/extension-cornerstone',
     ],
     /** ... */
   };
 }
 ```
 
-As seen, our `Template Mode` requires the `org.ohif.default`,
-`org.ohif.cornerstone` and `extension.template` extensions.
+As seen, our `Template Mode` requires the `@ohif/extension-default`,
+`@ohif/extension-cornerstone` and `extension.template` extensions.
 
 > Note: Currently extensions dependencies are not handled by OHIF from the
 > `extensions` property. We will be adding this feature in the future.
@@ -176,8 +176,8 @@ routes: [
           rightPanels: ["extension.template.panelModule.clockPanel"],
           viewports: [
             {
-              namespace: "org.ohif.cornerstone.viewportModule.cornerstone",
-              displaySetsToDisplay: ["org.ohif.default.sopClassHandlerModule.stack"],
+              namespace: "@ohif/extension-cornerstone.viewportModule.cornerstone",
+              displaySetsToDisplay: ["@ohif/extension-default.sopClassHandlerModule.stack"],
             },
           ],
         },

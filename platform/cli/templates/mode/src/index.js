@@ -4,7 +4,7 @@
 
 const id = 'templateMode';
 
-export default function modeFactory({ modeConfiguration }) {
+function modeFactory({ modeConfiguration }) {
   return {
     /**
      * Mode ID, which should be unique among modes used by the viewer. This ID
@@ -40,7 +40,7 @@ export default function modeFactory({ modeConfiguration }) {
      * Mode Routes are used to define the mode's behavior. A list of Mode Route
      * that includes the mode's path and the layout to be used. The layout will
      * include the components that are used in the layout. For instance, if the
-     * default layoutTemplate is used (id: 'org.ohif.default.layoutTemplateModule.viewerLayout')
+     * default layoutTemplate is used (id: '@ohif/extension-default.layoutTemplateModule.viewerLayout')
      * it will include the leftPanels, rightPanels, and viewports. However, if
      * you define another layoutTemplate that includes a Footer for instance,
      * you should provide the Footer component here too. Note: We use Strings
@@ -69,7 +69,7 @@ export default function modeFactory({ modeConfiguration }) {
       },
     ],
     /** List of extensions that are used by the modde */
-    extensions: [''],
+    extensions: ['org.ohif.default'],
     /** HangingProtocols used by the mode */
     hangingProtocols: [''],
     /** SopClassHandlers used by the mode */
