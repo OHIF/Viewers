@@ -56,4 +56,4 @@ const createExtension = async options => {
   return true;
 };
 
-export { createExtension };
+export default createExtension;

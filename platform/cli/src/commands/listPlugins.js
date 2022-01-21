@@ -1,24 +1,23 @@
-import chalk from 'chalk';
 import fs from 'fs';
+import { prettyPrint } from './utils/index.js';
+import { colors } from './enums/index.js';
 
 const listPlugins = async configPath => {
   const pluginConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
   const { extensions, modes } = pluginConfig;
 
-  console.log('');
-  console.log(`%s:`, chalk.cyan.bold('Modes'));
-  console.log('   |');
-  modes.forEach(mode => {
-    console.log(`   |- ${mode.packageName} @ ${mode.version}`);
-  });
+  const titleOptions = { color: colors.LIGHT, bold: true };
+  const itemsOptions = { color: colors.ACTIVE, bold: true };
 
-  console.log('');
-  console.log(`%s:`, chalk.cyan.bold('Extensions'));
-  console.log('   |');
-  extensions.forEach(extension => {
-    console.log(`   |- ${extension.packageName} @ ${extension.version}`);
-  });
+  const extensionsItems = extensions.map(
+    extension => `${extension.packageName} @ ${extension.version}`
+  );
+
+  const modesItems = modes.map(mode => `${mode.packageName} @ ${mode.version}`);
+
+  prettyPrint('Extensions', titleOptions, extensionsItems, itemsOptions);
+  prettyPrint('Modes', titleOptions, modesItems, itemsOptions);
 };
 
-export { listPlugins };
+export default listPlugins;
