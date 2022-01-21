@@ -1,12 +1,10 @@
 import axios from 'axios';
-import chalk from 'chalk';
 
-const URL = 'https://registry.npmjs.com/-/v1/search?text=keywords:';
-const OHIF_EXTENSION = 'ohif-extension';
-const OHIF_MODE = 'ohif-mode';
+import { prettyPrint } from './utils/index.js';
+import { keywords, colors, endPoints } from './enums/index.js';
 
-async function searchRegistry(type) {
-  const url = `${URL}${type}`;
+async function searchRegistry(keyword) {
+  const url = `${endPoints.NPM_KEYWORD}${keyword}`;
 
   try {
     const response = await axios.get(url);
@@ -20,24 +18,42 @@ async function searchRegistry(type) {
 async function searchPlugins(options) {
   const { verbose } = options;
 
-  const extensions = await searchRegistry(OHIF_EXTENSION);
-  const modes = await searchRegistry(OHIF_MODE);
+  const extensions = await searchRegistry(keywords.EXTENSION);
+  const modes = await searchRegistry(keywords.MODE);
 
-  console.log('');
-  console.log(`%s:`, chalk.cyan.bold('Modes'));
-  console.log('   |');
-  modes.forEach(mode => {
-    console.log(`   |- ${mode.package.name} @ ${mode.package.version}`);
+  const titleOptions = { color: colors.LIGHT, bold: true };
+  const itemsOptions = { color: colors.ACTIVE, bold: true };
+
+  const extensionsItems = extensions.map(extension => {
+    const item = [
+      `${extension.package.name} @ ${extension.package.version}`,
+      [`Description: ${extension.package.description}`],
+    ];
+
+    if (verbose) {
+      item[1].push(`Authors: ${extension.package.author.name}`);
+      item[1].push(`Repository: ${extension.package.links.repository}`);
+    }
+
+    return item;
   });
 
-  console.log('');
-  console.log(`%s:`, chalk.cyan.bold('Extensions'));
-  console.log('   |');
-  extensions.forEach(extension => {
-    console.log(
-      `   |- ${extension.package.name} @ ${extension.package.version}`
-    );
+  const modesItems = modes.map(mode => {
+    const item = [
+      `${mode.package.name} @ ${mode.package.version}`,
+      [`Description: ${mode.package.description}`],
+    ];
+
+    if (verbose) {
+      item[1].push(`Authors: ${mode.package.author.name}`);
+      item[1].push(`Repository: ${mode.package.links.repository}`);
+    }
+
+    return item;
   });
+
+  prettyPrint('Extensions', titleOptions, extensionsItems, itemsOptions);
+  prettyPrint('Modes', titleOptions, modesItems, itemsOptions);
 }
 
 export default searchPlugins;

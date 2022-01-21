@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { colors } from '../enums/colors.js';
+import { colors } from '../enums/index.js';
 
 function getStyle({ color, bold }) {
   return bold ? chalk.hex(color).bold : chalk.hex(color);

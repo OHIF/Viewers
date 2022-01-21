@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { prettyPrint } from './utils/index.js';
-import { colors } from './enums/colors.js';
+import { colors } from './enums/index.js';
 
 const listPlugins = async configPath => {
   const pluginConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
