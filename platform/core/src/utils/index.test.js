@@ -15,6 +15,8 @@ describe('Top level exports', () => {
       'formatDate',
       'formatPN',
       //'loadAndCacheDerivedDisplaySets',
+      'isDisplaySetReconstructable',
+      'isImage',
       'DicomLoaderService',
       'urlUtil',
       'makeDeferred',
