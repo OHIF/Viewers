@@ -56,4 +56,4 @@ const createMode = async options => {
   return true;
 };
 
-export { createMode };
+export default createMode;
