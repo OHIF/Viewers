@@ -1,3 +1,6 @@
+import chalk from 'chalk';
+import { execa } from 'execa';
+
 export default async function validateYarn() {
   try {
     await execa('yarn', ['--version']);

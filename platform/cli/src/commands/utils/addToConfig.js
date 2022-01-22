@@ -5,8 +5,8 @@ import {
   writePluginConfigFile,
 } from './private/index.js';
 
-function addToAndOverwriteConfig(packageName, yarnInfo, augmentConfigFuntion) {
-  const installedVersion = yarnInfo.version;
+function addToAndOverwriteConfig(packageName, options, augmentConfigFuntion) {
+  const installedVersion = options.version;
   const pluginConfig = readPluginConfigFile();
 
   if (!pluginConfig) {
@@ -23,12 +23,12 @@ function addToAndOverwriteConfig(packageName, yarnInfo, augmentConfigFuntion) {
   writePluginConfigFile(pluginConfig);
 }
 
-function addExtensionToConfig(packageName, yarnInfo) {
-  addToAndOverwriteConfig(packageName, yarnInfo, addExtensionToConfigJson);
+function addExtensionToConfig(packageName, options) {
+  addToAndOverwriteConfig(packageName, options, addExtensionToConfigJson);
 }
 
-function addModeToConfig(packageName, yarnInfo) {
-  addToAndOverwriteConfig(packageName, yarnInfo, addModeToConfigJson);
+function addModeToConfig(packageName, options) {
+  addToAndOverwriteConfig(packageName, options, addModeToConfigJson);
 }
 
 export { addExtensionToConfig, addModeToConfig };

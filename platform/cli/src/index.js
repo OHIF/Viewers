@@ -108,6 +108,13 @@ program
   });
 
 program
+  .command('unlink-extension <extensionName>')
+  .description('Unlinks a local OHIF extension from the Viewer')
+  .action(extensionName => {
+    unlinkPackage(extensionName, { viewerDirectory });
+  });
+
+program
   .command('list')
   .description('List Added Extensions and Modes')
   .action(() => {

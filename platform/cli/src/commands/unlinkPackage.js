@@ -1,12 +1,20 @@
-import { remove } from 'yarn-programmatic';
+import { execa } from 'execa';
+import { validateYarn, removeExtensionFromConfig } from './utils/index.js';
 
-const unlinkPackage = async packageName => {
-  // TODO - Anoyingly pkg-install doesn't seem to have uninstall.
-  // So since we are using yarn we will just use yarn here, but the tool
-  // is certainly less generic. But its a super minor issue.
-  await remove(packageName).catch(err => {
-    console.log(err);
-  });
+const linkPackage = async (extensionName, options) => {
+  const { viewerDirectory } = options;
+
+  // make sure yarn is installed
+  await validateYarn();
+
+  // change directory to OHIF Platform root and execute yarn link
+  process.chdir(viewerDirectory);
+
+  const results = await execa(`yarn`, ['unlink', extensionName]);
+  console.log(results.stdout);
+
+  //update the plugin.json file
+  removeExtensionFromConfig(extensionName);
 };
 
-export default unlinkPackage;
+export default linkPackage;
