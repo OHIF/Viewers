@@ -15,8 +15,10 @@ import {
   removeMode,
   listPlugins,
   searchPlugins,
-  linkPackage,
-  unlinkPackage,
+  linkExtension,
+  linkMode,
+  unlinkExtension,
+  unlinkMode,
 } from './commands/index.js';
 
 const currentDirectory = process.cwd();
@@ -104,14 +106,30 @@ program
     'Links a local OHIF extension to the Viewer to be used for development'
   )
   .action(packageDir => {
-    linkPackage(packageDir, { viewerDirectory });
+    linkExtension(packageDir, { viewerDirectory });
   });
 
 program
   .command('unlink-extension <extensionName>')
   .description('Unlinks a local OHIF extension from the Viewer')
   .action(extensionName => {
-    unlinkPackage(extensionName, { viewerDirectory });
+    unlinkExtension(extensionName, { viewerDirectory });
+  });
+
+program
+  .command('link-mode <packageDir>')
+  .description(
+    'Links a local OHIF mode to the Viewer to be used for development'
+  )
+  .action(packageDir => {
+    linkMode(packageDir, { viewerDirectory });
+  });
+
+program
+  .command('unlink-mode <extensionName>')
+  .description('Unlinks a local OHIF mode from the Viewer')
+  .action(modeName => {
+    unlinkMode(modeName, { viewerDirectory });
   });
 
 program

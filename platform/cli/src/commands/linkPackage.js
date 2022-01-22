@@ -1,9 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { execa } from 'execa';
-import { validateYarn, addExtensionToConfig } from './utils/index.js';
+import {
+  validateYarn,
+  addExtensionToConfig,
+  addModeToConfig,
+} from './utils/index.js';
 
-const linkPackage = async (packageDir, options) => {
+async function linkPackage(packageDir, options, addToConfig) {
   const { viewerDirectory } = options;
 
   // read package.json from packageDir
@@ -28,9 +32,15 @@ const linkPackage = async (packageDir, options) => {
 
   results = await execa(`yarn`, ['link', packageName]);
   console.log(results.stdout);
+  addToConfig(packageName, { version });
+}
 
-  //update the plugin.json file
-  addExtensionToConfig(packageName, { version });
-};
+function linkExtension(packageDir, options) {
+  linkPackage(packageDir, options, addExtensionToConfig);
+}
 
-export default linkPackage;
+function linkMode(packageDir, options) {
+  linkPackage(packageDir, options, addModeToConfig);
+}
+
+export { linkExtension, linkMode };

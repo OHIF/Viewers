@@ -1,7 +1,11 @@
 import { execa } from 'execa';
-import { validateYarn, removeExtensionFromConfig } from './utils/index.js';
+import {
+  validateYarn,
+  removeExtensionFromConfig,
+  removeModeFromConfig,
+} from './utils/index.js';
 
-const linkPackage = async (extensionName, options) => {
+const linkPackage = async (packageName, options, removeFromConfig) => {
   const { viewerDirectory } = options;
 
   // make sure yarn is installed
@@ -10,11 +14,19 @@ const linkPackage = async (extensionName, options) => {
   // change directory to OHIF Platform root and execute yarn link
   process.chdir(viewerDirectory);
 
-  const results = await execa(`yarn`, ['unlink', extensionName]);
+  const results = await execa(`yarn`, ['unlink', packageName]);
   console.log(results.stdout);
 
   //update the plugin.json file
-  removeExtensionFromConfig(extensionName);
+  removeFromConfig(packageName);
 };
 
-export default linkPackage;
+function unlinkExtension(extensionName, options) {
+  linkPackage(extensionName, options, removeExtensionFromConfig);
+}
+
+function unlinkMode(modeName, options) {
+  linkPackage(modeName, options, removeModeFromConfig);
+}
+
+export { unlinkExtension, unlinkMode };
