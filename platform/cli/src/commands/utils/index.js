@@ -22,6 +22,7 @@ import editPackageJson from './editPackageJson.js';
 import createLicense from './createLicense.js';
 import createReadme from './createReadme.js';
 import prettyPrint from './prettyPrint.js';
+import validateYarn from './validateYarn.js';
 
 export {
   getYarnInfo,
@@ -45,4 +46,5 @@ export {
   createLicense,
   createReadme,
   prettyPrint,
+  validateYarn,
 };

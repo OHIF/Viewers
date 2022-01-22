@@ -15,6 +15,8 @@ import {
   removeMode,
   listPlugins,
   searchPlugins,
+  linkPackage,
+  unlinkPackage,
 } from './commands/index.js';
 
 const currentDirectory = process.cwd();
@@ -94,6 +96,15 @@ program
   .description('Removes an ohif mode')
   .action(packageName => {
     removeMode(packageName);
+  });
+
+program
+  .command('link-extension <packageDir>')
+  .description(
+    'Links a local OHIF extension to the Viewer to be used for development'
+  )
+  .action(packageDir => {
+    linkPackage(packageDir, { viewerDirectory });
   });
 
 program
