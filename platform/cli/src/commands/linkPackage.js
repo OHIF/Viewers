@@ -1,13 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import { execa } from 'execa';
+import { keywords } from './enums/index.js';
 import {
   validateYarn,
   addExtensionToConfig,
   addModeToConfig,
 } from './utils/index.js';
 
-async function linkPackage(packageDir, options, addToConfig) {
+async function linkPackage(packageDir, options, addToConfig, keyword) {
   const { viewerDirectory } = options;
 
   // read package.json from packageDir
@@ -16,6 +17,13 @@ async function linkPackage(packageDir, options, addToConfig) {
   // name of the package
   const packageJSON = JSON.parse(file);
   const packageName = packageJSON.name;
+  const packageKeywords = packageJSON.keywords;
+
+  // check if package is an extension or a mode
+  if (!packageKeywords.includes(keyword)) {
+    throw new Error(`${packageName} is not ${keyword}`);
+  }
+
   const version = packageJSON.version;
 
   // make sure yarn is installed
@@ -36,11 +44,13 @@ async function linkPackage(packageDir, options, addToConfig) {
 }
 
 function linkExtension(packageDir, options) {
-  linkPackage(packageDir, options, addExtensionToConfig);
+  const keyword = keywords.EXTENSION;
+  linkPackage(packageDir, options, addExtensionToConfig, keyword);
 }
 
 function linkMode(packageDir, options) {
-  linkPackage(packageDir, options, addModeToConfig);
+  const keyword = keywords.MODE;
+  linkPackage(packageDir, options, addModeToConfig, keyword);
 }
 
 export { linkExtension, linkMode };
