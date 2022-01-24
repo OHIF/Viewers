@@ -101,6 +101,8 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         path.resolve(__dirname, '../node_modules'),
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
+        path.resolve(__dirname, '../platform/viewer/node_modules'),
+        path.resolve(__dirname, '../platform/ui/node_modules'),
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
