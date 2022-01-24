@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 sidebar_label: Testing
 ---
 
@@ -149,7 +149,6 @@ We write integration tests to gain confidence that several units work together.
 Generally, we want to mock as little as possible for these tests. In practice,
 this means only mocking network requests.
 
-
 ### End-to-End Tests
 
 These are the most expensive tests to write and maintain. Largely because, when
@@ -176,8 +175,6 @@ feature `X` or scenario `Y`? Open an issue and let's discuss.
   - Be sure to check out `Getting Started` and `Core Concepts`
 - [Best Practices](https://docs.cypress.io/guides/references/best-practices.html)
 - [Example Recipes](https://docs.cypress.io/examples/examples/recipes.html)
-
-
 
 <!--
   Links

@@ -54,10 +54,12 @@ const createExtension = async options => {
   await tasks.run();
   console.log('Done: Extension is ready');
   console.log(
-    chalk.green.bold(
-      'NOTE: In order to use this extension for development, run `ohif-cli link-extension <extension-dir>` inside the root folder of your OHIF repo.'
-    )
+    chalk.green.bold('NOTE: In order to use this extension for development,')
   );
+  console.log(
+    chalk.green.bold('run `ohif-cli link-extension <extension-dir>` inside')
+  );
+  console.log(chalk.green.bold('the root folder of your OHIF repo.'));
   return true;
 };
 
