@@ -51,7 +51,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       sideEffects: true,
     },
     output: {
-      clean: true,
+      // clean: true,
       publicPath: '/',
     },
     context: SRC_DIR,

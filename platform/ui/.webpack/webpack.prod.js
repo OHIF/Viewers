@@ -1,5 +1,7 @@
 const { merge } = require('webpack-merge');
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
 
@@ -37,5 +39,11 @@ module.exports = (env, argv) => {
       react: 'React',
       'react-dom': 'ReactDOM',
     },
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: `./dist/[name].css`,
+        chunkFilename: `./dist/[id].css`,
+      }),
+    ],
   });
 };
