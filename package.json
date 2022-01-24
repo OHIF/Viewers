@@ -123,6 +123,7 @@
     ]
   },
   "resolutions": {
+    "**/node-gyp": "8.4.1",
     "**/@babel/runtime": "7.5.5"
   }
 }
