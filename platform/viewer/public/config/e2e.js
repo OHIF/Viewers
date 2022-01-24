@@ -5,12 +5,11 @@ window.config = {
     dicomWeb: [
       {
         name: 'LocalStatic',
-        wadoUriRoot: '/dicomweb',
-        qidoRoot: '/dicomweb',
-        wadoRoot: '/dicomweb',
+        wadoUriRoot: '/viewer-testdata',
+        qidoRoot: '/viewer-testdata',
+        wadoRoot: '/viewer-testdata',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
-        thumbnailRendering: 'thumbnail',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         staticWado: true,

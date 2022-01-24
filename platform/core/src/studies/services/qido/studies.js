@@ -125,6 +125,7 @@ export default function Studies(server, filter) {
     requestHooks: [getXHRRetryRequestHook()],
   };
 
+  console.log('config=', config);
   const dicomWeb = staticWado
     ? new StaticWadoClient(config)
     : new api.DICOMwebClient(config);
