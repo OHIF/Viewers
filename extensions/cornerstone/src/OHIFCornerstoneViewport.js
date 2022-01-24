@@ -7,12 +7,16 @@ import OHIF from '@ohif/core';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import setCornerstoneMeasurementActive from './_shared/setCornerstoneMeasurementActive';
 import ViewportOverlay from './ViewportOverlay';
+import { useSearchParams } from "react-router-dom";
 
 import { useCine, useViewportGrid } from '@ohif/ui';
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 const { StackManager } = OHIF.utils;
+
+let initialImageIdIndex = null;
+let initialLoad = true;
 
 function OHIFCornerstoneViewport({
   children,
@@ -44,6 +48,23 @@ function OHIFCornerstoneViewport({
     };
     element.addEventListener(cornerstone.EVENTS.IMAGE_RENDERED, handler);
   };
+
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const instanceNumberParam = searchParams.get("instance_number");
+    const seriesNumberParam = searchParams.get("series_number");
+    // After loading and displaySets are changed, set initialImageIdIndex to null
+    // so that it uses the index from the viewport
+    if (!initialLoad) {
+      initialImageIdIndex = null
+    }
+    // Only preset instance number if series number is defined
+    if (initialLoad && instanceNumberParam !== null && seriesNumberParam !== null) {
+      initialImageIdIndex = Number(instanceNumberParam) - 1
+      initialLoad = false;
+    }
+  }, [displaySet]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -133,9 +154,12 @@ function OHIFCornerstoneViewport({
     return null;
   }
 
+  if (!initialImageIdIndex) {
+      initialImageIdIndex = viewportData.stack.initialImageIdIndex;
+  }
+
   const {
     imageIds,
-    initialImageIdIndex,
     // If this comes from the instance, would be a better default
     // `FrameTime` in the instance
     // frameRate = 0,

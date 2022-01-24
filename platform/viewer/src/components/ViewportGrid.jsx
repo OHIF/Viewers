@@ -6,10 +6,15 @@ import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
+import { useSearchParams } from "react-router-dom";
+
+let initialLoad = true;
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
+
+  const [searchParams] = useSearchParams();
 
   const {
     numCols,
@@ -34,10 +39,25 @@ function ViewerViewportGrid(props) {
       ] = HangingProtocolService.getState();
 
       if (!matchDetails.length) return;
-      // Match each viewport individually
 
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
+
+      const seriesNumberParam = searchParams.get("series_number");
+
+      // Match each viewport individually
       for (let i = 0; i < numViewports; i++) {
+        if(initialLoad && seriesNumberParam !== null) {
+          const initialDisplaySet = displaySets.find(ds => {
+            return ds.SeriesNumber === Number(seriesNumberParam);
+          });
+          viewportGridService.setDisplaysetForViewport({
+            viewportIndex: 0,
+            displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
+          });
+          initialLoad = false;
+          continue;
+        }
+
         if (hpAlreadyApplied[i] === true) {
           continue;
         }
