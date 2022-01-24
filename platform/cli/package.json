@@ -1,12 +1,12 @@
 {
-  "name": "@ohif/ohif-cli",
+  "name": "@ohif/cli",
   "version": "2.0.0",
   "description": "A CLI to bootstrap new OHIF extenion or mode",
   "type": "module",
   "main": "src/index.js",
   "bin": {
     "ohif-cli": "src/index.js",
-    "@ohif/ohif-cli": "src/index.js"
+    "@ohif/cli": "src/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -6,6 +6,8 @@ import addMode from './addMode.js';
 import removeMode from './removeMode.js';
 import listPlugins from './listPlugins.js';
 import searchPlugins from './searchPlugins.js';
+import { linkExtension, linkMode } from './linkPackage.js';
+import { unlinkExtension, unlinkMode } from './unlinkPackage.js';
 
 export {
   createExtension,
@@ -16,4 +18,8 @@ export {
   removeMode,
   listPlugins,
   searchPlugins,
+  linkExtension,
+  linkMode,
+  unlinkExtension,
+  unlinkMode,
 };

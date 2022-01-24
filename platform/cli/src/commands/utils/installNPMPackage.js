@@ -7,6 +7,7 @@ const installNPMPackage = async (packageName, version) => {
 
   await install(installObject, {
     prefer: 'yarn',
+    cwd: process.cwd(),
   });
 };
 
