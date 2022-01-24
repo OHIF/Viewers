@@ -15,10 +15,16 @@ import {
   removeMode,
   listPlugins,
   searchPlugins,
+  linkExtension,
+  linkMode,
+  unlinkExtension,
+  unlinkMode,
 } from './commands/index.js';
 
 const currentDirectory = process.cwd();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const viewerDirectory = path.resolve(__dirname, '../../viewer');
+process.chdir(viewerDirectory);
 
 function getOptionsFromAnswers(answers) {
   const targetDir = path.join(currentDirectory, answers.name);
@@ -32,6 +38,12 @@ function getOptionsFromAnswers(answers) {
 }
 
 program.version('0.0.1').description('OHIF CLI');
+
+program.command('debug').action(() => {
+  process.chdir(viewerDirectory);
+
+  console.log('current dir', process.cwd());
+});
 
 program
   .command('create-extension')
@@ -89,11 +101,42 @@ program
   });
 
 program
+  .command('link-extension <packageDir>')
+  .description(
+    'Links a local OHIF extension to the Viewer to be used for development'
+  )
+  .action(packageDir => {
+    linkExtension(packageDir, { viewerDirectory });
+  });
+
+program
+  .command('unlink-extension <extensionName>')
+  .description('Unlinks a local OHIF extension from the Viewer')
+  .action(extensionName => {
+    unlinkExtension(extensionName, { viewerDirectory });
+  });
+
+program
+  .command('link-mode <packageDir>')
+  .description(
+    'Links a local OHIF mode to the Viewer to be used for development'
+  )
+  .action(packageDir => {
+    linkMode(packageDir, { viewerDirectory });
+  });
+
+program
+  .command('unlink-mode <extensionName>')
+  .description('Unlinks a local OHIF mode from the Viewer')
+  .action(modeName => {
+    unlinkMode(modeName, { viewerDirectory });
+  });
+
+program
   .command('list')
   .description('List Added Extensions and Modes')
   .action(() => {
-    // TODO: The command should be able to run from the root of the project
-    const configPath = path.join(__dirname, '../../viewer/pluginConfig.json');
+    const configPath = path.resolve(process.cwd(), './pluginConfig.json');
     listPlugins(configPath);
   });
 
