@@ -52,7 +52,12 @@ const createExtension = async options => {
   );
 
   await tasks.run();
-  console.log('%s Extension is ready', chalk.green.bold('DONE'));
+  console.log('Done: Extension is ready');
+  console.log(
+    chalk.green.bold(
+      'NOTE: In order to use this extension for development, run `ohif-cli link-extension <extension-dir>` inside the root folder of your OHIF repo.'
+    )
+  );
   return true;
 };
 
