@@ -29,7 +29,7 @@ executors:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:14.19
+    - image: cimg/node:14.18
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
