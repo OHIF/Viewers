@@ -333,9 +333,13 @@ class StudyMetadata extends Metadata {
     if (referencedSeriesInstanceUID) {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet => {
+          const referencedDS = StudyMetadata.getReferencedDisplaySet(
+            displaySet,
+            [this]
+          );
           return (
-            StudyMetadata.getReferencedDisplaySet(displaySet, [this])
-              .SeriesInstanceUID === referencedSeriesInstanceUID
+            referencedDS &&
+            referencedDS.SeriesInstanceUID === referencedSeriesInstanceUID
           );
         }
       );
