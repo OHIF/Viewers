@@ -29,7 +29,7 @@ executors:
 
 defaults: &defaults
   docker:
-    - image: circleci/node:14.15.0
+    - image: cimg/node:14.19
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
