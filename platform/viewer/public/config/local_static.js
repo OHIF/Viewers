@@ -7,7 +7,7 @@ window.config = {
   // filterQueryParam: false,
   dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
+      friendlyName: 'Static WADO Local Data',
       namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
