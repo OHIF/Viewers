@@ -199,6 +199,11 @@ Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
       .its('cornerstone')
       .then({ timeout }, $cornerstone => {
         return new Cypress.Promise(resolve => {
+          const onEnabled = enabledEvt => {
+            const element = enabledEvt.detail.element;
+
+            element.addEventListener('cornerstoneimagerendered', onEvent);
+          };
           const onEvent = renderedEvt => {
             const element = renderedEvt.detail.element;
 
@@ -209,15 +214,18 @@ Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
             );
             resolve();
           };
-          const onEnabled = enabledEvt => {
-            const element = enabledEvt.detail.element;
-
-            element.addEventListener('cornerstoneimagerendered', onEvent);
-          };
-          $cornerstone.events.addEventListener(
-            'cornerstoneelementenabled',
-            onEnabled
-          );
+          const enabledElements = $cornerstone.getEnabledElements();
+          if (enabledElements && enabledElements.length &&
+            !enabledElements[0].invalid && !enabledElements[0].needsRedraw) {
+            // Sometimes the page finishes rendering before this gets run,
+            // if so, just resolve immediately.
+            resolve();
+          } else {
+            $cornerstone.events.addEventListener(
+              'cornerstoneelementenabled',
+              onEnabled
+            );
+          }
         });
       });
   }
