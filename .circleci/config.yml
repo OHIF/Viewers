@@ -21,7 +21,10 @@ executors:
       - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
         environment:
           CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
-
+  chrome-and-pacs:
+    docker:
+      # Primary container image where all steps run.
+      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
 defaults: &defaults
   docker:
     - image: cimg/node:14.18
@@ -331,7 +334,7 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: base-14
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
             - run: |
@@ -365,7 +368,7 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
-          executor: base-14
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
