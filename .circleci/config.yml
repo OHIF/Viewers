@@ -342,8 +342,6 @@ workflows:
                 rm -rf ~/.yarn
                 npm i -g yarn
                 yarn -v
-                # Checkout the PACS data
-                git submodule update --init
           yarn: true
           record: true
           store_artifacts: true
@@ -371,14 +369,20 @@ workflows:
           executor: chrome-and-pacs
           browser: chrome
           pre-steps:
-            - run: 'rm -rf ~/.yarn && git submodule update --init && npm i -g yarn && yarn -v' # Use yarn latest
+            - run: |
+                # Clear yarn cache; update to latest
+                rm -rf ~/.yarn
+                npm i -g yarn
+                yarn -v
           yarn: true
           record: true
           store_artifacts: true
           working_directory: platform/viewer
           build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
-            yarn run build:package
+            - run: |
+                ls -a
+                git submodule update --init
+                npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run build:package
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
           wait-on: 'http://localhost:3000'
