@@ -343,7 +343,7 @@ workflows:
                 npm i -g yarn
                 yarn -v
                 # Checkout the PACS data
-                git submodule init
+                git submodule update --init
           yarn: true
           record: true
           store_artifacts: true
@@ -378,7 +378,7 @@ workflows:
           working_directory: platform/viewer
           build:
             npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
-            git submodule init
+            git submodule update --init
             yarn run build:package
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
