@@ -159,14 +159,14 @@ module.exports = (env, argv) => {
           publicPath: '/dicomweb',
         },
         {
-          directory: path.join(require('os').homedir(), 'viewer-testdata'),
+          directory: '../../testdata',
           staticOptions: {
             extensions: ['gz', 'br'],
             index: "index.json.gz",
             redirect: true,
             setHeaders,
           },
-          publicPath: '/viewer-testdata',
+          publicPath: '/testdata',
         },
       ],
       //public: 'http://localhost:' + 3000,

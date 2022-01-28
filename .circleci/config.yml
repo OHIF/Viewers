@@ -21,11 +21,6 @@ executors:
       - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
         environment:
           CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
-  chrome-and-pacs:
-    docker:
-      # Primary container image where all steps run.
-      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
-      - image: 'ohif/viewer-testdata:0.1-test'
 
 defaults: &defaults
   docker:
@@ -336,7 +331,7 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: chrome-and-pacs
+          executor: base-14
           browser: chrome
           pre-steps:
             - run: |
@@ -344,12 +339,14 @@ workflows:
                 rm -rf ~/.yarn
                 npm i -g yarn
                 yarn -v
+                # Checkout the PACS data
+                git submodule init
           yarn: true
           record: true
           store_artifacts: true
           working_directory: platform/viewer
           build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
             yarn run build
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
@@ -368,7 +365,7 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
-          executor: chrome-and-pacs
+          executor: base-14
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
@@ -377,7 +374,8 @@ workflows:
           store_artifacts: true
           working_directory: platform/viewer
           build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
+            git submodule init
             yarn run build:package
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'

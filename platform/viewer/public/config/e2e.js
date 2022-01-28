@@ -5,9 +5,9 @@ window.config = {
     dicomWeb: [
       {
         name: 'LocalStatic',
-        wadoUriRoot: '/viewer-testdata',
-        qidoRoot: '/viewer-testdata',
-        wadoRoot: '/viewer-testdata',
+        wadoUriRoot: '/testdata',
+        qidoRoot: '/testdata',
+        wadoRoot: '/testdata',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,
