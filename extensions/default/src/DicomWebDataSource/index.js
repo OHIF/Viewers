@@ -149,6 +149,33 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
     },
     retrieve: {
+      /* Generates a URL that can be used for direct retrieve of the bulkdata */
+      directURL: (params) => {
+        const { instance, tag = "PixelData", defaultPath = "/pixeldata", defaultType = "video/mp4" } = params;
+        const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+        // If the BulkDataURI isn't present, then assume it uses the pixeldata endpoint
+        // The standard isn't quite clear on that, but appears to be what is expected
+        const value = instance[tag];
+        const BulkDataURI =
+          (value && value.BulkDataURI) ||
+          `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
+        const hasQuery = BulkDataURI.indexOf('?') != -1;
+        const hasAccept = BulkDataURI.indexOf('accept=') != -1;
+        const acceptUri =
+          BulkDataURI +
+          (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
+        if (BulkDataURI.indexOf('http') == 0) return acceptUri;
+        if (BulkDataURI.indexOf('/') == 0) {
+          return wadoRoot + acceptUri;
+        }
+        if (BulkDataURI.indexOf('series/') == 0) {
+          return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
+        }
+        if (BulkDataURI.indexOf('instances/') === 0) {
+          return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${acceptUri}`;
+        }
+        throw new Error('BulkDataURI in unknown format:' + BulkDataURI);
+      },
       series: {
         metadata: async ({
           StudyInstanceUID,
