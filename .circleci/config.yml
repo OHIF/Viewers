@@ -371,14 +371,13 @@ workflows:
           executor: chrome-and-pacs
           browser: chrome
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+            - run: 'rm -rf ~/.yarn && git submodule update --init && npm i -g yarn && yarn -v' # Use yarn latest
           yarn: true
           record: true
           store_artifacts: true
           working_directory: platform/viewer
           build:
             npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
-            git submodule update --init
             yarn run build:package
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
