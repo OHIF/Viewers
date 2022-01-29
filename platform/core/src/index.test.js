@@ -26,6 +26,7 @@ describe('Top level exports', () => {
       'cornerstone',
       'default', //
       'errorHandler',
+      'str2ab',
       'string',
       'ui',
       'user',
