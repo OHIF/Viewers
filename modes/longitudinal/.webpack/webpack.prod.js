@@ -1,9 +1,12 @@
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const path = require('path');
-const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const pkg = require('./../package.json');
+const webpackCommon = require('./../../../.webpack/webpack.base.js');
+
+const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
@@ -29,19 +32,19 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
-      path: DIST_DIR,
+      path: ROOT_DIR,
       library: 'OHIFExtCornerstone',
       libraryTarget: 'umd',
       libraryExport: 'default',
-      filename: fileName,
+      filename: pkg.main,
     },
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
       new MiniCssExtractPlugin({
-        filename: '[name].css',
-        chunkFilename: '[id].css',
+        filename: './dist/[name].css',
+        chunkFilename: './dist/[id].css',
       }),
     ],
   });

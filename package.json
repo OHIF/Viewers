@@ -24,6 +24,7 @@
     "build:qa": "lerna run build:viewer:qa --stream",
     "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
+    "build:package-all": "lerna run build:package --parallel --stream",
     "dev": "lerna run dev:viewer --stream",
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
@@ -47,7 +48,7 @@
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
     "lerna:version": "npx lerna version prerelease --force-publish",
-    "lerna:publish": "lerna publish from-package --canary --dist-tag canary",
+    "lerna:publish": "lerna publish from-package --dist-tag next",
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {

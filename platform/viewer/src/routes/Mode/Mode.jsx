@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
+import { useNavigate } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore } from '@ohif/core';
@@ -278,7 +280,7 @@ export default function ModeRoute({
     );
     const LayoutComponent = layoutTemplateModuleEntry.component;
 
-    return <LayoutComponent {...props} />;
+    return <LayoutComponent {...props} useNavigate={useNavigate} />;
   };
 
   return (
