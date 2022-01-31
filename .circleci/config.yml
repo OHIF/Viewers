@@ -24,7 +24,7 @@ executors:
   chrome-and-pacs:
     docker:
       # Primary container image where all steps run.
-    - image: cimg/node:14.18-browsers
+      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
 
 defaults: &defaults
   docker:
@@ -333,7 +333,6 @@ workflows:
           executor: chrome-and-pacs
           browser: chrome
           pre-steps:
-            - browser-tools/install-browser-tools
             - run: |
                 # Clear yarn cache; use yarn from image (update image to update yarn)
                 rm -rf ~/.yarn
