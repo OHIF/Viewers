@@ -334,9 +334,8 @@ workflows:
           browser: chrome
           pre-steps:
             - run: |
-                # Clear yarn cache; update to latest
+                # Clear yarn cache; use yarn from image (update image to update yarn)
                 rm -rf ~/.yarn
-                npm i -g yarn
                 yarn -v
           yarn: true
           record: true
@@ -368,8 +367,8 @@ workflows:
           executor: cypress/browsers-chrome76
           browser: chrome
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
+            - run: 'rm -rf ~/.yarn && yarn -v && yarn global
+                add wait-on'
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
