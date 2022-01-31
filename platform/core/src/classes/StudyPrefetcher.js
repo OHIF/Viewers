@@ -11,6 +11,7 @@ export class StudyPrefetcher {
     requestType: 'prefetch',
     preventCache: false,
     prefetchDisplaySetsTimeout: 300,
+    maxNumPrefetchRequests: 100,
     includeActiveDisplaySet: false,
   };
 
@@ -150,6 +151,11 @@ export class StudyPrefetcher {
   prefetchImageIds(imageIds) {
     const nonCachedImageIds = this.filterCachedImageIds(imageIds);
     const imageLoadPoolManager = cornerstone.imageLoadPoolManager;
+
+    imageLoadPoolManager.maxNumRequests = {
+      ...imageLoadPoolManager.maxNumRequests,
+      prefetch: this.options.maxNumPrefetchRequests,
+    };
 
     let requestFn;
     if (this.options.preventCache) {
