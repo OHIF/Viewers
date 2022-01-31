@@ -202,10 +202,17 @@ Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
 
             element.addEventListener('cornerstoneimagerendered', onEvent);
           };
-          $cornerstone.events.addEventListener(
-            'cornerstoneelementenabled',
-            onEnabled
-          );
+          const enabledElements = $cornerstone.getEnabledElements();
+          if (enabledElements && enabledElements.length && !enabledElements[0].invalid) {
+            // Sometimes the page finishes rendering before this gets run,
+            // if so, just resolve immediately.
+            resolve();
+          } else {
+            $cornerstone.events.addEventListener(
+              'cornerstoneelementenabled',
+              onEnabled
+            );
+          }
         });
       });
   }
