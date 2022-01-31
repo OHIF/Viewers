@@ -25,11 +25,9 @@ executors:
     docker:
       # Primary container image where all steps run.
       - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
-      - image: 'ohif/viewer-testdata:0.1-test'
-
 defaults: &defaults
   docker:
-    - image: circleci/node:14.15.0
+    - image: cimg/node:14.18
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -349,7 +347,8 @@ workflows:
           store_artifacts: true
           working_directory: platform/viewer
           build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            git submodule update --init &&
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
             yarn run build
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
@@ -377,7 +376,8 @@ workflows:
           store_artifacts: true
           working_directory: platform/viewer
           build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            git submodule update --init &&
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
             yarn run build:package
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
@@ -410,7 +410,8 @@ workflows:
           store_artifacts: false
           working_directory: platform/viewer
           build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            git submodule update --init &&
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
             yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
@@ -489,7 +490,8 @@ workflows:
           store_artifacts: false
           working_directory: platform/viewer
           build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            git submodule update --init &&
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js
             yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist

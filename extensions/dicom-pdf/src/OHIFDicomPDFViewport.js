@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import OHIF from '@ohif/core';
 import OHIFComponentPlugin from './OHIFComponentPlugin.js';
 import DicomPDFViewport from './DicomPDFViewport';
+import { str2ab } from '@ohif/core';
 
 const { DicomLoaderService } = OHIF.utils;
 
@@ -18,6 +19,7 @@ class OHIFDicomPDFViewport extends Component {
 
   state = {
     byteArray: null,
+    rawPdf: false,
     error: null,
   };
 
@@ -34,6 +36,15 @@ class OHIFDicomPDFViewport extends Component {
   componentDidMount() {
     const { displaySet, studies } = this.props.viewportData;
 
+    if (displaySet.metadata && displaySet.metadata.EncapsulatedDocument) {
+      const { InlineBinary, BulkDataURI } = displaySet.metadata.EncapsulatedDocument;
+      if (InlineBinary) {
+        const inlineBinaryData = atob(InlineBinary);
+        const byteArray = str2ab(inlineBinaryData);
+        this.setState({ byteArray, rawPdf: true });
+        return;
+      }
+    }
     DicomLoaderService.findDicomDataPromise(displaySet, studies).then(
       data => this.setState({ byteArray: new Uint8Array(data) }),
       error => {
@@ -49,15 +60,16 @@ class OHIFDicomPDFViewport extends Component {
       viewportIndex,
       activeViewportIndex,
     } = this.props;
-    const { byteArray, error } = this.state;
+    const { byteArray, error, rawPdf } = this.state;
     const { id, init, destroy } = OHIFDicomPDFViewport;
     const pluginProps = { id, init, destroy };
 
     return (
       <OHIFComponentPlugin {...pluginProps}>
-        {byteArray && (
+        {(byteArray) && (
           <DicomPDFViewport
             byteArray={byteArray}
+            rawPdf={rawPdf}
             setViewportActive={setViewportActive}
             viewportIndex={viewportIndex}
             activeViewportIndex={activeViewportIndex}
