@@ -27,13 +27,14 @@ function OHIFCornerstoneVideoViewport({
     MeasurementService,
     ToolBarService,
   } = servicesManager.services;
-  console.log('displaySet=', displaySet);
   const { videoUrl } = displaySet;
   const mimeType = "video/mp4";
 
+  // Need to copies of the source to fix a firefox bug
   return (
-    <div className="bg-primary-dark w-full h-full">
+    <div className="bg-primary-black w-full h-full">
       <video
+        src={videoUrl}
         controls
         controlsList="nodownload"
         preload="auto"

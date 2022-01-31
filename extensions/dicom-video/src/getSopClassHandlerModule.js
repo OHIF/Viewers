@@ -31,7 +31,6 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
   const dataSource = extensionManager.getActiveDataSource()[0];
   return instances
     .filter(metadata => {
-      console.log('video i=', metadata);
       const tsuid = metadata.AvailableTransferSyntaxUID ||
         metadata.TransferSyntaxUID || metadata['00083002'];
       return supportedTransferSyntaxUIDs.includes(tsuid);
@@ -59,7 +58,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         isDerivedDisplaySet: true,
         isLoaded: false,
         sopClassUids,
-        numInstances: NumberOfFrames,
+        numImageFrames: NumberOfFrames,
         instance,
       };
       return displaySet;
