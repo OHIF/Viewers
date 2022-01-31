@@ -35,7 +35,7 @@
     "test:e2e:ci": "percy exec -- cypress run --config video=false --record --browser chrome --spec 'cypress/integration/visual-regression/**/*'",
     "test:e2e:local": "cypress run --config video=false --browser chrome --spec 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'",
     "test:e2e:dist": "start-server-and-test test:e2e:serve http://localhost:3000 test:e2e:ci",
-    "test:e2e:serve": "serve -n -l 3000 -s dist",
+    "test:e2e:serve": "cross-env APP_CONFIG=config/e2e.js yarn start",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage",
     "ci:generateSuccessVersion": "node -p -e \"require('./package.json').version\" > success_version.txt"

@@ -15,6 +15,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     "StudyDescription": "00081030",
     "StudyDate": "00080020",
     "ModalitiesInStudy": "00080061",
+    AccessionNumber: "00080050",
   };
 
   constructor(qidoConfig) {
@@ -66,7 +67,16 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       actual = actual.Alphabetic;
     }
     if (typeof (actual) == 'string') {
-      return actual.indexOf(desired) != -1;
+      if (actual.length === 0) return true;
+      if (desired.length === 0 || desired === '*') return true;
+      if (desired[0] === '*' && desired[desired.length - 1] === '*') {
+        console.log(`Comparing ${actual} to ${desired.substring(1, desired.length - 1)}`)
+        return actual.indexOf(desired.substring(1, desired.length - 1)) != -1;
+      } else if (desired[desired.length - 1] === '*') {
+        return actual.indexOf(desired.substring(0, desired.length - 1)) != -1;
+      } else if (desired[0] === '*') {
+        return actual.indexOf(desired.substring(1)) === actual.length - desired.length + 1;
+      }
     }
     return desired === actual;
   }

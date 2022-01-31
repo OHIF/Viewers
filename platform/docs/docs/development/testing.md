@@ -24,26 +24,14 @@ Running unit test will generate a report at the end showing the successful and
 unsuccessful tests with detailed explanations.
 
 ## End-to-end test
-
 For running the OHIF e2e test you need to run the following steps:
 
-- Create a mini-pacs for OHIF to access the images for testing. We download and
-  run our lightweight implementation which provides a collection of DICOM
-  studies ([source code][mini-pacs]).
-
-  ```bash
-  docker run -p 5985:5985 -p 5984:5984 -e USE_POUCHDB=true -e DB_SERVER=http://0.0.0.0 ohif/viewer-testdata:0.1-test
-  ```
-
-  Successful execution should be
-
-  ![](../assets/img/docker-pacs.png)
-
 - Open a new terminal, navigate to the OHIF project, and run OHIF with the
-  dicom-server config
+  e2e config.  The test:data only needs to be run once and checks the data out.
 
   ```bash
-  APP_CONFIG=config/dicomweb-server.js yarn start
+  yarn test:data
+  APP_CONFIG=config/e2e.js yarn start
   ```
 
   You should be able to see test studies in the study list
@@ -53,7 +41,7 @@ For running the OHIF e2e test you need to run the following steps:
 - Open a new terminal inside the OHIF project, and run the e2e cypress test
 
   ```bash
-  yarn run test:e2e
+  yarn test:e2e
   ```
 
   You should be able to see the cypress window open
@@ -66,6 +54,27 @@ For running the OHIF e2e test you need to run the following steps:
   each other.
 
   ![e2e-cypress-final](../assets/img/e2e-cypress-final.png)
+
+  ## Test Data
+  The testing data is stored in two OHIF repositories.  The first contains the
+  binary DICOM data, at [viewer-testdata](https://github.com/OHIF/viewer-testdata.git)
+  while the second module contains data in the DICOMweb format, installed as a submodule
+  into OHIF in the `testdata` directory.  This is retrieved via the command
+  ```bash
+  yarn test:data
+  ```
+  or the equivalent command `git submodule update --init`
+  When adding new data, run:
+  ```
+  npm install -g dicomp10-to-dicomweb
+  mkdicomweb -d dicomweb dcm
+  ```
+  to update the local dicomweb submodule in viewer-testdata.  Then, commit
+  that data and update the submodules used in OHIF and in the viewer-testdata
+  parent modules.
+
+  All data MUST be fully anonymized and allowed to be used for open access.
+  Any attributions should be included in the DCM directory.
 
 ## Testing Philosophy
 
