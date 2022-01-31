@@ -435,7 +435,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run build
+          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
