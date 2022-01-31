@@ -35,7 +35,6 @@ const getMeasurements = (
         ];
 
       const measurement = processMeasurement(mergedContentSequence, displaySet);
-
       if (measurement) {
         measurements.push(measurement);
       }

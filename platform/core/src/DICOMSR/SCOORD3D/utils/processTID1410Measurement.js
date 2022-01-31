@@ -11,11 +11,17 @@ import { RELATIONSHIP_TYPE, CodeNameCodeSequenceValues } from '../enums';
 const processTID1410Measurement = (mergedContentSequence, displaySet) => {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
-  // TODO -> Look at RelationshipType => Contains means
 
   const graphicItem = mergedContentSequence.find(
     group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
   );
+
+  if (!graphicItem) {
+    console.warn(
+      `graphic ValueType ${graphicItem.ValueType} not currently supported, skipping annotation.`
+    );
+    return;
+  }
 
   const UIDREFContentItem = mergedContentSequence.find(
     group => group.ValueType === 'UIDREF'
@@ -26,13 +32,6 @@ const processTID1410Measurement = (mergedContentSequence, displaySet) => {
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.TrackingIdentifier
   );
-
-  if (!graphicItem) {
-    console.warn(
-      `graphic ValueType ${graphicItem.ValueType} not currently supported, skipping annotation.`
-    );
-    return;
-  }
 
   const NUMContentItems = mergedContentSequence.filter(
     group => group.ValueType === 'NUM'

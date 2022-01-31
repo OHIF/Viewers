@@ -16,10 +16,8 @@ const getCoordsFromSCOORDOrSCOORD3D = (graphicItem, displaySet) => {
     coords.ReferencedSOPSequence = ReferencedSOPSequence;
   } else if (ValueType === 'SCOORD3D') {
     if (graphicItem.ReferencedFrameOfReferenceUID) {
-      // todo
-    }
-
-    if (graphicItem.ContentSequence) {
+      coords.ReferencedFrameOfReferenceSequence = graphicItem.ReferencedFrameOfReferenceUID;
+    } else if (graphicItem.ContentSequence) {
       const {
         ReferencedFrameOfReferenceSequence,
       } = graphicItem.ContentSequence;
