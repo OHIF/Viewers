@@ -337,11 +337,12 @@ workflows:
                 # Clear yarn cache; use yarn from image (update image to update yarn)
                 rm -rf ~/.yarn
                 yarn -v
+                google-chrome --version
           yarn: true
           record: true
           store_artifacts: true
           working_directory: platform/viewer
-          build: yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run build
+          build: yarn test:data
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/**/*'
           wait-on: 'http://localhost:3000'
