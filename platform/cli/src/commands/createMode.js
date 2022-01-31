@@ -54,10 +54,10 @@ const createMode = async options => {
   await tasks.run();
   console.log('Done: Mode is ready');
   console.log(
-    chalk.green.bold(
-      'NOTE: In order to use this mode for development, run `ohif-cli link-mode <mode-dir>` inside the root folder of your OHIF repo.'
-    )
+    chalk.green.bold('NOTE: In order to use this mode for development,')
   );
+  console.log(chalk.green.bold('run `ohif-cli link-mode <mode-dir>` inside'));
+  console.log(chalk.green.bold('the root folder of your OHIF repo.'));
   return true;
 };
 
