@@ -24,11 +24,11 @@ executors:
   chrome-and-pacs:
     docker:
       # Primary container image where all steps run.
-    - image: cimg/node:14.18
+    - image: cimg/node:14.18-browsers
 
 defaults: &defaults
   docker:
-    - image: cimg/node:14.18
+    - image: cimg/node:14.18-browsers
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
