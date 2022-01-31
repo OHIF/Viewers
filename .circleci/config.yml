@@ -333,11 +333,11 @@ workflows:
           executor: chrome-and-pacs
           browser: chrome
           pre-steps:
+            - browser-tools/install-browser-tools
             - run: |
                 # Clear yarn cache; use yarn from image (update image to update yarn)
                 rm -rf ~/.yarn
                 yarn -v
-                google-chrome --version
           yarn: true
           record: true
           store_artifacts: true
