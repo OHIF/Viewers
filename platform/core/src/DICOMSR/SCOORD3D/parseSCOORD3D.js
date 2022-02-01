@@ -58,11 +58,12 @@ const checkIfCanAddMeasurementsToDisplaySet = (
   measurements = measurements.filter(measurement => {
     return measurement.coords.some(coord => {
       if (coord.ReferencedSOPSequence === undefined) {
-        // we miss the referenced information. We can compare the annotation SCOORD3D coordinates with
-        // the ImagePatientPosition of the frames. However (WARNING!!!),
-        // if more than a source series is present, this logic can find the wrong frame
-        // (i.e. two source series, with the same frameOfReferenceUID,
-        // that have each a frame with the same ImagePositionPatient of the annotation 3D coordinates)
+        /** we miss the referenced information. We can compare the annotation SCOORD3D coordinates with
+         * the ImagePatientPosition of the frames. However (WARNING!!!),
+         * if more than a source series is present, this logic can find the wrong frame
+         * (i.e. two source series, with the same frameOfReferenceUID,
+         * that have each a frame with the same ImagePositionPatient of the annotation 3D coordinates)
+         */
         for (let i = 0; i < images.length; ++i) {
           const imageMetadata = images[i].getData().metadata;
           if (
