@@ -1,5 +1,5 @@
 import csTools from 'cornerstone-tools';
-import OHIF from '@ohif/core';
+import OHIF from '../../../';
 
 /** Internal imports */
 import TOOL_NAMES from '../constants/toolNames';
