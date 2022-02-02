@@ -2,6 +2,7 @@ import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
 import AITriggerComponentPanel from '../ThetaDetailsPanel/AITriggerComponent';
+import LungModuleSimilarityPanel from '../LungModuleSimilarityPanel/LungModuleSimilarityPanel';
 import LabellingFlow from '../../components/Labelling/LabellingFlow';
 
 export default {
@@ -73,6 +74,10 @@ export default {
 
     const ExtentedAITriggerComponentPanel = () => <AITriggerComponentPanel />;
 
+    const ExtentedLungModuleSimilarityComponentPanel = () => (
+      <LungModuleSimilarityPanel />
+    );
+
     return {
       menuOptions: [
         {
@@ -85,6 +90,11 @@ export default {
           label: 'Theta Details',
           target: 'theta-details-panel',
         },
+        {
+          icon: 'list',
+          label: 'Lung Module',
+          target: 'lung-module-similarity-panel',
+        },
       ],
       components: [
         {
@@ -94,6 +104,10 @@ export default {
         {
           id: 'theta-details-panel',
           component: ExtentedAITriggerComponentPanel,
+        },
+        {
+          id: 'lung-module-similarity-panel',
+          component: ExtentedLungModuleSimilarityComponentPanel,
         },
       ],
       defaultContext: ['VIEWER'],

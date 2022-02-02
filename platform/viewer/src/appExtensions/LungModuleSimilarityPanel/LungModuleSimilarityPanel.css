@@ -1,0 +1,108 @@
+.component {
+  background-color: var(--primary-background-color);
+  color: white;
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.select-container {
+  width: 100%;
+  height: 30px;
+  border-radius: 24px;
+}
+
+.triggerButton {
+  border-radius: 24px;
+  color: #fff;
+  text-align: center;
+}
+
+.syncButton {
+  width: 80%;
+  height: 30px;
+  border-radius: 24px;
+  background-color: var(--active-color);
+  color: var(--ui-gray-dark);
+  line-height: 25px;
+  padding: 0 20px;
+  outline: none;
+  cursor: pointer;
+  &:hover,
+  &:active {
+    background-color: var(--ui-sky-blue);
+  }
+}
+
+.title-header {
+  background-color: var(--ui-gray-);
+  color: var(--text-secondary-color);
+  font-size: 22px;
+  font-weight: 300;
+  text-align: left;
+  flex: 1;
+}
+
+h1 {
+  text-align: center;
+  margin: 2rem 0 4rem 0;
+}
+
+.accordion {
+  max-width: 90%;
+  margin: 2rem auto;
+}
+
+.accordion-item {
+  width: 100%;
+}
+
+.accordion-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  cursor: pointer;
+  background-color: #152124;
+}
+
+.accordion-title:hover {
+  background-color: #244b53;
+}
+
+.accordion-title,
+.accordion-content {
+  padding: 1rem;
+}
+
+.accordion-content {
+  background-color: #355c64;
+}
+
+.textures {
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.texture_uids {
+  color: #ffffff;
+}
+
+.selected-instance {
+  color: rgb(155, 155, 255);
+}
+
+.reveal-error {
+  color: rgb(155, 155, 255);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.loader {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}

@@ -2,26 +2,21 @@ import React, { useContext, useEffect } from 'react';
 import axios from 'axios';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import '../AITriggerComponent.css';
+import '../LungModuleSimilarityPanel.css';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
 import { connect } from 'react-redux';
-import { servicesManager } from './../../../App';
+import { servicesManager } from '../../../App';
 import { JobsContext } from '../../../context/JobsContext';
 
-const JobParameters = props => {
-  const { user, viewport } = props;
+const SearchDetails = props => {
+  const { user } = props;
   const [isDisabled, setIsDisabled] = React.useState(true);
   const [toolData, setToolData] = React.useState({});
-  const [startX, setStartX] = React.useState();
-  const [startY, setStartY] = React.useState();
-  const [endX, setEndX] = React.useState();
-  const [endY, setEndY] = React.useState();
   const [x, setX] = React.useState();
   const [y, setY] = React.useState();
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
-  const { allSeriesState } = useContext(JobsContext);
 
   const { UINotificationService } = servicesManager.services;
 
@@ -56,7 +51,6 @@ const JobParameters = props => {
 
     // retrieving rectangle tool roi data from element
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
-
 
     if (tool_data && tool_data.data.length > 0) {
       setToolData(tool_data.data[0]);
@@ -116,16 +110,7 @@ const JobParameters = props => {
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     const data = tool_data.data[0];
 
-    if (allSeriesState.length >= 1000) {
-      UINotificationService.show({
-        message: `Cannot create more than a 1000 textures as texture number limit has been reached. Please contact Tech Support for further assistance`,
-        duration: 5000,
-        type: 'error',
-      });
-      return;
-    } else {
-      sendParams(data);
-    }
+    sendParams(data);
   };
 
   const clearParams = () => {
@@ -162,6 +147,10 @@ const JobParameters = props => {
         },
       },
     };
+
+    console.log({ searchData: body });
+
+    return;
 
     await client
       .post(`/texture`, body)
@@ -218,7 +207,7 @@ const JobParameters = props => {
                 disabled={isDisabled}
                 className="syncButton"
               >
-                Trigger Job
+                Search For Similarity
               </button>
             </div>
           </label>
@@ -235,9 +224,9 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedJobParameters = connect(
+const ConnectedSearchDetails = connect(
   mapStateToProps,
   null
-)(JobParameters);
+)(SearchDetails);
 
-export default ConnectedJobParameters;
+export default ConnectedSearchDetails;
