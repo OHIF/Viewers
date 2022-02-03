@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.15...@ohif/viewer@4.12.16) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.12.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.14...@ohif/viewer@4.12.15) (2022-02-02)
 
 **Note:** Version bump only for package @ohif/viewer

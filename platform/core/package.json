@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "2.16.9",
+  "version": "2.16.10",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -45,9 +45,9 @@
     "isomorphic-base64": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.1",
+    "mathjs": "^10.1.0",
     "mousetrap": "^1.6.3",
     "retry": "^0.12.0",
-    "validate.js": "^0.12.0",
-    "mathjs": "^10.1.0"
+    "validate.js": "^0.12.0"
   }
 }
