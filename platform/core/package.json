@@ -47,6 +47,7 @@
     "lodash.merge": "^4.6.1",
     "mousetrap": "^1.6.3",
     "retry": "^0.12.0",
-    "validate.js": "^0.12.0"
+    "validate.js": "^0.12.0",
+    "mathjs": "^10.1.0"
   }
 }

@@ -802,6 +802,10 @@ export default class MeasurementApi {
       collection.push(addedMeasurement);
     }
 
+    if (measurement.isReadOnly) {
+      addedMeasurement.isReadOnly = measurement.isReadOnly;
+    }
+
     if (!emptyItem) {
       // Reflect the entry in the tool group collection
       groupCollection.push({
