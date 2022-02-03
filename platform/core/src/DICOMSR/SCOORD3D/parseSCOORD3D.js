@@ -28,7 +28,13 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
     srDisplaySet.isRehydratable = isRehydratable(srDisplaySet, mappings);
     srDisplaySet.isLoaded = true;
 
-    const imageDisplaySets = displaySets.filter(ds => ds.Modality !== 'SR');
+    const imageDisplaySets = displaySets.filter(
+      ds =>
+        ds.Modality !== 'SR' &&
+        ds.Modality !== 'SEG' &&
+        ds.Modality !== 'RTSTRUCT' &&
+        ds.Modality !== 'RTDOSE'
+    );
     imageDisplaySets.forEach(imageDisplaySet => {
       // Check currently added displaySets and add measurements if the sources exist.
       checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, imageDisplaySet);
