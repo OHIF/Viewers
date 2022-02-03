@@ -79,6 +79,12 @@ const processNonGeometricallyDefinedMeasurement = mergedContentSequence => {
       MeasuredValueSequence,
     } = item;
 
+    if (!ContentSequence) {
+      console.warn(`Graphic ${ContentSequence} missing, skipping annotation.`);
+
+      return;
+    }
+
     const { ValueType } = ContentSequence;
 
     if (!ValueType === 'SCOORD' && !ValueType === 'SCOORD3D') {
