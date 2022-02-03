@@ -24,12 +24,17 @@ const getReferencedImagesList = ImagingMeasurementReportContentSequence => {
 
   getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;
-    const {
-      ReferencedSOPClassUID,
-      ReferencedSOPInstanceUID,
-    } = ReferencedSOPSequence;
+    if (ReferencedSOPSequence) {
+      const {
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
+      } = ReferencedSOPSequence;
 
-    referencedImages.push({ ReferencedSOPClassUID, ReferencedSOPInstanceUID });
+      referencedImages.push({
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
+      });
+    }
   });
 
   return referencedImages;
