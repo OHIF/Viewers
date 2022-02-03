@@ -1,9 +1,9 @@
 import csTools from 'cornerstone-tools';
+import cs from 'cornerstone-core';
 import OHIF from '@ohif/core';
 
 import { getEnabledElement } from '../state';
 import id from './id';
-import initSRTools from './initSRTools';
 
 const { studyMetadataManager } = OHIF.utils;
 
@@ -15,8 +15,6 @@ const checkForSRAnnotations = ({ viewportIndex, displaySet }) => {
     return;
   }
 
-  initSRTools(element);
-
   const { StudyInstanceUID } = displaySet;
   const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
   if (!studyMetadata) {
@@ -26,7 +24,6 @@ const checkForSRAnnotations = ({ viewportIndex, displaySet }) => {
   const srDisplaySets = studyMetadata
     .getDisplaySets()
     .filter(ds => ds.Modality === 'SR');
-
   if (srDisplaySets.length === 0) {
     return;
   }
@@ -38,7 +35,6 @@ const checkForSRAnnotations = ({ viewportIndex, displaySet }) => {
 
   const measurements = _measurements.filter(m => m.loaded === true);
   const measurement = measurements[0];
-
   if (!measurement) {
     return;
   }
@@ -54,6 +50,8 @@ const checkForSRAnnotations = ({ viewportIndex, displaySet }) => {
     element,
     TrackingUniqueIdentifier
   );
+
+  cs.updateImage(element);
 };
 
 export default checkForSRAnnotations;
