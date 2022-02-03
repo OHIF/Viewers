@@ -136,6 +136,7 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
         measurementNumber,
         lesionNamingNumber,
         toolType,
+        isReadOnly
       } = measurementData;
       const measurementId = measurementData._id;
 
@@ -154,6 +155,7 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
         lesionNamingNumber,
         toolType,
         hasWarnings,
+        isReadOnly,
         warningTitle,
         warningList,
         isSplitLesion: false, //TODO
