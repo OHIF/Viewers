@@ -8,7 +8,9 @@ OHIF Viewer and its medical imaging data. This post covers one of many potential
 setups that accomplish that. Please note, noticably absent is user account
 control.
 
-Do not use this recipe to host sensitive medical data on the open web. Depending
+> **Do not use this recipe to host sensitive medical data on the open web!** 
+
+Depending
 on your company's policies, this may be an appropriate setup on an internal
 network when protected with a server's basic authentication. For a more robust
 setup, check out our [user account control recipe](./user-account-control.md)
@@ -23,13 +25,13 @@ Our two biggest hurdles when hosting our image archive and web client are:
 
 ### Handling Web Requests
 
-We mittigate our first issue by allowing [Nginx][nginx] to handle incoming web
+We mitigate our first issue by allowing [Nginx][nginx] to handle incoming web
 requests. Nginx is open source software for web serving, reverse proxying,
 caching, and more. It's designed for maximum performance and stability --
 allowing us to more reliably serve content than Orthanc's built-in server can.
 
 More specifically, we accomplish this by using a
-[`reverse proxy`](https://en.wikipedia.org/wiki/Reverse_proxy) to retrieve
+[`reverse proxy`](https://en.wikipedia.org/wiki/Reverse_proxy) to retrieve 
 resources from our image archive (Orthanc), and when accessing its web admin.
 
 > A reverse proxy is a type of proxy server that retrieves resources on behalf
@@ -38,7 +40,7 @@ resources from our image archive (Orthanc), and when accessing its web admin.
 
 ### CORS Issues
 
-Cross-Origin Resource Sharing (CORS) is a mechanism that uses HTTP headers to
+[Cross-Origin Resource Sharing][understanding-cors] (CORS) is a mechanism that uses HTTP headers to
 tell a browser which web applications have permission to access selected
 resources from a server at a different origin (domain, protocol, port). IE. By
 default, a Web App located at `http://my-website.com` can't access resources
@@ -50,9 +52,6 @@ We can solve this one of two ways:
 2. Add appropriate `Access-Control-Allow-*` HTTP headers
 
 **This solution uses the first approach.**
-
-You can read more about CORS in this Medium article: [Understanding
-CORS][understanding-cors]
 
 ### Diagram
 
@@ -73,6 +72,8 @@ This setup allows us to create a setup similar to the one pictured below:
 - Docker
   - [Docker for Mac](https://docs.docker.com/docker-for-mac/)
   - [Docker for Windows](https://docs.docker.com/docker-for-windows/)
+- Node 16.x with optional Python and Visual Studio Build Tools ([webpack 4 has an issue](https://github.com/webpack/webpack/issues/14532) with Node 17.x)
+  - [Node.js](https://nodejs.org/en/download/)
 
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
@@ -81,7 +82,7 @@ in command prompt or terminal_
 
 _Spin Things Up_
 
-- Navigate to `<project-root>/docker/OpenResty-Orthanc` in your shell
+- Navigate to `./platform/viewer/.recipes/OpenResty-Orthanc` in your shell
 - Run `docker-compose up`
 
 _Upload Your First Study_
@@ -94,16 +95,16 @@ _Upload Your First Study_
 
 ### Troubleshooting
 
-_Exit code 137_
+#### Exit code 137
 
 This means Docker ran out of memory. Open Docker Desktop, go to the `advanced`
 tab, and increase the amount of Memory available.
 
-_Cannot create container for service X_
+#### Cannot create container for service X
 
 Use this one with caution: `docker system prune`
 
-_X is already running_
+#### X is already running
 
 Stop running all containers:
 
@@ -120,14 +121,11 @@ likely want to update:
 #### OHIF Viewer
 
 The OHIF Viewer's configuration is imported from a static `.js` file. The
-configuration we use is set to a specific file when we build the viewer, and
+configuration we use is set to [a specific file][config-ohif] when we build the viewer, and
 determined by the env variable: `APP_CONFIG`. You can see where we set its value
 in the `dockerfile` for this solution:
 
 `ENV APP_CONFIG=config/docker_openresty-orthanc.js`
-
-You can find the configuration we're using here:
-`/public/config/docker_openresty-orthanc.js`
 
 To rebuild the `webapp` image created by our `dockerfile` after updating the
 Viewer's configuration, you can run:
@@ -137,7 +135,7 @@ Viewer's configuration, you can run:
 
 #### Other
 
-All other files are found in: `/docker/OpenResty-Orthanc/`
+All other files in this directory include
 
 | Service           | Configuration                     | Docs                                        |
 | ----------------- | --------------------------------- | ------------------------------------------- |
@@ -236,6 +234,8 @@ members put together:
 [orthanc-docs]: http://book.orthanc-server.com/users/configuration.html#configuration
 [lua-resty-openidc-docs]: https://github.com/zmartzone/lua-resty-openidc
 <!-- SRC -->
+
+[config-ohif]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/docker_openresty-orthanc.js
 [dockerfile]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/dockerfile
 [config-nginx]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/config/nginx.conf
 [config-orthanc]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/config/orthanc.json

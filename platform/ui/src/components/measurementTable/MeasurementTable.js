@@ -139,7 +139,6 @@ class MeasurementTable extends Component {
       const itemIndex = measurement.itemNumber || index + 1;
       const itemClass =
         selectedKey === key && !this.props.readOnly ? 'selected' : '';
-
       return (
         <MeasurementTableItem
           key={key}
