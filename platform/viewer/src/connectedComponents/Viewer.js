@@ -761,6 +761,11 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       };
     });
 
+    /* sort thumbnails by series number */
+    thumbnails.sort((a, b) => {
+      return a.SeriesNumber - b.SeriesNumber;
+    });
+
     return {
       StudyInstanceUID,
       thumbnails,
