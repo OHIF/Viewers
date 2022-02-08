@@ -2,20 +2,25 @@
 sidebar_position: 4
 sidebar_label: Pub Sub
 ---
+
 # Pub sub
 
 ## Overview
-Publish–subscribe pattern is a messaging pattern that is one of the fundamentals patterns used in reusable software components.
 
-In short, services that implements this pattern, can have listeners subscribed to their broadcasted events. After the event is fired, the corresponding listener will execute the function that is registered.
+Publish–subscribe pattern is a messaging pattern that is one of the fundamentals
+patterns used in reusable software components.
 
-You can read more about this design pattern [here](https://cloud.google.com/pubsub/docs/overview).
+In short, services that implements this pattern, can have listeners subscribed
+to their broadcasted events. After the event is fired, the corresponding
+listener will execute the function that is registered.
 
+You can read more about this design pattern
+[here](https://cloud.google.com/pubsub/docs/overview).
 
 ## Example: Default Initialization
-In `Mode.jsx` we have a default initialization that demonstrates
-a series of subscriptions to various events.
 
+In `Mode.jsx` we have a default initialization that demonstrates a series of
+subscriptions to various events.
 
 ```js
 async function defaultRouteInit({
@@ -47,7 +52,7 @@ async function defaultRouteInit({
   unsubscriptions.push(instanceAddedUnsubscribe);
 
   studyInstanceUIDs.forEach(StudyInstanceUID => {
-    dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
+    dataSource.retrieve.series.metadata({ StudyInstanceUID });
   });
 
   const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
@@ -64,50 +69,52 @@ async function defaultRouteInit({
 ```
 
 ## Unsubscription
-You need to be careful if you are adding custom subscriptions to the app. Each subscription will return a unsubscription function that needs to be executed on component destruction to avoid adding multiple subscriptions to the same observer.
 
-Below, we can see `simplified` `Mode.jsx` and the corresponding `useEffect` where the unsubscription functions are executed upon destruction.
+You need to be careful if you are adding custom subscriptions to the app. Each
+subscription will return a unsubscription function that needs to be executed on
+component destruction to avoid adding multiple subscriptions to the same
+observer.
+
+Below, we can see `simplified` `Mode.jsx` and the corresponding `useEffect`
+where the unsubscription functions are executed upon destruction.
 
 ```js title="platform/viewer/src/routes/Mode/Mode.jsx"
 export default function ModeRoute(/**..**/) {
   /**...**/
-  useEffect(
-    () => {
-      /**...**/
+  useEffect(() => {
+    /**...**/
 
-      DisplaySetService.init(extensionManager, sopClassHandlers)
+    DisplaySetService.init(extensionManager, sopClassHandlers);
 
-      extensionManager.onModeEnter()
-      mode?.onModeEnter({ servicesManager, extensionManager })
+    extensionManager.onModeEnter();
+    mode?.onModeEnter({ servicesManager, extensionManager });
 
-      hangingProtocols.forEach((extentionProtocols) => {
-        const { protocols } =
-          extensionManager.getModuleEntry(extentionProtocols)
-        HangingProtocolService.addProtocols(protocols)
-      })
+    hangingProtocols.forEach(extentionProtocols => {
+      const { protocols } = extensionManager.getModuleEntry(extentionProtocols);
+      HangingProtocolService.addProtocols(protocols);
+    });
 
-      const setupRouteInit = async () => {
-        if (route.init) {
-          return await route.init(/**...**/)
-        }
-
-        return await defaultRouteInit(/**...**/)
+    const setupRouteInit = async () => {
+      if (route.init) {
+        return await route.init(/**...**/);
       }
 
-      let unsubscriptions
-      setupRouteInit().then((unsubs) => {
-        unsubscriptions = unsubs
-      })
+      return await defaultRouteInit(/**...**/);
+    };
 
-      return () => {
-        extensionManager.onModeExit()
-        mode?.onModeExit({ servicesManager, extensionManager })
-        unsubscriptions.forEach((unsub) => {
-          unsub()
-        })
-      }
-    },
-  )
-  return <> /**...**/ </>
+    let unsubscriptions;
+    setupRouteInit().then(unsubs => {
+      unsubscriptions = unsubs;
+    });
+
+    return () => {
+      extensionManager.onModeExit();
+      mode?.onModeExit({ servicesManager, extensionManager });
+      unsubscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
+  });
+  return <> /**...**/ </>;
 }
 ```

@@ -18,7 +18,6 @@ function create({
   store,
   reject,
   initialize,
-  retrieveSeriesMetadata,
   deleteStudyMetadataPromise,
   getImageIdsForDisplaySet,
   getImageIdsForInstance,
@@ -38,7 +37,7 @@ function create({
        * @param {number} params.resultsPerPage
        */
       mapParams: params => params,
-      requestResults: () => { },
+      requestResults: () => {},
       processResults: results => results,
     },
     series: {},
@@ -64,7 +63,6 @@ function create({
     reject: reject || defaultReject,
     store: store || defaultStore,
     initialize,
-    retrieveSeriesMetadata,
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet,
     getImageIdsForInstance,

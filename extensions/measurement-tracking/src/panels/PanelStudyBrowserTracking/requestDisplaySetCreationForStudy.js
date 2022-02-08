@@ -2,7 +2,7 @@ function requestDisplaySetCreationForStudy(
   dataSource,
   DisplaySetService,
   StudyInstanceUID,
-  madeInClient,
+  madeInClient
 ) {
   if (
     DisplaySetService.activeDisplaySets.some(
@@ -12,7 +12,7 @@ function requestDisplaySetCreationForStudy(
     return;
   }
 
-  dataSource.retrieveSeriesMetadata({ StudyInstanceUID, madeInClient });
+  dataSource.retrieve.series.metadata({ StudyInstanceUID, madeInClient });
 }
 
 export default requestDisplaySetCreationForStudy;
