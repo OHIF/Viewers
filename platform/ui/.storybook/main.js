@@ -1,15 +1,8 @@
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
-const autoprefixer = require('autoprefixer');
-const tailwindcss = require('tailwindcss');
-const tailwindConfigPath = path.resolve('tailwind.config.js');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   stories: ['../src/**/*.stories.@(mdx)'],
-  addons: ['@storybook/addon-links', '@storybook/addon-essentials'],
+  addons: ['@storybook/addon-links', '@storybook/addon-essentials', '@storybook/addon-google-analytics'],
   core: {
     builder: 'webpack5',
   },

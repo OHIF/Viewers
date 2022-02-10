@@ -12,3 +12,6 @@ document.head.appendChild(link);
 addons.setConfig({
   theme: ohifTheme,
 });
+
+window.STORYBOOK_GA_ID = "G-YTN5S84218"
+window.STORYBOOK_REACT_GA_OPTIONS = {}
