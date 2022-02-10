@@ -239,11 +239,11 @@ const ViewportActionBar = ({
   };
 
   const borderColor = useAltStyling ? '#365A6A' : '#1D205A';
-  const backgroundColor = useAltStyling
-    ? '#031923'
-    : isTracked
-    ? '#020424'
-    : null;
+
+  let backgroundColor = '#020424';
+  if (useAltStyling || isTracked) {
+    backgroundColor = '#031923'
+  }
 
   return (
     <div
