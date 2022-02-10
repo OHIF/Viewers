@@ -1,0 +1,66 @@
+import ToolbarButton from '../ToolbarButton';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: ToolbarButton,
+  title: 'Components/ToolbarButton',
+};
+
+<Meta title="Components/ToolbarButton" component={ToolbarButton} />
+
+export const ToolbarButtonTemplate = (args) => (
+  <div className="bg-primary-dark h-16">
+    <div class="w-8">
+      <ToolbarButton {...args} />
+    </div>
+  </div>
+);
+
+<Heading
+  title="ToolbarButton"
+  componentRelativePath="ToolbarButton/ToolbarButton.js"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+ToolbarButton is a component that renders the ToolbarButtons.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      type: 'tool',
+      id: 'Zoom',
+      icon: 'tool-zoom',
+      label: 'Zoom',
+      commandOptions: {
+        toolName: 'Zoom',
+      },
+      dropdownContent: null,
+      isActive: false,
+      bState: {
+        primaryToolId: 'Wwwc',
+        toggles: {},
+        groups: {
+          primary: 'Wwwc',
+        },
+      },
+    }}
+  >
+    {ToolbarButtonTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={ToolbarButton} />
+
+## Contribute
+
+<Footer componentRelativePath="ToolbarButton/__stories__/toolbarButton.stories.mdx" />

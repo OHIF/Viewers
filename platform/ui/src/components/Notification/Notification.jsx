@@ -3,7 +3,14 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Button, Icon } from '../';
 
-const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) => {
+const Notification = ({
+  id,
+  type,
+  message,
+  actions,
+  onSubmit,
+  onOutsideClick,
+}) => {
   const notificationRef = useRef(null);
 
   useEffect(() => {
@@ -93,7 +100,7 @@ Notification.defaultProps = {
 };
 
 Notification.propTypes = {
-  type: PropTypes.string,
+  type: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
   message: PropTypes.string.isRequired,
   actions: PropTypes.arrayOf(
     PropTypes.shape({

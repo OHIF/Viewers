@@ -1,0 +1,79 @@
+import Tooltip from '../Tooltip';
+import Icon from '../../Icon';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: Tooltip,
+  title: 'Components/Tooltip',
+};
+
+<Meta title="Components/Tooltip" component={Tooltip} />
+
+export const TooltipTemplate = (args) => (
+  <div className="h-16 w-full">
+    <div class="w-8 h-8 mx-auto">
+      <Tooltip {...args}>
+        <Icon name="clipboard" />
+      </Tooltip>
+    </div>
+  </div>
+);
+
+<Heading title="Tooltip" componentRelativePath="Tooltip/Tooltip.js" />
+
+- [Overview](#overview)
+- [Props](#props)
+- [Usage](#usage)
+- [Contribute](#contribute)
+
+## Overview
+
+Tooltip is a component that renders the Tooltips.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      content: 'Tooltip',
+    }}
+  >
+    {TooltipTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={Tooltip} />
+
+## Usage
+
+### Position
+
+You can set the position of the tooltip by using the `position` prop.
+
+<Canvas>
+  <Story name="Position">
+    <div className="h-16 w-full m-8">
+      <div class="w-8 h-8 mx-auto">
+        <Tooltip position="right" content="right">
+          <Icon name="clipboard" />
+          <span>Right</span>
+        </Tooltip>
+      </div>
+    </div>
+    <div className="h-16 w-full m-8">
+      <div class="w-8 h-8 mx-auto">
+        <Tooltip position="left" content="left">
+          <Icon name="clipboard" />
+          <span>Left</span>
+        </Tooltip>
+      </div>
+    </div>
+  </Story>
+</Canvas>
+
+## Contribute
+
+<Footer componentRelativePath="Tooltip/__stories__/tooltip.stories.mdx" />

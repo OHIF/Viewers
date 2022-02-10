@@ -1,0 +1,67 @@
+import Dialog from '../Dialog';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: Dialog,
+  title: 'Modals/Dialog',
+};
+
+<Meta title="Modals/Dialog" component={Dialog} />
+
+export const DialogTemplate = createComponentTemplate(Dialog);
+
+<Heading title="Dialog" componentRelativePath="Dialog/Dialog.jsx" />
+
+- [Overview](#overview)
+- [Props](#props)
+- [Usage](#usage)
+- [Contribute](#contribute)
+
+## Overview
+
+Dialog is a modal dialog component which enabled to show a modal dialog.
+
+<Canvas>
+  <Story name="Overview">{DialogTemplate.bind({})}</Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={Dialog} />
+
+## Usage
+
+It can be used to show a modal dialog to submit a form or show a message.
+
+<Canvas>
+  <Story
+    name="Submit"
+    args={{
+      title: 'Dialog Title',
+      text: 'Dialog Text',
+      onClose: () => {
+        window.alert('Dialog closed');
+      },
+      noCloseButton: false,
+      actions: [
+        {
+          id: 'cancel',
+          text: 'Cancel',
+          type: 'cancel',
+        },
+        {
+          id: 'submit',
+          text: 'Submit',
+          type: 'primary',
+        },
+      ],
+    }}
+  >
+    {DialogTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Contribute
+
+<Footer componentRelativePath="Dialog/__stories__/dialog.stories.mdx" />

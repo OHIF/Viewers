@@ -3,7 +3,7 @@ module.exports = {
   important: false,
   separator: ':',
   purge: {
-    content: ['./src/**/*.{jsx,js,css}'],
+    content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
     safelist: [],
   },
   theme: {
@@ -12,6 +12,9 @@ module.exports = {
       md: '768px',
       lg: '1024px',
       xl: '1280px',
+    },
+    fontFamily: {
+      inter: ['Inter', 'sans-serif'],
     },
     colors: {
       overlay: 'rgba(0, 0, 0, 0.8)',

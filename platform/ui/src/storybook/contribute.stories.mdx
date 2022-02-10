@@ -1,0 +1,110 @@
+import { Meta } from '@storybook/addon-docs';
+import { WithImage } from './components';
+import { WelcomeHeader } from './header/header';
+
+import StoryBook from './assets/storybook.png';
+import CodeBlock from './assets/codeblock-error.png';
+
+<Meta title="Contribute" />
+
+## How to Contribute to the Docs
+
+We are always looking for new contributors. If you are interested in
+contributing to the docs, please follow below instructions to run the storyBook
+locally and submit your new stories.
+
+<br />
+
+### Install OHIF Packages
+
+Install OHIF Packages using `yarn install` command.
+
+<br />
+
+### Change Directory to OHIF UI
+
+Change directory to OHIF UI using `cd platform/ui` command.
+
+<br />
+
+### Run Storybook
+
+You can now run the storybook using `yarn storybook` command. This will open the
+storybook in your browser. You should be able to interact with Storybook and the
+already existing stories.
+
+<WithImage image={StoryBook} alt={'storybook'} />
+
+<br />
+
+### Writing a Story
+
+Stories for each UI component are stored in the `__stories__` folder. Stories
+are written in the `mdx` file format. You can read more about `mdx` file format
+[here](https://storybook.js.org/docs/react/api/mdx). In summary, the `mdx` file
+format is a way to write stories in a plain text format, but with the ability to
+use React components.
+
+For Components that don't have a `mdx` file, you need to create a `mdx` file,
+Storybook automatically fetch the `mdx` file and render the story. You can use
+one of the already existing `mdx` files for the component (e.g.
+`button.stories.mdx`). If there is already a `mdx` file for the component, you
+can add you usage in the `usage` section of the `mdx` file. (again you can see
+`button.stories.mdx` for an example).
+
+## Potential Issues
+
+There are some potential issues that you might encounter when writing a story
+for a component. Please read the following sections carefully.
+
+### Wrong Code Block Formatting
+
+`mdx` is sensitive to whitespaces, so if you have a code block that has spaces
+in between the code block, it will not render correctly, and you will get an
+error. Always check the code block when you get an error.
+
+For instance the following code block will generate the error (notice the extra
+vertical space in the code block):
+
+```jsx
+export const TooltipTemplate = (args) => (
+  <div className="h-16 w-full">
+    <div class="w-8 h-8 mx-auto">
+      <Tooltip {...args}>
+        <Icon name="clipboard" />
+      </Tooltip>
+      // Imagine a whitespace here, we cannot show the extra vertical space, since
+      mdx will generate error
+    </div>
+  </div>
+);
+```
+
+<WithImage image={CodeBlock} alt={'codeblock'} />
+
+<br />
+
+### Stories with the same name
+
+You should not have multiple stories with the same name. If you have multiple
+stories with the same name, it will cause an error.
+
+The following code block will generate an error:
+
+```jsx
+<Canvas>
+  <Story name="Variants">
+    <Typography variant="h1" color="initial">
+      Heading 1
+    </Typography>
+  </Story>
+</Canvas>
+
+<Canvas>
+  <Story name="Variants">
+    <Typography variant="h4" color="initial">
+      Heading 4
+    </Typography>
+  </Story>
+</Canvas>
+```

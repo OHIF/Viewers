@@ -5,6 +5,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 /* Truncate 2 lines utility */
 .truncate-2-lines {
   overflow: hidden;
@@ -14,3 +16,4 @@
   line-height: 1.3;
   height: 2.1rem;
 }
+

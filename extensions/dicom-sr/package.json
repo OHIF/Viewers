@@ -43,7 +43,7 @@
     "react-cornerstone-viewport": "4.1.2"
   },
   "dependencies": {
-    "@babel/runtime": "7.7.6",
+    "@babel/runtime": "7.16.3",
     "classnames": "^2.2.6"
   }
 }

@@ -1,0 +1,170 @@
+import Button from '../Button';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import {
+  createComponentTemplate,
+  createStoryMetaSettings,
+} from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: Button,
+  title: 'Components/Button',
+};
+
+<Meta title="Components/Button" component={Button} />
+
+export const buttonTemplate = createComponentTemplate(Button);
+
+<Heading title="Button" componentRelativePath="Button/Button.jsx"/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Usage](#usage)
+- [Contribute](#contribute)
+
+
+## Overview
+
+You can use the button component to create a button. It can be used in different ways, the default
+button is a simple button with a text.
+
+<Canvas>
+  <Story name="Overview"
+         args={{children: "Button", color:"default"}}>
+    {buttonTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={Button} />
+
+## Usage
+### Variants
+There can be different variants of buttons: `text`, `outlined`,
+`contained`, and `disabled`.
+
+
+<Canvas>
+  <Story name="Variants" >
+    <div className="flex space-x-2">
+      <Button variant="text">Text Button</Button>
+      <Button variant="outlined">Outlined Button</Button>
+      <Button variant="contained">Contained Button</Button>
+      <Button variant="disabled">Disabled Button</Button>
+    </div>
+  </Story>
+</Canvas>
+
+
+### Colors
+There are different colors for the button: `default`, `primary`, `secondary`, `white`, `black`, `inherit`, `light`.
+
+
+<Canvas>
+  <Story name="Colors" >
+    <div className="flex space-x-2">
+      <Button color="default">Default Button</Button>
+      <Button color="primary">Primary Button</Button>
+      <Button color="secondary">Secondary Button</Button>
+      <Button color="white">White Button</Button>
+      <Button color="black">Black Button</Button>
+      <Button color="inherit">Inherit Button</Button>
+      <Button color="light">Light Button</Button>
+    </div>
+  </Story>
+</Canvas>
+
+### Mixing props
+You can mix different props together to create a button.
+
+<Canvas>
+  <Story name="Custom" >
+      <Button color="secondary" variant="outlined">Custom Button</Button>
+  </Story>
+</Canvas>
+
+### Disabled
+You can disable the button by setting the variant to `disabled`.
+
+<Canvas>
+  <Story name="Disabled" >
+      <Button variant="disabled">Disabled Button</Button>
+  </Story>
+</Canvas>
+
+
+### Start/End Icons
+You can add an icon to the start of the button. It accepts an icon component.
+
+
+<Canvas>
+  <Story name="Start Icon" >
+      {() => {
+        // svg icon for github
+        const Github = () => {
+          return (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="feather feather-github"
+            >
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+          )
+        }
+        return <Button startIcon={<Github />}>Start Icon Button</Button>;
+      }}
+    }}
+  </Story>
+</Canvas>
+
+End Icon is the same as start icon, but for the end of the button.
+
+
+<Canvas>
+  <Story name="End Icon" >
+      {() => {
+        // svg icon for github
+        const Github = () => {
+          return (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="feather feather-github"
+            >
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+          )
+        }
+        return <Button startIcon={<Github />} endIcon={<Github />}>Start and End Icon Button</Button>;
+      }}
+    }}
+  </Story>
+</Canvas>
+
+
+### Full width
+You can make the button full width by setting the `fullWidth` prop to `true`.
+
+<Canvas>
+  <Story name="Full Width" >
+      <Button fullWidth color="secondary">Full Width Button</Button>
+  </Story>
+</Canvas>
+
+## Contribute
+<Footer componentRelativePath="Button/__stories__/button.stories.mdx"/>
