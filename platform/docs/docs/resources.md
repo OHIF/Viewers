@@ -5,18 +5,19 @@ sidebar_label: Resources
 
 # Resources
 
-Throughout the development of the OHIF Viewer, we have had the chance to
-participate in various conferences and "hackathons". In this page, we will
-provide the presentations and other resources that we have provided to the
-community in the past:
+Throughout the development of the OHIF Viewer, we have participated in various
+conferences and "hackathons". In this page, we will provide the presentations
+and other resources that we have provided to the community in the past:
 
 ## 2022
 
-### [Upcoming: NA-MIC Project Week 36th 2022 - Remote](https://github.com/NA-MIC/ProjectWeek/blob/master/PW36_2022_Virtual/README.md)
+### [NA-MIC Project Week 36th 2022 - Remote](https://github.com/NA-MIC/ProjectWeek/blob/master/PW36_2022_Virtual/README.md)
 
 The Project Week is a week-long hackathon of hands on activity in which medical
-image computing researchers. OHIF team participated in the 35th Project Week
-in 2021. OHIF team will attend the upcoming NA-MIC Project Week 36th remotely.
+image computing researchers. OHIF team participated and gave a talk on OHIF and
+Cornerstone in the 36th Project Week:
+[[Slides]](https://docs.google.com/presentation/d/1-GtOKmr2cQi-r3OFyseSmgLeurtB3KXUkGMx2pVLh1I/edit?usp=sharing)
+[[Video]](https://vimeo.com/668339696/63a2c48de8)
 
 ## 2021
 
@@ -33,6 +34,11 @@ Project presentations and demonstrations of Essential Open Source Software for
 Science (EOSS) grantees
 [[Slides]](https://docs.google.com/presentation/d/1_CLtG2hsL3ZxOtV2olVnzBOzq-TMLrHLomOy3FiU4NE/edit?usp=sharing)
 [[Video]](https://youtu.be/0FjKkTJO0Rc?t=3737)
+
+### Google Cloud Tech
+
+Healthcare Imaging with Cloud Healthcare API
+[[Video]](https://www.youtube.com/watch?v=2MiX9ScHFhY)
 
 ## 2019
 
