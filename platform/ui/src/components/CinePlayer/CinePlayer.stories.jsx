@@ -1,15 +1,18 @@
-import React from 'react'
+import React from 'react';
 import CinePlayer from './CinePlayer';
 
 export default {
   component: CinePlayer,
   title: 'Components/CinePlayer',
-}
+  argTypes: {
+    argTypes: { onPlayPauseChange: { action: 'onPlayPauseChange' } },
+  },
+};
 
-const Template = (args) => (
+const Template = args => (
   <div className="flex flex-col flex-1 p-4 items-center">
     <div className="w-56">
-      <CinePlayer {...args}/>
+      <CinePlayer {...args} />
     </div>
   </div>
 );
@@ -20,5 +23,5 @@ Default.args = {
   maxFrameRate: 90,
   stepFrameRate: 1,
   frameRate: 24,
-  isPlaying: false
+  isPlaying: false,
 };
