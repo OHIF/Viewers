@@ -3,7 +3,7 @@ import AboutModal from './AboutModal';
 
 export default {
   component: AboutModal,
-  title: 'Components/AboutModal',
+  title: 'Modals/AboutModal',
 };
 
 const Template = args => <AboutModal {...args} />;

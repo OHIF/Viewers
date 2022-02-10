@@ -3,7 +3,7 @@ import Dialog from './Dialog';
 
 export default {
   component: Dialog,
-  title: 'Components/Dialog',
+  title: 'Modals/Dialog',
   argTypes: {
     actions: {},
   },

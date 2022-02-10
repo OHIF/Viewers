@@ -3,7 +3,7 @@ import ContextMenu from './ContextMenu';
 
 export default {
   component: ContextMenu,
-  title: 'Components/ContextMenu',
+  title: 'Modals/ContextMenu',
 };
 
 const Template = args => <ContextMenu {...args} />;

@@ -5,7 +5,7 @@ import { ICONS } from '../Icon/getIcon';
 
 export default {
   component: IconButton,
-  title: 'Components/IconButton',
+  title: 'Icons/IconButton',
   argTypes: {
     iconName: {
       control: { type: 'select', options: Object.keys(ICONS) },

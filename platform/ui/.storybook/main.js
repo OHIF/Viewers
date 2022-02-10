@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const autoprefixer = require('autoprefixer');
 const tailwindcss = require('tailwindcss');
@@ -12,6 +13,7 @@ module.exports = {
   core: {
     builder: 'webpack5',
   },
+  staticDirs: ['../static'],
   webpackFinal: async (config, { configType }) => {
     // `configType` has a value of 'DEVELOPMENT' or 'PRODUCTION'
     // You can change the configuration based on that.

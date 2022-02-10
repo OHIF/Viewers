@@ -4,7 +4,7 @@ import { ICONS } from './getIcon';
 
 export default {
   component: Icon,
-  title: 'Components/Icon',
+  title: 'Icons/Icon',
   argTypes: {
     name: {
       options: Object.keys(ICONS),
