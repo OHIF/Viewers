@@ -75,7 +75,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     const client = new StaticWadoClient({
       ...server,
-      url: server.qidoRoot,
+      url: server.wadoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
       errorInterceptor: errorHandler.getHTTPErrorHandler(),
       requestHooks: [getXHRRetryRequestHook()],
