@@ -7,9 +7,33 @@ import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/
 import { connect } from 'react-redux';
 import { servicesManager } from '../../../App';
 import { JobsContext } from '../../../context/JobsContext';
+import { withModal } from '@ohif/ui';
+
+const RenderSimilarityResult = ({ data }) => {
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <img
+        src={data.image_url}
+        style={{
+          width: '50%',
+          marginBottom: 20,
+          border: '2.55px solid blue',
+        }}
+      />
+    </div>
+  );
+};
 
 const SearchDetails = props => {
-  const { user } = props;
+  const { user, t, ...rest } = props;
   const [isDisabled, setIsDisabled] = React.useState(true);
   const [toolData, setToolData] = React.useState({});
   const [x, setX] = React.useState();
@@ -17,6 +41,7 @@ const SearchDetails = props => {
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
+  const [similarityResultState, setSimilarityResultState] = React.useState();
 
   const { UINotificationService } = servicesManager.services;
 
@@ -134,10 +159,17 @@ const SearchDetails = props => {
     const study_uid = data.StudyInstanceUID;
     const email = user.profile.email;
 
+    // get current image
+    const image = cornerstone.getImage(element);
+    // extract instance uid from the derived image data
+    const instance_uid = image.imageId.split('/')[18];
+    console.log({ instance_uid });
+
     const body = {
       study_uid: study_uid,
       series_uid: series_uid,
       email: email,
+      instance_uid,
       parameters: {
         rectangle: {
           x: x,
@@ -150,29 +182,18 @@ const SearchDetails = props => {
 
     console.log({ searchData: body });
 
-    return;
-
     await client
-      .post(`/texture`, body)
-      .then(response => {
-        cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
-          {}
-        );
-        cornerstone.updateImage(element);
+      .post(`/similarity`, body)
+      .then(async response => {
+        console.log({ response });
+        if (response.status === 201) {
+          const result = await client.get(
+            `/similarity?instance=${instance_uid}&email=${email}`
+          );
+          console.log({ result });
 
-        if (response.status === 202) {
-          UINotificationService.show({
-            message:
-              'Job triggered successfully. Please wait for it to be completed',
-            duration: 5000,
-          });
+          setSimilarityResultState(result.data.results[0]);
         }
-
-        // clearing all params
-        clearParams();
-
-        // set stackscroll as active tool
-        cornerstoneTools.setToolActive('StackScroll', { mouseButtonMask: 1 });
       })
       .catch(error => {
         console.log(error);
@@ -211,6 +232,91 @@ const SearchDetails = props => {
               </button>
             </div>
           </label>
+          {similarityResultState && (
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                paddingTop: 20,
+              }}
+            >
+              <p
+                style={{
+                  color: 'yellow',
+                  alignSelf: 'flex-start',
+                  marginLeft: 20,
+                }}
+              >
+                Query Image
+              </p>
+              <img
+                src={similarityResultState.query}
+                style={{
+                  width: '90%',
+                  marginBottom: 20,
+                  border: '2.55px solid red',
+                }}
+              />
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {similarityResultState.knn.map((res, index) => {
+                  return (
+                    <div
+                      style={{
+                        width: '50%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        paddingTop: 20,
+                        paddingBottom: 20,
+                        background: '#151A1F',
+                        position: 'relative',
+                      }}
+                      key={index}
+                      onClick={() => {
+                        console.log('open similarity modal');
+                        rest.modal.show({
+                          content: () => <RenderSimilarityResult data={res} />,
+                          title: 'Similarity Result',
+                        });
+                      }}
+                    >
+                      <p
+                        style={{
+                          color: 'blue',
+                          alignSelf: 'flex-start',
+                          position: 'absolute',
+                          top: 10,
+                          left: 10,
+                        }}
+                      >
+                        Similarity: {res.similarity_score}
+                      </p>
+                      <img
+                        src={res.region_thumbnail_url}
+                        style={{
+                          // width: '90%',
+                          width: '90%',
+                          height: '90%',
+                          // marginBottom: 20,
+                          // marginBottom: 20,
+                          border: '2.55px solid blue',
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -229,4 +335,4 @@ const ConnectedSearchDetails = connect(
   null
 )(SearchDetails);
 
-export default ConnectedSearchDetails;
+export default withModal(ConnectedSearchDetails);

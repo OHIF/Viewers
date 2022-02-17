@@ -87,12 +87,12 @@ export default {
         },
         {
           icon: 'user',
-          label: 'Theta Details',
+          label: 'Layouts',
           target: 'theta-details-panel',
         },
         {
-          icon: 'list',
-          label: 'Lung Module',
+          icon: 'search',
+          label: 'Similarity Search',
           target: 'lung-module-similarity-panel',
         },
       ],
