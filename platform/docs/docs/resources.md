@@ -40,6 +40,14 @@ Science (EOSS) grantees
 Healthcare Imaging with Cloud Healthcare API
 [[Video]](https://www.youtube.com/watch?v=2MiX9ScHFhY)
 
+## 2020
+
+### OHIF ITCR Pitch
+
+OHIF pitch for Informatics Technology for Cancer Research (ITCR)
+[[Slides]](https://docs.google.com/presentation/d/1MZXnZrVAnjmhVIWqC-aRSvJOoMMRLhLddACdCa1TybM/edit?usp=sharing)
+[[Video]](https://vimeo.com/678769373/625bdb8793)
+
 ## 2019
 
 ### OHIF and VTK.js Training Course
