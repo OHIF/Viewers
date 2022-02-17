@@ -2,15 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import getIcon from './getIcon';
 
-const Icon = ({ name, className, ...otherProps }) => {
-  if (className) {
-    return (
-      <div className={className}>
-        {getIcon(name, className, { ...otherProps })}
-      </div>
-    );
-  }
-
+const Icon = ({ name, ...otherProps }) => {
   return <React.Fragment>{getIcon(name, { ...otherProps })}</React.Fragment>;
 };
 
