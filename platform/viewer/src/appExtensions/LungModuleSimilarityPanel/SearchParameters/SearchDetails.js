@@ -9,7 +9,7 @@ import { servicesManager } from '../../../App';
 import { JobsContext } from '../../../context/JobsContext';
 import { withModal } from '@ohif/ui';
 
-const RenderSimilarityResult = ({ data }) => {
+const RenderSimilarityResult = ({ data, imgDimensions }) => {
   return (
     <div
       style={{
@@ -20,17 +20,49 @@ const RenderSimilarityResult = ({ data }) => {
         justifyContent: 'center',
       }}
     >
-      <img
-        src={data.image_url}
+      <div
         style={{
-          width: '50%',
-          marginBottom: 20,
-          border: '2.55px solid blue',
+          width: imgDimensions.width,
+          height: imgDimensions.height,
+          position: 'relative',
         }}
-      />
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: data.region_rectangle.x,
+            top: data.region_rectangle.y,
+            width: data.region_rectangle.w,
+            height: data.region_rectangle.h,
+            border: '3px solid red',
+          }}
+        />
+        <img
+          src={data.image_url}
+          style={{
+            flex: 1,
+            marginBottom: 20,
+          }}
+        />
+      </div>
     </div>
   );
 };
+
+const RenderSimilarityResultText = ({ content, res, title }) => (
+  <p
+    style={{
+      color: 'white',
+      alignSelf: 'flex-start',
+      padding: 0,
+      margin: 0,
+      marginLeft: 20,
+      ...(title === 'Malignant' && { color: res.malignant ? 'red' : 'blue' }),
+    }}
+  >
+    {content}
+  </p>
+);
 
 const SearchDetails = props => {
   const { user, t, ...rest } = props;
@@ -42,8 +74,6 @@ const SearchDetails = props => {
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
   const [similarityResultState, setSimilarityResultState] = React.useState();
-
-  const { UINotificationService } = servicesManager.services;
 
   const access_token = user.access_token;
 
@@ -200,6 +230,19 @@ const SearchDetails = props => {
       });
   };
 
+  function getMeta(url) {
+    return new Promise((res, rej) => {
+      var img = new Image();
+      img.src = url;
+      img.onload = function() {
+        res({
+          width: this.width,
+          height: this.height,
+        });
+      };
+    });
+  }
+
   return (
     <div className="component">
       {Object.keys(toolData).length > 0 && (
@@ -256,7 +299,7 @@ const SearchDetails = props => {
                 style={{
                   width: '90%',
                   marginBottom: 20,
-                  border: '2.55px solid red',
+                  border: '2.55px solid green',
                 }}
               />
               <div
@@ -281,35 +324,49 @@ const SearchDetails = props => {
                         position: 'relative',
                       }}
                       key={index}
-                      onClick={() => {
+                      onClick={async () => {
                         console.log('open similarity modal');
+                        const imgDimensions = await getMeta(res.image_url);
+
                         rest.modal.show({
-                          content: () => <RenderSimilarityResult data={res} />,
+                          content: () => (
+                            <RenderSimilarityResult
+                              data={res}
+                              imgDimensions={imgDimensions}
+                            />
+                          ),
                           title: 'Similarity Result',
                         });
                       }}
                     >
-                      <p
-                        style={{
-                          color: 'blue',
-                          alignSelf: 'flex-start',
-                          position: 'absolute',
-                          top: 10,
-                          left: 10,
-                        }}
-                      >
-                        Similarity: {res.similarity_score}
-                      </p>
                       <img
                         src={res.region_thumbnail_url}
                         style={{
-                          // width: '90%',
                           width: '90%',
                           height: '90%',
-                          // marginBottom: 20,
-                          // marginBottom: 20,
+                          marginBottom: 20,
                           border: '2.55px solid blue',
+                          borderColor: res.malignant ? 'red' : 'blue',
                         }}
+                      />
+                      <RenderSimilarityResultText
+                        content={`Similarity: ${res.similarity_score}`}
+                        res={res}
+                      />
+                      <RenderSimilarityResultText
+                        content={`Dataset: ${res.dataset}`}
+                        res={res}
+                      />
+                      <RenderSimilarityResultText
+                        content={`Dataset Id: ${res.data_id}`}
+                        res={res}
+                      />
+                      <RenderSimilarityResultText
+                        content={`Malignant: ${
+                          res.malignant ? 'true' : 'false'
+                        }`}
+                        res={res}
+                        title={'Malignant'}
                       />
                     </div>
                   );
