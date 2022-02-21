@@ -98,7 +98,7 @@ function createDicomLocalApi(dicomLocalConfig) {
     },
     retrieve: {
       series: {
-        metaData: async ({ StudyInstanceUID, madeInClient = false } = {}) => {
+        metadata: async ({ StudyInstanceUID, madeInClient = false } = {}) => {
           if (!StudyInstanceUID) {
             throw new Error(
               'Unable to query for SeriesMetadata without StudyInstanceUID'
