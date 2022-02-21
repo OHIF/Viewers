@@ -87,7 +87,7 @@ export default {
         },
         {
           icon: 'user',
-          label: 'Layouts',
+          label: '  Collage  ',
           target: 'theta-details-panel',
         },
         {
