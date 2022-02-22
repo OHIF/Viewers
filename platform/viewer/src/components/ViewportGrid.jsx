@@ -50,11 +50,13 @@ function ViewerViewportGrid(props) {
           const initialDisplaySet = displaySets.find(ds => {
             return ds.SeriesNumber === Number(seriesNumberParam);
           });
-          viewportGridService.setDisplaysetForViewport({
-            viewportIndex: 0,
-            displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
-          });
-          initialLoad = false;
+          if (initialDisplaySet) {
+            viewportGridService.setDisplaysetForViewport({
+              viewportIndex: 0,
+              displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
+            });
+            initialLoad = false;
+          }
           continue;
         }
 
