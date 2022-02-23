@@ -234,9 +234,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
         metadata = {
           samplesPerPixel: validNumber(instance.SamplesPerPixel),
-          photometricInterpretation: validNumber(
-            instance.PhotometricInterpretation
-          ),
+          photometricInterpretation: instance.PhotometricInterpretation,
           rows: validNumber(instance.Rows),
           columns: validNumber(instance.Columns),
           bitsAllocated: validNumber(instance.BitsAllocated),
