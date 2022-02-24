@@ -186,7 +186,8 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         }
 
         const viewportInfo = getEnabledElement(i);
-        const hasCornerstoneContext = viewportInfo.context &&
+        if (!viewportInfo) continue;
+        const hasCornerstoneContext =
           viewportInfo.context === 'ACTIVE_VIEWPORT::CORNERSTONE';
 
         if (hasCornerstoneContext) {
