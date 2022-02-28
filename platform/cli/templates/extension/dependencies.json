@@ -1,5 +1,6 @@
 {
   "repository": "OHIF/Viewers",
+  "keywords": ["ohif-extension"],
   "main": "dist/index.umd.js",
   "module": "src/index.js",
   "engines": {
