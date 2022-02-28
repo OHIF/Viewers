@@ -106,7 +106,8 @@ program
     'Links a local OHIF extension to the Viewer to be used for development'
   )
   .action(packageDir => {
-    linkExtension(packageDir, { viewerDirectory });
+    const fullPackageDir = path.join(currentDirectory, packageDir);
+    linkExtension(fullPackageDir, { viewerDirectory });
   });
 
 program
@@ -122,7 +123,8 @@ program
     'Links a local OHIF mode to the Viewer to be used for development'
   )
   .action(packageDir => {
-    linkMode(packageDir, { viewerDirectory });
+    const fullPackageDir = path.join(currentDirectory, packageDir);
+    linkMode(fullPackageDir, { viewerDirectory });
   });
 
 program

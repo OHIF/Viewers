@@ -3,13 +3,11 @@ import fs from 'fs';
 export default function readPluginConfigFile() {
   let fileContents;
 
-  fileContents = fs.readFileSync('./pluginConfig.json', { flag: 'r' }, function(
-    err
-  ) {
-    if (err) {
-      return; // File doesn't exist yet.
-    }
-  });
+  try {
+    fileContents = fs.readFileSync('./pluginConfig.json', { flag: 'r' });
+  } catch (err) {
+    return; // File doesn't exist yet.
+  }
 
   if (fileContents) {
     fileContents = JSON.parse(fileContents);
