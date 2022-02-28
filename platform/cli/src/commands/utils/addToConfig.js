@@ -7,7 +7,7 @@ import {
 
 function addToAndOverwriteConfig(packageName, options, augmentConfigFuntion) {
   const installedVersion = options.version;
-  const pluginConfig = readPluginConfigFile();
+  let pluginConfig = readPluginConfigFile();
 
   if (!pluginConfig) {
     pluginConfig = {
