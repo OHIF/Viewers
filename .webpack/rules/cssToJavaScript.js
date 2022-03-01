@@ -1,11 +1,14 @@
 const autoprefixer = require('autoprefixer');
 const path = require('path');
+const fs = require('fs');
 const tailwindcss = require('tailwindcss');
 const tailwindConfigPath = path.resolve(
   '../../platform/viewer/tailwind.config.js'
 );
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const devMode = process.env.NODE_ENV !== 'production';
+
+const withTailwind = fs.existsSync(tailwindConfigPath);
 
 const cssToJavaScript = {
   test: /\.css$/,
@@ -19,9 +22,9 @@ const cssToJavaScript = {
         postcssOptions: {
           verbose: true,
           plugins: [
-            [tailwindcss(tailwindConfigPath)],
+            withTailwind && [tailwindcss(tailwindConfigPath)],
             [autoprefixer('last 2 version', 'ie >= 11')],
-          ],
+          ].filter(Boolean),
         },
       },
     },
