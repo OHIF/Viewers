@@ -91,16 +91,16 @@ You can take a look at `dicomweb` data source implementation to get an idea
 If the configuration for the data source has the value staticWado set, then it
 is assumed that queries for the studies return a super-set of the studies, as it
 is assumed to be returning a static list. The StaticWadoClient performs the
-search functionality manually, by interpretting the query parameters and then
+search functionality manually, by interpreting the query parameters and then
 applying them to the returned response. This functionality may be useful for
 other types of DICOMweb back ends, where they are capable of performing queries,
 but don't allow for querying certain types of fields. However, that only works
 as long as the size of the studies list isn't too large that client side
-selectiton isn't too expensive.
+selection isn't too expensive.
 
 ## DicomMetadataStore
 
-In `OHIF-v3` we have a central location for the metadata of studies and they are
+In `OHIF-v3` we have a central location for the metadata of studies, and they are
 located in `DicomMetadataStore`. Your custom datasource can communicate with
 `DicomMetadataStore` to store, and fetch Study/Series/Instance metadata. We will
 learn more about `DicomMetadataStore` in services.

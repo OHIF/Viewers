@@ -75,7 +75,7 @@ Let's discuss each property in depth.
     protocol gets applied to the viewer.
   - `attriubte`: tag that needs to be matched against. This can be either Study-level metadata or a custom attribute. [Learn more about custom attribute matching](#custom-attribute)
 
-  - `constraint`: the constraint that needs to be satisfied for the attribute. It accept a `validator` which can be
+  - `constraint`: the constraint that needs to be satisfied for the attribute. It accepts a `validator` which can be
     [`equals`, `doesNotEqual`, `contains`, `doesNotContain`, `startsWith`, `endsWidth`]
 
     A sample of the matching rule is:
@@ -94,7 +94,7 @@ Let's discuss each property in depth.
     }
     ```
 
-- `stages`: Each protocol can defined one or more stages. Each stage defines a certain layout and viewport rules.
+- `stages`: Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules.
   Therefore, the `stages` property is array of objects, each object being one stage.
 
   - `viewportStructure`: Defines the layout of the viewer. You can define the number of `rows` and `columns`.
@@ -205,7 +205,7 @@ Default initialization of the modes handles running the `HangingProtocolService`
 
 ## Custom Attribute
 In some situations, you might want to match based on a custom attribute and not the DICOM tags. For instance,
-if you have assigned a `timepointId` to each study and you want to match based on it.
+if you have assigned a `timepointId` to each study, and you want to match based on it.
 Good news is that, in `OHIF-v3` you can define you custom attribute and use it for matching.
 
 There are various ways that you can let `HangingProtocolService` know of you custom attribute.

@@ -32,7 +32,7 @@ const extensionManager = new ExtensionManager({
 
 - `setHotkeys`: The most important method in the `HotkeysManager` which binds the keys with commands.
 - `setDefaultHotKeys`: set the defaultHotkeys **property**. Note that, this method **does not** bind the provided hotkeys; however, when `restoreDefaultBindings`
-is called, the provided defaultHotkeys will get binded.
+is called, the provided defaultHotkeys will get bound.
 - `destroy`: reset the HotkeysManager, and remove the set hotkeys and empty out the `defaultHotkeys`
 
 
@@ -42,7 +42,7 @@ A hotkey definition should have the following properties:
 
 - `commandName`: name of the registered command
 - `commandOptions`: extra arguments to the commands
-- `keys`: an array defining the key to get binded to the command
+- `keys`: an array defining the key to get bound to the command
 - `label`: label to be shown in the hotkeys preference panel
 - `isEditable`: whether the key can be edited by the user in the hotkey panel
 

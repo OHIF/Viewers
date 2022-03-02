@@ -1,7 +1,7 @@
 # Theme Configuration
 When adding new theme extendible configuration items, please document
 them here.  See [Theme Configuration with Config Point](#configPoint) on how to modify certain types of
-configuration values using the config-point defintions.
+configuration values using the config-point definitions.
 
 ## Hanging Protocols
 It is possible to customize the available hanging protocols by defining them
@@ -258,7 +258,7 @@ list: {
 }
 ```
 
-and and example for reference could be:
+and example for reference could be:
 ```js
 // Base definition:
 MGHangingProtocol: // ... full definition of MG HP here
@@ -283,5 +283,5 @@ StudyInstancesColumn: {
 ```
 Note how in the last example, the transform itself contains a reference.  This
 is a function that generates a javascript function taking props, where the
-props are available directly.  Thus, this props would need `study` containing
+props are available directly.  Thus, these props would need `study` containing
 the appropriate child objects.

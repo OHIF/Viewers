@@ -48,7 +48,7 @@ Each definition returned by the Commands Module is registered to the
 
 The command definition consists of a named command (`exampleActionDef` below) and a
 `commandFn`. The command name is used to call the command, and the `commandFn`
-is the "command" that is actioned. T
+is the "command" that is actioned.
 
 ```js
 exampleActionDef: {

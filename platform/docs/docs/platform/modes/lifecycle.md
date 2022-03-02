@@ -7,7 +7,7 @@ sidebar_label: Lifecycle Hooks
 
 ## Overview
 
-Currently there are two hooks that are called for modes:
+Currently, there are two hooks that are called for modes:
 
 - onModeEnter
 - onModeExit

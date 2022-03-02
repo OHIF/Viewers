@@ -137,7 +137,7 @@ value of this environment variable a few different ways:
 - ~[Add environment specific variables in `.env` file(s)](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-development-environment-variables-in-env)~
   - Previous `react-scripts` functionality that we need to duplicate with
     `dotenv-webpack`
-- Using the `cross-env` package in an npm script:
+- Using the `cross-env` package in a npm script:
   - `"build": "cross-env APP_CONFIG=config/my-config.js react-scripts build"`
 
 After updating the configuration, `yarn run build` to generate updated build

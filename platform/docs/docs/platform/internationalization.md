@@ -21,7 +21,7 @@ where is the main instance of i18n containing several languages and tools.
 ## How to change language for the viewer?
 
 You can take a look into user manuals to see how to change the viewer's
-language. In summary you can change the language:
+language. In summary, you can change the language:
 
 - In the preference modals
 - Using the language query in the URL: `lng=Test-LNG`
