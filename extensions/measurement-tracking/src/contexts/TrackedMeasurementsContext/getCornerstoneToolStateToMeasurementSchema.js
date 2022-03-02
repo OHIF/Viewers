@@ -13,6 +13,7 @@ export default function getCornerstoneToolStateToMeasurementSchema(
       ELLIPSE,
       POINT,
       BIDIRECTIONAL,
+      COBBANGLE,
     } = MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attemped, but its not nearly flexible enough.
@@ -24,6 +25,7 @@ export default function getCornerstoneToolStateToMeasurementSchema(
       EllipticalRoi: ELLIPSE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
+      CobbAngle: COBBANGLE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -74,6 +76,18 @@ export default function getCornerstoneToolStateToMeasurementSchema(
           DisplaySetService,
           _getValueTypeFromToolType
         );
+    case 'ArrowAnnotate':
+      return measurementData =>
+        CobbAngle(
+          measurementData,
+          SOPInstanceUID,
+          FrameOfReferenceUID,
+          SeriesInstanceUID,
+          StudyInstanceUID,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
+
   }
 }
 

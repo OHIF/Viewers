@@ -47,6 +47,7 @@ import toolMove from './../../assets/icons/tool-move.svg';
 import toolWindow from './../../assets/icons/tool-window-level.svg';
 import toolAnnotate from './../../assets/icons/tool-annotate.svg';
 import toolBidirectional from './../../assets/icons/tool-bidirectional.svg';
+import toolCobbAngle from './../../assets/icons/tool-cobbangle.svg';
 import toolElipse from './../../assets/icons/tool-elipse.svg';
 import toolLength from './../../assets/icons/tool-length.svg';
 import toolStackScroll from './../../assets/icons/tool-stack-scroll.svg';
@@ -112,6 +113,7 @@ const ICONS = {
   'tool-window-level': toolWindow,
   'tool-annotate': toolAnnotate,
   'tool-bidirectional': toolBidirectional,
+  'tool-cobbangle': toolCobbAngle,
   'tool-elipse': toolElipse,
   'tool-length': toolLength,
   'tool-stack-scroll': toolStackScroll,

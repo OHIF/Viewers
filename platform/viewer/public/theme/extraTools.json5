@@ -1,0 +1,21 @@
+{
+  // Example of how to add extra tools to the menus
+  toolbarButtonsConfig: {
+    toolbarButtons: [
+      {
+        props: {
+          items: {
+            CobbAngleTool: {
+              id: 'CobbAngle',
+              type: 'tool',
+              label: 'Cobb Angle',
+              icon: 'tool-cobbangle',
+              commandOptions: { toolName: 'CobbAngle' },
+              tooltip: '2 Line Angle'
+            },
+          },
+        },
+      },
+    ],
+  },
+}

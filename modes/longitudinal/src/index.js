@@ -1,4 +1,4 @@
-import toolbarButtons from './toolbarButtons.js';
+import toolbarButtonsConfig from './toolbarButtonsConfig.js';
 import { hotkeys } from '@ohif/core';
 
 const ohif = {
@@ -48,7 +48,8 @@ export default function mode({ modeConfiguration }) {
       ToolBarService.recordInteraction(interaction);
 
       ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
+      console.log('toolbarButtonsConfig=', toolbarButtonsConfig);
+      ToolBarService.addButtons(toolbarButtonsConfig.toolbarButtons);
       ToolBarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',

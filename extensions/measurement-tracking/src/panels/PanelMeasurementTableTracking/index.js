@@ -394,6 +394,13 @@ function _getDisplayText(
       const { text } = measurement; // Will display in "short description"
       return [`(S:${seriesNumber}, I:${instanceNumber})`];
     }
+    case types.COBBANGLE: {
+      const { rAngle } = measurement;
+      return [`${_round(rAngle, 2)}\xB0 (S:${seriesNumber}, I:${instanceNumber})`]
+    }
+    default: {
+      console.warn('Unknown type name mapping', type)
+    }
   }
 }
 

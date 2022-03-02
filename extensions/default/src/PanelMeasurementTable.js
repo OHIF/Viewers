@@ -160,6 +160,10 @@ function _getDisplayText(
       const { text } = measurement;
       return [`${text} (S:${seriesNumber}, I:${instanceNumber})`];
     }
+    case types.COBBANGLE: {
+      const { rAngle } = measurement;
+      return [`${rAngle}\xB0 (S:${seriesNumber}, I:${instanceNumber})`]
+    }
   }
 }
 

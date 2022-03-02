@@ -44,7 +44,8 @@ const appProps = {
  * loaded early enough to modify the initial render.
  */
 const defaultTheme = config && config.defaultTheme || 'theme';
-loadSearchConfigPoint(defaultTheme, '/theme', 'theme').then(() => {
+loadSearchConfigPoint(defaultTheme, '/theme', 'theme').then(configsLoaded => {
+  console.log('Configs loaded', configsLoaded);
   /** Create App */
   const app = React.createElement(App, appProps, null);
 

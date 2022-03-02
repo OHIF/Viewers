@@ -20,6 +20,7 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
   'Angle',
   'ArrowAnnotate',
   'Bidirectional',
+  'CobbAngle',
   'Length',
   'FreehandMouse',
   'EllipticalRoi',
@@ -320,6 +321,7 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     Bidirectional,
     EllipticalRoi,
     ArrowAnnotate,
+    CobbAngle,
   } = measurementServiceMappingsFactory(MeasurementService, DisplaySetService);
   const csToolsVer4MeasurementSource = MeasurementService.createSource(
     'CornerstoneTools',
@@ -357,6 +359,14 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     ArrowAnnotate.matchingCriteria,
     ArrowAnnotate.toAnnotation,
     ArrowAnnotate.toMeasurement
+  );
+
+  MeasurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'CobbAngle',
+    CobbAngle.matchingCriteria,
+    CobbAngle.toAnnotation,
+    CobbAngle.toMeasurement
   );
 
   return csToolsVer4MeasurementSource;
@@ -511,6 +521,7 @@ const _connectMeasurementServiceToTools = (
     ELLIPSE,
     POINT,
     BIDIRECTIONAL,
+    COBBANGLE,
   } = MeasurementService.VALUE_TYPES;
 
   // TODO -> I get why this was attemped, but its not nearly flexible enough.
@@ -522,6 +533,7 @@ const _connectMeasurementServiceToTools = (
     EllipticalRoi: ELLIPSE,
     Bidirectional: BIDIRECTIONAL,
     ArrowAnnotate: POINT,
+    CobbAngle: COBBANGLE,
   };
 
   const VALUE_TYPE_TO_TOOL_TYPE = {
@@ -529,6 +541,7 @@ const _connectMeasurementServiceToTools = (
     [ELLIPSE]: 'EllipticalRoi',
     [BIDIRECTIONAL]: 'Bidirectional',
     [POINT]: 'ArrowAnnotate',
+    [COBBANGLE]: 'CobbAngle',
   };
 
   MeasurementService.subscribe(

@@ -43,11 +43,13 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'mean',
   'stdDev',
   'length',
+  'rAngle',
   'shortestDiameter',
   'longestDiameter',
   'text', // NOTE: There is nothing like this in SR.
   'points',
   'source',
+  "displaySetInstanceUID",
 ];
 
 const EVENTS = {
@@ -67,6 +69,7 @@ const VALUE_TYPES = {
   ELLIPSE: 'value_type::ellipse',
   MULTIPOINT: 'value_type::multipoint',
   CIRCLE: 'value_type::circle',
+  COBBANGLE: 'value_type::cobangle',
 };
 
 class MeasurementService {
@@ -627,14 +630,15 @@ class MeasurementService {
    * @return {boolean} Measurement validation
    */
   _isValidMeasurement(measurementData) {
+    let ret = true;
     Object.keys(measurementData).forEach(key => {
       if (!MEASUREMENT_SCHEMA_KEYS.includes(key)) {
         log.warn(`Invalid measurement key: ${key}`);
-        return false;
+        ret = false;
       }
     });
 
-    return true;
+    return ret;
   }
 
   /**

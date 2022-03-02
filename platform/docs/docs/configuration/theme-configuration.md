@@ -46,6 +46,42 @@ For example:
 ```
 
 ## Query List
+## Toolbar Contents
+The layout of the toolbar can be modified by setting the configuration for
+toolbarButtonsConfig.  The button actions must be available internally for this
+to work, but the basic layout can be changed by modifying the config-point for
+toolbarButtonsConfig, for example, to add a Cobb Angle tool, the following configuration
+from extraTools.json5 can be used:
+```js
+{
+  // Example of how to add extra tools to the menus
+  toolbarButtonsConfig: {
+    toolbarButtons: [
+      {
+        props: {
+          items: {
+            CobbAngleTool: {
+              id: 'CobbAngle',
+              type: 'tool',
+              label: 'Cobb Angle',
+              icon: 'tool-cobbangle',
+              commandOptions: { toolName: 'CobbAngle' },
+              tooltip: '2 Line Angle'
+            },
+          },
+        },
+      },
+    ],
+  },
+}
+```
+This configuration says to modify the toolbarButtons list, element at 0,
+which is the annotation/markup tools list, and then modify the items list.
+Note how the items list is modified with an object, indicating to match by
+id key, or append if not found.  Then, the basic configuration is just to
+add the cobb angle tool definition.
+
+## Query List
 One of the suggested areas for customization is the columns in the query table.
 
 ## Demographics Overlay

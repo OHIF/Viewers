@@ -11,6 +11,7 @@ const toolsGroupedByType = {
     csTools.EllipticalRoiTool,
     csTools.DragProbeTool,
     csTools.RectangleRoiTool,
+    csTools.CobbAngleTool,
   ],
   other: [
     csTools.PanTool,

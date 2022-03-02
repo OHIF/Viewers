@@ -2,6 +2,7 @@ import Length from './Length';
 import Bidirectional from './Bidirectional';
 import ArrowAnnotate from './ArrowAnnotate';
 import EllipticalRoi from './EllipticalRoi';
+import CobbAngle from './CobbAngle';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
@@ -21,6 +22,7 @@ const measurementServiceMappingsFactory = (
       ELLIPSE,
       POINT,
       BIDIRECTIONAL,
+      COBBANGLE,
     } = MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attemped, but its not nearly flexible enough.
@@ -31,6 +33,7 @@ const measurementServiceMappingsFactory = (
       EllipticalRoi: ELLIPSE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
+      CobbAngle: COBBANGLE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -101,6 +104,20 @@ const measurementServiceMappingsFactory = (
           valueType: MeasurementService.VALUE_TYPES.ELLIPSE,
         },
       ],
+    },
+    CobbAngle: {
+      toAnnotation: CobbAngle.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        CobbAngle.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.CobbAngle,
+        }
+      ]
     },
   };
 };

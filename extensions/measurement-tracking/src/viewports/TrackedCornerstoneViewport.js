@@ -27,6 +27,7 @@ const {
   BidirectionalTool,
   EllipticalRoiTool,
   LengthTool,
+  CobbAngleTool,
 } = cornerstoneTools;
 
 const BaseAnnotationTool = cornerstoneTools.importInternal(
@@ -82,7 +83,8 @@ function TrackedCornerstoneViewport(props) {
         tool instanceof ArrowAnnotateTool ||
         tool instanceof BidirectionalTool ||
         tool instanceof EllipticalRoiTool ||
-        tool instanceof LengthTool
+        tool instanceof LengthTool ||
+        tool instanceof CobbAngleTool
       ) {
         const configuration = tool.configuration;
 
@@ -133,7 +135,8 @@ function TrackedCornerstoneViewport(props) {
         tool instanceof ArrowAnnotateTool ||
         tool instanceof BidirectionalTool ||
         tool instanceof EllipticalRoiTool ||
-        tool instanceof LengthTool
+        tool instanceof LengthTool ||
+        tool instanceof CobbAngleTool
       ) {
         const configuration = tool.configuration;
 
