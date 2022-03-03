@@ -49,7 +49,6 @@ const CobbAngle = {
       label: measurementData.label,
       description: measurementData.description,
       unit: "\xB0",
-      length: rAngle,
       rAngle,
       type: getValueTypeFromToolType(tool),
       points,

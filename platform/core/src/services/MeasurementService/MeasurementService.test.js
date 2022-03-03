@@ -74,6 +74,24 @@ describe('MeasurementService.js', () => {
     });
   });
 
+  describe('_isValidMeasurement', () => {
+    it('returns true on valid measurement', () => {
+      const measurementData = {
+        id: 5,
+        rAngle: 37,
+      };
+      expect(measurementService._isValidMeasurement(measurementData)).toBe(true);
+    })
+
+    it('returns false on invalid measurement', () => {
+      const measurementData = {
+        id: 5,
+        rAgle: 37,
+      };
+      expect(measurementService._isValidMeasurement(measurementData)).toBe(false);
+    })
+  });
+
   describe('addMapping()', () => {
     it('adds new mapping', () => {
       measurementService.addMapping(
