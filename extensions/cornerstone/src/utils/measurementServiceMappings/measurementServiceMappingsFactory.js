@@ -115,7 +115,7 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.CobbAngle,
+          valueType: MeasurementService.VALUE_TYPES.COBBANGLE,
         }
       ]
     },

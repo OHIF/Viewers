@@ -11,7 +11,7 @@
               label: 'Cobb Angle',
               icon: 'tool-cobbangle',
               commandOptions: { toolName: 'CobbAngle' },
-              tooltip: '2 Line Angle'
+              tooltip: '2 Lines Angle'
             },
           },
         },

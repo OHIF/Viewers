@@ -1,6 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import getHandlesFromPoints from './utils/getHandlesFromPoints';
 
 const CobbAngle = {
   toAnnotation: (measurement, definition) => { },
