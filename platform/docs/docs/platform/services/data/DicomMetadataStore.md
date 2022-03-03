@@ -33,7 +33,7 @@ Let's find out about the public API for `DicomMetaDataStore` service.
 - `EVENTS`: Object including the events mentioned above. You can subscribe to these events
   by calling DicomMetaDataStore.subscribe(EVENTS.SERIES_ADDED, myFunction). [Read more about pub/sub pattern here](../pubsub.md)
 
-- `addInstances(instances, madeInClient = false)`: adds the instances metadata to the store. madeInClient is explained in detail below. After
+- `addInstances(instances, madeInClient = false)`: adds the instances' metadata to the store. madeInClient is explained in detail below. After
   adding to the store it fires the EVENTS.INSTANCES_ADDED.
 
 - `addSeriesMetadata(seriesSummaryMetadata, madeInClient = false)`: adds series summary metadata. After adding it fires EVENTS.SERIES_ADDED

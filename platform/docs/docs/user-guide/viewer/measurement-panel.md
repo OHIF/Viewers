@@ -7,7 +7,7 @@ sidebar_position: 3
 ## Introduction
 In `Basic Viewer` mode, the right panel is the `Measurement Panel`. The Measurement Panel can be expanded or hidden by clicking on the arrow to the left of `Measurements`.
 <!-- We might want to make an entire section about the tracking workflow including SR hydration because it's pretty complicated. Let's review after the deploy branch is ready. Logic is in OHIF-63 OHIF-339 tickets for reference -->
-Select a measurement tool and mark an image to initiate measurement tracking. A pop up will ask if you want to track measurements for the series on which the annotation was drawn.
+Select a measurement tool and mark an image to initiate measurement tracking. A pop-up will ask if you want to track measurements for the series on which the annotation was drawn.
 
 ![user-measurement-panel-modal](../../assets/img/measurement-panel-prompt.png)
 

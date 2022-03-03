@@ -11,7 +11,7 @@ sidebar_label: Release Notes
 ## What's new in `OHIF-v3`
 
 `OHIF-v3` is our second try for a React-based viewer, and is the third version
-of our medical image web viewers from the start. The summary of changes include:
+of our medical image web viewers from the start. The summary of changes includes:
 
 - Addition of workflow modes
   - Often, medical imaging use cases involves lots of specific workflows that

@@ -11,7 +11,7 @@ The mode chooses what SOPClassHandlers to use, so you could process a series in 
 
 
 SOPClassHandler is a bit different from the other modules, as it doesn't provide a `1:1`
-schema for UI or provide it's own components. It instead defines:
+schema for UI or provide its own components. It instead defines:
 
 - `sopClassUIDs`: an array of string SOP Class UIDs that the
   `getDisplaySetFromSeries` method should be applied to.

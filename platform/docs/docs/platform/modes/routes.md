@@ -90,7 +90,7 @@ There are two types of `routes` that are created by the mode.
 - Routes with dataSourceName `/${mode.id}/${dataSourceName}`
 - Routes without dataSourceName `/${mode.id}`
 
-Therefore navigating to
+Therefore, navigating to
 `http://localhost:3000/viewer/?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1`
 will run the app with the layout and functionalities of the `viewer` mode using
 the `defaultDataSourceName` which is defined in the
@@ -114,7 +114,7 @@ Default init function will:
 - `retriveSeriesMetaData` for the `studyInstanceUIDs` that are defined in the
   URL.
 - Subscribe to `instanceAdded` event, to make display sets after a series have
-  finished retrieving its instances metadata.
+  finished retrieving its instances' metadata.
 - Subscribe to `seriesAdded` event, to run the `HangingProtocolService` on the
   retrieves series from the study.
 

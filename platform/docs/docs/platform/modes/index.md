@@ -293,7 +293,7 @@ properties inside the [route documentation](./routes.md)
 Currently `extensions` property in the mode config is used to add
 _contextModule_ of the mentioned extensions to the list of contexts and provide
 them through out the app. Since extensions are registered by the
-ExtensionManager, modes have access to the them even if they have not been
+ExtensionManager, modes have access to them even if they have not been
 referred in the mode config file inside _extensions_ property.
 [Read more about extension registration](../extensions/index.md#registering-an-extension)
 

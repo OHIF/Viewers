@@ -6,9 +6,9 @@ sidebar_label: Overview
 # Overview
 
 Data services are the first category of services which deal with handling non-ui
-related state Each services have their own internal state which they handle.
+related state Each service have their own internal state which they handle.
 
-> We have replaced the _redux_ store. Instead we have introduced various
+> We have replaced the _redux_ store. Instead, we have introduced various
 > services and a pub/sub pattern to subscribe and run, which makes the `OHIF-v3`
 > architecture nice and clean.
 

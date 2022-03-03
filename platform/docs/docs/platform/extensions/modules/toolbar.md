@@ -222,7 +222,7 @@ extension. To use it, you can just add the following definition to the list of
 ## Custom Button
 
 You can also create your own extension, and add your new custom tool appearance
-(e.g., split horizantlly instead of vertically for split tool). Simply add
+(e.g., split horizontally instead of vertically for split tool). Simply add
 `getToolbarModule` to your extension, and pass your tool react component to its
 `defaultComponent` property in the returned object. You can use `@ohif/ui`
 components such as `IconButton, Icon, Tooltip, ToolbarButton` to build your own

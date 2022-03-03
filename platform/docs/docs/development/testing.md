@@ -50,7 +50,7 @@ For running the OHIF e2e test you need to run the following steps:
 
   Run the tests by clicking on the `Run #number integration tests` .
 
-  A new window will open and you will see e2e tests being executed one after
+  A new window will open, and you will see e2e tests being executed one after
   each other.
 
   ![e2e-cypress-final](../assets/img/e2e-cypress-final.png)
@@ -118,7 +118,7 @@ choice for asserting an element's border color.
 
 Modern tooling gives us this "for free". It can catch invalid regular
 expressions, unused variables, and guarantee we're calling methods/functions
-with the expected paramater types.
+with the expected parameter types.
 
 Example Tooling:
 

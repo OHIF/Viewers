@@ -5,7 +5,7 @@ It is a service that allows exposing internal "static" configuration data
 for modification by sites at load time by defining "theme" files.  For
 information on the configuration side of things, see [theme-configuration](../../configuration/theme-conffiguration.md).
 
-The service isn't a traditional OHIF service avaialble in the services
+The service isn't a traditional OHIF service available in the services
 deployment, but is rather a service which exposes static declarations of
 data as configurable data.  For example, suppose a list of modalities
 was required for the search constraints.  The core code might decide to
@@ -53,7 +53,7 @@ example, in the above modalities list, the original declaration is:
         { value: 'ASMT', label: 'ASMT' },
         ...
 ```
-so the constant should be extracted to it's own file, but it is a fairly
+so the constant should be extracted to its own file, but it is a fairly
 simple list, so extracting it that way is fairly easy.  A more complex example
 might be the columns displayed in the search page.  These are directly
 referenced in the WorkList as bits of code that have both the configuration
@@ -168,7 +168,7 @@ re-render the display.  It works like:
     ConfigPoint.addLoadListener(ThemeProtocols, this._listenThemeProtocols);
 ```
 
-This is NOT intended for listening for programatic changes to the configuration,
+This is NOT intended for listening for programmatic changes to the configuration,
 but is intended only for load time updates.  Again, the idea is that the
 configuration points are constants loaded from configuration files.
 

@@ -65,13 +65,13 @@ Note 2: You don't need to use the `@ohif` scope for your extensions. You can use
 any scope you want.
 
 Note 3: Although folders names are not important and the `package.json` file
-contains the mode name, we recommend to use the same name as the folder name.
+contains the mode name, we recommend using the same name as the folder name.
 
 ![Template Extension](../../assets/img/template-extension-files.png)
 
 ### 2) Configuring OHIF
 
-There are couple of places inside OHIF which we need to modify in order to add
+There are a couple of places inside OHIF which we need to modify in order to add
 the extension. The following lines of code should be added to the OHIF:
 
 #### Viewer's package.json

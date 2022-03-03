@@ -10,7 +10,7 @@ renders series.
 ![user-viewer-main](../../assets/img/user-viewer-main.png)
 
 
-By default you can modify:
+By default, you can modify:
 
 - Zoom: right click dragging up or down
 - Contrast/brightness: left click dragging up/down to change contrast, and left/right for changing brightness

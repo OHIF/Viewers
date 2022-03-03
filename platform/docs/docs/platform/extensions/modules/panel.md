@@ -20,7 +20,7 @@ that can be displayed in the consuming application's "Panel" Component.
 
 The `menuOptions`'s `target` key, points to a registered `components`'s `id`. A
 `defaultContext` is applied to all `menuOption`s; however, each `menuOption` can
-optionally provide it's own `context` value.
+optionally provide its own `context` value.
 
 The `getPanelModule` receives an object containing the `ExtensionManager`'s
 associated `ServicesManager` and `CommandsManager`.
