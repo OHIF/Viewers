@@ -39,6 +39,7 @@
     "clsx": "^1.1.1",
     "file-loader": "^6.2.0",
     "plugin-image-zoom": "ataft/plugin-image-zoom",
+    "postcss-preset-env": "^7.4.1",
     "url-loader": "^4.1.1"
   },
   "peerDependencies": {
@@ -59,6 +60,6 @@
   },
   "devDependencies": {
     "postcss-import": "^14.0.2",
-    "postcss-preset-env": "^6.7.0"
+    "postcss-preset-env": "^7.4.1"
   }
 }

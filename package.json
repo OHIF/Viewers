@@ -52,7 +52,6 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
-    "config-point": "^0.3.4",
     "@babel/runtime": "7.16.3",
     "core-js": "^3.2.1",
     "cornerstone-core": "2.6.0",
@@ -104,8 +103,8 @@
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss": "^8.3.5",
     "postcss-import": "^14.0.2",
-    "postcss-loader": "^6.1.1",
-    "postcss-preset-env": "^6.7.0",
+    "postcss-loader": "^6.2.1",
+    "postcss-preset-env": "^7.4.1",
     "prettier": "^1.18.2",
     "react-hot-loader": "^4.13.0",
     "serve": "^11.1.0",

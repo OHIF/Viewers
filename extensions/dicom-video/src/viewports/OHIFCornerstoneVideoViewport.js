@@ -12,16 +12,17 @@ import {
 } from '@ohif/ui';
 import { adapters } from 'dcmjs';
 import id from '../id';
+import ViewportOverlay from './ViewportOverlay';
 
-
-function OHIFCornerstoneVideoViewport({
-  children,
-  dataSource,
-  displaySet,
-  viewportIndex,
-  servicesManager,
-  extensionManager,
-}) {
+function OHIFCornerstoneVideoViewport(props) {
+  const {
+    children,
+    dataSource,
+    displaySet,
+    viewportIndex,
+    servicesManager,
+    extensionManager,
+  } = props;
   const {
     DisplaySetService,
     MeasurementService,
@@ -33,6 +34,7 @@ function OHIFCornerstoneVideoViewport({
   // Need to copies of the source to fix a firefox bug
   return (
     <div className="bg-primary-black w-full h-full">
+      <ViewportOverlay  {...props} />
       <video
         src={videoUrl}
         controls
