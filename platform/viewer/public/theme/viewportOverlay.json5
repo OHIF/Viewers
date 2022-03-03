@@ -1,0 +1,35 @@
+{
+  ViewportOverlay: {
+    topLeft: {
+        PatientName: {
+          id: 'PatientName',
+          title: 'PN:',
+          condition: {configOperation: 'safe', value: "image && image.PatientName && image.PatientName.Alphabetic"},
+          value: { configOperation: 'safe', value: "image.PatientName.Alphabetic" },
+        },
+        AccessionNumber: {
+          id: 'AccessionNumber',
+          title: 'Acc#',
+          value: { configOperation: 'safe', value: "image && image.AccessionNumber" },
+        },
+        PID: {
+          id: 'PID',
+          title: 'PID#',
+          value: { configOperation: 'safe', value: "image && image.PatientID" },
+        },
+        OtherPid: {
+          id: 'OtherPid',
+          title: 'Other PID:',
+          condition: { configOperation: 'safe', value: "image && image.OtherPatientIDs"},
+          value: { configOperation: 'safe', value: "image && image.OtherPatientIDs" },
+        },
+        Species: {
+          id: 'Species',
+          title: 'Species:',
+          condition: {configOperation: 'safe', value: "image && image.PatientSpeciesDescription"},
+          value: { configOperation: 'safe', value: "image.PatientSpeciesDescription + '/' + image.PatientBreedDescription" },
+        },
+    },
+
+  },
+}

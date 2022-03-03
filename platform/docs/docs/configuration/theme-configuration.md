@@ -3,71 +3,37 @@ When adding new theme extendible configuration items, please document
 them here.  See [Theme Configuration with Config Point](#configPoint) on how to modify certain types of
 configuration values using the config-point definitions.
 
-## Hanging Protocols
-It is possible to customize the available hanging protocols by defining them
-in a new theme file OR by defining the hanging protocols in a custom mode.
-If done correctly, the mode defined hanging protocols are automatically
-applied when using a particular view mode, allowing for further customization
-by theme files.
-
-The default hanging protocols for the cornerstone mode is defined in
-themeProtocolProvider.js,  in a configuration point named
-`ThemeProtocols.protocols`  To define a new
-hanging protocol, it is possible to simply extend the protocols list with
-a new definition, for example, in the file mgHP.json5, the following definition
-would add a new hanging protocol:
+## Viewport Overlays
+The viewport overlays can be customized either a specific viewport, or generally
+for any viewport using an overlay.  There in an example of this in `viewportOverlay.json5`
+Some of the contents of this are:
 ```js
 {
-  ThemeProtocols: {
-    protocols: {
-      MG:         {
-        // This is a working HP, but isn't MG specific...
-          id: 'MG',
-          locked: true,
-          hasUpdatedPriorsInformation: false,
-          name: '1x2',
-          createdDate: '2021-11-01T18:32:42.849Z',
-          modifiedDate: '2021-11-01T18:32:42.849Z',
-          availableTo: {},
-          editableBy: {},
-          protocolMatchingRules: [
-            {
-              id: 'NumberOfStudyRelatedSeries>1',
-              weight: 10,
-              attribute: 'NumberOfStudyRelatedSeries',
-              constraint: {
-                greaterThan: {
-                  value: 1,
-                },
-              },
-              required: true,
-            },
-          ],
-          stages: [
-            {
-              name: 'OneByTwo',
-              viewportStructure: {
-                type: 'grid',
-                properties: {
-                  rows: 1,
-                  columns: 2,
-                },
-              },
-              viewport: {},
-            },
-          ],
-          numberOfPriorsReferenced: 0,
+  ViewportOverlay: {
+    topLeft: {
+        PatientName: {
+          id: 'PatientName',
+          title: 'PN:',
+          condition: {configOperation: 'safe', value: "image && image.PatientName && image.PatientName.Alphabetic"},
+          value: { configOperation: 'safe', value: "image.PatientName.Alphabetic" },
         },
-    },
-  },
-}
 ```
-The MG protocol doesn't initially exist, so this would add a new hanging
-protocol, which would be defined in the normal hanging protocol definition.
+
+This says to customize the generic `ViewportOverlay`, and to add to the topLeft
+section, a new item called PatientName.  Since no existing object exists with
+this name, it will be added at the end of the topLeft section.  The remaining
+items are then:
+* id is a name for this item
+* title is the string to use as a title value
+* condition is when to  include this item.
+ * The condition is a function taking a properties object.
+ * The condition function MAY be defined using a "safe function", whose body is provided by the value field.
+ * The condition says to only display the object if the image exists in the provided properites
+* value is the field to display, in this case the Alphabetic string value.
+* The available properties are the image data from the display set and the custom properties such as isZoom provided by the display port
 
 ## Query List
 One of the suggested areas for customization is the columns in the query table.
-TODO
 
 ## Demographics Overlay
 Another recommended change is to configure the demographics overlay using
