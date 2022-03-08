@@ -1,20 +1,20 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
-import { useSearchParams } from "react-router-dom";
 
-let initialLoad = true;
+const urlParams = new URLSearchParams(window.location.search);
+const seriesNumberParam = Number(urlParams.get('series_number'));
+
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
-
-  const [searchParams] = useSearchParams();
+  const [isParamViewLoaded, setIsParamViewLoaded] = useState(false);
 
   const {
     numCols,
@@ -42,46 +42,43 @@ function ViewerViewportGrid(props) {
 
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
 
-      const seriesNumberParam = searchParams.get("series_number");
+      if(!isParamViewLoaded && seriesNumberParam) {
+        const initialDisplaySet = displaySets.find(ds => {
+          return ds.SeriesNumber === seriesNumberParam;
+        });
 
-      // Match each viewport individually
-      for (let i = 0; i < numViewports; i++) {
-        if(initialLoad && seriesNumberParam !== null) {
-          const initialDisplaySet = displaySets.find(ds => {
-            return ds.SeriesNumber === Number(seriesNumberParam);
-          });
-          if (initialDisplaySet) {
-            viewportGridService.setDisplaysetForViewport({
-              viewportIndex: 0,
-              displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
-            });
-            initialLoad = false;
+        initialDisplaySet && viewportGridService.setDisplaysetForViewport({
+          viewportIndex: 0,
+          displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
+        });
+
+        setIsParamViewLoaded(true);
+      } else {
+        // Match each viewport individually
+        for (let i = 0; i < numViewports; i++) {
+          if (hpAlreadyApplied[i] === true) {
+            continue;
           }
-          continue;
+
+          // if current viewport doesn't have a match
+          if (matchDetails[i] === undefined) return;
+
+          const { SeriesInstanceUID } = matchDetails[i];
+          const matchingDisplaySet = displaySets.find(ds => {
+            return ds.SeriesInstanceUID === SeriesInstanceUID;
+          });
+
+          if (!matchingDisplaySet) {
+            continue;
+          }
+
+          viewportGridService.setDisplaysetForViewport({
+            viewportIndex: i,
+            displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+          });
+
+          HangingProtocolService.setHangingProtocolAppliedForViewport(i);
         }
-
-        if (hpAlreadyApplied[i] === true) {
-          continue;
-        }
-
-        // if current viewport doesn't have a match
-        if (matchDetails[i] === undefined) return;
-
-        const { SeriesInstanceUID } = matchDetails[i];
-        const matchingDisplaySet = displaySets.find(ds => {
-          return ds.SeriesInstanceUID === SeriesInstanceUID;
-        });
-
-        if (!matchingDisplaySet) {
-          continue;
-        }
-
-        viewportGridService.setDisplaysetForViewport({
-          viewportIndex: i,
-          displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
-        });
-
-        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
       }
     },
     [viewportGrid, numRows, numCols]
