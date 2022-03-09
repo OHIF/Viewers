@@ -4,19 +4,20 @@ them here.  See [Theme Configuration with Config Point](#configPoint) on how to 
 configuration values using the config-point definitions.
 
 ## Viewport Overlays
-The viewport overlays can be customized either a specific viewport, or generally
-for any viewport using an overlay.  There in an example of this in `viewportOverlay.json5`
+The viewport overlays can be customized either for a specific viewport,
+or generally for any viewport using an overlay.
+There in an example of this in `viewportOverlay.json5`
 Some of the contents of this are:
 ```js
-{
-  ViewportOverlay: {
-    topLeft: {
-        PatientName: {
-          id: 'PatientName',
-          title: 'PN:',
-          condition: {configOperation: 'safe', value: "image && image.PatientName && image.PatientName.Alphabetic"},
-          value: { configOperation: 'safe', value: "image.PatientName.Alphabetic" },
-        },
+ViewportOverlay: {
+    contents: {
+      topLeft: {
+        contents: {
+          PatientName: {
+            id: 'PatientName',
+              title: 'PN:',
+                condition: { configOperation: 'safe', value: "image && image.PatientName && image.PatientName.Alphabetic" },
+                value: { configOperation: 'safe', value: "image.PatientName.Alphabetic" },
 ```
 
 This says to customize the generic `ViewportOverlay`, and to add to the topLeft
@@ -31,6 +32,18 @@ items are then:
  * The condition says to only display the object if the image exists in the provided properites
 * value is the field to display, in this case the Alphabetic string value.
 * The available properties are the image data from the display set and the custom properties such as isZoom provided by the display port
+
+### Adding a new viewport overlay location
+It is possible to add more viewport overlay locations by extending the contents array in the ViewportOverlay config point.
+For example:
+```js
+  ViewportOverlay: {
+    contents: {
+      midLeft: {
+        dataCy: 'mid-left-viewport',
+        className: 'center left-viewport',
+        contents: [ ... contents for your new overlay location ],
+```
 
 ## Query List
 One of the suggested areas for customization is the columns in the query table.

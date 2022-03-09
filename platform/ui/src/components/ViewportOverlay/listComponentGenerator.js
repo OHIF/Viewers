@@ -1,7 +1,7 @@
 const listComponentGenerator = props => {
-  const { list, itemGenerator } = props;
-  if (!list) return;
-  return list.map(item => {
+  const { contents, itemGenerator } = props;
+  if (!contents) return;
+  return contents.map(item => {
     if (!item) return;
     const generator = item.generator || itemGenerator;
     if (!generator) throw new Error(`No generator for ${item}`);
