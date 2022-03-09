@@ -16,6 +16,7 @@ const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 import { useAppConfig } from '@state';
 
+
 function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
   const [toolbarButtons, setToolbarButtons] = useState([]);
@@ -119,6 +120,7 @@ function ViewerLayout({
         onSubmit: ({ hotkeyDefinitions, language }) => {
           i18n.changeLanguage(language.value);
           hotkeysManager.setHotkeys(hotkeyDefinitions);
+          console.log(hotkeyDefinitions);
           hide();
         },
         onReset: () => hotkeysManager.restoreDefaultBindings(),

@@ -14,6 +14,13 @@ import measurementTools from '../../../../extensions/cornerstone/src/utils/measu
  * @property {String[]} keys - Keys to bind; Follows Mousetrap.js binding syntax
  */
 
+ import axios from "axios";
+
+ const nlApi = axios.create({
+   baseURL: process.env.REACT_APP_API_URL || "",
+   withCredentials: process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.includes("http://localhost") : false,
+ });
+
 export class HotkeysManager {
   constructor(commandsManager, servicesManager) {
     this.hotkeyDefinitions = {};
@@ -65,12 +72,57 @@ export class HotkeysManager {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       definitions.forEach(definition => this.registerHotkeys(definition));
-      localStorage.setItem('hotkey-definitions', JSON.stringify(definitions));
+      this.saveHotkeys(definitions);
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
       UINotificationService.show({
         title: 'Hotkeys Manager',
         message: 'Error while setting hotkeys',
+        type: 'error',
+      });
+    }
+  }
+
+  async saveHotkeys(hotkeyDefinitions = []) {
+    try {
+      console.log(hotkeyDefinitions)
+      const hotKeysResponse = nlApi.post("/api/hotkeys/", {
+        params: {
+          hot_keys: hotkeyDefinitions
+        }}
+      );
+      if(hotKeysResponse.status !== 201){
+        throw new Error(
+          'Unable to save hotkeys'
+        );
+      }
+    } catch (error) {
+      const { UINotificationService } = this._servicesManager.services;
+      UINotificationService.show({
+        title: 'Hotkeys Manager',
+        message: 'Error while saving hotkeys',
+        type: 'error',
+      });
+    }
+  }
+
+  async updateHotkeys(hotkeyDefinitions = []) {
+    try {
+      const hotKeysResponse = nlApi.put("/api/hotkeys/$self/", {
+        params: {
+          hot_keys: hotkeyDefinitions
+        }}
+      );
+      if(hotKeysResponse.status !== 200){
+        throw new Error(
+          'Unable to update hotkeys'
+        );
+      }
+    } catch (error) {
+      const { UINotificationService } = this._servicesManager.services;
+      UINotificationService.show({
+        title: 'Hotkeys Manager',
+        message: 'Error while updating hotkeys',
         type: 'error',
       });
     }
