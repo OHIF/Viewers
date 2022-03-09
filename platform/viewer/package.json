@@ -57,7 +57,7 @@
     "@ohif/ui": "^2.0.0",
     "@types/react": "^16.0.0",
     "classnames": "^2.2.6",
-    "config-point": "^0.4.1",
+    "config-point": "^0.4.2",
     "core-js": "^3.16.1",
     "cornerstone-math": "^0.1.9",
     "cornerstone-tools": "6.0.2",
