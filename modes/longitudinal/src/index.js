@@ -23,6 +23,11 @@ const dicomvideo = {
   viewport: 'org.ohif.dicom-video.viewportModule.dicom-video',
 }
 
+const dicomecg = {
+  sopClassHandler: 'org.ohif.dicom-ecg.sopClassHandlerModule.dicom-ecg',
+  viewport: 'org.ohif.dicom-ecg.viewportModule.dicom-ecg',
+}
+
 export default function mode({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
@@ -96,6 +101,10 @@ export default function mode({ modeConfiguration }) {
                   namespace: dicomvideo.viewport,
                   displaySetsToDisplay: [dicomvideo.sopClassHandler],
                 },
+                {
+                  namespace: dicomecg.viewport,
+                  displaySetsToDisplay: [dicomecg.sopClassHandler],
+                },
               ],
             },
           };
@@ -110,7 +119,12 @@ export default function mode({ modeConfiguration }) {
       'org.ohif.dicom-video',
     ],
     hangingProtocols: [ohif.hangingProtocols],
-    sopClassHandlers: [dicomvideo.sopClassHandler, ohif.sopClassHandler, dicomsr.sopClassHandler,],
+    sopClassHandlers: [
+      dicomvideo.sopClassHandler,
+      dicomecg.sopClassHandler,
+      ohif.sopClassHandler,
+      dicomsr.sopClassHandler,
+    ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
