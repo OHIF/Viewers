@@ -6446,9 +6446,9 @@ ejs@^2.6.1:
   integrity sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==
 
 electron-to-chromium@^1.4.76:
-  version "1.4.80"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.80.tgz#299a1ea3e32810934b4e3c2e4d4cb53136fdab3f"
-  integrity sha512-COsbJCGVYCc/aAY4cd94x1Js3q0r406YKGbdL8LXHg0O9dEjuFEFU/vZneRxBxKo/f1lLHi0YyAR7sbFM+i8Bg==
+  version "1.4.81"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.81.tgz#a9ce8997232fb9fb0ec53de8931a85b18c0a7383"
+  integrity sha512-Gs7xVpIZ7tYYSDA+WgpzwpPvfGwUk3KSIjJ0akuj5XQHFdyQnsUoM76EA4CIHXNLPiVwTwOFay9RMb0ChG3OBw==
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -7755,11 +7755,10 @@ functions-have-names@^1.2.2:
   integrity sha512-bLgc3asbWdwPbx2mNk2S49kmJCuQeu0nfmaOgbs8WIyzzkw3r4htszdIi9Q9EMezDPTYuJx2wvjZ/EwgAthpnA==
 
 gauge@^4.0.0:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/gauge/-/gauge-4.0.2.tgz#c3777652f542b6ef62797246e8c7caddecb32cc7"
-  integrity sha512-aSPRm2CvA9R8QyU5eXMFPd+cYkyxLsXHd2l5/FOH2V/eml//M04G6KZOmTap07O1PvEwNcl2NndyLfK8g3QrKA==
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/gauge/-/gauge-4.0.3.tgz#286cf105c1962c659f0963058fb05116c1b82d3f"
+  integrity sha512-ICw1DhAwMtb22rYFwEHgJcx1JCwJGv3x6G0OQUq56Nge+H4Q8JEwr8iveS0XFlsUNSI67F5ffMGK25bK4Pmskw==
   dependencies:
-    ansi-regex "^5.0.1"
     aproba "^1.0.3 || ^2.0.0"
     color-support "^1.1.3"
     console-control-strings "^1.1.0"
@@ -11380,6 +11379,11 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
+node-ensure@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/node-ensure/-/node-ensure-0.0.0.tgz#ecae764150de99861ec5c810fd5d096b183932a7"
+  integrity sha1-7K52QVDemYYexcgQ/V0Jaxg5Mqc=
+
 node-fetch-npm@^2.0.2:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/node-fetch-npm/-/node-fetch-npm-2.0.4.tgz#6507d0e17a9ec0be3bec516958a497cec54bf5a4"
@@ -12296,12 +12300,13 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-pdfjs-dist@^2.2.228:
-  version "2.13.216"
-  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-2.13.216.tgz#251a11c9c8c6db19baacd833a4e6986c517d1ab3"
-  integrity sha512-qn/9a/3IHIKZarTK6ajeeFXBkG15Lg1Fx99PxU09PAU2i874X8mTcHJYyDJxu7WDfNhV6hM7bRQBZU384anoqQ==
+pdfjs-dist@2.2.228:
+  version "2.2.228"
+  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-2.2.228.tgz#777b068a0a16c96418433303807c183058b47aaa"
+  integrity sha512-W5LhYPMS2UKX0ELIa4u+CFCMoox5qQNQElt0bAK2mwz1V8jZL0rvLao+0tBujce84PK6PvWG36Nwr7agCCWFGQ==
   dependencies:
-    web-streams-polyfill "^3.2.0"
+    node-ensure "^0.0.0"
+    worker-loader "^2.0.0"
 
 pend@~1.2.0:
   version "1.2.0"
@@ -16924,11 +16929,6 @@ wcwidth@^1.0.0:
   integrity sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=
   dependencies:
     defaults "^1.0.3"
-
-web-streams-polyfill@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.0.tgz#a6b74026b38e4885869fb5c589e90b95ccfc7965"
-  integrity sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
