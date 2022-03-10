@@ -8,7 +8,6 @@ docs/_book
 src/version.js
 junit.xml
 coverage/
-.docz/
 *.js.map
 .yarn
 platform/docs/.docusaurus
@@ -38,4 +37,3 @@ screenshots/
 
 # Locize settings
 .locize
-
