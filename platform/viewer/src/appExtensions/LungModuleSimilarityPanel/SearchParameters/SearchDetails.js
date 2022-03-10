@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import { servicesManager } from '../../../App';
 import { JobsContext } from '../../../context/JobsContext';
 import { withModal } from '@ohif/ui';
+import { Tooltip } from '../../../../../ui/src/components/tooltip';
+import ExpandableToolMenu from '../../../../../ui/src/viewer/ExpandableToolMenu';
 
 const RenderSimilarityResult = ({ data, imgDimensions }) => {
   return (
@@ -34,7 +36,7 @@ const RenderSimilarityResult = ({ data, imgDimensions }) => {
             top: data.region_rectangle.y,
             width: data.region_rectangle.w,
             height: data.region_rectangle.h,
-            border: '3px solid red',
+            border: data.malignant ? '3px solid red' : '3px solid blue',
           }}
         />
         <img
@@ -74,6 +76,8 @@ const SearchDetails = props => {
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
   const [similarityResultState, setSimilarityResultState] = React.useState();
+  const [resultsListState, setResultsList] = React.useState([]);
+  const [showListState, setShowListState] = React.useState(false);
 
   const access_token = user.access_token;
 
@@ -106,7 +110,6 @@ const SearchDetails = props => {
 
     // retrieving rectangle tool roi data from element
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
-
     if (tool_data && tool_data.data.length > 0) {
       setToolData(tool_data.data[0]);
 
@@ -126,6 +129,8 @@ const SearchDetails = props => {
       setHeight(height);
       setWidth(width);
       setIsDisabled(false);
+    } else {
+      initSearchPanel(element);
     }
 
     // Pull event from cornerstone-tools
@@ -184,6 +189,60 @@ const SearchDetails = props => {
     }
   };
 
+  const initSearchPanel = async el => {
+    // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    console.log('init search data start');
+
+    // const data = tool_data.data[0];
+    // const series_uid = data.SeriesInstanceUID;
+    // const study_uid = data.StudyInstanceUID;
+    const email = user.profile.email;
+
+    // get current image
+    const image = cornerstone.getImage(el);
+    // extract instance uid from the derived image data
+    const instance_uid = image.imageId.split('/')[18];
+
+    console.log({ split: image.imageId.split('/'), instance_uid, email });
+    let result = await new Promise(res =>
+      fetchResults({ res, instance_uid, email })
+    );
+    console.log({ result });
+
+    setResultsList(result.jobList);
+  };
+
+  const fetchResults = async ({ jobId, res, instance_uid, email }) => {
+    try {
+      console.log('fetching from remote');
+      const response = await client.get(
+        `/similarity?instance=${instance_uid}&email=nick.fragakis%40thetatech.ai`
+      );
+
+      console.warn({ response, jobId, instance_uid, email });
+      if (jobId) {
+        const currJob = response.data.results.find(result => {
+          return result.job_id === jobId;
+        });
+        console.log({ currJob });
+
+        if (currJob && currJob.status === 'DONE') {
+          console.log('found job');
+          res({ currJob, jobList: response.data.results });
+        } else {
+          console.log('waiting to retry');
+          await setTimeout(() => {
+            fetchResults({ jobId, res, instance_uid, email });
+          }, 1000);
+        }
+      } else {
+        res({ jobList: response.data.results });
+      }
+    } catch (error) {
+      console.log('get similarity result caught', { error });
+    }
+  };
+
   const sendParams = async data => {
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
@@ -198,7 +257,7 @@ const SearchDetails = props => {
     const body = {
       study_uid: study_uid,
       series_uid: series_uid,
-      email: email,
+      email: 'nick.fragakis@thetatech.ai',
       instance_uid,
       parameters: {
         rectangle: {
@@ -217,12 +276,15 @@ const SearchDetails = props => {
       .then(async response => {
         console.log({ response });
         if (response.status === 201) {
-          const result = await client.get(
-            `/similarity?instance=${instance_uid}&email=${email}`
+          console.log('fetching');
+          let result = await new Promise(res =>
+            fetchResults({ jobId: response.data.job, res, instance_uid, email })
           );
-          console.log({ result });
 
-          setSimilarityResultState(result.data.results[0]);
+          console.log('found', { result });
+
+          setSimilarityResultState(result.currJob);
+          setResultsList(result.jobList);
         }
       })
       .catch(error => {
@@ -275,105 +337,186 @@ const SearchDetails = props => {
               </button>
             </div>
           </label>
-          {similarityResultState && (
+        </div>
+      )}
+      {Boolean(resultsListState.length) && (
+        <>
+          <div
+            onClick={() => setShowListState(!showListState)}
+            style={{
+              width: '100%',
+              padding: '10px 20px',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              backgroundColor: '#20A5D7',
+              borderRadius: 20,
+              color: '#000',
+              marginTop: 10,
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              {' '}
+              Select Job{' '}
+            </p>
+            <p
+              style={{
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              {' '}
+              v{' '}
+            </p>
+          </div>
+          {showListState && (
             <div
               style={{
                 width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                paddingTop: 20,
+                // border: '1px solid red',
+                position: 'relative',
+                top: 20,
               }}
             >
-              <p
-                style={{
-                  color: 'yellow',
-                  alignSelf: 'flex-start',
-                  marginLeft: 20,
-                }}
-              >
-                Query Image
-              </p>
-              <img
-                src={similarityResultState.query}
-                style={{
-                  width: '90%',
-                  marginBottom: 20,
-                  border: '2.55px solid green',
-                }}
-              />
               <div
                 style={{
                   width: '100%',
                   display: 'flex',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
+                  flexDirection: 'column',
+                  maxHeight: 250,
+                  overflowY: 'scroll',
+                  border: '1px solid #20A5D7',
+                  background: '#000',
+                  position: 'absolute',
+                  borderRadius: 20,
+                  color: '#20A5D7',
                 }}
               >
-                {similarityResultState.knn.map((res, index) => {
+                {resultsListState.map((item, index) => {
                   return (
-                    <div
-                      style={{
-                        width: '50%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        paddingTop: 20,
-                        paddingBottom: 20,
-                        background: '#151A1F',
-                        position: 'relative',
+                    <p
+                      onClick={() => {
+                        console.log({ item });
+                        setShowListState(!showListState);
+                        setSimilarityResultState(item);
                       }}
-                      key={index}
-                      onClick={async () => {
-                        console.log('open similarity modal');
-                        const imgDimensions = await getMeta(res.image_url);
-
-                        rest.modal.show({
-                          content: () => (
-                            <RenderSimilarityResult
-                              data={res}
-                              imgDimensions={imgDimensions}
-                            />
-                          ),
-                          title: 'Similarity Result',
-                        });
+                      style={{
+                        width: '100%',
+                        padding: '15px 20px',
+                        margin: 0,
+                        // border: '1px solid red',
                       }}
                     >
-                      <img
-                        src={res.region_thumbnail_url}
-                        style={{
-                          width: '90%',
-                          height: '90%',
-                          marginBottom: 20,
-                          border: '2.55px solid blue',
-                          borderColor: res.malignant ? 'red' : 'blue',
-                        }}
-                      />
-                      <RenderSimilarityResultText
-                        content={`Similarity: ${res.similarity_score}`}
-                        res={res}
-                      />
-                      <RenderSimilarityResultText
-                        content={`Dataset: ${res.dataset}`}
-                        res={res}
-                      />
-                      <RenderSimilarityResultText
-                        content={`Dataset Id: ${res.data_id}`}
-                        res={res}
-                      />
-                      <RenderSimilarityResultText
-                        content={`Malignant: ${
-                          res.malignant ? 'true' : 'false'
-                        }`}
-                        res={res}
-                        title={'Malignant'}
-                      />
-                    </div>
+                      Job {item.job_id}
+                    </p>
                   );
                 })}
               </div>
             </div>
           )}
+        </>
+      )}
+      {similarityResultState && (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            paddingTop: 20,
+          }}
+        >
+          <p
+            style={{
+              color: 'yellow',
+              alignSelf: 'flex-start',
+              marginLeft: 20,
+            }}
+          >
+            Query Image
+          </p>
+          <img
+            src={similarityResultState.query}
+            style={{
+              width: '90%',
+              marginBottom: 20,
+              border: '2.55px solid green',
+            }}
+          />
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+            }}
+          >
+            {similarityResultState.knn.map((res, index) => {
+              return (
+                <div
+                  style={{
+                    width: '50%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    paddingTop: 20,
+                    paddingBottom: 20,
+                    background: '#151A1F',
+                    position: 'relative',
+                  }}
+                  key={index}
+                  onClick={async () => {
+                    console.log('open similarity modal');
+                    const imgDimensions = await getMeta(res.image_url);
+
+                    rest.modal.show({
+                      content: () => (
+                        <RenderSimilarityResult
+                          data={res}
+                          imgDimensions={imgDimensions}
+                        />
+                      ),
+                      title: 'Similarity Result',
+                    });
+                  }}
+                >
+                  <img
+                    src={res.region_thumbnail_url}
+                    style={{
+                      width: '90%',
+                      height: '90%',
+                      marginBottom: 20,
+                      border: '2.55px solid blue',
+                      borderColor: res.malignant ? 'red' : 'blue',
+                    }}
+                  />
+                  <RenderSimilarityResultText
+                    content={`Similarity: ${res.similarity_score}`}
+                    res={res}
+                  />
+                  <RenderSimilarityResultText
+                    content={`Dataset: ${res.dataset}`}
+                    res={res}
+                  />
+                  <RenderSimilarityResultText
+                    content={`Dataset Id: ${res.data_id}`}
+                    res={res}
+                  />
+                  <RenderSimilarityResultText
+                    content={`Malignant: ${res.malignant ? 'true' : 'false'}`}
+                    res={res}
+                    title={'Malignant'}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
