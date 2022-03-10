@@ -14,12 +14,34 @@ import measurementTools from '../../../../extensions/cornerstone/src/utils/measu
  * @property {String[]} keys - Keys to bind; Follows Mousetrap.js binding syntax
  */
 
- import axios from "axios";
+import axios from "axios";
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
- const nlApi = axios.create({
-   baseURL: process.env.REACT_APP_API_URL || "",
-   withCredentials: process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.includes("http://localhost") : false,
- });
+const nlApi = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "",
+  withCredentials: process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.includes("http://localhost") : true,
+});
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+console.log("KEVIN TOKEN 1");
+console.log(csrftoken);
 
 export class HotkeysManager {
   constructor(commandsManager, servicesManager) {
@@ -85,12 +107,13 @@ export class HotkeysManager {
 
   async saveHotkeys(hotkeyDefinitions = []) {
     try {
-      console.log(hotkeyDefinitions)
       const hotKeysResponse = nlApi.post("/api/hotkeys/", {
         params: {
-          hot_keys: hotkeyDefinitions
+          hot_keys: hotkeyDefinitions,
         }}
       );
+      console.log("KEVIN RESPONSE");
+      console.log(hotKeysResponse);
       if(hotKeysResponse.status !== 201){
         throw new Error(
           'Unable to save hotkeys'
@@ -98,6 +121,8 @@ export class HotkeysManager {
       }
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
+      console.log("ERROR MESSAGE KEVIN");
+      console.log(error);
       UINotificationService.show({
         title: 'Hotkeys Manager',
         message: 'Error while saving hotkeys',
