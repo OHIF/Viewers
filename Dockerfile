@@ -21,7 +21,7 @@
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
-FROM node:lts-slim as builder
+FROM node:14-slim as builder
 
 RUN mkdir /app
 WORKDIR /app
@@ -43,7 +43,7 @@ RUN apt-get update && apt-get install -y software-properties-common gcc
 
 # Run the install before copying the rest of the files
 RUN yarn set version berry
-RUN yarn install --network-timeout 10000000
+RUN yarn install --frozen-lockfile  --network-timeout 10000000
 
 ENV PATH /app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
