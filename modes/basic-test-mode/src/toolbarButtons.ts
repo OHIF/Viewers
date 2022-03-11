@@ -499,7 +499,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          'Flip Horizontal'
+          'Flip Horizontally'
         ),
         _createToggleButton(
           'StackImageSync',
