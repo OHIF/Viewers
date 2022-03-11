@@ -350,7 +350,7 @@ const toolbarButtons = [
               context: 'CORNERSTONE',
             },
           ],
-          'Flip Horizontal'
+          'Flip Horizontally'
         ),
         _createToolButton(
           'StackScroll',
