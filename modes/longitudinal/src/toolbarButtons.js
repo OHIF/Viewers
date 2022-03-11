@@ -220,7 +220,7 @@ export default [
           'Flip Horizontally',
           'flipViewportHorizontal',
           undefined,
-          'Flip Horizontal'
+          'Flip Horizontally'
         ),
         _createToolButton(
           'StackScroll',
