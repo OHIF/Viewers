@@ -76,7 +76,7 @@ https://pubmed.ncbi.nlm.nih.gov/29092955/
 
 
 **Note:** If you use or find this repository helpful, please take the time to
-star this repository on Github. This is an easy way for us to assess adoption
+star this repository on Github. This is an easy way for us to assess adoption,
 and it can help us obtain future funding for the project.
 
 ## License

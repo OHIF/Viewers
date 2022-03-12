@@ -33,7 +33,7 @@ first contact with would-be adopters and contributors, it's important that we
 strive for timely responses and satisfactory resolutions. We attempt to
 accomplish this by:
 
-1. Responding to issues requiring `triage` at least once a week
+1. Responding to issue requiring `triage` at least once a week
 2. Create new "official issues" from "community issues"
 3. Provide clear guidance and next steps (when applicable)
 4. Regularly clean up old (stale) issues
@@ -97,7 +97,7 @@ appropriate:
 We rely on GitHub Checks and integrations with third party services to evaluate
 changes in code quality and test coverage. Tests must pass and User cases must
 be present (when applicable) before a PR can be merged to master, and code
-quality and test coverage must not changed by a significant margin. For some
+quality and test coverage must not be changed by a significant margin. For some
 repositories, visual screenshot-based tests are also included, and video
 recordings of end-to-end tests are stored for later review.
 

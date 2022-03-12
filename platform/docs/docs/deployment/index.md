@@ -112,7 +112,7 @@ There are two important steps to making sure this setup works:
 
 1. Your Image Archive needs to be exposed, in some way, to the open web. This
    can be directly, or through a `reverse proxy`, but the Viewer needs _some
-   way_ to request it's data.
+   way_ to request its data.
 2. \* Your Image Archive needs to have appropriate CORS (Cross-Origin Resource
    Sharing) Headers
 
@@ -224,7 +224,7 @@ More info on this JSON format can be found here
 
 _CORS Issues (Cross-Origin Resource Sharing)_
 
-If you host a JSON API or Images on a different domain from the the app itself,
+If you host a JSON API or Images on a different domain from the app itself,
 you will likely have CORS issues. This will also happen when testing from
 Localhost and reaching out to remote servers. Even if the domain is the same,
 different ports, subdomains or protocols (https vs http) will also cause CORS
@@ -233,7 +233,7 @@ to allow your App server origin.
 
 For example:
 
-Lets assume your application is hosted on `https://my-ohif-server.com`.
+Let's assume your application is hosted on `https://my-ohif-server.com`.
 
 Your JSON API is hosted on `https://my-json-api.aws.com`
 

@@ -134,7 +134,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     retrieve: {
       series: {
-        metaData: ({
+        metadata: ({
           StudyInstanceUID,
           madeInClient = false,
           customSort,

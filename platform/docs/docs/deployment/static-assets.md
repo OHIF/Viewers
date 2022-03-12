@@ -16,7 +16,7 @@ less product offerings.
 While not required, it can simplify things to host your Web Viewer alongside
 your image archive. Services with more robust product offerings, like
 `Google Cloud`, `Microsoft's Azure`, and `Amazon Web Services (AWS)`, are able
-to accomodate this setup.
+to accommodate this setup.
 
 _Drag-n-drop_
 
@@ -111,7 +111,7 @@ Learn more about [surge.sh on their website](https://surge.sh/)
 > Websites for you and your projects. Hosted directly from your GitHub
 > repository. Just edit, push, and your changes are live.
 
-This deploy strategy makes more sense if you intend to maintain your project in
+This deployment strategy makes more sense if you intend to maintain your project in
 a GitHub repository. It allows you to specify a `branch` or `folder` as the
 target for a GitHub Page's website. As you push code changes, the hosted content
 updates to reflect those changes.
@@ -140,7 +140,7 @@ avoid using a proxy or to simplify authentication.
 If that is the case, check out some of our more advanced `docker` deployments
 that target these providers from the left-hand sidepanel.
 
-These guides can be a bit longer and a update more frequently. To provide
+These guides can be a bit longer and an update more frequently. To provide
 accurate documentation, we will link to each provider's own recommended steps:
 
 ### AWS S3 + Cloudfront

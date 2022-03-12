@@ -13,7 +13,7 @@ and other resources that we have provided to the community in the past:
 
 ### [NA-MIC Project Week 36th 2022 - Remote](https://github.com/NA-MIC/ProjectWeek/blob/master/PW36_2022_Virtual/README.md)
 
-The Project Week is a week-long hackathon of hands on activity in which medical
+The Project Week is a week-long hackathon of hands-on activity in which medical
 image computing researchers. OHIF team participated and gave a talk on OHIF and
 Cornerstone in the 36th Project Week:
 [[Slides]](https://docs.google.com/presentation/d/1-GtOKmr2cQi-r3OFyseSmgLeurtB3KXUkGMx2pVLh1I/edit?usp=sharing)
@@ -23,7 +23,7 @@ Cornerstone in the 36th Project Week:
 
 ### [NA-MIC Project Week 35th 2021 - Remote](https://github.com/NA-MIC/ProjectWeek/tree/master/PW35_2021_Virtual)
 
-The Project Week is a week-long hackathon of hands on activity in which medical
+The Project Week is a week-long hackathon of hands-on activity in which medical
 image computing researchers. OHIF team participated in the 35th Project Week
 in 2021.
 [[Slides]](https://docs.google.com/presentation/d/1KYNjuiI8lT1foQ4P9TGNV0lBhM6H-5KBs0wkYj4JJbk/edit?usp=sharing)

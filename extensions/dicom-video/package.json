@@ -1,0 +1,49 @@
+{
+  "name": "@ohif/extension-dicom-video",
+  "version": "0.0.1",
+  "description": "OHIF extension for video display",
+  "author": "OHIF",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev:cornerstone": "yarn run dev",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "start": "yarn run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^0.50.0",
+    "@ohif/ui": "^0.50.0",
+    "cornerstone-core": "^2.6.0",
+    "cornerstone-math": "^0.1.9",
+    "cornerstone-tools": "6.0.2",
+    "cornerstone-wado-image-loader": "4.0.4",
+    "dcmjs": "0.16.1",
+    "dicom-parser": "^1.8.9",
+    "hammerjs": "^2.0.8",
+    "prop-types": "^15.6.2",
+    "react": "^17.0.2",
+    "react-cornerstone-viewport": "4.1.2"
+  },
+  "dependencies": {
+    "@babel/runtime": "7.7.6",
+    "classnames": "^2.2.6"
+  }
+}

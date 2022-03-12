@@ -3,6 +3,31 @@ import EVENTS from './EVENTS';
 
 const displaySetCache = [];
 
+/**
+ * Find an instance in a list of instances, comparing by SOP instance UID
+ */
+const findInSet = (instance, list) => {
+  if (!list) return false;
+  for (const elem of list) {
+    if (!elem) continue;
+    if (elem === instance) return true;
+    if (elem.SOPInstanceUID === instance.SOPInstanceUID) return true;
+  }
+  return false;
+};
+
+/**
+ * Find an instance in a display set
+ * @returns true if found
+ */
+const findInstance = (instance, displaySets) => {
+  for (const displayset of displaySets) {
+    if (findInSet(instance, displayset.images)) return true;
+    if (findInSet(instance, displayset.others)) return true;
+  }
+  return false;
+}
+
 export default class DisplaySetService {
   constructor() {
     this.activeDisplaySets = [];
@@ -151,13 +176,15 @@ export default class DisplaySetService {
     }
   };
 
-  makeDisplaySetForInstances(instances, settings) {
+  makeDisplaySetForInstances(instancesSrc, settings) {
+    let instances = instancesSrc;
     const instance = instances[0];
 
     const existingDisplaySets =
       this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
 
     const SOPClassHandlerIds = this.SOPClassHandlerIds;
+    let allDisplaySets;
 
     for (let i = 0; i < SOPClassHandlerIds.length; i++) {
       const SOPClassHandlerId = SOPClassHandlerIds[i];
@@ -174,6 +201,8 @@ export default class DisplaySetService {
         } else {
           displaySets = handler.getDisplaySetsFromSeries(instances);
 
+          if (!displaySets || !displaySets.length) continue;
+
           // applying hp-defined viewport settings to the displaysets
           displaySets.forEach(ds => {
             Object.keys(settings).forEach(key => {
@@ -183,10 +212,15 @@ export default class DisplaySetService {
 
           this._addDisplaySetsToCache(displaySets);
           this._addActiveDisplaySets(displaySets);
+
+          instances = instances.filter(instance => !findInstance(instance, displaySets))
         }
 
-        return displaySets;
+        allDisplaySets = allDisplaySets ? [...allDisplaySets, ...displaySets] : displaySets;
+
+        if (!instances.length) return allDisplaySets;
       }
     }
+    return allDisplaySets;
   }
 }

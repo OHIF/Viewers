@@ -31,7 +31,7 @@ In the following, we will discuss each category.
 ![user-measurement-panel-modal](../../assets/img/tracking-workflow1.png)
 
 In summary, when you create an annotation, a prompt will be shown whether to start tracking or not. If you start the tracking, the annotation style will change to a solid line, and annotation details get displayed on the measurement panel.
-On the other hand, if you decline the tracking pormpt, the measurement will be considered "temporary," and annotation style remains as a dashed line and not shown on the right panel, and cannot be exported.
+On the other hand, if you decline the tracking prompt, the measurement will be considered "temporary," and annotation style remains as a dashed line and not shown on the right panel, and cannot be exported.
 
 
 Below, you can see different icons that appear for a tracked vs. untracked series in
@@ -80,7 +80,7 @@ The full workflow for saving measurements to SR and loading SR into the viewer i
 ![user-measurement-panel-modal](../../assets/img/tracking-workflow3.png)
 
 
-#### Overview video for loading DICOM SR and making a tracked sereis:
+#### Overview video for loading DICOM SR and making a tracked series:
 <!-- SR Restore and Yes -->
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
@@ -115,7 +115,7 @@ you cannot edit the DICOM SR measurement.
 <br></br>
 
 
-#### Overview video for loading DICOM SR inside an already tracked sereis:
+#### Overview video for loading DICOM SR inside an already tracked series:
 <!-- DICOMSRLockedTracked -->
 
 

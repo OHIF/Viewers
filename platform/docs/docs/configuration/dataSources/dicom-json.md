@@ -129,7 +129,7 @@ downloading the dicom file by opening the url in your browser).
 
 ### Local Demo
 
-You can run OHIF with a JSON data source againts you local datasets (given that
+You can run OHIF with a JSON data source against you local datasets (given that
 their JSON metadata is extracted).
 
 First you need to put the JSON file and the folder containing the dicom files

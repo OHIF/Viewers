@@ -13,7 +13,7 @@ of the use case.
 Previously, extensions were “additive” and could not easily be mixed and matched
 within the same viewer for different use cases. Previous `OHIF-v2` architecture
 meant that any minor extension alteration usually would require the user to hard
-fork. E.g. removing some of the tools from the toolbar of the cornerstone
+fork. E.g. removing some tools from the toolbar of the cornerstone
 extension meant you had to hard fork it, which was frustrating if the
 implementation was otherwise the same as master.
 
@@ -142,7 +142,7 @@ Extensions are building blocks that need to be registered. There are two
 different ways to register and configure extensions: At
 [runtime](#registering-at-runtime) and at
 [build time](#registering-at-build-time). You can leverage one or both
-strategies. Which one(s) you choose depend on your application's requirements.
+strategies. Which one(s) you choose depends on your application's requirements.
 
 Each [module](#modules) defined by the extension becomes available to the modes
 via the `ExtensionManager` by requesting it via its id.
@@ -350,7 +350,7 @@ and behaviors depending on the current contexts.
 For example, if we have hotkey that "rotates the active viewport", each Viewport
 module that supports this behavior can add a command with the same name, scoped
 to the appropriate context. When the `command` is fired, the "active contexts"
-are used to determine the appropriate implementation of the rotate behavior.
+are used to determine the appropriate implementation of the rotation behavior.
 
 <!--
   LINKS
