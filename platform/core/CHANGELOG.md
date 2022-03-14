@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.14](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.13...@ohif/core@2.16.14) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.13](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.12...@ohif/core@2.16.13) (2022-03-14)
+
+
+### Bug Fixes
+
+* Update fetchPaletteColorLookupTableData: LUT Entries shall be 0 if the table entries value is 2^16 ([#2395](https://github.com/OHIF/Viewers/issues/2395)) ([0ba796c](https://github.com/OHIF/Viewers/commit/0ba796c73c5254f1bc5ac72c58fd06abf19d7102))
+
+
+
+
+
+## [2.16.12](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.11...@ohif/core@2.16.12) (2022-02-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 ## [2.16.11](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.10...@ohif/core@2.16.11) (2022-02-03)
 
 **Note:** Version bump only for package @ohif/core

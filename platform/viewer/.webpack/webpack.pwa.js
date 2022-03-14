@@ -5,8 +5,6 @@ const merge = require('webpack-merge');
 const webpack = require('webpack');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
 // ~~ Plugins
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
@@ -26,15 +24,14 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 
-
 const setHeaders = (res, path) => {
-  res.setHeader('Content-Type', 'text/plain')
+  res.setHeader('Content-Type', 'text/plain');
   if (path.indexOf('.gz') !== -1) {
-    res.setHeader('Content-Encoding', 'gzip')
+    res.setHeader('Content-Encoding', 'gzip');
   } else if (path.indexOf('.br') !== -1) {
-    res.setHeader('Content-Encoding', 'br')
+    res.setHeader('Content-Encoding', 'br');
   }
-}
+};
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
@@ -147,12 +144,12 @@ module.exports = (env, argv) => {
       client: {
         overlay: { errors: true, warnings: false },
       },
-      'static': [
+      static: [
         {
           directory: path.join(require('os').homedir(), 'dicomweb'),
           staticOptions: {
             extensions: ['gz', 'br'],
-            index: "index.json.gz",
+            index: 'index.json.gz',
             redirect: true,
             setHeaders,
           },
@@ -162,7 +159,7 @@ module.exports = (env, argv) => {
           directory: '../../testdata',
           staticOptions: {
             extensions: ['gz', 'br'],
-            index: "index.json.gz",
+            index: 'index.json.gz',
             redirect: true,
             setHeaders,
           },
