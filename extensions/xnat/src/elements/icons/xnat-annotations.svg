@@ -1,0 +1,16 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 48 48"
+  aria-labelledby="title"
+  width="1em"
+  height="1em"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+>
+  <title id="title">Annotations</title>
+    <path d="M20.52 14.09L8.79 5.11L3.05 14.09"></path>
+    <path d="M44.95 11.8C44.95 15.97 40.26 19.36 34.47 19.36C28.69 19.36 24 15.97 24 11.8C24 7.63 28.69 4.24 34.47 4.24C40.26 4.24 44.95 7.63 44.95 11.8Z"></path>
+    <path d="M3.05 26.08L24 26.08L24 45.27L3.05 45.27L3.05 26.08Z"></path>
+    <path d="M43.62 28.11L28.75 43.24"></path>
+</svg>

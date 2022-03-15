@@ -57,7 +57,7 @@ import store from './store';
 import WhiteLabelingContext from './context/WhiteLabelingContext';
 import UserManagerContext from './context/UserManagerContext';
 import { AppProvider, useAppContext, CONTEXTS } from './context/AppContext';
-import JobsContextProvider from './context/JobsContext'
+import JobsContextProvider from './context/JobsContext';
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {

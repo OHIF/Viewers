@@ -33,6 +33,7 @@ import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 // Add this for Debugging purposes:
 //import OHIFDebuggingExtension from '@ohif/extension-debugging';
 import { version } from '../package.json';
+import OHIFXNATExtension from '@xnat-ohif/extension-xnat';
 
 /*
  * Default Settings
@@ -55,6 +56,7 @@ const appProps = {
     OHIFDicomRtExtension,
     //OHIFDebuggingExtension,
     //OHIFDicomTagBrowserExtension,
+    OHIFXNATExtension
   ],
 };
 

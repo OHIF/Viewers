@@ -1,0 +1,26 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 128 128"
+  aria-labelledby="title"
+  width="1em"
+  height="1em"
+  stroke="currentColor"
+  fill="none"
+  stroke-width="2.5"
+  strokeMiterlimit="10"
+>
+    <title id="title">OHIF-XNAT Viewer</title>
+    <g id="icon-ohif-logo-group" stroke="#fff" stroke-width="8" stroke-miterlimit="10">
+      <rect x="3.4" y="3.4" width="51.2" height="51.2" rx="2.7" ry="2.7"></rect>
+      <rect x="70.8" y="3.4" width="51.2" height="51.2" rx="1" ry="2.7"></rect>
+      <rect x="3.4" y="70.8" width="51.2" height="51.2" rx="2.7" ry="2.7"></rect>
+      <rect x="70.8" y="70.8" width="51.2" height="51.2" rx="2.7" ry="2.7"></rect>
+    </g>
+    <g id="icon-xnat-logo-group" fill="#91B9CD" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M33.4 29.3L31.8 23.7L31.2 19.1L31.8 14.1L33.4 9.1L44.2 9.1L53.8 8.7L62.4 7.9L69.6 6.7L76.4 5.1L74.2 7.5L69.6 11.7L65.2 17.1L62.8 21.3L60.8 26.1L60.8 30.1L62.4 33.1L60.2 34.5L54.4 40.7L50.4 46.3L46.8 51.1L43.8 47.5L39.6 41.9L35.4 34.1L33.4 29.3Z"></path>
+      <path id="xnat-logo-path-2" d="M57.6 60.9L62 65.1L66.8 70.1L70.4 74.9L75.6 69.1L82 64L91 58.5L101.2 53.3L110.2 50.1L109.6 38.1L110.2 29.3L111.4 21.9L113 15.5L114.6 10.1L109.6 11.9L101.2 15.5L90.4 20.3L82 24.3L75.6 28.1L68.4 34.1L62 40.1L57.2 45.5L54.2 50.5L50.4 56.3L57.6 60.9Z"></path>
+      <path id="xnat-logo-path-3" d="M76.4 83.9L78.4 89.9L78.4 97.1L77.4 103.7L75.4 110.3L72.6 118.9L79 110.9L82.5 104.9L86.6 97.1L88.6 89.9L89.8 80.7L88.6 73.3L86.6 67.1L83.4 69.5L79 73.3L73.8 78.3L76.4 83.9Z"></path>
+      <path id="xnat-logo-path-4" d="M65.6 113.5L65.6 106.9L64 100.9L62 96.1L56.6 90.1L49.4 85.1L37.2 79.1L24.8 74.3L13.2 70.7L14.8 67.1L17 59.1L18.6 51.5L19 43.9L30.4 50.7L42.6 58.1L52.4 64.7L59.8 70.7L65.6 76.9L69.6 82.7L72.6 89.5L73.2 96.7L72 104.5L69.6 113.5L66.4 121.1L65.6 113.5Z"></path>
+      <path id="xnat-logo-path-5" d="M57.38 112.81L54.13 106.94L51.25 101.44L49.63 96.44L48.13 90.94L50.88 92.31L54.13 95.06L57.75 98.81L60.13 104.44L61 110.94L61 118.06L57.38 112.81Z"></path>
+    </g>
+</svg>

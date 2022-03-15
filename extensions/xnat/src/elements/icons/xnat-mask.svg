@@ -1,0 +1,16 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 128 128"
+  aria-labelledby="title"
+  width="1em"
+  height="1em"
+  stroke="currentColor"
+  fill="currentColor"
+>
+  <title id="title">Mask</title>
+  <g fill-opacity="0.5" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10">
+    <path d="
+		M43.5,6c15.1-4.6,31.4-2,44.2,7.2l22.2,15.8c12.5,9.4,15.9,26.7,7.8,40.1l-21.9,36.4c-3.6,6-9.7,10-16.6,10.9l-60.6,7.9
+		c-7.1,0.9-13.3-5.1-12.5-12.2l8.9-80c1.2-10.7,8.6-19.8,18.9-23L43.5,6z"/>
+  </g>
+</svg>
