@@ -1,6 +1,6 @@
 import objectHash from 'object-hash';
 import log from './../log.js';
-import { hotkeys } from '../utils';
+import { hotkeys, nlApi } from '../utils';
 
 import measurementTools from '../../../../extensions/cornerstone/src/utils/measurementServiceMappings/constants/supportedTools';
 
@@ -14,34 +14,6 @@ import measurementTools from '../../../../extensions/cornerstone/src/utils/measu
  * @property {String[]} keys - Keys to bind; Follows Mousetrap.js binding syntax
  */
 
-import axios from "axios";
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-
-const nlApi = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "",
-  withCredentials: process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.includes("http://localhost") : true,
-});
-
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          // Does this cookie string begin with the name we want?
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-          }
-      }
-  }
-  return cookieValue;
-}
-
-const csrftoken = getCookie('csrftoken');
-console.log("KEVIN TOKEN 1");
-console.log(csrftoken);
 
 export class HotkeysManager {
   constructor(commandsManager, servicesManager) {
@@ -92,9 +64,9 @@ export class HotkeysManager {
    */
   setHotkeys(hotkeyDefinitions = []) {
     try {
+      // console.log(hotkeyDefinitions)
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       definitions.forEach(definition => this.registerHotkeys(definition));
-      this.saveHotkeys(definitions);
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
       UINotificationService.show({
@@ -105,49 +77,44 @@ export class HotkeysManager {
     }
   }
 
+  async getHotkeys() {
+    try {
+      const hotKeysResponse = await nlApi.get("/api/hotkeys/$self/");
+      if(hotKeysResponse.status !== 200){
+        throw new Error(
+          'Unable to get hotkeys'
+        );
+      }
+      return hotKeysResponse.data
+    } catch (error) {
+      const { UINotificationService } = this._servicesManager.services;
+      UINotificationService.show({
+        title: 'Hotkeys Manager',
+        message: 'Error while getting hotkeys',
+        type: 'error',
+      });
+    }
+  }
+
   async saveHotkeys(hotkeyDefinitions = []) {
     try {
-      const hotKeysResponse = nlApi.post("/api/hotkeys/", {
-        params: {
-          hot_keys: hotkeyDefinitions,
-        }}
+      // console.log(hotkeyDefinitions);
+      const hotKeysResponse = await nlApi.put("/api/hotkeys/$self/",
+        {hotkeys: {
+          hotkeyDefinitions,
+        }},
       );
-      console.log("KEVIN RESPONSE");
-      console.log(hotKeysResponse);
-      if(hotKeysResponse.status !== 201){
+      if(hotKeysResponse.status !== 200){
         throw new Error(
           'Unable to save hotkeys'
         );
       }
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
-      console.log("ERROR MESSAGE KEVIN");
       console.log(error);
       UINotificationService.show({
         title: 'Hotkeys Manager',
         message: 'Error while saving hotkeys',
-        type: 'error',
-      });
-    }
-  }
-
-  async updateHotkeys(hotkeyDefinitions = []) {
-    try {
-      const hotKeysResponse = nlApi.put("/api/hotkeys/$self/", {
-        params: {
-          hot_keys: hotkeyDefinitions
-        }}
-      );
-      if(hotKeysResponse.status !== 200){
-        throw new Error(
-          'Unable to update hotkeys'
-        );
-      }
-    } catch (error) {
-      const { UINotificationService } = this._servicesManager.services;
-      UINotificationService.show({
-        title: 'Hotkeys Manager',
-        message: 'Error while updating hotkeys',
         type: 'error',
       });
     }

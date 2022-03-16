@@ -96,6 +96,13 @@ function ViewerLayout({
   viewports,
   ViewportGridComp,
 }) {
+  hotkeysManager.getHotkeys()
+      .then(res => {
+        console.log("KEVIN RES");
+        hotkeysManager.setHotkeys(res.hotkeys.hotkeyDefinitions);
+        console.log(res.hotkeys.hotkeyDefinitions);
+  });
+
   const [appConfig] = useAppConfig();
 
   const onClickReturnButton = () => {};
@@ -120,6 +127,7 @@ function ViewerLayout({
         onSubmit: ({ hotkeyDefinitions, language }) => {
           i18n.changeLanguage(language.value);
           hotkeysManager.setHotkeys(hotkeyDefinitions);
+          hotkeysManager.saveHotkeys(hotkeyDefinitions);
           console.log(hotkeyDefinitions);
           hide();
         },
