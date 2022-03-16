@@ -98,9 +98,7 @@ function ViewerLayout({
 }) {
   hotkeysManager.getHotkeys()
       .then(res => {
-        console.log("KEVIN RES");
         hotkeysManager.setHotkeys(res.hotkeys.hotkeyDefinitions);
-        console.log(res.hotkeys.hotkeyDefinitions);
   });
 
   const [appConfig] = useAppConfig();
@@ -128,7 +126,6 @@ function ViewerLayout({
           i18n.changeLanguage(language.value);
           hotkeysManager.setHotkeys(hotkeyDefinitions);
           hotkeysManager.saveHotkeys(hotkeyDefinitions);
-          console.log(hotkeyDefinitions);
           hide();
         },
         onReset: () => hotkeysManager.restoreDefaultBindings(),

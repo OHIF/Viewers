@@ -64,7 +64,6 @@ export class HotkeysManager {
    */
   setHotkeys(hotkeyDefinitions = []) {
     try {
-      // console.log(hotkeyDefinitions)
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       definitions.forEach(definition => this.registerHotkeys(definition));
     } catch (error) {
@@ -98,7 +97,6 @@ export class HotkeysManager {
 
   async saveHotkeys(hotkeyDefinitions = []) {
     try {
-      // console.log(hotkeyDefinitions);
       const hotKeysResponse = await nlApi.put("/api/hotkeys/$self/",
         {hotkeys: {
           hotkeyDefinitions,
