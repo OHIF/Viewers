@@ -17,17 +17,11 @@ import {
 } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient.js';
 
-import axios from "axios";
-
-const nlApi = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "",
-  withCredentials: process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.includes("http://localhost") : false,
-});
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
-const { urlUtil } = utils;
+const { urlUtil, nlApi } = utils;
 
 const ImplementationClassUID =
   '2.25.270695996825855179949881587723571202391.2.0.0';

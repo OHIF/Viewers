@@ -1,6 +1,6 @@
 import objectHash from 'object-hash';
 import log from './../log.js';
-import { hotkeys } from '../utils';
+import { hotkeys, nlApi } from '../utils';
 
 import measurementTools from '../../../../extensions/cornerstone/src/utils/measurementServiceMappings/constants/supportedTools';
 
@@ -13,6 +13,7 @@ import measurementTools from '../../../../extensions/cornerstone/src/utils/measu
  * @property {String} label - Display name for hotkey
  * @property {String[]} keys - Keys to bind; Follows Mousetrap.js binding syntax
  */
+
 
 export class HotkeysManager {
   constructor(commandsManager, servicesManager) {
@@ -65,12 +66,53 @@ export class HotkeysManager {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       definitions.forEach(definition => this.registerHotkeys(definition));
-      localStorage.setItem('hotkey-definitions', JSON.stringify(definitions));
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
       UINotificationService.show({
         title: 'Hotkeys Manager',
         message: 'Error while setting hotkeys',
+        type: 'error',
+      });
+    }
+  }
+
+  async getHotkeys() {
+    try {
+      const hotKeysResponse = await nlApi.get("/api/hotkeys/$self/");
+      if(hotKeysResponse.status !== 200){
+        throw new Error(
+          'Unable to get hotkeys'
+        );
+      }
+      return hotKeysResponse.data
+    } catch (error) {
+      const { UINotificationService } = this._servicesManager.services;
+      UINotificationService.show({
+        title: 'Hotkeys Manager',
+        message: 'Error while getting hotkeys',
+        type: 'error',
+      });
+    }
+  }
+
+  async saveHotkeys(hotkeyDefinitions = []) {
+    try {
+      const hotKeysResponse = await nlApi.put("/api/hotkeys/$self/",
+        {hotkeys: {
+          hotkeyDefinitions,
+        }},
+      );
+      if(hotKeysResponse.status !== 200){
+        throw new Error(
+          'Unable to save hotkeys'
+        );
+      }
+    } catch (error) {
+      const { UINotificationService } = this._servicesManager.services;
+      console.log(error);
+      UINotificationService.show({
+        title: 'Hotkeys Manager',
+        message: 'Error while saving hotkeys',
         type: 'error',
       });
     }
