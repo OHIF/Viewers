@@ -382,9 +382,7 @@ const SearchDetails = props => {
           </p>
           <br />
 
-          {loadingState === 'searching' ? (
-            <p style={{ color: 'white' }}>Searching</p>
-          ) : !newSearchState ? null : (
+          {!newSearchState ? null : (
             <label>
               <div className="triggerButton">
                 <button
@@ -392,7 +390,9 @@ const SearchDetails = props => {
                   disabled={isDisabled}
                   className="syncButton"
                 >
-                  Search For Similarity
+                  {loadingState === 'searching'
+                    ? 'Searching'
+                    : 'Search For Similarity'}
                 </button>
               </div>
             </label>
@@ -422,8 +422,7 @@ const SearchDetails = props => {
                 padding: 0,
               }}
             >
-              {' '}
-              Select Job{' '}
+              Job {similarityResultState.job_id}
             </p>
             <p
               style={{
