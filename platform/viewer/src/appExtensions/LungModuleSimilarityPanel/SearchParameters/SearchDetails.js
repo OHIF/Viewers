@@ -70,7 +70,7 @@ const RenderLoadingModal = () => (
         color: 'white',
       }}
     >
-      Loading..
+      Please Wait..
     </p>
   </div>
 );
@@ -260,6 +260,7 @@ const SearchDetails = props => {
     console.log({ result });
 
     setLoadingState('');
+    setSimilarityResultState(result.jobList[0]);
     setResultsList(result.jobList);
   };
 
@@ -384,7 +385,15 @@ const SearchDetails = props => {
 
           {!newSearchState ? null : (
             <label>
-              <div className="triggerButton">
+              <div
+                className="triggerButton"
+                style={{
+                  marginBottom: 20,
+                  border: '0px',
+                  outline: 'none',
+                  borderWidth: 0,
+                }}
+              >
                 <button
                   onClick={triggerJob}
                   disabled={isDisabled}
@@ -399,97 +408,91 @@ const SearchDetails = props => {
           )}
         </div>
       )}
-      {Boolean(resultsListState.length) && (
-        <>
-          <div
-            onClick={() => setShowListState(!showListState)}
-            style={{
-              width: '100%',
-              padding: '10px 20px',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              backgroundColor: '#20A5D7',
-              borderRadius: 20,
-              color: '#000',
-              marginTop: 10,
-            }}
-          >
-            <p
-              style={{
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              Job {similarityResultState.job_id}
-            </p>
-            <p
-              style={{
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              {' '}
-              v{' '}
-            </p>
-          </div>
-          {showListState && (
-            <div
-              style={{
-                width: '100%',
-                // border: '1px solid red',
-                position: 'relative',
-                top: 20,
-              }}
-            >
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  maxHeight: 250,
-                  overflowY: 'scroll',
-                  border: '1px solid #20A5D7',
-                  background: '#000',
-                  position: 'absolute',
-                  borderRadius: 20,
-                  color: '#20A5D7',
-                }}
-              >
-                {resultsListState.map((item, index) => {
-                  return (
-                    <p
-                      onClick={() => {
-                        console.log({ item });
-                        setShowListState(!showListState);
-                        setSimilarityResultState(item);
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '15px 20px',
-                        margin: 0,
-                        // border: '1px solid red',
-                      }}
-                    >
-                      Job {item.job_id}
-                    </p>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-      {loadingState === 'list' ? (
+
+      <div
+        onClick={
+          Boolean(resultsListState.length)
+            ? () => setShowListState(!showListState)
+            : null
+        }
+        style={{
+          width: '100%',
+          padding: '10px 20px',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          border: '1px solid #20A5D7',
+          borderRadius: 10,
+          color: '#20A5D7',
+          marginTop: 10,
+        }}
+      >
         <p
           style={{
-            color: 'white',
+            margin: 0,
+            padding: 0,
           }}
         >
-          Fetching Results
+          {loadingState === 'list'
+            ? 'Fetching Jobs'
+            : `Job ${similarityResultState ? similarityResultState.job_id : 0}`}
         </p>
-      ) : similarityResultState ? (
+        <p
+          style={{
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          {showListState ? 'x' : 'v'}
+        </p>
+      </div>
+      {Boolean(resultsListState.length) && showListState && (
+        <div
+          style={{
+            width: '100%',
+            // border: '1px solid red',
+            position: 'relative',
+            top: 20,
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              maxHeight: 250,
+              overflowY: 'scroll',
+              border: '1px solid #20A5D7',
+              background: '#000',
+              position: 'absolute',
+              borderRadius: 10,
+              color: '#20A5D7',
+            }}
+          >
+            {resultsListState.map((item, index) => {
+              return (
+                <p
+                  onClick={() => {
+                    console.log({ item });
+                    setShowListState(!showListState);
+                    setSimilarityResultState(item);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '15px 20px',
+                    margin: 0,
+                    // border: '1px solid red',
+                  }}
+                >
+                  Job {item.job_id}
+                </p>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {similarityResultState ? (
         <div
           style={{
             width: '100%',
