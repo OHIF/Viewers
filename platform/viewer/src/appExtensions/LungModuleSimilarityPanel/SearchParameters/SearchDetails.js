@@ -51,6 +51,30 @@ const RenderSimilarityResult = ({ data, imgDimensions }) => {
   );
 };
 
+const RenderLoadingModal = () => (
+  <div
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      background: 'rgba(0,0,0,0.3)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <p
+      style={{
+        color: 'white',
+      }}
+    >
+      Loading..
+    </p>
+  </div>
+);
+
 const RenderSimilarityResultText = ({ content, res, title }) => (
   <p
     style={{
@@ -72,12 +96,18 @@ const SearchDetails = props => {
   const [toolData, setToolData] = React.useState({});
   const [x, setX] = React.useState();
   const [y, setY] = React.useState();
+  const xRef = React.useRef();
+  const yRef = React.useRef();
+  const widthRef = React.useRef();
+  const heightRef = React.useRef();
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
   const [similarityResultState, setSimilarityResultState] = React.useState();
   const [resultsListState, setResultsList] = React.useState([]);
   const [showListState, setShowListState] = React.useState(false);
+  const [loadingState, setLoadingState] = React.useState(false);
+  const [newSearchState, setNewSearchState] = React.useState(true);
 
   const access_token = user.access_token;
 
@@ -128,6 +158,10 @@ const SearchDetails = props => {
       setY(y_min);
       setHeight(height);
       setWidth(width);
+      xRef.current = x_min;
+      yRef.current = y_min;
+      heightRef.current = height;
+      widthRef.current = width;
       setIsDisabled(false);
     } else {
       initSearchPanel(element);
@@ -140,6 +174,17 @@ const SearchDetails = props => {
     return () =>
       element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
   }, []);
+
+  React.useEffect(() => {
+    if (
+      x !== xRef &&
+      y !== yRef &&
+      height !== heightRef &&
+      width !== widthRef
+    ) {
+      setNewSearchState(true);
+    }
+  }, [x, y, width, height]);
 
   const eventhandler = event => {
     setIsDisabled(true);
@@ -163,6 +208,10 @@ const SearchDetails = props => {
     setY(y_min);
     setHeight(height);
     setWidth(width);
+    xRef.current = x_min;
+    yRef.current = y_min;
+    heightRef.current = height;
+    widthRef.current = width;
     setIsDisabled(false);
   };
 
@@ -196,6 +245,7 @@ const SearchDetails = props => {
     // const data = tool_data.data[0];
     // const series_uid = data.SeriesInstanceUID;
     // const study_uid = data.StudyInstanceUID;
+    setLoadingState('list');
     const email = user.profile.email;
 
     // get current image
@@ -209,6 +259,7 @@ const SearchDetails = props => {
     );
     console.log({ result });
 
+    setLoadingState('');
     setResultsList(result.jobList);
   };
 
@@ -244,6 +295,7 @@ const SearchDetails = props => {
   };
 
   const sendParams = async data => {
+    setLoadingState('searching');
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
     const email = user.profile.email;
@@ -283,6 +335,9 @@ const SearchDetails = props => {
 
           console.log('found', { result });
 
+          setNewSearchState(false);
+          setLoadingState('');
+
           setSimilarityResultState(result.currJob);
           setResultsList(result.jobList);
         }
@@ -307,6 +362,7 @@ const SearchDetails = props => {
 
   return (
     <div className="component">
+      {loadingState && <RenderLoadingModal />}
       {Object.keys(toolData).length > 0 && (
         <div>
           <div className="title-header">Parameters</div>
@@ -326,17 +382,21 @@ const SearchDetails = props => {
           </p>
           <br />
 
-          <label>
-            <div className="triggerButton">
-              <button
-                onClick={triggerJob}
-                disabled={isDisabled}
-                className="syncButton"
-              >
-                Search For Similarity
-              </button>
-            </div>
-          </label>
+          {loadingState === 'searching' ? (
+            <p style={{ color: 'white' }}>Searching</p>
+          ) : !newSearchState ? null : (
+            <label>
+              <div className="triggerButton">
+                <button
+                  onClick={triggerJob}
+                  disabled={isDisabled}
+                  className="syncButton"
+                >
+                  Search For Similarity
+                </button>
+              </div>
+            </label>
+          )}
         </div>
       )}
       {Boolean(resultsListState.length) && (
@@ -422,7 +482,15 @@ const SearchDetails = props => {
           )}
         </>
       )}
-      {similarityResultState && (
+      {loadingState === 'list' ? (
+        <p
+          style={{
+            color: 'white',
+          }}
+        >
+          Fetching Results
+        </p>
+      ) : similarityResultState ? (
         <div
           style={{
             width: '100%',
@@ -518,7 +586,7 @@ const SearchDetails = props => {
             })}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
