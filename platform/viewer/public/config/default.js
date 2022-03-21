@@ -1,10 +1,10 @@
 window.config = {
   // default: '/'
-  routerBasename: '/',
+  routerBasename: '/dicom-viewer/',
   extensions: [],
   showStudyList: true,
   filterQueryParam: false,
-  disableServersCache: false,
+  disableServersCache: true,
   studyPrefetcher: {
     enabled: true,
     order: 'closest',
@@ -18,10 +18,10 @@ window.config = {
   servers: {
     dicomWeb: [
       {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        name: 'dicom-web',
+        wadoUriRoot: '/orthanc/wado',
+        qidoRoot: '/orthanc/dicom-web',
+        wadoRoot: '/orthanc/dicom-web',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
