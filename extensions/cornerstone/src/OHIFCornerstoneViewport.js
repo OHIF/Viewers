@@ -14,9 +14,10 @@ const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 const { StackManager } = OHIF.utils;
 
-const urlParams = new URLSearchParams(window.location.search);
-const seriesNumberParam = Number(urlParams.get('series_number'));
-const instanceNumberParam = seriesNumberParam ? Number(urlParams.get("instance_number")) : 0;
+const getQueryParam = (key) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return Number(urlParams.get(key)) || 0;
+}
 
 function OHIFCornerstoneViewport({
   children,
@@ -92,8 +93,11 @@ function OHIFCornerstoneViewport({
 
     _getViewportData(dataSource, displaySet).then(data => {
       if (isMounted.current) {
+        const instanceNumberParam = getQueryParam('instance_number');
+        const seriesNumberParam = getQueryParam('series_number');
+
         if(!isParamViewLoaded && instanceNumberParam && displaySet.SeriesNumber === seriesNumberParam) {
-          data.stack.initialImageIdIndex = instanceNumberParam - 1;
+          data.stack.initialImageIdIndex = (instanceNumberParam > displaySet.numImageFrames ? displaySet.numImageFrames : instanceNumberParam) - 1;
           setIsParamViewLoaded(true);
         }
 

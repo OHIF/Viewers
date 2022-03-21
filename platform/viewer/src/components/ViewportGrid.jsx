@@ -7,9 +7,10 @@ import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
-const urlParams = new URLSearchParams(window.location.search);
-const seriesNumberParam = Number(urlParams.get('series_number'));
-
+const getQueryParam = (key) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return Number(urlParams.get(key)) || 0;
+}
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
@@ -37,10 +38,8 @@ function ViewerViewportGrid(props) {
         matchDetails,
         hpAlreadyApplied,
       ] = HangingProtocolService.getState();
-
-      if (!matchDetails.length) return;
-
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
+      const seriesNumberParam = getQueryParam('series_number');
 
       if(!isParamViewLoaded && seriesNumberParam) {
         const initialDisplaySet = displaySets.find(ds => {
@@ -52,8 +51,10 @@ function ViewerViewportGrid(props) {
           displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
         });
 
-        setIsParamViewLoaded(true);
+        initialDisplaySet && setIsParamViewLoaded(true);
       } else {
+        if (!matchDetails.length) return;
+
         // Match each viewport individually
         for (let i = 0; i < numViewports; i++) {
           if (hpAlreadyApplied[i] === true) {
@@ -120,12 +121,6 @@ function ViewerViewportGrid(props) {
     return () => {
       unsubscribe();
     };
-  }, [viewportGrid]);
-
-  // Changing the Hanging protocol while viewing
-  useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
-    updateDisplaysetForViewports(displaySets);
   }, [viewportGrid]);
 
   // Layout change based on hanging protocols
