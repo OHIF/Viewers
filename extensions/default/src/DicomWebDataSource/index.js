@@ -51,7 +51,6 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     wadoUrlPrefix,
     qidoUrlPrefix,
     stowUrlPrefix,
-    qidoSupportsIncludeField,
     enableStudyLazyLoad,
     supportsFuzzyMatching,
     supportsWildcard,
