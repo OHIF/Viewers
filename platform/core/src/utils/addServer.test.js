@@ -6,8 +6,9 @@ describe('addServers', () => {
       {
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        stowUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -47,12 +48,13 @@ describe('addServers', () => {
       server: {
         imageRendering: 'wadors',
         name: 'DCM4CHEE',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
         thumbnailRendering: 'wadors',
         type: 'dicomWeb',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        stowUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
       },
       type: 'ADD_SERVER',
     });

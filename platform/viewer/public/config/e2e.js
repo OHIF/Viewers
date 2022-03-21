@@ -13,8 +13,9 @@ window.config = {
       configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: '/viewer-testdata',
-        qidoRoot: '/viewer-testdata',
-        wadoRoot: '/viewer-testdata',
+        qidoUrlPrefix: '/viewer-testdata',
+        wadoUrlPrefix: '/viewer-testdata',
+        stowUrlPrefix: '/viewer-testdata',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
@@ -32,8 +33,9 @@ window.config = {
     //   configuration: {
     //     name: 'DCM4CHEE',
     //     wadoUriRoot: '/dicomweb',
-    //     qidoRoot: '/dicomweb',
-    //     wadoRoot: '/dicomweb',
+    //     qidoUrlPrefix: '/dicomweb',
+    //     wadoUrlPrefix: '/dicomweb',
+    //     stowUrlPrefix: '/dicomweb',
     //     qidoSupportsIncludeField: false,
     //     supportsReject: false,
     //     imageRendering: 'wadors',

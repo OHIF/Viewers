@@ -34,9 +34,11 @@ window.config = {
         name: 'GCP',
         wadoUriRoot:
           'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
-        qidoRoot:
+        qidoUrlPrefix:
           'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
-        wadoRoot:
+        wadoUrlPrefix:
+          'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+        stowUrlPrefix:
           'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',

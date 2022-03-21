@@ -61,9 +61,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   const dicomWebClientConfig = {
     url: baseUrl,
-    wadoURLPrefix: wadoUrlPrefix,
-    qidoURLPrefix: qidoUrlPrefix,
-    stowURLPrefix: stowUrlPrefix,
+    wadoUrlPrefix: wadoUrlPrefix,
+    qidoUrlPrefix: qidoUrlPrefix,
+    stowUrlPrefix: stowUrlPrefix,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };

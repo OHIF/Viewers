@@ -58,8 +58,9 @@ window.config = {
       configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        stowUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',

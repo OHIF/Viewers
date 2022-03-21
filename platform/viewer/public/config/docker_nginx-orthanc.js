@@ -11,8 +11,9 @@ window.config = {
       configuration: {
         name: 'Orthanc',
         wadoUriRoot: '/wado',
-        qidoRoot: '/dicom-web',
-        wadoRoot: '/dicom-web',
+        qidoUrlPrefix: '/dicom-web',
+        wadoUrlPrefix: '/dicom-web',
+        stowUrlPrefix: '/dicom-web',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',

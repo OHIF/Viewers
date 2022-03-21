@@ -110,8 +110,9 @@ window.config = {
     dicomWeb: [
       {
         name: 'DCM4CHEE',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        stowUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
