@@ -5,7 +5,7 @@ import { withTranslation } from '../../contextProviders';
 
 import { Icon } from './../../elements/Icon';
 import { MeasurementTableItem } from './MeasurementTableItem.js';
-import { OverlayTrigger } from './../overlayTrigger';
+import { OverlayTrigger2 as OverlayTrigger } from './../overlayTrigger';
 import PropTypes from 'prop-types';
 import { ScrollableArea } from './../../ScrollableArea/ScrollableArea.js';
 import { TableList } from './../tableList';
@@ -45,7 +45,7 @@ class MeasurementTable extends Component {
     return (
       <div className="measurementTable">
         <div className="measurementTableHeader">
-          {hasOverallWarnings && (
+          {true && (
             <OverlayTrigger
               key={'overwall-warning'}
               placement="left"
@@ -196,7 +196,7 @@ class MeasurementTable extends Component {
   };
 
   getWarningContent = () => {
-    const { warningList = '' } = this.props.overallWarnings;
+    const { warningList = ['um', 'dois', 'tres'] } = this.props.overallWarnings;
 
     if (Array.isArray(warningList)) {
       const listedWarnings = warningList.map((warn, index) => {

@@ -43,7 +43,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "core-js": "^3.2.1"
+    "core-js": "^3.2.1",
+    "react-overlay-trigger": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

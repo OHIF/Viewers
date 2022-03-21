@@ -42,6 +42,9 @@
 .OHIFCornerstoneViewportOverlay.controlsVisible .bottomright {
   right: calc(20px + 19px);
 }
+.OHIFCornerstoneViewportOverlay .warning-container {
+  position: fixed;
+}
 .OHIFCornerstoneViewportOverlay .warning {
   position: absolute;
   font-weight: 400;

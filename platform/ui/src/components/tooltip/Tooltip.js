@@ -34,6 +34,7 @@ class Tooltip extends React.Component {
       className,
       style,
       children,
+      ...rest
     } = this.props;
 
     const outerStyle = {
@@ -47,11 +48,16 @@ class Tooltip extends React.Component {
       left: arrowOffsetLeft,
     };
 
+    const otherProps = {};
+    if ((rest || {}).forwardRef) {
+      otherProps.ref = rest.forwardRef;
+    }
     return (
       <div
         role="tooltip"
         className={classNames(className, 'tooltip', placement)}
         style={outerStyle}
+        {...otherProps}
       >
         <div className="tooltip-arrow" style={arrowStyle} />
         <div className="tooltip-inner">{children}</div>

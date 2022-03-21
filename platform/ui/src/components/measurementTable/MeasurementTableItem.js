@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from '../../contextProviders';
 
 import { Icon } from './../../elements/Icon';
-import { OverlayTrigger } from './../overlayTrigger';
+import { OverlayTrigger2 as OverlayTrigger } from './../overlayTrigger';
 import { Tooltip } from './../tooltip';
 import { TableListItem } from './../tableList/TableListItem.js';
 
@@ -30,16 +30,16 @@ class MeasurementTableItem extends Component {
 
     return (
       <React.Fragment>
-        {hasWarnings && !isReadOnly ? (
+        {true ? (
           <OverlayTrigger
             key={this.props.itemIndex}
             placement="left"
+            popperConfig={{
+              modifiers: { preventOverflow: { enabled: false } },
+            }}
+            containerClassName="warning-container"
             overlay={
-              <Tooltip
-                placement="left"
-                className="in tooltip-warning"
-                id="tooltip-left"
-              >
+              <Tooltip className="tooltip-warning" id="tooltip-left">
                 <div className="warningTitle">{this.props.t(warningTitle)}</div>
                 <div className="warningContent">{this.getWarningContent()}</div>
               </Tooltip>
@@ -66,11 +66,7 @@ class MeasurementTableItem extends Component {
   };
 
   getTableListItem = () => {
-    const hasWarningClass =
-      this.props.measurementData.hasWarnings &&
-      !this.props.measurementData.isReadOnly
-        ? 'hasWarnings'
-        : '';
+    const hasWarningClass = 'hasWarnings';
 
     const actionButtons = [];
 
@@ -152,7 +148,10 @@ class MeasurementTableItem extends Component {
   };
 
   getWarningContent = () => {
-    const { warningList = '' } = this.props.measurementData;
+    const { warningList: warningList2 } = this.props.measurementData;
+
+    const warningList =
+      'aksjajakslakslsaklas lsklsk asaslkalskaslkalsklakslsaklaklksalkslkas lakslakslksakslaksalksal kalskalklskls';
 
     if (Array.isArray(warningList)) {
       const listedWarnings = warningList.map((warn, index) => {

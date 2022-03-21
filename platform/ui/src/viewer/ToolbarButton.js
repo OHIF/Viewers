@@ -7,7 +7,15 @@ import classnames from 'classnames';
 import { withTranslation } from '../contextProviders';
 
 export function ToolbarButton(props) {
-  const { isActive, icon, labelWhenActive, onClick, t } = props;
+  const {
+    isActive,
+    icon,
+    labelWhenActive,
+    onClick,
+    t,
+    forwardRef,
+    ref,
+  } = props;
   const className = classnames(props.className, { active: isActive });
   const iconProps = typeof icon === 'string' ? { name: icon } : icon;
   const label = isActive && labelWhenActive ? labelWhenActive : props.label;
@@ -25,11 +33,18 @@ export function ToolbarButton(props) {
 
   const cypressSelectorId = props.label.toLowerCase();
 
+  const restProps = {};
+
+  const _ref = ref || forwardRef;
+  if (_ref) {
+    restProps.ref = _ref;
+  }
   return (
     <div
       className={className}
       onClick={handleClick}
       data-cy={cypressSelectorId}
+      {...restProps}
     >
       {iconProps && <Icon {...iconProps} />}
       <div className="toolbar-button-label">

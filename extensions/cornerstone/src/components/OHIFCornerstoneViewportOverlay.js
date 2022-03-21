@@ -9,12 +9,12 @@ import {
   formatDICOMDate,
   formatDICOMTime,
   formatPN,
-  getCompression
+  getCompression,
 } from '../utils/formatStudy';
 import classNames from 'classnames';
 import { Icon } from '@ohif/ui/src/elements/Icon';
 import { Tooltip } from '@ohif/ui/src/components/tooltip';
-import { OverlayTrigger } from '@ohif/ui/src/components/overlayTrigger';
+import { OverlayTrigger2 as OverlayTrigger } from '@ohif/ui/src/components/overlayTrigger';
 
 class OHIFCornerstoneViewportOverlay extends PureComponent {
   static propTypes = {
@@ -30,11 +30,16 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     imageId: PropTypes.string.isRequired,
     imageIndex: PropTypes.number.isRequired,
     stackSize: PropTypes.number.isRequired,
-    inconsistencyWarnings: PropTypes.array.isRequired
+    inconsistencyWarnings: PropTypes.array.isRequired,
   };
-
   render() {
-    const { imageId, scale, windowWidth, windowCenter, inconsistencyWarnings } = this.props;
+    const {
+      imageId,
+      scale,
+      windowWidth,
+      windowCenter,
+      inconsistencyWarnings,
+    } = this.props;
 
     if (!imageId) {
       return null;
@@ -72,8 +77,11 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
 
     const { imageIndex, stackSize } = this.props;
 
-    const inconsistencyWarningsOn = inconsistencyWarnings && inconsistencyWarnings.length !== 0 ? true : false;
-    const getWarningContent = (warningList) => {
+    const inconsistencyWarningsOn =
+      inconsistencyWarnings && inconsistencyWarnings.length !== 0
+        ? true
+        : false;
+    const getWarningContent = warningList => {
       if (Array.isArray(warningList)) {
         const listedWarnings = warningList.map((warn, index) => {
           return <li key={index}>{warn}</li>;
@@ -86,33 +94,36 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     };
 
     const getWarningInfo = (seriesNumber, inconsistencyWarnings) => {
-      return(
+      return (
         <React.Fragment>
-        {inconsistencyWarnings.length != 0 ? (
-          <OverlayTrigger
-            key={seriesNumber}
-            placement="left"
-            overlay={
-              <Tooltip
-                placement="left"
-                className="in tooltip-warning"
-                id="tooltip-left"
-              >
-                <div className="warningTitle">Series Inconsistencies</div>
-                <div className="warningContent">{getWarningContent(inconsistencyWarnings)}</div>
-              </Tooltip>
-            }
-          >
-            <div className={classNames('warning')}>
-              <span className="warning-icon">
-                <Icon name="exclamation-triangle" />
-              </span>
-            </div>
-          </OverlayTrigger>
-        ) : (
-          <React.Fragment></React.Fragment>
+          {true ? (
+            <OverlayTrigger
+              key={seriesNumber}
+              placement="left"
+              containerClassName="warning-container"
+              overlay={
+                <Tooltip
+                  placement="left"
+                  className="tooltip-warning"
+                  id="tooltip-left"
+                >
+                  <div className="warningTitle">Series Inconsistencies</div>
+                  <div className="warningContent">
+                    {getWarningContent(inconsistencyWarnings)}
+                  </div>
+                </Tooltip>
+              }
+            >
+              <div className={classNames('warning')}>
+                <span className="warning-icon">
+                  <Icon name="exclamation-triangle" />
+                </span>
+              </div>
+            </OverlayTrigger>
+          ) : (
+            <React.Fragment></React.Fragment>
           )}
-      </React.Fragment>
+        </React.Fragment>
       );
     };
 
@@ -134,7 +145,7 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
           <div className="compressionIndicator">{compression}</div>
         </div>
         <div className="bottom-left2 warning">
-          <div>{inconsistencyWarningsOn ? getWarningInfo(seriesNumber, inconsistencyWarnings) : ''}</div>
+          <div>{getWarningInfo(seriesNumber, inconsistencyWarnings)}</div>
         </div>
         <div className="bottom-left overlay-element">
           <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>

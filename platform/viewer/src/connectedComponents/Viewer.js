@@ -95,8 +95,8 @@ class Viewer extends Component {
 
   state = {
     isLeftSidePanelOpen: true,
-    isRightSidePanelOpen: false,
-    selectedRightSidePanel: '',
+    isRightSidePanelOpen: true,
+    selectedRightSidePanel: 'measurement-panel',
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
   };

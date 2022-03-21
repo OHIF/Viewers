@@ -1,10 +1,11 @@
 import './ExpandableToolMenu.styl';
 
-import { OverlayTrigger } from '../components/overlayTrigger';
+import OverlayTrigger from '../components/overlayTrigger/OverlayTrigger2';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ToolbarButton from './ToolbarButton.js';
 import { Tooltip } from '../components/tooltip';
+import classNames from 'classnames';
 
 class ExpandableToolMenu extends React.Component {
   static propTypes = {
@@ -46,10 +47,33 @@ class ExpandableToolMenu extends React.Component {
     };
   }
 
-  toolbarMenuOverlay = () => (
+  /*
+  toolbarMenuOverlay = ({
+    props,
+    arrowProps,
+    className,
+    placement = 'bottom',
+  }) => {
+    const { ref, ...rest } = props || {};
+
+    return (
+      <Tooltip
+        forwardRef={ref}
+        {...rest}
+        placement={placement}
+        className={classNames(className, 'tooltip-toolbar-overlay')}
+        id={`${Math.random()}_tooltip-toolbar-overlay}`}
+      >
+        {this.getButtons()}
+      </Tooltip>
+    );
+  };
+  */
+
+  toolbarMenuOverlay = (props = {}) => (
     <Tooltip
-      placement="bottom"
-      className="tooltip-toolbar-overlay"
+      {...props}
+      className={classNames('tooltip-toolbar-overlay', props.className)}
       id={`${Math.random()}_tooltip-toolbar-overlay}`}
     >
       {this.getButtons()}
@@ -108,8 +132,16 @@ class ExpandableToolMenu extends React.Component {
   };
 
   render() {
-    const getToolBarButtonComponent = () => {
-      return (
+    return (
+      <OverlayTrigger
+        key="menu-button"
+        trigger={['click']}
+        placement="bottom"
+        rootClose={true}
+        onToggle={this.onOverlayHide}
+        onClick={this.onExpandableToolClick}
+        overlay={this.toolbarMenuOverlay}
+      >
         <ToolbarButton
           key="menu-button"
           type="tool"
@@ -120,22 +152,6 @@ class ExpandableToolMenu extends React.Component {
           isExpandable={true}
           isExpanded={this.state.isExpanded}
         />
-      );
-    };
-
-    const toolbarComponent = getToolBarButtonComponent();
-
-    return (
-      <OverlayTrigger
-        key="menu-button"
-        trigger="click"
-        placement="bottom"
-        rootClose={true}
-        handleHide={this.onOverlayHide}
-        onClick={this.onExpandableToolClick}
-        overlay={this.toolbarMenuOverlay()}
-      >
-        {toolbarComponent}
       </OverlayTrigger>
     );
   }

@@ -1,4 +1,4 @@
-import contains from 'dom-helpers/query/contains';
+import { contains } from 'dom-helpers';
 import React, { cloneElement } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
@@ -126,7 +126,9 @@ class OverlayTrigger extends React.Component {
   }
 
   componentDidMount() {
-    this._mountNode = document.createElement('div');
+    this._mountNode = this.props.container
+      ? this.props.container
+      : document.createElement('div');
     this.renderOverlay();
   }
 

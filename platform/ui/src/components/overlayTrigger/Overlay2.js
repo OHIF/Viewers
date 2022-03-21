@@ -1,11 +1,40 @@
-import classNames from 'classnames';
-import React, { cloneElement } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import BaseOverlay from 'react-overlays/Overlay';
 import elementType from 'prop-types-extra/lib/elementType';
 import { withTranslation } from '../../contextProviders';
+import classNames from 'classnames';
 
 import Fade from './Fade';
+
+function EnhancedOverlayContent(config, overlay, otherProps = {}) {
+  const { props, arrowProps, className, placement = 'bottom' } = config;
+
+  const { ref, ...rest } = props || {};
+
+  const overlayProps =
+    typeof overlay !== 'function' ? React.Children.only(overlay).props : {};
+
+  const mergedProps = {
+    ...overlayProps,
+    ...otherProps,
+    placement,
+    className: classNames(
+      className,
+      overlayProps.className,
+      otherProps.className
+    ),
+    ...rest,
+  };
+
+  if (ref) {
+    mergedProps.forwardRef = ref;
+  }
+
+  return typeof overlay === 'function'
+    ? overlay(mergedProps)
+    : React.cloneElement(overlay, mergedProps);
+}
 
 const propTypes = {
   /**
@@ -72,26 +101,16 @@ const defaultProps = {
 
 class Overlay extends React.Component {
   render() {
-    const { animation, children, ...props } = this.props;
+    const { animation, overlay: OverlayContent, ...props } = this.props;
 
-    const transition = animation === true ? Fade : animation || null;
-
-    let child;
-
-    if (!transition) {
-      child = cloneElement(children, {
-        className: classNames(children.props.className, 'in'),
-      });
-    } else {
-      child = children;
-    }
+    const transitionComponent = animation === true ? Fade : animation || null;
+    const childClassName = transitionComponent ? '' : 'in';
 
     return (
-      <BaseOverlay {...props} transition={transition}>
-        {({ props, arrowProps, placement }) =>
-          cloneElement(child, {
-            placement: placement,
-            target: props.target,
+      <BaseOverlay {...props} transition={transitionComponent}>
+        {config =>
+          EnhancedOverlayContent(config, OverlayContent, {
+            className: childClassName,
           })
         }
       </BaseOverlay>
