@@ -8,20 +8,12 @@ import OHIFError from '../OHIFError.js';
 
 const UNDEFINED = 'undefined';
 const STRING = 'string';
-const STUDY_INSTANCE_UID = 'x0020000d';
-const SERIES_INSTANCE_UID = 'x0020000e';
 
 export class InstanceMetadata extends Metadata {
   constructor(data, uid) {
     super(data, uid);
     // Initialize Private Properties
     Object.defineProperties(this, {
-      _sopInstanceUID: {
-        configurable: true, // configurable so that it can be redefined in sub-classes...
-        enumerable: false,
-        writable: true,
-        value: null,
-      },
       _imageId: {
         configurable: true, // configurable so that it can be redefined in sub-classes...
         enumerable: false,
@@ -43,14 +35,14 @@ export class InstanceMetadata extends Metadata {
    */
   _definePublicProperties() {
     /**
-     * Property: this.sopInstanceUID
+     * Property: this.SOPInstanceUID
      * Same as this.getSOPInstanceUID()
      * It's specially useful in contexts where a method call is not suitable like in search criteria. For example:
      * sopInstanceCollection.findBy({
-     *   sopInstanceUID: '1.2.3.4.5.6.77777.8888888.99999999999.0'
+     *   SOPInstanceUID: '1.2.3.4.5.6.77777.8888888.99999999999.0'
      * });
      */
-    Object.defineProperty(this, 'sopInstanceUID', {
+    Object.defineProperty(this, 'SOPInstanceUID', {
       configurable: false,
       enumerable: false,
       get: function() {
@@ -67,21 +59,21 @@ export class InstanceMetadata extends Metadata {
    * Returns the StudyInstanceUID of the current instance. This method is basically a shorthand the full "getTagValue" method call.
    */
   getStudyInstanceUID() {
-    return this.getTagValue(STUDY_INSTANCE_UID, null);
+    return this.getTagValue('StudyInstanceUID', null);
   }
 
   /**
    * Returns the SeriesInstanceUID of the current instance. This method is basically a shorthand the full "getTagValue" method call.
    */
   getSeriesInstanceUID() {
-    return this.getTagValue(SERIES_INSTANCE_UID, null);
+    return this.getTagValue('SeriesInstanceUID', null);
   }
 
   /**
    * Returns the SOPInstanceUID of the current instance.
    */
   getSOPInstanceUID() {
-    return this._sopInstanceUID;
+    return this.getTagValue('SOPInstanceUID', null);
   }
 
   // @TODO: Improve this... (E.g.: blob data)
@@ -125,13 +117,6 @@ export class InstanceMetadata extends Metadata {
     }
 
     return typeof value === STRING ? parseInt(value) : value;
-  }
-
-  /**
-   * @deprecated Please use getTagValue instead.
-   */
-  getRawValue(tagOrProperty, defaultValue) {
-    return this.getTagValue(tagOrProperty, defaultValue);
   }
 
   /**

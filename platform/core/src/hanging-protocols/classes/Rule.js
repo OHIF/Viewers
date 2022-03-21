@@ -6,7 +6,7 @@ const EQUALS_REGEXP = /^equals$/;
 /**
  * This Class represents a Rule to be evaluated given a set of attributes
  * Rules have:
- * - An attribute (e.g. 'seriesDescription')
+ * - An attribute (e.g. 'SeriesDescription')
  * - A constraint Object, in the form required by Validate.js:
  *
  * rule.constraint = {

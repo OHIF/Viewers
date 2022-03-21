@@ -1,0 +1,44 @@
+.debugReportModalHeader {
+  padding: 10px 0 10px;
+  color: var(--active-color);
+}
+
+.debug-report-modal-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.debug-report-modal-buttons-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.debug-report-modal-container .errors {
+  margin-top: 10px;
+}
+
+.debug-report-modal-container .errors-container {
+  border: 1px solid var(--active-color);
+  border-radius: 5px;
+  padding: 10px;
+  overflow: scroll;
+  max-height: 300px;
+}
+
+.debug-overflowText {
+  margin: 0 auto;
+  max-width: 300px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.debug-overflowText-border {
+  margin: 0 auto;
+  max-width: 300px;
+  border: solid 2px #ccc;
+  padding: 12px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}

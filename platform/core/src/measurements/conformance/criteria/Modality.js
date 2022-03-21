@@ -32,7 +32,7 @@ export const ModalitySchema = {
 
 /*
  * ModalityCriteria
- *   Check if a modality is allowed or denied
+ *   Check if a Modality is allowed or denied
  * Options:
  *   method (string): Specify if it\'s goinig to "allow" or "deny" the modalities
  *   measurementTypes (string[]): List of measurement types that will be evaluated
@@ -56,16 +56,14 @@ export class ModalityCriterion extends BaseCriterion {
 
       items.forEach(item => {
         const { measurement, metadata } = item;
-        const modality = (
-          metadata.getRawValue('x00080060') || ''
-        ).toUpperCase();
+        const Modality = metadata.getTagValue('Modality') || '';
 
         if (
-          (validationMethod === 'allow' && !modalitiesSet.has(modality)) ||
-          (validationMethod === 'deny' && modalitiesSet.has(modality))
+          (validationMethod === 'allow' && !modalitiesSet.has(Modality)) ||
+          (validationMethod === 'deny' && modalitiesSet.has(Modality))
         ) {
           measurements.push(measurement);
-          invalidModalities.add(modality);
+          invalidModalities.add(Modality);
         }
       });
     });
@@ -74,7 +72,7 @@ export class ModalityCriterion extends BaseCriterion {
       const uniqueModalities = Array.from(invalidModalities);
       const uniqueModalitiesText = uniqueModalities.join(', ');
       const modalityText =
-        uniqueModalities.length > 1 ? 'modalities' : 'modality';
+        uniqueModalities.length > 1 ? 'modalities' : 'Modality';
 
       message = `The ${modalityText} ${uniqueModalitiesText} should not be used as a method of measurement`;
     }

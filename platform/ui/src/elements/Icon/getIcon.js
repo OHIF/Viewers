@@ -9,6 +9,7 @@ import arrowsAltH from './icons/arrows-alt-h.svg';
 import arrowsAltV from './icons/arrows-alt-v.svg';
 import bars from './icons/bars.svg';
 import brain from './icons/brain.svg';
+import brush from './icons/brush.svg';
 import caretDown from './icons/caret-down.svg';
 import caretUp from './icons/caret-up.svg';
 import check from './icons/check.svg';
@@ -18,6 +19,7 @@ import chevronDown from './icons/chevron-down.svg';
 import circle from './icons/circle.svg';
 import circleNotch from './icons/circle-notch.svg';
 import circleO from './icons/circle-o.svg';
+import clipboard from './icons/clipboard.svg';
 import cog from './icons/cog.svg';
 import createComment from './icons/create-comment.svg';
 import createScreenCapture from './icons/create-screen-capture.svg';
@@ -30,11 +32,11 @@ import edit from './icons/edit.svg';
 import ellipseCircle from './icons/ellipse-circle.svg';
 import ellipseH from './icons/ellipse-h.svg';
 import ellipseV from './icons/ellipse-v.svg';
-import eraser from './icons/eraser.svg';
 import exclamationCircle from './icons/exclamation-circle.svg';
 import exclamationTriangle from './icons/exclamation-triangle.svg';
 import fastBackward from './icons/fast-backward.svg';
 import fastForward from './icons/fast-forward.svg';
+import stop from './icons/stop.svg';
 import info from './icons/info.svg';
 import inlineEdit from './icons/inline-edit.svg';
 import level from './icons/level.svg';
@@ -63,32 +65,42 @@ import reset from './icons/reset.svg';
 import rotate from './icons/rotate.svg';
 import rotateRight from './icons/rotate-right.svg';
 import saveRegular from './icons/save-regular.svg';
+import scissors from './icons/scissors.svg';
 import search from './icons/search.svg';
 import searchPlus from './icons/search-plus.svg';
 import softTissue from './icons/soft-tissue.svg';
 import sort from './icons/sort.svg';
 import sortDown from './icons/sort-down.svg';
 import sortUp from './icons/sort-up.svg';
+import sphere from './icons/sphere.svg';
 import squareO from './icons/square-o.svg';
 import star from './icons/star.svg';
 import stepBackward from './icons/step-backward.svg';
 import stepForward from './icons/step-forward.svg';
-import stop from './icons/stop.svg';
 import sun from './icons/sun.svg';
 import th from './icons/th.svg';
 import thLarge from './icons/th-large.svg';
 import thList from './icons/th-list.svg';
 import times from './icons/times.svg';
 import trash from './icons/trash.svg';
+import unlink from './icons/unlink.svg';
 import user from './icons/user.svg';
 import youtube from './icons/youtube.svg';
+import eye from './icons/eye.svg';
+import eyeClosed from './icons/eye-closed.svg';
+import envelopeSquare from './icons/envelope-square.svg';
 
 const ICONS = {
+  eye,
+  'eye-closed': eyeClosed,
+  brush,
+  scissors,
   user,
   sort,
   th,
   star,
   'sort-up': sortUp,
+  sphere,
   'sort-down': sortDown,
   info,
   cube,
@@ -113,7 +125,6 @@ const ICONS = {
   'create-comment': createComment,
   'create-screen-capture': createScreenCapture,
   edit,
-  eraser,
   'fast-backward': fastBackward,
   'fast-forward': fastForward,
   'object-group': objectGroup,
@@ -133,6 +144,7 @@ const ICONS = {
   'lock-alt': lockAlt,
   'step-backward': stepBackward,
   'step-forward': stepForward,
+  clipboard: clipboard,
   stop,
   'th-large': thLarge,
   'th-list': thList,
@@ -158,6 +170,7 @@ const ICONS = {
   rotate,
   'rotate-right': rotateRight,
   trash,
+  unlink,
   'exclamation-circle': exclamationCircle,
   link,
   'exclamation-triangle': exclamationTriangle,
@@ -166,6 +179,7 @@ const ICONS = {
   lung,
   liver,
   save: saveRegular,
+  'envelope-square': envelopeSquare,
 };
 
 /**

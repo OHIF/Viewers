@@ -1,16 +1,14 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import {
-  clearStudyLoadingProgress,
-  setStudyLoadingProgress,
-} from '../redux/actions';
+import debounce from 'lodash.debounce';
+
 import StackManager from '../utils/StackManager';
+import { StudyPrefetcher } from './StudyPrefetcher';
 
 class BaseLoadingListener {
   constructor(stack, options = {}) {
     this.id = BaseLoadingListener.getNewId();
     this.stack = stack;
-    this.startListening();
     this.statsItemsLimit = options.statsItemsLimit || 2;
     this.stats = {
       items: [],
@@ -60,8 +58,11 @@ class BaseLoadingListener {
   }
 
   _getProgressId() {
-    const displaySetInstanceUid = this.stack.displaySetInstanceUid;
-    return 'StackProgress:' + displaySetInstanceUid;
+    /**
+     * TODO: The id key should be configurable.
+     */
+    const displaySetInstanceUID = this.stack.displaySetInstanceUID;
+    return 'StackProgress:' + displaySetInstanceUID;
   }
 
   _clearProgress() {
@@ -96,11 +97,18 @@ class BaseLoadingListener {
 class DICOMFileLoadingListener extends BaseLoadingListener {
   constructor(stack, options) {
     super(stack, options);
+
+    this.imageLoadProgressEventHandler = this._imageLoadProgressEventHandler.bind(
+      this
+    );
+
     this._dataSetUrl = this._getDataSetUrl(stack);
     this._lastLoaded = 0;
 
     // Check how many instances has already been download (cached)
     this._checkCachedData();
+
+    this.startListening();
   }
 
   _checkCachedData() {
@@ -126,10 +134,6 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
 
   startListening() {
     const imageLoadProgressEventName = this._getImageLoadProgressEventName();
-
-    this.imageLoadProgressEventHandler = this._imageLoadProgressEventHandle.bind(
-      this
-    );
 
     this.stopListening();
 
@@ -200,17 +204,57 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
   }
 }
 
+const StudyLoadingListenerEvents = {
+  OnProgress: 'StudyLoadingListenerEvents.OnProgress',
+};
+
+function promiseState(promise, callback) {
+  // Symbols and RegExps are never content-equal
+  var uniqueValue = window['Symbol'] ? Symbol('unique') : /unique/;
+
+  function notifyPendingOrResolved(value) {
+    if (value === uniqueValue) {
+      return callback('pending');
+    } else {
+      return callback('fulfilled');
+    }
+  }
+
+  function notifyRejected(reason) {
+    return callback('rejected');
+  }
+
+  var race = [promise, Promise.resolve(uniqueValue)];
+  Promise.race(race).then(notifyPendingOrResolved, notifyRejected);
+}
+
 class StackLoadingListener extends BaseLoadingListener {
   constructor(stack, options = {}) {
     options.statsItemsLimit = 20;
+
     super(stack, options);
+
+    this.imageLoadedEventHandler = this._imageLoadedEventHandler.bind(this);
+    this.imageCachePromiseRemovedEventHandler = this._imageCachePromiseRemovedEventHandler.bind(
+      this
+    );
 
     this.imageDataMap = this._convertImageIdsArrayToMap(stack.imageIds);
     this.framesStatus = this._createArray(stack.imageIds.length, false);
     this.loadedCount = 0;
 
     // Check how many instances has already been download (cached)
-    this._checkCachedData();
+    this._debouncedSetProgressData = debounce((...args) => {
+      this._setProgressData(...args);
+
+      /** After checking cache, continue prefetch */
+      const studyPrefetcher = StudyPrefetcher.getInstance();
+      studyPrefetcher.prefetch(studyPrefetcher.getElement());
+    }, 300);
+    const debounced = true;
+    this._checkCachedData(debounced);
+
+    this.startListening();
   }
 
   _convertImageIdsArrayToMap(imageIds) {
@@ -238,18 +282,37 @@ class StackLoadingListener extends BaseLoadingListener {
     return array;
   }
 
-  _checkCachedData() {
-    // const imageIds = this.stack.imageIds;
-    // TODO: No way to check status of Promise.
-    /*for(let i = 0; i < imageIds.length; i++) {
-            const imageId = imageIds[i];
+  /**
+   * Check if image id is cached in cornerstone.
+   *
+   * @param {string} imageId
+   * @returns
+   */
+  isImageCached(imageId) {
+    const image = cornerstone.imageCache.imageCache[imageId];
+    return image && image.sizeInBytes;
+  }
 
-            const imagePromise = cornerstone.imageCache.getImageLoadObject(imageId).promise;
+  _checkCachedData(debounced = false) {
+    const imageIds = this.stack.imageIds;
 
-            if (imagePromise && (imagePromise.state() === 'resolved')) {
-                this._updateFrameStatus(imageId, true);
-            }
-        }*/
+    for (let i = 0; i < imageIds.length; i++) {
+      const imageId = imageIds[i];
+
+      const imageObject = cornerstone.imageCache.getImageLoadObject(imageId);
+
+      if (this.isImageCached(imageId)) {
+        this._updateFrameStatus(imageId, true, debounced);
+      }
+
+      if (imageObject && imageObject.promise) {
+        promiseState(imageObject.promise, state => {
+          if (state === 'fulfilled') {
+            this._updateFrameStatus(imageId, true, debounced);
+          }
+        });
+      }
+    }
   }
 
   _getImageLoadedEventName() {
@@ -271,11 +334,6 @@ class StackLoadingListener extends BaseLoadingListener {
   startListening() {
     const imageLoadedEventName = this._getImageLoadedEventName();
     const imageCachePromiseRemovedEventName = this._getImageCachePromiseRemoveEventName();
-
-    this.imageLoadedEventHandler = this._imageLoadedEventHandler.bind(this);
-    this.imageCachePromiseRemovedEventHandler = this._imageCachePromiseRemovedEventHandler.bind(
-      this
-    );
 
     this.stopListening();
 
@@ -303,7 +361,7 @@ class StackLoadingListener extends BaseLoadingListener {
     );
   }
 
-  _updateFrameStatus(imageId, loaded) {
+  _updateFrameStatus(imageId, loaded, debounced) {
     const imageData = this.imageDataMap.get(imageId);
 
     if (!imageData || imageData.loaded === loaded) {
@@ -318,7 +376,7 @@ class StackLoadingListener extends BaseLoadingListener {
     imageData.loaded = loaded;
     this.framesStatus[imageData.index] = loaded;
     this.loadedCount += loaded ? 1 : -1;
-    this._updateProgress();
+    this._updateProgress(debounced);
   }
 
   _setProgressData(progressId, progressData) {
@@ -339,7 +397,7 @@ class StackLoadingListener extends BaseLoadingListener {
     );
   }
 
-  _updateProgress() {
+  _updateProgress(debounced) {
     const totalFramesCount = this.stack.imageIds.length;
     const loadedFramesCount = this.loadedCount;
     const loadingFramesCount = totalFramesCount - loadedFramesCount;
@@ -357,12 +415,17 @@ class StackLoadingListener extends BaseLoadingListener {
       framesStatus: this.framesStatus,
     };
 
+    if (debounced) {
+      this._debouncedSetProgressData(progressId, progressData);
+      return;
+    }
+
     this._setProgressData(progressId, progressData);
   }
 
   _logProgress() {
     const totalFramesCount = this.stack.imageIds.length;
-    const displaySetInstanceUid = this.stack.displaySetInstanceUid;
+    const displaySetInstanceUID = this.stack.displaySetInstanceUID;
     let progressBar = '[';
 
     for (let i = 0; i < totalFramesCount; i++) {
@@ -371,11 +434,13 @@ class StackLoadingListener extends BaseLoadingListener {
     }
 
     progressBar += ']';
-    log.info(`${displaySetInstanceUid}: ${progressBar}`);
+    console.info(`${displaySetInstanceUID}: ${progressBar}`);
   }
 }
 
 class StudyLoadingListener {
+  static events = StudyLoadingListenerEvents;
+
   constructor(options) {
     this.listeners = {};
     this.options = options;
@@ -388,12 +453,12 @@ class StudyLoadingListener {
       return;
     }
 
-    const displaySetInstanceUid = stack.displaySetInstanceUid;
+    const displaySetInstanceUID = stack.displaySetInstanceUID;
 
-    if (!this.listeners[displaySetInstanceUid]) {
+    if (!this.listeners[displaySetInstanceUID]) {
       const listener = this._createListener(stack, stackMetaData);
       if (listener) {
-        this.listeners[displaySetInstanceUid] = listener;
+        this.listeners[displaySetInstanceUID] = listener;
       }
     }
   }
@@ -424,12 +489,12 @@ class StudyLoadingListener {
   }
 
   clear() {
-    const displaySetInstanceUids = Object.keys(this.listeners);
-    const length = displaySetInstanceUids.length;
+    const displaySetInstanceUIDs = Object.keys(this.listeners);
+    const length = displaySetInstanceUIDs.length;
 
     for (let i = 0; i < length; i++) {
-      const displaySetInstanceUid = displaySetInstanceUids[i];
-      const displaySet = this.listeners[displaySetInstanceUid];
+      const displaySetInstanceUID = displaySetInstanceUIDs[i];
+      const displaySet = this.listeners[displaySetInstanceUID];
 
       displaySet.destroy();
     }
@@ -454,14 +519,36 @@ class StudyLoadingListener {
 
   _getSchema(stack) {
     const imageId = stack.imageIds[0];
+    if (!imageId) {
+      return;
+    }
     const colonIndex = imageId.indexOf(':');
     return imageId.substring(0, colonIndex);
   }
 
-  // Singleton
   static getInstance(options) {
+    /**
+     * TODO: Use a different alternative without the use of events.
+     */
+    const DEFAULT_OPTIONS = {
+      _setProgressData: (progressId, progressData) => {
+        const event = new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+          detail: { progressId, progressData },
+        });
+        document.dispatchEvent(event);
+      },
+      _clearProgressById: progressId => {
+        const event = new CustomEvent(StudyLoadingListenerEvents.OnProgress, {
+          detail: { progressId, percentComplete: 0 },
+        });
+        document.dispatchEvent(event);
+      },
+    };
+
     if (!StudyLoadingListener._instance) {
-      StudyLoadingListener._instance = new StudyLoadingListener(options);
+      StudyLoadingListener._instance = new StudyLoadingListener(
+        options || DEFAULT_OPTIONS
+      );
     }
 
     return StudyLoadingListener._instance;

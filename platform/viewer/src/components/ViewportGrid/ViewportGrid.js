@@ -1,12 +1,16 @@
 import './ViewportGrid.css';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { utils } from '@ohif/core';
+import { useSnackbarContext, useLogger } from '@ohif/ui';
 //
 import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
 import EmptyViewport from './EmptyViewport.js';
+
+const { loadAndCacheDerivedDisplaySets } = utils;
 
 const ViewportGrid = function(props) {
   const {
@@ -20,6 +24,7 @@ const ViewportGrid = function(props) {
     studies,
     viewportData,
     children,
+    isStudyLoaded,
   } = props;
 
   const rowSize = 100 / numRows;
@@ -30,64 +35,80 @@ const ViewportGrid = function(props) {
     return null;
   }
 
-  const ViewportPanes = layout.viewports.map((layout, viewportIndex) => {
-    const displaySet = viewportData[viewportIndex];
+  const snackbar = useSnackbarContext();
+  const logger = useLogger();
 
-    if (!displaySet) {
-      return null;
+  useEffect(() => {
+    if (isStudyLoaded) {
+      viewportData.forEach(displaySet => {
+        loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
+      });
     }
+  }, [studies, viewportData, isStudyLoaded, snackbar]);
 
-    const data = {
-      displaySet,
-      studies,
-    };
+  const getViewportPanes = () =>
+    layout.viewports.map((layout, viewportIndex) => {
+      const displaySet = viewportData[viewportIndex];
 
-    // Use whichever plugin is currently in use in the panel
-    // unless nothing is specified. If nothing is specified
-    // and the display set has a plugin specified, use that.
-    //
-    // TODO: Change this logic to:
-    // - Plugins define how capable they are of displaying a SopClass
-    // - When updating a panel, ensure that the currently enabled plugin
-    // in the viewport is capable of rendering this display set. If not
-    // then use the most capable available plugin
-    const pluginName =
-      !layout.plugin && displaySet && displaySet.plugin
-        ? displaySet.plugin
-        : layout.plugin;
+      if (!displaySet) {
+        return null;
+      }
 
-    const ViewportComponent = _getViewportComponent(
-      data, // Why do we pass this as `ViewportData`, when that's not really what it is?
-      viewportIndex,
-      children,
-      availablePlugins,
-      pluginName,
-      defaultPluginName
-    );
+      const data = {
+        displaySet,
+        studies,
+      };
 
-    return (
-      <ViewportPane
-        onDrop={({
-          viewportIndex,
-          studyInstanceUid,
-          displaySetInstanceUid,
-        }) => {
-          setViewportData({
-            viewportIndex,
-            studyInstanceUid,
-            displaySetInstanceUid,
-          });
-        }}
-        viewportIndex={viewportIndex} // Needed by `setViewportData`
-        className={classNames('viewport-container', {
-          active: activeViewportIndex === viewportIndex,
-        })}
-        key={viewportIndex}
-      >
-        {ViewportComponent}
-      </ViewportPane>
-    );
-  });
+      // JAMES TODO:
+
+      // Use whichever plugin is currently in use in the panel
+      // unless nothing is specified. If nothing is specified
+      // and the display set has a plugin specified, use that.
+      //
+      // TODO: Change this logic to:
+      // - Plugins define how capable they are of displaying a SopClass
+      // - When updating a panel, ensure that the currently enabled plugin
+      // in the viewport is capable of rendering this display set. If not
+      // then use the most capable available plugin
+
+      const pluginName =
+        !layout.plugin && displaySet && displaySet.plugin
+          ? displaySet.plugin
+          : layout.plugin;
+
+      const ViewportComponent = _getViewportComponent(
+        data, // Why do we pass this as `ViewportData`, when that's not really what it is?
+        viewportIndex,
+        children,
+        availablePlugins,
+        pluginName,
+        defaultPluginName
+      );
+
+      return (
+        <ViewportPane
+          onDrop={setViewportData}
+          viewportIndex={viewportIndex} // Needed by `setViewportData`
+          className={classNames('viewport-container', {
+            active: activeViewportIndex === viewportIndex,
+          })}
+          key={viewportIndex}
+        >
+          {ViewportComponent}
+        </ViewportPane>
+      );
+    });
+
+  const ViewportPanes = React.useMemo(getViewportPanes, [
+    layout,
+    viewportData,
+    studies,
+    children,
+    availablePlugins,
+    defaultPluginName,
+    setViewportData,
+    activeViewportIndex,
+  ]);
 
   return (
     <div

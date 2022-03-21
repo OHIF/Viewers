@@ -140,4 +140,7 @@ i18n.initI18n = initI18n;
 i18n.addLocales = addLocales;
 i18n.defaultLanguage = DEFAULT_LANGUAGE;
 
+import getAvailableLanguagesInfo from './getAvailableLanguagesInfo.js';
+i18n.availableLanguages = getAvailableLanguagesInfo(locales);
+
 export default i18n;

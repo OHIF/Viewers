@@ -1,5 +1,4 @@
 import { InstanceMetadata } from './InstanceMetadata';
-import { DICOMTagDescriptions } from '../../utils/DICOMTagDescriptions.js';
 import getImageId from '../../utils/getImageId.js';
 
 export class OHIFInstanceMetadata extends InstanceMetadata {
@@ -20,7 +19,7 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
         configurable: false,
         enumerable: false,
         writable: false,
-        value: instance.sopInstanceUid,
+        value: instance.SOPInstanceUID,
       },
       _study: {
         configurable: false,
@@ -56,16 +55,16 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
       return this._cache[tagOrProperty];
     }
 
-    const propertyName = OHIFInstanceMetadata.getPropertyName(tagOrProperty);
+    const instanceData = this._instance.metadata;
 
     // Search property value in the whole study metadata chain...
     let rawValue;
-    if (propertyName in this._instance) {
-      rawValue = this._instance[propertyName];
-    } else if (propertyName in this._series) {
-      rawValue = this._series[propertyName];
-    } else if (propertyName in this._study) {
-      rawValue = this._study[propertyName];
+    if (tagOrProperty in instanceData) {
+      rawValue = instanceData[tagOrProperty];
+    } else if (tagOrProperty in this._series) {
+      rawValue = this._series[tagOrProperty];
+    } else if (tagOrProperty in this._study) {
+      rawValue = this._study[tagOrProperty];
     }
 
     if (rawValue !== void 0) {
@@ -79,12 +78,10 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
 
   // Override
   tagExists(tagOrProperty) {
-    const propertyName = OHIFInstanceMetadata.getPropertyName(tagOrProperty);
-
     return (
-      propertyName in this._instance ||
-      propertyName in this._series ||
-      propertyName in this._study
+      tagOrProperty in this._instance.metadata ||
+      tagOrProperty in this._series ||
+      tagOrProperty in this._study
     );
   }
 
@@ -96,29 +93,5 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
     }
 
     return this._imageId;
-  }
-
-  /**
-   * Static methods
-   */
-
-  // @TODO: The current mapping of standard DICOM property names to local property names is not optimal.
-  // The inconsistency in property naming makes this function increasingly complex.
-  // A possible solution to improve this would be adapt retriveMetadata names to use DICOM standard names as in dicomTagDescriptions.js
-  static getPropertyName(tagOrProperty) {
-    let propertyName;
-    const tagInfo = DICOMTagDescriptions.find(tagOrProperty);
-
-    if (tagInfo !== void 0) {
-      // This function tries to translate standard DICOM property names into local naming convention.
-      propertyName = tagInfo.keyword
-        .replace(/^SOP/, 'sop')
-        .replace(/UID$/, 'Uid')
-        .replace(/ID$/, 'Id');
-      propertyName =
-        propertyName.charAt(0).toLowerCase() + propertyName.substr(1);
-    }
-
-    return propertyName;
   }
 }

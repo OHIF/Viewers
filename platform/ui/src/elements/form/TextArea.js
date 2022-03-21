@@ -19,7 +19,7 @@ class TextArea extends React.Component {
       <textarea
         className="textarea-ohif"
         value={this.state.value}
-        rows={this.props.rows}
+        Rows={this.props.Rows}
         cols={this.props.cols}
         onChange={this.handleChange}
         id={this.props.id}
@@ -30,7 +30,7 @@ class TextArea extends React.Component {
 
 TextArea.propTypes = {
   value: PropTypes.string,
-  rows: PropTypes.number,
+  Rows: PropTypes.number,
   cols: PropTypes.number,
   id: PropTypes.string,
   onChange: PropTypes.func,

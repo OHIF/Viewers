@@ -48,7 +48,7 @@ Check out these helpful links:
   -->
 
 <!-- prettier-ignore-start -->
-[ohif-org]: https://www.ohif.org
+[ohif-org]: http://www.ohif.org
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [gh-issues]: https://github.com/OHIF/Viewers/issues
 <!-- prettier-ignore-end -->

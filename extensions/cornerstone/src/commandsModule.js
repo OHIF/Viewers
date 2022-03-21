@@ -7,6 +7,17 @@ import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
 
+const { studyMetadataManager } = OHIF.utils;
+const { setViewportSpecificData } = OHIF.redux.actions;
+
+const refreshCornerstoneViewports = () => {
+  cornerstone.getEnabledElements().forEach(enabledElement => {
+    if (enabledElement.image) {
+      cornerstone.updateImage(enabledElement.element);
+    }
+  });
+};
+
 const commandsModule = ({ servicesManager }) => {
   const actions = {
     rotateViewport: ({ viewports, rotation }) => {
@@ -73,10 +84,6 @@ const commandsModule = ({ servicesManager }) => {
         console.warn('No toolname provided to setToolActive command');
       }
       cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
-    },
-    updateViewportDisplaySet: ({ direction }) => {
-      // TODO
-      console.warn('updateDisplaySet: ', direction);
     },
     clearAnnotations: ({ viewports }) => {
       const element = getEnabledElement(viewports.activeViewportIndex);
@@ -181,10 +188,7 @@ const commandsModule = ({ servicesManager }) => {
 
       measurementApi.syncMeasurementsAndToolData();
 
-      // Update images in all active viewports
-      cornerstone.getEnabledElements().forEach(enabledElement => {
-        cornerstone.updateImage(enabledElement.element);
-      });
+      refreshCornerstoneViewports();
     },
     getNearbyToolData({ element, canvasCoordinates, availableToolTypes }) {
       const nearbyTool = {};
@@ -245,10 +249,59 @@ const commandsModule = ({ servicesManager }) => {
     },
     setCornerstoneLayout: () => {
       setCornerstoneLayout();
-    }
+    },
+    setWindowLevel: ({ viewports, window, level }) => {
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+
+      if (enabledElement) {
+        let viewport = cornerstone.getViewport(enabledElement);
+
+        viewport.voi = {
+          windowWidth: Number(window),
+          windowCenter: Number(level),
+        };
+        cornerstone.setViewport(enabledElement, viewport);
+      }
+    },
+    jumpToImage: ({
+      StudyInstanceUID,
+      SOPInstanceUID,
+      frameIndex,
+      activeViewportIndex,
+      refreshViewports = true,
+    }) => {
+      const study = studyMetadataManager.get(StudyInstanceUID);
+
+      const displaySet = study.findDisplaySet(ds => {
+        return (
+          ds.images &&
+          ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
+        );
+      });
+
+      if (!displaySet) {
+        return;
+      }
+
+      displaySet.SOPInstanceUID = SOPInstanceUID;
+      displaySet.frameIndex = frameIndex;
+
+      window.store.dispatch(
+        setViewportSpecificData(activeViewportIndex, displaySet)
+      );
+
+      if (refreshViewports) {
+        refreshCornerstoneViewports();
+      }
+    },
   };
 
   const definitions = {
+    jumpToImage: {
+      commandFn: actions.jumpToImage,
+      storeContexts: [],
+      options: {},
+    },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
       storeContexts: [],
@@ -334,29 +387,27 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: ['viewports'],
       options: {},
     },
-    // TODO: First/Last image
-    // Next/Previous series/DisplaySet
-    nextViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
-      options: { direction: 1 },
-    },
-    previousViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
-      options: { direction: -1 },
-    },
     // TOOLS
     setToolActive: {
       commandFn: actions.setToolActive,
       storeContexts: [],
       options: {},
     },
+    setZoomTool: {
+      commandFn: actions.setToolActive,
+      storeContexts: [],
+      options: { toolName: 'Zoom' },
+    },
     setCornerstoneLayout: {
       commandFn: actions.setCornerstoneLayout,
       storeContexts: [],
       options: {},
       context: 'VIEWER',
+    },
+    setWindowLevel: {
+      commandFn: actions.setWindowLevel,
+      storeContexts: ['viewports'],
+      options: {},
     },
   };
 

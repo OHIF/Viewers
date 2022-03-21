@@ -10,6 +10,7 @@ import {
   SET_VIEWPORT_ACTIVE,
   SET_VIEWPORT_LAYOUT,
   SET_VIEWPORT_LAYOUT_AND_DATA,
+  SET_USER_PREFERENCES,
 } from './constants/ActionTypes.js';
 
 /**
@@ -77,19 +78,8 @@ export const setActiveViewportSpecificData = viewportSpecificData => ({
 /**
  * NOT-VIEWPORT
  */
-export const setStudyLoadingProgress = (progressId, progressData) => ({
-  type: 'SET_STUDY_LOADING_PROGRESS',
-  progressId,
-  progressData,
-});
-
-export const clearStudyLoadingProgress = progressId => ({
-  type: 'CLEAR_STUDY_LOADING_PROGRESS',
-  progressId,
-});
-
 export const setUserPreferences = state => ({
-  type: 'SET_USER_PREFERENCES',
+  type: SET_USER_PREFERENCES,
   state,
 });
 
@@ -109,9 +99,9 @@ export const setMeasurements = state => ({
   state,
 });
 
-export const setStudyData = (studyInstanceUid, data) => ({
+export const setStudyData = (StudyInstanceUID, data) => ({
   type: 'SET_STUDY_DATA',
-  studyInstanceUid,
+  StudyInstanceUID,
   data,
 });
 
@@ -133,8 +123,6 @@ const actions = {
   /**
    * NOT-VIEWPORT
    */
-  setStudyLoadingProgress,
-  clearStudyLoadingProgress,
   setUserPreferences,
   setExtensionData,
   setTimepoints,

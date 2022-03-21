@@ -1,0 +1,46 @@
+.dcmrt-panel-section {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary-color);
+  font-size: 12px;
+}
+
+.dcmrt-panel-section .header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--ui-gray-dark);
+  border-radius: 5px;
+  font-weight: bold;
+  padding: 10px 15px;
+}
+
+.dcmrt-panel-section .header .eye-icon,
+.dcmrt-panel-section .header .angle-double-down,
+.dcmrt-panel-section .header .angle-double-up {
+  cursor: pointer;
+  color: var(--active-color);
+}
+
+.dcmrt-panel-section .header .eye-icon:hover,
+.dcmrt-panel-section .header .angle-double-down:hover,
+.dcmrt-panel-section .header .angle-double-up:hover {
+  color: var(--hover-color);
+}
+
+.dcmrt-panel-section .header .eye-icon.expanded {
+  color: var(--default-color);
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.icons .angle-double-down,
+.icons .angle-double-up {
+  margin-left: 15px;
+  margin-right: -5px;
+}

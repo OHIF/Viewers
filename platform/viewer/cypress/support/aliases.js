@@ -17,7 +17,7 @@ export function initCornerstoneToolsAliases() {
 //Creating aliases for Common page elements
 export function initCommonElementsAliases() {
   cy.get(
-    '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton'
+    '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper:first-of-type > .roundedButton'
   ).as('measurementsBtn');
   cy.get('.viewport-element').as('viewport');
   cy.get('section.sidepanel.from-right').as('measurementsPanel');
@@ -25,10 +25,10 @@ export function initCommonElementsAliases() {
     '.pull-left > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton'
   ).as('seriesBtn');
   cy.get('section.sidepanel.from-left').as('seriesPanel');
-  cy.get('div.ViewportOverlay > div.bottom-left.overlay-element > div').as(
+  cy.get('div.OHIFCornerstoneViewportOverlay > div.bottom-left.overlay-element > div').as(
     'viewportInfoBottomLeft'
   );
-  cy.get('div.ViewportOverlay > div.bottom-right.overlay-element > div').as(
+  cy.get('div.OHIFCornerstoneViewportOverlay > div.bottom-right.overlay-element > div').as(
     'viewportInfoBottomRight'
   );
   cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
@@ -47,7 +47,6 @@ export function initVTKToolsAliases() {
   cy.get('[data-cy="exit 2d mpr"]').as('exit2dmprBtn');
   cy.get('[data-cy="crosshairs"]').as('crosshairsBtn');
   cy.get('[data-cy="wwwc"]').as('wwwcBtn');
-  cy.get('[data-cy="rotate"]').as('rotateBtn');
   cy.get('.slab-thickness').as('slabSlider');
   cy.get('.select-ohif').as('modeDropdown');
   cy.get('.ohif-check-label').as('modeCheckbox');
@@ -57,13 +56,13 @@ export function initVTKToolsAliases() {
 //Creating aliases for Study List page elements on Desktop experience
 export function initStudyListAliasesOnDesktop() {
   cy.get('.study-count').as('studyCount');
-  cy.get('#filter-patientName').as('patientName');
-  cy.get('#filter-patientId').as('MRN');
-  cy.get('#filter-accessionNumber').as('accessionNumber');
+  cy.get('#filter-PatientName').as('PatientName');
+  cy.get('#filter-PatientID').as('MRN');
+  cy.get('#filter-AccessionNumber').as('AccessionNumber');
   cy.get('#start-date').as('studyListStartDate');
   cy.get('#end-date').as('studyListEndDate');
   cy.get('#filter-modalities').as('modalities');
-  cy.get('#filter-studyDescription').as('studyDescription');
+  cy.get('#filter-StudyDescription').as('StudyDescription');
   cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
 }
 
@@ -84,7 +83,13 @@ export function initPreferencesModalAliases() {
   cy.get('.OHIFModal').as('preferencesModal');
   cy.get('[data-cy="hotkeys"]').as('userPreferencesHotkeysTab');
   cy.get('[data-cy="general"]').as('userPreferencesGeneralTab');
-  cy.get('[data-cy="reset-default-btn"]').as('restoreBtn');
-  cy.get('[data-cy="cancel-btn"]').as('cancelBtn');
-  cy.get('[data-cy="save-btn"]').as('saveBtn');
+  cy.get('[data-cy="window-level"]').as('userPreferencesWindowLevelTab');
+  initPreferencesModalFooterBtnAliases();
+}
+
+//Creating aliases for User Preferences modal
+export function initPreferencesModalFooterBtnAliases() {
+  cy.get('.active [data-cy="reset-default-btn"]').as('restoreBtn');
+  cy.get('.active [data-cy="cancel-btn"]').as('cancelBtn');
+  cy.get('.active [data-cy="save-btn"]').as('saveBtn');
 }

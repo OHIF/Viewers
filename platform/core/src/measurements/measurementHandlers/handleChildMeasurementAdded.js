@@ -4,6 +4,7 @@ import log from '../../log';
 import user from '../../user';
 import getImageAttributes from '../lib/getImageAttributes';
 import getLabel from '../lib/getLabel';
+import refreshCornerstoneViewports from '../lib/refreshCornerstoneViewports';
 
 export default function({ eventData, tool, toolGroupId, toolGroup }) {
   const measurementApi = MeasurementApi.Instance;
@@ -38,7 +39,7 @@ export default function({ eventData, tool, toolGroupId, toolGroup }) {
   const parentMeasurement = collection.find(
     t =>
       t.toolType === tool.parentTool &&
-      t.patientId === imageAttributes.patientId &&
+      t.PatientID === imageAttributes.PatientID &&
       t[tool.attribute] === null
   );
 
@@ -63,8 +64,8 @@ export default function({ eventData, tool, toolGroupId, toolGroup }) {
       toolType: tool.parentTool,
       lesionNamingNumber: measurementData.lesionNamingNumber,
       userId: user.getUserId(),
-      patientId: imageAttributes.patientId,
-      studyInstanceUid: imageAttributes.studyInstanceUid,
+      PatientID: imageAttributes.PatientID,
+      StudyInstanceUID: imageAttributes.StudyInstanceUID,
     };
 
     measurement[tool.attribute] = Object.assign(
@@ -86,9 +87,7 @@ export default function({ eventData, tool, toolGroupId, toolGroup }) {
   }
 
   // TODO: This is very hacky, but will work for now
-  cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
-  });
+  refreshCornerstoneViewports();
 
   // TODO: Notify about the last activated measurement
 

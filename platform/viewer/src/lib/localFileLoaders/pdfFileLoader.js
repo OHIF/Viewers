@@ -19,30 +19,32 @@ const PDFFileLoader = new (class extends FileLoader {
 
   getDefaultStudy(imageId) {
     const study = {
-      studyInstanceUid: '',
-      studyDate: '',
-      studyTime: '',
-      accessionNumber: '',
-      referringPhysicianName: '',
-      patientName: '',
-      patientId: '',
-      patientBirthdate: '',
-      patientSex: '',
-      studyId: '',
-      studyDescription: '',
-      seriesList: [
+      StudyInstanceUID: '',
+      StudyDate: '',
+      StudyTime: '',
+      AccessionNumber: '',
+      ReferringPhysicianName: '',
+      PatientName: '',
+      PatientID: '',
+      PatientBirthdate: '',
+      PatientSex: '',
+      StudyId: '',
+      StudyDescription: '',
+      series: [
         {
-          seriesInstanceUid: '',
-          seriesDescription: '',
-          seriesNumber: '',
+          SeriesInstanceUID: '',
+          SeriesDescription: '',
+          SeriesNumber: '',
           instances: [
             {
-              sopInstanceUid: '',
-              sopClassUid: '1.2.840.10008.5.1.4.1.1.104.1',
-              rows: '',
-              columns: '',
-              numberOfFrames: 0,
-              instanceNumber: 1,
+              metadata: {
+                SOPInstanceUID: '',
+                SOPClassUID: '1.2.840.10008.5.1.4.1.1.104.1',
+                Rows: '',
+                Columns: '',
+                NumberOfFrames: 0,
+                InstanceNumber: 1,
+              },
               getImageId: () => imageId,
               isLocalFile: true,
             },

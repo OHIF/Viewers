@@ -13,7 +13,6 @@ architected, and the role each of it's dependent libraries plays.
 - [Overview](#overview)
 - [Business Logic](#business-logic)
 - [Component Library](#react-component-library)
-- [Internationalization](#internationalization-i18n)
 - [Extensions & Configuration](#extensions--configuration)
 - [Common Questions](#common-questions)
 
@@ -74,10 +73,10 @@ This diagram is a conceptual illustration of how the Viewer is architected.
 The [`@ohif/core`][core-github] project offers pre-packaged solutions for
 features common to Web-based medical imaging viewers. For example:
 
-- [Hotkeys](#)
+- Hotkeys
 - DICOM Web requests
 - Hanging Protocols
-- [Managing a study's measurements](../services/default/measurements.md)
+- Managing a study's measurements
 - Managing a study's DICOM metadata
 - [A flexible pattern for extensions](../extensions/index.md)
 - And many others
@@ -99,10 +98,6 @@ application.
 
 [Check out our component library!](https://react.ohif.org/)
 
-## Internationalization (i18n)
-
-...
-
 ## Extensions & Configuration
 
 While OHIF maintains several high value and commonly requested features in its
@@ -120,7 +115,7 @@ the viewer. Some common use cases include:
 We expose common integration points via [extensions](../extensions/index.md) to
 make this possible. The viewer and many of our own extensions also offer
 [configuration][configuration]. For a list of extensions maintained by OHIF,
-[check out this helpful table](../extensions/index.mdl#maintained-extensions).
+[check out this helpful table](../extensions/index.md#maintained-extensions).
 
 If you find yourself thinking "I wish the Viewer could do X", and you can't
 accomplish it with an extension today, create a GitHub issue! We're actively
@@ -147,12 +142,12 @@ you would need to recreate.
   -->
 
 <!-- prettier-ignore-start -->
-[monorepo]: #
+[monorepo]: https://github.com/OHIF/Viewers/issues/768
 [viewers-project]: https://github.com/OHIF/Viewers
 [viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
 [pwa]: https://developers.google.com/web/progressive-web-apps/
 [configuration]: ../configuring/index.md
 [extensions]: ../extensions/index.md
 [core-github]: https://github.com/OHIF/viewers/platform/core
-[ui-github]: https://github.com/OHIF/Viewers/platform/ui
+[ui-github]: https://github.com/OHIF/Viewers/tree/master/platform/ui
 <!-- prettier-ignore-end -->

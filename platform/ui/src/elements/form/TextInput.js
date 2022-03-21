@@ -14,7 +14,7 @@ class TextInput extends React.Component {
       PropTypes.number
     ]),
     id: PropTypes.string,
-    label:PropTypes.string,
+    label: PropTypes.string,
     type: PropTypes.string,
   };
 
@@ -28,15 +28,15 @@ class TextInput extends React.Component {
   render() {
     return (
       <div className="input-ohif-container">
-        <label className="input-ohif-label" htmlFor={this.props.id}>
-          {this.props.label}
-          <input
-            type={this.props.type}
-            id={this.props.id}
-            className="form-control input-ohif"
-            {...this.props}
-          />
-        </label>
+        {this.props.label && (
+          <label className="input-ohif-label" htmlFor={this.props.id}>{this.props.label}</label>
+        )}
+        <input
+          type={this.props.type}
+          id={this.props.id}
+          className="form-control input-ohif"
+          {...this.props}
+        />
       </div>
     );
   }

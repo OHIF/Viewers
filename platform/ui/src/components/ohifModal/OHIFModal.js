@@ -22,6 +22,7 @@ const OHIFModal = ({
   closeButton,
   shouldCloseOnEsc,
   isOpen,
+  fullscreen,
   title,
   onClose,
   children,
@@ -41,9 +42,13 @@ const OHIFModal = ({
     );
   };
 
+  const classes = fullscreen
+    ? classNames('OHIFModal', className, 'OHIFModal-fullscreen')
+    : classNames('OHIFModal', className);
+
   return (
     <Modal
-      className={classNames('OHIFModal', className)}
+      className={classes}
       data-cy="modal"
       shouldCloseOnEsc={shouldCloseOnEsc}
       isOpen={isOpen}

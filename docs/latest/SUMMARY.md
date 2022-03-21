@@ -5,6 +5,7 @@
   - [Getting Started](development/getting-started.md)
   - [Contributing](development/contributing.md)
   - [Continuous Integration](development/continous-integration.md)
+  - [Testing](development/testing.md)
 - [Configuring](configuring/index.md)
   - [Data Source](configuring/data-source.md)
 

@@ -1,14 +1,21 @@
+import React from 'react';
 import init from './init.js';
-import asyncComponent from './asyncComponent.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
+import { version } from '../package.json';
 
-const OHIFCornerstoneViewport = asyncComponent(() =>
-  import(
-    /* webpackChunkName: "OHIFCornerstoneViewport" */ './OHIFCornerstoneViewport.js'
-  )
-);
+const Component = React.lazy(() => {
+  return import('./OHIFCornerstoneViewport');
+});
+
+const OHIFCornerstoneViewport = props => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Component {...props} />
+    </React.Suspense>
+  );
+};
 
 /**
  *
@@ -18,6 +25,7 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id: 'cornerstone',
+  version,
 
   /**
    *
@@ -28,8 +36,33 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getViewportModule() {
-    return OHIFCornerstoneViewport;
+  getViewportModule({ commandsManager, appConfig }) {
+    const ExtendedOHIFCornerstoneViewport = props => {
+      /**
+       * TODO: This appears to be used to set the redux parameters for
+       * the viewport when new images are loaded. It's very ugly
+       * and we should remove it.
+       */
+      const onNewImageHandler = jumpData => {
+        /** Do not trigger all viewports to render unnecessarily */
+        jumpData.refreshViewports = false;
+        commandsManager.runCommand('jumpToImage', jumpData);
+      };
+
+      const { studyPrefetcher } = appConfig;
+      const isStackPrefetchEnabled =
+        studyPrefetcher && !studyPrefetcher.enabled;
+
+      return (
+        <OHIFCornerstoneViewport
+          {...props}
+          onNewImage={onNewImageHandler}
+          isStackPrefetchEnabled={isStackPrefetchEnabled}
+        />
+      );
+    };
+
+    return ExtendedOHIFCornerstoneViewport;
   },
   getToolbarModule() {
     return toolbarModule;
