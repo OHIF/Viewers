@@ -65,6 +65,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
             fullySpecified: false,
           },
         },
+        {
+          test: /\.png$/,
+          use: 'file-loader'
+        },
         cssToJavaScript,
       ],
     },
