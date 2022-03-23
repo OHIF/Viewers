@@ -47,7 +47,7 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
 ENV PUBLIC_URL /dicom-viewer/
 # ENV GENERATE_SOURCEMAP=false
-ENV REACT_APP_CONFIG=config/default.js
+# ENV REACT_APP_CONFIG=config/default.js
 
 RUN yarn run build
 
