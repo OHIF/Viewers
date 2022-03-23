@@ -89,6 +89,8 @@ import youtube from './icons/youtube.svg';
 import eye from './icons/eye.svg';
 import eyeClosed from './icons/eye-closed.svg';
 import envelopeSquare from './icons/envelope-square.svg';
+// ICR/XNAT icons
+import { XNATICONS } from '@xnat-ohif/extension-xnat';
 
 const ICONS = {
   eye,
@@ -180,6 +182,7 @@ const ICONS = {
   liver,
   save: saveRegular,
   'envelope-square': envelopeSquare,
+  ...XNATICONS,
 };
 
 /**
