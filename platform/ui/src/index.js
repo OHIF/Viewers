@@ -94,6 +94,7 @@ export {
   ViewportActionBar,
   ViewportDownloadForm,
   ViewportGrid,
+  ViewportOverlay,
   ViewportPane,
   WindowLevelMenuItem,
 } from './components';

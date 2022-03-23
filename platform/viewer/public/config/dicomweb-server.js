@@ -12,9 +12,9 @@ window.config = {
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
-        wadoUriRoot: 'http://localhost:5985',
-        qidoRoot: 'http://localhost:5985',
-        wadoRoot: 'http://localhost:5985',
+        wadoUriRoot: 'http://localhost:5984',
+        qidoRoot: 'http://localhost:5984',
+        wadoRoot: 'http://localhost:5984',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadouri',
