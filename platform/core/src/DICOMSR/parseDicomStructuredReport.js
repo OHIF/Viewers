@@ -96,7 +96,7 @@ const parseDicomStructuredReport = (
             const TrackingIdentifierGroup = measurementGroupContentSequence.find(
               contentItem =>
                 contentItem.ConceptNameCodeSequence.CodeMeaning ===
-                TRACKING_IDENTIFIER
+                'Tracking Identifier'
             );
 
             const TrackingIdentifierValue = TrackingIdentifierGroup.TextValue;
