@@ -3,7 +3,7 @@ window.config = {
   routerBasename: '/dicom-viewer/',
   whiteLabelling: {},
   extensions: [],
-  showStudyList: true,
+  showStudyList: false,
   filterQueryParam: false,
   disableServersCache: true,
   servers: {
