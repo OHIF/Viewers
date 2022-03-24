@@ -245,8 +245,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   return (
     <>
-      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
-           data-cy={"trackedMeasurements-panel"}>
+      <div
+        className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        data-cy={'trackedMeasurements-panel'}
+      >
         {displayStudySummary.key && (
           <StudySummary
             date={formatDate(displayStudySummary.date)}
@@ -382,7 +384,8 @@ function _getDisplayText(
         `W: ${roundedShortestDiameter} ${unit}`,
       ];
     }
-    case types.ELLIPSE: {
+    case types.ELLIPSE:
+    case types.RECTANGLE: {
       const { area } = measurement;
       const roundedArea = _round(area, 2);
 
@@ -400,6 +403,13 @@ function _getDisplayText(
 
       return [
         `${roundedArea} ${unit}<sup>2</sup> (S:${seriesNumber}, I:${instanceNumber})`,
+      ];
+    }
+    case types.ANGLE: {
+      const { angle } = measurement; // Will display in "short description"
+      const degreeSymbol = String.fromCharCode(parseInt('00B0', 16));
+      return [
+        `${angle}${degreeSymbol} (S:${seriesNumber}, I:${instanceNumber})`,
       ];
     }
   }

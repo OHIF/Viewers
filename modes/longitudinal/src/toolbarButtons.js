@@ -15,7 +15,15 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commandName, commandOptions, tooltip) {
+function _createButton(
+  type,
+  id,
+  icon,
+  label,
+  commandName,
+  commandOptions,
+  tooltip
+) {
   return {
     id,
     icon,
@@ -116,6 +124,22 @@ export default [
           },
           'Freehand Tool'
         ),
+        _createToolButton(
+          'Angle',
+          'tool-angle',
+          'Angle',
+          undefined,
+          { toolName: 'Angle' },
+          'Angle'
+        ),
+        _createToolButton(
+          'RectangleRoi',
+          'tool-rectangle',
+          'Rectangle',
+          undefined,
+          { toolName: 'RectangleRoi' },
+          'Rectangle Tool'
+        ),
       ],
     },
   },
@@ -194,7 +218,7 @@ export default [
       icon: 'list-bullets',
       label: 'Reference Lines',
       commandName: 'toggleReferenceLines',
-    }
+    },
   },
   {
     id: 'Crosshairs',
@@ -204,7 +228,7 @@ export default [
       icon: 'tool-crosshairs',
       label: 'Crosshairs',
       commandName: 'activateCrosshairs',
-    }
+    },
   },
   {
     id: 'SeriesLinking',
@@ -214,7 +238,7 @@ export default [
       icon: 'tool-series-linking',
       label: 'Series Linking',
       commandName: 'toggleSeriesLinking',
-    }
+    },
   },
   // More...
   {
@@ -295,28 +319,12 @@ export default [
           'Cine'
         ),
         _createToolButton(
-          'Angle',
-          'tool-angle',
-          'Angle',
-          undefined,
-          { toolName: 'Angle' },
-          'Angle'
-        ),
-        _createToolButton(
           'DragProbe',
           'tool-probe',
           'Probe',
           undefined,
           { toolName: 'DragProbe' },
           'Probe'
-        ),
-        _createToolButton(
-          'Rectangle',
-          'tool-rectangle',
-          'Rectangle',
-          undefined,
-          { toolName: 'RectangleRoi' },
-          'Rectangle'
         ),
         _createToolButton(
           'Rotate',

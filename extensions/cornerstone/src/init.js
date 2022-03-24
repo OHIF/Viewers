@@ -325,8 +325,10 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     Length,
     Bidirectional,
     EllipticalRoi,
-    NLFreehandRoi,
     ArrowAnnotate,
+    NLFreehandRoi,
+    RectangleRoi,
+    Angle,
   } = measurementServiceMappingsFactory(MeasurementService, DisplaySetService);
   const csToolsVer4MeasurementSource = MeasurementService.createSource(
     'CornerstoneTools',
@@ -372,6 +374,22 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     ArrowAnnotate.matchingCriteria,
     ArrowAnnotate.toAnnotation,
     ArrowAnnotate.toMeasurement
+  );
+
+  MeasurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'RectangleRoi',
+    RectangleRoi.matchingCriteria,
+    RectangleRoi.toAnnotation,
+    RectangleRoi.toMeasurement
+  );
+
+  MeasurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'Angle',
+    Angle.matchingCriteria,
+    Angle.toAnnotation,
+    Angle.toMeasurement
   );
 
   return csToolsVer4MeasurementSource;
@@ -527,6 +545,8 @@ const _connectMeasurementServiceToTools = (
     FREEHAND,
     POINT,
     BIDIRECTIONAL,
+    RECTANGLE,
+    ANGLE,
   } = MeasurementService.VALUE_TYPES;
 
   // TODO -> I get why this was attemped, but its not nearly flexible enough.
@@ -539,6 +559,8 @@ const _connectMeasurementServiceToTools = (
     NLFreehandRoi: FREEHAND,
     Bidirectional: BIDIRECTIONAL,
     ArrowAnnotate: POINT,
+    RectangleRoi: RECTANGLE,
+    Angle: ANGLE,
   };
 
   const VALUE_TYPE_TO_TOOL_TYPE = {
@@ -547,6 +569,8 @@ const _connectMeasurementServiceToTools = (
     [FREEHAND]: 'NLFreehandRoi',
     [BIDIRECTIONAL]: 'Bidirectional',
     [POINT]: 'ArrowAnnotate',
+    [RECTANGLE]: 'RectangleRoi',
+    [ANGLE]: 'Angle',
   };
 
   MeasurementService.subscribe(
