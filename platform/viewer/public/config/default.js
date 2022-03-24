@@ -5,13 +5,22 @@ window.config = {
   extensions: [],
   showStudyList: false,
   filterQueryParam: false,
-  disableServersCache: true,
+  disableServersCache: false,
+  studyPrefetcher: {
+    enabled: true,
+    order: 'all',
+    displaySetCount: 1,
+    preventCache: false,
+    prefetchDisplaySetsTimeout: 300,
+    displayProgress: false,
+    includeActiveDisplaySet: true,
+  },
   servers: {
     dicomWeb: [
       {
         name: 'dicom-web',
-        wadoUriRoot: '/orthanc/wado',          
-        qidoRoot: '/orthanc/dicom-web',   
+        wadoUriRoot: '/orthanc/wado',
+        qidoRoot: '/orthanc/dicom-web',
         wadoRoot: '/orthanc/dicom-web',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
