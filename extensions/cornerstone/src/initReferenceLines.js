@@ -24,8 +24,10 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
     if (
       !isReferenceLinesEnabled ||
       getEnabledElement(activeViewportIndex).element !== enabledElement.element
-    )
+    ) {
+      cornerstone.updateImage(getEnabledElement(activeViewportIndex).element);
       return;
+    }
 
     const targetImage = enabledElement.image;
     cornerstone
@@ -34,6 +36,8 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
       .forEach(async referenceElement => {
         if (!referenceElement.image)
           await waitForTheImageToBeRendered(referenceElement.element);
+
+        cornerstone.updateImage(referenceElement.element);
 
         const referenceImage = referenceElement.image;
 
@@ -103,6 +107,7 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
           .cross(referenceImagePlane.columnCosines);
         let angleInRadians = targetNormal.angleTo(referenceNormal);
         angleInRadians = Math.abs(angleInRadians);
+        console.log(angleInRadians);
         if (angleInRadians < 0.5) {
           console.warn(
             'Could not render reference lines, the angle between the two planes is lower than the required.'
@@ -165,7 +170,7 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
     cornerstone.EVENTS.ELEMENT_ENABLED,
     event => {
       event.detail.element.addEventListener(
-        cornerstone.EVENTS.IMAGE_RENDERED,
+        cornerstone.EVENTS.NEW_IMAGE,
         renderReferenceLines
       );
     }
@@ -175,7 +180,7 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
     cornerstone.EVENTS.ELEMENT_DISABLED,
     event => {
       event.detail.element.removeEventListener(
-        cornerstone.EVENTS.IMAGE_RENDERED,
+        cornerstone.EVENTS.NEW_IMAGE,
         renderReferenceLines
       );
     }

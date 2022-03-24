@@ -167,7 +167,7 @@ const initSeriesLinking = ({ servicesManager, commandsManager }) => {
     cornerstone.EVENTS.ELEMENT_ENABLED,
     event => {
       event.detail.element.addEventListener(
-        cornerstone.EVENTS.IMAGE_RENDERED,
+        cornerstone.EVENTS.NEW_IMAGE,
         updateSeriesLinking
       );
     }
@@ -177,7 +177,7 @@ const initSeriesLinking = ({ servicesManager, commandsManager }) => {
     cornerstone.EVENTS.ELEMENT_DISABLED,
     event => {
       event.detail.element.removeEventListener(
-        cornerstone.EVENTS.IMAGE_RENDERED,
+        cornerstone.EVENTS.NEW_IMAGE,
         updateSeriesLinking
       );
     }

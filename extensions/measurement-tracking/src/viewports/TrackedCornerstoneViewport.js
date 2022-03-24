@@ -263,9 +263,7 @@ function TrackedCornerstoneViewport(props) {
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName.Alphabetic)
-              : '',
+            patientName: PatientName || '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',

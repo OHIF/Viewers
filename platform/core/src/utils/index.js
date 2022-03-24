@@ -11,6 +11,7 @@ import b64toBlob from './b64toBlob.js';
 import urlUtil from './urlUtil';
 import makeDeferred from './makeDeferred';
 import makeCancelable from './makeCancelable';
+import nlApi from './nlApi';
 import hotkeys from './hotkeys';
 import Queue from './Queue';
 import isDicomUid from './isDicomUid';
@@ -40,6 +41,7 @@ const utils = {
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
+  nlApi,
   hotkeys,
   Queue,
   isDicomUid,
@@ -63,6 +65,7 @@ export {
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
+  nlApi,
   hotkeys,
   Queue,
   isDicomUid,

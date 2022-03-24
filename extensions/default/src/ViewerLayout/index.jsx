@@ -16,6 +16,7 @@ const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 import { useAppConfig } from '@state';
 
+
 function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
   const [toolbarButtons, setToolbarButtons] = useState([]);
@@ -95,6 +96,9 @@ function ViewerLayout({
   viewports,
   ViewportGridComp,
 }) {
+
+  hotkeysManager.setupHotkeys();
+
   const [appConfig] = useAppConfig();
 
   const onClickReturnButton = () => {};
@@ -119,6 +123,7 @@ function ViewerLayout({
         onSubmit: ({ hotkeyDefinitions, language }) => {
           i18n.changeLanguage(language.value);
           hotkeysManager.setHotkeys(hotkeyDefinitions);
+          hotkeysManager.saveHotkeys(hotkeyDefinitions);
           hide();
         },
         onReset: () => hotkeysManager.restoreDefaultBindings(),

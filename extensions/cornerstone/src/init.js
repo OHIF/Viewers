@@ -76,8 +76,6 @@ export default function init({
   } = servicesManager.services;
   const tools = getTools();
 
-  console.log(servicesManager.services);
-
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
     MeasurementService,
@@ -362,18 +360,18 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
 
   MeasurementService.addMapping(
     csToolsVer4MeasurementSource,
-    'NLFreehandRoi',
-    NLFreehandRoi.matchingCriteria,
-    NLFreehandRoi.toAnnotation,
-    NLFreehandRoi.toMeasurement
-  );
-
-  MeasurementService.addMapping(
-    csToolsVer4MeasurementSource,
     'ArrowAnnotate',
     ArrowAnnotate.matchingCriteria,
     ArrowAnnotate.toAnnotation,
     ArrowAnnotate.toMeasurement
+  );
+
+  MeasurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'NLFreehandRoi',
+    NLFreehandRoi.matchingCriteria,
+    NLFreehandRoi.toAnnotation,
+    NLFreehandRoi.toMeasurement
   );
 
   MeasurementService.addMapping(
@@ -542,9 +540,9 @@ const _connectMeasurementServiceToTools = (
   const {
     POLYLINE,
     ELLIPSE,
-    FREEHAND,
     POINT,
     BIDIRECTIONAL,
+    FREEHAND,
     RECTANGLE,
     ANGLE,
   } = MeasurementService.VALUE_TYPES;
@@ -556,9 +554,9 @@ const _connectMeasurementServiceToTools = (
   const TOOL_TYPE_TO_VALUE_TYPE = {
     Length: POLYLINE,
     EllipticalRoi: ELLIPSE,
-    NLFreehandRoi: FREEHAND,
     Bidirectional: BIDIRECTIONAL,
     ArrowAnnotate: POINT,
+    NLFreehandRoi: FREEHAND,
     RectangleRoi: RECTANGLE,
     Angle: ANGLE,
   };
@@ -566,9 +564,9 @@ const _connectMeasurementServiceToTools = (
   const VALUE_TYPE_TO_TOOL_TYPE = {
     [POLYLINE]: 'Length',
     [ELLIPSE]: 'EllipticalRoi',
-    [FREEHAND]: 'NLFreehandRoi',
     [BIDIRECTIONAL]: 'Bidirectional',
     [POINT]: 'ArrowAnnotate',
+    [FREEHAND]: 'NLFreehandRoi',
     [RECTANGLE]: 'RectangleRoi',
     [ANGLE]: 'Angle',
   };

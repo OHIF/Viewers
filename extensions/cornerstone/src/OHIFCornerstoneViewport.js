@@ -14,6 +14,11 @@ const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 const { StackManager } = OHIF.utils;
 
+const getQueryParam = (key) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return Number(urlParams.get(key)) || 0;
+}
+
 function OHIFCornerstoneViewport({
   children,
   dataSource,
@@ -33,7 +38,7 @@ function OHIFCornerstoneViewport({
   const [viewportData, setViewportData] = useState(null);
   const [{ cines }, cineService] = useCine();
   const [{ viewports }, viewportGridService] = useViewportGrid();
-
+  const [isParamViewLoaded, setIsParamViewLoaded] = useState(false);
   const isMounted = useRef(false);
   const stageChangedRef = useRef(false);
 
@@ -87,7 +92,17 @@ function OHIFCornerstoneViewport({
     }
 
     _getViewportData(dataSource, displaySet).then(data => {
-      if (isMounted.current) setViewportData(data);
+      if (isMounted.current) {
+        const instanceNumberParam = getQueryParam('instance_number');
+        const seriesNumberParam = getQueryParam('series_number');
+
+        if(!isParamViewLoaded && instanceNumberParam && displaySet.SeriesNumber === seriesNumberParam) {
+          data.stack.initialImageIdIndex = (instanceNumberParam > displaySet.numImageFrames ? displaySet.numImageFrames : instanceNumberParam) - 1;
+          setIsParamViewLoaded(true);
+        }
+
+        setViewportData(data);
+      }
     });
   }, [dataSource, displaySet, viewportIndex]);
 

@@ -2,7 +2,6 @@ import csTools from 'cornerstone-tools';
 
 const toolsGroupedByType = {
   touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
-  series: [csTools.CrosshairsTool],
   annotations: [
     csTools.ArrowAnnotateTool,
     csTools.BidirectionalTool,

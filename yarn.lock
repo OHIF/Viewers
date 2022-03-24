@@ -3511,10 +3511,10 @@
     outvariant "^1.2.0"
     strict-event-emitter "^0.2.0"
 
-"@newlantern/viewer@^4.2.5":
-  version "4.2.5"
-  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.2.5.tgz#e52b12ba492d462743007ae28487e6e4ba57e8cf"
-  integrity sha512-WR3Y7zGPXM2z+LewfI0wTzIMfOXVJz4Zm8hr7fAw5tVI8nBTGVHHfrrWVoFWkUms9SnyVX4G+W5NC3XyCAoAxA==
+"@newlantern/viewer@^4.3.1":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.3.3.tgz#17a2a6948e41c11abf321bbad1fd63422586f7c3"
+  integrity sha512-UV97OEGXJEAEGjAAXHAex9zR7xQCHFvD9qZGj99WHl9cdaT1+PISP2NgkxAI4pYluPLo9vYgWwg/dEmgGfbc6Q==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -7963,9 +7963,9 @@ core-js@^3.14.0, core-js@^3.2.1, core-js@^3.6.5, core-js@^3.8.3, core-js@^3.9.1:
   integrity sha512-Tnc7E9iKd/b/ff7GFbhwPVzJzPztGrChB8X8GLqoYGdEOG8IpLnK1xPyo3ZoO3HsK6TodJS58VGPOxA+hLHQMg==
 
 core-js@^3.6.0:
-  version "3.20.1"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.20.1.tgz#eb1598047b7813572f1dc24b7c6a95528c99eef3"
-  integrity sha512-btdpStYFQScnNVQ5slVcr858KP0YWYjV16eGJQw8Gg7CWtu/2qNvIM3qVRIR3n1pK2R9NNOrTevbvAYxajwEjg==
+  version "3.20.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.20.0.tgz#1c5ac07986b8d15473ab192e45a2e115a4a95b79"
+  integrity sha512-KjbKU7UEfg4YPpskMtMXPhUKn7m/1OdTHTVjy09ScR2LVaoUXe8Jh0UdvN2EKUR6iKTJph52SJP95mAB0MnVLQ==
 
 core-util-is@1.0.2:
   version "1.0.2"

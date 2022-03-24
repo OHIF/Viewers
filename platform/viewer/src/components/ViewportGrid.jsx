@@ -1,15 +1,21 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
+const getQueryParam = (key) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return Number(urlParams.get(key)) || 0;
+}
+
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
+  const [isParamViewLoaded, setIsParamViewLoaded] = useState(false);
 
   const {
     numCols,
@@ -32,34 +38,48 @@ function ViewerViewportGrid(props) {
         matchDetails,
         hpAlreadyApplied,
       ] = HangingProtocolService.getState();
-
-      if (!matchDetails.length) return;
-      // Match each viewport individually
-
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
-      for (let i = 0; i < numViewports; i++) {
-        if (hpAlreadyApplied[i] === true) {
-          continue;
-        }
+      const seriesNumberParam = getQueryParam('series_number');
 
-        // if current viewport doesn't have a match
-        if (matchDetails[i] === undefined) return;
-
-        const { SeriesInstanceUID } = matchDetails[i];
-        const matchingDisplaySet = displaySets.find(ds => {
-          return ds.SeriesInstanceUID === SeriesInstanceUID;
+      if(!isParamViewLoaded && seriesNumberParam) {
+        const initialDisplaySet = displaySets.find(ds => {
+          return ds.SeriesNumber === seriesNumberParam;
         });
 
-        if (!matchingDisplaySet) {
-          continue;
-        }
-
-        viewportGridService.setDisplaysetForViewport({
-          viewportIndex: i,
-          displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+        initialDisplaySet && viewportGridService.setDisplaysetForViewport({
+          viewportIndex: 0,
+          displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
         });
 
-        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+        initialDisplaySet && setIsParamViewLoaded(true);
+      } else {
+        if (!matchDetails.length) return;
+
+        // Match each viewport individually
+        for (let i = 0; i < numViewports; i++) {
+          if (hpAlreadyApplied[i] === true) {
+            continue;
+          }
+
+          // if current viewport doesn't have a match
+          if (matchDetails[i] === undefined) return;
+
+          const { SeriesInstanceUID } = matchDetails[i];
+          const matchingDisplaySet = displaySets.find(ds => {
+            return ds.SeriesInstanceUID === SeriesInstanceUID;
+          });
+
+          if (!matchingDisplaySet) {
+            continue;
+          }
+
+          viewportGridService.setDisplaysetForViewport({
+            viewportIndex: i,
+            displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+          });
+
+          HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+        }
       }
     },
     [viewportGrid, numRows, numCols]
@@ -101,12 +121,6 @@ function ViewerViewportGrid(props) {
     return () => {
       unsubscribe();
     };
-  }, [viewportGrid]);
-
-  // Changing the Hanging protocol while viewing
-  useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
-    updateDisplaysetForViewports(displaySets);
   }, [viewportGrid]);
 
   // Layout change based on hanging protocols

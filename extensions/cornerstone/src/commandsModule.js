@@ -9,28 +9,21 @@ const scroll = cornerstoneTools.import('util/scroll');
 
 const { studyMetadataManager } = OHIF.utils;
 
-const imagePositionSynchronizer = new cornerstoneTools.Synchronizer(
+const updateImageSynchronizer = new cornerstoneTools.Synchronizer(
   cornerstone.EVENTS.NEW_IMAGE,
-  cornerstoneTools.stackImagePositionSynchronizer
-);
-
-const panZoomSynchronizer = new cornerstoneTools.Synchronizer(
-  cornerstone.EVENTS.IMAGE_RENDERED,
-  cornerstoneTools.panZoomSynchronizer
+  cornerstoneTools.updateImageSynchronizer
 );
 
 function onElementEnabledAddToSync(event) {
   const { element } = event.detail;
 
-  imagePositionSynchronizer.add(element);
-  // panZoomSynchronizer.add(element);
+  updateImageSynchronizer.add(element);
 }
 
 function onElementDisabledRemoveFromSync(event) {
   const { element } = event.detail;
 
-  imagePositionSynchronizer.remove(element);
-  panZoomSynchronizer.remove(element);
+  updateImageSynchronizer.remove(element);
 }
 
 const commandsModule = ({ servicesManager, commandsManager }) => {
@@ -98,7 +91,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
     },
     toggleSynchronizer: ({ toggledState }) => {
-      const synchronizers = [imagePositionSynchronizer];
+      const synchronizers = [updateImageSynchronizer];
       // Set synchronizer state when the command is run.
       synchronizers.forEach(s => {
         s.enabled = toggledState;
@@ -153,15 +146,12 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     toggleSeriesLinking: () => {
       const { isSeriesLinkingEnabled } = ViewerToolsetService.getState();
       ViewerToolsetService.setIsSeriesLinkingEnabled(!isSeriesLinkingEnabled);
-      // cornerstone.getEnabledElements().forEach(enabledElement => {
-      //   cornerstone.updateImage(enabledElement.element);
-      // });
     },
     activateCrosshairs: () => {
       commandsManager.runCommand('toggleSynchronizer', { toggledState: true });
-      cornerstoneTools.setToolActive('Crosshairs', {
+      cornerstoneTools.setToolActive('NLCrosshairs', {
         mouseButtonMask: 1,
-        synchronizationContext: imagePositionSynchronizer,
+        synchronizationContext: updateImageSynchronizer,
       });
     },
     invertViewport: ({ element }) => {

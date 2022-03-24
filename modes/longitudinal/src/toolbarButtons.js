@@ -180,8 +180,8 @@ export default [
         _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
         _createWwwcPreset(2, 'Lung', '1500 / -600'),
         _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '80 / 40'),
-        _createWwwcPreset(5, 'Brain', '2500 / 480'),
+        _createWwwcPreset(4, 'Brain', '80 / 40'),
+        _createWwwcPreset(5, 'Bone', '2500 / 480'),
       ],
     },
   },
@@ -221,7 +221,7 @@ export default [
     },
   },
   {
-    id: 'Crosshairs',
+    id: 'NLCrosshairs',
     type: 'ohif.radioGroup',
     props: {
       type: 'tool',
