@@ -5,6 +5,7 @@ import 'regenerator-runtime/runtime';
 import App from './App.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { loadSearchConfigPoint } from "config-point";
 
 /**
  * EXTENSIONS
@@ -37,8 +38,14 @@ const appProps = {
   ],
 };
 
-/** Create App */
-const app = React.createElement(App, appProps, null);
+const defaultTheme = config && config.defaultTheme || 'theme';
+loadSearchConfigPoint(defaultTheme, '/theme', 'theme').catch(reason => {
+  console.log("Unable to load theme because:", reason);
+}).then(loaded => {
+  console.log("Loaded=", loaded);
+  /** Create App */
+  const app = React.createElement(App, appProps, null);
 
-/** Render */
-ReactDOM.render(app, document.getElementById('root'));
+  /** Render */
+  ReactDOM.render(app, document.getElementById('root'));
+})

@@ -25,8 +25,9 @@ export function initCommonElementsAliases() {
   cy.get('[data-cy="studyBrowser-panel"]').as('seriesPanel');
   cy.get('[data-cy="viewport-overlay-top-right"]').as('viewportInfoTopRight');
   cy.get('[data-cy="viewport-overlay-top-left"]').as('viewportInfoTopLeft');
-  cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
-  cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
+  // Uncomment these if items get added/tested in bottom right, otherwise they are not present
+  // cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
+  // cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
 
   cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
   cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');

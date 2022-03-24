@@ -55,6 +55,7 @@ import Viewport from './Viewport';
 import ViewportActionBar from './ViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
+import ViewportOverlay from './ViewportOverlay';
 import ViewportPane from './ViewportPane';
 import WindowLevelMenuItem from './WindowLevelMenuItem';
 import UserPreferences from './UserPreferences';
@@ -62,6 +63,7 @@ import HotkeysPreferences from './HotkeysPreferences';
 import HotkeyField from './HotkeyField';
 import Header from './Header';
 
+console.log('viewportOverlay1=', ViewportOverlay);
 export {
   AboutModal,
   HotkeyField,
@@ -125,6 +127,7 @@ export {
   ViewportActionBar,
   ViewportDownloadForm,
   ViewportGrid,
+  ViewportOverlay,
   ViewportPane,
   WindowLevelMenuItem,
 };
