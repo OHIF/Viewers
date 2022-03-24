@@ -1,7 +1,5 @@
-import { SOPClassHandlerName, SOPClassHandlerId } from './id';
-import { utils, classes } from '@ohif/core';
-
-const { ImageSet } = classes;
+import { Name, SOPClassHandlerId } from './id';
+import { utils, } from '@ohif/core';
 
 const SOP_CLASS_UIDS = {
   VIDEO_MICROSCOPIC_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.2.1',
@@ -36,8 +34,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       return supportedTransferSyntaxUIDs.includes(tsuid);
     })
     .map(instance => {
-      const { Modality, FrameOfReferenceUID, SOPInstanceUID } = instance;
-      const { SeriesDescription, ContentDate, ContentTime } = instance;
+      const { Modality, SOPInstanceUID, SeriesDescription = "VIDEO" } = instance;
       const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames } = instance;
       const displaySet = {
         //plugin: id,
@@ -52,7 +49,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SOPClassHandlerId,
         referencedImages: null,
         measurements: null,
-        videoUrl: dataSource.retrieve.directURL({ instance }),
+        videoUrl: dataSource.retrieve.directURL({ instance, singlepart: "video", tag: "PixelData", }),
         others: [instance],
         thumbnailSrc: dataSource.retrieve.directURL({ instance, defaultPath: "/thumbnail", defaultType: "image/jpeg", tag: "Absent" }),
         isDerivedDisplaySet: true,
@@ -76,7 +73,7 @@ export default function getSopClassHandlerModule({ servicesManager, extensionMan
 
   return [
     {
-      name: SOPClassHandlerName,
+      name: Name,
       sopClassUids,
       getDisplaySetsFromSeries,
     },

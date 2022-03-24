@@ -1,4 +1,4 @@
-const Name = 'dicom-video';
+const Name = 'dicom-pdf';
 const id = `org.ohif.${Name}`;
 
 export default id;

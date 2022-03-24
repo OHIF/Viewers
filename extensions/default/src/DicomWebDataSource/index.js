@@ -25,7 +25,6 @@ import StaticWadoClient from './utils/StaticWadoClient.js';
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
-const { urlUtil } = utils;
 
 const ImplementationClassUID =
   '2.25.270695996825855179949881587723571202391.2.0.0';
@@ -43,6 +42,7 @@ const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
  * @param {string} thumbnailRendering - wadors | ? (unsure of where/how this is used)
  * @param {bool} supportsReject - Whether the server supports reject calls (i.e. DCM4CHEE)
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
+ * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
 function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   const {
@@ -53,17 +53,20 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     supportsWildcard,
     supportsReject,
     staticWado,
+    singlepart,
   } = dicomWebConfig;
 
   const qidoConfig = {
     url: qidoRoot,
     staticWado,
+    singlepart,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
   const wadoConfig = {
     url: wadoRoot,
+    singlepart,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
@@ -91,7 +94,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -116,7 +119,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -149,13 +152,46 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
     },
     retrieve: {
-      /* Generates a URL that can be used for direct retrieve of the bulkdata */
+      /**
+       * Generates a URL that can be used for direct retrieve of the bulkdata
+       *
+       * @param {object} params
+       * @param {string} params.tag is the tag name of the URL to retrieve
+       * @param {object} params.instance is the instance object that the tag is in
+       * @param {string} params.defaultType is the mime type of the response
+       * @param {string} params.singlepart is the type of the part to retrieve
+       * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
+       *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
+       */
       directURL: (params) => {
-        const { instance, tag = "PixelData", defaultPath = "/pixeldata", defaultType = "video/mp4" } = params;
-        const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-        // If the BulkDataURI isn't present, then assume it uses the pixeldata endpoint
-        // The standard isn't quite clear on that, but appears to be what is expected
+        const {
+          instance,
+          tag = "PixelData",
+          defaultPath = "/pixeldata",
+          defaultType = "video/mp4",
+          singlepart: fetchPart = "video",
+        } = params;
         const value = instance[tag];
+        if (!value) return undefined;
+
+        if (value.DirectRetrieveURL) return value.DirectRetrieveURL;
+        if (value.InlineBinary) {
+          const blob = utils.b64toBlob(value.InlineBinary, defaultType);
+          value.DirectRetrieveURL = URL.createObjectURL(blob);
+          return value.DirectRetrieveURL;
+        }
+        if (!singlepart || singlepart !== true && singlepart.indexOf(fetchPart) === -1) {
+          if (value.retrieveBulkData) {
+            return value.retrieveBulkData().then(arr => {
+              value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
+              return value.DirectRetrieveURL;
+            });
+          }
+          console.warn('Unable to retrieve', tag, 'from', instance);
+          return undefined;
+        }
+
+        const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
         const BulkDataURI =
           (value && value.BulkDataURI) ||
           `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
@@ -164,8 +200,8 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         const acceptUri =
           BulkDataURI +
           (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
-        if (BulkDataURI.indexOf('http') == 0) return acceptUri;
-        if (BulkDataURI.indexOf('/') == 0) {
+        if (BulkDataURI.indexOf('http') === 0) return acceptUri;
+        if (BulkDataURI.indexOf('/') === 0) {
           return wadoRoot + acceptUri;
         }
         if (BulkDataURI.indexOf('series/') == 0) {
@@ -173,6 +209,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         }
         if (BulkDataURI.indexOf('instances/') === 0) {
           return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${acceptUri}`;
+        }
+        if (BulkDataURI.indexOf('bulkdata/') === 0) {
+          return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
         }
         throw new Error('BulkDataURI in unknown format:' + BulkDataURI);
       },

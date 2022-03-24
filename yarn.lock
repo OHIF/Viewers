@@ -7943,10 +7943,10 @@ config-chain@^1.1.11:
     ini "^1.3.4"
     proto-list "~1.2.1"
 
-config-point@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/config-point/-/config-point-0.3.4.tgz#ac4ec8f39432400b6f31b0fe5d6edcc18fe8650a"
-  integrity sha512-/5heLx9DqfZKduBF09w64FPxLzPBD+yYepNvGS6rexUVfIBCKiE0hQkALvriqEzX6MvEA5U2gxdrd+mQLlTCtw==
+config-point@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/config-point/-/config-point-0.4.3.tgz#8bbd7213b1904513fa2bf51b0ba200720470ea4e"
+  integrity sha512-z1Vfl2AjUFx436xB529StjRNKEr+oRsxTI3GWrUlP5q1tlTARdTvle/4PUTRtHLWgstyAu7hqTP+YEaj1gqa9w==
   dependencies:
     "@babel/runtime" "^7.14.6"
     json5 "^2.2.0"
