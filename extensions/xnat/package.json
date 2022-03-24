@@ -1,0 +1,55 @@
+{
+  "name": "@xnat-ohif/extension-xnat",
+  "version": "3.1.0",
+  "description": "OHIF extension for XNAT functionality.",
+  "author": "The Institute For Cancer Research",
+  "license": "BSD",
+  "repository": "OHIF/Viewers",
+  "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev:dicom-html": "yarn run dev",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^0.50.0",
+    "@ohif/ui": "^0.50.0",
+    "cornerstone-core": "^2.2.8",
+    "cornerstone-tools": "https://bitbucket.org/icrimaginginformatics/cornerstonetools.git",
+    "dcmjs": "0.18.8",
+    "prop-types": "^15.6.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "moment": "^2.24.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@cornerstonejs/nifti-image-loader": "^1.0.6",
+    "dicom-parser": "^1.8.4",
+    "nifti-reader-js": "^0.5.4",
+    "react-select": "^3.0.8",
+    "xml-writer": "^1.7.0",
+    "loglevelnext": "^3.0.1",
+    "ndarray": "^1.0.19",
+    "react-color": "2.18.1",
+    "axios": "^0.21.1",
+    "nrrd-js": "^0.2.1",
+    "pako": "^1.0.11"
+  }
+}

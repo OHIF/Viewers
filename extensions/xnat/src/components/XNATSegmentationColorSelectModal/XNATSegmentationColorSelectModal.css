@@ -1,0 +1,15 @@
+
+
+.xnat-color-select-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.xnat-color-select-container .xnat-colormap-item {
+    width: 300px;
+}
+
+.xnat-color-select-container .xnat-color-select-header {
+    color: var(--text-secondary-color);
+}

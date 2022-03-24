@@ -1,0 +1,341 @@
+.xnatPanel
+  background-color: var(--primary-background-color)
+  color: var(--text-primary-color)
+  z-index: 1000
+  height: 100%
+  //width: 96%
+  display: flex
+  display: -webkit-flex
+  display: -ms-flexbox
+  flex-direction: column
+  padding: 0 10px 0 10px
+
+  h3
+    font-weight: bold
+    font-size: large
+    margin: 0
+
+  h4
+    font-weight: normal
+    font-size: medium
+    margin: 0
+
+  h5
+    font-weight: bold
+    font-size: 14px
+    margin: 0
+
+  button
+    border: 1px solid var(--ui-gray-light)
+    //border-radius: 5px
+    background-color: #337ab7
+    color: var(--text-primary-color)
+    //line-height: 25px
+    padding: 2px 10px
+    outline: none
+    cursor: pointer
+
+    + button
+      margin-left: 5px
+
+    &:hover, &:active
+      background-color: var(--active-color)
+
+    &:disabled
+      background-color: var(--ui-gray)
+      border-color: var(--ui-gray-light)
+      cursor: not-allowed
+
+    svg
+      margin-right: 4px
+      position: relative
+      top: 2px
+
+  button.small
+    border: 0
+    background-color: transparent
+
+    svg
+      color: var(--text-primary-color)
+      background-color: transparent
+      width: 16px
+      height: 16px
+      fill: var(--text-secondary-color)
+
+  .settings-icon
+    fill: var(--active-color)
+    margin-left: 10px
+    cursor: pointer
+
+    &:hover, &:active
+      fill: var(--text-secondary-color)
+
+  .title-with-icon
+    display: flex
+    display: -webkit-flex
+    display: -ms-flexbox
+    flex-direction: row
+
+  .panelHeader
+    display: flex
+    display: -webkit-flex
+    display: -ms-flexbox
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
+    width: 100%
+    margin: 15px 0
+    padding-bottom: 5px
+    border-width: 1px
+    //border-top-style: solid
+    border-bottom-style: solid
+    border-color: var(--ui-gray-light)
+
+  .importSessionList
+    display: flex
+    display: -webkit-flex
+    display: -ms-flexbox
+    flex-direction: row
+    height: 30px
+    margin-bottom: 10px
+    h5
+      margin-right: 5px
+      align-self: center
+    select
+      width: 100%
+
+
+  .roiCollectionBody
+    height: 90% //calc(90% - 180px)
+    overflow-y: auto
+    overflow-x: hidden
+    scrollbar-color: var(--text-secondary-color --ui-gray-darkest)
+    word-wrap: break-word
+
+    &::-webkit-scrollbar
+      background: var(--ui-gray-darkest)
+      width: 10px
+
+    &::-webkit-scrollbar-thumb
+      background: var(--text-secondary-color)
+      border-radius: 10px
+      border-right: 2px solid
+      border-right-color: var(--ui-gray-darkest)
+
+  .roiCollectionBody.limitHeight
+    height: auto
+    max-height: 90%
+    //padding-right: 18px
+    overflow-y: auto
+    overflow-x: hidden
+    display: inline-block
+    font-size: 12px
+
+  .roiCollectionFooter
+    display: -webkit-flex
+    display: -ms-flexbox
+    display: flex
+    //justify-content: space-around
+    align-items: center
+    margin-top: 20px
+    margin-right: 20px
+
+  .workingCollectionHeader
+    display: flex
+    display: -webkit-flex
+    display: -ms-flexbox
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
+    width: 100%
+    margin-bottom: 5px
+
+  .lockedCollectionHeader
+    display: flex
+    display: -webkit-flex
+    display: -ms-flexbox
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
+    width: 100%
+    margin-bottom: 5px
+    margin-top: 20px
+
+  .collectionListInfo
+    color: var(--text-secondary-color)
+    display: flex
+    display: -webkit-flex
+    display: -ms-flexbox
+    flex-direction: column
+    justify-content: space-between
+    align-items: left
+    width: 100%
+    margin-bottom: 5px
+
+  .collectionSection
+    display: flex
+    flex-direction: column
+    color: var(--text-primary-color)
+    font-size: 12px
+    margin-bottom: 5px
+
+    .header
+      display: flex
+      flex-direction: row
+      align-items: center
+      justify-content: space-between
+      background-color: var(--ui-gray-dark)
+      border-radius: 5px
+      font-weight: bold
+      padding: 5px
+
+      .icons
+        display: flex
+        align-items: center
+        border-radius: 5px
+
+      .icon
+        cursor: pointer
+        color: var(--active-color)
+        margin-left: 15px
+
+        &:hover
+          color: var(--hover-color)
+
+  .collectionTable
+    border-collapse: collapse
+    border: 2px solid var(--ui-gray-light)
+    width: 100%
+    //display: block
+    white-space: nowrap
+    overflow-x: auto
+    //table-layout: fixed
+
+  .collectionTable tr:nth-child(even)
+    background-color: #333333
+
+  .subRow
+    background-color: #333333
+    border: 2px solid var(--ui-gray-light)
+
+  .collectionTable tr th
+    background-color: var(--ui-gray-dark)
+    border: 1px dotted
+    padding: 2px
+    word-wrap: break-word
+
+  .collectionTable tr td
+    border: 1px dotted
+    padding: 2px
+    word-wrap: break-word
+    white-space: -o-pre-wrap
+    white-space: pre-wrap
+    white-space: -moz-pre-wrap
+    white-space: -pre-wrap
+
+  .centered-cell
+    text-align: center
+  .left-aligned-cell
+    text-align: left
+  .right-aligned-cell
+    text-align: right
+
+  .roiEdit
+    display: flex
+    width: 100%
+    border: none
+    color: var(--text-primary-color)
+    background-color: transparent
+
+    &:focus, &:hover
+      outline: solid 1px var(--ui-sky-blue)
+
+  .roiColor
+    height: 15px
+    width: 15px
+    background-color: #bbb
+    border-radius: 50%
+    display: inline-block
+
+  .checkboxInCell
+    margin: 0 auto
+    float: left
+    width: 100%
+
+  .roiPanelFooter
+    display: -webkit-flex
+    display: -ms-flexbox
+    display: flex
+    flex-direction: column
+    margin: 10px 0
+    padding: 10px
+    background: var(--ui-gray-dark)
+    border: 1px solid
+    border-color: var(--ui-border-color)
+
+    h4
+      font-weight: bold
+      margin-bottom: 10px
+
+    .footerSection
+      display: -webkit-flex
+      display: -ms-flexbox
+      display: flex
+      flex-direction: column
+      font-size: 14px
+
+      h5
+        font-weight: bold
+        margin-bottom: 2px
+
+      p
+        color: var(--text-secondary-color)
+        margin: 5px 0
+        font-size: 13px
+
+      .footerSectionItem
+        display: -webkit-flex
+        display: -ms-flexbox
+        display: flex
+        flex-direction: row
+        margin-left: 5px
+        margin-right: 5px
+
+        &:first-of-type
+          margin-top: 5px
+
+        &:not(:last-of-type)
+          margin-bottom: 5px
+
+        label
+          margin-right: 5px
+          font-size: 13px
+          align-self: center
+          white-space: nowrap
+
+        input[type=range]
+          padding: 10px 0
+          //height: 20px
+
+        input[type=text]
+          width: 100%
+
+          &:focus
+            outline: none
+
+        select
+          padding: 0 5px
+          width: 100%
+          height: 25px
+
+          &:focus
+            outline: none
+
+      &:first-of-type
+        margin-top: 5px
+
+      &:not(:last-of-type)
+        margin-bottom: 15px
+
+
+
