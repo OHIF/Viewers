@@ -68,6 +68,7 @@ const VALUE_TYPES = {
   MULTIPOINT: 'value_type::multipoint',
   CIRCLE: 'value_type::circle',
   FREEHAND: 'value_type::freehand',
+  ANGLE: 'value_type::angle',
 };
 
 class MeasurementService {

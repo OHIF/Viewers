@@ -3,6 +3,8 @@ import Bidirectional from './Bidirectional';
 import ArrowAnnotate from './ArrowAnnotate';
 import EllipticalRoi from './EllipticalRoi';
 import NLFreehandRoi from './NLFreehandRoi';
+import RectangleRoi from './RectangleRoi';
+import Angle from './Angle';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
@@ -23,6 +25,8 @@ const measurementServiceMappingsFactory = (
       POINT,
       BIDIRECTIONAL,
       FREEHAND,
+      RECTANGLE,
+      ANGLE,
     } = MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attemped, but its not nearly flexible enough.
@@ -34,6 +38,8 @@ const measurementServiceMappingsFactory = (
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
       NLFreehandRoi: FREEHAND,
+      RectangleRoi: RECTANGLE,
+      Angle: ANGLE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -117,6 +123,34 @@ const measurementServiceMappingsFactory = (
         {
           valueType: MeasurementService.VALUE_TYPES.FREEHAND
         }
+      ],
+    },
+    RectangleRoi: {
+      toAnnotation: RectangleRoi.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+      RectangleRoi.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.RECTANGLE,
+        },
+      ],
+    },
+    Angle: {
+      toAnnotation: Angle.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+      Angle.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.ANGLE,
+        },
       ],
     },
   };

@@ -34,6 +34,9 @@ describe('measurementServiceMappings.js', () => {
         ELLIPSE: 'value_type::ellipse',
         MULTIPOINT: 'value_type::multipoint',
         CIRCLE: 'value_type::circle',
+        FREEHAND: 'value_type::freehand',
+        RECTANGLE: 'value_type::rectangle',
+        ANGLE: 'value_type::angle',
       },
     };
     displaySetServiceMock = {
@@ -41,11 +44,14 @@ describe('measurementServiceMappings.js', () => {
         console.warn('SOPInstanceUID');
 
         return {
-          displaySetInstanceUID: '1.2.3.4'
-        }
-      }
+          displaySetInstanceUID: '1.2.3.4',
+        };
+      },
     };
-    mappings = measurementServiceMappingsFactory(measurementServiceMock, displaySetServiceMock);
+    mappings = measurementServiceMappingsFactory(
+      measurementServiceMock,
+      displaySetServiceMock
+    );
     handles = { start: { x: 1, y: 2 }, end: { x: 1, y: 2 } };
     points = [
       { x: 1, y: 2 },
@@ -63,7 +69,7 @@ describe('measurementServiceMappings.js', () => {
         text: 'Test',
         description: 'Test',
         unit: 'mm',
-        length: undefined
+        length: undefined,
       },
     };
     measurement = {
@@ -94,8 +100,14 @@ describe('measurementServiceMappings.js', () => {
 
   describe('toMeasurement()', () => {
     it('map annotation to measurement service format', async () => {
-      const getValueTypeFromToolType = (toolType) => 'valueType';
-      const mappedAnnotation = await mappings[csToolsAnnotation.toolName].toMeasurement(csToolsAnnotation, displaySetServiceMock, getValueTypeFromToolType);
+      const getValueTypeFromToolType = toolType => 'valueType';
+      const mappedAnnotation = await mappings[
+        csToolsAnnotation.toolName
+      ].toMeasurement(
+        csToolsAnnotation,
+        displaySetServiceMock,
+        getValueTypeFromToolType
+      );
       expect(mappedAnnotation).toEqual(measurement);
     });
   });
