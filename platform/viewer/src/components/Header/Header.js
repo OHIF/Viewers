@@ -79,18 +79,6 @@ function Header(props) {
           )}
 
           {children}
-
-          {showStudyList && !home && (
-            <Link
-              className="header-btn header-studyListLinkSection"
-              to={{
-                pathname: '/',
-                state: { studyLink: location.pathname },
-              }}
-            >
-              {t('Study list')}
-            </Link>
-          )}
         </div>
 
         <div className="header-menu">
