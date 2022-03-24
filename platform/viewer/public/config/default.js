@@ -6,6 +6,7 @@ window.config = {
   showStudyList: false,
   filterQueryParam: false,
   disableServersCache: false,
+  maxConcurrentMetadataRequests: 1,
   studyPrefetcher: {
     enabled: true,
     order: 'closest',
@@ -27,7 +28,6 @@ window.config = {
         thumbnailRendering: 'wadors',
         StudiesMetadata: 'Full',
         SeriesMetadata: 'Full',
-        enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
       },
     ],
