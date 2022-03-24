@@ -10,20 +10,21 @@
     "jest": true
   },
   "settings": {
-    "react": {
-      "version": "detect"
+      "react": {
+        "version": "detect"
 
-  },
-  "rules": {
-    "react/jsx-props-no-spreading": "error",
-    "react-hooks/exhaustive-deps": "false",
-    "import/no-unused-modules": [1, {"unusedExports": true}]
-  },
-  "globals": {
-    "cy": true,
-    "before": true,
-    "context": true,
-    "Cypress": true,
-    "assert": true
+    },
+    "rules": {
+      "react/jsx-props-no-spreading": "error",
+      "react-hooks/exhaustive-deps": "false",
+      "import/no-unused-modules": [1, {"unusedExports": true}]
+    },
+    "globals": {
+      "cy": true,
+      "before": true,
+      "context": true,
+      "Cypress": true,
+      "assert": true
+    }
   }
 }

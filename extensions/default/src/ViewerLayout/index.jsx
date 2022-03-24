@@ -96,10 +96,8 @@ function ViewerLayout({
   viewports,
   ViewportGridComp,
 }) {
-  hotkeysManager.getHotkeys()
-      .then(res => {
-        hotkeysManager.setHotkeys(res.hotkeys.hotkeyDefinitions);
-  });
+
+  hotkeysManager.setupHotkeys();
 
   const [appConfig] = useAppConfig();
 
