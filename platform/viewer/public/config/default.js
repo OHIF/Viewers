@@ -25,8 +25,26 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        StudiesMetadata: 'MainDicomTags',
-        SeriesMetadata: 'Full',
+        StudiesMetadata: 'Extrapolate',
+        StudiesMetadataExtrapolatedTags: [
+          'AcquisitionDate'
+        ],
+        SeriesMetadata: 'Extrapolate',
+        SeriesMetadataExtrapolatedTags: [
+          'BitsAllocated',
+          'BitsStored',
+          'Columns',
+          'HighBit',
+          'PhotometricInterpretation',
+          'PixelSpacing',
+          'PlanarConfiguration',
+          'RescaleIntercept',
+          'RescaleSlope',
+          'Rows',
+          'SOPClassUID',
+          'SamplesPerPixel',
+          'SliceThickness'
+        ],
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
       },
