@@ -6,15 +6,7 @@ window.config = {
   showStudyList: false,
   filterQueryParam: false,
   disableServersCache: false,
-  studyPrefetcher: {
-    enabled: true,
-    order: 'all',
-    displaySetCount: 1,
-    preventCache: false,
-    prefetchDisplaySetsTimeout: 300,
-    displayProgress: true,
-    includeActiveDisplaySet: true,
-  },
+
   servers: {
     dicomWeb: [
       {
@@ -25,26 +17,8 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        StudiesMetadata: 'Extrapolate',
-        StudiesMetadataExtrapolatedTags: [
-          'AcquisitionDate'
-        ],
-        SeriesMetadata: 'Extrapolate',
-        SeriesMetadataExtrapolatedTags: [
-          'BitsAllocated',
-          'BitsStored',
-          'Columns',
-          'HighBit',
-          'PhotometricInterpretation',
-          'PixelSpacing',
-          'PlanarConfiguration',
-          'RescaleIntercept',
-          'RescaleSlope',
-          'Rows',
-          'SOPClassUID',
-          'SamplesPerPixel',
-          'SliceThickness'
-        ],
+        StudiesMetadata: 'MainDicomTags',
+        SeriesMetadata: 'Full',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
       },
