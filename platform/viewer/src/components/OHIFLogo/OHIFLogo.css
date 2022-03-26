@@ -15,14 +15,14 @@
 }
 
 .header-logo-text {
-  width: 224px;
-  height: auto;
-  margin-left: 8px;
+  width: 100px;
+  height: 50%;
+  margin-left: 5px;
 }
 
 .header-logo-image {
-  height: 30px;
-  width: 30px;
+  height: 50px;
+  width: 50px;
   font-size: 30px;
 }
 

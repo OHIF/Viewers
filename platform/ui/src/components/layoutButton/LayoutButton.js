@@ -43,7 +43,7 @@ export class LayoutButton extends PureComponent {
 
   render() {
     return (
-      <div className="btn-group">
+      <>
         <ToolbarButton
           isActive={this.state.dropdownVisible}
           label={'Layout'}
@@ -56,7 +56,7 @@ export class LayoutButton extends PureComponent {
           onClick={this.onClick}
           selectedCell={this.props.selectedCell}
         />
-      </div>
+      </>
     );
   }
 }

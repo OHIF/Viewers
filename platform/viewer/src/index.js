@@ -23,12 +23,12 @@ import ReactDOM from 'react-dom';
  * by using the exported `App` component, and passing in your extensions as props using
  * the defaultExtensions property.
  */
-import OHIFVTKExtension from '@ohif/extension-vtk';
-import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
-import OHIFDicomSegmentationExtension from '@ohif/extension-dicom-segmentation';
-import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
-import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
+//import OHIFVTKExtension from '@ohif/extension-vtk';
+//import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
+//import OHIFDicomSegmentationExtension from '@ohif/extension-dicom-segmentation';
+//import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
+//import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
+//import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 //import OHIFDicomTagBrowserExtension from '@ohif/extension-dicom-tag-browser';
 // Add this for Debugging purposes:
 //import OHIFDebuggingExtension from '@ohif/extension-debugging';
@@ -47,12 +47,12 @@ if (window) {
 const appProps = {
   config,
   defaultExtensions: [
-    OHIFVTKExtension,
-    OHIFDicomHtmlExtension,
-    OHIFDicomMicroscopyExtension,
-    OHIFDicomPDFExtension,
-    OHIFDicomSegmentationExtension,
-    OHIFDicomRtExtension,
+    //OHIFVTKExtension,
+    //OHIFDicomHtmlExtension,
+    //OHIFDicomMicroscopyExtension,
+    //OHIFDicomPDFExtension,
+    //OHIFDicomSegmentationExtension,
+    //OHIFDicomRtExtension,
     //OHIFDebuggingExtension,
     //OHIFDicomTagBrowserExtension,
   ],

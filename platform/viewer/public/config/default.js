@@ -5,6 +5,7 @@ window.config = {
   showStudyList: true,
   filterQueryParam: false,
   disableServersCache: false,
+  disableMeasurementPanel: true,
   studyPrefetcher: {
     enabled: true,
     order: 'closest',

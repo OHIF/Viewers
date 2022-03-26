@@ -1,17 +1,26 @@
 .ToolbarRow {
-    border-bottom: var(--ui-border-thickness) solid var(--ui-border-color);
-    flex: 0 0 auto;
-    height: var(--toolbar-height);
-    padding-left: 1rem;
-    padding-right: 1rem;
-    position: relative;
-    transition: height 300ms ease;
-    width: 100%;
-    display: flex;
-    align-items: center;
+  border-bottom: var(--ui-border-thickness) solid var(--ui-border-color);
+  flex: 0 0 auto;
+  height: var(--toolbar-height);
+  padding-left: 1rem;
+  padding-right: 1rem;
+  position: relative;
+  transition: height 300ms ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
-
+.scroll_toolbar {
+  width: 100%;
+  /* overflow: hidden; */
+  overflow-y: hidden;
+  overflow-x: auto;
+  display: flex;
+  scrollbar-width: none;
+}
+.scroll_toolbar::-webkit-scrollbar {
+  display: none;
+}
 ToolbarRow.expanded {
-    height: calc(var(--toolbar-height) + var(--toolbar-drawer-height));
+  height: calc(var(--toolbar-height) + var(--toolbar-drawer-height));
 }
-

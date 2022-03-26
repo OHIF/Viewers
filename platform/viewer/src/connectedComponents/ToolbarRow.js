@@ -33,6 +33,7 @@ class ToolbarRow extends Component {
     // NOTE: withDialog, withModal HOCs
     dialog: PropTypes.any,
     modal: PropTypes.any,
+    isPhone: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -215,26 +216,28 @@ class ToolbarRow extends Component {
     return (
       <>
         <div className="ToolbarRow">
-          <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
-            <RoundedButtonGroup
-              options={this.buttonGroups.left}
-              value={this.props.selectedLeftSidePanel || ''}
-              onValueChanged={onPressLeft}
-            />
-          </div>
-          {buttonComponents}
-          <ConnectedLayoutButton />
-          <div
-            className="pull-right m-t-1 rm-x-1"
-            style={{ marginLeft: 'auto' }}
-          >
-            {this.buttonGroups.right.length && (
+          <div className="scroll_toolbar">
+            <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
               <RoundedButtonGroup
-                options={this.buttonGroups.right}
-                value={this.props.selectedRightSidePanel || ''}
-                onValueChanged={onPressRight}
+                options={this.buttonGroups.left}
+                value={this.props.selectedLeftSidePanel || ''}
+                onValueChanged={onPressLeft}
               />
-            )}
+            </div>
+            {buttonComponents}
+            <ConnectedLayoutButton />
+            <div
+              className="pull-right m-t-1 rm-x-1"
+              style={{ marginLeft: 'auto' }}
+            >
+              {this.buttonGroups.right.length && (
+                <RoundedButtonGroup
+                  options={this.buttonGroups.right}
+                  value={this.props.selectedRightSidePanel || ''}
+                  onValueChanged={onPressRight}
+                />
+              )}
+            </div>
           </div>
         </div>
       </>
