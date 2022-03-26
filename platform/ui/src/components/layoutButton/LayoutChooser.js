@@ -24,7 +24,7 @@ class LayoutChooser extends PureComponent {
     Rows: 3,
     Columns: 3,
     visible: true,
-    boxSize: 20,
+    boxSize: 15,
     cellBorder: 1,
     selectedCell: {
       row: -1,

@@ -216,14 +216,14 @@ class ToolbarRow extends Component {
     return (
       <>
         <div className="ToolbarRow">
+          <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
+            <RoundedButtonGroup
+              options={this.buttonGroups.left}
+              value={this.props.selectedLeftSidePanel || ''}
+              onValueChanged={onPressLeft}
+            />
+          </div>
           <div className="scroll_toolbar">
-            <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
-              <RoundedButtonGroup
-                options={this.buttonGroups.left}
-                value={this.props.selectedLeftSidePanel || ''}
-                onValueChanged={onPressLeft}
-              />
-            </div>
             {buttonComponents}
             <ConnectedLayoutButton />
             <div

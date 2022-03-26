@@ -12,11 +12,14 @@
 }
 .scroll_toolbar {
   width: 100%;
+  height: 100%;
   /* overflow: hidden; */
   overflow-y: hidden;
   overflow-x: auto;
   display: flex;
   scrollbar-width: none;
+  align-items: center;
+  user-select: none;
 }
 .scroll_toolbar::-webkit-scrollbar {
   display: none;

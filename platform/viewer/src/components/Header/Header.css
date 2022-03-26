@@ -91,6 +91,7 @@
   line-height: 18px;
   text-decoration: none;
   margin-right: 10px;
+  display: none;
 }
 
 .entry-header.header-big .header-menu {
@@ -120,12 +121,12 @@
 @media only screen and (max-width: 768px) {
   .entry-header,
   .entry-header.header-big {
-    padding: 30px 15px 10px 15px;
+    padding: 10px 15px 10px 15px;
   }
   .entry-header.header-big .header-logo-image {
     margin: 0 10px 0 0;
-    width: 25px;
-    height: 25px;
+    width: 50px;
+    height: 50px;
   }
 
   .entry-header.header-big .header-logo-text {
@@ -134,7 +135,7 @@
 
   /* Toggle Notification Bar */
   .notification-bar {
-    display: block;
+    display: none;
   }
   .header-menu .research-use {
     display: none;
