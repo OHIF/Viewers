@@ -17,7 +17,9 @@ import './theme-tide.css';
 // Contexts
 import AppContext from './context/AppContext';
 const CallbackPage = asyncComponent(() =>
-  retryImport(() => import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js'))
+  retryImport(() =>
+    import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js')
+  )
 );
 
 class OHIFStandaloneViewer extends Component {

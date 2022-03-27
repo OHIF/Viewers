@@ -16,6 +16,7 @@
 //  -- ACTIVE_VIEWPORT::CORNERSTONE
 // setToolActive commands should receive the button event that triggered
 // so we can do the "bind to this button" magic
+// import {MicaButton} from '../../mica/micaButton';
 
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
@@ -236,6 +237,15 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
+  },
+  {
+    id: 'Mica',
+    label: 'Mica AI',
+    icon: 'brain',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'setMica',
+    commandOptions: { toolName: 'mica' },
   },
 ];
 
