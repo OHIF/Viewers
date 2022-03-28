@@ -1,11 +1,8 @@
 import ConfigPoint from 'config-point'
 import { ViewportOverlay } from '@ohif/ui'
 
-const { cornerstoneViewportOverlayConfig } = ConfigPoint.register({
-  cornerstoneViewportOverlayConfig: {
-    configBase: 'viewportOverlayConfig',
-  }
-});
+const cornerstoneViewportOverlayConfig =
+  ConfigPoint.createConfiguration("cornerstoneViewportOverlayConfig", 'viewportOverlayConfig');
 
 /**
  * Default to using the cornerstoneViewportOverlayConfig.

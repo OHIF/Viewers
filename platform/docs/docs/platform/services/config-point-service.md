@@ -1,26 +1,29 @@
 # Config Point Service
 The Config Point service is based on the external library
 [config-point](https://github.com/OHIF/config-point).
-It is a service that allows exposing internal "static" configuration data
-for modification by sites at load time by defining "theme" files.  For
-information on the configuration side of things, see [theme-configuration](../../configuration/theme-conffiguration.md).
+It is a service that allows exposing internal final/unchaning after load
+configuration data for modification by sites at load time by defining "theme" files.
+For information on the configuration side of things, see [theme-configuration](../../configuration/theme-conffiguration.md).
 
 The service isn't a traditional OHIF service available in the services
-deployment, but is rather a service which exposes static declarations of
-data as configurable data.  For example, suppose a list of modalities
+deployment because the point of the service is to enhance static configuration
+values with the ability to update those at load time.
+For example, suppose a list of modalities
 was required for the search constraints.  The core code might decide to
 supply such a list by default, but sites may want to customize it to
 only list the actual modalities they use.  Further, they might want to
 change the name of some of these.  The core code could declare the modalities
 list in a file like this:
 ```js
-export default const { ModalitiesList } = ConfigPoint.register({
-  ModalitiesList: [
-    "CR",
-    {id: "MR", description: "Magnetic Resonance Imaging"},
-    {id: "CT", name: "Computed Tomography"},
-  ]
-})
+export default const ModalitiesList = ConfigPoint.createConfiguration(
+  "ModalitiesList": {
+      list: [
+        "CR",
+        {id: "MR", description: "Magnetic Resonance Imaging"},
+        {id: "CT", name: "Computed Tomography"},
+      ],
+  },
+);
 ```
 The CR modality is just a plain name, whereas MR includes a description,
 and CT includes an alternate name.  That list is used exactly as a straight
@@ -36,7 +39,9 @@ the following element to it:
 {
   ...
   ModalitiesList: {
-    US: {id: 'US', name: 'Ultrasound'},
+    list: {
+      US: {id: 'US', name: 'Ultrasound'}
+    },
   },
 }
 ```
@@ -88,6 +93,44 @@ Always the basic idea is that the code extracts a literal declaration of
 data, defaulting to the base behaviour of the application, allowing it to
 be exposed later to enhancements in a declarative fashion.  The remaining
 sections below simply expand on the idea with some more advanced concepts.
+
+## Why isn't Config-Point a general service?
+Although config-point is intended to be a service, it is one that is used
+very early on in the load time, so trying to pass the config-point service
+into the code during service injection means that the service is available
+too late for effective use.  The design of config-point is that it is nearly
+final/static data which isn't changed after the application is loaded.  That
+allows depending on the config-point data for load ordering and decisions.
+
+By final/static data, what is meant is basically something that could be
+represented in JSON + functions, where the data itself doesn't change after
+the load phase is complete.  Think of something like:
+```javascript
+const configurationValue = {
+  f: (a,b) => a+b,
+  list: [1,2,3],
+}
+```
+where the function is a pure function, not modifying this, and the list is
+just a set of values that can be looked at.  This can be updated a little
+bit during load, but is intended to be accessed assuming it is invariant after
+the load phase.  Passing the config point service during extension loading
+would violate this design.
+
+### If configurations are constant after load, how does an extension modify configuration?
+Since extensions are loaded during the load time, they can extend a configuration
+by simply including a config-point value in the extension.  For example:
+```javascript
+// Create a new configuration point within an MG extension
+ConfigPoint.createConfiguration('MGHangingProtocols', { ... }, 'HangingProtocols)
+
+// Extend the configuration point "ModalitiesList" within an MG extension:
+ConfigPoint.extendConfiguration('ModalitiesList', {
+  list: {
+    MGTomo: {label: "MG Tomosynthesis", value: "MGT"},
+  }
+})
+```
 
 ## Automatic Sorting of Data
 Sometimes, data needs to be sorted in the provided order.  The above
@@ -155,22 +198,31 @@ export default const { HangingProtocols } = ConfigPoint.register({
 ```
 
 ## Theme Load Timing
-The theme values are intended to be constants for a given instance of OHIF.
-However, because the actual theme files are loaded at startup time, if an initial
-render is performed before all the theme files have been fully loaded, it may
-be necessary to re-render after all the theme loads have completed.  There is
-a listener service which can be used to listen for load events, and then to
-re-render the display.  It works like:
-```js
-    if (!this._listenThemeProtocols) {
-      this._listenThemeProtocols = this.listenThemeProtocols.bind(this);
-    }
-    ConfigPoint.addLoadListener(ThemeProtocols, this._listenThemeProtocols);
-```
+The user specified themes are loaded before the initial rendering starts, so
+all changes to the configuration are loaded by the time the render is executed,
+but are not loaded until the configuration files are loaded, so it may be
+necessary to reference nested values dynamically.  That is:
+```javascript
+const myConfig = ConfigPoint.register("myConfig", {
+  a: 3,
+  list: [1,2],
+});
 
-This is NOT intended for listening for programmatic changes to the configuration,
-but is intended only for load time updates.  Again, the idea is that the
-configuration points are constants loaded from configuration files.
+const topA = myConfig.a;
+const topList = myConfig.list;
+const topMyConfig = myConfig;
+
+function calledDuringRender() {
+  // It is not necessarily true that:
+  topA === myConfig.a
+  // or that
+  topList.length===myConfig.list.length
+  // however the following IS true:
+  myConfig === topMyConfig;
+}
+```
+That is no different than declaring regular constants anywhere else, it is merely
+something to be aware of.
 
 ## Mode Changes to Configuration Point
 If the config points are "constants", then one might ask how different modes
@@ -182,20 +234,21 @@ hanging protocols to apply.  One way to do that is to have the mode specify
 the name of the configuration, and then to use the initial/default configuration
 as a base, and extend it, something like this:
 ```js
-const {MGHangingProtocols} = ConfigPoint.register({
-  MGHangingProtocols: {
-    // The config base says to START with the value from the named
-    // config point as the base values.
-    configBase: 'HangingProtocols',
+const MGHangingProtocols = ConfigPoint.createConfiguration( "MGHangingProtocols",
+  {
     // Now, just extend the protocols list with the mg protocols.
     protocols: {
       mgProtocol1: ...
       mgProtocol2: ...
-    }
-
+  },
+  'HangingProtocols');
 ```
 
-As an alternative to extending the protocols, they can be replaced via:
+This says to create a new hanging protocol constant that inherits from `HangingProtocols`
+and name it `MGHangingProtocols`.  The inheritance will use the config-point
+inheritance rules, and NOT the replace rules that are used in JavaScript normally.
+If you wish to use a replace rule, then you can use the configOperation replace
+with the new value, for example:
 ```js
 protocols: {
   configOperation: 'replace',
