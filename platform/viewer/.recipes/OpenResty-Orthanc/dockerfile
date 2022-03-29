@@ -59,7 +59,7 @@ RUN luarocks install lua-resty-session
 RUN luarocks install lua-resty-http
 # !!!
 RUN luarocks install lua-resty-openidc
-RUN luarocks install luacrypto
+RUN luarocks install luaossl
 
 # Copy build output to image
 COPY --from=builder /usr/src/app/platform/viewer/dist /var/www/html
