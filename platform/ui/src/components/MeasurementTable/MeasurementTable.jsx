@@ -22,6 +22,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
               key={measurementItem.id}
               id={measurementItem.id}
               index={index + 1}
+              color={measurementItem.color}
               label={measurementItem.label}
               isActive={measurementItem.isActive}
               displayText={measurementItem.displayText}

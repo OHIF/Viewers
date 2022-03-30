@@ -32,6 +32,10 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
   'SREllipticalRoi',
 ];
 
+const removeUndefined = updates =>
+  Object.keys(updates).forEach((key) => (updates[key] === undefined) && delete updates[key]);
+
+
 const _refreshViewports = () =>
   cs.getEnabledElements().forEach(({ element }) => cs.updateImage(element));
 
@@ -68,12 +72,9 @@ export default function init({
     UIDialogService,
     MeasurementService,
     DisplaySetService,
-    ToolBarService,
     UserAuthenticationService,
   } = servicesManager.services;
   const tools = getTools();
-
-  console.log(servicesManager.services);
 
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
@@ -81,27 +82,48 @@ export default function init({
     DisplaySetService
   );
 
-  const onRightClick = event => {
+  const showContextMenu = contextMenuProps => {
     if (!UIDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
+    const { event, subMenu } = contextMenuProps;
 
-    const onGetMenuItems = defaultMenuItems => {
+    const onGetMenuItems = (menus, props) => {
       const { element, currentPoints } = event.detail;
-      const nearbyToolData = commandsManager.runCommand('getNearbyToolData', {
-        element,
-        canvasCoordinates: currentPoints.canvas,
-        availableToolTypes: TOOL_TYPES_WITH_CONTEXT_MENU,
-      });
-
-      let menuItems = [];
-      if (nearbyToolData) {
-        defaultMenuItems.forEach(item => {
-          item.value = nearbyToolData;
-          menuItems.push(item);
+      const { subMenu } = props;
+      const nearbyToolData = contextMenuProps.nearbyToolData ||
+        commandsManager.runCommand('getNearbyToolData', {
+          element,
+          canvasCoordinates: currentPoints.canvas,
+          availableToolTypes: TOOL_TYPES_WITH_CONTEXT_MENU,
         });
+
+      const menuItems = [];
+      const defaultSite = ContextMenuMeasurements.getFindingSite({ ...props, nearbyToolData });
+      const subProps = { props, nearbyToolData, event, defaultSite, };
+      const menu = subMenu ?
+        menus.find(menu => menu.id === subMenu)
+        : menus.find(menu => !menu.selector || menu.selector(subProps));
+      if (!menu) {
+        console.log("No menu found", subMenu);
+        return undefined;
       }
+      menu.items.forEach(item => {
+        const toAdd = { ...item, value: nearbyToolData };
+        if (!item.action) {
+          toAdd.action = (value) => {
+            props.onClose();
+            const action = props[`on${item.actionType}`];
+            if (action) {
+              action.call(null, toAdd, value, subProps);
+            } else {
+              console.warn("No action defined for", item);
+            }
+          }
+        }
+        menuItems.push(toAdd);
+      });
 
       return menuItems;
     };
@@ -114,6 +136,7 @@ export default function init({
       isDraggable: false,
       preservePosition: false,
       defaultPosition: _getDefaultPosition(event.detail),
+      event,
       content: ContextMenuMeasurements,
       onClickOutside: () => {
         UIDialogService.dismiss({ id: 'context-menu' });
@@ -121,7 +144,14 @@ export default function init({
       },
       contentProps: {
         onGetMenuItems,
+        event,
+        subMenu,
         eventData: event.detail,
+
+        /**
+         * Remove a measurement.
+         * @param {object} item to be removed
+         */
         onDelete: item => {
           const { tool: measurementData, toolType } = item.value;
 
@@ -164,6 +194,52 @@ export default function init({
           CONTEXT_MENU_OPEN = false;
           UIDialogService.dismiss({ id: 'context-menu' });
         },
+
+        /**
+         * Displays a sub-menu, removing this menu
+         * @param {*} item
+         * @param {*} obj
+         * @param {*} props
+         */
+        onSubMenu: (item, value, subProps) => {
+          if (!value.subMenu) {
+            console.warn("No submenu defined for", item, value, subProps);
+            return;
+          }
+          showContextMenu({ ...contextMenuProps, subMenu: value.subMenu });
+        },
+
+        /** Applies site selection details to this annotation or overall image */
+        onSiteSelection: (item, value) => {
+          const { tool: measurementData } = item.value;
+
+          const { color, findingSite, finding, findingUpdates } = value;
+          const findingText = (finding || findingSite) ? `${finding?.text || ''} ${findingSite?.text || ''}` : undefined;
+          const updates = {
+            ...findingUpdates,
+            color,
+            findingText,
+            findingSite,
+            finding
+          };
+          removeUndefined(updates);
+
+          const measurement = MeasurementService.getMeasurement(
+            measurementData.id
+          );
+
+          const updatedMeasurement = Object.assign({}, measurement, updates);
+
+          console.log("updatedMeasurement=", updatedMeasurement);
+
+          MeasurementService.update(
+            updatedMeasurement.id,
+            updatedMeasurement,
+            true
+          );
+        },
+
+        /** Sets the label on a measurement. */
         onSetLabel: item => {
           const { tool: measurementData } = item.value;
 
@@ -198,17 +274,12 @@ export default function init({
     });
   };
 
-  const onTouchPress = event => {
-    if (!UIDialogService) {
-      console.warn('Unable to show dialog; no UI Dialog Service available.');
-      return;
-    }
+  const onRightClick = event => {
+    showContextMenu({ event, content: ContextMenuMeasurements, nearbyToolData: undefined });
+  };
 
-    UIDialogService.create({
-      eventData: event.detail,
-      content: ContextMenuMeasurements,
-      contentProps: { isTouchEvent: true },
-    });
+  const onTouchPress = event => {
+    showContextMenu({ event, content: ContextMenuMeasurements, nearbyToolData: undefined, isTouchEvent: true });
   };
 
   const resetContextMenu = () => {
@@ -292,7 +363,7 @@ export default function init({
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
     const { context, viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement, context);
@@ -445,7 +516,7 @@ const _connectToolsToMeasurementService = (
     MeasurementService.subscribe(
       MEASUREMENT_UPDATED,
       ({ source, measurement, notYetUpdatedAtSource }) => {
-        const { id, label } = measurement;
+        const { id, label, color } = measurement;
 
         if (
           source.name == 'CornerstoneTools' &&
@@ -458,6 +529,7 @@ const _connectToolsToMeasurementService = (
 
         if (cornerstoneMeasurement) {
           cornerstoneMeasurement.label = label;
+          cornerstoneMeasurement.color = color;
           if (cornerstoneMeasurement.hasOwnProperty('text')) {
             // Deal with the weird case of ArrowAnnotate.
             cornerstoneMeasurement.text = label;

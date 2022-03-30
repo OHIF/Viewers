@@ -5,6 +5,7 @@ import { Icon } from '../';
 
 const MeasurementItem = ({
   id,
+  color,
   index,
   label,
   displayText,
@@ -55,6 +56,7 @@ const MeasurementItem = ({
         {displayText.map(line => (
           <span
             key={line}
+            style={({ borderColor: color })}
             className="pl-2 text-base text-white border-l border-primary-light"
             dangerouslySetInnerHTML={{ __html: line }}
           ></span>

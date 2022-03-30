@@ -4,7 +4,9 @@ import getPointsFromHandles from './utils/getPointsFromHandles';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const Length = {
-  toAnnotation: (measurement, definition) => {},
+  toAnnotation: (measurement, definition) => {
+    console.log('toAnnotation', measurement, definition);
+  },
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -51,6 +53,7 @@ const Length = {
       label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
+      color: measurementData.color,
       length: measurementData.length,
       type: getValueTypeFromToolType(tool),
       points: getPointsFromHandles(measurementData.handles),

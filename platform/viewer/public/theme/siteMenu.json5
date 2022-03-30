@@ -1,0 +1,51 @@
+{
+  contextMenus: {
+    imageAreaMenus: {
+      // Show the site selection sub-menu
+      siteSelectionMenu: {
+        id: "siteSelectionMenu",
+        items: [
+          {
+            label: 'Head', actionType: 'SiteSelection', color: "red",
+            findingSite: { text: 'Head' },
+          },
+          { label: 'Neck', actionType: 'SiteSelection', color: "green",
+            findingSite: { text: 'Neck' },
+          },
+          { label: 'Chest', actionType: 'SiteSelection', color: "blue",
+            findingSite: { text: 'Chest' },
+          },
+          { label: 'Heart', actionType: 'SiteSelection', color: "cyan" ,
+            findingSite: { text: 'Heart' },
+          },
+          { label: 'Legs', actionType: 'SiteSelection', color: "magenta",
+            findingSite: { text: 'Legs' },
+          },
+        ],
+      },
+      forExistingMeasurement: {
+        id: 'forExistingMeasurement',
+        items: [
+          {
+            label: 'Site',
+            actionType: 'SubMenu',
+            subMenu: "siteSelectionMenu",
+          },
+          // {
+          //   label: 'Finding',
+          //   actionType: 'SubMenu',
+          //   subMenu: "findingTypeMenu",
+          // },
+          {
+            label: 'Delete measurement',
+            actionType: 'Delete',
+          },
+          {
+            label: 'Add Label',
+            actionType: 'SetLabel',
+          },
+        ],
+      },
+    }
+  },
+}

@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@percy/cypress": "^2.3.0",
-    "cypress": "^6.4.0",
+    "cypress": "^9.5.3",
     "cypress-file-upload": "^3.5.3",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.15",

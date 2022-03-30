@@ -329,10 +329,13 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
     types
   );
 
+  const { findingSite } = measurement;
+
   return {
     id: measurement.id,
-    label: measurement.label || '(empty)',
+    label: measurement.label || findingSite?.text || '(empty)',
     measurementType: measurement.type,
+    color: measurement.color,
     displayText: displayText || [],
     isActive: false, // activeMeasurementItem === i + 1,
   };
@@ -353,7 +356,7 @@ function _getDisplayText(
   instanceNumber,
   types
 ) {
-  const { type, points } = measurement;
+  const { type, findingText, label } = measurement;
   const hasPixelSpacing =
     pixelSpacing !== undefined &&
     Array.isArray(pixelSpacing) &&
@@ -363,12 +366,14 @@ function _getDisplayText(
     : [1, 1];
   const unit = hasPixelSpacing ? 'mm' : 'px';
 
+  const prefix = findingText && label && [findingText] || [];
+
   switch (type) {
     case types.POLYLINE: {
       const { length } = measurement;
       const roundedLength = _round(length, 2);
 
-      return [
+      return [...prefix,
         `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
       ];
     }
@@ -377,7 +382,7 @@ function _getDisplayText(
       const roundedShortestDiameter = _round(shortestDiameter, 1);
       const roundedLongestDiameter = _round(longestDiameter, 1);
 
-      return [
+      return [...prefix,
         `L: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
         `W: ${roundedShortestDiameter} ${unit}`,
       ];
@@ -386,13 +391,13 @@ function _getDisplayText(
       const { area } = measurement;
       const roundedArea = _round(area, 2);
 
-      return [
+      return [...prefix,
         `${roundedArea} ${unit}<sup>2</sup> (S:${seriesNumber}, I:${instanceNumber})`,
       ];
     }
     case types.POINT: {
       const { text } = measurement; // Will display in "short description"
-      return [`(S:${seriesNumber}, I:${instanceNumber})`];
+      return [...prefix, `(S:${seriesNumber}, I:${instanceNumber})`];
     }
   }
 }

@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.16.3",
-    "config-point": "0.4.3",
+    "config-point": "0.4.4",
     "core-js": "^3.2.1",
     "cornerstone-core": "2.6.0",
     "wslink": "^0.1.8"
