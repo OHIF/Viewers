@@ -7,11 +7,11 @@ window.config = {
     dicomWeb: [
       {
         wadoUriRoot:
-          'https://healthcare.googleapis.com/v1/projects/nih-nci-ccr-dicom-sbox-34ad/locations/us/datasets/mib-air-dicom-dataset/dicomStores/mib-air-dicom-data-store/dicomWeb',
+          'https://healthcare.googleapis.com/v1/projects/nih-nci-ccr-dicom-sbox-34ad/locations/us/datasets/mib-air-dicom-dev-dataset/dicomStores/mib-air-dicom-dev-data-store/dicomWeb',
         qidoRoot:
-          'https://healthcare.googleapis.com/v1/projects/nih-nci-ccr-dicom-sbox-34ad/locations/us/datasets/mib-air-dicom-dataset/dicomStores/mib-air-dicom-data-store/dicomWeb',
+          'https://healthcare.googleapis.com/v1/projects/nih-nci-ccr-dicom-sbox-34ad/locations/us/datasets/mib-air-dicom-dev-dataset/dicomStores/mib-air-dicom-dev-data-store/dicomWeb',
         wadoRoot:
-          'https://healthcare.googleapis.com/v1/projects/nih-nci-ccr-dicom-sbox-34ad/locations/us/datasets/mib-air-dicom-dataset/dicomStores/mib-air-dicom-data-store/dicomWeb',
+          'https://healthcare.googleapis.com/v1/projects/nih-nci-ccr-dicom-sbox-34ad/locations/us/datasets/mib-air-dicom-dev-dataset/dicomStores/mib-air-dicom-dev-data-store/dicomWeb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
