@@ -21,7 +21,7 @@
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
-FROM node:14.3.0-slim as json-copier
+FROM node:16-slim as json-copier
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
@@ -38,7 +38,7 @@ RUN find modes \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm
 RUN find platform \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
 
 # Copy Files
-FROM node:14.3.0-slim as builder
+FROM node:16-slim as builder
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
