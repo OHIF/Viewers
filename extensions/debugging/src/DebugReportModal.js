@@ -2,6 +2,8 @@ import React from 'react';
 import { detect } from 'detect-browser';
 import './DebugReportModal.css';
 import { ToolbarButton } from '@ohif/ui';
+import { utils } from '@ohif/core';
+const { studyMetadataManager } = utils;
 
 const DubugReportModal = ({
   viewports,
@@ -70,7 +72,7 @@ const DubugReportModal = ({
     body += '== Viewport Layout ==\n';
     body += `Rows\t${numRows}\n`;
     body += `Columns\t${numColumns}\n\n`;
-    body += '== Viewports ==\n';
+    body += '== SeriesInstanceUIDs ==\n';
 
     Object.keys(viewportSpecificData).forEach(viewportIndex => {
       const vsd = viewportSpecificData[viewportIndex];
@@ -81,6 +83,40 @@ const DubugReportModal = ({
       );
 
       body += `[${row},${column}]\t${vsd.SeriesInstanceUID}\n`;
+    });
+
+    body += '== ReferencedSEGSeriesInstanceUIDs ==\n';
+
+    Object.keys(viewportSpecificData).forEach(viewportIndex => {
+      const displaySet = viewportSpecificData[viewportIndex];
+      const [
+        referencedDisplaySetsRef,
+        referencedDisplaySetsCount,
+      ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'SEG');
+
+      const [row, column] = _viewportIndexToViewportPosition(
+        viewportIndex,
+        numColumns
+      );
+
+      body += `[${row},${column}]\t${referencedDisplaySetsRef}\n`;
+    });
+
+    body += '== ReferencedRTSTRUCTSeriesInstanceUIDs ==\n';
+
+    Object.keys(viewportSpecificData).forEach(viewportIndex => {
+      const displaySet = viewportSpecificData[viewportIndex];
+      const [
+        referencedDisplaySetsRef,
+        referencedDisplaySetsCount,
+      ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'RTSTRUCT');
+
+      const [row, column] = _viewportIndexToViewportPosition(
+        viewportIndex,
+        numColumns
+      );
+
+      body += `[${row},${column}]\t${referencedDisplaySetsRef}\n`;
     });
 
     return body;
@@ -171,7 +207,7 @@ const getCurrentStudyUrl = () => {
       </tr>
       <tr>
         <td>URL</td>
-        <td>{window.location.href}</td>
+        <td className="debug-overflowText">{window.location.href}</td>
       </tr>
     </React.Fragment>
   );
@@ -222,6 +258,14 @@ const getLayout = viewports => {
         <th>SeriesInstanceUIDs</th>
       </tr>
       {getSeriesInstanceUIDsPerRow(viewports)}
+      <tr>
+        <th>ReferencedSEGSeriesInstanceUIDs</th>
+      </tr>
+      {getReferencedSEGSeriesInstanceUIDsPerRow(viewports)}
+      <tr>
+        <th>ReferencedRTSTRUCTSeriesInstanceUIDs</th>
+      </tr>
+      {getReferencedRTSTRUCTSeriesInstanceUIDsPerRow(viewports)}
     </React.Fragment>
   );
 };
@@ -254,6 +298,129 @@ const getBrowserInfo = () => {
       </tr>
     </React.Fragment>
   );
+};
+
+/**
+ * Returns DisplaySets that reference the target series, sorted by dateTime
+ *
+ * @param {string} StudyInstanceUID
+ * @param {string} SeriesInstanceUID
+ * @returns Array
+ */
+const _getReferencedDisplaysets = (
+  StudyInstanceUID,
+  SeriesInstanceUID,
+  Modality
+) => {
+  /* Referenced DisplaySets */
+  const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+  const referencedDisplaysets = studyMetadata.getDerivedDatasets({
+    referencedSeriesInstanceUID: SeriesInstanceUID,
+    Modality,
+  });
+
+  /* Sort */
+  referencedDisplaysets.sort((a, b) => {
+    const aNumber = Number(`${a.SeriesDate}${a.SeriesTime}`);
+    const bNumber = Number(`${b.SeriesDate}${b.SeriesTime}`);
+    return bNumber - aNumber;
+  });
+
+  return referencedDisplaysets;
+};
+
+const _getReferencedSeriesInstanceUIDsString = (displaySet, Modality) => {
+  const referencedDisplaySets = _getReferencedDisplaysets(
+    displaySet.StudyInstanceUID,
+    displaySet.SeriesInstanceUID,
+    Modality
+  );
+
+  let referencedDisplaySetsRef = 'None';
+  const referencedDisplaySetsCount = referencedDisplaySets.length;
+  if (referencedDisplaySetsCount !== 0) {
+    referencedDisplaySetsRef = '';
+    for (let i = 0; i < referencedDisplaySetsCount - 1; i++) {
+      referencedDisplaySetsRef +=
+        referencedDisplaySets[i].SeriesInstanceUID + ', ';
+    }
+    referencedDisplaySetsRef +=
+      referencedDisplaySets[referencedDisplaySetsCount - 1].SeriesInstanceUID;
+  }
+
+  return [referencedDisplaySetsRef, referencedDisplaySetsCount];
+};
+
+const getReferencedSEGSeriesInstanceUIDsPerRow = viewports => {
+  const { viewportSpecificData, numColumns } = viewports;
+
+  // NOTE viewportSpecificData is actually an object with numerical keys.
+  return Object.keys(viewportSpecificData).map(viewportIndex => {
+    const displaySet = viewportSpecificData[viewportIndex];
+    const [
+      referencedDisplaySetsRef,
+      referencedDisplaySetsCount,
+    ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'SEG');
+
+    const [row, column] = _viewportIndexToViewportPosition(
+      viewportIndex,
+      numColumns
+    );
+
+    if (referencedDisplaySetsCount > 1) {
+      return (
+        <tr>
+          <td>{`[${row},${column}]`}</td>
+          <td className="debug-overflowText-border">
+            {referencedDisplaySetsRef}
+          </td>
+        </tr>
+      );
+    } else {
+      return (
+        <tr>
+          <td>{`[${row},${column}]`}</td>
+          <td className="debug-overflowText">{referencedDisplaySetsRef}</td>
+        </tr>
+      );
+    }
+  });
+};
+
+const getReferencedRTSTRUCTSeriesInstanceUIDsPerRow = viewports => {
+  const { viewportSpecificData, numColumns } = viewports;
+
+  // NOTE viewportSpecificData is actually an object with numerical keys.
+  return Object.keys(viewportSpecificData).map(viewportIndex => {
+    const displaySet = viewportSpecificData[viewportIndex];
+    const [
+      referencedDisplaySetsRef,
+      referencedDisplaySetsCount,
+    ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'RTSTRUCT');
+
+    const [row, column] = _viewportIndexToViewportPosition(
+      viewportIndex,
+      numColumns
+    );
+
+    if (referencedDisplaySetsCount > 1) {
+      return (
+        <tr>
+          <td>{`[${row},${column}]`}</td>
+          <td className="debug-overflowText-border">
+            {referencedDisplaySetsRef}
+          </td>
+        </tr>
+      );
+    } else {
+      return (
+        <tr>
+          <td>{`[${row},${column}]`}</td>
+          <td className="debug-overflowText">{referencedDisplaySetsRef}</td>
+        </tr>
+      );
+    }
+  });
 };
 
 const getSeriesInstanceUIDsPerRow = viewports => {
