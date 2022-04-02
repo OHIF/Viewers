@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "2.12.7",
+  "version": "2.12.9",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "cornerstone-math": "^0.1.9",
     "cornerstone-tools": "^6.0.6",
     "cornerstone-wado-image-loader": "^4.1.0",
-    "dcmjs": "0.19.4",
+    "dcmjs": "0.19.8",
     "dicom-parser": "^1.8.11",
     "hammerjs": "^2.0.8",
     "prop-types": "^15.6.2",
