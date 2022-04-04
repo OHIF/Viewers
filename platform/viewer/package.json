@@ -52,6 +52,8 @@
     "@ohif/core": "^2.5.1",
     "@ohif/extension-cornerstone": "^2.4.0",
     "@ohif/extension-measurement-tracking": "^0.0.1",
+    "@ohif/extension-dicom-sr": "0.0.1",
+    "@ohif/extension-default": "1.0.1",
     "@ohif/i18n": "^0.52.8",
     "@ohif/mode-longitudinal": "^0.0.1",
     "@ohif/ui": "^2.0.0",

@@ -7,36 +7,24 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 /**
- * EXTENSIONS
+ * EXTENSIONS AND MODES
  * =================
+ * pluginImports.js is dynamically generated from extension and mode
+ * configuration at build time.
  *
- * Importing and modifying the extensions our app uses HERE allows us to leverage
- * tree shaking and a few other niceties. However, by including them here they become
- * "baked in" to the published application.
- *
- * Depending on your use case/needs, you may want to consider not adding any extensions
- * by default HERE, and instead provide them via the extensions configuration key or
- * by using the exported `App` component, and passing in your extensions as props using
- * the defaultExtensions property.
+ * pluginImports.js imports all of the modes and extensions and adds them
+ * to the window for processing.
  */
-import OHIFDefaultExtension from '@ohif/extension-default';
-import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-import OHIFMeasurementTrackingExtension from '@ohif/extension-measurement-tracking';
-import OHIFDICOMSRExtension from '@ohif/extension-dicom-sr';
-import OHIFDICOMVIDEOExtension from '@ohif/extension-dicom-video';
-import OHIFDICOMPDFExtension from '@ohif/extension-dicom-pdf';
+import './pluginImports.js';
 
-/** Combine our appConfiguration and "baked-in" extensions */
+/**
+ * Combine our appConfiguration with installed extensions and modes.
+ * In the future appConfiguration may contain modes added at runtime.
+ *  */
 const appProps = {
   config: window ? window.config : {},
-  defaultExtensions: [
-    OHIFDefaultExtension,
-    OHIFCornerstoneExtension,
-    OHIFMeasurementTrackingExtension,
-    OHIFDICOMSRExtension,
-    OHIFDICOMVIDEOExtension,
-    OHIFDICOMPDFExtension,
-  ],
+  defaultExtensions: window.extensions,
+  defaultModes: window.modes,
 };
 
 /** Create App */

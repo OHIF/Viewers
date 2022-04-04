@@ -22,6 +22,9 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
+const writePluginImportFile = require('./writePluginImportsFile.js');
+
+writePluginImportFile(SRC_DIR);
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {

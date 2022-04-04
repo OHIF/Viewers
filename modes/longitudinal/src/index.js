@@ -21,18 +21,20 @@ const dicomsr = {
 const dicomvideo = {
   sopClassHandler: 'org.ohif.dicom-video.sopClassHandlerModule.dicom-video',
   viewport: 'org.ohif.dicom-video.viewportModule.dicom-video',
-}
+};
 
 const dicompdf = {
   sopClassHandler: 'org.ohif.dicom-pdf.sopClassHandlerModule.dicom-pdf',
   viewport: 'org.ohif.dicom-pdf.viewportModule.dicom-pdf',
-}
+};
 
-export default function mode({ modeConfiguration }) {
+const id = 'viewer';
+
+function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
     // We should not be.
-    id: 'viewer',
+    id,
     displayName: 'Basic Viewer',
     /**
      * Lifecycle hooks
@@ -73,7 +75,7 @@ export default function mode({ modeConfiguration }) {
       const modalities_list = modalities.split('\\');
 
       // Slide Microscopy modality not supported by basic mode yet
-      return !modalities_list.includes('SM')
+      return !modalities_list.includes('SM');
     },
     routes: [
       {
@@ -128,9 +130,15 @@ export default function mode({ modeConfiguration }) {
       dicomvideo.sopClassHandler,
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
-      dicomsr.sopClassHandler,],
+      dicomsr.sopClassHandler,
+    ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 
-window.longitudinalMode = mode({});
+const mode = {
+  id,
+  modeFactory,
+};
+
+export default mode;
