@@ -1,6 +1,7 @@
 import React from 'react';
 import init from './init.js';
 import commandsModule from './commandsModule.js';
+import { id, version } from './id.js';
 // import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
 const Component = React.lazy(() => {
@@ -14,10 +15,6 @@ const OHIFCornerstoneViewport = props => {
     </React.Suspense>
   );
 };
-
-// TODO -> Inject these using webpack from package.json
-const id = '@ohif/extension-cornerstone';
-const version = '3.0.0';
 
 /**
  *

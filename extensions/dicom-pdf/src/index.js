@@ -1,6 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import { id } from './id.js';
+import { id, version } from './id.js';
 
 const Component = React.lazy(() => {
   return import(
@@ -16,8 +16,6 @@ const OHIFCornerstonePdfViewport = props => {
   );
 };
 
-// TODO -> Inject these from package.json at build time.
-const version = '3.0.1';
 /**
  *
  */

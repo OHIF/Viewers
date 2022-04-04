@@ -8,6 +8,7 @@ import {
   createLicense,
   createReadme,
   initGit,
+  createIdAndVersion,
 } from './utils/index.js';
 
 const createMode = async options => {
@@ -27,6 +28,10 @@ const createMode = async options => {
         title: 'Copying template files',
         task: () =>
           createDirectoryContents(options.templateDir, options.targetDir),
+      },
+      {
+        title: 'Changing extension id to the provided name',
+        task: () => createIdAndVersion(options),
       },
       {
         title: 'Editing Package.json with provided information',

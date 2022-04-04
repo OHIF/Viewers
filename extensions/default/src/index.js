@@ -5,10 +5,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getToolbarModule from './getToolbarModule.js';
 import commandsModule from './commandsModule';
-import id from './id.js';
-
-// TODO -> Inject these from package.json at build time.
-const version = '1.0.1';
+import { id, version } from './id.js';
 
 export default {
   /**
@@ -16,7 +13,6 @@ export default {
    */
   id,
   version,
-
   getDataSourcesModule,
   getHangingProtocolModule,
   getLayoutTemplateModule,

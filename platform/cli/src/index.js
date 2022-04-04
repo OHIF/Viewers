@@ -37,7 +37,8 @@ function getOptionsFromAnswers(answers) {
   };
 }
 
-program.version('0.0.1').description('OHIF CLI');
+// Todo: inject with webpack
+program.version('2.0.2').description('OHIF CLI');
 
 program.command('debug').action(() => {
   process.chdir(viewerDirectory);

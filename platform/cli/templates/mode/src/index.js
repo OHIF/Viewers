@@ -1,8 +1,6 @@
-/**
- * Mode Template
- */
+import { id, version } from './id';
 
-const id = 'templateMode';
+const extensionDependencies = { '@ohif/extension-default': '^1.0.1' };
 
 function modeFactory({ modeConfiguration }) {
   return {
@@ -11,8 +9,10 @@ function modeFactory({ modeConfiguration }) {
      * is used to identify the mode in the viewer's state.
      */
     id,
+    version,
+    routeName: 'template',
     /**
-     * Mode name, which is displayed in the viewer's UI in the worklist, for the
+     * Mode name, which is displayed in the viewer's UI in the workList, for the
      * user to select the mode.
      */
     displayName: 'Template Mode',
@@ -68,8 +68,8 @@ function modeFactory({ modeConfiguration }) {
         },
       },
     ],
-    /** List of extensions that are used by the modde */
-    extensions: { '@ohif/extension-default': '^1.0.1' },
+    /** List of extensions that are used by the mode */
+    extensions: extensionDependencies,
     /** HangingProtocols used by the mode */
     hangingProtocols: [''],
     /** SopClassHandlers used by the mode */
@@ -82,6 +82,7 @@ function modeFactory({ modeConfiguration }) {
 const mode = {
   id,
   modeFactory,
+  extensionDependencies,
 };
 
 export default mode;

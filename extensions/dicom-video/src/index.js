@@ -1,6 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import { id } from './id';
+import { id, version } from './id';
 
 const Component = React.lazy(() => {
   return import(
@@ -16,7 +16,6 @@ const OHIFCornerstoneVideoViewport = props => {
   );
 };
 
-const version = '3.0.1';
 /**
  *
  */
@@ -26,6 +25,15 @@ export default {
    */
   id,
   version,
+
+  dependencies: [
+    // TODO -> This isn't used anywhere yet, but we do have a hard dependency, and need to check for these in the future.
+    // OHIF-229
+    {
+      id: 'org.ohif.cornerstone',
+      version: '3.0.0',
+    },
+  ],
 
   preRegistration({ servicesManager, configuration = {} }) {
     // No-op for now

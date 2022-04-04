@@ -1,7 +1,8 @@
 const id = '@ohif/extension-dicom-sr';
 
-export default id;
+const version = '0.0.1';
 
 const SOPClassHandlerName = 'dicom-sr';
 const SOPClassHandlerId = `${id}.sopClassHandlerModule.${SOPClassHandlerName}`;
-export { SOPClassHandlerName, SOPClassHandlerId };
+
+export { SOPClassHandlerName, SOPClassHandlerId, version, id };
