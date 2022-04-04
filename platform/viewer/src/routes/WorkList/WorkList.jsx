@@ -194,10 +194,7 @@ function WorkList({
     const fetchSeries = async studyInstanceUid => {
       try {
         const series = await dataSource.query.series.search(studyInstanceUid);
-        seriesInStudiesMap.set(
-          studyInstanceUid,
-          sortBySeriesDate(series)
-        );
+        seriesInStudiesMap.set(studyInstanceUid, sortBySeriesDate(series));
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service
@@ -336,7 +333,8 @@ function WorkList({
           {appConfig.modes.map((mode, i) => {
             const isFirst = i === 0;
 
-            const isValidMode = mode.isValidMode({ modalities })
+            const isValidMode = mode.isValidMode({ modalities });
+
             // TODO: Modes need a default/target route? We mostly support a single one for now.
             // We should also be using the route path, but currently are not
             // mode.id
@@ -351,7 +349,7 @@ function WorkList({
               >
                 <Button
                   rounded="full"
-                  variant={isValidMode ? "contained" : "disabled"}
+                  variant={isValidMode ? 'contained' : 'disabled'}
                   disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
@@ -380,7 +378,12 @@ function WorkList({
     {
       title: t('Header:About'),
       icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer', contentProps: { versionNumber, buildNumber } }),
+      onClick: () =>
+        show({
+          content: AboutModal,
+          title: 'About OHIF Viewer',
+          contentProps: { versionNumber, buildNumber },
+        }),
     },
     {
       title: t('Header:Preferences'),
@@ -398,13 +401,13 @@ function WorkList({
             currentLanguage: currentLanguage(),
             availableLanguages,
             defaultLanguage,
-            onSubmit: (state) => {
+            onSubmit: state => {
               i18n.changeLanguage(state.language.value);
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hide();
             },
             onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys
+            hotkeysModule: hotkeys,
           },
         }),
     },
@@ -416,7 +419,12 @@ function WorkList({
         'h-screen': !hasStudies,
       })}
     >
-      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} WhiteLabeling={appConfig.whiteLabeling} />
+      <Header
+        isSticky
+        menuOptions={menuOptions}
+        isReturnEnabled={false}
+        WhiteLabeling={appConfig.whiteLabeling}
+      />
       <StudyListFilter
         numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
         filtersMeta={filtersMeta}

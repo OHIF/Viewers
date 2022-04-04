@@ -1,30 +1,55 @@
-import installNPMPackage from './utils/installNPMPackage.js';
-import readPluginConfigFile from './utils/readPluginConfigFile.js';
-import getPackageVersion from './utils/getPackageVersion.js';
-import { addExtensionToConfig } from './utils/manipulatePluginConfigFile.js';
-import writePluginConfig from './utils/writePluginConfig.js';
+import Listr from 'listr';
+import chalk from 'chalk';
+
+import {
+  installNPMPackage,
+  getYarnInfo,
+  validateExtension,
+  getVersionedPackageName,
+  addExtensionToConfig,
+} from './utils/index.js';
 
 export default async function addExtension(packageName, version) {
-  console.log('Adding ohif extension...');
-  console.log(
-    'Note: There is currently no validation that this npm package is an ohif-extension.'
+  console.log(chalk.green.bold(`Adding ohif-extension ${packageName}...`));
+
+  const versionedPackageName = getVersionedPackageName(packageName, version);
+
+  const tasks = new Listr(
+    [
+      {
+        title: `Searching for extension: ${versionedPackageName}`,
+        task: async () => await validateExtension(packageName, version),
+      },
+      {
+        title: `Installing npm package: ${versionedPackageName}`,
+        task: async () => await installNPMPackage(packageName, version),
+      },
+      {
+        title: 'Adding ohif-extension to the configuration file',
+        task: async ctx => {
+          const yarnInfo = await getYarnInfo(packageName);
+
+          addExtensionToConfig(packageName, yarnInfo);
+
+          ctx.yarnInfo = yarnInfo;
+        },
+      },
+    ],
+    {
+      exitOnError: true,
+    }
   );
-  await installNPMPackage(packageName, version);
 
-  // Find the version actually installed using yarn info, as version is optional
-  version = await getPackageVersion(packageName);
-
-  const pluginConfig = readPluginConfigFile();
-
-  if (!pluginConfig) {
-    pluginConfig = {
-      extensions: [],
-      modes: [],
-    };
-  }
-
-  addExtensionToConfig(pluginConfig, { packageName, version });
-  writePluginConfig(pluginConfig);
-
-  console.log('Extension Added');
+  await tasks
+    .run()
+    .then(ctx => {
+      console.log(
+        `${chalk.green.bold(
+          `Added ohif-extension ${packageName}@${ctx.yarnInfo.version}`
+        )} `
+      );
+    })
+    .catch(error => {
+      console.log(error.message);
+    });
 }

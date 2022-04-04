@@ -30,6 +30,15 @@ const dicompdf = {
 
 const id = 'viewer';
 
+const extensionDependencies = [
+  'org.ohif.default',
+  'org.ohif.cornerstone',
+  'org.ohif.measurement-tracking',
+  'org.ohif.dicom-sr',
+  'org.ohif.dicom-video',
+  'org.ohif.dicom-pdf',
+];
+
 function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
@@ -113,14 +122,7 @@ function modeFactory({ modeConfiguration }) {
         },
       },
     ],
-    extensions: [
-      'org.ohif.default',
-      'org.ohif.cornerstone',
-      'org.ohif.measurement-tracking',
-      'org.ohif.dicom-sr',
-      'org.ohif.dicom-video',
-      'org.ohif.dicom-pdf',
-    ],
+    extensions: extensionDependencies,
     hangingProtocols: [ohif.hangingProtocols],
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
@@ -139,6 +141,7 @@ function modeFactory({ modeConfiguration }) {
 const mode = {
   id,
   modeFactory,
+  extensionDependencies,
 };
 
 export default mode;

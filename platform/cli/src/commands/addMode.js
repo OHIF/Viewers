@@ -1,43 +1,47 @@
 import Listr from 'listr';
 import chalk from 'chalk';
 
-import installNPMPackage from './utils/installNPMPackage.js';
-import getPackageVersion from './utils/getPackageVersion.js';
-import readPluginConfigFile from './utils/readPluginConfigFile.js';
-import { addModeToConfig } from './utils/manipulatePluginConfigFile.js';
-import writePluginConfig from './utils/writePluginConfig.js';
+import {
+  installNPMPackage,
+  getYarnInfo,
+  getVersionedPackageName,
+  validateMode,
+  addModeToConfig,
+  findRequiredOhifExtensionsForMode,
+} from './utils/index.js';
+import addExtensions from './addExtensions.js';
 
 export default async function addMode(packageName, version) {
-  console.log('Adding ohif mode...');
-  console.log(
-    '%s There is currently no validation that this npm package is an ohif-extension.',
-    chalk.yellow.bold('Warning')
-  );
+  console.log(chalk.green.bold(`Adding ohif-mode ${packageName}...`));
+
+  const versionedPackageName = getVersionedPackageName(packageName, version);
 
   const tasks = new Listr(
     [
       {
-        title: `Installing npm package: ${packageName}`,
+        title: `Searching for mode: ${versionedPackageName}`,
+        task: async () => await validateMode(packageName, version),
+      },
+      {
+        title: `Installing npm package: ${versionedPackageName}`,
         task: async () => await installNPMPackage(packageName, version),
       },
       {
-        title: 'Adding Mode to the Config file',
-        task: async () => {
-          const installedVersion = await getPackageVersion(packageName);
-          const pluginConfig = readPluginConfigFile();
+        title: 'Adding ohif-mode to the configuration file',
+        task: async ctx => {
+          const yarnInfo = await getYarnInfo(packageName);
 
-          if (!pluginConfig) {
-            pluginConfig = {
-              extensions: [],
-              modes: [],
-            };
-          }
+          addModeToConfig(packageName, yarnInfo);
 
-          addModeToConfig(pluginConfig, {
-            packageName,
-            version: installedVersion,
-          });
-          writePluginConfig(pluginConfig);
+          ctx.yarnInfo = yarnInfo;
+        },
+      },
+      {
+        title: 'Detecting required ohif-extensions...',
+        task: async ctx => {
+          ctx.ohifExtensions = await findRequiredOhifExtensionsForMode(
+            ctx.yarnInfo
+          );
         },
       },
     ],
@@ -46,8 +50,23 @@ export default async function addMode(packageName, version) {
     }
   );
 
-  await tasks.run();
+  await tasks
+    .run()
+    .then(async ctx => {
+      console.log(
+        `${chalk.green.bold(
+          `Added ohif-mode ${packageName}@${ctx.yarnInfo.version}`
+        )} `
+      );
 
-  // TODO parse mode and add extensions
-  console.log('%s Mode Added', chalk.green.bold('DONE'));
+      const ohifExtensions = ctx.ohifExtensions;
+
+      if (ohifExtensions.length) {
+        console.log(`${chalk.green.bold(`Installing dependent extensions`)} `);
+        await addExtensions(ohifExtensions);
+      }
+    })
+    .catch(error => {
+      console.log(error.message);
+    });
 }

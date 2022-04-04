@@ -13,9 +13,7 @@
   },
   "keywords": [
     "cli",
-    "ohif",
-    "ohif-mode",
-    "ohif-extension"
+    "ohif"
   ],
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -29,7 +27,9 @@
     "listr": "^0.14.3",
     "mustache": "^4.2.0",
     "ncp": "^2.0.0",
+    "node-fetch": "^3.1.1",
     "pkg-install": "^1.0.0",
+    "registry-url": "^6.0.0",
     "spdx-license-list": "^6.4.0",
     "util": "^0.12.4",
     "yarn-programmatic": "^0.1.2"

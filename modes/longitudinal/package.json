@@ -19,6 +19,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "ohif-mode"
+  ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
@@ -29,7 +32,11 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "^2.12.3"
+    "@ohif/core": "^2.12.3",
+    "@ohif/extension-default": "1.0.1",
+    "@ohif/extension-cornerstone": "3.0.0",
+    "@ohif/extension-dicom-sr": "0.0.1",
+    "@ohif/extension-measurement-tracking": "0.0.1"
   },
   "dependencies": {
     "@babel/runtime": "7.16.3"

@@ -19,6 +19,9 @@
     "dist",
     "README.md"
   ],
+  "keywords": [
+    "ohif-extension"
+  ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:dicom-pdf": "yarn run dev",
