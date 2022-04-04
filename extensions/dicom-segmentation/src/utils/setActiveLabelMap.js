@@ -47,13 +47,22 @@ export default async function setActiveLabelmap(
     return labelmapIndex;
   }
 
-  if (!displaySet.isLoaded) {
+  if (!displaySet.isLoaded && !displaySet.loadError) {
     try {
       await displaySet.load(referencedDisplaySet, studies);
     } catch (error) {
       displaySet.isLoaded = false;
       displaySet.loadError = true;
+      displaySet.segLoadErrorMessagge = error.message;
       onDisplaySetLoadFailure(error);
+
+      /*
+       * TODO: Improve the way we notify parts of the app
+       * that depends on derived display sets to be loaded.
+       * (Implement pubsub for better tracking of derived display sets)
+       */
+      const event = new CustomEvent('segmentationLoadingError');
+      document.dispatchEvent(event);
 
       return -1;
     }
