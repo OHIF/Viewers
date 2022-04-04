@@ -23,8 +23,8 @@ import {
 
 const currentDirectory = process.cwd();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const viewerDirectory = path.resolve(__dirname, '../../viewer');
-process.chdir(viewerDirectory);
+// const viewerDirectory = path.resolve(__dirname, '../../viewer');
+// process.chdir(viewerDirectory);
 
 function getOptionsFromAnswers(answers) {
   const targetDir = path.join(currentDirectory, answers.name);
