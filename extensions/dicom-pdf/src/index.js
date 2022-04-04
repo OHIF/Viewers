@@ -1,6 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import id from './id.js';
+import { id } from './id.js';
 
 const Component = React.lazy(() => {
   return import(
@@ -16,6 +16,8 @@ const OHIFCornerstonePdfViewport = props => {
   );
 };
 
+// TODO -> Inject these from package.json at build time.
+const version = '3.0.1';
 /**
  *
  */
@@ -24,18 +26,7 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
-  dependencies: [
-    // TODO -> This isn't used anywhere yet, but we do have a hard dependency, and need to check for these in the future.
-    // OHIF-229
-    {
-      id: 'org.ohif.cornerstone',
-      version: '3.0.0',
-    },
-    {
-      id: 'org.ohif.measurement-tracking',
-      version: '^0.0.1',
-    },
-  ],
+  version,
 
   preRegistration({ servicesManager, configuration = {} }) {
     // No-op for now
@@ -58,7 +49,9 @@ export default {
       );
     };
 
-    return [{ name: 'dicom-pdf', component: ExtendedOHIFCornerstonePdfViewport }];
+    return [
+      { name: 'dicom-pdf', component: ExtendedOHIFCornerstonePdfViewport },
+    ];
   },
   getCommandsModule({ servicesManager }) {
     return {

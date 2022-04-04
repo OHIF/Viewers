@@ -20,6 +20,17 @@ const dicomsr = {
   viewport: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
 };
 
+const dicomvideo = {
+  sopClassHandler:
+    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
+};
+
+const dicompdf = {
+  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
+  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
+};
+
 // TODO -> We should inject these with webpack from the package.json
 // for id -> process.env.npm_package_name
 // for version -> process.env.npm_package_version
@@ -32,6 +43,8 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^0.0.1',
   '@ohif/extension-dicom-sr': '^0.0.1',
+  '@ohif/extension-dicom-pdf': '^3.0.1',
+  '@ohif/extension-dicom-video': '^3.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -123,7 +136,7 @@ function modeFactory({ modeConfiguration }) {
     hangingProtocols: [ohif.hangingProtocols],
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
-    // general handler needs to come last.  For this case, the dicomvideo msut
+    // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [
       dicomvideo.sopClassHandler,

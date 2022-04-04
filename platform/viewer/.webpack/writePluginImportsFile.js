@@ -31,7 +31,7 @@ function constructLines(input, categoryName) {
   return lines;
 }
 
-function getFormatedImportBlock(importLines) {
+function getFormattedImportBlock(importLines) {
   let content = '';
   // Imports
   importLines.forEach(importLine => {
@@ -41,7 +41,7 @@ function getFormatedImportBlock(importLines) {
   return content;
 }
 
-function getFormatedWindowBlock(addToWindowLines) {
+function getFormattedWindowBlock(addToWindowLines) {
   let content = `window.extensions = [];\nwindow.modes = [];\n\n`;
 
   addToWindowLines.forEach(addToWindowLine => {
@@ -57,11 +57,11 @@ function writePluginImportsFile(SRC_DIR) {
   const extensionLines = constructLines(pluginConfig.extensions, 'extensions');
   const modeLines = constructLines(pluginConfig.modes, 'modes');
 
-  pluginImportsJsContent += getFormatedImportBlock([
+  pluginImportsJsContent += getFormattedImportBlock([
     ...extensionLines.importLines,
     ...modeLines.importLines,
   ]);
-  pluginImportsJsContent += getFormatedWindowBlock([
+  pluginImportsJsContent += getFormattedWindowBlock([
     ...extensionLines.addToWindowLines,
     ...modeLines.addToWindowLines,
   ]);

@@ -36,6 +36,8 @@
     "@ohif/extension-default": "1.0.1",
     "@ohif/extension-cornerstone": "3.0.0",
     "@ohif/extension-dicom-sr": "0.0.1",
+    "@ohif/extension-dicom-pdf": "3.0.1",
+    "@ohif/extension-dicom-video": "3.0.1",
     "@ohif/extension-measurement-tracking": "0.0.1"
   },
   "dependencies": {

@@ -1,8 +1,4 @@
-const Name = 'dicom-video';
-const id = `org.ohif.${Name}`;
+const id = `@ohif/extension-dicom-video`;
+const SOPClassHandlerId = `${id}.sopClassHandlerModule.dicom-video`;
 
-export default id;
-
-const SOPClassHandlerId = `${id}.sopClassHandlerModule.${Name}`;
-
-export { Name, SOPClassHandlerId, };
+export { SOPClassHandlerId, id };
