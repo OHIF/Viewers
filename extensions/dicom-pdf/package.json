@@ -1,7 +1,7 @@
 {
-  "name": "@ohif/extension-dicom-video",
+  "name": "@ohif/extension-dicom-pdf",
   "version": "3.0.1",
-  "description": "OHIF extension for video display",
+  "description": "OHIF extension for PDF display",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",

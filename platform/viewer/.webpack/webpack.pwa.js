@@ -24,11 +24,15 @@ const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
 
 const setHeaders = (res, path) => {
-  res.setHeader('Content-Type', 'text/plain')
   if (path.indexOf('.gz') !== -1) {
     res.setHeader('Content-Encoding', 'gzip')
   } else if (path.indexOf('.br') !== -1) {
     res.setHeader('Content-Encoding', 'br')
+  }
+  if (path.indexOf('.pdf') !== -1) {
+    res.setHeader('Content-Type', 'application/pdf');
+  } else {
+    res.setHeader('Content-Type', 'application/json')
   }
 }
 

@@ -23,6 +23,7 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
+        singlepart: "bulkdata,video,pdf",
       },
     },
     {
