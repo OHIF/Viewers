@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.16.3",
-    "@ohif/core": "^2.5.1",
+    "@ohif/core": "^2.9.7",
     "@ohif/extension-cornerstone": "^2.4.0",
     "@ohif/extension-default": "1.0.1",
     "@ohif/extension-dicom-sr": "0.0.1",

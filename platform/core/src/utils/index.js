@@ -20,6 +20,8 @@ import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
 import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
+import { isImage } from './isImage';
+import isDisplaySetReconstructable from './isDisplaySetReconstructable';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for dervived displaySets using the displaySetManager.
@@ -47,6 +49,8 @@ const utils = {
   hierarchicalListUtils,
   progressTrackingUtils,
   isLowPriorityModality,
+  isImage,
+  isDisplaySetReconstructable,
 };
 
 export {
@@ -70,6 +74,8 @@ export {
   hierarchicalListUtils,
   progressTrackingUtils,
   isLowPriorityModality,
+  isImage,
+  isDisplaySetReconstructable,
 };
 
 export default utils;
