@@ -67,7 +67,7 @@
     "dicom-parser": "^1.8.9",
     "dotenv-webpack": "^1.7.0",
     "hammerjs": "^2.0.8",
-    "history": "5.0.0",
+    "history": "^5.2.0",
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
@@ -80,8 +80,8 @@
     "react-dropzone": "^10.1.7",
     "react-i18next": "^10.11.0",
     "react-resize-detector": "^4.2.0",
-    "react-router": "next",
-    "react-router-dom": "next"
+    "react-router": "^6.2.1",
+    "react-router-dom": "^6.2.1"
   },
   "devDependencies": {
     "@percy/cypress": "^2.3.0",

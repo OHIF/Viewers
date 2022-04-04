@@ -90,7 +90,7 @@ _Example `onModeEnter` hook implementation_
 
 ```js
 export default {
-  id: 'org.ohif.dicom-sr',
+  id: '@ohif/extension-dicom-sr',
 
   onModeEnter({ servicesManager }) {
     const { DisplaySetService } = servicesManager.services;

@@ -240,23 +240,23 @@ export default function mode({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [
-                'org.ohif.measurement-tracking.panelModule.seriesList',
+                '@ohif/extension-measurement-tracking.panelModule.seriesList',
               ],
               rightPanels: [
-                'org.ohif.measurement-tracking.panelModule.trackedMeasurements',
+                '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
               ],
               viewports: [
                 {
                   namespace:
-                    'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
+                    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
                   displaySetsToDisplay: [
-                    'org.ohif.default.sopClassHandlerModule.stack',
+                    '@ohif/extension-default.sopClassHandlerModule.stack',
                   ],
                 },
                 {
-                  namespace: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
+                  namespace: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
                   displaySetsToDisplay: [
-                    'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',
+                    '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr',
                   ],
                 },
               ],
@@ -266,15 +266,15 @@ export default function mode({ modeConfiguration }) {
       },
     ],
     extensions: [
-      'org.ohif.default',
-      'org.ohif.cornerstone',
-      'org.ohif.measurement-tracking',
-      'org.ohif.dicom-sr',
+      '@ohif/extension-default',
+      '@ohif/extension-cornerstone',
+      '@ohif/extension-measurement-tracking',
+      '@ohif/extension-dicom-sr',
     ],
-    hangingProtocols: ['org.ohif.default.hangingProtocolModule.petCT'],
+    hangingProtocols: ['@ohif/extension-default.hangingProtocolModule.petCT'],
     sopClassHandlers: [
-      'org.ohif.default.sopClassHandlerModule.stack',
-      'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',
+      '@ohif/extension-default.sopClassHandlerModule.stack',
+      '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr',
     ],
     /*...*/
   };

@@ -58,7 +58,7 @@ function TrackedCornerstoneViewport({
 }) {
   const renderViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
-      'org.ohif.cornerstone.viewportModule.cornerstone'
+      '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
     return (
       <Component

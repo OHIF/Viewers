@@ -228,7 +228,7 @@ function TrackedCornerstoneViewport(props) {
 
   const renderViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
-      'org.ohif.cornerstone.viewportModule.cornerstone'
+      '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
     return (
       <Component
@@ -257,7 +257,7 @@ function TrackedCornerstoneViewport(props) {
           isLocked: false,
           isRehydratable: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
-          currentSeries: SeriesNumber,  // TODO - switch entire currentSeries to be UID based or actual position based
+          currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {

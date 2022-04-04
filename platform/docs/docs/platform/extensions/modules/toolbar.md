@@ -11,7 +11,6 @@ toolbar button types:
 
 ![toolbarModule](../../../assets/img/toolbar-module.png)
 
-
 ## Example Toolbar Module
 
 The Toolbar Module should return an array of `objects`. There are currently a
@@ -79,10 +78,10 @@ export default function mode({ modeConfiguration }) {
       },
     ],
     extensions: [
-      'org.ohif.default',
-      'org.ohif.cornerstone',
-      'org.ohif.measurement-tracking',
-      'org.ohif.dicom-sr',
+      '@ohif/extension-default',
+      '@ohif/extension-cornerstone',
+      '@ohif/extension-measurement-tracking',
+      '@ohif/extension-dicom-sr',
     ],
   };
 }

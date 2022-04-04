@@ -78,10 +78,10 @@ export default function mode({ modeConfiguration }) {
             id,
             props: {
               leftPanels: [
-                'org.ohif.measurement-tracking.panelModule.seriesList',
+                '@ohif/extension-measurement-tracking.panelModule.seriesList',
               ],
               rightPanels: [
-                'org.ohif.measurement-tracking.panelModule.trackedMeasurements',
+                '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
               ],
               viewports,
             },
@@ -90,10 +90,10 @@ export default function mode({ modeConfiguration }) {
       },
     ],
     extensions: [
-      'org.ohif.default',
-      'org.ohif.cornerstone',
-      'org.ohif.measurement-tracking',
-      'org.ohif.dicom-sr',
+      '@ohif/extension-default',
+      '@ohif/extension-cornerstone',
+      '@ohif/extension-measurement-tracking',
+      '@ohif/extension-dicom-sr',
     ],
   };
 }
