@@ -42,16 +42,16 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       app: `${SRC_DIR}/index.js`,
     },
     optimization: {
-      splitChunks: {
-        // include all types of chunks
-        chunks: 'all',
-      },
+      // splitChunks: {
+      //   // include all types of chunks
+      //   chunks: 'all',
+      // },
       //runtimeChunk: 'single',
       minimize: isProdBuild,
       sideEffects: true,
     },
     output: {
-      clean: true,
+      // clean: true,
       publicPath: '/',
     },
     context: SRC_DIR,
@@ -101,6 +101,8 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         path.resolve(__dirname, '../node_modules'),
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
+        path.resolve(__dirname, '../platform/viewer/node_modules'),
+        path.resolve(__dirname, '../platform/ui/node_modules'),
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.

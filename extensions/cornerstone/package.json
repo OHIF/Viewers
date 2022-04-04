@@ -32,7 +32,7 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
   "peerDependencies": {
-    "@ohif/core": "^2.9.7",
+    "@ohif/core": "^3.0.0",
     "@ohif/ui": "^0.50.0",
     "cornerstone-core": "2.6.0",
     "cornerstone-math": "0.1.9",

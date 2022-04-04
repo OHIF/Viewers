@@ -4,10 +4,11 @@ const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const pkg = require('./../package.json');
+const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
-const fileName = 'index.umd.js';
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
@@ -29,19 +30,19 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
-      path: DIST_DIR,
+      path: ROOT_DIR,
       library: 'OHIFExtCornerstone',
       libraryTarget: 'umd',
       libraryExport: 'default',
-      filename: fileName,
+      filename: pkg.main,
     },
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
       new MiniCssExtractPlugin({
-        filename: '[name].css',
-        chunkFilename: '[id].css',
+        filename: './dist/[name].css',
+        chunkFilename: './dist/[id].css',
       }),
     ],
   });
