@@ -1,5 +1,6 @@
-// TODO -> Inject these using webpack from package.json
-const id = '@ohif/extension-measurement-tracking';
-const version = '0.0.1';
+import packageJson from '../package.json';
+
+const id = packageJson.name;
+const version = packageJson.version;
 
 export { id, version };

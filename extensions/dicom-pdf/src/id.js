@@ -1,7 +1,7 @@
-const id = '@ohif/extension-dicom-pdf';
-const SOPClassHandlerId = `${id}.sopClassHandlerModule.dicom-pdf`;
+import packageJson from '../package.json';
 
-// TODO -> Inject these from package.json at build time.
-const version = '3.0.1';
+const id = packageJson.name;
+const version = packageJson.version;
+const SOPClassHandlerId = `${id}.sopClassHandlerModule.dicom-pdf`;
 
 export { id, SOPClassHandlerId, version };

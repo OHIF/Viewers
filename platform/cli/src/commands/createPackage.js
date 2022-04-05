@@ -8,7 +8,6 @@ import {
   createLicense,
   createReadme,
   initGit,
-  createIdAndVersion,
 } from './utils/index.js';
 
 const createPackage = async (options) => {
@@ -34,10 +33,6 @@ const createPackage = async (options) => {
             options.targetDir,
             options.prettier
           ),
-      },
-      {
-        title: `Changing ${packageType} id to the provided name`,
-        task: () => createIdAndVersion(options),
       },
       {
         title: 'Editing Package.json with provided information',

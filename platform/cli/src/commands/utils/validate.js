@@ -54,6 +54,56 @@ function validateYarnInfo(packageName, keyword) {
   });
 }
 
+function getVersion(json, version) {
+  const versions = Object.keys(json.versions);
+  // if no version is defined get the latest
+  if (version === undefined) {
+    return json['dist-tags'].latest;
+  }
+
+  // Get and validate version if it is explicitly defined
+  const allowMinorVersionUpgrade = version.startsWith('^');
+  if (!allowMinorVersionUpgrade) {
+    const isValidVersion = versions.includes(version);
+
+    if (!isValidVersion) {
+      return;
+    }
+
+    return version;
+  }
+
+  // Choose version based on the newer minor/patch versions
+  const [majorVersion] = version
+    .split('^')[1]
+    .split('.')
+    .map((v) => parseInt(v));
+
+  // Find the version that matches the major version, but is the latest minor version
+  versions
+    .filter((version) => parseInt(version.split('.')[0]) === majorVersion)
+    .sort((a, b) => {
+      const [majorA, minorA, patchA] = a.split('.').map((v) => parseInt(v));
+      const [majorB, minorB, patchB] = b.split('.').map((v) => parseInt(v));
+
+      if (majorA === majorB) {
+        if (minorA === minorB) {
+          return patchB - patchA;
+        }
+
+        return minorB - minorA;
+      }
+
+      return majorB - majorA;
+    });
+
+  if (versions.length === 0) {
+    return;
+  }
+
+  return versions[0];
+}
+
 function validate(packageName, version, keyword) {
   return new Promise(async (resolve, reject) => {
     const { scope } = getPackageNameAndScope(packageName);
@@ -72,13 +122,10 @@ function validate(packageName, version, keyword) {
       return;
     }
 
-    if (version === undefined) {
-      // Get latest
-      version = json['dist-tags'].latest;
-    }
+    const packageVersion = getVersion(json, version);
 
-    if (json.versions[version]) {
-      const versionedJson = json.versions[version];
+    if (packageVersion) {
+      const versionedJson = json.versions[packageVersion];
       const keywords = versionedJson.keywords;
 
       const isValid = keywords && keywords.includes(keyword);
@@ -98,7 +145,7 @@ function validate(packageName, version, keyword) {
       const error = new Error(
         `${chalk.red.bold(
           'Error'
-        )} verson ${version} of package ${packageName} not found`
+        )} version ${packageVersion} of package ${packageName} not found`
       );
       reject(error);
     }

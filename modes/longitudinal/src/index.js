@@ -1,5 +1,6 @@
-import toolbarButtons from './toolbarButtons.js';
 import { hotkeys } from '@ohif/core';
+import toolbarButtons from './toolbarButtons.js';
+import { id, version } from './id.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -31,18 +32,12 @@ const dicompdf = {
   viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
 };
 
-// TODO -> We should inject these with webpack from the package.json
-// for id -> process.env.npm_package_name
-// for version -> process.env.npm_package_version
-// For extension Dependencies, can at least get the versions from process.env.npm_package_peerDependencies
-const id = '@ohif/mode-longitudinal'; //
-const version = '1.0.1';
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
-  '@ohif/extension-default': '^1.0.1',
+  '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-measurement-tracking': '^0.0.1',
-  '@ohif/extension-dicom-sr': '^0.0.1',
+  '@ohif/extension-measurement-tracking': '^3.0.0',
+  '@ohif/extension-dicom-sr': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
 };

@@ -1,5 +1,6 @@
-// TODO -> Inject these using webpack from package.json
-const id = '@ohif/extension-default';
-const version = '1.0.1';
+import packageJson from '../package.json';
+
+const id = packageJson.name;
+const version = packageJson.version;
 
 export { id, version };

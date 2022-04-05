@@ -23,7 +23,6 @@ import createLicense from './createLicense.js';
 import createReadme from './createReadme.js';
 import prettyPrint from './prettyPrint.js';
 import validateYarn from './validateYarn.js';
-import createIdAndVersion from './createIdAndVersion.js';
 
 export {
   getYarnInfo,
@@ -48,5 +47,4 @@ export {
   createReadme,
   prettyPrint,
   validateYarn,
-  createIdAndVersion,
 };

@@ -1,6 +1,7 @@
-const id = `@ohif/extension-dicom-video`;
-const SOPClassHandlerId = `${id}.sopClassHandlerModule.dicom-video`;
+import packageJson from '../package.json';
 
-const version = '3.0.1';
+const id = packageJson.name;
+const version = packageJson.version;
+const SOPClassHandlerId = `${id}.sopClassHandlerModule.dicom-video`;
 
 export { SOPClassHandlerId, id, version };

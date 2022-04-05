@@ -1,6 +1,7 @@
-const id = '@ohif/extension-dicom-sr';
+import packageJson from '../package.json';
 
-const version = '0.0.1';
+const id = packageJson.name;
+const version = packageJson.version;
 
 const SOPClassHandlerName = 'dicom-sr';
 const SOPClassHandlerId = `${id}.sopClassHandlerModule.${SOPClassHandlerName}`;
