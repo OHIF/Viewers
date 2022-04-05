@@ -5,7 +5,7 @@ window.config = {
   extensions: [],
   showStudyList: false,
   filterQueryParam: false,
-  disableServersCache: false,
+  disableServersCache: true,
 
   servers: {
     dicomWeb: [
@@ -18,6 +18,7 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         StudiesMetadata: 'MainDicomTags',
+        SeriesMetadata: 'Full',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
       },
