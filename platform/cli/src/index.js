@@ -6,7 +6,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-import QUESTIONS from './questions.js';
+import { getPathQuestions, getRepoQuestions } from './questions.js';
 import {
   createExtension,
   createMode,
@@ -31,7 +31,7 @@ const packageJsonPath = path.join(runningDirectory, 'package.json');
 
 try {
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  if (packageJson.name !== 'ohif-root') {
+  if (packageJson.name !== 'ohif-monorepo-root') {
     console.log(packageJson);
     console.log(
       chalk.red('ohif-cli must run from the root of the OHIF platform')
@@ -45,6 +45,41 @@ try {
   process.exit(1);
 }
 
+function createPackage(packageType) {
+  const pathQuestions = getPathQuestions(packageType);
+  const repoQuestions = getRepoQuestions(packageType);
+
+  let pathAnswers;
+
+  const askPathQuestions = () => {
+    inquirer.prompt(pathQuestions).then((answers) => {
+      pathAnswers = answers;
+      if (pathAnswers.confirm) {
+        askRepoQuestions(answers.baseDir, answers.name);
+      } else {
+        askPathQuestions();
+      }
+    });
+  };
+
+  const askRepoQuestions = () => {
+    inquirer.prompt(repoQuestions).then((repoAnswers) => {
+      const answers = {
+        ...pathAnswers,
+        ...repoAnswers,
+      };
+
+      const templateDir = path.join(__dirname, `../templates/${packageType}`);
+      answers.templateDir = templateDir;
+      answers.targetDir = path.join(answers.baseDir);
+
+      createExtension(answers);
+    });
+  };
+
+  askPathQuestions();
+}
+
 // Todo: inject with webpack
 program.version('2.0.7').description('OHIF CLI');
 
@@ -52,28 +87,14 @@ program
   .command('create-extension')
   .description('Create a new template extension')
   .action(() => {
-    inquirer.prompt(QUESTIONS.createExtension).then(answers => {
-      const templateDir = path.join(__dirname, '../templates/extension');
-
-      answers.templateDir = templateDir;
-      answers.targetDir = path.join(answers.baseDir, answers.name);
-
-      createExtension(answers);
-    });
+    createPackage('extension');
   });
 
 program
   .command('create-mode')
   .description('Create a new template Mode')
-  .action(name => {
-    inquirer.prompt(QUESTIONS.createMode).then(answers => {
-      const templateDir = path.join(__dirname, '../templates/mode');
-
-      answers.templateDir = templateDir;
-      answers.targetDir = path.join(answers.baseDir, answers.name);
-
-      createMode(answers);
-    });
+  .action(() => {
+    createPackage('mode');
   });
 
 program
@@ -88,7 +109,7 @@ program
 program
   .command('remove-extension <packageName>')
   .description('removes an ohif extension')
-  .action(packageName => {
+  .action((packageName) => {
     // change directory to viewer
     process.chdir(viewerDirectory);
     removeExtension(packageName);
@@ -106,7 +127,7 @@ program
 program
   .command('remove-mode <packageName>')
   .description('Removes an ohif mode')
-  .action(packageName => {
+  .action((packageName) => {
     // change directory to viewer
     process.chdir(viewerDirectory);
     removeMode(packageName);
@@ -117,7 +138,7 @@ program
   .description(
     'Links a local OHIF extension to the Viewer to be used for development'
   )
-  .action(packageDir => {
+  .action((packageDir) => {
     if (!fs.existsSync(packageDir)) {
       console.log(
         chalk.red(
@@ -132,7 +153,7 @@ program
 program
   .command('unlink-extension <extensionName>')
   .description('Unlinks a local OHIF extension from the Viewer')
-  .action(extensionName => {
+  .action((extensionName) => {
     unlinkExtension(extensionName, { viewerDirectory });
     console.log(
       chalk.green(
@@ -146,7 +167,7 @@ program
   .description(
     'Links a local OHIF mode to the Viewer to be used for development'
   )
-  .action(packageDir => {
+  .action((packageDir) => {
     if (!fs.existsSync(packageDir)) {
       console.log(
         chalk.red(
@@ -161,7 +182,7 @@ program
 program
   .command('unlink-mode <modeName>')
   .description('Unlinks a local OHIF mode from the Viewer')
-  .action(modeName => {
+  .action((modeName) => {
     unlinkMode(modeName, { viewerDirectory });
     console.log(
       chalk.green(
@@ -182,7 +203,7 @@ program
   .command('search')
   .option('-v, --verbose', 'Verbose output')
   .description('Search NPM for the list of Modes and Extensions')
-  .action(options => {
+  .action((options) => {
     searchPlugins(options);
   });
 

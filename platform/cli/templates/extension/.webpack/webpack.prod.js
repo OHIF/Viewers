@@ -1,44 +1,48 @@
-const webpack = require('webpack');
-const { merge } = require('webpack-merge');
 const path = require('path');
-const webpackCommon = require('./../../../.webpack/webpack.base.js');
-const pkg = require('./../package.json');
+const pkg = require('../package.json');
 
-const ROOT_DIR = path.join(__dirname, './..');
-const SRC_DIR = path.join(__dirname, '../src');
-const DIST_DIR = path.join(__dirname, '../dist');
+const outputFile = 'index.umd.js';
+const rootDir = path.resolve(__dirname, '../');
+const outputFolder = path.join(__dirname, '../dist');
 
-module.exports = (env, argv) => {
-  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
-
-  return merge(commonConfig, {
-    devtool: 'source-map',
-    stats: {
-      colors: true,
-      hash: true,
-      timings: true,
-      assets: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false,
-      children: false,
-      warnings: true,
+const config = {
+  mode: 'production',
+  entry: rootDir + '/' + pkg.module,
+  devtool: 'inline-source-map',
+  output: {
+    path: outputFolder,
+    filename: outputFile,
+    library: pkg.name,
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
+    globalObject: "typeof self !== 'undefined' ? self : this",
+  },
+  externals: [
+    {
+      react: {
+        root: 'React',
+        commonjs2: 'react',
+        commonjs: 'react',
+        amd: 'react',
+      },
     },
-    optimization: {
-      minimize: true,
-      sideEffects: true,
-    },
-    output: {
-      path: ROOT_DIR,
-      library: 'OHIFExtCornerstone',
-      libraryTarget: 'umd',
-      libraryExport: 'default',
-      filename: pkg.main,
-    },
-    plugins: [
-      new webpack.optimize.LimitChunkCountPlugin({
-        maxChunks: 1,
-      }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /(\.jsx|\.js)$/,
+        loader: 'babel-loader',
+        exclude: /(node_modules|bower_components)/,
+        resolve: {
+          extensions: ['.js', '.jsx'],
+        },
+      },
     ],
-  });
+  },
+  resolve: {
+    modules: [path.resolve('./node_modules'), path.resolve('./src')],
+    extensions: ['.json', '.js', '.jsx'],
+  },
 };
+
+module.exports = config;

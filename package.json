@@ -1,5 +1,5 @@
 {
-  "name": "ohif-root",
+  "name": "ohif-monorepo-root",
   "private": true,
   "workspaces": {
     "packages": [
