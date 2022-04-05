@@ -41,11 +41,11 @@
     "react-cornerstone-viewport": "^4.1.2",
     "webpack": "^5.50.0",
     "webpack-merge": "^5.7.3",
-    "@ohif/ui": "^1.8.2"
+    "@ohif/ui": "^2.0.0"
   },
   "dependencies": {
     "@babel/runtime": "7.16.3",
-    "@ohif/ui": "^1.8.2",
+    "@ohif/ui": "^2.0.0",
     "@xstate/react": "^0.8.1",
     "xstate": "^4.10.0"
   }

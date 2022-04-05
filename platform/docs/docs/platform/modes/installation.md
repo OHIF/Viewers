@@ -73,8 +73,8 @@ inside OHIF. The OHIF should be updated using the following lines of code:
 /* ... */
 "dependencies": {
   /* ... */
-  "@ohif/i18n": "^0.52.8",
-  "@ohif/mode-longitudinal": "^0.0.1",
+  "@ohif/i18n": "^1.0.0",
+  "@ohif/mode-longitudinal": "^3.0.0",
   "@ohif/mode-template": "^0.0.1",
   "@ohif/ui": "^2.0.0",
   "@types/react": "^16.0.0",

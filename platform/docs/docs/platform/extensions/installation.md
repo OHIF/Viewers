@@ -81,10 +81,9 @@ the extension. The following lines of code should be added to the OHIF:
 "dependencies": {
   /* ... */
   "@babel/runtime": "7.16.3",
-  "@ohif/core": "^2.5.1",
-  "@ohif/extension-cornerstone": "^2.4.0",
-  "@ohif/extension-measurement-tracking": "^0.0.1",
-  "@ohif/extension-template": "^0.0.1",
+  "@ohif/core": "^3.0.0",
+  "@ohif/extension-cornerstone": "^3.0.0",
+  "@ohif/extension-measurement-tracking": "^3.0.0",
   /* ... */
 }
 ```

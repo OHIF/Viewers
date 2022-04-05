@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
-    "@ohif/ui": "^0.50.0",
+    "@ohif/ui": "^2.0.0",
     "cornerstone-core": "^2.6.0",
     "cornerstone-math": "^0.1.9",
     "cornerstone-tools": "6.0.2",
@@ -45,7 +45,7 @@
     "react": "^17.0.2",
     "react-cornerstone-viewport": "4.1.2",
     "@ohif/extension-cornerstone": "^3.0.0",
-    "@ohif/extension-measurement-tracking": "^0.0.1"
+    "@ohif/extension-measurement-tracking": "^3.0.0"
   },
   "dependencies": {
     "@babel/runtime": "7.16.3",
