@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "ohif-root",
   "private": true,
   "workspaces": {
     "packages": [
@@ -22,6 +22,7 @@
     "build:dev": "lerna run build:dev --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:qa": "lerna run build:viewer:qa --stream",
+    "cli": "node ./platform/cli/src/index.js",
     "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",

@@ -2,7 +2,7 @@ import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import onModeEnter from './onModeEnter';
 import init from './init';
-import { id, version } from 'id';
+import { id, version } from './id.js';
 
 const Component = React.lazy(() => {
   return import(

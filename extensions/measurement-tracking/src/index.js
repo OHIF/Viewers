@@ -1,7 +1,7 @@
 import getContextModule from './getContextModule.js';
 import getPanelModule from './getPanelModule.js';
 import getViewportModule from './getViewportModule.js';
-import { id, version } from 'id.js';
+import { id, version } from './id.js';
 
 export default {
   /**

@@ -57,7 +57,10 @@ const createMode = async options => {
   );
 
   await tasks.run();
-  console.log('Done: Mode is ready');
+  console.log();
+  console.log(chalk.green('Done: Mode is ready at', options.targetDir));
+  console.log();
+
   console.log(
     chalk.green.bold('NOTE: In order to use this mode for development,')
   );

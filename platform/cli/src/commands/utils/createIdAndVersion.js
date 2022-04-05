@@ -9,7 +9,7 @@ import fs from 'fs';
  */
 function createIdAndVersion(options) {
   const { targetDir, name, version } = options;
-  const idFile = path.join(targetDir, 'id.js');
+  const idFile = path.join(targetDir, 'src/id.js');
 
   let toWrite = `const id = '${name}';`;
   toWrite += `\n\nconst version = '${version}';`;

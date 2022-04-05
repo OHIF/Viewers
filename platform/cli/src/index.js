@@ -3,6 +3,7 @@
 import program from 'commander';
 import inquirer from 'inquirer';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import QUESTIONS from './questions.js';
@@ -20,31 +21,32 @@ import {
   unlinkExtension,
   unlinkMode,
 } from './commands/index.js';
+import chalk from 'chalk';
 
-const currentDirectory = process.cwd();
+const runningDirectory = process.cwd();
+const viewerDirectory = path.resolve(runningDirectory, 'platform/viewer');
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// const viewerDirectory = path.resolve(__dirname, '../../viewer');
-// process.chdir(viewerDirectory);
 
-function getOptionsFromAnswers(answers) {
-  const targetDir = path.join(currentDirectory, answers.name);
-  const gitRepository = answers.gitRepository.toLowerCase() === 'y';
+const packageJsonPath = path.join(runningDirectory, 'package.json');
 
-  return {
-    ...answers,
-    targetDir,
-    gitRepository,
-  };
+try {
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  if (packageJson.name !== 'ohif-root') {
+    console.log(packageJson);
+    console.log(
+      chalk.red('ohif-cli must run from the root of the OHIF platform')
+    );
+    process.exit(1);
+  }
+} catch (error) {
+  console.log(
+    chalk.red('ohif-cli must run from the root of the OHIF platform')
+  );
+  process.exit(1);
 }
 
 // Todo: inject with webpack
-program.version('2.0.2').description('OHIF CLI');
-
-program.command('debug').action(() => {
-  process.chdir(viewerDirectory);
-
-  console.log('current dir', process.cwd());
-});
+program.version('2.0.7').description('OHIF CLI');
 
 program
   .command('create-extension')
@@ -52,11 +54,11 @@ program
   .action(() => {
     inquirer.prompt(QUESTIONS.createExtension).then(answers => {
       const templateDir = path.join(__dirname, '../templates/extension');
-      const options = getOptionsFromAnswers(answers);
 
-      options.templateDir = templateDir;
+      answers.templateDir = templateDir;
+      answers.targetDir = path.join(answers.baseDir, answers.name);
 
-      createExtension(options);
+      createExtension(answers);
     });
   });
 
@@ -66,10 +68,11 @@ program
   .action(name => {
     inquirer.prompt(QUESTIONS.createMode).then(answers => {
       const templateDir = path.join(__dirname, '../templates/mode');
-      const options = getOptionsFromAnswers(answers);
 
-      options.templateDir = templateDir;
-      createMode(options);
+      answers.templateDir = templateDir;
+      answers.targetDir = path.join(answers.baseDir, answers.name);
+
+      createMode(answers);
     });
   });
 
@@ -77,6 +80,8 @@ program
   .command('add-extension <packageName> [version]')
   .description('Adds an ohif extension')
   .action((packageName, version) => {
+    // change directory to viewer
+    process.chdir(viewerDirectory);
     addExtension(packageName, version);
   });
 
@@ -84,6 +89,8 @@ program
   .command('remove-extension <packageName>')
   .description('removes an ohif extension')
   .action(packageName => {
+    // change directory to viewer
+    process.chdir(viewerDirectory);
     removeExtension(packageName);
   });
 
@@ -91,6 +98,8 @@ program
   .command('add-mode <packageName> [version]')
   .description('Removes an ohif mode')
   .action((packageName, version) => {
+    // change directory to viewer
+    process.chdir(viewerDirectory);
     addMode(packageName, version);
   });
 
@@ -98,6 +107,8 @@ program
   .command('remove-mode <packageName>')
   .description('Removes an ohif mode')
   .action(packageName => {
+    // change directory to viewer
+    process.chdir(viewerDirectory);
     removeMode(packageName);
   });
 
@@ -107,8 +118,15 @@ program
     'Links a local OHIF extension to the Viewer to be used for development'
   )
   .action(packageDir => {
-    const fullPackageDir = path.join(currentDirectory, packageDir);
-    linkExtension(fullPackageDir, { viewerDirectory });
+    if (!fs.existsSync(packageDir)) {
+      console.log(
+        chalk.red(
+          'The extension directory does not exist, please provide a valid directory'
+        )
+      );
+      process.exit(1);
+    }
+    linkExtension(packageDir, { viewerDirectory });
   });
 
 program
@@ -124,8 +142,15 @@ program
     'Links a local OHIF mode to the Viewer to be used for development'
   )
   .action(packageDir => {
-    const fullPackageDir = path.join(currentDirectory, packageDir);
-    linkMode(fullPackageDir, { viewerDirectory });
+    if (!fs.existsSync(packageDir)) {
+      console.log(
+        chalk.red(
+          'The mode directory does not exist, please provide a valid directory'
+        )
+      );
+      process.exit(1);
+    }
+    linkMode(packageDir, { viewerDirectory });
   });
 
 program
@@ -139,7 +164,7 @@ program
   .command('list')
   .description('List Added Extensions and Modes')
   .action(() => {
-    const configPath = path.resolve(process.cwd(), './pluginConfig.json');
+    const configPath = path.resolve(viewerDirectory, './pluginConfig.json');
     listPlugins(configPath);
   });
 

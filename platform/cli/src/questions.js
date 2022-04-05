@@ -1,6 +1,24 @@
+import path from 'path';
+
 const QUESTIONS = {
   //
   createExtension: [
+    {
+      type: 'input',
+      name: 'baseDir',
+      message:
+        'What is the target directory absolute/relative path to create your extension (we strongly recommend to use a separate directory from ohif extensions directory - unless you are developing a core extension which is highly unlikely):',
+      validate: input => {
+        if (!input) {
+          console.log('Please provide a valid target directory path');
+          return;
+        }
+        return true;
+      },
+      filter: input => {
+        return path.resolve(input);
+      },
+    },
     {
       type: 'input',
       name: 'name',
@@ -14,10 +32,9 @@ const QUESTIONS = {
       default: 'my-extension',
     },
     {
-      type: 'input',
+      type: 'confirm',
       name: 'gitRepository',
       message: 'Should it be a git repository?',
-      default: 'Y',
     },
     {
       type: 'input',
@@ -53,6 +70,22 @@ const QUESTIONS = {
   createMode: [
     {
       type: 'input',
+      name: 'baseDir',
+      message:
+        'What is the target directory absolute/relative path to create your mode (we strongly recommend to use a separate directory from ohif mode directory - unless you are developing a core mode which is highly unlikely):',
+      validate: input => {
+        if (!input) {
+          console.log('Please provide a valid target directory path');
+          return;
+        }
+        return true;
+      },
+      filter: input => {
+        return path.resolve(input);
+      },
+    },
+    {
+      type: 'input',
       name: 'name',
       message: 'What is the name of your mode?',
       validate: input => {
@@ -64,7 +97,7 @@ const QUESTIONS = {
       default: 'my-mode',
     },
     {
-      type: 'input',
+      type: 'confirm',
       name: 'gitRepository',
       message: 'Should it be a git repository?',
       default: 'Y',
@@ -100,8 +133,6 @@ const QUESTIONS = {
       default: 'MIT',
     },
   ],
-  //
-  // "create-mode"
 };
 
 export default QUESTIONS;

@@ -57,7 +57,9 @@ const createExtension = async options => {
   );
 
   await tasks.run();
-  console.log('Done: Extension is ready');
+  console.log();
+  console.log(chalk.green('Done: Extension is ready at', options.targetDir));
+  console.log();
   console.log(
     chalk.green.bold('NOTE: In order to use this extension for development,')
   );
