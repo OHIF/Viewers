@@ -10,16 +10,21 @@ async function editPackageJson(options) {
   const packageJson = JSON.parse(rawData);
 
   // edit package.json
-  packageJson.name = name;
-  packageJson.version = version;
-  packageJson.description = description;
-  packageJson.author = author;
-  packageJson.license = license;
-  packageJson.files = ['dist', 'README.md'];
+  const mergedObj = Object.assign(
+    {
+      name,
+      version,
+      description,
+      author,
+      license,
+      files: ['dist', 'README.md'],
+    },
+    packageJson
+  );
 
   // write package.json back to targetDir
   const writePath = path.join(targetDir, 'package.json');
-  fs.writeFileSync(writePath, JSON.stringify(packageJson, null, 2));
+  fs.writeFileSync(writePath, JSON.stringify(mergedObj, null, 2));
 
   // remove the dependencies.json file
   fs.unlinkSync(dependenciesPath);

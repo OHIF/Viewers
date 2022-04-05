@@ -141,7 +141,7 @@ command will create utilize `yarn link` command to link the extension to the
 Viewer. This command should run from the root directory of the viewer.
 
 ```bash
-ohif-cli link-extension <extensionDir>
+yarn run cli link-extension <extensionDir>
 ```
 
 ### unlink-extension
@@ -162,7 +162,7 @@ link the mode to the Viewer. This command should run from the root directory of
 the viewer.
 
 ```bash
-ohif-cli link-mode <modeDir>
+yarn run cli link-mode <modeDir>
 ```
 
 ### unlink-mode
