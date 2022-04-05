@@ -1,10 +1,18 @@
 import fs from 'fs';
 
 // https://github.dev/leoroese/template-cli/blob/628dd24db7df399ebb520edd0bc301bc7b5e8b66/index.js#L19
-const createDirectoryContents = (templatePath, targetDirPath) => {
+const createDirectoryContents = (
+  templatePath,
+  targetDirPath,
+  copyPrettierRules
+) => {
   const filesToCreate = fs.readdirSync(templatePath);
 
-  filesToCreate.forEach(file => {
+  filesToCreate.forEach((file) => {
+    if (!copyPrettierRules && file === 'prettier.config.js') {
+      return;
+    }
+
     const origFilePath = `${templatePath}/${file}`;
 
     // get stats about the current file
@@ -24,7 +32,8 @@ const createDirectoryContents = (templatePath, targetDirPath) => {
       // recursive call
       createDirectoryContents(
         `${templatePath}/${file}`,
-        `${targetDirPath}/${file}`
+        `${targetDirPath}/${file}`,
+        copyPrettierRules
       );
     }
   });

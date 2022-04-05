@@ -45,6 +45,11 @@ function getRepoQuestions(packageType) {
       message: 'Should it be a git repository?',
     },
     {
+      type: 'confirm',
+      name: 'prettier',
+      message: 'Should it follow same prettier rules as OHIF?',
+    },
+    {
       type: 'input',
       name: 'version',
       message: `What is the version of your ${packageType}?`,

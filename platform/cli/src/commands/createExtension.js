@@ -11,7 +11,7 @@ import {
   createIdAndVersion,
 } from './utils/index.js';
 
-const createExtension = async options => {
+const createExtension = async (options) => {
   if (fs.existsSync(options.targetDir)) {
     console.error(
       '%s Extension with the same name already exists in this directory, either delete it or choose a different name',
@@ -27,7 +27,11 @@ const createExtension = async options => {
       {
         title: 'Copying template files',
         task: () =>
-          createDirectoryContents(options.templateDir, options.targetDir),
+          createDirectoryContents(
+            options.templateDir,
+            options.targetDir,
+            options.prettier
+          ),
       },
       {
         title: 'Changing extension id to the provided name',
@@ -64,7 +68,7 @@ const createExtension = async options => {
     chalk.green.bold('NOTE: In order to use this extension for development,')
   );
   console.log(
-    chalk.green.bold('run `ohif-cli link-extension <extension-dir>` inside')
+    chalk.green.bold('run `yarn run cli link-extension <extension-dir>` inside')
   );
   console.log(chalk.green.bold('the root folder of your OHIF repo.'));
   return true;
