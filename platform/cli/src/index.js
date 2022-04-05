@@ -8,8 +8,7 @@ import { fileURLToPath } from 'url';
 
 import { getPathQuestions, getRepoQuestions } from './questions.js';
 import {
-  createExtension,
-  createMode,
+  createPackage,
   addExtension,
   removeExtension,
   addMode,
@@ -45,7 +44,7 @@ try {
   process.exit(1);
 }
 
-function createPackage(packageType) {
+function _createPackage(packageType) {
   const pathQuestions = getPathQuestions(packageType);
   const repoQuestions = getRepoQuestions(packageType);
 
@@ -72,8 +71,9 @@ function createPackage(packageType) {
       const templateDir = path.join(__dirname, `../templates/${packageType}`);
       answers.templateDir = templateDir;
       answers.targetDir = path.join(answers.baseDir);
+      answers.packageType = packageType;
 
-      createExtension(answers);
+      createPackage(answers);
     });
   };
 
@@ -87,14 +87,14 @@ program
   .command('create-extension')
   .description('Create a new template extension')
   .action(() => {
-    createPackage('extension');
+    _createPackage('extension');
   });
 
 program
   .command('create-mode')
   .description('Create a new template Mode')
   .action(() => {
-    createPackage('mode');
+    _createPackage('mode');
   });
 
 program

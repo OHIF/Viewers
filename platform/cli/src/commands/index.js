@@ -1,5 +1,4 @@
-import createExtension from './createExtension.js';
-import createMode from './createMode.js';
+import createPackage from './createPackage.js';
 import addExtension from './addExtension.js';
 import removeExtension from './removeExtension.js';
 import addMode from './addMode.js';
@@ -10,8 +9,7 @@ import { linkExtension, linkMode } from './linkPackage.js';
 import { unlinkExtension, unlinkMode } from './unlinkPackage.js';
 
 export {
-  createExtension,
-  createMode,
+  createPackage,
   addExtension,
   removeExtension,
   addMode,

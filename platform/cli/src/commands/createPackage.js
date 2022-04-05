@@ -11,10 +11,12 @@ import {
   createIdAndVersion,
 } from './utils/index.js';
 
-const createExtension = async (options) => {
+const createPackage = async (options) => {
+  const { packageType } = options; // extension or mode
+
   if (fs.existsSync(options.targetDir)) {
     console.error(
-      '%s Extension with the same name already exists in this directory, either delete it or choose a different name',
+      `%s ${packageType} with the same name already exists in this directory, either delete it or choose a different name`,
       chalk.red.bold('ERROR')
     );
     process.exit(1);
@@ -34,7 +36,7 @@ const createExtension = async (options) => {
           ),
       },
       {
-        title: 'Changing extension id to the provided name',
+        title: `Changing ${packageType} id to the provided name`,
         task: () => createIdAndVersion(options),
       },
       {
@@ -62,16 +64,39 @@ const createExtension = async (options) => {
 
   await tasks.run();
   console.log();
-  console.log(chalk.green('Done: Extension is ready at', options.targetDir));
+  console.log(
+    chalk.green(`Done: ${packageType} is ready at`, options.targetDir)
+  );
+  console.log();
+
+  console.log(
+    chalk.green(`NOTE: In order to use this ${packageType} for development,`)
+  );
+  console.log(
+    chalk.green(
+      `run the following command inside the root of the OHIF monorepo`
+    )
+  );
+
   console.log();
   console.log(
-    chalk.green.bold('NOTE: In order to use this extension for development,')
+    chalk.green.bold(
+      `    yarn run cli link-${packageType} ${options.targetDir}`
+    )
   );
+  console.log();
   console.log(
-    chalk.green.bold('run `yarn run cli link-extension <extension-dir>` inside')
+    chalk.yellow(
+      "and when you don't need it anymore, run the following command to unlink it"
+    )
   );
-  console.log(chalk.green.bold('the root folder of your OHIF repo.'));
+  console.log();
+  console.log(
+    chalk.yellow(`    yarn run cli unlink-${packageType} ${options.name}`)
+  );
+  console.log();
+
   return true;
 };
 
-export default createExtension;
+export default createPackage;
