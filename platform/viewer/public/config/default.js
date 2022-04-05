@@ -6,16 +6,18 @@ window.config = {
   showStudyList: false,
   filterQueryParam: false,
   disableServersCache: true,
+
   servers: {
     dicomWeb: [
       {
         name: 'dicom-web',
-        wadoUriRoot: '/orthanc/wado',          
-        qidoRoot: '/orthanc/dicom-web',   
+        wadoUriRoot: '/orthanc/wado',
+        qidoRoot: '/orthanc/dicom-web',
         wadoRoot: '/orthanc/dicom-web',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        StudiesMetadata: 'MainDicomTags',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
       },
