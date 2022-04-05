@@ -1,6 +1,3 @@
-const aliases = require('./aliases.config');
-const path = require('path');
-
 module.exports = {
   plugins: ['inline-react-svg', '@babel/plugin-proposal-class-properties'],
   env: {
