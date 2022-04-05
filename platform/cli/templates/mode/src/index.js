@@ -1,6 +1,25 @@
 import { id, version } from './id';
 
-const extensionDependencies = { '@ohif/extension-default': '^1.0.1' };
+const ohif = {
+  layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
+  sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
+  leftPanel: '@ohif/extension-default.panelModule.seriesList',
+  rightPanel: '@ohif/extension-default.panelModule.measure',
+};
+
+const cornerstone = {
+  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+};
+
+/**
+ * Just two dependencies to be able to render a viewport with panels in order
+ * to make sure that the mode is working.
+ */
+const extensionDependencies = {
+  '@ohif/extension-default': '^1.0.1',
+  '@ohif/extension-cornerstone': '^3.0.0',
+};
 
 function modeFactory({ modeConfiguration }) {
   return {
@@ -35,7 +54,7 @@ function modeFactory({ modeConfiguration }) {
      * A boolean return value that indicates whether the mode is valid for the
      * modalities of the selected studies. For instance a PET/CT mode should be
      */
-    isValidMode: ({ modalities }) => {},
+    isValidMode: ({ modalities }) => true,
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route
      * that includes the mode's path and the layout to be used. The layout will
@@ -55,12 +74,12 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [''],
-              rightPanels: [''],
+              leftPanels: [ohif.leftPanel],
+              rightPanels: [ohif.rightPanel],
               viewports: [
                 {
-                  namespace: '',
-                  displaySetsToDisplay: [''],
+                  namespace: cornerstone.viewport,
+                  displaySetsToDisplay: [ohif.sopClassHandler],
                 },
               ],
             },
@@ -73,7 +92,7 @@ function modeFactory({ modeConfiguration }) {
     /** HangingProtocols used by the mode */
     hangingProtocols: [''],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [''],
+    sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */
     hotkeys: [''],
   };

@@ -134,6 +134,11 @@ program
   .description('Unlinks a local OHIF extension from the Viewer')
   .action(extensionName => {
     unlinkExtension(extensionName, { viewerDirectory });
+    console.log(
+      chalk.green(
+        `Successfully unlinked extension ${extensionName} from the Viewer, don't forget to run yarn install --force`
+      )
+    );
   });
 
 program
@@ -154,10 +159,15 @@ program
   });
 
 program
-  .command('unlink-mode <extensionName>')
+  .command('unlink-mode <modeName>')
   .description('Unlinks a local OHIF mode from the Viewer')
   .action(modeName => {
     unlinkMode(modeName, { viewerDirectory });
+    console.log(
+      chalk.green(
+        `Successfully unlinked mode ${modeName} from the Viewer, don't forget to run yarn install --force`
+      )
+    );
   });
 
 program

@@ -14,7 +14,7 @@ import {
 } from '@ohif/ui';
 import TOOL_NAMES from './../constants/toolNames';
 import { adapters } from 'dcmjs';
-import id from './../id';
+import { id } from './../id';
 
 const { formatDate } = utils;
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');

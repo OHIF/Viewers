@@ -3,7 +3,7 @@ import { pixelToCanvas } from 'cornerstone-core';
 
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
-import id from '../id';
+import { id } from '../id';
 
 // Cornerstone 3rd party dev kit imports
 const draw = importInternal('drawing/draw');
