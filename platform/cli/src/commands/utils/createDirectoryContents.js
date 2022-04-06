@@ -8,8 +8,8 @@ const createDirectoryContents = (
 ) => {
   const filesToCreate = fs.readdirSync(templatePath);
 
-  filesToCreate.forEach((file) => {
-    if (!copyPrettierRules && file === 'prettier.config.js') {
+  filesToCreate.forEach(file => {
+    if (!copyPrettierRules && file === '.prettierrc') {
       return;
     }
 

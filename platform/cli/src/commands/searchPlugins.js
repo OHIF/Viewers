@@ -31,7 +31,6 @@ async function searchPlugins(options) {
     ];
 
     if (verbose) {
-      item[1].push(`Authors: ${extension.package.author.name}`);
       item[1].push(`Repository: ${extension.package.links.repository}`);
     }
 
@@ -45,7 +44,6 @@ async function searchPlugins(options) {
     ];
 
     if (verbose) {
-      item[1].push(`Authors: ${mode.package.author.name}`);
       item[1].push(`Repository: ${mode.package.links.repository}`);
     }
 
