@@ -53,7 +53,7 @@ window.config = {
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
@@ -73,39 +73,6 @@ window.config = {
 };
 ```
 
-## Run Time Configuration (Config-Point)
-There is a library [config-point](https://github.com/OHIF/config-point)
-used to allow loading of configuration values dynamically,
-that is, at load time rather than being built into the runtime configuration.
-A user of OHIF can specify a dynamic configuration by adding one or more theme
-parameters, for example:
-```
-https://ohif.hospital.org/?theme=mgHP&theme=euroKeyboard
-```
-to load two hypothetical theme settings files mgHP and euroKeyboard to add
-mammographic hanging protocols and European keyboard settings.
-
-A site can add such settings by creating custom files in the deployment
-directory (which is wherever the deployed OHIF is located.)  For a deployment
-running off a straight build of OHIF, this would be:
-```
-...Viewers/platform/viewer/dist/theme/mgHP.json5
-...Viewers/platform/viewer/dist/theme/euroKeyboard.json5
-```
-A site might build such different themes to support various user preferences
-or site differences between users, such as themes to support specific clinics
-or differences in user groups such as left on right mammography viewing versus
-right on left mammography viewing.
-
-The decision to use the JSON5 parser for this was primarily aimed at allowing
-comments in the configuration files, an important consideration for sites
-wanting to document their settings.
-
-See [theme-configuration](theme-configuration.md) for more details on the
-specific configuration settings which can be applied.
-
-See [config-point-service](../platform/services/config-point-service.md) for
-information on how to add your own config-point based extensions to the code.
 
 <!--
   LINKS

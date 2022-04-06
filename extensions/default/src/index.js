@@ -5,7 +5,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getToolbarModule from './getToolbarModule.js';
 import commandsModule from './commandsModule';
-import id from './id';
+import { id } from './id.js';
 
 export default {
   /**

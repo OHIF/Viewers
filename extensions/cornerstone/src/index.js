@@ -1,7 +1,8 @@
 import React from 'react';
 import init from './init.js';
 import commandsModule from './commandsModule.js';
-import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
+import { id } from './id.js';
+// import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './OHIFCornerstoneViewport');
@@ -22,8 +23,7 @@ export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id: 'org.ohif.cornerstone',
-
+  id,
   /**
    *
    *
@@ -59,5 +59,3 @@ export default {
     return commandsModule({ servicesManager, commandsManager });
   },
 };
-
-export { CornerstoneViewportDownloadForm };

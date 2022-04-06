@@ -28,9 +28,10 @@ configuration:
   route (panels, viewports)
 
 ```js
-export default function mode() {
+function modeFactory() {
   return {
     id: 'viewer',
+    version: '3.0.0',
     displayName: '',
     routes: [
       {
@@ -43,23 +44,23 @@ export default function mode() {
             id: ohif.layout,
             props: {
               leftPanels: [
-                'org.ohif.measurement-tracking.panelModule.seriesList',
+                '@ohif/extension-measurement-tracking.panelModule.seriesList',
               ],
               rightPanels: [
-                'org.ohif.measurement-tracking.panelModule.trackedMeasurements',
+                '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
               ],
               viewports: [
                 {
                   namespace:
-                    'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
+                    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
                   displaySetsToDisplay: [
-                    'org.ohif.default.sopClassHandlerModule.stack',
+                    '@ohif/extension-default.sopClassHandlerModule.stack',
                   ],
                 },
                 {
-                  namespace: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
+                  namespace: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
                   displaySetsToDisplay: [
-                    'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',
+                    '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr',
                   ],
                 },
               ],
@@ -251,7 +252,7 @@ the extension, and any mode that is interested in using `layoutTemplate-2`
 */
 layoutTemplate: ({ location, servicesManager }) => {
   return {
-    id: 'org.ohif.default.layoutTemplateModule.viewerLayout',
+    id: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
     props: {
       leftPanels: [
         'myExtension.panelModule.leftPanel1',
@@ -291,7 +292,7 @@ component you have written for that route. `Mode` handle showing the correct
 component for the specified route.
 
 ```js
-export default function mode() {
+function modeFactory() {
   return {
     id: 'viewer',
     displayName: '',

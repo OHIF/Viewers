@@ -165,18 +165,22 @@ function PanelStudyBrowser({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-      [
-        ...expandedStudyInstanceUIDs.filter(
-          stdyUid => stdyUid !== StudyInstanceUID
-        ),
-      ]
+        [
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
-      const madeInClient = true
-      requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID, madeInClient);
+      const madeInClient = true;
+      requestDisplaySetCreationForStudy(
+        DisplaySetService,
+        StudyInstanceUID,
+        madeInClient
+      );
     }
   }
 

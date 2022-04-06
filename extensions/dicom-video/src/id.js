@@ -1,8 +1,6 @@
-const Name = 'dicom-video';
-const id = `org.ohif.${Name}`;
+import packageJson from '../package.json';
 
-export default id;
+const id = packageJson.name;
+const SOPClassHandlerId = `${id}.sopClassHandlerModule.dicom-video`;
 
-const SOPClassHandlerId = `${id}.sopClassHandlerModule.${Name}`;
-
-export { Name, SOPClassHandlerId, };
+export { SOPClassHandlerId, id };

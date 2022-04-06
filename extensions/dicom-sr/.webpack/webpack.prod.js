@@ -1,10 +1,12 @@
 const webpack = require('webpack');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const path = require('path');
-const webpackCommon = require('./../../../.webpack/webpack.commonjs.js');
-const pkg = require('./../package.json');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const ROOT_DIR = path.join(__dirname, './..');
+const pkg = require('./../package.json');
+const webpackCommon = require('./../../../.webpack/webpack.base.js');
+
+const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
@@ -30,7 +32,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'OHIFExtDICOMSR',
+      library: 'OHIFExtCornerstone',
       libraryTarget: 'umd',
       libraryExport: 'default',
       filename: pkg.main,
@@ -38,6 +40,10 @@ module.exports = (env, argv) => {
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
+      }),
+      new MiniCssExtractPlugin({
+        filename: './dist/[name].css',
+        chunkFilename: './dist/[id].css',
       }),
     ],
   });

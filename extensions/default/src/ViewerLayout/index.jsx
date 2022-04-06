@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   SidePanel,
@@ -12,11 +13,9 @@ import {
 
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
-import { useNavigate } from 'react-router-dom';
+import { useAppConfig } from '@state';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
-
-import { useAppConfig } from '@state';
 
 function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
@@ -94,7 +93,7 @@ function ViewerLayout({
   const navigate = useNavigate();
 
   const onClickReturnButton = () => {
-    navigate('/')
+    navigate('/');
   };
 
   const { t } = useTranslation();
@@ -108,7 +107,12 @@ function ViewerLayout({
     {
       title: t('Header:About'),
       icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer', contentProps: { versionNumber, buildNumber } }),
+      onClick: () =>
+        show({
+          content: AboutModal,
+          title: 'About OHIF Viewer',
+          contentProps: { versionNumber, buildNumber },
+        }),
     },
     {
       title: t('Header:Preferences'),
@@ -136,7 +140,7 @@ function ViewerLayout({
               hide();
             },
             onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys
+            hotkeysModule: hotkeys,
           },
         }),
     },
@@ -185,7 +189,11 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header menuOptions={menuOptions} onClickReturnButton={onClickReturnButton} WhiteLabeling={appConfig.whiteLabeling} >
+      <Header
+        menuOptions={menuOptions}
+        onClickReturnButton={onClickReturnButton}
+        WhiteLabeling={appConfig.whiteLabeling}
+      >
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
             <Toolbar servicesManager={servicesManager} />
@@ -193,7 +201,7 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="flex flex-row flex-nowrap items-stretch w-full overflow-hidden"
+        className="flex flex-row items-stretch w-full overflow-hidden flex-nowrap"
         style={{ height: 'calc(100vh - 52px' }}
       >
         {/* LEFT SIDEPANELS */}

@@ -8,7 +8,7 @@
   "main": "dist/index.umd.js",
   "module": "src/index.js",
   "engines": {
-    "node": ">=10",
+    "node": ">=14",
     "npm": ">=6",
     "yarn": ">=1.16.0"
   },
@@ -29,8 +29,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "^0.50.0",
-    "@ohif/ui": "^0.50.0",
+    "@ohif/core": "^3.0.0",
+    "@ohif/ui": "^2.0.0",
     "cornerstone-core": "^2.6.0",
     "cornerstone-math": "^0.1.9",
     "cornerstone-tools": "6.0.2",

@@ -1,8 +1,6 @@
-const Name = 'dicom-pdf';
-const id = `org.ohif.${Name}`;
+import packageJson from '../package.json';
 
-export default id;
+const id = packageJson.name;
+const SOPClassHandlerId = `${id}.sopClassHandlerModule.dicom-pdf`;
 
-const SOPClassHandlerId = `${id}.sopClassHandlerModule.${Name}`;
-
-export { Name, SOPClassHandlerId, };
+export { id, SOPClassHandlerId };

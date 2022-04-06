@@ -10,7 +10,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=10",
+    "node": ">=14",
     "npm": ">=6",
     "yarn": ">=1.16.0"
   },

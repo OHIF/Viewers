@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 sidebar_label: Testing
 ---
 
@@ -26,11 +26,19 @@ unsuccessful tests with detailed explanations.
 ## End-to-end test
 For running the OHIF e2e test you need to run the following steps:
 
-- Open a new terminal, navigate to the OHIF project, and run OHIF with the
-  e2e config.  The test:data only needs to be run once and checks the data out.
+- Open a new terminal, and from the root of the OHIF mono repo, run the following command:
 
   ```bash
   yarn test:data
+  ```
+
+  This will download the required data to run the e2e tests (it might take a while).
+  The `test:data` only needs to be run once and checks the data out. Read more about
+  test data [below](#test-data).
+
+- Run the viewer with e2e config
+
+  ```bash
   APP_CONFIG=config/e2e.js yarn start
   ```
 
@@ -158,7 +166,6 @@ We write integration tests to gain confidence that several units work together.
 Generally, we want to mock as little as possible for these tests. In practice,
 this means only mocking network requests.
 
-
 ### End-to-End Tests
 
 These are the most expensive tests to write and maintain. Largely because, when
@@ -185,8 +192,6 @@ feature `X` or scenario `Y`? Open an issue and let's discuss.
   - Be sure to check out `Getting Started` and `Core Concepts`
 - [Best Practices](https://docs.cypress.io/guides/references/best-practices.html)
 - [Example Recipes](https://docs.cypress.io/examples/examples/recipes.html)
-
-
 
 <!--
   Links

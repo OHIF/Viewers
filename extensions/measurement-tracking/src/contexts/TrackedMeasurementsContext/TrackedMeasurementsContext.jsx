@@ -17,7 +17,8 @@ const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
-const SR_SOPCLASSHANDLERID = "org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr";
+const SR_SOPCLASSHANDLERID =
+  '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr';
 
 /**
  *
@@ -33,7 +34,10 @@ function TrackedMeasurementsContextProvider(
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const { DisplaySetService, MeasurementService } = servicesManager.services;
+      const {
+        DisplaySetService,
+        MeasurementService,
+      } = servicesManager.services;
       const { trackedStudy, trackedSeries } = ctx;
       const measurements = MeasurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
@@ -44,7 +48,10 @@ function TrackedMeasurementsContextProvider(
 
       const id = trackedMeasurements[0].id;
 
-      MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, id);
+      MeasurementService.jumpToMeasurement(
+        viewportGrid.activeViewportIndex,
+        id
+      );
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
@@ -98,7 +105,7 @@ function TrackedMeasurementsContextProvider(
     }),
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
       servicesManager,
-      extensionManager
+      extensionManager,
     }),
   });
 
@@ -149,9 +156,11 @@ function TrackedMeasurementsContextProvider(
       // The issue here is that this handler in TrackedMeasurementsContext
       // ends up occurring before the Viewport is created, so the displaySet
       // is not loaded yet, and isRehydratable is undefined unless we call load().
-      if (displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-          !displaySet.isLoaded &&
-          displaySet.load) {
+      if (
+        displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+        !displaySet.isLoaded &&
+        displaySet.load
+      ) {
         displaySet.load();
       }
 

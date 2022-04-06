@@ -1,7 +1,8 @@
-const id = 'org.ohif.dicom-sr';
+import packageJson from '../package.json';
 
-export default id;
+const id = packageJson.name;
 
 const SOPClassHandlerName = 'dicom-sr';
 const SOPClassHandlerId = `${id}.sopClassHandlerModule.${SOPClassHandlerName}`;
-export { SOPClassHandlerName, SOPClassHandlerId };
+
+export { SOPClassHandlerName, SOPClassHandlerId, id };

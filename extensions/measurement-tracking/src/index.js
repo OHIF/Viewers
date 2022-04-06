@@ -1,12 +1,14 @@
 import getContextModule from './getContextModule.js';
 import getPanelModule from './getPanelModule.js';
 import getViewportModule from './getViewportModule.js';
+import { id } from './id.js';
 
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id: 'org.ohif.measurement-tracking',
+  id,
+
   getContextModule,
   getPanelModule,
   getViewportModule,

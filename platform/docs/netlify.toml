@@ -16,7 +16,7 @@
 [build.environment]
   # If 'production', `yarn install` does not install devDependencies
   NODE_ENV = "development"
-  NODE_VERSION = "12.13.0"
+  NODE_VERSION = "14.19.1"
   YARN_VERSION = "1.22.0"
   RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"

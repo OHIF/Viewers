@@ -3,17 +3,20 @@ const dotenv = require('dotenv');
 //
 const path = require('path');
 const webpack = require('webpack');
+
+// ~~ PLUGINS
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
+const TerserJSPlugin = require('terser-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
+// ~~ PackageJSON
 const PACKAGE = require('../platform/viewer/package.json');
 // ~~ RULES
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
-// ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
-const TerserJSPlugin = require('terser-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -39,16 +42,16 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       app: `${SRC_DIR}/index.js`,
     },
     optimization: {
-      splitChunks: {
-        // include all types of chunks
-        chunks: 'all',
-      },
+      // splitChunks: {
+      //   // include all types of chunks
+      //   chunks: 'all',
+      // },
       //runtimeChunk: 'single',
       minimize: isProdBuild,
       sideEffects: true,
     },
     output: {
-      clean: true,
+      // clean: true,
       publicPath: '/',
     },
     context: SRC_DIR,
@@ -98,6 +101,8 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         path.resolve(__dirname, '../node_modules'),
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
+        path.resolve(__dirname, '../platform/viewer/node_modules'),
+        path.resolve(__dirname, '../platform/ui/node_modules'),
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
@@ -131,15 +136,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       }),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
-      new CopyPlugin({
-        patterns: [
-          {
-            from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
-        ],
-      }),
     ],
   };
 

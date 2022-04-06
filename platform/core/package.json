@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "2.9.6",
+  "version": "3.0.0",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=10",
+    "node": ">=14",
     "npm": ">=6",
     "yarn": ">=1.16.0"
   },
@@ -35,7 +35,7 @@
     "cornerstone-math": "0.1.9",
     "cornerstone-wado-image-loader": "4.0.4",
     "dicom-parser": "^1.8.9",
-    "@ohif/ui": "^1.8.2"
+    "@ohif/ui": "^2.0.0"
   },
   "dependencies": {
     "@babel/runtime": "7.16.3",

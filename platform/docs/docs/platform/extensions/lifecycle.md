@@ -52,7 +52,7 @@ and
 import MyNewService from './MyNewService'
 
 export default {
-  id: 'MyExampleExtension',
+  id,
 
   /**
    * @param {object} params
@@ -90,7 +90,7 @@ _Example `onModeEnter` hook implementation_
 
 ```js
 export default {
-  id: 'org.ohif.dicom-sr',
+  id: '@ohif/extension-dicom-sr',
 
   onModeEnter({ servicesManager }) {
     const { DisplaySetService } = servicesManager.services;

@@ -14,7 +14,7 @@ import {
   HangingProtocolService,
   CineService,
   UserAuthenticationService,
-  errorHandler
+  errorHandler,
   // utils,
 } from '@ohif/core';
 
@@ -22,7 +22,7 @@ import {
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
-function appInit(appConfigOrFunc, defaultExtensions) {
+function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
       ? appConfigOrFunc({ servicesManager })
@@ -86,10 +86,18 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     throw new Error('No modes are defined! Check your app-config.js');
   }
 
-  // TODO: Remove this
-  if (!appConfig.modes.length) {
-    appConfig.modes.push(window.longitudinalMode);
-    // appConfig.modes.push(window.segmentationMode);
+  for (let i = 0; i < defaultModes.length; i++) {
+    const { modeFactory, id } = defaultModes[i];
+
+    // If the appConfig contains configuration for this mode, use it.
+    const modeConfig =
+      appConfig.modeConfig && appConfig.modeConfig[i]
+        ? appConfig.modeConfig[id]
+        : {};
+
+    const mode = modeFactory(modeConfig);
+
+    appConfig.modes.push(mode);
   }
 
   return {
