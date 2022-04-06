@@ -17,7 +17,7 @@ const cornerstone = {
  * to make sure that the mode is working.
  */
 const extensionDependencies = {
-  '@ohif/extension-default': '^1.0.1',
+  '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
 };
 

@@ -76,7 +76,11 @@ function OHIFCornerstoneSRViewport({
 
   // TODO: this is a hook that fails if we register/de-register
   //
-  if (extensionManager.getExtensionVersion(MEASUREMENT_TRACKING_EXTENSION_ID)) {
+  if (
+    extensionManager.registeredExtensionIds.includes(
+      MEASUREMENT_TRACKING_EXTENSION_ID
+    )
+  ) {
     const contextModule = extensionManager.getModuleEntry(
       '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
     );

@@ -263,7 +263,7 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run: npx lerna version
       - run: yarn run build:package-all
-      - run: npx lerna publish from-package
+      - run: yarn run lerna:publish
       - run: npx lerna run ci:generateSuccessVersion --stream
       - persist_to_workspace:
           root: ~/repo

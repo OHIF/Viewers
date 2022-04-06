@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   SidePanel,
@@ -12,10 +13,9 @@ import {
 
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
+import { useAppConfig } from '@state';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
-
-import { useAppConfig } from '@state';
 
 function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
@@ -88,7 +88,6 @@ function ViewerLayout({
   rightPanels,
   viewports,
   ViewportGridComp,
-  useNavigate,
 }) {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();

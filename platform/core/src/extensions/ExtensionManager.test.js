@@ -120,18 +120,15 @@ describe('ExtensionManager.js', () => {
     it('tracks which extensions have been registered', () => {
       const extension = {
         id: 'hello-world',
-        version: '1.0.0',
       };
 
       extensionManager.registerExtension(extension);
 
-      expect(extensionManager.getExtensionVersion(extension.id)).toContain(
-        extension.version
-      );
+      expect(extensionManager.registeredExtensionIds).toContain(extension.id);
     });
 
     it('logs a warning if the extension has an id that has already been registered', () => {
-      const extension = { id: 'hello-world', version: '1.0.0' };
+      const extension = { id: 'hello-world' };
       extensionManager.registerExtension(extension);
 
       // SUT

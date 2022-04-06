@@ -1,21 +1,16 @@
 export default function checkExtensionDependencies(mode, extensionManager) {
   const extensionDependencies = mode.extensions;
 
-  const dependencyString = `Unmet extension dependency in mode: ${mode.id}@${mode.version}`;
+  const dependencyString = `Unmet extension dependency in mode: ${mode.id}`;
 
   Object.keys(extensionDependencies).forEach(extensionId => {
-    const requiredVersion = extensionDependencies[extensionId];
-    const installedVersion = extensionManager.getExtensionVersion(extensionId);
+    const extensionInstalled = extensionManager.registeredExtensionIds.includes(
+      extensionId
+    );
 
-    if (!installedVersion) {
+    if (!extensionInstalled) {
       throw new Error(
-        `${dependencyString}: extension ${extensionId}@${requiredVersion} not found`
-      );
-    }
-
-    if (!areVersionsCompatible(requiredVersion, installedVersion)) {
-      throw new Error(
-        `${dependencyString}: required version @${requiredVersion} not met, found version ${installedVersion}`
+        `${dependencyString}: extension ${extensionId} not found`
       );
     }
   });

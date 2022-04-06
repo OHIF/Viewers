@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
-import { useNavigate } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
@@ -84,7 +83,6 @@ export default function ModeRoute({
   const {
     DisplaySetService,
     HangingProtocolService,
-    UserAuthenticationService,
   } = servicesManager.services;
 
   const { extensions, sopClassHandlers, hotkeys, hangingProtocols } = mode;
@@ -101,12 +99,6 @@ export default function ModeRoute({
   const dataSource = dataSources[0];
   // Only handling one route per mode for now
   const route = mode.routes[0];
-
-  const layoutTemplateRouteData = route.layoutTemplate({ location });
-  const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
-    layoutTemplateRouteData.id
-  );
-  const LayoutComponent = layoutTemplateModuleEntry.component;
 
   // For each extension, look up their context modules
   // TODO: move to extension manager.
@@ -220,9 +212,9 @@ export default function ModeRoute({
 
     // Adding hanging protocols of extensions after onModeEnter since
     // it will reset the protocols
-    hangingProtocols.forEach(extentionProtocols => {
+    hangingProtocols.forEach(extensionProtocols => {
       const hangingProtocolModule = extensionManager.getModuleEntry(
-        extentionProtocols
+        extensionProtocols
       );
       if (hangingProtocolModule?.protocols) {
         HangingProtocolService.addProtocols(hangingProtocolModule.protocols);
@@ -280,7 +272,7 @@ export default function ModeRoute({
     );
     const LayoutComponent = layoutTemplateModuleEntry.component;
 
-    return <LayoutComponent {...props} useNavigate={useNavigate} />;
+    return <LayoutComponent {...props} />;
   };
 
   return (
