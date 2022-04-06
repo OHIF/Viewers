@@ -24,7 +24,11 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: undefined, // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
+function PanelMeasurementTableTracking({
+  servicesManager,
+  extensionManager,
+  commandsManager,
+}) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
     Date.now().toString()
@@ -225,15 +229,17 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     });
   };
 
-  const onMeasurementItemClickHandler = ({ id, isActive }) => {
-    if (!isActive) {
-      const measurements = [...displayMeasurements];
-      const measurement = measurements.find(m => m.id === id);
+  const onChangeVisibilityHandler = ({ id }) => {
+    commandsManager.runCommand('toggleMeasurementsVisibility', {
+      ids: id ? [id] : undefined,
+    });
+  };
 
-      measurements.forEach(m => (m.isActive = m.id !== id ? false : true));
-      measurement.isActive = true;
-      setDisplayMeasurements(measurements);
-    }
+  const onMeasurementItemClickHandler = ({ id, isActive }) => {
+    commandsManager.runCommand('setMeasurementsActiveProp', {
+      ids: [id],
+      value: !isActive,
+    });
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
@@ -260,6 +266,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           data={displayMeasurementsWithoutFindings}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
+          onChangeVisibility={onChangeVisibilityHandler}
         />
         {additionalFindings.length !== 0 && (
           <MeasurementTable
@@ -268,6 +275,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
             data={additionalFindings}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
+            onChangeVisibility={onChangeVisibilityHandler}
           />
         )}
       </div>
@@ -337,7 +345,8 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
     measurementType: measurement.type,
     color: measurement.color,
     displayText: displayText || [],
-    isActive: false, // activeMeasurementItem === i + 1,
+    isActive: measurement.active,
+    visible: measurement.visible,
   };
 }
 

@@ -90,6 +90,18 @@ window.config = {
       label: 'Flip Vertically',
       keys: ['v'],
     },
+    {
+      commandName: 'toggleMeasurementsVisibility',
+      commandOptions: { ids: [] }, // get current active measurement
+      label: 'Toggle measurement visibility',
+      keys: ['m'],
+    },
+    {
+      commandName: 'toggleMeasurementsVisibility',
+      commandOptions: { ids: undefined }, // bulk op
+      label: 'Toggle all measurements visibility',
+      keys: ['shift+m'],
+    },
     { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
     { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
     { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },

@@ -516,7 +516,7 @@ const _connectToolsToMeasurementService = (
     MeasurementService.subscribe(
       MEASUREMENT_UPDATED,
       ({ source, measurement, notYetUpdatedAtSource }) => {
-        const { id, label, color } = measurement;
+        const { id, label, color, visible, active } = measurement;
 
         if (
           source.name == 'CornerstoneTools' &&
@@ -528,8 +528,11 @@ const _connectToolsToMeasurementService = (
         const cornerstoneMeasurement = getCornerstoneMeasurementById(id);
 
         if (cornerstoneMeasurement) {
+          // side effect, cs should provide api to prevent changing by ref.
           cornerstoneMeasurement.label = label;
           cornerstoneMeasurement.color = color;
+          cornerstoneMeasurement.visible = visible;
+          cornerstoneMeasurement.active = active;
           if (cornerstoneMeasurement.hasOwnProperty('text')) {
             // Deal with the weird case of ArrowAnnotate.
             cornerstoneMeasurement.text = label;

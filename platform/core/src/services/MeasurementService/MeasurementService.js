@@ -106,6 +106,56 @@ class MeasurementService {
   }
 
   /**
+   * Creates a new array populated with the result of calling the given iteratee param (function).
+   * on every item of measurements list.
+   *
+   * @param {Function} iteratee Function that is called for each item of measurements list.
+   * @returns a new array populated with modified measurements.
+   */
+  mapMeasurementsBy(iteratee) {
+    const measurements = this.getMeasurements();
+
+    if (measurements && measurements.length && typeof iteratee === 'function') {
+      const _measurements = [...measurements];
+
+      return _measurements.map(iteratee);
+    }
+
+    return [];
+  }
+
+  /**
+   * Executes the given iteratee param (function) once for each item of measurements list.
+   *
+   * @param {Function} iteratee Function that is called for each item of measurements list.
+   */
+  forEachMeasurement(iteratee) {
+    const measurements = this.getMeasurements();
+
+    if (measurements && measurements.length && typeof iteratee === 'function') {
+      const _measurements = [...measurements];
+
+      _measurements.forEach(iteratee);
+    }
+  }
+
+  /**
+   * Returns the first element in the measurements list array that satisfies the provided testing function. If no values satisfy the testing function, undefined is returned.
+   *
+   * @param {Function} comparator Testing function.
+   * @returns a new array populated with modified measurements.
+   */
+  findMeasurementBy(comparator) {
+    if (typeof comparator !== 'function') {
+      return;
+    }
+
+    const measurements = this.getMeasurements() || [];
+
+    return measurements.find(comparator);
+  }
+
+  /**
    * Get specific measurement by its id.
    *
    * @param {string} id Id of the measurement
@@ -308,6 +358,19 @@ class MeasurementService {
 
       return updatedMeasurement.id;
     }
+  }
+
+  /**
+   * Update all the given measurement items from measurements list.
+   * Each item from the first param list will be updated into measurements list only if it already exists on it.
+   *
+   * @param {Measurement[]} measurements list of measurements to be updated.
+   * @param {boolean} [notYetUpdatedAtSource=false] Tell whether correspondent change is already updated on source or not.
+   */
+  updateMany(measurements = [], notYetUpdatedAtSource = false) {
+    measurements.forEach(measurement => {
+      this.update(measurement.id, measurement, notYetUpdatedAtSource);
+    });
   }
 
   /**

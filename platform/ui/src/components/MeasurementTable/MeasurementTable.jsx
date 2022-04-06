@@ -3,8 +3,13 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
+import { Icon } from '../';
 
-const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
+function hasAnyVisible(data =[]) {
+  return data.some(measurement => !!measurement.visible);
+}
+
+const MeasurementTable = ({ data, title, amount, onClick, onEdit, onChangeVisibility }) => {
   const { t } = useTranslation("MeasurementTable")
 
   return (
@@ -13,6 +18,12 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
         <span className="text-base font-bold tracking-widest text-white uppercase">
           {t(title)}
         </span>
+        {data.length !== 0 && <Icon
+          className={
+            'text-white ml-auto mr-6 w-4 cursor-pointer'}
+          name={hasAnyVisible(data) ? 'eye-visible' : 'eye-hidden'}
+          onClick={onChangeVisibility}
+        />}
         <span className="text-base font-bold text-white">{amount}</span>
       </div>
       <div className="overflow-hidden ohif-scrollbar max-h-112">
@@ -24,10 +35,12 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
               index={index + 1}
               color={measurementItem.color}
               label={measurementItem.label}
-              isActive={measurementItem.isActive}
+              isActive={measurementItem.active}
+              visible={measurementItem.visible}
               displayText={measurementItem.displayText}
               onClick={onClick}
               onEdit={onEdit}
+              onChangeVisibility={onChangeVisibility}
             />
           ))}
         {data.length === 0 && (
@@ -65,6 +78,7 @@ MeasurementTable.propTypes = {
   ),
   onClick: PropTypes.func,
   onEdit: PropTypes.func,
+  onChangeVisibility: PropTypes.func,
 };
 
 export default MeasurementTable;

@@ -88,6 +88,8 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     referenceStudyUID,
     referenceSeriesUID,
     SOPInstanceUID,
+    active,
+    visible,
   } = measurement;
   const instance = DicomMetadataStore.getInstance(
     referenceStudyUID,
@@ -107,8 +109,8 @@ function _mapMeasurementToDisplay(measurement, index, types) {
         InstanceNumber,
         types
       ) || [],
-    // TODO: handle one layer down
-    isActive: false, // activeMeasurementItem === i + 1,
+    active,
+    visible,
   };
 }
 

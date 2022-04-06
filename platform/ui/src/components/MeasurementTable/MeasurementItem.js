@@ -12,12 +12,19 @@ const MeasurementItem = ({
   isActive,
   onClick,
   onEdit,
+  visible,
+  onChangeVisibility,
 }) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const onEditHandler = event => {
     event.stopPropagation();
     onEdit({ id, isActive, event });
+  };
+
+  const onChangeVisibilityHandler = event => {
+    event.stopPropagation();
+    onChangeVisibility({ id, visible, event });
   };
 
   const onClickHandler = event => onClick({ id, isActive, event });
@@ -67,6 +74,20 @@ const MeasurementItem = ({
             { 'invisible opacity-0 mr-2': !isActive && !isHovering },
             { 'visible opacity-1': !isActive && isHovering }
           )}
+          name={visible ? 'eye-visible' : 'eye-hidden'}
+          style={{
+            top: 6,
+            right: 30,
+            transform: isActive || isHovering ? '' : 'translateX(100%)',
+          }}
+          onClick={onChangeVisibilityHandler}
+        />
+        <Icon
+          className={classnames(
+            'text-white w-4 absolute cursor-pointer transition duration-300',
+            { 'invisible opacity-0 mr-2': !isActive && !isHovering },
+            { 'visible opacity-1': !isActive && isHovering }
+          )}
           name="pencil"
           style={{
             top: 4,
@@ -89,12 +110,15 @@ MeasurementItem.propTypes = {
   label: PropTypes.string,
   displayText: PropTypes.array.isRequired,
   isActive: PropTypes.bool,
+  visible: PropTypes.bool,
   onClick: PropTypes.func,
   onEdit: PropTypes.func,
+  onChangeVisibility: PropTypes.func,
 };
 
 MeasurementItem.defaultProps = {
   isActive: false,
+  color: 'yellow',
 };
 
 export default MeasurementItem;

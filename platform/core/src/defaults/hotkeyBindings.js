@@ -23,6 +23,18 @@ export default [
     isEditable: true,
   },
   {
+    commandName: 'toggleMeasurementsVisibility',
+    commandOptions: { ids: [] }, // get current active measurement
+    label: 'Toggle measurement visibility',
+    keys: ['m'],
+  },
+  {
+    commandName: 'toggleMeasurementsVisibility',
+    commandOptions: { ids: undefined }, // bulk op
+    label: 'Toggle all measurements visibility',
+    keys: ['shift+m'],
+  },
+  {
     commandName: 'toggleCine',
     label: 'Cine',
     keys: ['c'],

@@ -86,6 +86,8 @@ const EllipticalRoi = {
       label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
+      active: measurementData.active,
+      visible: measurementData.visible,
       area: cachedStats && cachedStats.area,
       mean: cachedStats && cachedStats.mean,
       stdDev: cachedStats && cachedStats.stdDev,
