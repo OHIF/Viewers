@@ -2,7 +2,7 @@ import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import onModeEnter from './onModeEnter';
 import init from './init';
-import { id, version } from './id.js';
+import { id } from './id.js';
 
 const Component = React.lazy(() => {
   return import(
@@ -23,24 +23,9 @@ const OHIFCornerstoneSRViewport = props => {
  */
 export default {
   /**
-   * Only two required properties. Should be a unique value across all extensions.
+   * Only required property. Should be a unique value across all extensions.
    */
   id,
-  version,
-  dependencies: [
-    // TODO -> This isn't used anywhere yet, but we do have a hard dependency, and need to check for these in the future.
-    // TODO #2 -> When ohif-cli installs this, we should check if these dependencies are installed and install them if not
-    //         -> Added these to peer dependencies in preparation for this.
-    // OHIF-229
-    {
-      id: '@ohif/extension-cornerstone',
-      version: '^3.0.0',
-    },
-    {
-      id: '@ohif/extension-measurement-tracking',
-      version: '^0.0.1',
-    },
-  ],
 
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });

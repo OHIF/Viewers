@@ -1,14 +1,13 @@
 import getContextModule from './getContextModule.js';
 import getPanelModule from './getPanelModule.js';
 import getViewportModule from './getViewportModule.js';
-import { id, version } from './id.js';
+import { id } from './id.js';
 
 export default {
   /**
-   * Only two required properties. Should be a unique value across all extensions.
+   * Only required property. Should be a unique value across all extensions.
    */
   id,
-  version,
 
   getContextModule,
   getPanelModule,

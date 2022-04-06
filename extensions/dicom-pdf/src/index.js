@@ -1,6 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import { id, version } from './id.js';
+import { id } from './id.js';
 
 const Component = React.lazy(() => {
   return import(
@@ -24,12 +24,6 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
-  version,
-
-  preRegistration({ servicesManager, configuration = {} }) {
-    // No-op for now
-  },
-
   /**
    *
    *

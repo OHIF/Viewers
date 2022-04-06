@@ -1,7 +1,7 @@
 import React from 'react';
 import init from './init.js';
 import commandsModule from './commandsModule.js';
-import { id, version } from './id.js';
+import { id } from './id.js';
 // import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
 const Component = React.lazy(() => {
@@ -21,11 +21,9 @@ const OHIFCornerstoneViewport = props => {
  */
 export default {
   /**
-   * Only two required properties. Should be a unique value across all extensions.
+   * Only required property. Should be a unique value across all extensions.
    */
   id,
-  version,
-
   /**
    *
    *
