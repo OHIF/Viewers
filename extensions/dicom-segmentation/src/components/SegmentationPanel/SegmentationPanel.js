@@ -226,7 +226,6 @@ const SegmentationPanel = ({
     };
   }, [
     activeIndex,
-    updateSegmentationComboBox,
     viewports,
   ]);
 
@@ -234,21 +233,7 @@ const SegmentationPanel = ({
     const index = e.detail.activatedLabelmapIndex;
     if (index !== -1) {
       setState(state => ({ ...state, selectedSegmentation: index }));
-    } else {
-      cleanSegmentationComboBox();
     }
-  };
-
-  const cleanSegmentationComboBox = () => {
-    setState(state => ({
-      ...state,
-      segmentsHidden: [],
-      segmentNumbers: [],
-      labelMapList: [],
-      segmentList: [],
-      isDisabled: true,
-      selectedSegmentation: -1,
-    }));
   };
 
   const refreshSegmentations = () => {
@@ -709,7 +694,7 @@ const SegmentationPanel = ({
           count={state.segmentList.length}
           isVisible={
             state.segmentsHidden.filter(isHidden => isHidden === true).length <
-            state.segmentNumbers.length
+            state.segmentNumbers.length && state.segmentNumbers.length > 0
           }
           onVisibilityChange={onVisibilityChangeHandler}
         >

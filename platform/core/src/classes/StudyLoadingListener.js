@@ -401,7 +401,7 @@ class StackLoadingListener extends BaseLoadingListener {
     const totalFramesCount = this.stack.imageIds.length;
     const loadedFramesCount = this.loadedCount;
     const loadingFramesCount = totalFramesCount - loadedFramesCount;
-    const percentComplete = Math.round(
+    const percentComplete = Math.ceil(
       (loadedFramesCount / totalFramesCount) * 100
     );
     const progressId = this._getProgressId();
