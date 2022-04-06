@@ -250,7 +250,6 @@ const version = '3.0.0';
 function modeFactory({ modeConfiguration }) {
   return {
     id,
-    version,
     // ...
     routes: [
       {

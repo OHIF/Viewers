@@ -50,7 +50,6 @@ export default {
    * Required properties. Should be a unique value across all extensions.
    */
   id,
-  version,
 
   // Lifecyle
   preRegistration() { /* */ },

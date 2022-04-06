@@ -5,7 +5,7 @@ import {
   writePluginConfigFile,
 } from './private/index.js';
 
-function addToAndOverwriteConfig(packageName, options, augmentConfigFuntion) {
+function addToAndOverwriteConfig(packageName, options, augmentConfigFunction) {
   const installedVersion = options.version;
   let pluginConfig = readPluginConfigFile();
 
@@ -16,7 +16,7 @@ function addToAndOverwriteConfig(packageName, options, augmentConfigFuntion) {
     };
   }
 
-  augmentConfigFuntion(pluginConfig, {
+  augmentConfigFunction(pluginConfig, {
     packageName,
     version: installedVersion,
   });

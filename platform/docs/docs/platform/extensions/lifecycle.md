@@ -53,7 +53,6 @@ import MyNewService from './MyNewService'
 
 export default {
   id,
-  version,
 
   /**
    * @param {object} params
