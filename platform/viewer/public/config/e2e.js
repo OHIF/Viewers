@@ -8,7 +8,7 @@ window.config = {
   dataSources: [
     {
       friendlyName: 'StaticWado test data',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
@@ -23,12 +23,12 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: "video,thumbnail,pdf",
+        singlepart: 'video,thumbnail,pdf',
       },
     },
     // {
     //   friendlyName: 'StaticWado default data',
-    //   namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+    //   namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
     //   sourceName: 'dicomweb',
     //   configuration: {
     //     name: 'DCM4CHEE',
@@ -47,7 +47,7 @@ window.config = {
     // },
     {
       friendlyName: 'dicom json',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomjson',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
         name: 'json',
@@ -55,7 +55,7 @@ window.config = {
     },
     {
       friendlyName: 'dicom local',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomlocal',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
       configuration: {},
     },

@@ -67,9 +67,21 @@ using the mode configuration. As seen below, the `leftPanels` and `rightPanels`
 accept an `Array` of the `IDs`.
 
 ```js
-export default function mode({ modeConfiguration }) {
+
+const extensionDependencies = {
+  '@ohif/extension-default': '^3.0.0',
+  '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-measurement-tracking': '^3.0.0',
+  '@ohif/extension-dicom-sr': '^3.0.0',
+};
+
+const id = 'viewer'
+const version = '3.0.0
+
+function modeFactory({ modeConfiguration }) {
   return {
-    id: 'viewer',
+    id,
+    version,
     routes: [
       {
         path: 'longitudinal',
@@ -89,12 +101,16 @@ export default function mode({ modeConfiguration }) {
         },
       },
     ],
-    extensions: [
-      '@ohif/extension-default',
-      '@ohif/extension-cornerstone',
-      '@ohif/extension-measurement-tracking',
-      '@ohif/extension-dicom-sr',
-    ],
+    extensions: extensionDependencies
   };
 }
+
+const mode = {
+  id,
+  modeFactory,
+  extensionDependencies,
+};
+
+export default mode;
+
 ```

@@ -23,9 +23,10 @@ For instance, in `longitudinal` mode we are using this hook to initialize the
 buttons to the toolbar.
 
 ```js
-export default function mode() {
+function modeFactory() {
   return {
     id: '',
+    version: '',
     displayName: '',
     onModeEnter: ({ servicesManager, extensionManager }) => {
       const { ToolBarService } = servicesManager.services;
@@ -68,7 +69,7 @@ For instance, it can be used to reset the `ToolbarService` which reset the
 toggled buttons.
 
 ```js
-export default function mode() {
+function modeFactory() {
   return {
     id: '',
     displayName: '',

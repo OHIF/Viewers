@@ -28,9 +28,10 @@ configuration:
   route (panels, viewports)
 
 ```js
-export default function mode() {
+function modeFactory() {
   return {
     id: 'viewer',
+    version: '3.0.0',
     displayName: '',
     routes: [
       {
@@ -291,7 +292,7 @@ component you have written for that route. `Mode` handle showing the correct
 component for the specified route.
 
 ```js
-export default function mode() {
+function modeFactory() {
   return {
     id: 'viewer',
     displayName: '',

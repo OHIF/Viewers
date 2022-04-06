@@ -47,8 +47,8 @@ function modeFactory({ modeConfiguration }) {
     // TODO: We're using this as a route segment
     // We should not be.
     id,
-    routeName: 'viewer',
     version,
+    routeName: 'viewer',
     displayName: 'Basic Viewer',
     /**
      * Lifecycle hooks

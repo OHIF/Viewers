@@ -2,19 +2,19 @@
   "extensions": [
     {
       "packageName": "@ohif/extension-cornerstone",
-      "version": "2.12.3"
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-measurement-tracking",
-      "version": "0.0.1"
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-dicom-sr",
-      "version": "0.0.1"
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-default",
-      "version": "1.0.1"
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-dicom-pdf",
@@ -28,7 +28,7 @@
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
-      "version": "0.0.1"
+      "version": "3.0.0"
     }
   ]
 }

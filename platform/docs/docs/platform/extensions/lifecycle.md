@@ -52,7 +52,8 @@ and
 import MyNewService from './MyNewService'
 
 export default {
-  id: 'MyExampleExtension',
+  id,
+  version,
 
   /**
    * @param {object} params

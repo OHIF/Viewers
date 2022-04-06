@@ -26,11 +26,19 @@ unsuccessful tests with detailed explanations.
 ## End-to-end test
 For running the OHIF e2e test you need to run the following steps:
 
-- Open a new terminal, navigate to the OHIF project, and run OHIF with the
-  e2e config.  The test:data only needs to be run once and checks the data out.
+- Open a new terminal, and from the root of the OHIF mono repo, run the following command:
 
   ```bash
   yarn test:data
+  ```
+
+  This will download the required data to run the e2e tests (it might take a while).
+  The `test:data` only needs to be run once and checks the data out. Read more about
+  test data [below](#test-data).
+
+- Run the viewer with e2e config
+
+  ```bash
   APP_CONFIG=config/e2e.js yarn start
   ```
 

@@ -13,8 +13,6 @@ There are two mechanism for checking the validity of a mode for a study.
 
 
 
-
-
 ## isValidMode
 This hook can be used to define a function that return a `boolean` which decided the
 validity of the mode based on `StudyInstanceUID` and `modalities` that are in the study.
@@ -22,7 +20,7 @@ validity of the mode based on `StudyInstanceUID` and `modalities` that are in th
 For instance, for pet-ct mode, both `PT` and 'CT' modalities should be available inside the study.
 
 ```js
-export default function mode() {
+function modeFactory() {
   return {
     id: '',
     displayName: '',

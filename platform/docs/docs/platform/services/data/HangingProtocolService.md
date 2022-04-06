@@ -241,7 +241,7 @@ const getTimePointUID = (metaData) => {
   return myBackEndAPI(metaData)
 }
 
-export default function mode() {
+function modeFactory() {
   return {
     id: 'myMode',
     /** .. **/
