@@ -14,11 +14,6 @@
       "version": "detect"
     }
   },
-  "rules": {
-    "react/jsx-props-no-spreading": "warn",
-    "react-hooks/exhaustive-deps": 0,
-    "import/no-unused-modules": [1, { "unusedExports": true }]
-  },
   "globals": {
     "cy": true,
     "before": true,
