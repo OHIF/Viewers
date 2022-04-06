@@ -21,25 +21,12 @@ const dicomsr = {
   viewport: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
 };
 
-const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
-};
-
-const dicompdf = {
-  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
-  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
-};
-
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-dicom-sr': '^3.0.0',
-  '@ohif/extension-dicom-pdf': '^3.0.1',
-  '@ohif/extension-dicom-video': '^3.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -112,14 +99,6 @@ function modeFactory({ modeConfiguration }) {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler],
                 },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                },
-                {
-                  namespace: dicompdf.viewport,
-                  displaySetsToDisplay: [dicompdf.sopClassHandler],
-                },
               ],
             },
           };
@@ -132,12 +111,7 @@ function modeFactory({ modeConfiguration }) {
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
-    sopClassHandlers: [
-      dicomvideo.sopClassHandler,
-      ohif.sopClassHandler,
-      dicompdf.sopClassHandler,
-      dicomsr.sopClassHandler,
-    ],
+    sopClassHandlers: [ohif.sopClassHandler, dicomsr.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
