@@ -6,8 +6,9 @@ import { errorHandler } from '@ohif/core';
 let initialized = false;
 
 function initWebWorkers() {
+  // TODO - increase the limit of 3 web worker once the bug in the decompression is fixed
   const config = {
-    maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
+    maxWebWorkers: Math.min(Math.max(navigator.hardwareConcurrency - 1, 1),3),
     startWebWorkersOnDemand: true,
     taskConfiguration: {
       decodeTask: {

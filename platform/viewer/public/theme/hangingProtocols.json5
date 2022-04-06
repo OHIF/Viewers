@@ -1,0 +1,15 @@
+{
+  // Activate the 1x2 and 2x2 default hanging protocols
+  hangingProtocolConfig: {
+    protocols: {
+      '1x2': {
+        id: '1x2',
+        priority: 200,
+      },
+      '2x2': {
+        id: '2x2',
+        priority: 300,
+      },
+    },
+  },
+}

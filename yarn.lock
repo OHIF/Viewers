@@ -7951,6 +7951,14 @@ config-point@0.4.3:
     "@babel/runtime" "^7.14.6"
     json5 "^2.2.0"
 
+config-point@0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/config-point/-/config-point-0.4.4.tgz#0d6b67cebc771cb538f032e14c551d2f27baf70a"
+  integrity sha512-YgiNcMAUGWw0iuC7BCQUP/S3Xr8MlfPpdy+ovZ9/KppODGqJweN/oAUrY/NOQvxfkB3p3XoBuE3iIS+AXGMDxA==
+  dependencies:
+    "@babel/runtime" "^7.14.6"
+    json5 "^2.2.0"
+
 configstore@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/configstore/-/configstore-5.0.1.tgz#d365021b5df4b98cdd187d6a3b0e3f6a7cc5ed96"

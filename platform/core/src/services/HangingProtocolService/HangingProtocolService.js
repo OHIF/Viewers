@@ -54,6 +54,24 @@ class HangingProtocolService {
   addProtocols(protocols) {
     protocols.forEach(protocol => {
       if (this.protocols.indexOf(protocol) === -1) {
+        protocol.id = protocol.id || protocol.name;
+        // Automatically compute some number of attributes if they
+        // aren't present.  Makes defining new HPs easier.
+        protocol.name = protocol.name || protocol.id;
+        const { stages } = protocol;
+
+        // Generate viewports automatically as required.
+        stages.forEach(stage => {
+          if (!stage.viewports) {
+            const viewport = stage.viewport || {};
+            stage.viewports = [];
+            const { rows, columns } = stage.viewportStructure.properties;
+
+            for (let i = 0; i < rows * columns; i++) {
+              stage.viewports.push(viewport);
+            }
+          }
+        });
         this.protocols.push(protocol);
       }
     });
@@ -213,9 +231,10 @@ class HangingProtocolService {
     // for each of the viewport matching procedures
 
     // Loop through each viewport
+    const alreadyMatched = [];
     stageModel.viewports.forEach((viewport, viewportIndex) => {
       this.hpAlreadyApplied.push(false);
-      const details = this._matchImages(viewport);
+      const details = this._matchImages(viewport, alreadyMatched);
 
       let currentMatch = details.bestMatch;
 
@@ -227,6 +246,7 @@ class HangingProtocolService {
       // Viewport Settings
       //
       // protocol defined callback
+      viewport.viewportSettings = viewport.viewportSettings || [];
       const protocolCallbacks = viewport.viewportSettings.filter(
         setting => setting.type === VIEWPORT_SETTING_TYPES.PROPS
       );
@@ -286,13 +306,13 @@ class HangingProtocolService {
   }
 
   // Match images given a list of Studies and a Viewport's image matching reqs
-  _matchImages(viewport) {
+  _matchImages(viewport, existingMatches) {
     console.log('ProtocolEngine::matchImages');
 
-    // TODO: matching is applied on study and series level, instance
-    // level matching needs to be added in future
+    // TODO: matching is applied on study and series level,
+    // instance level matching needs to be added in future
 
-    const { studyMatchingRules, seriesMatchingRules } = viewport;
+    const { studyMatchingRules = [], seriesMatchingRules = [] } = viewport;
 
     const matchingScores = [];
     let highestStudyMatchingScore = 0;
@@ -314,7 +334,12 @@ class HangingProtocolService {
 
       highestStudyMatchingScore = studyMatchDetails.score;
 
+      // TODO - use display sets instead of series, as that will use the
+      // correct re-grouped information.
       study.series.forEach(aSeries => {
+        if (existingMatches && existingMatches.indexOf(aSeries) != -1) {
+          return;
+        }
         const seriesMatchDetails = this.ProtocolEngine.findMatch(
           aSeries,
           seriesMatchingRules
@@ -357,6 +382,7 @@ class HangingProtocolService {
           SeriesInstanceUID: aSeries.SeriesInstanceUID,
           matchingScore: totalMatchScore,
           matchDetails: matchDetails,
+          displaySet: aSeries,
           sortingInfo: {
             score: totalMatchScore,
             study: study.StudyInstanceUID,
@@ -387,7 +413,7 @@ class HangingProtocolService {
     );
 
     const bestMatch = matchingScores[0];
-
+    if (bestMatch?.displaySet) existingMatches.push(bestMatch.displaySet);
     console.log('ProtocolEngine::matchImages bestMatch', bestMatch);
 
     return {

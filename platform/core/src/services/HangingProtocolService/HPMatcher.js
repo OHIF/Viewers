@@ -21,7 +21,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
   let score = 0;
 
   rules.forEach(rule => {
-    const attribute = rule.attribute;
+    const { attribute } = rule;
 
     // Do not use the custom attribute from the metadataInstance since it is subject to change
     if (customAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
@@ -36,7 +36,13 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
 
     // Create a single attribute object to be validated, since metadataInstance is an
     // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-    const attributeValue = metadataInstance[attribute];
+    let attributeValue = metadataInstance[attribute];
+    if (attributeValue === undefined) {
+      if (attribute === 'NumberOfStudyRelatedSeries') {
+        attributeValue = metadataInstance.series?.length;
+      }
+      // Add other computable values such as modalities in study
+    }
     const attributeMap = {
       [attribute]: attributeValue,
     };
@@ -50,6 +56,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
     }
 
     if (!errorMessages) {
+
       // If no errorMessages were returned, then validation passed.
 
       // Add the rule's weight to the total score

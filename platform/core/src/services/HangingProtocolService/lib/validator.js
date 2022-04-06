@@ -36,4 +36,12 @@ validate.validators.endsWith = function (value, options, key) {
   }
 };
 
+validate.validators.greaterThan = function (value, options, key) {
+  if (options && value <= options.value) {
+
+    return key + 'with value ' + value + ' must be greater than ' + options.value;
+  }
+
+};
+
 export default validate;
