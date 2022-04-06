@@ -1,6 +1,6 @@
 import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
-import { id, version } from './id.js';
+import { id } from './id.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -47,7 +47,6 @@ function modeFactory({ modeConfiguration }) {
     // TODO: We're using this as a route segment
     // We should not be.
     id,
-    version,
     routeName: 'viewer',
     displayName: 'Basic Viewer',
     /**

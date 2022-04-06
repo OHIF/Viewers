@@ -1,4 +1,4 @@
-import { id, version } from './id';
+import { id } from './id';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -28,7 +28,6 @@ function modeFactory({ modeConfiguration }) {
      * is used to identify the mode in the viewer's state.
      */
     id,
-    version,
     routeName: 'template',
     /**
      * Mode name, which is displayed in the viewer's UI in the workList, for the
