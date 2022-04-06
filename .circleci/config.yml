@@ -24,7 +24,7 @@ executors:
   chrome-and-pacs:
     docker:
       # Primary container image where all steps run.
-      - image: 'cypress/browsers:node14.17.6-chrome88-ff82'
+      - image: 'cypress/browsers:node14.17.0-chrome88-ff89'
 
 defaults: &defaults
   docker:
