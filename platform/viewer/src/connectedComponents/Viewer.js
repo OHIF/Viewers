@@ -563,8 +563,8 @@ const _checkForSeriesInconsistencesWarnings = async function(displaySet) {
       );
     }
 
-    if (displaySet.isModalitySupported === false) {
-      inconsistencyWarnings.push('The datasets modality is not supported.');
+    if (displaySet.isSOPClassUIDSupported === false) {
+      inconsistencyWarnings.push('The datasets is not supported.');
     }
     displaySet.inconsistencyWarnings = inconsistencyWarnings;
   } else {
@@ -668,6 +668,8 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
         imageId = displaySet.images[imageIndex].getImageId();
+      } else if (displaySet.isSOPClassUIDSupported === false) {
+        altImageText = displaySet.SOPClassUIDNaturalized;
       } else {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }

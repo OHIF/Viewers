@@ -3,12 +3,12 @@ import DICOMWeb from './../../DICOMWeb';
 import ImageSet from './../ImageSet';
 import { InstanceMetadata } from './InstanceMetadata';
 import { Metadata } from './Metadata';
-import OHIFError from '../OHIFError';
 import { SeriesMetadata } from './SeriesMetadata';
 // - createStacks
 import { api } from 'dicomweb-client';
 // - createStacks
 import { isImage } from '../../utils/isImage';
+import { naturalizeSOPClassUID } from '../../utils/naturalizeSOPClassUID';
 import {
   isDisplaySetReconstructable,
   isSpacingUniform,
@@ -169,8 +169,12 @@ class StudyMetadata extends Metadata {
         !isImage(instance.getTagValue('SOPClassUID')) &&
         !instance.getTagValue('Rows')
       ) {
-        // we set an empty display and we add a isModalitySupported variable to
-        // print a warning that the modality is not supported in the thumbnail.
+        // we set an empty display and we add a isSOPClassUIDSupported variable to
+        // print a warning that the series is not supported in the thumbnail.
+        // SOPClassUIDNaturalized is human readable name, since for non image series,
+        // we could have a mismatch between the SOPClassUID and the Modality.
+        // For example, in the Parametric map IOD Modality is expected to match
+        // the value for the series used to generate Parametric map, and there is no "PM" modality.
         const displaySet = new ImageSet([]);
         const seriesData = series.getData();
         displaySet.setAttributes({
@@ -188,7 +192,10 @@ class StudyMetadata extends Metadata {
           InstanceNumber: instance.getTagValue('InstanceNumber'), // Include the instance number
           AcquisitionDatetime: instance.getTagValue('AcquisitionDateTime'), // Include the acquisition datetime
           isReconstructable: false,
-          isModalitySupported: false,
+          isSOPClassUIDSupported: false,
+          SOPClassUIDNaturalized: naturalizeSOPClassUID(
+            instance.getTagValue('SOPClassUID')
+          ),
           metadata: instance.getData().metadata,
         });
 
@@ -923,7 +930,7 @@ const makeDisplaySet = (series, instances) => {
       : displayReconstructableInfo.reconstructionIssues;
   }
 
-  imageSet.isModalitySupported = true;
+  imageSet.isSOPClassUIDSupported = true;
 
   return imageSet;
 };
