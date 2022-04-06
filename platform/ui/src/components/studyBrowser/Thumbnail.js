@@ -177,7 +177,9 @@ function Thumbnail(props) {
       const { progressId, progressData } = detail;
       if (`StackProgress:${displaySetInstanceUID}` === progressId) {
         const percent = progressData ? progressData.percentComplete : 0;
-        setStackPercentComplete(percent);
+        if (percent > stackPercentComplete) {
+          setStackPercentComplete(percent);
+        }
       }
     }, 100);
 
