@@ -8,7 +8,7 @@
   "main": "dist/index.umd.js",
   "module": "src/index.js",
   "engines": {
-    "node": ">=10",
+    "node": ">=14",
     "npm": ">=6",
     "yarn": ">=1.16.0"
   },
