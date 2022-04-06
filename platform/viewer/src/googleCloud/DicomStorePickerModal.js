@@ -36,7 +36,7 @@ function DicomStorePickerModal({
           user,
           url,
         },
-        onClose
+        onClose,
       });
     }
   };
