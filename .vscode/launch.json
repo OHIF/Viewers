@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "pwa-chrome",
       "request": "launch",
-      "name": "Debug OHIF CLI",
-      "program": "${workspaceFolder}/platform/cli/bin/ohif-cli",
-      "args": ["debug", "my-extension", "MIT"]
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
     }
   ]
 }

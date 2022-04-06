@@ -4,6 +4,7 @@
   "description": "A CLI to bootstrap new OHIF extension or mode",
   "type": "module",
   "main": "src/index.js",
+  "private": true,
   "bin": {
     "ohif-cli": "src/index.js"
   },
