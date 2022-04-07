@@ -1,0 +1,23 @@
+0 silly argv {
+0 silly argv   _: [ 'run' ],
+0 silly argv   stream: true,
+0 silly argv   lernaVersion: '3.18.3',
+0 silly argv   '$0': 'node_modules/.bin/lerna',
+0 silly argv   script: 'dev:viewer'
+0 silly argv }
+1 notice cli v3.18.3
+2 verbose rootPath /home/davide/Development/OIHF/Viewers
+3 info versioning independent
+4 info Executing command in 1 package: "yarn run dev:viewer"
+5 silly npmRunScript.stream [ 'dev:viewer', [], '@ohif/viewer' ]
+6 silly getExecOpts /home/davide/Development/OIHF/Viewers/platform/viewer undefined
+7 error MaxBufferError: stderr maxBuffer exceeded
+7 error     at PassThrough.<anonymous> (/home/davide/Development/OIHF/Viewers/node_modules/get-stream/index.js:41:19)
+7 error     at PassThrough.emit (events.js:412:35)
+7 error     at addChunk (internal/streams/readable.js:290:12)
+7 error     at readableAddChunk (internal/streams/readable.js:261:11)
+7 error     at PassThrough.Readable.push (internal/streams/readable.js:204:10)
+7 error     at PassThrough.Transform.push (internal/streams/transform.js:166:32)
+7 error     at PassThrough.afterTransform (internal/streams/transform.js:101:10)
+7 error     at PassThrough._transform (internal/streams/passthrough.js:46:3)
+7 error     at PassThrough.Transform._read (internal/streams/transform.js:205:10)

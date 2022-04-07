@@ -2,8 +2,8 @@
 
 - [Overview](#overview)
 - [Example](#example)
-- [Tips & Tricks](#/)
-- [Maintained Services](#/)
+- [Tips & Tricks](#tips--tricks)
+- [Maintained Services](#maintained-services)
 
 ## Overview
 

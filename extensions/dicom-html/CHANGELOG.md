@@ -3,6 +3,293 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.21](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.20...@ohif/extension-dicom-html@1.3.21) (2022-04-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.20](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.19...@ohif/extension-dicom-html@1.3.20) (2022-03-25)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.19](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.18...@ohif/extension-dicom-html@1.3.19) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.17...@ohif/extension-dicom-html@1.3.18) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.16...@ohif/extension-dicom-html@1.3.17) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.15...@ohif/extension-dicom-html@1.3.16) (2022-02-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.14...@ohif/extension-dicom-html@1.3.15) (2022-01-20)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.13...@ohif/extension-dicom-html@1.3.14) (2021-12-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.12...@ohif/extension-dicom-html@1.3.13) (2021-10-26)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.12](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.11...@ohif/extension-dicom-html@1.3.12) (2021-10-25)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.11](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.10...@ohif/extension-dicom-html@1.3.11) (2021-09-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.10](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.9...@ohif/extension-dicom-html@1.3.10) (2021-06-02)
+
+
+### Bug Fixes
+
+* **dicom-html:** Add parsed dicom meta info section ([#2419](https://github.com/OHIF/Viewers/issues/2419)) ([403688b](https://github.com/OHIF/Viewers/commit/403688b18c52468fc1101166ec0c1734fb710039))
+
+
+
+
+
+## [1.3.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.8...@ohif/extension-dicom-html@1.3.9) (2021-04-22)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.8](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.7...@ohif/extension-dicom-html@1.3.8) (2021-04-22)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.6...@ohif/extension-dicom-html@1.3.7) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.5...@ohif/extension-dicom-html@1.3.6) (2021-04-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.4...@ohif/extension-dicom-html@1.3.5) (2021-04-15)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.3...@ohif/extension-dicom-html@1.3.4) (2021-03-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.2...@ohif/extension-dicom-html@1.3.3) (2021-03-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.1...@ohif/extension-dicom-html@1.3.2) (2021-02-25)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.3.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.3.0...@ohif/extension-dicom-html@1.3.1) (2021-02-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+# [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.9...@ohif/extension-dicom-html@1.3.0) (2020-12-10)
+
+
+### Features
+
+* visualize overlapping segments in cornerstone ([#2185](https://github.com/OHIF/Viewers/issues/2185)) ([29fceac](https://github.com/OHIF/Viewers/commit/29fceacee97d51f1952a0f6b574c66596d32c201))
+
+
+
+
+
+## [1.2.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.8...@ohif/extension-dicom-html@1.2.9) (2020-10-07)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.8](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.7...@ohif/extension-dicom-html@1.2.8) (2020-09-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.6...@ohif/extension-dicom-html@1.2.7) (2020-09-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.5...@ohif/extension-dicom-html@1.2.6) (2020-09-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.4...@ohif/extension-dicom-html@1.2.5) (2020-08-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.3...@ohif/extension-dicom-html@1.2.4) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.2...@ohif/extension-dicom-html@1.2.3) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
+## [1.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.1...@ohif/extension-dicom-html@1.2.2) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
+## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.0...@ohif/extension-dicom-html@1.2.1) (2020-04-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.1.2...@ohif/extension-dicom-html@1.2.0) (2020-04-24)
+
+
+### Features
+
+* 🎸 Seg jump to slice + show/hide ([835f64d](https://github.com/OHIF/Viewers/commit/835f64d47a9994f6a25aaf3941a4974e215e7e7f))
+
+
+
+
+
+## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.1.1...@ohif/extension-dicom-html@1.1.2) (2020-04-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.1.0...@ohif/extension-dicom-html@1.1.1) (2020-03-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
 # [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.0.2...@ohif/extension-dicom-html@1.1.0) (2019-12-11)
 
 

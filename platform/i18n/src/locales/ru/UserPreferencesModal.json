@@ -1,0 +1,9 @@
+{
+  "Cancel": "$t(Buttons:Cancel)",
+  "No hotkeys found": "Не найдено горячих клавиш",
+  "Reset to Defaults": "$t(Buttons:Reset to Defaults)",
+  "ResetDefaultMessage": "Настройки успешно сброшены. <br /> Вы должны <strong>Сохранить</strong> это действие нажав на кнопку.",
+  "Save": "$t(Buttons:Save)",
+  "SaveMessage": "Настройки сохранены",
+  "User Preferences": "Пользовательские настройки"
+}

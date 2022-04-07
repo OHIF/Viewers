@@ -10,7 +10,8 @@ module.exports = {
   // https://jestjs.io/docs/en/configuration#projects-array-string-projectconfig
   projects: [
     // "<rootDir>/extensions/*/jest.config.js",
-    "<rootDir>/platform/*/jest.config.js"
+    "<rootDir>/platform/*/jest.config.js",
+    "<rootDir>/extensions/*/jest.config.js"
   ],
   coverageDirectory: "<rootDir>/coverage/"
 };

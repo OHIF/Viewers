@@ -1,6 +1,5 @@
 window.config = {
   routerBasename: '/',
-  whiteLabelling: {},
   showStudyList: true,
   servers: {
     dicomWeb: [
@@ -12,6 +11,7 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        supportsFuzzyMatching: true,
       },
     ],
   },

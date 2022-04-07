@@ -1,4 +1,4 @@
-import { measurements, utils } from "@ohif/core";
+import { measurements, utils } from '@ohif/core';
 
 const { MeasurementApi } = measurements;
 const { studyMetadataManager } = utils;
@@ -68,10 +68,15 @@ export default function jumpToRowItem(
 
   // Needs to update viewports.viewportData state to set image set data
 
-  const displaySetContainsSopInstance = (displaySet, sopInstanceUid) =>
-    displaySet.images.find(
-      image => image.getSOPInstanceUID() === sopInstanceUid
+  const displaySetContainsSopInstance = (displaySet, SOPInstanceUID) => {
+    if (!displaySet.images || !displaySet.images.length) {
+      return;
+    }
+
+    return displaySet.images.find(
+      image => image.getSOPInstanceUID() === SOPInstanceUID
     );
+  };
 
   const viewportSpecificData = [];
   measurementsToJumpTo.forEach((data, viewportIndex) => {
@@ -80,32 +85,34 @@ export default function jumpToRowItem(
       return;
     }
 
-    const study = studyMetadataManager.get(data.studyInstanceUid);
+    const study = studyMetadataManager.get(data.StudyInstanceUID);
     if (!study) {
-      throw new Error("Study not found.");
+      throw new Error('Study not found.');
     }
 
     const displaySet = study.findDisplaySet(displaySet => {
-      return displaySetContainsSopInstance(displaySet, data.sopInstanceUid);
+      return displaySetContainsSopInstance(displaySet, data.SOPInstanceUID);
     });
 
     if (!displaySet) {
-      throw new Error("Display set not found.");
+      throw new Error('Display set not found.');
     }
 
-    displaySet.sopInstanceUid = data.sopInstanceUid;
+    displaySet.SOPInstanceUID = data.SOPInstanceUID;
     if (data.frameIndex) {
       displaySet.frameIndex = data.frameIndex;
     }
 
+    viewportIndex =
+      (viewportIndex + viewportsState.activeViewportIndex) % numViewports;
     viewportSpecificData.push({
       viewportIndex,
-      displaySet
+      displaySet,
     });
   });
 
   return {
     viewportSpecificData,
-    layout: [] // TODO: if we need to change layout, we should return this here
+    layout: [], // TODO: if we need to change layout, we should return this here
   };
 }

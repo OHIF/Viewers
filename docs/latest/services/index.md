@@ -62,7 +62,7 @@ able to fail or be removed. Related patterns that may reduce coupling include:
   -->
 
 <!-- prettier-ignore-start -->
-[commands]: #/
+[commands]: ../extensions/modules/commands.md
 [core-services]: https://github.com/OHIF/Viewers/tree/master/platform/core/src/services
 [services-manager]: https://github.com/OHIF/Viewers/blob/master/platform/core/src/services/ServicesManager.js
 [cross-cutting-concerns]: https://en.wikipedia.org/wiki/Cross-cutting_concern

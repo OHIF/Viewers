@@ -12,6 +12,7 @@
   flex: 1;
   height: 100%;
   transition: var(--sidepanel-transition);
+  overflow-y: auto;
 }
 
 .from-left {

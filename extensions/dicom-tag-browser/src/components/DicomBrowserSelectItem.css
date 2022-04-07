@@ -1,0 +1,26 @@
+.dcmseg-segmentation-item {
+  display: flex;
+  justify-content: start;
+  margin: 0;
+  width: 100%;
+}
+
+.dcmseg-segmentation-item .segmentation-meta {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.dcmseg-segmentation-item .segmentation-meta-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: white;
+  max-width: calc(100% - 30px);
+}
+
+.dcmseg-segmentation-item .segmentation-meta-description {
+  font-size: 12px;
+  color: var(--text-secondary-color);
+}

@@ -28,5 +28,8 @@
   ],
   "prettier.disableLanguages": ["html"],
   "prettier.endOfLine": "lf",
-  "workbench.colorCustomizations": {}
+  "workbench.colorCustomizations": {},
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

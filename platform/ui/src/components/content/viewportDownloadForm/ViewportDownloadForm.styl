@@ -10,6 +10,9 @@
   input, select
     max-height: 30px;
 
+  #keep-aspect svg
+    margin-top: 3px;
+
   .title
     margin: 0;
     font-weight: bold;
@@ -17,85 +20,117 @@
   .file-info-container
     display: flex;
     flex-direction: row;
+    justify-content: space-around;
     margin: 20px 0;
     border-radius: 5px;
-    padding: 20px 10px 0;
-    background-color: #16202b;
-
-    .form-control.input-ohif
-      padding: 6px 12px;
+    padding: 20px 10px;
+    background-color: var(--ui-gray-dark);
 
     @media screen and (max-width: 1023px)
       flex-direction: column;
+      align-items: flex-start;
 
-    .col
-      flex-grow: 1;
+    .width,
+    .height,
+    .file-name,
+    .file-type
+      height: 56px;
 
-      .input-ohif
-        margin-left: 15px;
+    .input-ohif
+      margin: 0 5px;
+
+    .file-name,
+    .file-type
+      .select-ohif, .input-ohif
+        width: 170px;
+
+      .input-ohif-label, .select-ohif-label
+        width: 90px;
+        display: inline-block;
         @media screen and (max-width: 1023px)
-          margin-left: 0;
-          margin-top: 5px;
-          width: 100%;
+          width: 120px;
 
-      .file-type
-        .select-ohif
-          margin-left: 17px;
+    .dimension-wrapper
+      display: flex;
+      flex-direction: row;
+
+      .dimensions
+        display: flex;
+        flex-direction: column;
+
+        .input-ohif-label
+          width: 120px;
+          display: inline-block;
+
+        .input-ohif
           @media screen and (max-width: 1023px)
-            margin-left: 0;
-            width: 100%;
+            width: 170px;
 
-      .show-annotations
-        font-weight: bold;
-        line-height: 30px;
-        input
-          margin-right: 7px;
-          vertical-align: middle;
-        label
-          display: flex;
-          justify-content: center;
-          align-items: center;
+      .keep-aspect-wrapper
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 10px;
+        height: 86px;
+
+    .show-annotations
+      font-weight: bold;
+      line-height: 30px;
+      input
+        margin-right: 7px;
+        vertical-align: middle;
+      label
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+  .loading-image
+    height: 580px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--active-color);
+    font-size: 20px;
+
+    .icon-spin
+      margin-right: 15px;
 
   .preview
     display: flex;
-    flex-direction column;
-    height: fit-content;
-    background-color: #16202b;
-    width: fit-content;
+    flex-direction: column;
+    background-color: var(--ui-gray-dark);
     padding: 10px;
     border-radius: 5px;
-    align-self: center;
-    margin-bottom: 20px;
-    @media screen and (max-width: 1023px)
-      width: 100%;
-      justify-content: center;
-      align-items: center;
+    justify-content: flex-start;
+    align-items: center;
+    height: 580px;
 
     .viewport-preview
       max-height: 512px;
       max-width: 512px;
 
-    h4
+    .preview-header
       width: 100%;
       text-align center;
       font-size: 1.3em;
       margin: 0 0 10px;
-
-    .preview-container
-      width: auto;
-      height: 100%;
-      max-height: 400px;
-      object-fit contain;
 
   .actions
     display: flex;
     flex-wrap: nowrap;
     justify-content: flex-end;
     align-items: center;
-    .action-cancel
-      margin: 0 20px;
-    .actions-save
-      margin: 0 0 0 10px;
+    margin-top: 20px;
+
+    .btn
+      margin: 0 10px;
+
+  .input-error
+    font-size: 12px;
+    color: red;
+    text-align: center;
+    margin: 3px 0;
+
 
 .modal-dialog
   height: 100%;

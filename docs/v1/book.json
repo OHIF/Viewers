@@ -8,7 +8,6 @@
     "-fontsettings",
     "github",
     "ga",
-    "sitemap",
     "anchors",
     "versions"
   ],
@@ -24,7 +23,8 @@
       "token": "UA-110573590-2"
     },
     "sitemap": {
-      "hostname": "https://docs.ohif.org"
+      "hostname": "https://docs.ohif.org",
+      "todo": "sitemap plugin removed; causing build errors"
     },
     "versions": {
       "gitbookConfigURL": "https://raw.githubusercontent.com/OHIF/Viewers/master/docs/book.json",

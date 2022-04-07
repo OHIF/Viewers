@@ -9,6 +9,9 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id: 'measurements-table',
+  get version() {
+    return window.version;
+  },
 
   preRegistration({ servicesManager, commandsManager, configuration = {} }) {
     init({ servicesManager, commandsManager, configuration });

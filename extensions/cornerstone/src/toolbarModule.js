@@ -216,15 +216,6 @@ const definitions = [
         commandOptions: { toolName: 'Bidirectional' },
       },
       {
-        id: 'Eraser',
-        label: 'Eraser',
-        icon: 'eraser',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'Eraser' },
-      },
-      {
         id: 'Download',
         label: 'Download',
         icon: 'create-screen-capture',
@@ -245,7 +236,7 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
-  }
+  },
 ];
 
 export default {

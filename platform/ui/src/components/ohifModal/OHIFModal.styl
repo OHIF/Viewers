@@ -18,14 +18,26 @@
   @media (min-width: 768px)
     width: 600px
 
+    &.OHIFModal-fullscreen
+      width: 95%
+
   @media (min-width: 992px)
     width: 900px
+
+    &.OHIFModal-fullscreen
+      width: 95%
 
   &__content
     padding: 20px
     max-height: 90vh;
-    overflow-x: hidden;
     overflow-y: auto;
+
+  &.noScroll &__content {
+    overflow: hidden;
+  }
+
+  &:not(.visibleScrollbar) &__content
+    overflow-x: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
     &::-webkit-scrollbar

@@ -18,11 +18,11 @@ export class OHIFStudyMetadata extends StudyMetadata {
       configurable: false,
       enumerable: false,
       writable: false,
-      value: study.studyInstanceUid,
+      value: study.StudyInstanceUID,
     });
 
     // populate internal list of series
-    study.seriesList.forEach(series => {
+    study.series.forEach(series => {
       this.addSeries(new OHIFSeriesMetadata(series, study));
     });
   }

@@ -161,7 +161,7 @@ export class CommandsManager {
       return;
     }
 
-    const { commandFn, storeContexts } = definition;
+    const { commandFn, storeContexts = [] } = definition;
     const definitionOptions = definition.options;
 
     let commandParams = {};

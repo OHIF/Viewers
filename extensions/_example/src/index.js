@@ -21,7 +21,6 @@ export default {
   /**
    * MODULE GETTERS
    */
-
   getViewportModule() {
     return '... react component ...';
   },
@@ -64,7 +63,7 @@ const commandsModule = {
  */
 const sopClassHandlerModule = {
   id: 'OHIFDicomHtmlSopClassHandler',
-  sopClassUids: Object.values({
+  sopClassUIDs: Object.values({
     BASIC_TEXT_SR: '1.2.840.10008.5.1.4.1.1.88.11',
     ENHANCED_SR: '1.2.840.10008.5.1.4.1.1.88.22',
     COMPREHENSIVE_SR: '1.2.840.10008.5.1.4.1.1.88.33',
@@ -78,12 +77,12 @@ const sopClassHandlerModule = {
 
     return {
       plugin: 'html',
-      displaySetInstanceUid: 0, //utils.guid(),
+      displaySetInstanceUID: 0, //utils.guid(),
       wadoRoot: study.getData().wadoRoot,
       wadoUri: instance.getData().wadouri,
-      sopInstanceUid: instance.getSOPInstanceUID(),
-      seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID(),
+      SOPInstanceUID: instance.getSOPInstanceUID(),
+      SeriesInstanceUID: series.getSeriesInstanceUID(),
+      StudyInstanceUID: study.getStudyInstanceUID(),
       authorizationHeaders,
     };
   },
@@ -98,6 +97,9 @@ const panelModule = {
       icon: 'th-list',
       label: 'Segments',
       target: 'segment-panel',
+      isDisabled: studies => {
+        return false;
+      },
     },
   ],
   components: [

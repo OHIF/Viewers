@@ -9,7 +9,7 @@ services:
         max-size: '10m'
     ports:
       - '389:389'
-    env_file: ./dcm4che/docker-compose-dcm4che.env
+    env_file: ./docker-compose-dcm4che.env
     volumes:
       - ./dcm4che/etc/localtime:/etc/localtime:ro
       - ./dcm4che/etc/timezone:/etc/timezone:ro
@@ -25,7 +25,7 @@ services:
         max-size: '10m'
     ports:
       - '5432:5432'
-    env_file: ./dcm4che/docker-compose-dcm4che.env
+    env_file: ./docker-compose-dcm4che.env
     volumes:
       - ./dcm4che/etc/localtime:/etc/localtime:ro
       - ./dcm4che/etc/timezone:/etc/timezone:ro
@@ -44,7 +44,7 @@ services:
       - '9990:9990'
       - '11112:11112'
       - '2575:2575'
-    env_file: ./dcm4che/docker-compose-dcm4che.env
+    env_file: ./docker-compose-dcm4che.env
     environment:
       WILDFLY_CHOWN: /opt/wildfly/standalone /storage
       WILDFLY_WAIT_FOR: ldap:389 db:5432
@@ -73,5 +73,4 @@ services:
     restart: always
     networks:
       - dcm4che_default
-
-networks: dcm4che_default:
+    networks: dcm4che_default:

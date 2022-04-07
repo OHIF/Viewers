@@ -1,30 +1,13 @@
 import React, { Component } from 'react';
 
+import OHIFCornerstoneViewportOverlay from './components/OHIFCornerstoneViewportOverlay';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import handleSegmentationStorage from './handleSegmentationStorage.js';
+import checkForSRAnnotations from './tools/checkForSRAnnotations';
 
 const { StackManager } = OHIF.utils;
-
-// Metadata configuration
-const metadataProvider = new OHIF.cornerstone.MetadataProvider();
-
-cornerstone.metaData.addProvider(
-  metadataProvider.provider.bind(metadataProvider)
-);
-
-StackManager.setMetadataProvider(metadataProvider);
-
-const SOP_CLASSES = {
-  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
-};
-
-const specialCaseHandlers = {};
-specialCaseHandlers[
-  SOP_CLASSES.SEGMENTATION_STORAGE
-] = handleSegmentationStorage;
 
 class OHIFCornerstoneViewport extends Component {
   state = {
@@ -33,6 +16,7 @@ class OHIFCornerstoneViewport extends Component {
 
   static defaultProps = {
     customProps: {},
+    isStackPrefetchEnabled: true,
   };
 
   static propTypes = {
@@ -41,6 +25,8 @@ class OHIFCornerstoneViewport extends Component {
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
     customProps: PropTypes.object,
+    stackPrefetch: PropTypes.object,
+    isStackPrefetchEnabled: PropTypes.bool,
   };
 
   static id = 'OHIFCornerstoneViewport';
@@ -58,34 +44,34 @@ class OHIFCornerstoneViewport extends Component {
    * Obtain the CornerstoneTools Stack for the specified display set.
    *
    * @param {Object[]} studies
-   * @param {String} studyInstanceUid
-   * @param {String} displaySetInstanceUid
-   * @param {String} [sopInstanceUid]
+   * @param {String} StudyInstanceUID
+   * @param {String} displaySetInstanceUID
+   * @param {String} [SOPInstanceUID]
    * @param {Number} [frameIndex=1]
    * @return {Object} CornerstoneTools Stack
    */
   static getCornerstoneStack(
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
+    SOPInstanceUID,
     frameIndex = 0
   ) {
     if (!studies || !studies.length) {
       throw new Error('Studies not provided.');
     }
 
-    if (!studyInstanceUid) {
+    if (!StudyInstanceUID) {
       throw new Error('StudyInstanceUID not provided.');
     }
 
-    if (!displaySetInstanceUid) {
+    if (!displaySetInstanceUID) {
       throw new Error('StudyInstanceUID not provided.');
     }
 
     // Create shortcut to displaySet
     const study = studies.find(
-      study => study.studyInstanceUid === studyInstanceUid
+      study => study.StudyInstanceUID === StudyInstanceUID
     );
 
     if (!study) {
@@ -93,7 +79,7 @@ class OHIFCornerstoneViewport extends Component {
     }
 
     const displaySet = study.displaySets.find(set => {
-      return set.displaySetInstanceUid === displaySetInstanceUid;
+      return set.displaySetInstanceUID === displaySetInstanceUID;
     });
 
     if (!displaySet) {
@@ -107,17 +93,14 @@ class OHIFCornerstoneViewport extends Component {
     const stack = Object.assign({}, storedStack);
     stack.currentImageIdIndex = frameIndex;
 
-    if (sopInstanceUid) {
+    if (SOPInstanceUID) {
       const index = stack.imageIds.findIndex(imageId => {
-        const sopCommonModule = cornerstone.metaData.get(
-          'sopCommonModule',
+        const imageIdSOPInstanceUID = cornerstone.metaData.get(
+          'SOPInstanceUID',
           imageId
         );
-        if (!sopCommonModule) {
-          return;
-        }
 
-        return sopCommonModule.sopInstanceUID === sopInstanceUid;
+        return imageIdSOPInstanceUID === SOPInstanceUID;
       });
 
       if (index > -1) {
@@ -134,44 +117,26 @@ class OHIFCornerstoneViewport extends Component {
 
   getViewportData = async (
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopClassUid,
-    sopInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
+    SOPInstanceUID,
     frameIndex
   ) => {
     let viewportData;
 
-    switch (sopClassUid) {
-      case SOP_CLASSES.SEGMENTATION_STORAGE:
-        const specialCaseHandler =
-          specialCaseHandlers[SOP_CLASSES.SEGMENTATION_STORAGE];
+    const stack = OHIFCornerstoneViewport.getCornerstoneStack(
+      studies,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPInstanceUID,
+      frameIndex
+    );
 
-        viewportData = await specialCaseHandler(
-          studies,
-          studyInstanceUid,
-          displaySetInstanceUid,
-          sopInstanceUid,
-          frameIndex
-        );
-        break;
-      default:
-        const stack = OHIFCornerstoneViewport.getCornerstoneStack(
-          studies,
-          studyInstanceUid,
-          displaySetInstanceUid,
-          sopInstanceUid,
-          frameIndex
-        );
-
-        viewportData = {
-          studyInstanceUid,
-          displaySetInstanceUid,
-          stack,
-        };
-
-        break;
-    }
+    viewportData = {
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      stack,
+    };
 
     return viewportData;
   };
@@ -179,31 +144,28 @@ class OHIFCornerstoneViewport extends Component {
   setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUids,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      sopClassUIDs,
+      SOPInstanceUID,
       frameIndex,
     } = displaySet;
 
-    if (!studyInstanceUid || !displaySetInstanceUid) {
+    if (!StudyInstanceUID || !displaySetInstanceUID) {
       return;
     }
 
-    if (sopClassUids && sopClassUids.length > 1) {
+    if (sopClassUIDs && sopClassUIDs.length > 1) {
       console.warn(
-        'More than one SOPClassUid in the same series is not yet supported.'
+        'More than one SOPClassUID in the same series is not yet supported.'
       );
     }
 
-    const sopClassUid = sopClassUids && sopClassUids[0];
-
     this.getViewportData(
       studies,
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUid,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPInstanceUID,
       frameIndex
     ).then(viewportData => {
       this.setState({
@@ -217,15 +179,17 @@ class OHIFCornerstoneViewport extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, displaySet } = this.props.viewportData;
+    const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (
-      displaySet.displaySetInstanceUid !==
-        prevDisplaySet.displaySetInstanceUid ||
-      displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid ||
+      displaySet.displaySetInstanceUID !==
+        prevDisplaySet.displaySetInstanceUID ||
+      displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
+      const { viewportIndex } = this.props;
+      checkForSRAnnotations({ displaySet, viewportIndex });
       this.setStateFromProps();
     }
   }
@@ -237,6 +201,7 @@ class OHIFCornerstoneViewport extends Component {
       return null;
     }
     const { viewportIndex } = this.props;
+    const { inconsistencyWarnings } = this.props.viewportData.displaySet;
     const {
       imageIds,
       currentImageIdIndex,
@@ -258,16 +223,43 @@ class OHIFCornerstoneViewport extends Component {
       });
     }
 
+    const newImageHandler = ({ currentImageIdIndex, sopInstanceUid }) => {
+      const { displaySet } = this.props.viewportData;
+      const { StudyInstanceUID } = displaySet;
+
+      if (currentImageIdIndex >= 0) {
+        this.props.onNewImage({
+          StudyInstanceUID,
+          SOPInstanceUID: sopInstanceUid,
+          frameIndex: currentImageIdIndex,
+          activeViewportIndex: viewportIndex,
+        });
+      }
+    };
+
+    const warningsOverlay = props => {
+      return (
+        <OHIFCornerstoneViewportOverlay
+          {...props}
+          inconsistencyWarnings={inconsistencyWarnings}
+        />
+      );
+    };
+
     return (
       <>
         <ConnectedCornerstoneViewport
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImageDebounced={newImageHandler}
+          onNewImageDebounceTime={300}
+          viewportOverlayComponent={warningsOverlay}
+          stackPrefetch={this.props.stackPrefetch}
+          isStackPrefetchEnabled={this.props.isStackPrefetchEnabled}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
-          // isStackPrefetchEnabled={true}
           // onElementEnabled={() => {}}
           // setViewportActive{() => {}}
           {...this.props.customProps}

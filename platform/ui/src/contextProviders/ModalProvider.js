@@ -32,23 +32,15 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     contentProps: null,
     shouldCloseOnEsc: false,
     isOpen: true,
+    onClose: null,
     closeButton: true,
+    showScrollbar: false,
     title: null,
     customClassName: '',
+    fullscreen: false,
   };
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
-
-  /**
-   * Sets the implementation of a modal service that can be used by extensions.
-   *
-   * @returns void
-   */
-  useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({ hide, show });
-    }
-  }, [hide, service, show]);
 
   /**
    * Show the modal and override its configuration props.
@@ -69,26 +61,53 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     DEFAULT_OPTIONS,
   ]);
 
+  /**
+   * Sets the implementation of a modal service that can be used by extensions.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (service) {
+      service.setServiceImplementation({ hide, show });
+    }
+  }, [hide, service, show]);
+
   const {
     content: ModalContent,
     contentProps,
     isOpen,
+    onClose,
     title,
     customClassName,
     shouldCloseOnEsc,
+    fullscreen,
     closeButton,
+    showScrollbar,
+    noScroll,
   } = options;
 
   return (
     <Provider value={{ show, hide }}>
       {ModalContent && (
         <Modal
-          className={classNames(customClassName, ModalContent.className)}
+          className={classNames(
+            customClassName,
+            ModalContent.className,
+            { visibleScrollbar: showScrollbar },
+            { noScroll }
+          )}
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
           title={title}
+          fullscreen={fullscreen}
           closeButton={closeButton}
-          onClose={hide}
+          onClose={() => {
+            if (onClose) {
+              onClose();
+            }
+
+            hide();
+          }}
         >
           <ModalContent {...contentProps} show={show} hide={hide} />
         </Modal>

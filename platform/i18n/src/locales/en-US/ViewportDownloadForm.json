@@ -1,0 +1,14 @@
+{
+  "emptyFilenameError": "The file name cannot be empty.",
+  "fileType": "File Type",
+  "filename": "File Name",
+  "formTitle": "Please specify the dimensions, filename, and desired type for the output image.",
+  "imageHeight": "Image height (px)",
+  "imagePreview": "Image Preview",
+  "imageWidth": "Image width (px)",
+  "keepAspectRatio": "Keep aspect ratio",
+  "loadingPreview": "Loading Image Preview...",
+  "minHeightError": "The minimum valid height is 100px.",
+  "minWidthError": "The minimum valid width is 100px.",
+  "showAnnotations": "Show Annotations"
+}

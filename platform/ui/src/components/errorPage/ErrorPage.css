@@ -1,0 +1,24 @@
+.ErrorPage {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: var(--active-color);
+}
+
+.ErrorPage .error-container {
+  margin: 10px;
+  width: 50%;
+  height: 25%;
+  overflow: scroll;
+  border-radius: 15px;
+  border-color: var(--active-color);
+  border: 1px solid;
+  padding: 5px;
+}
+
+.ErrorPage .retry-icon {
+  cursor: pointer;
+}

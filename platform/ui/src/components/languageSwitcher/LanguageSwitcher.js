@@ -2,26 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import './LanguageSwitcher.styl';
-import { withTranslation } from '../../contextProviders';
 
-const LanguageSwitcher = ({ language, onLanguageChange }) => {
-  const parseLanguage = lang => lang.split('-')[0];
-
-  const languages = [
-    // TODO: list of available languages should come from i18n.options.resources
-    {
-      value: 'en',
-      label: 'English',
-    },
-    {
-      value: 'es',
-      label: 'Spanish',
-    },
-  ];
-
+const LanguageSwitcher = ({ language, onLanguageChange, languages }) => {
   const onChange = event => {
     const { value } = event.target;
-    onLanguageChange(parseLanguage(value));
+    onLanguageChange(value);
   };
 
   return (
@@ -29,7 +14,7 @@ const LanguageSwitcher = ({ language, onLanguageChange }) => {
       name="language-select"
       id="language-select"
       className="language-select"
-      value={parseLanguage(language)}
+      value={language}
       onChange={onChange}
     >
       {languages.map(lng => (
@@ -43,7 +28,8 @@ const LanguageSwitcher = ({ language, onLanguageChange }) => {
 
 LanguageSwitcher.propTypes = {
   language: PropTypes.string.isRequired,
+  languages: PropTypes.array.isRequired,
   onLanguageChange: PropTypes.func.isRequired,
 };
 
-export default withTranslation('UserPreferencesModal')(LanguageSwitcher);
+export { LanguageSwitcher };

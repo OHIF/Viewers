@@ -8,7 +8,7 @@ export class SeriesList extends Component {
   static propTypes = {
     seriesItems: PropTypes.array.isRequired,
     onClick: PropTypes.func.isRequired,
-    activeDisplaySetInstanceUid: PropTypes.string,
+    activeDisplaySetInstanceUID: PropTypes.string,
   };
 
   render() {
@@ -25,12 +25,12 @@ export class SeriesList extends Component {
     return this.props.seriesItems.map((seriesData, index) => {
       return (
         <Thumbnail
-          key={seriesData.displaySetInstanceUid}
+          key={seriesData.displaySetInstanceUID}
           id={`series_thumb_${index}`}
           {...seriesData}
           active={
-            seriesData.displaySetInstanceUid ===
-            this.props.activeDisplaySetInstanceUid
+            seriesData.displaySetInstanceUID ===
+            this.props.activeDisplaySetInstanceUID
           }
           onClick={() => this.props.onClick(seriesData)}
         />

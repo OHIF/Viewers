@@ -1,0 +1,21 @@
+@import './../../design/styles/common/navbar.styl'
+
+.TabComponents
+  .TabComponents_tabHeader
+    display: flex
+    flex-direction: column
+    margin-left: -20px
+    margin-right: -20px
+
+  .TabComponents_tabHeader_selector
+      border-bottom: 3px solid black
+      padding: 0 25px
+
+  .TabComponents_content
+    min-height: 450px
+    display: none
+
+    &.active
+      display: flex
+      flex-direction: column
+      justify-content: space-between
