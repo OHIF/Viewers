@@ -82,7 +82,7 @@ function _createPackage(packageType) {
 
 // for now ohif-cli is ran through yarn only.
 // see ohif-cli.md section # OHIF Command Line Interface for reference.
-const program = new Command('yarn run build-cli');
+const program = new Command('yarn run cli');
 // Todo: inject with webpack
 program
   .version('2.0.7')
