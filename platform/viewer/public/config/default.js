@@ -11,9 +11,9 @@ window.config = {
     dicomWeb: [
       {
         name: 'dicom-web',
-        wadoUriRoot: '/orthanc/wado',
-        qidoRoot: '/orthanc/dicom-web',
-        wadoRoot: '/orthanc/dicom-web',
+        wadoUriRoot: '/dicom-server/wado',
+        qidoRoot: '/dicom-server/dicom-web',
+        wadoRoot: '/dicom-server/dicom-web',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
