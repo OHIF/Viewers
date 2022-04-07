@@ -10,3 +10,14 @@ describe('initWebWorkers', () => {
     ).toHaveBeenCalled();
   });
 });
+
+describe('initWebWorkers', () => {
+  it("initializes cornerstoneWADOImageLoader's web workers only once", () => {
+    initWebWorkers();
+    initWebWorkers();
+
+    expect(
+      cornerstoneWADOImageLoader.webWorkerManager.initialize
+    ).toHaveBeenCalledTimes(1);
+  });
+});

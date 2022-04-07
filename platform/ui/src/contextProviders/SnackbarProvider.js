@@ -6,9 +6,12 @@ import React, {
   useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
+import { classes } from '@ohif/core';
 
 import SnackbarContainer from '../components/snackbar/SnackbarContainer';
 import SnackbarTypes from '../components/snackbar/SnackbarTypes';
+
+const { LogManager } = classes;
 
 const SnackbarContext = createContext(null);
 
@@ -22,21 +25,25 @@ const SnackbarProvider = ({ children, service }) => {
     autoClose: true,
     position: 'bottomRight',
     type: SnackbarTypes.INFO,
+    action: null,
   };
 
   const [count, setCount] = useState(1);
   const [snackbarItems, setSnackbarItems] = useState([]);
 
-  /**
-   * Sets the implementation of a notification service that can be used by extensions.
-   *
-   * @returns void
-   */
   useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({ hide, show });
-    }
-  }, [service, hide, show]);
+    const onLogHandler = ({ type, notify, title, message }) => {
+      if (notify) {
+        show({ type, title, message });
+      }
+    };
+
+    LogManager.subscribe(LogManager.EVENTS.OnLog, onLogHandler);
+
+    return () => {
+      LogManager.unsubscribe(LogManager.EVENTS.OnLog, onLogHandler);
+    };
+  }, [show]);
 
   const show = useCallback(
     options => {
@@ -46,6 +53,10 @@ const SnackbarProvider = ({ children, service }) => {
         );
 
         return null;
+      }
+
+      if (options.type === 'error') {
+        console.error(options.error);
       }
 
       const newItem = {
@@ -91,6 +102,17 @@ const SnackbarProvider = ({ children, service }) => {
     // remove all items from array
     setSnackbarItems(() => []);
   };
+
+  /**
+   * Sets the implementation of a notification service that can be used by extensions.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (service) {
+      service.setServiceImplementation({ hide, show });
+    }
+  }, [service, hide, show]);
 
   /**
    * expose snackbar methods to window for debug purposes

@@ -8,9 +8,12 @@
  * @property {string} [position="bottomRight"] -"topLeft" | "topCenter | "topRight" | "bottomLeft" | "bottomCenter" | "bottomRight"
  * @property {string} [type="info"] - "info" | "error" | "warning" | "success"
  * @property {boolean} [autoClose=true]
+ * @property {object} [action=null]
  */
 
 const name = 'UINotificationService';
+
+const serviceShowRequestQueue = [];
 
 const publicAPI = {
   name,
@@ -21,14 +24,18 @@ const publicAPI = {
 
 const serviceImplementation = {
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
-  _show: () => console.warn('show() NOT IMPLEMENTED'),
+  _show: showArguments => {
+    serviceShowRequestQueue.push(showArguments);
+
+    console.warn('show() NOT IMPLEMENTED');
+  },
 };
 
 /**
  * Create and show a new UI notification; returns the
  * ID of the created notification.
  *
- * @param {Notification} notification { title, message, duration, position, type, autoClose}
+ * @param {Notification} notification { title, message, duration, position, type, autoClose, action}
  * @returns {number} id
  */
 function _show({
@@ -38,6 +45,7 @@ function _show({
   position = 'bottomRight',
   type = 'info',
   autoClose = true,
+  action = null,
 }) {
   return serviceImplementation._show({
     title,
@@ -46,6 +54,7 @@ function _show({
     position,
     type,
     autoClose,
+    action,
   });
 }
 
@@ -76,6 +85,11 @@ function setServiceImplementation({
   }
   if (showImplementation) {
     serviceImplementation._show = showImplementation;
+
+    while (serviceShowRequestQueue.length > 0) {
+      const showArguments = serviceShowRequestQueue.pop();
+      serviceImplementation._show(showArguments);
+    }
   }
 }
 

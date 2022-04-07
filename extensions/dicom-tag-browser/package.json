@@ -1,0 +1,40 @@
+{
+  "name": "@ohif/extension-dicom-tag-browser",
+  "version": "0.2.23",
+  "description": "OHIF extension for checking DICOM headers.",
+  "author": "OHIF",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^2.6.0",
+    "dcmjs": "0.19.9",
+    "react": "^16.8.6"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "dicomweb-client": "^0.8.3",
+    "moment": "2.24.0",
+    "react-select": "^3.0.8"
+  }
+}

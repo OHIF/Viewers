@@ -13,8 +13,11 @@ describe('Top level exports', () => {
       'UINotificationService',
       'UIModalService',
       'UIDialogService',
+      'MeasurementService',
+      'LoggerService',
       //
       'utils',
+      'hotkeys',
       'studies',
       'redux',
       'classes',
@@ -22,6 +25,8 @@ describe('Top level exports', () => {
       'header',
       'cornerstone',
       'default', //
+      'errorHandler',
+      'str2ab',
       'string',
       'ui',
       'user',

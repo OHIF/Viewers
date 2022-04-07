@@ -1,49 +1,44 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Modal from 'react-bootstrap-modal';
 import DicomUploader from './DicomUploader';
 import { withTranslation } from 'react-i18next';
+import { servicesManager } from './../App.js';
 
-class DicomFileUploaderModal extends Component {
-  static propTypes = {
-    url: PropTypes.string,
-    retrieveAuthHeaderFunction: PropTypes.func,
-    onClose: PropTypes.func,
-  };
+function DicomFileUploaderModal({
+                                 isOpen = false,
+                                 onClose,
+                                 url,
+                                 retrieveAuthHeaderFunction,
+                                 t,
+                               }) {
+  const { UIModalService } = servicesManager.services;
 
-  state = {
-    uploaded: false,
-  };
-
-  render() {
-    if (!this.props.url) {
-      return null;
+  const showDicomStorePickerModal = () => {
+    if (!UIModalService) {
+      return
     }
 
-    return (
-      <Modal
-        show={this.props.isOpen}
-        onHide={this.props.onClose}
-        aria-labelledby="ModalHeader"
-        className="modal fade themed in"
-        backdrop={false}
-        size={'md'}
-        keyboard={true}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {this.props.t('Upload DICOM Files')}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <DicomUploader
-            url={this.props.url}
-            retrieveAuthHeaderFunction={this.props.retrieveAuthHeaderFunction}
-          />
-        </Modal.Body>
-      </Modal>
-    );
-  }
+    UIModalService.show({
+      content: DicomUploader,
+      title: t('Upload DICOM Files'),
+      contentProps: {
+        url,
+        retrieveAuthHeaderFunction
+      },
+      onClose,
+    });
+  };
+
+  return (
+    <React.Fragment>{isOpen && showDicomStorePickerModal()}</React.Fragment>
+  );
 }
+
+DicomFileUploaderModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  retrieveAuthHeaderFunction: PropTypes.func.isRequired,
+  onClose: PropTypes.func,
+  url: PropTypes.string,
+};
 
 export default withTranslation('Common')(DicomFileUploaderModal);

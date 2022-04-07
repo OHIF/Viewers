@@ -1,0 +1,4 @@
+.ErrorFallback {
+  padding: 10px;
+  color: var(--active-color);
+}

@@ -9,7 +9,7 @@ export default class LocationPicker extends Component {
     error: null,
     loading: true,
     locations: [],
-    filterStr: "",
+    filterStr: '',
   };
 
   static propTypes = {
@@ -42,10 +42,11 @@ export default class LocationPicker extends Component {
     const { onSelect } = this.props;
     return (
       <div>
-        <input class="form-control gcp-input"
-            type="text"
-            value={ filterStr }
-            onChange={ e => this.setState({ filterStr: e.target.value }) }
+        <input
+          className="form-control gcp-input"
+          type="text"
+          value={filterStr}
+          onChange={e => this.setState({ filterStr: e.target.value })}
         />
         <LocationsList
           locations={locations}

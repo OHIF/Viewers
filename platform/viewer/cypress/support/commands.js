@@ -1,4 +1,6 @@
 import '@percy/cypress';
+import { enable } from 'cornerstone-core';
+import 'cypress-file-upload';
 import { DragSimulator } from '../helpers/DragSimulator.js';
 import {
   initCornerstoneToolsAliases,
@@ -8,6 +10,7 @@ import {
   initStudyListAliasesOnDesktop,
   initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
+  initPreferencesModalFooterBtnAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -41,31 +44,45 @@ import {
  *
  * @param {string} PatientName - Patient name that we would like to search for
  */
-Cypress.Commands.add('openStudy', patientName => {
+Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
-  cy.get('#filter-patientNameOrId').type(patientName);
+  cy.get('#filter-patientNameOrId').type(PatientName);
   cy.wait('@getStudies');
   cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
-    .contains(patientName)
+    .contains(PatientName)
     .first()
     .click({ force: true });
 });
 
+Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
+  cy.location('pathname').then($url => {
+    cy.log($url);
+    if ($url == 'blank' || !$url.includes(`/viewer/${StudyInstanceUID}`)) {
+      cy.openStudyInViewer(StudyInstanceUID);
+      cy.waitDicomImage();
+    }
+  });
+});
+
+Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
+  cy.visit(`/viewer/${StudyInstanceUID}`);
+});
+
 /**
- * Command to search for a modality and open the study.
+ * Command to search for a Modality and open the study.
  *
- * @param {string} modality - Modality type that we would like to search for
+ * @param {string} Modality - Modality type that we would like to search for
  */
-Cypress.Commands.add('openStudyModality', modality => {
+Cypress.Commands.add('openStudyModality', Modality => {
   cy.initRouteAliases();
   cy.visit('/');
 
   cy.get('#filter-accessionOrModalityOrDescription')
-    .type(modality)
+    .type(Modality)
     .wait(2000);
 
   cy.get('[data-cy="study-list-results"]')
-    .contains(modality)
+    .contains(Modality)
     .first()
     .click();
 });
@@ -91,21 +108,21 @@ Cypress.Commands.add('waitStudyList', () => {
   });
 });
 
-Cypress.Commands.add('waitVTKReformatting', () => {
-  // Wait for start reformatting
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 10000 }).should($grid => {
-    expect($grid).to.contain.text('Reform');
+Cypress.Commands.add('waitVTKLoading', () => {
+  // Wait for start loading
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
+    expect($grid).to.contain.text('Loading');
   });
 
-  // Wait for finish reformatting
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
-    expect($grid).not.to.contain.text('Reform');
+  // Wait for finish loading
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 90000 }).should($grid => {
+    expect($grid).not.to.contain.text('Loading');
   });
 });
 
 Cypress.Commands.add('waitViewportImageLoading', () => {
   // Wait for finish loading
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
     expect($grid).not.to.contain.text('Load');
   });
 });
@@ -133,10 +150,11 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
     const [x1, y1] = firstClick;
     const [x2, y2] = secondClick;
 
+    // TODO: Added a wait which appears necessary in Cornerstone Tools >4?
     cy.wrap($viewport)
-      .click(x1, y1, { force: true })
+      .click(x1, y1).wait(100)
       .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2, { force: true });
+      .click(x2, y2).wait(100);
   });
 });
 
@@ -168,13 +186,13 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy=thumbnail-list]', { timeout: 10000 }).should($itemList => {
+  cy.get('[data-cy=thumbnail-list]', { timeout: 50000 }).should($itemList => {
     expect($itemList.length >= seriesToWait).to.be.true;
   });
 });
 
 //Command to wait DICOM image to load into the viewport
-Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
+Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
   const loaded = cy.isPageLoaded();
 
   if (loaded) {
@@ -182,6 +200,11 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
       .its('cornerstone')
       .then({ timeout }, $cornerstone => {
         return new Cypress.Promise(resolve => {
+          const onEnabled = enabledEvt => {
+            const element = enabledEvt.detail.element;
+
+            element.addEventListener('cornerstoneimagerendered', onEvent);
+          };
           const onEvent = renderedEvt => {
             const element = renderedEvt.detail.element;
 
@@ -192,15 +215,17 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
             );
             resolve();
           };
-          const onEnabled = enabledEvt => {
-            const element = enabledEvt.detail.element;
-
-            element.addEventListener('cornerstoneimagerendered', onEvent);
-          };
-          $cornerstone.events.addEventListener(
-            'cornerstoneelementenabled',
-            onEnabled
-          );
+          const enabledElements = $cornerstone.getEnabledElements();
+          if (enabledElements && enabledElements.length && !enabledElements[0].invalid) {
+            // Sometimes the page finishes rendering before this gets run,
+            // if so, just resolve immediately.
+            resolve();
+          } else {
+            $cornerstone.events.addEventListener(
+              'cornerstoneelementenabled',
+              onEnabled
+            );
+          }
         });
       });
   }
@@ -226,6 +251,8 @@ Cypress.Commands.add('resetViewport', () => {
   cy.get('[data-cy="reset"]')
     .as('resetBtn')
     .click();
+
+  cy.get('.tooltip-toolbar-overlay').should('not.exist');
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -268,6 +295,16 @@ Cypress.Commands.add('initRouteAliases', () => {
 //Initialize aliases for VTK tools
 Cypress.Commands.add('initVTKToolsAliases', () => {
   initVTKToolsAliases();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
+  initStudyListAliasesOnDesktop();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
+  initStudyListAliasesOnTablet();
 });
 
 //Initialize aliases for Study List page elements
@@ -440,15 +477,74 @@ Cypress.Commands.add('openPreferences', () => {
   });
 });
 
-Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
+Cypress.Commands.add('closePreferences', () => {
+  cy.log('Close User Preferences Modal');
+
+  cy.get('body').then(body => {
+    // Close notification if displayed
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+
+    // Close User Preferences Modal (if displayed)
+    if (body.find('.OHIFModal__header').length > 0) {
+      cy.get('[data-cy="close-button"]').click({ force: true });
+    }
+  });
+});
+
+Cypress.Commands.add('selectPreferencesTab', tabAlias => {
+  cy.initPreferencesModalAliases();
+  cy.get(tabAlias)
+    .click()
+    .should('have.class', 'active');
+  initPreferencesModalFooterBtnAliases();
+});
+
+Cypress.Commands.add('resetUserHotkeyPreferences', () => {
   // Open User Preferences modal
   cy.openPreferences();
 
-  cy.initPreferencesModalAliases();
+  cy.selectPreferencesTab('@userPreferencesHotkeysTab').then(() => {
+    cy.log('Reset Hotkeys to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
 
-  cy.log('Reset to Default Preferences');
-  cy.get('@restoreBtn').click();
+  // Click on Save Button
   cy.get('@saveBtn').click();
+
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+  });
+});
+
+Cypress.Commands.add('resetUserGeneralPreferences', () => {
+  // Open User Preferences modal
+  cy.openPreferences();
+
+  cy.selectPreferencesTab('@userPreferencesGeneralTab').then(() => {
+    cy.log('Reset Language to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
+
+  // Click on Save Button
+  cy.get('@saveBtn').click();
+
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+  });
 });
 
 Cypress.Commands.add(
@@ -456,12 +552,42 @@ Cypress.Commands.add(
   (function_label, shortcut) => {
     // Within scopes all `.get` and `.contains` to within the matched elements
     // dom instead of checking from document
-    cy.get('.HotKeysPreferences')
+    cy.get('.HotkeysPreferences')
       .within(() => {
         cy.contains(function_label) // label we're looking for
           .parent()
           .find('input') // closest input to that label
           .type(shortcut, { force: true }); // Set new shortcut for that function
+      });
+  }
+);
+
+Cypress.Commands.add(
+  'setWindowLevelPreset',
+  (preset_index, description_value, window_value, level_value) => {
+    let index = parseInt(preset_index) + 1;
+
+    // Set new Description value
+    cy.get(':nth-child(' + index + ') > .description > .preferencesInput')
+      .clear()
+      .type(description_value, {
+        force: true,
+      })
+      .blur();
+
+    // Set new Window value
+    cy.get(':nth-child(' + index + ') > .window > .preferencesInput')
+      .clear()
+      .type(window_value, {
+        force: true,
+      })
+      .blur();
+
+    // Set new Level value
+    cy.get(':nth-child(' + index + ') > .level > .preferencesInput')
+      .clear()
+      .type(level_value, {
+        force: true,
       })
       .blur();
   }
@@ -481,21 +607,27 @@ Cypress.Commands.add('openDownloadImageModal', () => {
 
 Cypress.Commands.add('setLanguage', (language, save = true) => {
   cy.openPreferences();
-
-  cy.get('@userPreferencesGeneralTab')
-    .click()
-    .should('have.class', 'active');
+  cy.initPreferencesModalAliases();
+  cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
   // Language dropdown should be displayed
   cy.get('#language-select').should('be.visible');
 
   // Select Language and Save/Cancel
-  cy.get('#language-select')
-    .select(language)
-    .then(() => {
-      const toClick = save ? '@saveBtn' : '@cancelBtn';
-      cy.get(toClick)
-        .scrollIntoView()
-        .click();
-    });
+  cy.get('#language-select').select(language);
+
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+
+    //Click on Save/Cancel button
+    const toClick = save ? '@saveBtn' : '@cancelBtn';
+    cy.get(toClick)
+      .scrollIntoView()
+      .click();
+  });
 });

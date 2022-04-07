@@ -1,63 +1,55 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
-import { MODULE_TYPES } from '@ohif/core';
-import OHIF, { DICOMSR } from '@ohif/core';
+import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
+
 import ConnectedHeader from './ConnectedHeader.js';
-import ConnectedToolbarRow from './ConnectedToolbarRow.js';
+import ToolbarRow from './ToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
-import { extensionManager } from './../App.js';
+import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
+import { extensionManager, servicesManager } from './../App.js';
+import { ReconstructionIssues } from './../../../core/src/enums.js';
 
 // Contexts
-import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
+import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
+import AppContext from '../context/AppContext';
 
 import './Viewer.css';
-/**
- * Inits OHIF Hanging Protocol's onReady.
- * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
- * Hanging Protocol will use OHIF LayoutManager to render viewports properly
- */
-/*const initHangingProtocol = () => {
-    // When Hanging Protocol is ready
-    HP.ProtocolStore.onReady(() => {
+import StudyPrefetcher from '../components/StudyPrefetcher.js';
+import StudyLoadingMonitor from '../components/StudyLoadingMonitor';
 
-        // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
-        const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
-
-        // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new OHIF.studies.classes.OHIFStudyMetadataSource();
-
-        // Get prior studies map
-        const studyPriorsMap = OHIF.studylist.functions.getStudyPriorsMap(studyMetadataList);
-
-        // Creates Protocol Engine object with required arguments
-        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, studyPriorsMap, studyMetadataSource);
-
-        // Sets up Hanging Protocol engine
-        HP.setEngine(ProtocolEngine);
-    });
-};*/
-
-/*const viewportUtils = OHIF.viewerbase.viewportUtils;
-
-OHIF.viewer.functionList = {
-    toggleCineDialog: viewportUtils.toggleCineDialog,
-    toggleCinePlay: viewportUtils.toggleCinePlay,
-    clearTools: viewportUtils.clearTools,
-    resetViewport: viewportUtils.resetViewport,
-    invert: viewportUtils.invert
-};*/
+const { studyMetadataManager } = OHIF.utils;
 
 class Viewer extends Component {
   static propTypes = {
-    studies: PropTypes.array,
-    studyInstanceUids: PropTypes.array,
+    studies: PropTypes.arrayOf(
+      PropTypes.shape({
+        StudyInstanceUID: PropTypes.string.isRequired,
+        StudyDate: PropTypes.string,
+        PatientID: PropTypes.string,
+        displaySets: PropTypes.arrayOf(
+          PropTypes.shape({
+            displaySetInstanceUID: PropTypes.string.isRequired,
+            SeriesDescription: PropTypes.string,
+            SeriesNumber: PropTypes.number,
+            InstanceNumber: PropTypes.number,
+            numImageFrames: PropTypes.number,
+            Modality: PropTypes.string.isRequired,
+            images: PropTypes.arrayOf(
+              PropTypes.shape({
+                getImageId: PropTypes.func.isRequired,
+              })
+            ),
+          })
+        ),
+      })
+    ),
+    studyInstanceUIDs: PropTypes.array,
     activeServer: PropTypes.shape({
       type: PropTypes.string,
       wadoRoot: PropTypes.string,
@@ -78,9 +70,11 @@ class Viewer extends Component {
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
 
+    const external = { servicesManager };
+
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
-        retrieve: DICOMSR.retrieveMeasurements,
+        retrieve: server => DICOMSR.retrieveMeasurements(server, external),
         store: DICOMSR.storeMeasurements,
       },
       server,
@@ -95,6 +89,8 @@ class Viewer extends Component {
         disassociate: this.disassociateStudy,
       },
     });
+
+    this._getActiveViewport = this._getActiveViewport.bind(this);
   }
 
   state = {
@@ -109,6 +105,11 @@ class Viewer extends Component {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
+
+    document.removeEventListener(
+      'segmentationLoadingError',
+      this._updateThumbnails
+    );
   }
 
   retrieveTimepoints = filter => {
@@ -120,12 +121,12 @@ class Viewer extends Component {
     if (this.props.studies) {
       latestDate = new Date('1000-01-01').toISOString();
       this.props.studies.forEach(study => {
-        const studyDate = moment(study.studyDate, 'YYYYMMDD').toISOString();
-        if (studyDate < earliestDate) {
-          earliestDate = studyDate;
+        const StudyDate = moment(study.StudyDate, 'YYYYMMDD').toISOString();
+        if (StudyDate < earliestDate) {
+          earliestDate = StudyDate;
         }
-        if (studyDate > latestDate) {
-          latestDate = studyDate;
+        if (StudyDate > latestDate) {
+          latestDate = StudyDate;
         }
       });
     }
@@ -135,8 +136,8 @@ class Viewer extends Component {
       {
         timepointType: 'baseline',
         timepointId: 'TimepointId',
-        studyInstanceUids: this.props.studyInstanceUids,
-        patientId: filter.patientId,
+        studyInstanceUIDs: this.props.studyInstanceUIDs,
+        PatientID: filter.PatientID,
         earliestDate,
         latestDate,
         isLocked: false,
@@ -159,7 +160,7 @@ class Viewer extends Component {
     return Promise.resolve();
   };
 
-  disassociateStudy = (timepointIds, studyInstanceUid) => {
+  disassociateStudy = (timepointIds, StudyInstanceUID) => {
     OHIF.log.info('disassociateStudy');
     return Promise.resolve();
   };
@@ -194,34 +195,93 @@ class Viewer extends Component {
     this.measurementApi = measurementApi;
 
     if (studies) {
-      const patientId = studies[0] && studies[0].patientId;
+      const PatientID = studies[0] && studies[0].PatientID;
 
-      timepointApi.retrieveTimepoints({ patientId });
+      timepointApi.retrieveTimepoints({ PatientID });
       if (isStudyLoaded) {
-        this.measurementApi.retrieveMeasurements(patientId, [
+        this.measurementApi.retrieveMeasurements(PatientID, [
           currentTimepointId,
         ]);
       }
+
+      const activeViewport = this.props.viewports[
+        this.props.activeViewportIndex
+      ];
+      const activeDisplaySetInstanceUID = activeViewport
+        ? activeViewport.displaySetInstanceUID
+        : undefined;
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies),
+        thumbnails: _mapStudiesToThumbnails(
+          studies,
+          activeDisplaySetInstanceUID
+        ),
       });
     }
+
+    document.addEventListener(
+      'segmentationLoadingError',
+      this._updateThumbnails.bind(this),
+      false
+    );
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, isStudyLoaded } = this.props;
-    if (studies !== prevProps.studies) {
+    const {
+      studies,
+      isStudyLoaded,
+      activeViewportIndex,
+      viewports,
+    } = this.props;
+
+    const activeViewport = viewports[activeViewportIndex];
+    const activeDisplaySetInstanceUID = activeViewport
+      ? activeViewport.displaySetInstanceUID
+      : undefined;
+
+    const prevActiveViewport =
+      prevProps.viewports[prevProps.activeViewportIndex];
+    const prevActiveDisplaySetInstanceUID = prevActiveViewport
+      ? prevActiveViewport.displaySetInstanceUID
+      : undefined;
+
+    if (
+      studies !== prevProps.studies ||
+      activeViewportIndex !== prevProps.activeViewportIndex ||
+      activeDisplaySetInstanceUID !== prevActiveDisplaySetInstanceUID
+    ) {
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies),
+        thumbnails: _mapStudiesToThumbnails(
+          studies,
+          activeDisplaySetInstanceUID
+        ),
+        activeDisplaySetInstanceUID,
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
-      const patientId = studies[0] && studies[0].patientId;
+      const PatientID = studies[0] && studies[0].PatientID;
       const { currentTimepointId } = this;
 
-      this.timepointApi.retrieveTimepoints({ patientId });
-      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+      this.timepointApi.retrieveTimepoints({ PatientID });
+      this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
+  }
+
+  _updateThumbnails() {
+    const { studies, activeViewportIndex, viewports } = this.props;
+
+    const activeViewport = viewports[activeViewportIndex];
+    const activeDisplaySetInstanceUID = activeViewport
+      ? activeViewport.displaySetInstanceUID
+      : undefined;
+
+    this.setState({
+      thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
+      activeDisplaySetInstanceUID,
+    });
+  }
+
+  _getActiveViewport() {
+    return this.props.viewports[this.props.activeViewportIndex];
   }
 
   render() {
@@ -241,90 +301,155 @@ class Viewer extends Component {
     return (
       <>
         {/* HEADER */}
-        <WhiteLabellingContext.Consumer>
-          {whiteLabelling => (
+        <WhiteLabelingContext.Consumer>
+          {whiteLabeling => (
             <UserManagerContext.Consumer>
               {userManager => (
-                <ConnectedHeader home={false} userManager={userManager}>
-                  {whiteLabelling.logoComponent}
-                </ConnectedHeader>
+                <AppContext.Consumer>
+                  {appContext => (
+                    <ConnectedHeader
+                      linkText={
+                        appContext.appConfig.showStudyList
+                          ? 'Study List'
+                          : undefined
+                      }
+                      linkPath={
+                        appContext.appConfig.showStudyList ? '/' : undefined
+                      }
+                      userManager={userManager}
+                    >
+                      {whiteLabeling &&
+                        whiteLabeling.createLogoComponentFn &&
+                        whiteLabeling.createLogoComponentFn(React)}
+                    </ConnectedHeader>
+                  )}
+                </AppContext.Consumer>
               )}
             </UserManagerContext.Consumer>
           )}
-        </WhiteLabellingContext.Consumer>
-
+        </WhiteLabelingContext.Consumer>
         {/* TOOLBAR */}
-        <ConnectedToolbarRow
-          isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-          isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-          selectedLeftSidePanel={
-            this.state.isLeftSidePanelOpen
-              ? this.state.selectedLeftSidePanel
-              : ''
-          }
-          selectedRightSidePanel={
-            this.state.isRightSidePanelOpen
-              ? this.state.selectedRightSidePanel
-              : ''
-          }
-          handleSidePanelChange={(side, selectedPanel) => {
-            const sideClicked = side && side[0].toUpperCase() + side.slice(1);
-            const openKey = `is${sideClicked}SidePanelOpen`;
-            const selectedKey = `selected${sideClicked}SidePanel`;
-            const updatedState = Object.assign({}, this.state);
-
-            const isOpen = updatedState[openKey];
-            const prevSelectedPanel = updatedState[selectedKey];
-            // RoundedButtonGroup returns `null` if selected button is clicked
-            const isSameSelectedPanel =
-              prevSelectedPanel === selectedPanel || selectedPanel === null;
-
-            updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
-
-            const isClosedOrShouldClose = !isOpen || isSameSelectedPanel;
-            if (isClosedOrShouldClose) {
-              updatedState[openKey] = !updatedState[openKey];
+        <ErrorBoundaryDialog context="ToolbarRow">
+          <ToolbarRow
+            activeViewport={
+              this.props.viewports[this.props.activeViewportIndex]
             }
+            isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
+            isRightSidePanelOpen={this.state.isRightSidePanelOpen}
+            selectedLeftSidePanel={
+              this.state.isLeftSidePanelOpen
+                ? this.state.selectedLeftSidePanel
+                : ''
+            }
+            selectedRightSidePanel={
+              this.state.isRightSidePanelOpen
+                ? this.state.selectedRightSidePanel
+                : ''
+            }
+            handleSidePanelChange={(side, selectedPanel) => {
+              const sideClicked = side && side[0].toUpperCase() + side.slice(1);
+              const openKey = `is${sideClicked}SidePanelOpen`;
+              const selectedKey = `selected${sideClicked}SidePanel`;
+              const updatedState = Object.assign({}, this.state);
 
-            this.setState(updatedState);
-          }}
-          studies={this.props.studies}
-        />
+              const isOpen = updatedState[openKey];
+              const prevSelectedPanel = updatedState[selectedKey];
+              // RoundedButtonGroup returns `null` if selected button is clicked
+              const isSameSelectedPanel =
+                prevSelectedPanel === selectedPanel || selectedPanel === null;
 
-        {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
-        {/*<StudyPrefetcher studies={this.props.studies} />*/}
+              updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
 
+              const isClosedOrShouldClose = !isOpen || isSameSelectedPanel;
+              if (isClosedOrShouldClose) {
+                updatedState[openKey] = !updatedState[openKey];
+              }
+
+              this.setState(updatedState);
+            }}
+            studies={this.props.studies}
+          />
+        </ErrorBoundaryDialog>
+        <AppContext.Consumer>
+          {appContext => <StudyLoadingMonitor studies={this.props.studies} />}
+        </AppContext.Consumer>
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">
           {/* LEFT */}
-          <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-            {VisiblePanelLeft ? (
-              <VisiblePanelLeft
-                viewports={this.props.viewports}
-                activeIndex={this.props.activeViewportIndex}
-              />
-            ) : (
-              <ConnectedStudyBrowser
-                studies={this.state.thumbnails}
-                studyMetadata={this.props.studies}
-              />
-            )}
-          </SidePanel>
+          <ErrorBoundaryDialog context="LeftSidePanel">
+            <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
+              {VisiblePanelLeft ? (
+                <VisiblePanelLeft
+                  viewports={this.props.viewports}
+                  studies={this.props.studies}
+                  activeIndex={this.props.activeViewportIndex}
+                />
+              ) : (
+                <AppContext.Consumer>
+                  {appContext => {
+                    const { appConfig } = appContext;
+                    const { studyPrefetcher } = appConfig;
+                    const { thumbnails } = this.state;
+                    return (
+                      <ConnectedStudyBrowser
+                        studies={thumbnails}
+                        studyMetadata={this.props.studies}
+                        showThumbnailProgressBar={
+                          studyPrefetcher &&
+                          studyPrefetcher.enabled &&
+                          studyPrefetcher.displayProgress
+                        }
+                      />
+                    );
+                  }}
+                </AppContext.Consumer>
+              )}
+            </SidePanel>
+          </ErrorBoundaryDialog>
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            <ConnectedViewerMain studies={this.props.studies} />
+            <ErrorBoundaryDialog context="ViewerMain">
+              <AppContext.Consumer>
+                {appContext => {
+                  const { appConfig } = appContext;
+                  const { studyPrefetcher } = appConfig;
+                  const { studies } = this.props;
+                  return (
+                    studyPrefetcher &&
+                    studyPrefetcher.enabled && (
+                      <StudyPrefetcher
+                        studies={studies}
+                        options={studyPrefetcher}
+                      />
+                    )
+                  );
+                }}
+              </AppContext.Consumer>
+              <ConnectedViewerMain
+                studies={this.props.studies}
+                isStudyLoaded={this.props.isStudyLoaded}
+              />
+            </ErrorBoundaryDialog>
           </div>
 
           {/* RIGHT */}
-          <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
-            {VisiblePanelRight && (
-              <VisiblePanelRight
-                viewports={this.props.viewports}
-                activeIndex={this.props.activeViewportIndex}
-              />
-            )}
-          </SidePanel>
+          <ErrorBoundaryDialog context="RightSidePanel">
+            <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
+              {VisiblePanelRight && (
+                <VisiblePanelRight
+                  isOpen={this.state.isRightSidePanelOpen}
+                  viewports={this.props.viewports}
+                  studies={this.props.studies}
+                  activeIndex={this.props.activeViewportIndex}
+                  activeViewport={
+                    this.props.viewports[this.props.activeViewportIndex]
+                  }
+                  getActiveViewport={this._getActiveViewport}
+                />
+              )}
+            </SidePanel>
+          </ErrorBoundaryDialog>
         </div>
       </>
     );
@@ -334,58 +459,247 @@ class Viewer extends Component {
 export default withDialog(Viewer);
 
 /**
+ * Async function to check if the displaySet has any derived one
+ *
+ * @param {*object} displaySet
+ * @param {*object} study
+ * @returns {bool}
+ */
+const _checkForDerivedDisplaySets = async function(displaySet, study) {
+  let derivedDisplaySetsNumber = 0;
+  if (
+    displaySet.Modality &&
+    !['SEG', 'SR', 'RTSTRUCT', 'RTDOSE'].includes(displaySet.Modality)
+  ) {
+    const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
+
+    const derivedDisplaySets = studyMetadata.getDerivedDatasets({
+      referencedSeriesInstanceUID: displaySet.SeriesInstanceUID,
+    });
+
+    derivedDisplaySetsNumber = derivedDisplaySets.length;
+  }
+
+  return derivedDisplaySetsNumber > 0;
+};
+
+/**
+ * Async function to check if there are any inconsistences in the series.
+ *
+ * For segmentation returns any error during loading.
+ *
+ * For reconstructable 3D volume:
+ * 1) Is series multiframe?
+ * 2) Do the frames have different dimensions/number of components/orientations?
+ * 3) Has the series any missing frames or irregular spacing?
+ * 4) Is the series 4D?
+ *
+ * If not reconstructable, MPR is disabled.
+ * The actual computations are done in isDisplaySetReconstructable.
+ *
+ * @param {*object} displaySet
+ * @returns {[string]} an array of strings containing the warnings
+ */
+const _checkForSeriesInconsistencesWarnings = async function(displaySet) {
+  if (displaySet.inconsistencyWarnings) {
+    // warnings already checked and cached in displaySet
+    return displaySet.inconsistencyWarnings;
+  }
+
+  const inconsistencyWarnings = [];
+
+  if (displaySet.Modality !== 'SEG') {
+    if (
+      displaySet.reconstructionIssues &&
+      displaySet.reconstructionIssues.length !== 0
+    ) {
+      displaySet.reconstructionIssues.forEach(warning => {
+        switch (warning) {
+          case ReconstructionIssues.DATASET_4D:
+            inconsistencyWarnings.push('The dataset is 4D.');
+            break;
+          case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
+            inconsistencyWarnings.push(
+              'The dataset frames have different dimensions (rows, columns).'
+            );
+            break;
+          case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
+            inconsistencyWarnings.push(
+              'The dataset frames have different components (Sample per pixel).'
+            );
+            break;
+          case ReconstructionIssues.VARYING_IMAGESORIENTATION:
+            inconsistencyWarnings.push(
+              'The dataset frames have different orientation.'
+            );
+            break;
+          case ReconstructionIssues.IRREGULAR_SPACING:
+            inconsistencyWarnings.push(
+              'The dataset frames have different pixel spacing.'
+            );
+            break;
+          case ReconstructionIssues.MULTIFFRAMES:
+            inconsistencyWarnings.push('The dataset is a multiframes.');
+            break;
+          default:
+            break;
+        }
+      });
+      inconsistencyWarnings.push(
+        'The datasets is not a reconstructable 3D volume. MPR mode is not available.'
+      );
+    }
+
+    if (
+      displaySet.missingFrames &&
+      (!displaySet.reconstructionIssues ||
+        (displaySet.reconstructionIssues &&
+          !displaySet.reconstructionIssues.find(
+            warn => warn === ReconstructionIssues.DATASET_4D
+          )))
+    ) {
+      inconsistencyWarnings.push(
+        'The datasets is missing frames: ' + displaySet.missingFrames + '.'
+      );
+    }
+
+    if (displaySet.isSOPClassUIDSupported === false) {
+      inconsistencyWarnings.push('The datasets is not supported.');
+    }
+    displaySet.inconsistencyWarnings = inconsistencyWarnings;
+  } else {
+    if (displaySet.loadError) {
+      inconsistencyWarnings.push(displaySet.segLoadErrorMessagge);
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
+    }
+  }
+
+  return inconsistencyWarnings;
+};
+
+/**
+ * Checks if display set is active, i.e. if the series is currently shown
+ * in the active viewport.
+ *
+ * For data display set, this functions checks if the active
+ * display set instance uid in the current active viewport is the same of the
+ * thumbnail one.
+ *
+ * For derived modalities (e.g., SEG and RTSTRUCT), the function gets the
+ * reference display set and then checks the reference uid with the active
+ * display set instance uid.
+ *
+ * @param {displaySet} displaySet
+ * @param {Study[]} studies
+ * @param {string} activeDisplaySetInstanceUID
+ * @returns {boolean} is active.
+ */
+const _isDisplaySetActive = function(
+  displaySet,
+  studies,
+  activeDisplaySetInstanceUID
+) {
+  let active = false;
+
+  const { displaySetInstanceUID } = displaySet;
+
+  // TO DO: in the future, we could possibly support new modalities
+  // we should have a list of all modalities here, instead of having hard coded checks
+  if (
+    displaySet.Modality !== 'SEG' &&
+    displaySet.Modality !== 'RTSTRUCT' &&
+    displaySet.Modality !== 'RTDOSE'
+  ) {
+    active = activeDisplaySetInstanceUID === displaySetInstanceUID;
+  } else if (displaySet.getSourceDisplaySet) {
+    if (displaySet.Modality === 'SEG') {
+      const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
+        studies,
+        false
+      );
+      active = referencedDisplaySet
+        ? activeDisplaySetInstanceUID ===
+          referencedDisplaySet.displaySetInstanceUID
+        : false;
+    } else {
+      const referencedDisplaySet = displaySet.getSourceDisplaySet(
+        studies,
+        false
+      );
+      active = referencedDisplaySet
+        ? activeDisplaySetInstanceUID ===
+          referencedDisplaySet.displaySetInstanceUID
+        : false;
+    }
+  }
+
+  return active;
+};
+
+/**
  * What types are these? Why do we have "mapping" dropped in here instead of in
  * a mapping layer?
  *
  * TODO[react]:
- * - Add sorting of display sets
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
- * @param {DisplaySet[]} studies[].displaySets
+ * @param {string} activeDisplaySetInstanceUID
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   return studies.map(study => {
-    const { studyInstanceUid } = study;
-
+    const { StudyInstanceUID } = study;
     const thumbnails = study.displaySets.map(displaySet => {
       const {
-        displaySetInstanceUid,
-        seriesDescription,
-        seriesNumber,
-        instanceNumber,
+        displaySetInstanceUID,
+        SeriesDescription,
         numImageFrames,
+        SeriesNumber,
       } = displaySet;
 
       let imageId;
       let altImageText;
 
-      if (displaySet.modality && displaySet.modality === 'SEG') {
+      if (displaySet.Modality && displaySet.Modality === 'SEG') {
         // TODO: We want to replace this with a thumbnail showing
         // the segmentation map on the image, but this is easier
         // and better than what we have right now.
         altImageText = 'SEG';
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
-
         imageId = displaySet.images[imageIndex].getImageId();
+      } else if (displaySet.isSOPClassUIDSupported === false) {
+        altImageText = displaySet.SOPClassUIDNaturalized;
       } else {
-        altImageText = displaySet.modality ? displaySet.modality : 'UN';
+        altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
+      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet);
+
+      const hasDerivedDisplaySets = _checkForDerivedDisplaySets(
+        displaySet,
+        study
+      );
+
       return {
+        active: _isDisplaySetActive(
+          displaySet,
+          studies,
+          activeDisplaySetInstanceUID
+        ),
         imageId,
         altImageText,
-        displaySetInstanceUid,
-        seriesDescription,
-        seriesNumber,
-        instanceNumber,
+        displaySetInstanceUID,
+        SeriesDescription,
         numImageFrames,
+        SeriesNumber,
+        hasWarnings,
+        hasDerivedDisplaySets,
       };
     });
 
     return {
-      studyInstanceUid,
+      StudyInstanceUID,
       thumbnails,
     };
   });

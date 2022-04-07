@@ -65,7 +65,7 @@ export const MeasurementsLengthSchema = {
     },
     isNodal: {
       label: 'Filter to evaluate only nodal or extranodal measurements',
-      type: 'boolean'
+      type: 'boolean',
     },
     message: {
       label: 'Message to be displayed in case of nonconformity',
@@ -119,19 +119,24 @@ export class MeasurementsLengthCriterion extends BaseCriterion {
         shortestDiameter = (child && child.shortestDiameter) || 0;
       }
 
-      const { sliceThickness } = metadata;
-      const modality = (metadata.getRawValue('x00080060') || '').toUpperCase();
+      const { SliceThickness } = metadata;
 
-      // Stop here if the measurement does not match the modality and location filters
-      if (typeof isNodal === 'boolean' && typeof options.isNodal === 'boolean' && options.isNodal !== isNodal)
+      const Modality = metadata.getTagValue('Modality') || '';
+
+      // Stop here if the measurement does not match the Modality and location filters
+      if (
+        typeof isNodal === 'boolean' &&
+        typeof options.isNodal === 'boolean' &&
+        options.isNodal !== isNodal
+      )
         return;
       if (options.locationIn && options.locationIn.indexOf(location) === -1)
         return;
-      if (options.modalityIn && options.modalityIn.indexOf(modality) === -1)
+      if (options.modalityIn && options.modalityIn.indexOf(Modality) === -1)
         return;
       if (options.locationNotIn && options.locationNotIn.indexOf(location) > -1)
         return;
-      if (options.modalityNotIn && options.modalityNotIn.indexOf(modality) > -1)
+      if (options.modalityNotIn && options.modalityNotIn.indexOf(Modality) > -1)
         return;
 
       // Check the measurement length
@@ -139,11 +144,11 @@ export class MeasurementsLengthCriterion extends BaseCriterion {
         (options.longAxis && longestDiameter < options.longAxis) ||
         (options.shortAxis && shortestDiameter < options.shortAxis) ||
         (longMultiplier &&
-          !isNaN(sliceThickness) &&
-          longestDiameter < longMultiplier * sliceThickness) ||
+          !isNaN(SliceThickness) &&
+          longestDiameter < longMultiplier * SliceThickness) ||
         (shortMultiplier &&
-          !isNaN(sliceThickness) &&
-          shortestDiameter < shortMultiplier * sliceThickness);
+          !isNaN(SliceThickness) &&
+          shortestDiameter < shortMultiplier * SliceThickness);
 
       // Mark this measurement as invalid if some of the checks have failed
       if (failed) {

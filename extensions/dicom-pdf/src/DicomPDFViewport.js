@@ -33,6 +33,7 @@ class DicomPDFViewport extends Component {
 
   static propTypes = {
     byteArray: TypedArrayProp.uint8,
+    rawPdf: PropTypes.bool,
     useNative: PropTypes.bool,
     viewportData: PropTypes.object,
     activeViewportIndex: PropTypes.number,
@@ -45,7 +46,8 @@ class DicomPDFViewport extends Component {
   };
 
   async componentDidMount() {
-    const dataSet = this.parseByteArray(this.props.byteArray);
+    const { rawPdf } = this.props
+    const dataSet = !rawPdf && this.parseByteArray(this.props.byteArray);
     const fileURL = this.getPDFFileUrl(dataSet, this.props.byteArray);
 
     this.setState(state => ({ ...state, fileURL }));
@@ -101,9 +103,9 @@ class DicomPDFViewport extends Component {
     let pdfByteArray = byteArray;
 
     if (dataSet) {
-      const sopClassUid = dataSet.string('x00080016');
+      const SOPClassUID = dataSet.string('x00080016');
 
-      if (sopClassUid !== SOP_CLASS_UIDS.ENCAPSULATED_PDF) {
+      if (SOPClassUID !== SOP_CLASS_UIDS.ENCAPSULATED_PDF) {
         throw new Error('This is not a DICOM-encapsulated PDF');
       }
 

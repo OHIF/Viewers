@@ -1,6 +1,10 @@
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
+import classes from '../classes';
+import parseSCOORD3D from './SCOORD3D/parseSCOORD3D';
 
-import findInstanceMetadataBySopInstanceUid from './utils/findInstanceMetadataBySopInstanceUid';
+import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
+
+const { LogManager } = classes;
 
 /**
  * Function to parse the part10 array buffer that comes from a DICOM Structured report into measurementData
@@ -9,9 +13,18 @@ import findInstanceMetadataBySopInstanceUid from './utils/findInstanceMetadataBy
  *
  * @param {ArrayBuffer} part10SRArrayBuffer
  * @param {Array} displaySets
+ * @param {object} external
  * @returns
  */
-const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
+const parseDicomStructuredReport = (
+  part10SRArrayBuffer,
+  displaySets,
+  external
+) => {
+  if (external && external.servicesManager) {
+    parseSCOORD3D({ servicesManager: external.servicesManager, displaySets });
+  }
+
   // Get the dicom data as an Object
   const dicomData = dcmjs.data.DicomMessage.readFile(part10SRArrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
@@ -19,9 +32,21 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
   );
 
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
-  const storedMeasurementByToolType = MeasurementReport.generateToolState(
-    dataset
-  );
+
+  let storedMeasurementByToolType;
+  try {
+    storedMeasurementByToolType = MeasurementReport.generateToolState(dataset);
+  } catch (error) {
+    const seriesDescription = dataset.SeriesDescription || '';
+    LogManager.publish(LogManager.EVENTS.OnLog, {
+      title: `Failed to parse ${seriesDescription} measurement report`,
+      type: 'warning',
+      message: error.message || '',
+      notify: true,
+    });
+    return;
+  }
+
   const measurementData = {};
   let measurementNumber = 0;
 
@@ -30,17 +55,18 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
     measurementData[toolName] = [];
 
     measurements.forEach(measurement => {
-      const instanceMetadata = findInstanceMetadataBySopInstanceUid(
+      const instanceMetadata = findInstanceMetadataBySopInstanceUID(
         displaySets,
         measurement.sopInstanceUid
       );
+
       const { _study: study, _series: series } = instanceMetadata;
-      const { studyInstanceUid, patientId } = study;
-      const { seriesInstanceUid } = series;
+      const { StudyInstanceUID, PatientID } = study;
+      const { SeriesInstanceUID } = series;
       const { sopInstanceUid, frameIndex } = measurement;
       const imagePath = getImagePath(
-        studyInstanceUid,
-        seriesInstanceUid,
+        StudyInstanceUID,
+        SeriesInstanceUID,
         sopInstanceUid,
         frameIndex
       );
@@ -56,9 +82,10 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
       const toolData = Object.assign({}, measurement, {
         imageId,
         imagePath,
-        seriesInstanceUid,
-        studyInstanceUid,
-        patientId,
+        SOPInstanceUID: sopInstanceUid,
+        SeriesInstanceUID,
+        StudyInstanceUID,
+        PatientID,
         measurementNumber: ++measurementNumber,
         timepointId: currentTimepointId,
         toolType: toolName,
@@ -74,20 +101,19 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
 
 /**
  * Function to create imagePath with all imageData related
- *
- * @param {string} studyInstanceUid
- * @param {string} seriesInstanceUid
- * @param {string} sopInstanceUid
+ * @param {string} StudyInstanceUID
+ * @param {string} SeriesInstanceUID
+ * @param {string} SOPInstanceUID
  * @param {string} frameIndex
  * @returns
  */
 const getImagePath = (
-  studyInstanceUid,
-  seriesInstanceUid,
-  sopInstanceUid,
+  StudyInstanceUID,
+  SeriesInstanceUID,
+  SOPInstanceUID,
   frameIndex
 ) => {
-  return [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join(
+  return [StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, frameIndex].join(
     '_'
   );
 };

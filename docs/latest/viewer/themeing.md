@@ -66,11 +66,11 @@ open to pull requests and discussion issues.
 
 Current white-labeling options are limited. We expose the ability to replace the
 "Logo" section of the application with a custom "Logo" component. You can do
-this by adding a `whiteLabelling` key to your
+this by adding a `whiteLabeling` key to your
 [configuration file](./configuration.md).
 
 ```js
-function RadicalImagingLogo() {
+function RadicalImagingLogo(React) {
   return React.createElement(
     'a',
     {
@@ -83,8 +83,8 @@ function RadicalImagingLogo() {
   );
 }
 
-props.whiteLabelling = {
-  logoComponent: RadicalImagingLogo(),
+props.whiteLabeling = {
+  createLogoComponentFn: RadicalImagingLogo,
 };
 ```
 

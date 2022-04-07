@@ -11,6 +11,7 @@ node -v
 
 # Install build deps and all monorepo package dependencies. Yarn Workspaces
 # should also symlink all projects appropriately
+yarn run lerna:restore
 yarn install --no-ignore-optional --pure-lockfile
 
 # Build && Move PWA Output
@@ -21,6 +22,9 @@ mv platform/viewer/dist/* .netlify/www/pwa -v
 # Build && Move script output
 # yarn run build:package
 
+# Cache all of the node_module dependencies in
+# extensions, modules, and platform packages
+yarn run lerna:cache
 echo 'Nothing left to see here. Go home, folks.'
 
 # Build using react-scripts

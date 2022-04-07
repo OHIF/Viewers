@@ -9,6 +9,8 @@
  * @property {boolean} [closeButton=true] Should the modal body render the close button.
  * @property {string} [title=null] Should the modal render the title independently of the body content.
  * @property {string} [customClassName=null] The custom class to style the modal.
+ * @property {boolean} [showScrollbar=false] Show or hide scrollbar.
+ * @property {boolean} [noScroll=false] Disable or not the scrollbar.
  */
 
 const name = 'UIModalService';
@@ -28,25 +30,33 @@ const serviceImplementation = {
 /**
  * Show a new UI modal;
  *
- * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, closeButton, title, customClassName }
+ * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, onClose, closeButton, title, customClassName, showScrollbar, noScroll }
  */
 function _show({
   content = null,
   contentProps = null,
   shouldCloseOnEsc = false,
   isOpen = true,
+  onClose = null,
   closeButton = true,
   title = null,
+  fullscreen = false,
   customClassName = null,
+  showScrollbar = false,
+  noScroll = false,
 }) {
   return serviceImplementation._show({
     content,
     contentProps,
     shouldCloseOnEsc,
     isOpen,
+    onClose,
     closeButton,
     title,
+    fullscreen,
     customClassName,
+    showScrollbar,
+    noScroll,
   });
 }
 

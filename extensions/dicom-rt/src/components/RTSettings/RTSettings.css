@@ -1,0 +1,88 @@
+.dcmrt-settings {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  color: white;
+}
+
+.dcmrt-settings .settings-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+}
+
+.dcmrt-settings .settings-title h3 {
+  color: var(--text-primary-color);
+  margin: 0;
+  padding: 0;
+}
+
+.dcmrt-settings .settings-section .content {
+  padding: 10px;
+  background-color: var(--ui-gray-dark);
+  border-radius: 5px;
+}
+
+.dcmrt-settings .settings-section .header {
+  border-bottom: 2px solid black;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--ui-gray-dark);
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 10px 15px;
+}
+
+.dcmrt-settings .settings-section p {
+  font-weight: bold;
+}
+
+.dcmrt-settings .range {
+  display: flex;
+  padding: 10px 10px;
+  font-size: 12px;
+}
+
+.dcmrt-settings .range:not(:last-of-type) {
+  padding-bottom: 0;
+}
+
+.dcmrt-settings .range label {
+  margin: 0;
+  display: unset;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+.dcmrt-settings .range input {
+  width: 100%;
+  padding: 0 20px 0 20px;
+}
+
+.dcmrt-settings .return-button {
+  color: #333;
+  background-color: #fff;
+  padding: 4px 12px;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.dcmrt-settings .return-button:hover,
+.dcmrt-settings .return-button:active,
+.dcmrt-settings .return-button.active {
+  background-color: var(--active-color);
+  border-color: var(--ui-border-color-active);
+  color: #fff;
+}

@@ -7,8 +7,9 @@ import Header from './Header.json';
 import MeasurementTable from './MeasurementTable.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
+import ViewportDownloadForm from './ViewportDownloadForm.json';
 
-export default {
+export default { 
   'en-US': {
     AboutModal,
     Buttons,
@@ -19,5 +20,6 @@ export default {
     MeasurementTable,
     StudyList,
     UserPreferencesModal,
-  },
+    ViewportDownloadForm,
+  }
 };

@@ -83,10 +83,10 @@ well (again, flexibility and extensibility are design goals). Most implemented
 methods rely on the implementation of an unimplemented method. For example, the
 method `getStringValue` from `InstanceMetadata` class, which has indeed been
 implemented and is meant to retrieve a metadata value as a string, internally
-calls the `getRawValue` method which _was NOT implemented_ and is meant to query
+calls the `getTagValue` method which _was NOT implemented_ and is meant to query
 the internal data structures for the requested metadata value and return it _as
 is_. Used in that way, an application would not benefit much from the already
-implemented methods. On the other hand, by simply overriding the `getRawValue`
+implemented methods. On the other hand, by simply overriding the `getTagValue`
 method on a specialized class to deal with the intrinsics of its internal data
 structures, this very application would now benefit from all already implemented
 methods.
@@ -99,12 +99,12 @@ The following code snippet tries to illustrate the idea:
 
 class InstanceMetadata {
     [ ... ]
-    getRawValue(tagOrProperty, defaultValue) {
+    getTagValue(tagOrProperty, defaultValue) {
         // Please implement this method in a specialized subclass...
     }
     [ ... ]
     getStringValue(tagOrProperty, index, defaultValue) {
-        let rawValue = this.getRawValue(tagOrProperty, '');
+        let rawValue = this.getTagValue(tagOrProperty, '');
         // parse the returned value into a string...
         [ ... ]
         return stringValue;
@@ -117,11 +117,11 @@ class InstanceMetadata {
 class MyFancyAppInstanceMetadata extends InstanceMetadata {
     // Overriding this method will make all methods implemented in the super class
     // that rely on it to be immediately available...
-    getRawValue(tagOrProperty, defaultValue) {
-        let rawValue;
+    getTagValue(tagOrProperty, defaultValue) {
+        let tagValue;
         // retrieve raw value from internal data structures...
         [ ... ]
-        return rawValue;
+        return tagValue;
     }
 }
 
@@ -135,9 +135,9 @@ if (sopInstaceMetadata instanceof MyFancyAppInstanceMetadata) { // true
 if (sopInstaceMetadata instanceof InstanceMetadata) { // also true
     // this code will also be executed...
 }
-// The following will also work since the internal "getRawValue" call inside
+// The following will also work since the internal "getTagValue" call inside
 // "getStringValue" method will now be satisfied... (thanks to the override)
-let patientName = sopInstaceMetadata.getStringValue('PatientName', '');
+let PatientName = sopInstaceMetadata.getStringValue('PatientName', '');
 [ ... ]
 
 ```
