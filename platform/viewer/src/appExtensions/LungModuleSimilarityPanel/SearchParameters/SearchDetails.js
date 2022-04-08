@@ -10,6 +10,8 @@ import { JobsContext } from '../../../context/JobsContext';
 import { withModal } from '@ohif/ui';
 import { Tooltip } from '../../../../../ui/src/components/tooltip';
 import ExpandableToolMenu from '../../../../../ui/src/viewer/ExpandableToolMenu';
+import circularLoading from '../../ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
+import { useLottie } from 'lottie-react';
 
 const RenderSimilarityResult = ({ data, imgDimensions }) => {
   return (
@@ -51,29 +53,71 @@ const RenderSimilarityResult = ({ data, imgDimensions }) => {
   );
 };
 
-const RenderLoadingModal = () => (
-  <div
-    style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      background: 'rgba(0,0,0,0.3)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    <p
+const RenderLoadingIcon = ({ size }) => {
+  const options = {
+    animationData: circularLoading,
+    loop: true,
+    autoplay: true,
+  };
+
+  const { View: Loader } = useLottie(options);
+
+  return (
+    <div
       style={{
-        color: 'white',
+        height: size,
+        width: size,
+        position: 'relative',
+        display: 'flex',
       }}
     >
-      Please Wait..
-    </p>
-  </div>
-);
+      <div
+        style={{
+          width: '300%',
+          height: '300%',
+          display: 'flex',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        {Loader}
+      </div>
+    </div>
+  );
+};
+
+const RenderLoadingModal = () => {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.3)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <RenderLoadingIcon size={70} />
+      <p
+        style={{
+          color: 'white',
+        }}
+      >
+        Please Wait..
+      </p>
+    </div>
+  );
+};
 
 const RenderSimilarityResultText = ({ content, res, title }) => (
   <p
@@ -409,44 +453,48 @@ const SearchDetails = props => {
         </div>
       )}
 
-      <div
-        onClick={
-          Boolean(resultsListState.length)
-            ? () => setShowListState(!showListState)
-            : null
-        }
-        style={{
-          width: '100%',
-          padding: '10px 20px',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          border: '1px solid #20A5D7',
-          borderRadius: 10,
-          color: '#20A5D7',
-          marginTop: 10,
-        }}
-      >
-        <p
+      {!Boolean(resultsListState.length) && !loadingState ? null : (
+        <div
+          onClick={
+            Boolean(resultsListState.length)
+              ? () => setShowListState(!showListState)
+              : null
+          }
           style={{
-            margin: 0,
-            padding: 0,
+            width: '100%',
+            padding: '10px 20px',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            border: '1px solid #20A5D7',
+            borderRadius: 10,
+            color: '#20A5D7',
+            marginTop: 10,
           }}
         >
-          {loadingState === 'list'
-            ? 'Fetching Jobs'
-            : `Job ${similarityResultState ? similarityResultState.job_id : 0}`}
-        </p>
-        <p
-          style={{
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          {showListState ? 'x' : 'v'}
-        </p>
-      </div>
+          <p
+            style={{
+              margin: 0,
+              padding: 0,
+            }}
+          >
+            {loadingState === 'list'
+              ? 'Fetching Jobs'
+              : `Job ${
+                  similarityResultState ? similarityResultState.job_id : 0
+                }`}
+          </p>
+          <p
+            style={{
+              margin: 0,
+              padding: 0,
+            }}
+          >
+            {showListState ? 'x' : 'v'}
+          </p>
+        </div>
+      )}
       {Boolean(resultsListState.length) && showListState && (
         <div
           style={{
