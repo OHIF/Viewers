@@ -2,13 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { NavBar, Svg, Icon, IconButton, Dropdown } from '../';
+import { NavBar, Svg, Icon, IconButton, Tooltip } from '../';
 
 function Header({
   children,
-  isReturnEnabled,
   onClickSettingButton,
-  onClickReturnButton,
+  onClickClipboardButton,
   isSticky,
   WhiteLabeling,
 }) {
@@ -20,6 +19,12 @@ function Header({
   const onClickSetting = () => {
     if (onClickSettingButton) {
       onClickSettingButton();
+    }
+  };
+
+  const onClickClipboard = () => {
+    if (onClickClipboardButton) {
+      onClickClipboardButton();
     }
   };
 
@@ -40,16 +45,40 @@ function Header({
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          <IconButton
-            id={'options-settings-icon'}
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
-            onClick={onClickSetting}
+          <Tooltip
+            content={
+              <div className="text-center max-w-40">
+                Copy Active
+                <br />
+                Image Link
+              </div>
+            }
           >
-            <Icon name="settings" />
-          </IconButton>
+            <IconButton
+              id={'options-clipboard-icon'}
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+              onClick={onClickClipboard}
+              style={{ padding: 5 }}
+            >
+              <Icon name="clipboard" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content="Settings">
+            <IconButton
+              id={'options-settings-icon'}
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+              onClick={onClickSetting}
+              style={{ padding: 5 }}
+            >
+              <Icon name="settings" />
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
     </NavBar>
@@ -58,14 +87,13 @@ function Header({
 
 Header.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  isReturnEnabled: PropTypes.bool,
   isSticky: PropTypes.bool,
-  onClickReturnButton: PropTypes.func,
-  WhiteLabeling: PropTypes.element,
+  onClickSettingButton: PropTypes.func,
+  onClickClipboardButton: PropTypes.func,
+  WhiteLabeling: PropTypes.object,
 };
 
 Header.defaultProps = {
-  isReturnEnabled: true,
   isSticky: false,
 };
 

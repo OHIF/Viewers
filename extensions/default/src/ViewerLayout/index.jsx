@@ -1,3 +1,4 @@
+import cornerstone from 'cornerstone-core';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -7,15 +8,15 @@ import {
   UserPreferences,
   Header,
   useModal,
+  useViewportGrid,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
 
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
-
 import { useAppConfig } from '@state';
 
+const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
@@ -96,12 +97,11 @@ function ViewerLayout({
   viewports,
   ViewportGridComp,
 }) {
-
   hotkeysManager.setupHotkeys();
 
   const [appConfig] = useAppConfig();
-
-  const onClickReturnButton = () => {};
+  const [{ activeViewportIndex }] = useViewportGrid();
+  const { UINotificationService } = servicesManager.services;
 
   const onClickSettingButton = () => {
     show({
@@ -130,6 +130,36 @@ function ViewerLayout({
         hotkeysModule: hotkeys,
       },
     });
+  };
+
+  const onClickClipboardButton = () => {
+    if (activeViewportIndex >= 0) {
+      const enabledElements = cornerstone.getEnabledElements();
+      const enabledElement = enabledElements[activeViewportIndex];
+      const imageId = enabledElement.image.imageId;
+      const instance = cornerstone.metaData.get('instance', imageId);
+
+      const studyURL = window.location.origin.concat(window.location.pathname);
+      const instanceURL = new URL(studyURL);
+
+      instanceURL.searchParams.append('series_number', instance.SeriesNumber);
+      instanceURL.searchParams.append(
+        'instance_number',
+        instance.InstanceNumber
+      );
+      navigator.clipboard.writeText(instanceURL.href);
+
+      const uiMessage =
+        'Series ' +
+        instance.SeriesNumber +
+        ' Image ' +
+        instance.InstanceNumber +
+        ' link copied!';
+      UINotificationService.show({
+        message: uiMessage,
+        type: 'info',
+      });
+    }
   };
 
   const { t } = useTranslation();
@@ -184,7 +214,7 @@ function ViewerLayout({
     <div className="flex flex-col overflow-hidden h-full">
       <Header
         onClickSettingButton={onClickSettingButton}
-        onClickReturnButton={onClickReturnButton}
+        onClickClipboardButton={onClickClipboardButton}
         WhiteLabeling={appConfig.whiteLabeling}
       >
         <ErrorBoundary context="Primary Toolbar">

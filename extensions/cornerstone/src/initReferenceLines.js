@@ -107,7 +107,6 @@ const initReferenceLines = ({ servicesManager, commandsManager }) => {
           .cross(referenceImagePlane.columnCosines);
         let angleInRadians = targetNormal.angleTo(referenceNormal);
         angleInRadians = Math.abs(angleInRadians);
-        console.log(angleInRadians);
         if (angleInRadians < 0.5) {
           console.warn(
             'Could not render reference lines, the angle between the two planes is lower than the required.'
