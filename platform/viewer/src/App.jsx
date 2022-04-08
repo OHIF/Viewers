@@ -87,7 +87,7 @@ function App({ config, defaultExtensions, defaultModes }) {
 
   return (
     <CombinedProviders>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBasename}>
         {authRoutes}
         {appRoutes}
       </BrowserRouter>
