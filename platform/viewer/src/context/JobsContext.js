@@ -9,6 +9,8 @@ const JobsContextProvider = ({ children, series, overlay, instance }) => {
   const [isInstance, setIsInstance] = useState(instance);
   const [opacityStatus, setOpacityStatus] = useState(0.5);
   const [colorMapStatus, setColorMapStatus] = useState('hotIron');
+  const [resultsListState, setResultsList] = React.useState([]);
+  const [similarityResultState, setSimilarityResultState] = React.useState();
 
   // useEffect(() => {
   //   console.log('JobsContext Effect ', {
@@ -39,6 +41,10 @@ const JobsContextProvider = ({ children, series, overlay, instance }) => {
         setOpacityStatus,
         colorMapStatus,
         setColorMapStatus,
+        resultsListState,
+        setResultsList,
+        similarityResultState,
+        setSimilarityResultState,
       }}
     >
       {children}

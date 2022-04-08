@@ -147,11 +147,15 @@ const SearchDetails = props => {
   const [width, setWidth] = React.useState();
   const [height, setHeight] = React.useState();
   const [element, setElement] = React.useState();
-  const [similarityResultState, setSimilarityResultState] = React.useState();
-  const [resultsListState, setResultsList] = React.useState([]);
   const [showListState, setShowListState] = React.useState(false);
   const [loadingState, setLoadingState] = React.useState(false);
   const [newSearchState, setNewSearchState] = React.useState(true);
+  const {
+    setResultsList,
+    resultsListState,
+    setSimilarityResultState,
+    similarityResultState,
+  } = useContext(JobsContext);
 
   const access_token = user.access_token;
 
