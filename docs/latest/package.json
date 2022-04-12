@@ -39,6 +39,7 @@
     "gitbook-plugin-versions": "^2.1.4"
   },
   "devDependencies": {
-    "gitbook-cli": "^2.3.2"
+    "gitbook-cli": "^2.3.2",
+    "lodash": "^4.17.20"
   }
 }
