@@ -1,16 +1,30 @@
-### PR Checklist
-
-- [ ] Brief description of changes
-- [ ] Links to any relevant issues
-- [ ] Required status checks are passing
-- [ ] User cases if changes impact the user's experience
-- [ ] `@mention` a maintainer to request a review
-
+Jira Ticket: [PXP-xxxx](https://ctds-planx.atlassian.net/browse/PXP-xxxx)
+- [ ] Remove this line if you've changed the title to (PXP-xxxx): <title>
 <!--
-  Links
-  -->
+Make sure to follow the DEV guidelines (https://gen3.org/resources/developer/dev-introduction/) before asking for review.
 
-<!-- prettier-ignore-start -->
-[blog]: https://circleci.com/blog/triggering-trusted-ci-jobs-on-untrusted-forks/
-[script]: https://github.com/jklukas/git-push-fork-to-upstream-branch
-<!-- prettier-ignore-end -->
+- Describe what this pull request does.
+- Add short descriptive bullet points for each section if relevant. Keep in mind that they will be parsed automatically to generate official release notes.
+- Test manually.
+- Maintain or increase the test coverage (if relevant).
+- Update the documentation, or justify if not needed.
+
+-->
+
+### New Features
+
+
+### Breaking Changes
+
+
+### Bug Fixes
+
+
+### Improvements
+
+
+### Dependency updates
+
+
+### Deployment changes
+<!-- This section should only contain important things devops should know when updating service versions. -->
