@@ -46,7 +46,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function(info) {
+      devtoolModuleFilenameTemplate: function (info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -73,32 +73,36 @@ module.exports = (env, argv) => {
       // Clean output.path
       new CleanWebpackPlugin(),
       // Copy "Public" Folder to Dist
-      new CopyWebpackPlugin([
-        {
-          from: PUBLIC_DIR,
-          to: DIST_DIR,
-          toType: 'dir',
-          // Ignore our HtmlWebpackPlugin template file
-          // Ignore our configuration files
-          ignore: ['config/*', 'html-templates/*', '.DS_Store'],
-        },
-        // Short term solution to make sure GCloud config is available in output
-        // for our docker implementation
-        {
-          from: `${PUBLIC_DIR}/config/google.js`,
-          to: `${DIST_DIR}/google.js`,
-        },
-        // Copy over and rename our target app config file
-        {
-          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
-          to: `${DIST_DIR}/app-config.js`,
-        },
-        {
-          from:
-            '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-          to: DIST_DIR,
-        },
-      ]),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: PUBLIC_DIR,
+            to: DIST_DIR,
+            toType: 'dir',
+            // Ignore our HtmlWebpackPlugin template file
+            // Ignore our configuration files
+            globOptions: {
+              ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+            },
+          },
+          // Short term solution to make sure GCloud config is available in output
+          // for our docker implementation
+          {
+            from: `${PUBLIC_DIR}/config/google.js`,
+            to: `${DIST_DIR}/google.js`,
+          },
+          // Copy over and rename our target app config file
+          {
+            from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+            to: `${DIST_DIR}/app-config.js`,
+          },
+          {
+            from:
+              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
+          },
+        ]
+      }),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
         filename: isProdBuild ? '[name].[hash].css' : '[name].css',

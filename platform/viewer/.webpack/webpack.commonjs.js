@@ -36,13 +36,15 @@ module.exports = (env, argv) => {
     plugins: [
       // Clean output.path
       new CleanWebpackPlugin(),
-      new CopyWebpackPlugin([
+      new CopyWebpackPlugin({
         // Copy over and rename our target app config file
-        {
-          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
-          to: `${DIST_DIR}/app-config.js`,
-        },
-      ]),
+        patterns: [
+          {
+            from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+            to: `${DIST_DIR}/app-config.js`,
+          },
+        ]
+      }),
       // Generate "index.html" w/ correct includes/imports
       // NOTE: We use this for E2E Tests
       new HtmlWebpackPlugin({
