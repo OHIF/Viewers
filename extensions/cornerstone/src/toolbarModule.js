@@ -90,6 +90,23 @@ const definitions = [
     commandOptions: { toolName: 'ArrowAnnotate' },
   },
   {
+    id: 'DragProbe',
+    label: 'Probe',
+    icon: 'dot-circle',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'DragProbe' },
+  },
+  {
+    id: 'RotateRight',
+    label: 'Rotate Right',
+    icon: 'rotate-right',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'rotateViewportCW',
+  },
+  {
     id: 'Angle',
     label: 'Angle',
     icon: 'angle-left',
@@ -116,6 +133,7 @@ const definitions = [
       behavior: TOOLBAR_BUTTON_BEHAVIORS.CINE,
     },
   },
+
   {
     id: 'More',
     label: 'More',
@@ -139,15 +157,7 @@ const definitions = [
         commandName: 'setToolActive',
         commandOptions: { toolName: 'WwwcRegion' },
       },
-      {
-        id: 'DragProbe',
-        label: 'Probe',
-        icon: 'dot-circle',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'DragProbe' },
-      },
+
       {
         id: 'EllipticalRoi',
         label: 'Ellipse',
@@ -173,14 +183,6 @@ const definitions = [
         //
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'invertViewport',
-      },
-      {
-        id: 'RotateRight',
-        label: 'Rotate Right',
-        icon: 'rotate-right',
-        //
-        type: TOOLBAR_BUTTON_TYPES.COMMAND,
-        commandName: 'rotateViewportCW',
       },
       {
         id: 'FlipH',

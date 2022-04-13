@@ -135,7 +135,7 @@ function ThumbnailFooter({
           )}
         </React.Fragment>
         {getDerivedInfo(derivedDisplaySetsActive)}
-        {getWarningInfo(SeriesNumber, inconsistencyWarnings)}
+        {/* {getWarningInfo(SeriesNumber, inconsistencyWarnings)} */}
       </div>
     );
 

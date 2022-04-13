@@ -27,15 +27,15 @@ function Header(props) {
 
   useEffect(() => {
     const optionsValue = [
-      {
-        title: t('About'),
-        icon: { name: 'info' },
-        onClick: () =>
-          show({
-            content: AboutContent,
-            title: t('OHIF Viewer - About'),
-          }),
-      },
+      // {
+      //   title: t('About'),
+      //   icon: { name: 'info' },
+      //   onClick: () =>
+      //     show({
+      //       content: AboutContent,
+      //       title: t('OHIF Viewer - About'),
+      //     }),
+      // },
       {
         title: t('Preferences'),
         icon: {
@@ -62,7 +62,7 @@ function Header(props) {
 
   return (
     <>
-      <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
+      <div className="notification-bar"></div>
       <div
         className={classNames('entry-header', { 'header-big': useLargeLogo })}
       >
@@ -92,7 +92,7 @@ function Header(props) {
         </div>
 
         <div className="header-menu">
-          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
+          <span className="research-use"></span>
           <Dropdown title={t('Options')} list={options} align="right" />
         </div>
       </div>

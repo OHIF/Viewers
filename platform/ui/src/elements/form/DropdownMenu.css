@@ -3,6 +3,7 @@
   margin-right: 10px;
   cursor: pointer;
   position: relative;
+  color: white;
 }
 
 .dd-title {
@@ -26,8 +27,8 @@
 
 .dd-menu-list {
   position: absolute;
-  top: 100%;
-  margin-top: 10px;
+  top: 50%;
+  margin-top: 0px;
   background: white;
   z-index: 999;
   border-radius: 5px;

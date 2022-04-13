@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Thumbnail } from './Thumbnail.js';
 import './StudyBrowser.styl';
+import { ScrollableArea } from './../../ScrollableArea/ScrollableArea.js';
+
 
 function StudyBrowser(props) {
   const {
@@ -14,7 +16,9 @@ function StudyBrowser(props) {
 
   return (
     <div className="study-browser">
-      <div className="scrollable-study-thumbnails">
+      <ScrollableArea hideScrollbar={false} scrollableClass ="scrollStyle">
+
+      {/* <div className="scrollable-study-thumbnails"> */}
         {studies
           .map((study, studyIndex) => {
             const { StudyInstanceUID } = study;
@@ -69,7 +73,8 @@ function StudyBrowser(props) {
             });
           })
           .flat()}
-      </div>
+      {/* </div> */}
+      </ScrollableArea>
     </div>
   );
 }

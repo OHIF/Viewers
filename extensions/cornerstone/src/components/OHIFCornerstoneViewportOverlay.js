@@ -50,11 +50,13 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
 
     const generalStudyModule =
       cornerstone.metaData.get('generalStudyModule', imageId) || {};
-    const { studyDate, studyTime, studyDescription } = generalStudyModule;
+    const { studyDate, studyTime, studyDescription, patientAge, station } = generalStudyModule;
 
     const patientModule =
       cornerstone.metaData.get('patientModule', imageId) || {};
-    const { patientId, patientName } = patientModule;
+    const { patientId, patientName, patientBirthDate } = patientModule;
+
+    //console.log(cornerstone.metaData.get('patientModule', imageId) || {})
 
     const generalImageModule =
       cornerstone.metaData.get('generalImageModule', imageId) || {};
@@ -121,21 +123,24 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
         <div className="top-left overlay-element">
           <div>{formatPN(patientName)}</div>
           <div>{patientId}</div>
+          <div>{patientBirthDate} / {patientAge} </div>
         </div>
         <div className="top-right overlay-element">
           <div>{studyDescription}</div>
           <div>
             {formatDICOMDate(studyDate)} {formatDICOMTime(studyTime)}
           </div>
+          <div>{station} </div>
+
         </div>
         <div className="bottom-right overlay-element">
           <div>Zoom: {zoomPercentage}%</div>
           <div>{wwwc}</div>
           <div className="compressionIndicator">{compression}</div>
         </div>
-        <div className="bottom-left2 warning">
+        {/* <div className="bottom-left2 warning">
           <div>{inconsistencyWarningsOn ? getWarningInfo(seriesNumber, inconsistencyWarnings) : ''}</div>
-        </div>
+        </div> */}
         <div className="bottom-left overlay-element">
           <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
           <div>

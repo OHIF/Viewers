@@ -3,7 +3,8 @@
   flex: 1;
   flex-flow: row nowrap;
   align-items: stretch;
-  height: calc(100% - var(--toolbar-height) - var(--top-bar-height));
+  /* height: calc(100% - var(--toolbar-height) - var(--top-bar-height)); */
+  height: calc(100% - var(--toolbar-height));
   width: 100%;
   overflow: hidden;
 }
@@ -45,4 +46,28 @@
   .FlexboxLayout {
     height: calc(100% - var(--toolbar-height) - var(--top-bar-height) - 16px);
   }
+}
+
+#scrollStyle::-webkit-scrollbar-track
+{
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+
+	background-color: #000000;
+
+}
+
+.scrollStyle::-webkit-scrollbar
+{  width: 10px;
+
+	 background-color: #000000;
+}
+
+.scrollStyle::-webkit-scrollbar-thumb
+{
+
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px #163239;
+	-webkit-box-shadow: inset 0 0 6px #163239;
+	background-color: #163239;
 }

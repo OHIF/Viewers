@@ -8,7 +8,7 @@ import {
   RoundedButtonGroup,
   ToolbarButton,
   withModal,
-  withDialog,
+  withDialog,Dropdown
 } from '@ohif/ui';
 
 import './ToolbarRow.css';
@@ -17,6 +17,8 @@ import { commandsManager, extensionManager } from './../App.js';
 import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import { withAppContext } from '../context/AppContext';
+import { UserPreferences } from '../components/UserPreferences';
+
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -41,6 +43,10 @@ class ToolbarRow extends Component {
 
   constructor(props) {
     super(props);
+
+    const {
+      modal: { show },
+    } = props;
 
     const toolbarButtonDefinitions = _getVisibleToolbarButtons.call(this);
     // TODO:
@@ -228,12 +234,26 @@ class ToolbarRow extends Component {
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}
           >
-            {this.buttonGroups.right.length && (
+            {this.buttonGroups.right.length && (<div style={{display:"flex"}}>
+              <Dropdown title={'Options'} list={ [
+      {
+        title: 'Preferences',
+        icon: {
+          name: 'user',
+        },
+        onClick: () =>
+          this.props.modal.show({
+            content: UserPreferences,
+            title: 'User Preferences',
+          }),
+          },
+          ]} align="right" />
               <RoundedButtonGroup
                 options={this.buttonGroups.right}
                 value={this.props.selectedRightSidePanel || ''}
                 onValueChanged={onPressRight}
               />
+              </div>
             )}
           </div>
         </div>

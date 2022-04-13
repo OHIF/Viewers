@@ -78,7 +78,7 @@ class MeasurementTable extends Component {
           <div>{this.getMeasurementsGroups()}</div>
         </ScrollableArea>
         <div className="measurementTableFooter">
-          {saveFunction && (
+          {/* {saveFunction && (
             <button
               onClick={this.saveFunction}
               className="saveBtn"
@@ -87,7 +87,7 @@ class MeasurementTable extends Component {
               <Icon name="save" width="14px" height="14px" />
               Save measurements
             </button>
-          )}
+          )} */}
         </div>
       </div>
     );
