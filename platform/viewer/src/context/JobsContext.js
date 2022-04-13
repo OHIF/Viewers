@@ -8,7 +8,7 @@ const JobsContextProvider = ({ children, series, overlay, instance }) => {
   const [overlayStatus, setOverlayStatus] = useState(overlay);
   const [isInstance, setIsInstance] = useState(instance);
   const [opacityStatus, setOpacityStatus] = useState(0.5);
-  const [colorMapStatus, setColorMapStatus] = useState('hotIron');
+  const [colorMapStatus, setColorMapStatus] = useState('spectral');
   const [resultsListState, setResultsList] = React.useState([]);
   const [similarityResultState, setSimilarityResultState] = React.useState();
 

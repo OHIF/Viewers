@@ -7,7 +7,7 @@ import { JobsContext } from '../../../context/JobsContext';
 const LayerControls = () => {
   const [opacity, setOpacity] = React.useState(0.5);
   const [sync, setSync] = React.useState(false);
-  const [colorMap, setColorMap] = React.useState('hotIron');
+  const [colorMap, setColorMap] = React.useState('spectral');
   const [element, setElement] = React.useState({});
   const [enabledElement, setEnabledElement] = React.useState({});
   const [layers, setLayers] = React.useState([]);
@@ -90,23 +90,32 @@ const LayerControls = () => {
 
   // function for changing the colormap for an active layer
   const onHandleColorChange = event => {
-    setColorMap(event.target.value);
+                                         // console.log(event.target.value);
+                                         setColorMap(event.target.value);
 
-    // getting all active layers in the current element
-    const all_layers = cornerstone.getLayers(element);
+                                         // getting all active layers in the current element
+                                         const all_layers = cornerstone.getLayers(
+                                           element
+                                         );
 
-    if (all_layers.length > 1) {
-      const layer = cornerstone.getLayer(element, all_layers[1].layerId);
+                                         if (all_layers.length > 1) {
+                                           const layer = cornerstone.getLayer(
+                                             element,
+                                             all_layers[1].layerId
+                                           );
 
-      // setting colormap to selected color
-      layer.viewport.colormap = event.target.value;
+                                           // setting colormap to selected color
+                                           layer.viewport.colormap =
+                                             event.target.value;
 
-      setColorMapStatus(event.target.value);
+                                           setColorMapStatus(
+                                             event.target.value
+                                           );
 
-      // update the element to apply new settings
-      cornerstone.updateImage(element);
-    }
-  };
+                                           // update the element to apply new settings
+                                           cornerstone.updateImage(element);
+                                         }
+                                       };
 
   return (
     <div className="component">

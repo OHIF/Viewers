@@ -591,6 +591,7 @@ const SearchDetails = props => {
                     paddingBottom: 20,
                     background: '#151A1F',
                     position: 'relative',
+                    cursor: 'pointer',
                   }}
                   key={index}
                   onClick={async () => {
