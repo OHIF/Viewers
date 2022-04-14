@@ -1,0 +1,111 @@
+import React from 'react';
+import * as cornerstone3D from '@cornerstonejs/core';
+import * as cornerstone3DTools from '@cornerstonejs/tools';
+import { Enums as cs3DEnums, CONSTANTS } from '@cornerstonejs/core';
+import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
+import init from './init.js';
+import commandsModule from './commandsModule';
+import ToolGroupService from './services/ToolGroupService';
+import ViewportService from './services/ViewportService';
+import { toolNames } from './initCornerstoneTools';
+import { getEnabledElement } from './state';
+
+import { id } from './id';
+
+const Component = React.lazy(() => {
+  return import(/* webpackPrefetch: true */ './OHIFCornerstone3DViewport');
+});
+
+const OHIFCornerstoneViewport = props => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Component {...props} />
+    </React.Suspense>
+  );
+};
+
+/**
+ *
+ */
+const cornerstone3DExtension = {
+  /**
+   * Only required property. Should be a unique value across all extensions.
+   */
+  id,
+
+  /**
+   *
+   *
+   * @param {object} [configuration={}]
+   * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
+   */
+  async preRegistration({
+    servicesManager,
+    commandsManager,
+    configuration = {},
+  }) {
+    servicesManager.registerService(ToolGroupService(servicesManager));
+    servicesManager.registerService(ViewportService(servicesManager));
+    await init({ servicesManager, commandsManager, configuration });
+  },
+  getViewportModule({ servicesManager, commandsManager }) {
+    const ExtendedOHIFCornerstoneViewport = props => {
+      // const onNewImageHandler = jumpData => {
+      //   commandsManager.runCommand('jumpToImage', jumpData);
+      // };
+      const { ToolBarService } = servicesManager.services;
+
+      return (
+        <OHIFCornerstoneViewport
+          {...props}
+          ToolBarService={ToolBarService}
+          servicesManager={servicesManager}
+          commandsManager={commandsManager}
+        />
+      );
+    };
+
+    return [
+      {
+        name: 'cornerstone-3d',
+        component: ExtendedOHIFCornerstoneViewport,
+      },
+    ];
+  },
+  getCommandsModule({ servicesManager, commandsManager, extensionManager }) {
+    return commandsModule({
+      servicesManager,
+      commandsManager,
+      extensionManager,
+    });
+  },
+  getUtilityModule({ servicesManager }) {
+    return [
+      {
+        name: 'common',
+        exports: {
+          getCornerstoneLibraries: () => {
+            return { cornerstone3D, cornerstone3DTools };
+          },
+          getEnabledElement,
+        },
+      },
+      {
+        name: 'core',
+        exports: {
+          Enums: cs3DEnums,
+          CONSTANTS,
+        },
+      },
+      {
+        name: 'tools',
+        exports: {
+          toolNames,
+          Enums: cs3DToolsEnums,
+        },
+      },
+    ];
+  },
+};
+
+export default cornerstone3DExtension;

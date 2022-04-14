@@ -7,7 +7,7 @@ sidebar_label: Toolbar Service
 
 ## Overview
 
-`ToolbarService` handles the toolbar section buttons, and what happens when a
+`ToolBarService` handles the toolbar section buttons, and what happens when a
 button is clicked by the user.
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
@@ -19,12 +19,12 @@ button is clicked by the user.
 | Event                   | Description                                                            |
 | ----------------------- | ---------------------------------------------------------------------- |
 | TOOL_BAR_MODIFIED       | Fires when a button is added/removed to the toolbar                    |
-| TOOL_BAR_STATE_MODIFIED | Fires when an interaction happens and ToolbarService state is modified |
+| TOOL_BAR_STATE_MODIFIED | Fires when an interaction happens and ToolBarService state is modified |
 
 ## API
 
 - `recordInteraction(interaction)`: executes the provided interaction which is
-  an object providing the following properties to the ToolbarService:
+  an object providing the following properties to the ToolBarService:
 
   - `interactionType`: can be `tool`, `toggle` and `action`. We will discuss
     more each type below.
@@ -47,7 +47,7 @@ button is clicked by the user.
 
 ## State
 
-ToolbarService has an internal state that gets updated per tool interaction and
+ToolBarService has an internal state that gets updated per tool interaction and
 tracks the active toolId, state of the buttons that have toggled state, and the
 group buttons and which tool in each group is active.
 
@@ -70,10 +70,10 @@ interaction object.
 
 - `tool`: setting a tool to be active; e.g., measurement tools
 - `toggle`: toggling state of a tool; e.g., viewport link (sync)
-- `action`: performs a registered action outside of the ToolbarService; e.g.,
+- `action`: performs a registered action outside of the ToolBarService; e.g.,
   capture
 
-A _simplified_ implementation of the ToolbarService is:
+A _simplified_ implementation of the ToolBarService is:
 
 ```js
 export default class ToolBarService {

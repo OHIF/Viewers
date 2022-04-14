@@ -47,8 +47,8 @@ function modeFactory({ modeConfiguration }) {
     // TODO: We're using this as a route segment
     // We should not be.
     id,
-    routeName: 'viewer',
-    displayName: 'Basic Viewer',
+    routeName: 'measurement-tracking',
+    displayName: 'Measurement Tracking',
     /**
      * Lifecycle hooks
      */
@@ -62,7 +62,15 @@ function modeFactory({ modeConfiguration }) {
         groupId: 'primary',
         itemId: 'Wwwc',
         interactionType: 'tool',
-        commandOptions: undefined,
+        commands: [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'WindowLevel',
+            },
+            context: 'CORNERSTONE',
+          },
+        ],
       };
 
       ToolBarService.recordInteraction(interaction);
@@ -79,7 +87,17 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
     },
-    onModeExit: () => {},
+    onModeExit: ({ servicesManager }) => {
+      const {
+        MeasurementService,
+        SegmentationService,
+        ToolBarService,
+      } = servicesManager.services;
+
+      ToolBarService.reset();
+      MeasurementService.clearMeasurements();
+      SegmentationService.clearSegmentations();
+    },
     validationTags: {
       study: [],
       series: [],
@@ -92,7 +110,7 @@ function modeFactory({ modeConfiguration }) {
     },
     routes: [
       {
-        path: 'longitudinal',
+        path: 'measurementTracking',
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/

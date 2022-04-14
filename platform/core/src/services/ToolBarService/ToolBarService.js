@@ -48,6 +48,8 @@ export default class ToolBarService {
       groups: {},
     };
     this.unsubscriptions = [];
+    this.buttonSections = {};
+    this.buttons = {};
   }
 
   /**
@@ -56,17 +58,20 @@ export default class ToolBarService {
    */
   recordInteraction(interaction) {
     const commandsManager = this._commandsManager;
-    const { groupId, itemId, interactionType, commandName, commandOptions } = interaction;
+    const { groupId, itemId, interactionType, commands } = interaction;
 
     switch (interactionType) {
       case 'action': {
+        commands.forEach(({ commandName, commandOptions, context }) => {
+          commandsManager.runCommand(commandName, commandOptions, context);
+        });
         break;
       }
       case 'tool': {
         this.state.primaryToolId = itemId;
-        // TODO: Force run this for all contexts? Even inactive?
-        // or... They'll just detect primaryToolId when they spin up and apply...
-        commandsManager.runCommand('setToolActive', commandOptions);
+        commands.forEach(({ commandName, commandOptions, context }) => {
+          commandsManager.runCommand('setToolActive', commandOptions, context);
+        });
         break;
       }
       case 'toggle': {
@@ -74,6 +79,7 @@ export default class ToolBarService {
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
+        // Todo: Adapt to toolGroup concept...
         if (commandOptions) {
           commandOptions.toggledState = this.state.toggles[itemId];
         }
@@ -83,21 +89,22 @@ export default class ToolBarService {
         throw new Error(`Invalid interaction type: ${interactionType}`);
     }
 
+    // Todo: comment out for now
     // Run command if there's one associated
     //
     // NOTE: Should probably just do this for tools as well?
     // But would be nice if we could enforce at least the command name?
-    let unsubscribe;
-    if (commandName) {
-      unsubscribe = commandsManager.runCommand(commandName, commandOptions);
-    }
+    // let unsubscribe;
+    // if (commandName) {
+    //   unsubscribe = commandsManager.runCommand(commandName, commandOptions);
+    // }
 
-    // Storing the unsubscribe for later reseting
-    if (unsubscribe && typeof unsubscribe === 'function') {
-      if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
-        this.unsubscriptions.push(unsubscribe);
-      }
-    }
+    // // Storing the unsubscribe for later reseting
+    // if (unsubscribe && typeof unsubscribe === 'function') {
+    //   if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
+    //     this.unsubscriptions.push(unsubscribe);
+    //   }
+    // }
 
     // Track last touched id for each group
     if (groupId) {

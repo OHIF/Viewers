@@ -22,6 +22,10 @@ import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 import { isImage } from './isImage';
 import isDisplaySetReconstructable from './isDisplaySetReconstructable';
+import imageIdToURI from './imageIdToURI';
+import debounce from './debounce';
+import roundNumber from './roundNumber';
+import downloadCSVReport from './downloadCSVReport';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for dervived displaySets using the displaySetManager.
@@ -51,6 +55,10 @@ const utils = {
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
+  imageIdToURI,
+  debounce,
+  roundNumber,
+  downloadCSVReport,
 };
 
 export {
@@ -76,6 +84,10 @@ export {
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
+  imageIdToURI,
+  debounce,
+  roundNumber,
+  downloadCSVReport,
 };
 
 export default utils;

@@ -9,10 +9,11 @@ import initWADOImageLoader from './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
-import callInputDialog from './callInputDialog.js';
+import callInputDialog from './callInputDialog';
 
 // TODO -> Global "context menu open state", or lots of expensive searches on drag?
 
+const CORNERSTONE_TOOLS_SOURCE_NAME = 'CornerstoneTools';
 let CONTEXT_MENU_OPEN = false;
 const { globalImageIdSpecificToolStateManager } = csTools;
 
@@ -322,7 +323,7 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     ArrowAnnotate,
   } = measurementServiceMappingsFactory(MeasurementService, DisplaySetService);
   const csToolsVer4MeasurementSource = MeasurementService.createSource(
-    'CornerstoneTools',
+    CORNERSTONE_TOOLS_SOURCE_NAME,
     '4'
   );
 
@@ -534,6 +535,10 @@ const _connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
     ({ source, measurement, data, dataSource }) => {
+      if (source.name !== CORNERSTONE_TOOLS_SOURCE_NAME) {
+        return;
+      }
+
       const {
         referenceStudyUID: StudyInstanceUID,
         referenceSeriesUID: SeriesInstanceUID,
@@ -588,6 +593,10 @@ const _connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {
+      if (source.name !== CORNERSTONE_TOOLS_SOURCE_NAME) {
+        return;
+      }
+
       // THIS POINTS TO ORIGINAL; Not a copy
       const imageIdSpecificToolState = globalImageIdSpecificToolStateManager.saveToolState();
 

@@ -36,18 +36,15 @@ function onElementDisabledRemoveFromSync(event) {
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const { ViewportGridService } = servicesManager.services;
 
-  function _getActiveViewportsEnabledElement() {
+  function _getActiveViewportEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
     const { element } = getEnabledElement(activeViewportIndex) || {};
     return element;
   }
 
   const actions = {
-    getCornerstoneLibraries: () => {
-      return { cornerstone, cornerstoneTools };
-    },
     rotateViewport: ({ rotation }) => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -56,7 +53,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
     },
     flipViewportHorizontal: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -65,7 +62,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
     },
     flipViewportVertical: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -74,7 +71,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
     },
     scaleViewport: ({ direction }) => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
       const step = direction * 0.15;
 
       if (enabledElement) {
@@ -88,7 +85,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
     },
     resetViewport: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
 
       if (enabledElement) {
         cornerstone.reset(enabledElement);
@@ -144,7 +141,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       let enabledElement;
 
       if (element === undefined) {
-        enabledElement = _getActiveViewportsEnabledElement();
+        enabledElement = _getActiveViewportEnabledElement();
       } else {
         enabledElement = element;
       }
@@ -156,7 +153,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
     },
     cancelMeasurement: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
 
       if (enabledElement) {
         const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
@@ -171,15 +168,13 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     // TODO: this is receiving `evt` from `ToolbarRow`. We could use it to have
     //       better mouseButtonMask sets.
     setToolActive: ({ toolName }) => {
-      if (!toolName) {
-        console.warn('No toolname provided to setToolActive command');
-      }
-
       // Find total number of tool indexes
-      const { viewports } = ViewportGridService.getState() || { viewports: [] };
+      const { viewports } = ViewportGridService.getState() || {
+        viewports: [],
+      };
       for (let i = 0; i < viewports.length; i++) {
         const viewport = viewports[i];
-        const hasDisplaySet = viewport.displaySetInstanceUID !== undefined;
+        const hasDisplaySet = viewport.displaySetInstanceUIDs?.length;
 
         if (!hasDisplaySet) {
           continue;
@@ -209,7 +204,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
     },
     clearAnnotations: () => {
-      const element = _getActiveViewportsEnabledElement();
+      const element = _getActiveViewportEnabledElement();
       if (!element) {
         return;
       }
@@ -266,15 +261,15 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       });
     },
     nextImage: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
       scroll(enabledElement, 1);
     },
     previousImage: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
       scroll(enabledElement, -1);
     },
     getActiveViewportEnabledElement: () => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+      const enabledElement = _getActiveViewportEnabledElement();
       return enabledElement;
     },
     showDownloadViewportModal: () => {
@@ -352,8 +347,9 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     // setCornerstoneLayout: () => {
     //   setCornerstoneLayout();
     // },
-    setWindowLevel: ({ window, level }) => {
-      const enabledElement = _getActiveViewportsEnabledElement();
+    setWindowLevel: ({ windowLevel }) => {
+      const { window, level } = windowLevel;
+      const enabledElement = _getActiveViewportEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -372,12 +368,6 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       commandFn: actions.jumpToImage,
       storeContexts: [],
       options: {},
-    },
-    getCornerstoneLibraries: {
-      commandFn: actions.getCornerstoneLibraries,
-      storeContexts: [],
-      options: {},
-      context: 'VIEWER',
     },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
@@ -496,7 +486,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
   return {
     actions,
     definitions,
-    defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE',
+    defaultContext: 'CORNERSTONE',
   };
 };
 

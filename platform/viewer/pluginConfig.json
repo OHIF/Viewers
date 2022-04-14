@@ -1,7 +1,7 @@
 {
   "extensions": [
     {
-      "packageName": "@ohif/extension-cornerstone",
+      "packageName": "@ohif/extension-cornerstone-3d",
       "version": "3.0.0"
     },
     {
@@ -27,7 +27,7 @@
   ],
   "modes": [
     {
-      "packageName": "@ohif/mode-longitudinal",
+      "packageName": "@ohif/mode-basic-viewer-cs3d",
       "version": "3.0.0"
     }
   ]

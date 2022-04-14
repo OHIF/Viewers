@@ -5,8 +5,8 @@ import utils from '../utils';
 //   stowSRFromMeasurements,
 // } from './handleStructuredReport';
 import findMostRecentStructuredReport from './utils/findMostRecentStructuredReport';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
+import * as cornerstone from '@cornerstonejs/core';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 import dcmjs from 'dcmjs';
 
 const { MeasurementReport } = dcmjs.adapters.Cornerstone;
@@ -154,7 +154,9 @@ function _getFilteredCornerstoneToolState(
 ) {
   const uidFilter = measurementData.map(md => md.id);
 
-  const globalToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+  // BROKEN BY CS3D
+  // cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+  const globalToolState = {};
   const filteredToolState = {};
 
   function addToFilteredToolState(imageId, toolType, toolDataI) {

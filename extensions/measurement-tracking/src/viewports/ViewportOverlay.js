@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
+import cornerstone from '@cornerstonejs/core';
+
 import classnames from 'classnames';
 
 const ViewportOverlay = ({

@@ -83,7 +83,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./data/ToolbarService">
+                <a href="./data/ToolBarService">
                     ToolBarService (NEW)
                 </a>
             </td>

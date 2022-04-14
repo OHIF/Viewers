@@ -39,9 +39,9 @@ const measurementServiceMappingsFactory = (
   return {
     Length: {
       toAnnotation: Length.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
+      toMeasurement: csToolsEventDetail =>
         Length.toMeasurement(
-          csToolsAnnotation,
+          csToolsEventDetail,
           DisplaySetService,
           _getValueTypeFromToolType
         ),
@@ -54,9 +54,9 @@ const measurementServiceMappingsFactory = (
     },
     Bidirectional: {
       toAnnotation: Bidirectional.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
+      toMeasurement: csToolsEventDetail =>
         Bidirectional.toMeasurement(
-          csToolsAnnotation,
+          csToolsEventDetail,
           DisplaySetService,
           _getValueTypeFromToolType
         ),
@@ -75,9 +75,9 @@ const measurementServiceMappingsFactory = (
     },
     ArrowAnnotate: {
       toAnnotation: ArrowAnnotate.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
+      toMeasurement: csToolsEventDetail =>
         ArrowAnnotate.toMeasurement(
-          csToolsAnnotation,
+          csToolsEventDetail,
           DisplaySetService,
           _getValueTypeFromToolType
         ),
@@ -90,9 +90,9 @@ const measurementServiceMappingsFactory = (
     },
     EllipticalRoi: {
       toAnnotation: EllipticalRoi.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
+      toMeasurement: csToolsEventDetail =>
         EllipticalRoi.toMeasurement(
-          csToolsAnnotation,
+          csToolsEventDetail,
           DisplaySetService,
           _getValueTypeFromToolType
         ),

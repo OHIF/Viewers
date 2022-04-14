@@ -8,4 +8,5 @@ export default {
   CONTEXT: 'contextModule',
   LAYOUT_TEMPLATE: 'layoutTemplateModule',
   HANGING_PROTOCOL: 'hangingProtocolModule',
+  UTILITY: 'utilityModule',
 };

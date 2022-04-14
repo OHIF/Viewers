@@ -1,11 +1,18 @@
 {
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "eslint-plugin-tsdoc",
+    "prettier"
+  ],
   "extends": [
     "react-app",
     "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "env": {
     "jest": true
   },

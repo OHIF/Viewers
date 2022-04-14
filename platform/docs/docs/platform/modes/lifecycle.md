@@ -65,7 +65,7 @@ This hook is called when the viewer navigate away from the route in the url.
 This is the place for cleaning up data, and services by unsubscribing to the
 events.
 
-For instance, it can be used to reset the `ToolbarService` which reset the
+For instance, it can be used to reset the `ToolBarService` which reset the
 toggled buttons.
 
 ```js

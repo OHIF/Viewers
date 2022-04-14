@@ -15,14 +15,13 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commandName, commandOptions, tooltip) {
+function _createButton(type, id, icon, label, commands, tooltip) {
   return {
     id,
     icon,
     label,
     type,
-    commandName,
-    commandOptions,
+    commands,
     tooltip,
   };
 }
@@ -43,8 +42,15 @@ function _createWwwcPreset(preset, title, subtitle) {
     title,
     subtitle,
     type: 'action',
-    commandName: 'setWindowLevel',
-    commandOptions: windowLevelPresets[preset],
+    commands: [
+      {
+        commandName: 'setWindowLevel',
+        commandOptions: {
+          windowLevel: windowLevelPresets[preset],
+        },
+        context: 'CORNERSTONE',
+      },
+    ],
   };
 }
 
@@ -61,8 +67,15 @@ export default [
         'Length',
         'tool-length',
         'Length',
-        undefined,
-        { toolName: 'Length' },
+        [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'Length',
+            },
+            context: 'CORNERSTONE',
+          },
+        ],
         'Length'
       ),
       secondary: {
@@ -76,34 +89,60 @@ export default [
           'Length',
           'tool-length',
           'Length',
-          undefined,
-          { toolName: 'Length' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Length',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Length Tool'
         ),
         _createToolButton(
           'Bidirectional',
           'tool-bidirectional',
           'Bidirectional',
-          undefined,
-          { toolName: 'Bidirectional' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Bidirectional',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Bidirectional Tool'
         ),
         _createToolButton(
           'ArrowAnnotate',
           'tool-annotate',
           'Annotation',
-          undefined,
-          { toolName: 'ArrowAnnotate' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ArrowAnnotate',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Arrow Annotate'
         ),
         _createToolButton(
           'EllipticalRoi',
           'tool-elipse',
           'Ellipse',
-          undefined,
-          {
-            toolName: 'EllipticalRoi',
-          },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'EllipticalRoi',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Ellipse Tool'
         ),
       ],
@@ -117,7 +156,15 @@ export default [
       type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commandOptions: { toolName: 'Zoom' },
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Zoom',
+          },
+          context: 'CORNERSTONE',
+        },
+      ],
     },
   },
   // Window Level + Presets...
@@ -130,8 +177,15 @@ export default [
         'Wwwc',
         'tool-window-level',
         'Window Level',
-        undefined,
-        { toolName: 'Wwwc' },
+        [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'Wwwc',
+            },
+            context: 'CORNERSTONE',
+          },
+        ],
         'Window Level'
       ),
       secondary: {
@@ -159,7 +213,15 @@ export default [
       type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commandOptions: { toolName: 'Pan' },
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Pan',
+          },
+          context: 'CORNERSTONE',
+        },
+      ],
     },
   },
   {
@@ -169,7 +231,13 @@ export default [
       icon: 'tool-capture',
       label: 'Capture',
       type: 'action',
-      commandName: 'showDownloadViewportModal',
+      commands: [
+        {
+          commandName: 'showDownloadViewportModal',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
+      ],
     },
   },
   {
@@ -187,8 +255,13 @@ export default [
         'Reset',
         'tool-reset',
         'Reset View',
-        'resetViewport',
-        undefined,
+        [
+          {
+            commandName: 'resetViewport',
+            commandOptions: {},
+            context: 'CORNERSTONE',
+          },
+        ],
         'Reset'
       ),
       secondary: {
@@ -202,80 +275,140 @@ export default [
           'Reset',
           'tool-reset',
           'Reset View',
-          'resetViewport',
-          undefined,
+          [
+            {
+              commandName: 'resetViewport',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
           'Reset'
         ),
         _createActionButton(
           'rotate-right',
           'tool-rotate-right',
           'Rotate Right',
-          'rotateViewportCW',
-          undefined,
+          [
+            {
+              commandName: 'rotateViewportCW',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
           'Rotate +90'
         ),
         _createActionButton(
           'flip-horizontal',
           'tool-flip-horizontal',
           'Flip Horizontally',
-          'flipViewportHorizontal',
-          undefined,
+          [
+            {
+              commandName: 'flipViewportHorizontal',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
           'Flip Horizontal'
         ),
         _createToolButton(
           'StackScroll',
           'tool-stack-scroll',
           'Stack Scroll',
-          undefined,
-          { toolName: 'StackScroll' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'StackScroll',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Stack Scroll'
         ),
         _createToolButton(
           'Magnify',
           'tool-magnify',
           'Magnify',
-          undefined,
-          { toolName: 'Magnify' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Magnify',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Magnify'
         ),
         _createActionButton(
           'invert',
           'tool-invert',
           'Invert',
-          'invertViewport',
-          undefined,
+          [
+            {
+              commandName: 'invertViewport',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
           'Invert Colors'
         ),
         _createToggleButton(
           'cine',
           'tool-cine',
           'Cine',
-          'toggleCine',
-          undefined,
+          [
+            {
+              commandName: 'toggleCine',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
           'Cine'
         ),
         _createToolButton(
           'Angle',
           'tool-angle',
           'Angle',
-          undefined,
-          { toolName: 'Angle' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Angle',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Angle'
         ),
         _createToolButton(
           'DragProbe',
           'tool-probe',
           'Probe',
-          undefined,
-          { toolName: 'DragProbe' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'DragProbe',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Probe'
         ),
         _createToolButton(
           'Rectangle',
           'tool-rectangle',
           'Rectangle',
-          undefined,
-          { toolName: 'RectangleRoi' },
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'RectangleRoi',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Rectangle'
         ),
       ],

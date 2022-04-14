@@ -13,7 +13,7 @@ describe('OHIF Download Snapshot File', () => {
   /*afterEach(() => {
     // Close modal
 
-    // TODO: Modal.jsx currently uses Icon instead of IconButton, so
+    // TODO: Modal.tsx currently uses Icon instead of IconButton, so
     // it's not as easy to give it the cypress data attribute.
     // We should fix that first
     cy.get('[data-cy="close-button"]')
@@ -43,7 +43,6 @@ describe('OHIF Download Snapshot File', () => {
 
     // Check image preview
     cy.get('[data-cy="image-preview"]').should('contain.text', 'Image preview');
-
 
     /* TODO: This is a canvas now, not an img with src
     cy.get('[data-cy="viewport-preview-img"]')

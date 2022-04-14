@@ -8,6 +8,7 @@ import {
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
+  SegmentationService,
   DisplaySetService,
   ToolBarService,
   ViewportGridService,
@@ -22,7 +23,7 @@ import {
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
-function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
+async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
       ? appConfigOrFunc({ servicesManager })
@@ -35,7 +36,8 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     getActiveContexts: () => [
       'VIEWER',
       'DEFAULT',
-      'ACTIVE_VIEWPORT::CORNERSTONE',
+      'CORNERSTONE',
+      'CORNERSTONE3D',
     ],
   };
 
@@ -61,6 +63,7 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     HangingProtocolService,
     CineService,
     UserAuthenticationService,
+    SegmentationService,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {
@@ -73,7 +76,7 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  extensionManager.registerExtensions(
+  await extensionManager.registerExtensions(
     [...defaultExtensions, ...appConfig.extensions],
     appConfig.dataSources
   );

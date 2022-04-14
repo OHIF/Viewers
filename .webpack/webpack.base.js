@@ -12,6 +12,8 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 // ~~ PackageJSON
 const PACKAGE = require('../platform/viewer/package.json');
+// const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
+//   .rules;
 // ~~ RULES
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
@@ -66,11 +68,20 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       children: false,
       warnings: true,
     },
+    devServer: {
+      open: true,
+      port: 3000,
+      historyApiFallback: true,
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
+    },
     module: {
       rules: [
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
-        loadShadersRule,
+        // loadShadersRule,
         {
           test: /\.m?js/,
           resolve: {
@@ -78,7 +89,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           },
         },
         cssToJavaScript,
-      ],
+      ], //.concat(vtkRules),
     },
     resolve: {
       mainFields: ['module', 'browser', 'main'],
@@ -106,7 +117,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
-      extensions: ['.js', '.jsx', '.json', '*'],
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
       fallback: { fs: false, path: false, zlib: false },

@@ -1,4 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy.js';
 import ProtocolEngine from './ProtocolEngine';
@@ -6,11 +5,8 @@ import ProtocolEngine from './ProtocolEngine';
 const EVENTS = {
   STAGE_CHANGE: 'event::hanging_protocol_stage_change',
   NEW_LAYOUT: 'event::hanging_protocol_new_layout',
-};
-
-const VIEWPORT_SETTING_TYPES = {
-  PROPS: 'props',
-  VIEWPORT: 'viewport',
+  CUSTOM_IMAGE_LOAD_PERFORMED:
+    'event::hanging_protocol_custom_image_load_performed',
 };
 
 class HangingProtocolService {
@@ -20,12 +16,38 @@ class HangingProtocolService {
     this.ProtocolEngine = undefined;
     this.protocol = undefined;
     this.stage = undefined;
+    /**
+     * An array that contains for each viewport (viewportIndex) specified in the
+     * hanging protocol, an object of the form
+     *
+     * {
+     *   viewportOptions,
+     *   displaySetsInfo, // contains array of  [ { SeriesInstanceUID, displaySetOPtions}, ... ]
+     * }
+     */
     this.matchDetails = [];
+    /**
+     * displaySetMatchDetails = <displaySetId, match>
+     * DisplaySetId is the id defined in the hangingProtocol
+     * match is an object that contains information about
+     *
+     * {
+     *   SeriesInstanceUID,
+     *   StudyInstanceUID,
+     *   matchDetails,
+     *   matchingScore,
+     *   sortingInfo
+     * }
+     */
+    this.displaySetMatchDetails = new Map();
     this.hpAlreadyApplied = [];
     this.studies = [];
     this.customViewportSettings = [];
     this.customAttributeRetrievalCallbacks = {};
     this.listeners = {};
+    this.imageLoadStrategies = {};
+    this.activeImageLoadStrategy = null;
+    this.customImageLoadPerformed = false;
     Object.defineProperty(this, 'EVENTS', {
       value: EVENTS,
       writable: false,
@@ -41,6 +63,10 @@ class HangingProtocolService {
     this.hpAlreadyApplied = [];
     this.matchDetails = [];
     // this.ProtocolEngine.reset()
+  }
+
+  getDisplaySetsMatchDetails() {
+    return this.displaySetMatchDetails;
   }
 
   getState() {
@@ -79,6 +105,73 @@ class HangingProtocolService {
     }
 
     this._setProtocol(protocol);
+  }
+
+  /**
+   * Returns true, if the hangingProtocol has a custom loading strategy for the images
+   * and its callback has been added to the HangingProtocolService
+   * @returns {boolean} true
+   */
+  hasCustomImageLoadStrategy() {
+    return (
+      this.activeImageLoadStrategy !== null &&
+      this.imageLoadStrategies[this.activeImageLoadStrategy] instanceof Function
+    );
+  }
+
+  getCustomImageLoadPerformed() {
+    return this.customImageLoadPerformed;
+  }
+
+  /**
+   * Executes the callback function for the custom loading strategy for the images
+   * if no strategy is set, the default strategy is used
+   * @param {Object} props Properties to be passed to the loaders
+   * @param {string} strategyName The name of the strategy to be used
+   */
+  runImageLoadStrategy(props, strategyName) {
+    if (strategyName) {
+      this.activeImageLoadStrategy = strategyName;
+    }
+
+    const displaySetsMatchDetails = this.getDisplaySetsMatchDetails();
+    if (this.activeImageLoadStrategy) {
+      const loader = this.imageLoadStrategies[this.activeImageLoadStrategy];
+      const loadedProps = loader({ ...props, displaySetsMatchDetails });
+
+      // if loader successfully re-arranged the data with the custom strategy
+      // and returned the new props, then broadcast them
+      if (!loadedProps) {
+        return;
+      }
+
+      this.customImageLoadPerformed = true;
+
+      this._broadcastChange(
+        this.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
+        loadedProps
+      );
+    }
+  }
+
+  /**
+   * Set the name of the active imageLoadStrategy
+   * @param {string} name strategy name
+   */
+  setActiveImageLoadStrategy(name) {
+    this.activeImageLoadStrategy = name;
+  }
+
+  /**
+   * Set the strategy callback for loading images to the HangingProtocolService
+   * @param {string} name strategy name
+   * @param {Function} callback image loader callback
+   */
+  registerImageLoadStrategy(name, callback) {
+    if (callback instanceof Function && name) {
+      this.imageLoadStrategies[name] = callback;
+      this.activeImageLoadStrategy = name;
+    }
   }
 
   setHangingProtocolAppliedForViewport(i) {
@@ -139,6 +232,9 @@ class HangingProtocolService {
     // which are entered manually
     this.stage = 0;
     this.protocol = protocol;
+    if (protocol.imageLoadStrategy) {
+      this.activeImageLoadStrategy = protocol.imageLoadStrategy;
+    }
     this._updateViewports(protocol);
   }
 
@@ -173,6 +269,9 @@ class HangingProtocolService {
       return;
     }
 
+    // reset displaySetMatchDetails
+    this.displaySetMatchDetails = new Map();
+
     // Retrieve the current stage
     const stageModel = this._getCurrentStageModel();
 
@@ -182,16 +281,15 @@ class HangingProtocolService {
       !stageModel ||
       !stageModel.viewportStructure ||
       !stageModel.viewports ||
+      !stageModel.displaySets ||
       !stageModel.viewports.length
     ) {
       return;
     }
 
-    // Retrieve the layoutTemplate associated with the current display set's viewport structure
-    // If no such template name exists, stop here.
-    // const layoutTemplateName = stageModel.viewportStructure.getLayoutTemplateName();
-    const layoutTemplateName = 'gridLayout';
-    if (!layoutTemplateName) {
+    this.customImageLoadPerformed = false;
+    const { layoutType } = stageModel.viewportStructure;
+    if (!layoutType) {
       return;
     }
 
@@ -202,97 +300,63 @@ class HangingProtocolService {
       return;
     }
 
-    const { columns: numCols, rows: numRows } = layoutProps;
+    const {
+      columns: numCols,
+      rows: numRows,
+      viewports: viewportsPos,
+    } = layoutProps;
+
     this._broadcastChange(this.EVENTS.NEW_LAYOUT, {
+      layoutType,
       numRows,
       numCols,
+      viewportsPos,
     });
 
-    // Empty the matchDetails associated with the ProtocolEngine.
-    // This will be used to store the pass/fail details and score
-    // for each of the viewport matching procedures
+    // Matching the displaySets
+    // Note: this is happening before displaySets are created. Here, displaySet
+    // only contains the information of the id of the displaySet to be matched
+    // based on some rules
+    stageModel.displaySets.forEach(displaySet => {
+      const { bestMatch } = this._matchImages(displaySet);
+      this.displaySetMatchDetails.set(displaySet.id, bestMatch);
+    });
 
     // Loop through each viewport
     stageModel.viewports.forEach((viewport, viewportIndex) => {
+      const { viewportOptions } = viewport;
       this.hpAlreadyApplied.push(false);
-      const details = this._matchImages(viewport);
 
-      let currentMatch = details.bestMatch;
+      // DisplaySets for the viewport, Note: this is not the actual displaySet,
+      // but it is a info to locate the displaySet from the displaySetService
+      let displaySetsInfo = [];
+      viewport.displaySets.forEach(({ id, options: displaySetOptions }) => {
+        const { SeriesInstanceUID } = this.displaySetMatchDetails.get(id);
 
-      const currentViewportData = {
-        viewportIndex,
-        SeriesInstanceUID: currentMatch && currentMatch.SeriesInstanceUID,
-      };
-
-      // Viewport Settings
-      //
-      // protocol defined callback
-      const protocolCallbacks = viewport.viewportSettings.filter(
-        setting => setting.type === VIEWPORT_SETTING_TYPES.PROPS
-      );
-      // manually added callback
-      const customCallbacks = this.customViewportSettings.filter(
-        setting => setting.type === VIEWPORT_SETTING_TYPES.PROPS
-      );
-      const callbacks = protocolCallbacks.concat(customCallbacks);
-
-      // if we have callbacks to applied at the app level or at the HP level
-      if (callbacks.length) {
-        currentViewportData.renderedCallback = (element, ToolBarService) => {
-          callbacks.forEach(setting => {
-            const { commandName, options } = setting;
-            options.viewportIndex = viewportIndex;
-            options.element = element;
-            // Toolbar service to handle tool activation
-            if (commandName === 'setToolActive') {
-              ToolBarService.recordInteraction(options);
-              return;
-            }
-            // other commands
-            this._commandsManager.runCommand(commandName, options);
-          });
+        const displaySetInfo = {
+          SeriesInstanceUID,
+          displaySetOptions,
         };
-      }
 
-      // initial viewport settings defined by protocol
-      const protocolInitialViewport = viewport.viewportSettings.filter(
-        setting => setting.type === VIEWPORT_SETTING_TYPES.VIEWPORT
-      );
-      // custom added initial viewport settings
-      const customInitialViewport = this.customViewportSettings.filter(
-        setting => setting.type === VIEWPORT_SETTING_TYPES.VIEWPORT
-      );
-      // TODO: conflict might happen between protocol and custom viewport settings
-      const viewportSettings = protocolInitialViewport.concat(
-        customInitialViewport
-      );
+        displaySetsInfo.push(displaySetInfo);
+      });
 
-      if (viewportSettings.length) {
-        const initialViewport = {};
-        viewportSettings.forEach(setting => {
-          const { options } = setting;
-          if (!options) return;
-          // Do not manipulate the hp settings
-          const viewportOptions = cloneDeep(options);
-          Object.entries(viewportOptions).forEach(([key, value]) => {
-            initialViewport[key] = value;
-          });
-        });
-        currentViewportData.initialViewport = initialViewport;
-      }
-
-      this.matchDetails[viewportIndex] = currentViewportData;
+      this.matchDetails[viewportIndex] = {
+        viewportOptions,
+        displaySetsInfo,
+      };
     });
   }
 
   // Match images given a list of Studies and a Viewport's image matching reqs
-  _matchImages(viewport) {
+  _matchImages(displaySet) {
     console.log('ProtocolEngine::matchImages');
 
     // TODO: matching is applied on study and series level, instance
     // level matching needs to be added in future
 
-    const { studyMatchingRules, seriesMatchingRules } = viewport;
+    // Todo: handle fusion viewports by not taking the first displaySet rule for the viewport
+    const { studyMatchingRules, seriesMatchingRules } = displaySet;
 
     const matchingScores = [];
     let highestStudyMatchingScore = 0;
@@ -460,6 +524,7 @@ class HangingProtocolService {
    *      within the measurement service and the source needs to update.
    * @return void
    */
+  // Todo: why do we have a separate broadcastChange function here?
   _broadcastChange(eventName, eventData) {
     const hasListeners = Object.keys(this.listeners).length > 0;
     const hasCallbacks = Array.isArray(this.listeners[eventName]);

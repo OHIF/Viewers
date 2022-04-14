@@ -1,4 +1,4 @@
-import createReportAsync from './../../_shared/createReportAsync.js';
+import createReportAsync from './../../_shared/createReportAsync';
 import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
 import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
