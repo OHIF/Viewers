@@ -97,7 +97,7 @@ const testProtocol = {
       id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
-        type: 'grid',
+        layoutType: 'grid',
         properties: {
           rows: 1,
           columns: 2,
@@ -156,6 +156,8 @@ const testProtocol = {
           ],
           studyMatchingRules: [],
         },
+      ],
+      viewports: [
         {
           id: 'ptACDisplaySet',
           imageMatchingRules: [],
