@@ -55,6 +55,7 @@ import toolFlipHorizontal from './../../assets/icons/tool-flip-horizontal.svg';
 import toolInvert from './../../assets/icons/tool-invert.svg';
 import toolRotateRight from './../../assets/icons/tool-rotate-right.svg';
 import toolCine from './../../assets/icons/tool-cine.svg';
+import toolCrosshair from './../../assets/icons/tool-crosshair.svg';
 import toolProbe from './../../assets/icons/tool-probe.svg';
 import toolAngle from './../../assets/icons/tool-angle.svg';
 import toolReset from './../../assets/icons/tool-reset.svg';
@@ -120,6 +121,7 @@ const ICONS = {
   'tool-invert': toolInvert,
   'tool-rotate-right': toolRotateRight,
   'tool-cine': toolCine,
+  'tool-crosshair': toolCrosshair,
   'tool-probe': toolProbe,
   'tool-angle': toolAngle,
   'tool-reset': toolReset,

@@ -60,7 +60,6 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
   }
 
   async posLoad(loadData) {
-    const { server } = this;
-    return createStudyFromSOPInstanceList(server, loadData);
+    return loadData;
   }
 }

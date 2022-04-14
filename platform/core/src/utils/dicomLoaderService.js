@@ -1,4 +1,4 @@
-import cornerstone from 'cornerstone-core';
+import * as cornerstone from '@cornerstonejs/core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import DICOMWeb from '../DICOMWeb';
@@ -49,7 +49,7 @@ const fetchIt = (url, headers = DICOMWeb.getAuthorizationHeader()) => {
 };
 
 const cornerstoneRetriever = imageId => {
-  return cornerstone.loadAndCacheImage(imageId).then(image => {
+  return cornerstone.imageLoader.loadAndCacheImage(imageId).then(image => {
     return image && image.data && image.data.byteArray.buffer;
   });
 };

@@ -125,7 +125,6 @@ describe('OHIF Study Viewer Page', function() {
   });
    */
 
-
   /*it('checks if measurement item can be deleted through the context menu on the viewport', function() {
     cy.addLengthMeasurement([100, 100], [200, 100]); //Adding measurement in the viewport
 
@@ -283,7 +282,6 @@ describe('OHIF Study Viewer Page', function() {
       .trigger('mousemove', 'center', { which: 3 })
       .trigger('mouseup');
 
-
     const expectedText = 'Zoom:3.98x';
     cy.get('@viewportInfoTopLeft').should('contains.text', expectedText);
   });
@@ -293,14 +291,14 @@ describe('OHIF Study Viewer Page', function() {
     let cornerstone;
     let currentPan;
 
-    // TO DO: Replace the cornerstone pan check by Percy snapshop comparison
-    cy.window()
-      .its('cornerstone')
-      .then(c => {
-        cornerstone = c;
-        currentPan = () =>
-          cornerstone.getEnabledElements()[0].viewport.translation;
-      });
+    // TO DO: Replace the cornerstone pan check by Percy snapshot comparison
+    // cy.window()
+    //   .its('cornerstone')
+    //   .then(c => {
+    //     cornerstone = c;
+    //     currentPan = () =>
+    //       cornerstone.getEnabledElements()[0].viewport.translation;
+    //   });
 
     //pan image with middle click
     cy.get('@viewport')

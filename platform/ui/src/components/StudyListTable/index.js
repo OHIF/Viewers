@@ -1,5 +1,5 @@
-import StudyListTable from './StudyListTable.js';
-import StudyListTableRow from './StudyListTableRow.js';
+import StudyListTable from './StudyListTable.tsx';
+import StudyListTableRow from './StudyListTableRow.tsx';
 
 export default StudyListTable;
 

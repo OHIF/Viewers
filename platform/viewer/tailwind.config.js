@@ -6,11 +6,11 @@ module.exports = {
     // Note: if you are writing an extension that uses Tailwind classes,
     // you need to put it here so they are not purged in the production build
     content: [
-      './src/**/*.{jsx,js,css}',
-      './node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
-      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
-      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
-      '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,css}',
+      './src/**/*.{jsx,js,ts,tsx, css}',
+      './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx, css}',
+      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
+      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
+      '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,css, ts,tsx}',
     ],
   },
   theme: {

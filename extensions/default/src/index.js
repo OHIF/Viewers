@@ -1,17 +1,21 @@
 import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
-import getPanelModule from './getPanelModule.js';
+import getPanelModule from './getPanelModule';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
-import getToolbarModule from './getToolbarModule.js';
+import getToolbarModule from './getToolbarModule';
 import commandsModule from './commandsModule';
 import { id } from './id.js';
+import init from './init';
 
-export default {
+const defaultExtension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+  preRegistration: ({ servicesManager, configuration = {} }) => {
+    init({ servicesManager, configuration });
+  },
   getDataSourcesModule,
   getHangingProtocolModule,
   getLayoutTemplateModule,
@@ -22,3 +26,5 @@ export default {
     return commandsModule({ servicesManager, commandsManager });
   },
 };
+
+export default defaultExtension;

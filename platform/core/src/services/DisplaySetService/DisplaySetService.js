@@ -26,7 +26,7 @@ const findInstance = (instance, displaySets) => {
     if (findInSet(instance, displayset.others)) return true;
   }
   return false;
-}
+};
 
 export default class DisplaySetService {
   constructor() {
@@ -87,6 +87,21 @@ export default class DisplaySetService {
     });
 
     return displaySet;
+  }
+
+  setDisplaySetsMetadataUpdated(displaySetUIDs) {
+    displaySetUIDs.forEach(displaySetUID => {
+      const displaySet = this.getDisplaySetByUID(displaySetUID);
+
+      if (!displaySet) {
+        return;
+      }
+
+      displaySet.needsRerendering = true;
+    });
+
+    // boradcast event to update listeners with the new displaySets
+    this._broadcastEvent(EVENTS.DISPLAY_SETS_METADATA_UPDATED, displaySetUIDs);
   }
 
   deleteDisplaySet(displaySetInstanceUID) {
@@ -213,10 +228,14 @@ export default class DisplaySetService {
           this._addDisplaySetsToCache(displaySets);
           this._addActiveDisplaySets(displaySets);
 
-          instances = instances.filter(instance => !findInstance(instance, displaySets))
+          instances = instances.filter(
+            instance => !findInstance(instance, displaySets)
+          );
         }
 
-        allDisplaySets = allDisplaySets ? [...allDisplaySets, ...displaySets] : displaySets;
+        allDisplaySets = allDisplaySets
+          ? [...allDisplaySets, ...displaySets]
+          : displaySets;
 
         if (!instances.length) return allDisplaySets;
       }
