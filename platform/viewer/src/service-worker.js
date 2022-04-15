@@ -7,10 +7,10 @@
 //
 
 // Embedded version
-importScripts('/third_party/workbox/workbox-v5.1.4/workbox-sw.js');
+importScripts('/dicom-viewer/third_party/workbox/workbox-v5.1.4/workbox-sw.js');
 
 workbox.setConfig({
-  modulePathPrefix: '/third_party/workbox/workbox-v5.1.4/',
+  modulePathPrefix: '/dicom-viewer/third_party/workbox/workbox-v5.1.4/',
 });
 
 // Internet version

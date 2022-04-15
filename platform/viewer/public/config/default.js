@@ -5,6 +5,7 @@ window.config = {
   showStudyList: false,
   filterQueryParam: false,
   disableServersCache: true,
+  disableMeasurementPanel: true,
   servers: {
     dicomWeb: [
       {
@@ -18,6 +19,7 @@ window.config = {
         StudiesMetadata: 'MainDicomTags',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
+        
       },
     ],
   },
