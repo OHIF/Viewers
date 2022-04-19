@@ -61,6 +61,7 @@ import UserPreferences from './UserPreferences';
 import HotkeysPreferences from './HotkeysPreferences';
 import HotkeyField from './HotkeyField';
 import Header from './Header';
+import ImageScrollbar from './ImageScrollbar';
 
 export {
   AboutModal,
@@ -87,6 +88,7 @@ export {
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
+  ImageScrollbar,
   Label,
   LayoutSelector,
   MeasurementTable,

@@ -1,14 +1,12 @@
 import * as cornerstone3D from '@cornerstonejs/core';
+import * as cornerstone3DTools from '@cornerstonejs/tools';
+import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
 
 const commandsModule = ({ servicesManager }) => {
-  const {
-    ViewportGridService,
-    ToolGroupService,
-    ViewportService,
-  } = servicesManager.services;
+  const { ViewportGridService, ToolGroupService } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
@@ -37,7 +35,7 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       // get actor from the viewport
-      const renderingEngine = ViewportService.getRenderingEngine();
+      const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
       const lower = windowCenterNum - windowWidthNum / 2.0;
@@ -58,15 +56,29 @@ const commandsModule = ({ servicesManager }) => {
       let toolGroupIdToUse = toolGroupId;
 
       if (!toolGroupIdToUse) {
-        const toolGroupIds = ToolGroupService.getToolGroupIds();
+        // Use the active viewport's tool group if no tool group id is provided
+        const enabledElement = _getActiveViewportEnabledElement();
 
-        if (toolGroupIds.length !== 1) {
-          throw new Error(
-            'setToolActive requires a toolGroupId if there are multiple tool groups'
+        if (!enabledElement) {
+          return;
+        }
+
+        const { renderingEngineId, viewportId } = enabledElement;
+        const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroupForViewport(
+          viewportId,
+          renderingEngineId
+        );
+
+        if (!toolGroup) {
+          console.warn(
+            'No tool group found for viewportId:',
+            viewportId,
+            'and renderingEngineId:',
+            renderingEngineId
           );
         }
 
-        toolGroupIdToUse = toolGroupIds[0];
+        toolGroupIdToUse = toolGroup.id;
       }
 
       const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
@@ -114,6 +126,128 @@ const commandsModule = ({ servicesManager }) => {
         return;
       }
     },
+    rotateViewport: ({ rotation }) => {
+      const enabledElement = _getActiveViewportEnabledElement();
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof cornerstone3D.StackViewport) {
+        const { rotation: currentRotation } = viewport.getProperties();
+
+        viewport.setProperties({ rotation: currentRotation + rotation });
+        viewport.render();
+      }
+    },
+    flipViewportHorizontal: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof cornerstone3D.StackViewport) {
+        const { flipHorizontal } = viewport.getProperties();
+        viewport.setProperties({ flipHorizontal: !flipHorizontal });
+        viewport.render();
+      }
+    },
+    flipViewportVertical: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof cornerstone3D.StackViewport) {
+        const { flipVertical } = viewport.getProperties();
+        viewport.setProperties({ flipVertical: !flipVertical });
+        viewport.render();
+      }
+    },
+    invertViewport: ({ element }) => {
+      let enabledElement;
+
+      if (element === undefined) {
+        enabledElement = _getActiveViewportEnabledElement();
+      } else {
+        enabledElement = element;
+      }
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof cornerstone3D.StackViewport) {
+        const { invert } = viewport.getProperties();
+        viewport.setProperties({ invert: !invert });
+        viewport.render();
+      }
+    },
+    resetViewport: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof cornerstone3D.StackViewport) {
+        viewport.resetProperties();
+        viewport.resetCamera();
+        viewport.render();
+      }
+    },
+    scaleViewport: ({ direction }) => {
+      const enabledElement = _getActiveViewportEnabledElement();
+      const scaleFactor = direction > 0 ? 0.9 : 1.1;
+
+      if (!enabledElement) {
+        return;
+      }
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof cornerstone3D.StackViewport) {
+        if (direction) {
+          const { parallelScale } = viewport.getCamera();
+          viewport.setCamera({ parallelScale: parallelScale * scaleFactor });
+          viewport.render();
+        } else {
+          viewport.resetCamera();
+          viewport.render();
+        }
+      }
+    },
+    scroll: ({ direction }) => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      let options = {};
+      if (viewport instanceof cornerstone3D.StackViewport) {
+        options = { direction };
+      } else {
+        throw new Error('scroll: volume viewport is not supported yet');
+      }
+
+      cornerstone3DTools.utilities.stackScrollTool.scrollThroughStack(
+        viewport,
+        options
+      );
+    },
   };
 
   const definitions = {
@@ -126,6 +260,61 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.setToolActive,
       storeContexts: [],
       options: {},
+    },
+    rotateViewportCW: {
+      commandFn: actions.rotateViewport,
+      storeContexts: [],
+      options: { rotation: 90 },
+    },
+    rotateViewportCCW: {
+      commandFn: actions.rotateViewport,
+      storeContexts: [],
+      options: { rotation: -90 },
+    },
+    flipViewportHorizontal: {
+      commandFn: actions.flipViewportHorizontal,
+      storeContexts: [],
+      options: {},
+    },
+    flipViewportVertical: {
+      commandFn: actions.flipViewportVertical,
+      storeContexts: [],
+      options: {},
+    },
+    invertViewport: {
+      commandFn: actions.invertViewport,
+      storeContexts: [],
+      options: {},
+    },
+    resetViewport: {
+      commandFn: actions.resetViewport,
+      storeContexts: [],
+      options: {},
+    },
+    scaleUpViewport: {
+      commandFn: actions.scaleViewport,
+      storeContexts: [],
+      options: { direction: 1 },
+    },
+    scaleDownViewport: {
+      commandFn: actions.scaleViewport,
+      storeContexts: [],
+      options: { direction: -1 },
+    },
+    fitViewportToWindow: {
+      commandFn: actions.scaleViewport,
+      storeContexts: [],
+      options: { direction: 0 },
+    },
+    nextImage: {
+      commandFn: actions.scroll,
+      storeContexts: [],
+      options: { direction: 1 },
+    },
+    previousImage: {
+      commandFn: actions.scroll,
+      storeContexts: [],
+      options: { direction: -1 },
     },
   };
 

@@ -9,9 +9,12 @@ const { registerVolumeLoader } = volumeLoader;
 
 let initialized = false;
 
-function initWebWorkers() {
+function initWebWorkers(appConfig) {
   const config = {
-    maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
+    maxWebWorkers: Math.min(
+      Math.max(navigator.hardwareConcurrency - 1, 1),
+      appConfig.maxNumberOfWebWorkers
+    ),
     startWebWorkersOnDemand: true,
     taskConfiguration: {
       decodeTask: {
@@ -28,7 +31,10 @@ function initWebWorkers() {
   }
 }
 
-export default function initWADOImageLoader(UserAuthenticationService) {
+export default function initWADOImageLoader(
+  UserAuthenticationService,
+  appConfig
+) {
   cornerstoneWADOImageLoader.external.cornerstone = cornerstone3D;
   cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
@@ -71,5 +77,5 @@ export default function initWADOImageLoader(UserAuthenticationService) {
     },
   });
 
-  initWebWorkers();
+  initWebWorkers(appConfig);
 }

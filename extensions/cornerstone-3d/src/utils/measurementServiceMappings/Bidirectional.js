@@ -1,13 +1,29 @@
+import { annotation } from '@cornerstonejs/tools';
+
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
 const Bidirectional = {
-  toAnnotation: (measurement, definition) => {},
+  // Currently we only update the labels
+  toAnnotation: measurement => {
+    const annotationUID = measurement.uid;
+    const cornerstone3DAnnotation = annotation.state.getAnnotation(
+      annotationUID
+    );
+
+    if (!cornerstone3DAnnotation) {
+      return;
+    }
+
+    if (cornerstone3DAnnotation.data.label !== measurement.label) {
+      cornerstone3DAnnotation.data.label = measurement.label;
+    }
+  },
   toMeasurement: (
     csToolsEventDetail,
     DisplaySetService,
-    ViewportService,
+    Cornerstone3DViewportService,
     getValueTypeFromToolType
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
@@ -31,7 +47,7 @@ const Bidirectional = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(
       referencedImageId,
-      ViewportService,
+      Cornerstone3DViewportService,
       viewportId
     );
 

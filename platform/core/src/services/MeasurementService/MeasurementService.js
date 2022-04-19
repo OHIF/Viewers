@@ -15,7 +15,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
  * Measurement schema
  *
  * @typedef {Object} Measurement
- * @property {number} id -
+ * @property {number} uid -
  * @property {string} SOPInstanceUID -
  * @property {string} FrameOfReferenceUID -
  * @property {string} referenceSeriesUID -
@@ -167,9 +167,9 @@ class MeasurementService {
   }
 
   /**
-   * Get specific measurement by its id.
+   * Get specific measurement by its uid.
    *
-   * @param {string} id Id of the measurement
+   * @param {string} uid measurement uid
    * @return {Measurement} Measurement instance
    */
   getMeasurement(measurementUID) {
@@ -225,8 +225,8 @@ class MeasurementService {
       return this.measurementToAnnotation(source, annotationType, measurement);
     };
 
-    source.remove = (id, eventDetails) => {
-      return this.remove(id, source, eventDetails);
+    source.remove = (measurementUID, eventDetails) => {
+      return this.remove(measurementUID, source, eventDetails);
     };
 
     source.getAnnotation = (annotationType, measurementId) => {
@@ -315,7 +315,7 @@ class MeasurementService {
    *
    * @param {MeasurementSource} source Measurement source instance
    * @param {string} annotationType The source annotationType
-   * @param {string} measurementUID The measurement service measurement id
+   * @param {string} measurementUID The measurement service measurement uid
    * @return {Object} Source measurement schema
    */
   getAnnotation(source, annotationType, measurementUID) {
@@ -512,7 +512,7 @@ class MeasurementService {
    * @param {MeasurementSource} source The measurement source instance
    * @param {string} annotationType The source annotationType
    * @param {EventDetail} sourceAnnotationEvent for the annotation event
-   * @return {string} A measurement id
+   * @return {string} A measurement uid
    */
   annotationToMeasurement(source, annotationType, sourceAnnotationEvent) {
     if (!this._isValidSource(source)) {
@@ -586,19 +586,18 @@ class MeasurementService {
       });
     }
 
-    return newMeasurement.id;
+    return newMeasurement.uid;
   }
 
   /**
    * Removes a measurement and broadcasts the removed event.
    *
-   * @param {string} measurementUID The measurement id
+   * @param {string} measurementUID The measurement uid
    * @param {MeasurementSource} source The measurement source instance
-   * @return {string} The removed measurement id
    */
   remove(measurementUID, source, eventDetails) {
     if (!measurementUID || !this.measurements[measurementUID]) {
-      log.warn(`No id provided, or unable to find measurement by id.`);
+      log.warn(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
 
@@ -611,9 +610,11 @@ class MeasurementService {
   }
 
   clearMeasurements() {
+    // Make a copy of the measurements
+    const measurements = { ...this.measurements };
     this.measurements = {};
     this._jumpToMeasurementCache = {};
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED);
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
   jumpToMeasurement(viewportIndex, measurementUID) {

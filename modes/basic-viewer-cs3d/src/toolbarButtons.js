@@ -54,7 +54,7 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-export default [
+const toolbarButtons = [
   // Measurement
   {
     id: 'MeasurementTools',
@@ -325,22 +325,22 @@ export default [
           ],
           'Stack Scroll'
         ),
-        _createToolButton(
-          'Magnify',
-          'tool-magnify',
-          'Magnify',
+        _createActionButton(
+          'invert',
+          'tool-invert',
+          'Invert',
           [
             {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Magnify',
-              },
+              commandName: 'invertViewport',
+              commandOptions: {},
               context: 'CORNERSTONE3D',
             },
           ],
-          'Magnify'
+          'Invert Colors'
         ),
       ],
     },
   },
 ];
+
+export default toolbarButtons;

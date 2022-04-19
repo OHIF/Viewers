@@ -328,6 +328,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         if (!seriesSummaryMetadata[instance.SeriesInstanceUID]) {
           seriesSummaryMetadata[instance.SeriesInstanceUID] = {
             StudyInstanceUID: instance.StudyInstanceUID,
+            StudyDescription: instance.StudyDescription,
             SeriesInstanceUID: instance.SeriesInstanceUID,
             SeriesDescription: instance.SeriesDescription,
             SeriesNumber: instance.SeriesNumber,

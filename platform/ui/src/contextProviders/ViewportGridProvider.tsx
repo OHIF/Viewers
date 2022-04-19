@@ -65,8 +65,15 @@ export function ViewportGridProvider({ children, service }) {
         return { ...state, ...{ viewports }, cachedLayout: null };
       }
       case 'SET_LAYOUT': {
-        const { numCols, numRows, layoutType, viewportsPos } = action.payload;
-        const numPanes = viewportsPos ? viewportsPos.length : numCols * numRows;
+        const {
+          numCols,
+          numRows,
+          layoutType,
+          viewportOptions,
+        } = action.payload;
+
+        // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
+        const numPanes = viewportOptions.length || numRows * numCols;
         const viewports = state.viewports.slice();
         const activeViewportIndex =
           state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
@@ -81,8 +88,8 @@ export function ViewportGridProvider({ children, service }) {
         for (let i = 0; i < numPanes; i++) {
           let xPos, yPos, w, h;
 
-          if (viewportsPos && viewportsPos[i]) {
-            ({ x: xPos, y: yPos, width: w, height: h } = viewportsPos[i]);
+          if (viewportOptions && viewportOptions[i]) {
+            ({ x: xPos, y: yPos, width: w, height: h } = viewportOptions[i]);
           } else {
             const { row, col } = unravelIndex(i, numRows, numCols);
             w = 1 / numCols;
@@ -177,14 +184,14 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const setLayout = useCallback(
-    ({ layoutType, numRows, numCols, viewportsPos }) =>
+    ({ layoutType, numRows, numCols, viewportOptions = [] }) =>
       dispatch({
         type: 'SET_LAYOUT',
         payload: {
           layoutType,
           numRows,
           numCols,
-          viewportsPos,
+          viewportOptions,
         },
       }),
     [dispatch]

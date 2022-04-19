@@ -8,11 +8,7 @@ import {
 } from '@cornerstonejs/core';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, {
-  ViewportOptions,
-  DisplaySet,
-  DisplaySetOptions,
-} from './Viewport';
+import ViewportInfo, { ViewportOptions, DisplaySetOptions } from './Viewport';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -23,9 +19,7 @@ const EVENTS = {
  * Handles cornerstone-3D viewport logic including enabling, disabling, and
  * updating the viewport.
  */
-class ViewportService implements IViewportService {
-  servicesManager: unknown;
-  HangingProtocolService: unknown;
+class Cornerstone3DViewportService implements IViewportService {
   renderingEngine: Types.IRenderingEngine | null;
   viewportsInfo: Map<number, ViewportInfo>;
   viewportGridResizeObserver: ResizeObserver | null;
@@ -41,8 +35,7 @@ class ViewportService implements IViewportService {
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
 
-  constructor(servicesManager) {
-    this.servicesManager = servicesManager;
+  constructor() {
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;
     this.viewportsInfo = new Map();
@@ -51,8 +44,6 @@ class ViewportService implements IViewportService {
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
     //
-    const { HangingProtocolService } = servicesManager.services;
-    this.HangingProtocolService = HangingProtocolService;
   }
 
   /**
@@ -91,8 +82,9 @@ class ViewportService implements IViewportService {
    */
   public resize() {
     const immediate = true;
-    const resetPanZoomForViewPlane = false;
-    this.renderingEngine.resize(immediate, resetPanZoomForViewPlane);
+    const resetPan = false;
+    const resetZoom = false;
+    this.renderingEngine.resize(immediate, resetPan, resetZoom);
     this.renderingEngine.render();
   }
 
@@ -136,32 +128,36 @@ class ViewportService implements IViewportService {
    */
   public setViewportDisplaySets(
     viewportIndex: number,
-    displaySets: unknown[],
+    viewportData: unknown,
     viewportOptions: ViewportOptions,
-    displaySetOptions: unknown[],
-    dataSource: unknown
-  ) {
+    displaySetOptions: unknown[]
+  ): void {
     const renderingEngine = this.getRenderingEngine();
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const currentViewportOptions = viewportInfo.getViewportOptions();
     // If new viewportOptions are provided and have keys that are not in the
     // current viewportOptions, then we need to update the viewportOptions,
     // else we inherit the current viewportOptions.
+    const currentViewportOptions = viewportInfo.getViewportOptions();
+    let viewportOptionsToUse = currentViewportOptions;
     if (Object.keys(viewportOptions)) {
-      const newViewportOptions = {
+      viewportOptionsToUse = {
         ...currentViewportOptions,
         ...viewportOptions,
       };
-      viewportInfo.setViewportOptions(newViewportOptions);
-    } else {
-      viewportInfo.setViewportOptions(currentViewportOptions);
     }
+    viewportInfo.setViewportOptions(viewportOptionsToUse);
 
-    // Todo: handle changed displaySetOptions
-
-    viewportInfo.setDisplaySets(displaySets, displaySetOptions);
+    const currentDisplaySetOptions = viewportInfo.getDisplaySetOptions();
+    let displaySetOptionsToUse = currentDisplaySetOptions;
+    if (displaySetOptions?.length) {
+      displaySetOptionsToUse = [
+        ...(currentDisplaySetOptions ?? []),
+        ...displaySetOptions,
+      ];
+    }
+    viewportInfo.setDisplaySetOptions(displaySetOptionsToUse);
 
     this._broadcastEvent(EVENTS.VIEWPORT_INFO_CREATED, viewportInfo);
 
@@ -184,11 +180,22 @@ class ViewportService implements IViewportService {
     renderingEngine.enableElement(viewportInput);
     this._setDisplaySets(
       viewportId,
-      displaySets,
-      viewportOptions,
-      displaySetOptions,
-      dataSource
+      viewportData,
+      viewportOptionsToUse,
+      displaySetOptionsToUse
     );
+  }
+
+  public getCornerstone3DViewport(viewportId: string): StackViewport | null {
+    const viewportInfo = this.getViewportInfoById(viewportId);
+
+    if (!viewportInfo) {
+      return null;
+    }
+
+    const viewport = this.renderingEngine.getViewport(viewportId);
+
+    return viewport;
   }
 
   /**
@@ -210,30 +217,40 @@ class ViewportService implements IViewportService {
     return null;
   }
 
-  _setStackViewport(viewport, displaySet, displaySetOptions, dataSource) {
-    const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-    viewport.setStack(imageIds).then(() => {
+  _setStackViewport(viewport, viewportData, displaySetOptions) {
+    const { imageIds, initialImageIdIndex } = viewportData.stack;
+    // Todo: handle fusion stack when it is implemented
+    const { voi, voiInverted } = displaySetOptions[0];
+
+    const properties = {};
+    if (Array.isArray(voi)) {
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
+        voi[0],
+        voi[1]
+      );
+      properties.voiRange = { lower, upper };
+    }
+
+    if (voiInverted !== undefined) {
+      properties.invert = voiInverted;
+    }
+
+    viewport.setStack(imageIds, initialImageIdIndex).then(() => {
+      viewport.setProperties(properties);
       csUtils.prefetchStack(imageIds);
     });
   }
 
   _setDisplaySets(
     viewportId: string,
-    displaySets: DisplaySet[],
+    viewportData: unknown,
     viewportOptions: ViewportOptions,
-    displaySetOptions: DisplaySetOptions,
-    dataSource: unknown
-  ) {
+    displaySetOptions: DisplaySetOptions
+  ): void {
     const viewport = this.renderingEngine.getViewport(viewportId);
 
     if (viewport instanceof StackViewport) {
-      // Todo: No fusion on StackViewport Yet
-      this._setStackViewport(
-        viewport,
-        displaySets[0],
-        displaySetOptions[0],
-        dataSource
-      );
+      this._setStackViewport(viewport, viewportData, displaySetOptions);
     } else {
       throw new Error('Unsupported viewport type');
     }
@@ -249,4 +266,4 @@ class ViewportService implements IViewportService {
   }
 }
 
-export default ViewportService;
+export default new Cornerstone3DViewportService();

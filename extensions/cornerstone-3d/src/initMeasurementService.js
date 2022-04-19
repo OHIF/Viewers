@@ -3,7 +3,7 @@ import { Enums, annotation } from '@cornerstonejs/tools';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
-const { getAnnotation, removeAnnotation } = annotation.state;
+const { removeAnnotation } = annotation.state;
 
 const csToolsEvents = Enums.Events;
 
@@ -12,7 +12,7 @@ const CORNERSTONE_TOOLS_3D_SOURCE_NAME = 'CornerstoneTools3D';
 const initMeasurementService = (
   MeasurementService,
   DisplaySetService,
-  ViewportService
+  Cornerstone3DViewportService
 ) => {
   /* Initialization */
   const {
@@ -23,7 +23,7 @@ const initMeasurementService = (
   } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
-    ViewportService
+    Cornerstone3DViewportService
   );
   const csTools3DVer1MeasurementSource = MeasurementService.createSource(
     CORNERSTONE_TOOLS_3D_SOURCE_NAME,
@@ -69,16 +69,16 @@ const initMeasurementService = (
 const connectToolsToMeasurementService = (
   MeasurementService,
   DisplaySetService,
-  ViewportService
+  Cornerstone3DViewportService
 ) => {
   const csTools3DVer1MeasurementSource = initMeasurementService(
     MeasurementService,
     DisplaySetService,
-    ViewportService
+    Cornerstone3DViewportService
   );
   connectMeasurementServiceToTools(
     MeasurementService,
-    ViewportService,
+    Cornerstone3DViewportService,
     csTools3DVer1MeasurementSource
   );
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
@@ -86,31 +86,8 @@ const connectToolsToMeasurementService = (
 
   /* Measurement Service Events */
   eventTarget.addEventListener(elementEnabledEvt, evt => {
-    function addMeasurement(csToolsEvent) {
-      try {
-        const evtDetail = csToolsEvent.detail;
-        const { annotation } = evtDetail;
-        const {
-          metadata: { toolName },
-          annotationUID,
-        } = annotation;
-
-        // setting the evtDetail to be the annotation UID in order for measurement service to
-        // NOT creates its own measurementUID. Todo: this should be rethought
-        // when we implement the architecture where a measurement can have more than one annotation.
-        evtDetail.uid = annotationUID;
-        annotationToMeasurement(toolName, evtDetail);
-      } catch (error) {
-        console.warn('Failed to add measurement:', error);
-      }
-    }
-
     function updateMeasurement(csToolsEvent) {
       try {
-        if (!csToolsEvent.detail.annotation) {
-          return;
-        }
-
         const evtDetail = csToolsEvent.detail;
         const {
           annotation: { metadata, annotationUID },
@@ -132,16 +109,20 @@ const connectToolsToMeasurementService = (
      */
     function removeMeasurement(csToolsEvent) {
       try {
-        if (csToolsEvent.detail.toolData.metadata.toolDataUID) {
-          // check if measurement service has such tool id
-          const id = csToolsEvent.detail.toolData.metadata.toolDataUID;
+        try {
+          const evtDetail = csToolsEvent.detail;
+          const {
+            annotation: { annotationUID },
+          } = evtDetail;
 
-          const measurement = MeasurementService.getMeasurement(id);
+          const measurement = MeasurementService.getMeasurement(annotationUID);
 
           if (measurement) {
             console.log('~~ removeEvt', csToolsEvent);
-            remove(id);
+            remove(annotationUID, evtDetail);
           }
+        } catch (error) {
+          console.warn('Failed to update measurement:', error);
         }
       } catch (error) {
         console.warn('Failed to remove measurement:', error);
@@ -154,7 +135,7 @@ const connectToolsToMeasurementService = (
     const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
     const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
 
-    eventTarget.addEventListener(addedEvt, addMeasurement);
+    eventTarget.addEventListener(addedEvt, updateMeasurement);
     eventTarget.addEventListener(updatedEvt, updateMeasurement);
     eventTarget.addEventListener(removedEvt, removeMeasurement);
   });
@@ -164,7 +145,7 @@ const connectToolsToMeasurementService = (
 
 const connectMeasurementServiceToTools = (
   MeasurementService,
-  ViewportService,
+  Cornerstone3DViewportService,
   measurementSource
 ) => {
   const {
@@ -174,8 +155,26 @@ const connectMeasurementServiceToTools = (
     RAW_MEASUREMENT_ADDED,
   } = MeasurementService.EVENTS;
 
-  MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
-    // Todo: handle all measurements cleared
+  const csTools3DVer1MeasurementSource = MeasurementService.getSource(
+    CORNERSTONE_TOOLS_3D_SOURCE_NAME,
+    '1'
+  );
+
+  const { measurementToAnnotation } = csTools3DVer1MeasurementSource;
+
+  MeasurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements }) => {
+    if (!Object.keys(measurements).length) {
+      return;
+    }
+
+    for (const measurement of Object.values(measurements)) {
+      const { uid, source } = measurement;
+      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+        continue;
+      }
+
+      removeAnnotation(uid);
+    }
   });
 
   MeasurementService.subscribe(
@@ -191,14 +190,8 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const { id, label } = measurement;
-      const toolData = getAnnotation(id);
-
-      if (toolData) {
-        if ('label' in toolData.metadata) {
-          toolData.metadata.label = label;
-        }
-      }
+      const annotationType = measurement.metadata.toolName;
+      measurementToAnnotation(annotationType, measurement);
     }
   );
 
@@ -215,12 +208,15 @@ const connectMeasurementServiceToTools = (
 
   MeasurementService.subscribe(
     MEASUREMENT_REMOVED,
-    ({ source, measurement: removedMeasurementId, element }) => {
+    ({ source, measurement: removedMeasurementId }) => {
       if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
         return;
       }
-      removeAnnotation(element, removedMeasurementId);
-      ViewportService.getRenderingEngine().render();
+      removeAnnotation(removedMeasurementId);
+      const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+      // Note: We could do a better job by triggering the render on the
+      // viewport itself, but the removeAnnotation does not include that info...
+      renderingEngine.render();
     }
   );
 };

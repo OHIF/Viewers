@@ -9,6 +9,7 @@ import { useDrop } from 'react-dnd';
 function ViewportPane({
   children,
   className,
+  customStyle,
   isActive,
   onDrop,
   onDoubleClick,
@@ -66,7 +67,7 @@ function ViewportPane({
         'flex flex-col w-full h-full',
         'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
         {
-          'border-2 border-primary-light': isActive,
+          'border border-primary-light': isActive,
           'border border-secondary-light': !isActive,
         },
         className
@@ -76,7 +77,7 @@ function ViewportPane({
       // and trigger a canvas resize, we have to use this little trick for margin.
       // Assumes a :root font-fize of `16px`
       style={{
-        padding: isActive ? '3px' : '4px',
+        ...customStyle,
       }}
     >
       {children}

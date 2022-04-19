@@ -13,7 +13,7 @@ import * as cornerstone from '@cornerstonejs/core';
  */
 export default function getSOPInstanceAttributes(
   imageId,
-  ViewportService,
+  Cornerstone3DViewportService,
   viewportId
 ) {
   if (imageId) {
@@ -23,7 +23,7 @@ export default function getSOPInstanceAttributes(
   // Todo: implement for volume viewports and use the referencedSeriesInstanceUID
 
   // if no imageId => measurement is not in the acquisition plane
-  // const metadata = getUIDFromScene(ViewportService, viewportId);
+  // const metadata = getUIDFromScene(Cornerstone3DViewportService, viewportId);
 
   // if (!metadata) {
   //   throw new Error('Not viewport with imageId found');
@@ -48,8 +48,8 @@ function _getUIDFromImageID(imageId) {
   };
 }
 
-// function getUIDFromScene(ViewportService) {
-//   const renderingEngine = ViewportService.getRenderingEngine();
+// function getUIDFromScene(Cornerstone3DViewportService) {
+//   const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
 //   const scene = renderingEngine.getScene(sceneUID);
 
 //   const viewportUIDs = scene.getViewportIds();

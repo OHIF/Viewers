@@ -6,14 +6,15 @@ import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import init from './init.js';
 import commandsModule from './commandsModule';
 import ToolGroupService from './services/ToolGroupService';
-import ViewportService from './services/ViewportService';
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement } from './state';
 
 import { id } from './id';
 
 const Component = React.lazy(() => {
-  return import(/* webpackPrefetch: true */ './OHIFCornerstone3DViewport');
+  return import(
+    /* webpackPrefetch: true */ './Viewport/OHIFCornerstone3DViewport'
+  );
 });
 
 const OHIFCornerstoneViewport = props => {
@@ -43,10 +44,10 @@ const cornerstone3DExtension = {
     servicesManager,
     commandsManager,
     configuration = {},
+    appConfig,
   }) {
     servicesManager.registerService(ToolGroupService(servicesManager));
-    servicesManager.registerService(ViewportService(servicesManager));
-    await init({ servicesManager, commandsManager, configuration });
+    await init({ servicesManager, commandsManager, configuration, appConfig });
   },
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {

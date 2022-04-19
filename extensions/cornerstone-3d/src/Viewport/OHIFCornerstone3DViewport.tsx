@@ -1,7 +1,17 @@
-import React, { useEffect, useRef, useCallback } from 'react';
-import { utilities } from '@cornerstonejs/tools';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid, ImageScrollbar } from '@ohif/ui';
+import OHIF from '@ohif/core';
+import { utilities } from '@cornerstonejs/tools';
+import { Enums } from '@cornerstonejs/core';
+
+import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
+
+import './OHIFCornerstone3DViewport.css';
+
+const { StackManager } = OHIF.utils;
+
+const STACK = 'stack';
 
 function areEqual(prevProps, nextProps) {
   if (nextProps.needsRerendering) {
@@ -18,14 +28,17 @@ function areEqual(prevProps, nextProps) {
   const nextDisplaySets = nextProps.displaySets[0];
 
   if (prevDisplaySets && nextDisplaySets) {
-    return (
+    const areSameDisplaySetInstanceUIDs =
       prevDisplaySets.displaySetInstanceUID ===
-        nextDisplaySets.displaySetInstanceUID &&
-      prevDisplaySets.images.length === nextDisplaySets.images.length &&
-      prevDisplaySets.images.every(
-        (prevImage, index) =>
-          prevImage.imageId === nextDisplaySets.images[index].imageId
-      )
+      nextDisplaySets.displaySetInstanceUID;
+    const areSameImageLength =
+      prevDisplaySets.images.length === nextDisplaySets.images.length;
+    const areSameImageIds = prevDisplaySets.images.every(
+      (prevImage, index) =>
+        prevImage.imageId === nextDisplaySets.images[index].imageId
+    );
+    return (
+      areSameDisplaySetInstanceUIDs && areSameImageLength && areSameImageIds
     );
   }
   return false;
@@ -43,55 +56,82 @@ const OHIFCornerstoneViewport = React.memo(props => {
     servicesManager,
   } = props;
 
+  const [viewportData, setViewportData] = useState(null);
+  const [scrollbarIndex, setScrollbarIndex] = useState(0);
+  const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [_, viewportGridService] = useViewportGrid();
 
   const elementRef = useRef();
-  const {
-    ViewportService,
-    MeasurementService,
-    DisplaySetService,
-  } = servicesManager.services;
+  const { MeasurementService, DisplaySetService } = servicesManager.services;
+
+  // useCallback for scroll bar height calculation
+  const setImageScrollBarHeight = useCallback(() => {
+    const scrollbarHeight = `${elementRef.current.clientHeight - 20}px`;
+    setScrollbarHeight(scrollbarHeight);
+  }, [elementRef]);
 
   // useCallback for onResize
-  const onResize = useCallback(
-    props => {
-      if (elementRef.current) {
-        const element = elementRef.current;
-        ViewportService.resize();
-      }
-    },
-    [elementRef]
-  );
+  const onResize = useCallback(() => {
+    if (elementRef.current) {
+      Cornerstone3DViewportService.resize();
+      setImageScrollBarHeight();
+    }
+  }, [elementRef]);
 
   // disable the element upon unmounting
   useEffect(() => {
-    // setElementRef(targetRef.current);
-    ViewportService.enableElement(viewportIndex, elementRef.current);
+    Cornerstone3DViewportService.enableElement(
+      viewportIndex,
+      elementRef.current
+    );
+    setImageScrollBarHeight();
     return () => {
-      ViewportService.disableElement(viewportIndex);
+      Cornerstone3DViewportService.disableElement(viewportIndex);
     };
   }, []);
 
-  // Todo: Use stackManager to handle the stack creation and imageId get, problem
-  // would be what to do with the volumes which needs different schema for loading: streaming-wadors
-  // Stack manager shouldn't care about the type of volume. Maybe add a postImageId creation callback?
-  // Maybe we should need a volumeManager later on.
   useEffect(() => {
-    ViewportService.setViewportDisplaySets(
-      viewportIndex,
+    const viewportData = _getViewportData(
+      dataSource,
       displaySets,
-      viewportOptions,
-      displaySetOptions,
-      dataSource
+      viewportOptions.viewportType
     );
+
+    Cornerstone3DViewportService.setViewportDisplaySets(
+      viewportIndex,
+      viewportData,
+      viewportOptions,
+      displaySetOptions
+    );
+
+    setViewportData(viewportData);
   }, [
     viewportIndex,
     viewportOptions,
     displaySetOptions,
     displaySets,
     dataSource,
-    ViewportService,
   ]);
+
+  useEffect(() => {
+    const element = elementRef.current;
+
+    const updateIndex = event => {
+      const { imageId } = event.detail;
+      // find the index of imageId in the imageIds
+      const index = viewportData.stack?.imageIds.indexOf(imageId);
+
+      if (index !== -1) {
+        setScrollbarIndex(index);
+      }
+    };
+
+    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
+
+    return () => {
+      element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
+    };
+  }, [elementRef, viewportData]);
 
   /**
    * There are two scenarios for jump to click
@@ -125,17 +165,37 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
     };
-  }, [
-    displaySets,
-    elementRef,
-    viewportIndex,
-    viewportGridService,
-    MeasurementService,
-    DisplaySetService,
-  ]);
+  }, [displaySets, elementRef, viewportIndex]);
+
+  const onImageScrollbarChange = useCallback(
+    (imageIndex, viewportIndex) => {
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+        viewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+      const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
+        viewportId
+      );
+
+      // if getCurrentImageId is not a method on viewport
+      if (!viewport.getCurrentImageId) {
+        throw new Error('cannot use scrollbar for non-stack viewports');
+      }
+
+      // Later scrollThroughStack should return two values the current index
+      // and the total number of indices (volume it is different)
+      viewport.setImageIdIndex(imageIndex).then(() => {
+        // Update scrollbar index
+        const currentIndex = viewport.getCurrentImageIdIndex();
+        setScrollbarIndex(currentIndex);
+      });
+    },
+    [viewportIndex, viewportData]
+  );
 
   return (
-    <React.Fragment>
+    <div className="viewport-wrapper">
       <ReactResizeDetector
         handleWidth
         handleHeight
@@ -152,9 +212,45 @@ const OHIFCornerstoneViewport = React.memo(props => {
         onMouseDown={e => e.preventDefault()}
         ref={elementRef}
       ></div>
-    </React.Fragment>
+      <ImageScrollbar
+        onChange={evt => onImageScrollbarChange(evt, viewportIndex)}
+        max={viewportData ? viewportData.stack?.imageIds?.length - 1 : 0}
+        height={scrollbarHeight}
+        value={scrollbarIndex}
+      />
+    </div>
   );
 }, areEqual);
+
+function _getCornerstoneStack(displaySet, dataSource) {
+  // Get stack from Stack Manager
+  const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
+
+  // Clone the stack here so we don't mutate it
+  const stack = Object.assign({}, storedStack);
+
+  return stack;
+}
+
+function _getViewportData(dataSource, displaySets, viewportType) {
+  viewportType = viewportType || STACK;
+  if (viewportType !== STACK) {
+    throw new Error('Only STACK viewport type is supported now');
+  }
+
+  // For Stack Viewport we don't have fusion currently
+  const displaySet = displaySets[0];
+
+  const stack = _getCornerstoneStack(displaySet, dataSource);
+
+  const viewportData = {
+    StudyInstanceUID: displaySet.StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    stack,
+  };
+
+  return viewportData;
+}
 
 function _subscribeToJumpToMeasurementEvents(
   MeasurementService,
@@ -261,6 +357,7 @@ function _jumpToMeasurement(
     };
     utilities.jumpToSlice(targetElement, metadata);
 
+    annotations.selection.setAnnotationSelected();
     // Jump to measurement consumed, remove.
     MeasurementService.removeJumpToMeasurement(viewportIndex);
   }

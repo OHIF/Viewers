@@ -205,6 +205,7 @@ const BaseImplementation = {
     let study = _getStudy(StudyInstanceUID);
     if (!study) {
       study = createStudyMetadata(StudyInstanceUID);
+      study.StudyDescription = seriesSummaryMetadata[0].StudyDescription;
       _model.studies.push(study);
     }
 
