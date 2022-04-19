@@ -17,7 +17,7 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         StudiesMetadata: 'MainDicomTags',
-        enableStudyLazyLoad: true,
+        SeriesMetadata: "Full",
         supportsFuzzyMatching: true,
         
       },
