@@ -10,15 +10,8 @@ import classNames from 'classnames';
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [, setState] = useState({});
 
-  const {
-    numCols,
-    numRows,
-    activeViewportIndex,
-    viewports,
-    cachedLayout,
-  } = viewportGrid;
+  const { numCols, numRows, activeViewportIndex, viewports } = viewportGrid;
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const {
@@ -58,7 +51,7 @@ function ViewerViewportGrid(props) {
         const { displaySetsInfo, viewportOptions } = matchDetails[i];
 
         const displaySetUIDsToHang = [];
-        const displaySetOptions = [];
+        const displaySetUIDsToHangOptions = [];
         displaySetsInfo.forEach(({ SeriesInstanceUID, displaySetOptions }) => {
           const matchingDisplaySet = availableDisplaySets.find(ds => {
             return ds.SeriesInstanceUID === SeriesInstanceUID;
@@ -69,7 +62,7 @@ function ViewerViewportGrid(props) {
           }
 
           displaySetUIDsToHang.push(matchingDisplaySet.displaySetInstanceUID);
-          displaySetOptions.push(displaySetOptions);
+          displaySetUIDsToHangOptions.push(displaySetOptions);
         });
 
         if (!displaySetUIDsToHang.length) {
@@ -80,7 +73,7 @@ function ViewerViewportGrid(props) {
           viewportIndex: i,
           displaySetInstanceUIDs: displaySetUIDsToHang,
           viewportOptions,
-          displaySetOptions,
+          displaySetOptions: displaySetUIDsToHangOptions,
         });
 
         // During setting displaySets for viewport, we need to update the hanging protocol
@@ -101,31 +94,12 @@ function ViewerViewportGrid(props) {
   useEffect(() => {
     const { unsubscribe } = HangingProtocolService.subscribe(
       HangingProtocolService.EVENTS.NEW_LAYOUT,
-      ({ gridType, numRows, numCols, viewportsPos }) => {
+      ({ layoutType, numRows, numCols, viewportOptions }) => {
         viewportGridService.setLayout({
           numRows,
           numCols,
-          gridType,
-          viewportsPos,
-        });
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [viewports]);
-
-  // Layout change based on hanging protocols
-  useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.NEW_LAYOUT,
-      ({ gridType, numRows, numCols, viewportsPos }) => {
-        viewportGridService.setLayout({
-          numRows,
-          numCols,
-          gridType,
-          viewportsPos,
+          layoutType,
+          viewportOptions,
         });
       }
     );
@@ -141,28 +115,6 @@ function ViewerViewportGrid(props) {
       DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       activeDisplaySets => {
         updateDisplaySetsForViewports(activeDisplaySets);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [viewports]);
-
-  /**
-   * Layout Change
-   */
-  // Layout change based on hanging protocols
-  useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.NEW_LAYOUT,
-      ({ gridType, numRows, numCols, viewportsPos }) => {
-        viewportGridService.setLayout({
-          numRows,
-          numCols,
-          gridType,
-          viewportsPos,
-        });
       }
     );
 
@@ -344,39 +296,35 @@ function ViewerViewportGrid(props) {
       // onDoubleClick={() => onDoubleClick(viewportIndex)}
 
       viewportPanes[i] = (
-        <div
+        <ViewportPane
           key={viewportIndex}
-          className="p-1"
-          style={{
+          acceptDropsFor="displayset"
+          onDrop={onDropHandler.bind(null, viewportIndex)}
+          onInteraction={onInteractionHandler}
+          customStyle={{
             position: 'absolute',
-            top: viewportY * 100 + '%',
-            left: viewportX * 100 + '%',
-            width: viewportWidth * 100 + '%',
-            height: viewportHeight * 100 + '%',
+            top: viewportY * 100 + 0.5 + '%',
+            left: viewportX * 100 + 0.5 + '%',
+            width: viewportWidth * 100 - 0.5 + '%',
+            height: viewportHeight * 100 - 0.5 + '%',
           }}
+          isActive={isActive}
         >
-          <ViewportPane
-            acceptDropsFor="displayset"
-            onDrop={onDropHandler.bind(null, viewportIndex)}
-            onInteraction={onInteractionHandler}
-            isActive={isActive}
+          <div
+            className={classNames('h-full w-full flex flex-col', {
+              'pointer-events-none': !isActive,
+            })}
           >
-            <div
-              className={classNames('h-full w-full flex flex-col', {
-                'pointer-events-none': !isActive,
-              })}
-            >
-              <ViewportComponent
-                displaySets={displaySets}
-                viewportIndex={viewportIndex}
-                dataSource={dataSource}
-                viewportOptions={viewportOptions}
-                displaySetOptions={displaySetOptions}
-                needsRerendering={displaySetsNeedsRerendering}
-              />
-            </div>
-          </ViewportPane>
-        </div>
+            <ViewportComponent
+              displaySets={displaySets}
+              viewportIndex={viewportIndex}
+              dataSource={dataSource}
+              viewportOptions={viewportOptions}
+              displaySetOptions={displaySetOptions}
+              needsRerendering={displaySetsNeedsRerendering}
+            />
+          </div>
+        </ViewportPane>
       );
     }
 

@@ -11,6 +11,7 @@ import {
 import { Enums, utilities } from '@cornerstonejs/tools';
 
 import initWADOImageLoader from './initWADOImageLoader';
+import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import initCornerstoneTools from './initCornerstoneTools';
 import { setEnabledElement } from './state';
 
@@ -31,6 +32,7 @@ export default async function init({
   servicesManager,
   commandsManager,
   configuration,
+  appConfig,
 }) {
   await cs3DInit();
 
@@ -46,7 +48,6 @@ export default async function init({
     MeasurementService,
     DisplaySetService,
     UIDialogService,
-    ViewportService,
   } = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
@@ -62,14 +63,14 @@ export default async function init({
     prefetch: 50,
   };
 
-  initWADOImageLoader(UserAuthenticationService);
+  initWADOImageLoader(UserAuthenticationService, appConfig);
 
   // Register the cornerstone-tools-measurement-tool
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
     MeasurementService,
     DisplaySetService,
-    ViewportService
+    Cornerstone3DViewportService
   );
 
   const _getDefaultPosition = event => ({
@@ -125,7 +126,9 @@ export default async function init({
           const uid = annotationUID;
           // Sync'd w/ Measurement Service
           if (uid) {
-            measurementServiceSource.remove(uid, { element: item.element });
+            measurementServiceSource.remove(uid, {
+              element: item.element,
+            });
           }
           CONTEXT_MENU_OPEN = false;
         },
@@ -197,18 +200,20 @@ export default async function init({
 
   function elementEnabledHandler(evt) {
     const { viewportId, element } = evt.detail;
-    const viewportInfo = ViewportService.getViewportInfoById(viewportId);
+    const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
+      viewportId
+    );
     const viewportIndex = viewportInfo.getViewportIndex();
 
     setEnabledElement(viewportIndex, element);
 
-    // const volumeUID = ViewportService.getVolumeUIDsForViewportUID(viewportId);
+    // const volumeUID = Cornerstone3DViewportService.getVolumeUIDsForViewportUID(viewportId);
     const renderingEngineId = viewportInfo.getRenderingEngineId();
     const toolGroupId = viewportInfo.getToolGroupId();
     ToolGroupService.addToolGroupViewport(
-      toolGroupId,
       viewportId,
-      renderingEngineId
+      renderingEngineId,
+      toolGroupId
     );
 
     element.addEventListener(
@@ -220,7 +225,9 @@ export default async function init({
   function elementDisabledHandler(evt) {
     const { viewportId } = evt.detail;
 
-    const viewportInfo = ViewportService.getViewportInfoById(viewportId);
+    const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
+      viewportId
+    );
     ToolGroupService.disable(viewportInfo);
   }
 

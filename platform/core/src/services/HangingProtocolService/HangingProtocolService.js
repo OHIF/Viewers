@@ -80,7 +80,7 @@ class HangingProtocolService {
   addProtocols(protocols) {
     protocols.forEach(protocol => {
       if (this.protocols.indexOf(protocol) === -1) {
-        this.protocols.push(protocol);
+        this.protocols.push(this._validateProtocol(protocol));
       }
     });
   }
@@ -227,6 +227,31 @@ class HangingProtocolService {
     }
   }
 
+  _validateProtocol(protocol) {
+    protocol.id = protocol.id || protocol.name;
+    // Automatically compute some number of attributes if they
+    // aren't present.  Makes defining new HPs easier.
+    protocol.name = protocol.name || protocol.id;
+    const { stages } = protocol;
+
+    // Generate viewports automatically as required.
+    stages.forEach(stage => {
+      if (!stage.viewports) {
+        stage.viewports = [];
+        const { rows, columns } = stage.viewportStructure.properties;
+
+        for (let i = 0; i < rows * columns; i++) {
+          stage.viewports.push({
+            viewportOptions: {},
+            displaySetOptions: [],
+          });
+        }
+      }
+    });
+
+    return protocol;
+  }
+
   _setProtocol(protocol) {
     // TODO: Add proper Protocol class to validate the protocols
     // which are entered manually
@@ -288,10 +313,7 @@ class HangingProtocolService {
     }
 
     this.customImageLoadPerformed = false;
-    const { layoutType } = stageModel.viewportStructure;
-    if (!layoutType) {
-      return;
-    }
+    const { type: layoutType } = stageModel.viewportStructure;
 
     // Retrieve the properties associated with the current display set's viewport structure template
     // If no such layout properties exist, stop here.
@@ -303,14 +325,14 @@ class HangingProtocolService {
     const {
       columns: numCols,
       rows: numRows,
-      viewports: viewportsPos,
+      viewportOptions = [],
     } = layoutProps;
 
     this._broadcastChange(this.EVENTS.NEW_LAYOUT, {
       layoutType,
       numRows,
       numCols,
-      viewportsPos,
+      viewportOptions,
     });
 
     // Matching the displaySets
@@ -331,14 +353,25 @@ class HangingProtocolService {
       // but it is a info to locate the displaySet from the displaySetService
       let displaySetsInfo = [];
       viewport.displaySets.forEach(({ id, options: displaySetOptions }) => {
-        const { SeriesInstanceUID } = this.displaySetMatchDetails.get(id);
+        const viewportDisplaySet = this.displaySetMatchDetails.get(id);
 
-        const displaySetInfo = {
-          SeriesInstanceUID,
-          displaySetOptions,
-        };
+        if (viewportDisplaySet) {
+          const { SeriesInstanceUID } = viewportDisplaySet;
 
-        displaySetsInfo.push(displaySetInfo);
+          const displaySetInfo = {
+            SeriesInstanceUID,
+            displaySetOptions,
+          };
+
+          displaySetsInfo.push(displaySetInfo);
+        } else {
+          console.warn(
+            `
+             The hanging protocol viewport is requesting to display ${id} displaySet that is not
+             matched based on the provided criteria (e.g. matching rules).
+            `
+          );
+        }
       });
 
       this.matchDetails[viewportIndex] = {

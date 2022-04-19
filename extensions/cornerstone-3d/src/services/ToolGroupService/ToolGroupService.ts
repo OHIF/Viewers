@@ -54,6 +54,15 @@ export default class ToolGroupService {
     return ToolGroupManager.getToolGroupForViewport(viewportId);
   }
 
+  public getActiveToolForViewport(viewportId: string): string {
+    const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId);
+    if (!toolGroup) {
+      return null;
+    }
+
+    return toolGroup.getActivePrimaryMouseButtonTool();
+  }
+
   public destroy() {
     ToolGroupManager.destroy();
     this.toolGroupIds = new Set();
@@ -78,22 +87,24 @@ export default class ToolGroupService {
   }
 
   public addToolGroupViewport(
-    toolGroupId: string,
     viewportId: string,
-    renderingEngineId: string
+    renderingEngineId: string,
+    toolGroupId?: string
   ): void {
-    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
-    if (!toolGroup) {
-      throw new Error(`ToolGroup ${toolGroupId} does not exist`);
-    }
+    if (!toolGroupId) {
+      // If toolGroupId is not provided, add the viewport to all toolGroups
+      const toolGroups = ToolGroupManager.getAllToolGroups();
+      toolGroups.forEach(toolGroup => {
+        toolGroup.addViewport(viewportId, renderingEngineId);
+      });
+    } else {
+      const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+      if (!toolGroup) {
+        throw new Error(`ToolGroup ${toolGroupId} does not exist`);
+      }
 
-    toolGroup.addViewport(viewportId, renderingEngineId);
-
-    // If toolGroupId is not provided, add the viewport to all toolGroups
-    const toolGroups = ToolGroupManager.getAllToolGroups();
-    toolGroups.forEach(toolGroup => {
       toolGroup.addViewport(viewportId, renderingEngineId);
-    });
+    }
 
     this._broadcastEvent(EVENTS.VIEWPORT_ADDED, { viewportId });
   }
@@ -101,7 +112,7 @@ export default class ToolGroupService {
   public createToolGroup(
     toolGroupId: string,
     tools: Array<Tool>,
-    configs: any
+    configs: any = {}
   ): Types.IToolGroup {
     // check if the toolGroup already exists
     if (this.getToolGroup(toolGroupId)) {

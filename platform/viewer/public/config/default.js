@@ -4,6 +4,7 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
+  maxNumberOfWebWorkers: 3,
   // filterQueryParam: false,
   dataSources: [
     {

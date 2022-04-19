@@ -3,6 +3,7 @@ import createSeriesMetadata from './createSeriesMetadata';
 function createStudyMetadata(StudyInstanceUID) {
   return {
     StudyInstanceUID,
+    StudyDescription: '',
     isLoaded: false,
     series: [],
     /**
@@ -10,7 +11,7 @@ function createStudyMetadata(StudyInstanceUID) {
      * @param {object} instance
      * @returns {bool} true if series were added; false if series already exist
      */
-    addInstanceToSeries: function (instance) {
+    addInstanceToSeries: function(instance) {
       const { SeriesInstanceUID } = instance;
       const existingSeries = this.series.find(
         s => s.SeriesInstanceUID === SeriesInstanceUID
@@ -29,7 +30,7 @@ function createStudyMetadata(StudyInstanceUID) {
      * @param {string} instances[].SeriesInstanceUID
      * @returns {bool} true if series were added; false if series already exist
      */
-    addInstancesToSeries: function (instances) {
+    addInstancesToSeries: function(instances) {
       const { SeriesInstanceUID } = instances[0];
       const existingSeries = this.series.find(
         s => s.SeriesInstanceUID === SeriesInstanceUID
@@ -43,7 +44,7 @@ function createStudyMetadata(StudyInstanceUID) {
       }
     },
 
-    setSeriesMetadata: function (SeriesInstanceUID, seriesMetadata) {
+    setSeriesMetadata: function(SeriesInstanceUID, seriesMetadata) {
       let existingSeries = this.series.find(
         s => s.SeriesInstanceUID === SeriesInstanceUID
       );

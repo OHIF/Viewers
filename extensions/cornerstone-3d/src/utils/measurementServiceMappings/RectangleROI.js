@@ -1,14 +1,30 @@
+import { annotation } from '@cornerstonejs/tools';
+
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import getModalityUnit from './utils/getModalityUnit';
 import { utils } from '@ohif/core';
 
 const RectangleRoi = {
-  toAnnotation: (measurement, definition) => {},
+  // Currently we only update the labels
+  toAnnotation: measurement => {
+    const annotationUID = measurement.uid;
+    const cornerstone3DAnnotation = annotation.state.getAnnotation(
+      annotationUID
+    );
+
+    if (!cornerstone3DAnnotation) {
+      return;
+    }
+
+    if (cornerstone3DAnnotation.data.label !== measurement.label) {
+      cornerstone3DAnnotation.data.label = measurement.label;
+    }
+  },
   toMeasurement: (
     csToolsEventDetail,
     DisplaySetService,
-    ViewportService,
+    Cornerstone3DViewportService,
     getValueTypeFromToolType
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
@@ -32,7 +48,7 @@ const RectangleRoi = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(
       referencedImageId,
-      ViewportService,
+      Cornerstone3DViewportService,
       viewportId
     );
 
@@ -179,11 +195,21 @@ function getDisplayText(mappedAnnotations) {
 
   // Area is the same for all series
   const { area } = mappedAnnotations[0];
+
+  if (!area) {
+    return '';
+  }
+
   const roundedArea = utils.roundNumber(area, 2);
   displayText.push(`Area: ${roundedArea} mm<sup>2</sup>`);
 
-  mappedAnnotations.forEach(normalizedAnnotation => {
-    const { mean, unit, max, SeriesNumber } = normalizedAnnotation;
+  mappedAnnotations.forEach(mappedAnnotation => {
+    const { mean, unit, max, SeriesNumber } = mappedAnnotation;
+
+    if (!mean || !unit || !max) {
+      return;
+    }
+
     const roundedMean = utils.roundNumber(mean, 2);
     const roundedMax = utils.roundNumber(max, 2);
     // const roundedStdDev = utils.roundNumber(stdDev, 2);

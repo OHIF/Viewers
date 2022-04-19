@@ -81,6 +81,7 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.Probe },
           { toolName: toolNames.EllipticalROI },
           { toolName: toolNames.RectangleROI },
+          { toolName: toolNames.StackScroll },
         ],
         // enabled
         // disabled
@@ -89,12 +90,12 @@ function modeFactory({ modeConfiguration }) {
       const toolGroupId = 'default';
       ToolGroupService.createToolGroup(toolGroupId, tools, configs);
 
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ToolGroupService.subscribe(ToolGroupService.EVENTS.VIEWPORT_ADDED, () => {
+      let unsubscribe;
+
+      const activateTool = () => {
         ToolBarService.recordInteraction({
-          groupId: 'primary',
-          itemId: 'Wwwc',
+          groupId: 'Wwwc',
+          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {
@@ -106,7 +107,18 @@ function modeFactory({ modeConfiguration }) {
             },
           ],
         });
-      });
+
+        // We don't need to reset the active tool whenever a viewport is getting
+        // added to the toolGroup.
+        unsubscribe();
+      };
+
+      // Since we only have one viewport for the basic cs3d mode and it has
+      // only one hanging protocol, we can just use the first viewport
+      ({ unsubscribe } = ToolGroupService.subscribe(
+        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+        activateTool
+      ));
 
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
@@ -116,6 +128,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Pan',
         'Layout',
+        'MoreTools',
       ]);
     },
     onModeExit: ({ servicesManager }) => {

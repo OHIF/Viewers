@@ -6,7 +6,7 @@ import RectangleROI from './RectangleROI';
 const measurementServiceMappingsFactory = (
   MeasurementService,
   DisplaySetService,
-  ViewportService
+  Cornerstone3DViewportService
 ) => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
@@ -44,7 +44,7 @@ const measurementServiceMappingsFactory = (
         Length.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
-          ViewportService,
+          Cornerstone3DViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
@@ -60,7 +60,7 @@ const measurementServiceMappingsFactory = (
         Bidirectional.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
-          ViewportService,
+          Cornerstone3DViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
@@ -82,7 +82,7 @@ const measurementServiceMappingsFactory = (
         EllipticalROI.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
-          ViewportService,
+          Cornerstone3DViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
@@ -97,7 +97,7 @@ const measurementServiceMappingsFactory = (
         RectangleROI.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
-          ViewportService,
+          Cornerstone3DViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [

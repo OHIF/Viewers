@@ -220,7 +220,7 @@ function ViewerLayout({
           </ErrorBoundary>
         )}
         {/* TOOLBAR + GRID */}
-        <div className="flex flex-col flex-1 h-full">
+        <div className="flex flex-col flex-1 h-full p-1">
           <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black">
             <ErrorBoundary context="Grid">
               <ViewportGridComp

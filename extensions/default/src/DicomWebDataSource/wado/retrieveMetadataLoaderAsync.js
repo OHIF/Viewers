@@ -2,7 +2,6 @@ import dcmjs from 'dcmjs';
 import { sortStudySeries, sortingCriteria } from '../utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
-
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface
  * @param {DICOMWebClient} dicomWebClient The DICOMWebClient instance to be used for series load

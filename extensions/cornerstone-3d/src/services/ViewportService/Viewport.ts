@@ -1,4 +1,4 @@
-import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import { Types, Enums } from '@cornerstonejs/core';
 
 export type ViewportOptions = {
   viewportType: Enums.ViewportType;
@@ -23,7 +23,6 @@ class ViewportInfo {
   private element: HTMLDivElement;
   private viewportOptions: ViewportOptions;
   private displaySetOptions: Array<DisplaySetOptions>;
-  private displaySets: Array<DisplaySet>;
   private renderingEngineId: string;
 
   constructor(viewportIndex: number) {
@@ -83,18 +82,6 @@ class ViewportInfo {
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {
     return this.displaySetOptions;
-  }
-
-  public setDisplaySets(
-    displaySets: Array<DisplaySet>,
-    displaySetOptions: Array<DisplaySetOptions>
-  ): void {
-    this.displaySets = displaySets;
-    this.setDisplaySetOptions(displaySetOptions);
-  }
-
-  public getDisplaySets(): Array<DisplaySet> {
-    return this.displaySets;
   }
 
   private makeViewportId(viewportIndex: number): void {

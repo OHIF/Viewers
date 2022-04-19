@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function ViewportGrid({ numRows, numCols, gridType, children }) {
+function ViewportGrid({ numRows, numCols, layoutType, children }) {
   return (
     <div
       data-cy="viewport-grid"
@@ -21,6 +21,7 @@ ViewportGrid.propTypes = {
   numRows: PropTypes.number.isRequired,
   /** Number of rows */
   numCols: PropTypes.number.isRequired,
+  layoutType: PropTypes.string,
   /** Array of React Components to render within grid */
   children: PropTypes.arrayOf(PropTypes.node).isRequired,
 };

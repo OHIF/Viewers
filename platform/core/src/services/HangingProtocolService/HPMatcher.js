@@ -1,6 +1,5 @@
 import validate from './lib/validator';
 
-
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
  * @param  {InstanceMetadata} metadataInstance Metadata instance object
@@ -36,7 +35,13 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
 
     // Create a single attribute object to be validated, since metadataInstance is an
     // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-    const attributeValue = metadataInstance[attribute];
+    let attributeValue = metadataInstance[attribute];
+    if (attributeValue === undefined) {
+      if (attribute === 'NumberOfStudyRelatedSeries') {
+        attributeValue = metadataInstance.series?.length;
+      }
+      // Add other computable values such as modalities in study
+    }
     const attributeMap = {
       [attribute]: attributeValue,
     };
