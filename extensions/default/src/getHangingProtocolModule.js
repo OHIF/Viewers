@@ -248,7 +248,6 @@ const testProtocol = {
           },
           displaySets: [
             {
-              options: { voi: 'default', voiInverted: false },
               id: 'ctDisplaySet',
             },
           ],
@@ -263,7 +262,13 @@ const testProtocol = {
           },
           displaySets: [
             {
-              options: { voi: [5, 2.5], voiInverted: true },
+              options: {
+                voi: {
+                  windowWidth: 5,
+                  windowCenter: 2.5,
+                },
+                voiInverted: true,
+              },
               id: 'ptACDisplaySet',
             },
           ],

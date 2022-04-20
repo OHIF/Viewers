@@ -243,9 +243,20 @@ class HangingProtocolService {
         for (let i = 0; i < rows * columns; i++) {
           stage.viewports.push({
             viewportOptions: {},
-            displaySetOptions: [],
+            displaySets: [],
           });
         }
+      } else {
+        stage.viewports.forEach(viewport => {
+          viewport.viewportOptions = viewport.viewportOptions || {};
+          if (!viewport.displaySets) {
+            viewport.displaySets = [];
+          } else {
+            viewport.displaySets.forEach(displaySet => {
+              displaySet.options = displaySet.options || {};
+            });
+          }
+        });
       }
     });
 

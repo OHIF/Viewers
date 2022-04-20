@@ -8,10 +8,17 @@ export type ViewportOptions = {
   background?: Types.Point3;
   blendMode?: number;
   initialView?: string;
-  //   syncGroups: string[];
 };
 
-export type DisplaySetOptions = {};
+type VOI = {
+  windowWidth: number;
+  windowCenter: number;
+};
+
+export type DisplaySetOptions = {
+  voi: 'default' | VOI;
+  voiInverted: boolean;
+};
 
 export type DisplaySet = {
   displaySetInstanceUID: string;
@@ -32,7 +39,9 @@ class ViewportInfo {
       toolGroupId: 'default',
       viewportType: Enums.ViewportType.STACK,
     };
+    const displaySetOptions = [{} as DisplaySetOptions];
     this.setViewportOptions(viewportOptions);
+    this.setDisplaySetOptions(displaySetOptions);
   }
 
   public setRenderingEngineId(renderingEngineId: string): void {
@@ -77,16 +86,13 @@ class ViewportInfo {
   public setDisplaySetOptions(
     displaySetOptions: Array<DisplaySetOptions>
   ): void {
+    // validate the displaySetOptions and check if they are undefined then set them to default values
+    this.validateDisplaySetOptions(displaySetOptions);
     this.displaySetOptions = displaySetOptions;
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {
     return this.displaySetOptions;
-  }
-
-  private makeViewportId(viewportIndex: number): void {
-    const viewportId = `viewport-${viewportIndex}`;
-    this.setViewportId(viewportId);
   }
 
   public getViewportType(): Enums.ViewportType {
@@ -103,6 +109,20 @@ class ViewportInfo {
 
   public getOrientation(): Types.Orientation {
     return this.viewportOptions.orientation;
+  }
+
+  private makeViewportId(viewportIndex: number): void {
+    const viewportId = `viewport-${viewportIndex}`;
+    this.setViewportId(viewportId);
+  }
+
+  private validateDisplaySetOptions(
+    displaySetOptions: Array<DisplaySetOptions>
+  ): void {
+    for (const displaySetOption of displaySetOptions) {
+      displaySetOption.voi = displaySetOption.voi || 'default';
+      displaySetOption.voiInverted = displaySetOption.voiInverted || false;
+    }
   }
 }
 
