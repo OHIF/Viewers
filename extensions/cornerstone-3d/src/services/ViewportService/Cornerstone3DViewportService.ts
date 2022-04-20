@@ -130,7 +130,7 @@ class Cornerstone3DViewportService implements IViewportService {
     viewportIndex: number,
     viewportData: unknown,
     viewportOptions: ViewportOptions,
-    displaySetOptions: unknown[]
+    displaySetOptions: DisplaySetOptions[]
   ): void {
     const renderingEngine = this.getRenderingEngine();
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
@@ -153,7 +153,7 @@ class Cornerstone3DViewportService implements IViewportService {
     let displaySetOptionsToUse = currentDisplaySetOptions;
     if (displaySetOptions?.length) {
       displaySetOptionsToUse = [
-        ...(currentDisplaySetOptions ?? []),
+        ...currentDisplaySetOptions,
         ...displaySetOptions,
       ];
     }
@@ -178,12 +178,7 @@ class Cornerstone3DViewportService implements IViewportService {
     };
 
     renderingEngine.enableElement(viewportInput);
-    this._setDisplaySets(
-      viewportId,
-      viewportData,
-      viewportOptionsToUse,
-      displaySetOptionsToUse
-    );
+    this._setDisplaySets(viewportId, viewportData, viewportInfo);
   }
 
   public getCornerstone3DViewport(viewportId: string): StackViewport | null {
@@ -217,16 +212,17 @@ class Cornerstone3DViewportService implements IViewportService {
     return null;
   }
 
-  _setStackViewport(viewport, viewportData, displaySetOptions) {
+  _setStackViewport(viewport, viewportData, viewportInfo) {
+    const displaySetOptions = viewportInfo.getDisplaySetOptions();
+
     const { imageIds, initialImageIdIndex } = viewportData.stack;
-    // Todo: handle fusion stack when it is implemented
     const { voi, voiInverted } = displaySetOptions[0];
 
     const properties = {};
-    if (Array.isArray(voi)) {
+    if (voi.windowWidth || voi.windowCenter) {
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(
-        voi[0],
-        voi[1]
+        voi.windowWidth,
+        voi.windowCenter
       );
       properties.voiRange = { lower, upper };
     }
@@ -244,13 +240,12 @@ class Cornerstone3DViewportService implements IViewportService {
   _setDisplaySets(
     viewportId: string,
     viewportData: unknown,
-    viewportOptions: ViewportOptions,
-    displaySetOptions: DisplaySetOptions
+    viewportInfo: ViewportInfo
   ): void {
-    const viewport = this.renderingEngine.getViewport(viewportId);
+    const viewport = this.getCornerstone3DViewport(viewportId);
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData, displaySetOptions);
+      this._setStackViewport(viewport, viewportData, viewportInfo);
     } else {
       throw new Error('Unsupported viewport type');
     }

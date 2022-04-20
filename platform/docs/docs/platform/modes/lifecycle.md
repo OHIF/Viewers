@@ -33,7 +33,7 @@ function modeFactory() {
 
       const interaction = {
         groupId: 'primary',
-        itemId: 'Wwwc',
+        itemId: 'WindowLevel',
         interactionType: 'tool',
         commandOptions: undefined,
       };

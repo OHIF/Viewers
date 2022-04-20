@@ -172,7 +172,7 @@ const toolbarButtons = [
     id: 'WindowLevel',
     type: 'ohif.splitButton',
     props: {
-      groupId: 'Wwwc',
+      groupId: 'WindowLevel',
       primary: _createToolButton(
         'WindowLevel',
         'tool-window-level',

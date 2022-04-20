@@ -94,7 +94,7 @@ function modeFactory({ modeConfiguration }) {
 
       const activateTool = () => {
         ToolBarService.recordInteraction({
-          groupId: 'Wwwc',
+          groupId: 'WindowLevel',
           itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [

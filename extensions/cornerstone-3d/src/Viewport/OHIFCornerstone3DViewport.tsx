@@ -6,6 +6,7 @@ import { utilities } from '@cornerstonejs/tools';
 import { Enums } from '@cornerstonejs/core';
 
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
+import CornerstoneOverlay from './CornerstoneOverlay';
 
 import './OHIFCornerstone3DViewport.css';
 
@@ -57,12 +58,17 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = props;
 
   const [viewportData, setViewportData] = useState(null);
-  const [scrollbarIndex, setScrollbarIndex] = useState(0);
+  const [imageIndex, setImageIndex] = useState(0);
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [_, viewportGridService] = useViewportGrid();
 
   const elementRef = useRef();
-  const { MeasurementService, DisplaySetService } = servicesManager.services;
+
+  const {
+    MeasurementService,
+    DisplaySetService,
+    ToolBarService,
+  } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
@@ -122,7 +128,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       const index = viewportData.stack?.imageIds.indexOf(imageId);
 
       if (index !== -1) {
-        setScrollbarIndex(index);
+        setImageIndex(index);
       }
     };
 
@@ -188,7 +194,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       viewport.setImageIdIndex(imageIndex).then(() => {
         // Update scrollbar index
         const currentIndex = viewport.getCurrentImageIdIndex();
-        setScrollbarIndex(currentIndex);
+        setImageIndex(currentIndex);
       });
     },
     [viewportIndex, viewportData]
@@ -216,7 +222,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
         onChange={evt => onImageScrollbarChange(evt, viewportIndex)}
         max={viewportData ? viewportData.stack?.imageIds?.length - 1 : 0}
         height={scrollbarHeight}
-        value={scrollbarIndex}
+        value={imageIndex}
+      />
+      <CornerstoneOverlay
+        viewportData={viewportData}
+        imageIndex={imageIndex}
+        viewportIndex={viewportIndex}
+        ToolBarService={ToolBarService}
       />
     </div>
   );

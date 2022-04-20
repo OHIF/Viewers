@@ -62,6 +62,7 @@ import HotkeysPreferences from './HotkeysPreferences';
 import HotkeyField from './HotkeyField';
 import Header from './Header';
 import ImageScrollbar from './ImageScrollbar';
+import ViewportOverlay from './ViewportOverlay';
 
 export {
   AboutModal,
@@ -128,5 +129,6 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
+  ViewportOverlay,
   WindowLevelMenuItem,
 };

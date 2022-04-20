@@ -24,7 +24,7 @@ export default class ToolBarService {
     // TODO: Do we need to track per context? Or do we allow for a mixed
     // definition that adapts based on context?
     this.state = {
-      primaryToolId: 'Wwwc',
+      primaryToolId: 'WindowLevel',
       toggles: {
         /* id: true/false */
       },
@@ -43,7 +43,7 @@ export default class ToolBarService {
   reset() {
     this.unsubscriptions.forEach(unsub => unsub());
     this.state = {
-      primaryToolId: 'Wwwc',
+      primaryToolId: 'WindowLevel',
       toggles: {},
       groups: {},
     };
