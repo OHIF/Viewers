@@ -58,9 +58,9 @@ export default async function init({
   );
 
   imageLoadPoolManager.maxNumRequests = {
-    interaction: 50,
-    thumbnail: 50,
-    prefetch: 50,
+    interaction: 100,
+    thumbnail: 75,
+    prefetch: 20,
   };
 
   initWADOImageLoader(UserAuthenticationService, appConfig);

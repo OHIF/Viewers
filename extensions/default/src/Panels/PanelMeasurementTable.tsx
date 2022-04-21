@@ -151,7 +151,7 @@ export default function PanelMeasurementTable({
     <>
       <div
         className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
-        data-cy={'trackedMeasurements-panel'}
+        data-cy={'measurements-panel'}
       >
         <MeasurementTable
           title="Measurements"

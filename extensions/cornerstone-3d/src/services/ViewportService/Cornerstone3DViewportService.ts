@@ -152,10 +152,7 @@ class Cornerstone3DViewportService implements IViewportService {
     const currentDisplaySetOptions = viewportInfo.getDisplaySetOptions();
     let displaySetOptionsToUse = currentDisplaySetOptions;
     if (displaySetOptions?.length) {
-      displaySetOptionsToUse = [
-        ...currentDisplaySetOptions,
-        ...displaySetOptions,
-      ];
+      displaySetOptionsToUse = [...displaySetOptions];
     }
     viewportInfo.setDisplaySetOptions(displaySetOptionsToUse);
 

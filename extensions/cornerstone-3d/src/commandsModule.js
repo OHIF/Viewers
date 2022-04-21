@@ -98,9 +98,15 @@ const commandsModule = ({ servicesManager }) => {
       // iterate over all viewports and set the tool active for the
       // viewports that belong to the toolGroup
       for (let index = 0; index < viewports.length; index++) {
-        const { element } = getEnabledElement(index);
+        const ohifEnabledElement = getEnabledElement(index);
 
-        const viewport = cornerstone3D.getEnabledElement(element);
+        if (!ohifEnabledElement) {
+          continue;
+        }
+
+        const viewport = cornerstone3D.getEnabledElement(
+          ohifEnabledElement.element
+        );
 
         if (!viewport) {
           continue;
