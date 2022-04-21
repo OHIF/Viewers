@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { useViewportGrid, ImageScrollbar } from '@ohif/ui';
 import OHIF from '@ohif/core';
-import { utilities } from '@cornerstonejs/tools';
+import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums } from '@cornerstonejs/core';
 
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
 import CornerstoneOverlay from './CornerstoneOverlay';
+import ViewportLoadingIndicator from './ViewportLoadingIndicator';
+import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 
 import './OHIFCornerstone3DViewport.css';
 
@@ -230,6 +232,18 @@ const OHIFCornerstoneViewport = React.memo(props => {
         viewportIndex={viewportIndex}
         ToolBarService={ToolBarService}
       />
+      {viewportData && (
+        <>
+          <ViewportLoadingIndicator
+            viewportData={viewportData}
+            element={elementRef.current}
+          />
+          <ViewportOrientationMarkers
+            viewportData={viewportData}
+            imageIndex={imageIndex}
+          />
+        </>
+      )}
     </div>
   );
 }, areEqual);
@@ -367,9 +381,9 @@ function _jumpToMeasurement(
       ...measurement.metadata,
       imageIdIndex,
     };
-    utilities.jumpToSlice(targetElement, metadata);
+    cs3DTools.utilities.jumpToSlice(targetElement, metadata);
 
-    annotations.selection.setAnnotationSelected();
+    cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
     // Jump to measurement consumed, remove.
     MeasurementService.removeJumpToMeasurement(viewportIndex);
   }
