@@ -5,7 +5,7 @@ window.config = {
   showStudyList: false,
   filterQueryParam: false,
   disableServersCache: true,
-  disableMeasurementPanel: true,
+  disableMeasurementPanel: false,
   servers: {
     dicomWeb: [
       {
