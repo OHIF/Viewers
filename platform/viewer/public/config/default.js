@@ -6,6 +6,7 @@ window.config = {
   filterQueryParam: false,
   disableServersCache: true,
   disableMeasurementPanel: false,
+  DICOMTagBrowser: true,
   servers: {
     dicomWeb: [
       {
