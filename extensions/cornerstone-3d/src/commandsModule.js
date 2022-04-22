@@ -157,8 +157,8 @@ const commandsModule = ({ servicesManager }) => {
       const { viewport } = enabledElement;
 
       if (viewport instanceof cornerstone3D.StackViewport) {
-        const { flipHorizontal } = viewport.getProperties();
-        viewport.setProperties({ flipHorizontal: !flipHorizontal });
+        const { flipHorizontal } = viewport.getCamera();
+        viewport.setCamera({ flipHorizontal: !flipHorizontal });
         viewport.render();
       }
     },
@@ -172,8 +172,8 @@ const commandsModule = ({ servicesManager }) => {
       const { viewport } = enabledElement;
 
       if (viewport instanceof cornerstone3D.StackViewport) {
-        const { flipVertical } = viewport.getProperties();
-        viewport.setProperties({ flipVertical: !flipVertical });
+        const { flipVertical } = viewport.getCamera();
+        viewport.setCamera({ flipVertical: !flipVertical });
         viewport.render();
       }
     },

@@ -214,7 +214,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         targetRef={elementRef.current}
       />
       <div
-        className="viewport-element"
+        className="cornerstone3D-viewport-element"
         style={{ height: '100%', width: '100%' }}
         onContextMenu={e => e.preventDefault()}
         onMouseDown={e => e.preventDefault()}
@@ -241,6 +241,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
           <ViewportOrientationMarkers
             viewportData={viewportData}
             imageIndex={imageIndex}
+            viewportIndex={viewportIndex}
           />
         </>
       )}
