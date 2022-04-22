@@ -183,8 +183,8 @@ function CornerstoneOverlay({
         <span className="mr-1">I:</span>
         <span className="font-light">
           {instanceNumber !== undefined
-            ? `${instanceNumber} (${imageIndex}/${stackSize})`
-            : `${imageIndex}/${stackSize}`}
+            ? `${instanceNumber} (${imageIndex + 1}/${stackSize})`
+            : `${imageIndex + 1}/${stackSize}`}
         </span>
       </div>
     );

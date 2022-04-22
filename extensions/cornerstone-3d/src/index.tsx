@@ -1,7 +1,12 @@
 import React from 'react';
 import * as cornerstone3D from '@cornerstonejs/core';
 import * as cornerstone3DTools from '@cornerstonejs/tools';
-import { Enums as cs3DEnums, CONSTANTS } from '@cornerstonejs/core';
+import {
+  Enums as cs3DEnums,
+  CONSTANTS,
+  imageLoadPoolManager,
+  imageRetrievalPoolManager,
+} from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import init from './init.js';
 import commandsModule from './commandsModule';
@@ -33,6 +38,15 @@ const cornerstone3DExtension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+
+  onModeExit: () => {
+    // Empty out the image load and retrieval pools to prevent memory leaks
+    // on the mode exits
+    Object.values(cs3DEnums.RequestType).forEach(type => {
+      imageLoadPoolManager.clearRequestStack(type);
+      imageRetrievalPoolManager.clearRequestStack(type);
+    });
+  },
 
   /**
    *

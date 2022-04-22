@@ -60,8 +60,10 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mousedown', 'center', { button: 1 })
+      .trigger('mousemove', 'top', {
+        button: 1,
+      })
       .trigger('mouseup');
 
     const expectedText = 'Zoom:0.45x';
@@ -78,11 +80,17 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
+      .click({ force: true })
+      .trigger('mousemove', 'center', { which: 1 })
       .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mousemove', 'top', {
+        which: 1,
+      })
       .trigger('mouseup')
       .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'left', { which: 1 })
+      .trigger('mousemove', 'left', {
+        which: 1,
+      })
       .trigger('mouseup');
 
     const expectedText = 'W:731L:226';
@@ -222,6 +230,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       });
   });*/
 
+  /**
   it('checks if More button will prompt a modal with secondary tools', () => {
     //Click on More button
     cy.get('@moreBtnSecondary').click();
@@ -244,6 +253,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // Verify if overlay is hidden
     cy.get('@toolbarOverlay').should('not.be.visible');
   });
+   */
 
   /*it('checks if Layout tool will multiply the number of viewports displayed', () => {
     //Click on Layout button and verify if overlay is displayed

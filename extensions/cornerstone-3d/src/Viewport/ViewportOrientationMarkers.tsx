@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { metaData } from '@cornerstonejs/core';
+import { metaData, Enums, Types } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
 import './ViewportOrientationMarkers.css';
+import { getEnabledElement } from '../state';
 
 /**
  *
@@ -12,17 +13,15 @@ import './ViewportOrientationMarkers.css';
  *
  * @param {*} rowCosines
  * @param {*} columnCosines
- * @param {*} rotationDegrees
- * @param {*} isFlippedVertically
- * @param {*} isFlippedHorizontally
+ * @param {*} rotation in degrees
  * @returns
  */
 function getOrientationMarkers(
   rowCosines,
   columnCosines,
-  rotationDegrees,
-  isFlippedVertically,
-  isFlippedHorizontally
+  rotation,
+  flipVertical,
+  flipHorizontal
 ) {
   const {
     getOrientationStringLPS,
@@ -42,33 +41,33 @@ function getOrientationMarkers(
 
   // If any vertical or horizontal flips are applied, change the orientation strings ahead of
   // the rotation applications
-  if (isFlippedVertically) {
+  if (flipVertical) {
     markers.top = invertOrientationStringLPS(markers.top);
     markers.bottom = invertOrientationStringLPS(markers.bottom);
   }
 
-  if (isFlippedHorizontally) {
+  if (flipHorizontal) {
     markers.left = invertOrientationStringLPS(markers.left);
     markers.right = invertOrientationStringLPS(markers.right);
   }
 
   // Swap the labels accordingly if the viewport has been rotated
   // This could be done in a more complex way for intermediate rotation values (e.g. 45 degrees)
-  if (rotationDegrees === 90 || rotationDegrees === -270) {
+  if (rotation === 90 || rotation === -270) {
     return {
       top: markers.left,
       left: invertOrientationStringLPS(markers.top),
       right: invertOrientationStringLPS(markers.bottom),
       bottom: markers.right, // left
     };
-  } else if (rotationDegrees === -90 || rotationDegrees === 270) {
+  } else if (rotation === -90 || rotation === 270) {
     return {
       top: invertOrientationStringLPS(markers.left),
       left: markers.top,
       bottom: markers.left,
       right: markers.bottom,
     };
-  } else if (rotationDegrees === 180 || rotationDegrees === -180) {
+  } else if (rotation === 180 || rotation === -180) {
     return {
       top: invertOrientationStringLPS(markers.top),
       left: invertOrientationStringLPS(markers.left),
@@ -83,48 +82,93 @@ function getOrientationMarkers(
 function ViewportOrientationMarkers({
   viewportData,
   imageIndex,
+  viewportIndex,
   orientationMarkers = ['top', 'left'],
 }) {
-  const imageId = viewportData?.stack?.imageIds[imageIndex];
+  // Rotation is in degrees
+  const [rotation, setRotation] = useState(0);
+  const [flipHorizontal, setFlipHorizontal] = useState(false);
+  const [flipVertical, setFlipVertical] = useState(false);
 
-  // Todo: We should be reactive to these changes
-  const [rotationDegrees, setRotationDegrees] = useState(0);
-  const [isFlippedVertically, setIsFlippedVertically] = useState(false);
-  const [isFlippedHorizontally, setIsFlippedHorizontally] = useState(false);
+  useEffect(() => {
+    const ohifEnabledElement = getEnabledElement(viewportIndex);
 
-  // Workaround for below TODO stub
-  if (!imageId) {
-    return false;
-  }
+    if (!ohifEnabledElement || !ohifEnabledElement.element) {
+      return;
+    }
 
-  const { rowCosines, columnCosines } =
-    metaData.get('imagePlaneModule', imageId) || {};
+    const { element } = ohifEnabledElement;
 
-  if (!rowCosines || !columnCosines || rotationDegrees === undefined) {
-    return false;
-  }
+    const cameraModifiedListener = (
+      evt: Types.EventTypes.CameraModifiedEventDetail
+    ) => {
+      const { rotation, previousCamera, camera } = evt.detail;
 
-  if (!rowCosines || !columnCosines) {
-    return '';
-  }
+      if (rotation !== undefined) {
+        setRotation(rotation);
+      }
 
-  const markers = getOrientationMarkers(
-    rowCosines,
-    columnCosines,
-    rotationDegrees,
-    isFlippedVertically,
-    isFlippedHorizontally
+      if (previousCamera.flipHorizontal !== camera.flipHorizontal) {
+        setFlipHorizontal(camera.flipHorizontal);
+      }
+
+      if (previousCamera.flipVertical !== camera.flipVertical) {
+        setFlipVertical(camera.flipVertical);
+      }
+    };
+
+    element.addEventListener(
+      Enums.Events.CAMERA_MODIFIED,
+      cameraModifiedListener
+    );
+
+    return () => {
+      element.removeEventListener(
+        Enums.Events.CAMERA_MODIFIED,
+        cameraModifiedListener
+      );
+    };
+  }, []);
+
+  const getMarkers = useCallback(
+    orientationMarkers => {
+      const imageId = viewportData?.stack?.imageIds[imageIndex];
+
+      // Workaround for below TODO stub
+      if (!imageId) {
+        return false;
+      }
+
+      const { rowCosines, columnCosines } =
+        metaData.get('imagePlaneModule', imageId) || {};
+
+      if (!rowCosines || !columnCosines || rotation === undefined) {
+        return false;
+      }
+
+      if (!rowCosines || !columnCosines) {
+        return '';
+      }
+
+      const markers = getOrientationMarkers(
+        rowCosines,
+        columnCosines,
+        rotation,
+        flipVertical,
+        flipHorizontal
+      );
+
+      return orientationMarkers.map((m, index) => (
+        <div
+          className={`${m}-mid orientation-marker`}
+          key={`${m}-mid orientation-marker`}
+        >
+          <div className="orientation-marker-value">{markers[m]}</div>
+        </div>
+      ));
+    },
+    [flipHorizontal, flipVertical, rotation, viewportData, imageIndex]
   );
-
-  const getMarkers = orientationMarkers =>
-    orientationMarkers.map((m, index) => (
-      <div
-        className={`${m}-mid orientation-marker`}
-        key={`${m}-mid orientation-marker`}
-      >
-        <div className="orientation-marker-value">{markers[m]}</div>
-      </div>
-    ));
 
   return (
     <div className="ViewportOrientationMarkers noselect">
