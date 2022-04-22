@@ -5,15 +5,11 @@ const merge = require('webpack-merge');
 const webpack = require('webpack');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
 // ~~ Plugins
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
-const TerserJSPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // ~~ Rules
 const extractStyleChunksRule = require('./rules/extractStyleChunks.js');
 // ~~ Directories
@@ -28,6 +24,15 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 
+const setHeaders = (res, path) => {
+  res.setHeader('Content-Type', 'text/plain');
+  if (path.indexOf('.gz') !== -1) {
+    res.setHeader('Content-Encoding', 'gzip');
+  } else if (path.indexOf('.br') !== -1) {
+    res.setHeader('Content-Encoding', 'br');
+  }
+};
+
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
@@ -41,6 +46,23 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
+      devtoolModuleFilenameTemplate: function(info) {
+        if (isProdBuild) {
+          return `webpack:///${info.resourcePath}`;
+        } else {
+          return 'file:///' + encodeURI(info.absoluteResourcePath);
+        }
+      },
+    },
+    resolve: {
+      // We use this alias and the CopyPlugin below to support using the dynamic-import version
+      // of WADO Image Loader, but only when building a PWA. When we build a package, we must use the
+      // bundled version of WADO Image Loader so we can produce a single file for the viewer.
+      // (Note: script-tag version of the viewer will no longer be supported in OHIF v3)
+      alias: {
+        'cornerstone-wado-image-loader':
+          'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js',
+      },
     },
     module: {
       rules: [...extractStyleChunksRule(isProdBuild)],
@@ -71,6 +93,11 @@ module.exports = (env, argv) => {
           from: `${PUBLIC_DIR}/${APP_CONFIG}`,
           to: `${DIST_DIR}/app-config.js`,
         },
+        {
+          from:
+            '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+          to: DIST_DIR,
+        },
       ]),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
@@ -95,6 +122,15 @@ module.exports = (env, argv) => {
         // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
       }),
     ],
+    optimization: {
+      splitChunks: {
+        // include all types of chunks
+        chunks: 'all',
+      },
+      //runtimeChunk: 'single',
+      minimize: isProdBuild,
+      sideEffects: true,
+    },
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
       // gzip compression of everything served
@@ -105,10 +141,39 @@ module.exports = (env, argv) => {
       hot: true,
       open: true,
       port: 3000,
-      host: '0.0.0.0',
-      public: 'http://localhost:' + 3000,
+      client: {
+        overlay: { errors: true, warnings: false },
+      },
+      static: [
+        {
+          directory: path.join(require('os').homedir(), 'dicomweb'),
+          staticOptions: {
+            extensions: ['gz', 'br'],
+            index: 'index.json.gz',
+            redirect: true,
+            setHeaders,
+          },
+          publicPath: '/dicomweb',
+        },
+        {
+          directory: '../../testdata',
+          staticOptions: {
+            extensions: ['gz', 'br'],
+            index: 'index.json.gz',
+            redirect: true,
+            setHeaders,
+          },
+          publicPath: '/testdata',
+        },
+      ],
+      //public: 'http://localhost:' + 3000,
+      //writeToDisk: true,
       historyApiFallback: {
         disableDotRule: true,
+      },
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
       },
     },
   });

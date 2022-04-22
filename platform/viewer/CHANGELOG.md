@@ -3,6 +3,312 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.26](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.25...@ohif/viewer@4.12.26) (2022-04-22)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.25](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.24...@ohif/viewer@4.12.25) (2022-04-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.24](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.23...@ohif/viewer@4.12.24) (2022-04-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.23](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.22...@ohif/viewer@4.12.23) (2022-03-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.22](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.21...@ohif/viewer@4.12.22) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.20...@ohif/viewer@4.12.21) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.19...@ohif/viewer@4.12.20) (2022-03-14)
+
+
+### Bug Fixes
+
+* remove docz + node version fix on docker ([#2743](https://github.com/OHIF/Viewers/issues/2743)) ([7164d1a](https://github.com/OHIF/Viewers/commit/7164d1a654571af99c22d2684e56cbdde05b2222))
+
+
+
+
+
+## [4.12.19](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.18...@ohif/viewer@4.12.19) (2022-03-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.18](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.17...@ohif/viewer@4.12.18) (2022-02-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.17](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.16...@ohif/viewer@4.12.17) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.15...@ohif/viewer@4.12.16) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.14...@ohif/viewer@4.12.15) (2022-02-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.13...@ohif/viewer@4.12.14) (2022-01-31)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.12...@ohif/viewer@4.12.13) (2022-01-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.11...@ohif/viewer@4.12.12) (2022-01-20)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.10...@ohif/viewer@4.12.11) (2022-01-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.9...@ohif/viewer@4.12.10) (2022-01-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.8...@ohif/viewer@4.12.9) (2021-12-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.7...@ohif/viewer@4.12.8) (2021-12-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.6...@ohif/viewer@4.12.7) (2021-12-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.5...@ohif/viewer@4.12.6) (2021-11-30)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.4...@ohif/viewer@4.12.5) (2021-10-27)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.3...@ohif/viewer@4.12.4) (2021-10-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.2...@ohif/viewer@4.12.3) (2021-10-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.1...@ohif/viewer@4.12.2) (2021-10-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.0...@ohif/viewer@4.12.1) (2021-10-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.12.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.11.2...@ohif/viewer@4.12.0) (2021-10-04)
+
+
+### Features
+
+* Added support for WADO servers built with static hosting (e.g. S3) ([#2566](https://github.com/OHIF/Viewers/issues/2566)) ([a046c6c](https://github.com/OHIF/Viewers/commit/a046c6c9017a84e5ead71d5113b5e892333b4130))
+
+
+
+
+
+## [4.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.11.1...@ohif/viewer@4.11.2) (2021-09-28)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.11.0...@ohif/viewer@4.11.1) (2021-09-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.10.1...@ohif/viewer@4.11.0) (2021-09-23)
+
+
+### Features
+
+* Update to WADO Image Loader 4.0.3 to add dynamically imported WebAssembly codec support 🚀 ([#2537](https://github.com/OHIF/Viewers/issues/2537)) ([489d4b0](https://github.com/OHIF/Viewers/commit/489d4b0584f4657ceda1c5b9b68d5e9733827e47))
+
+
+
+
+
+## [4.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.10.0...@ohif/viewer@4.10.1) (2021-09-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.10.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.24...@ohif/viewer@4.10.0) (2021-09-09)
+
+
+### Features
+
+* OHIF-1000: Study prefetcher ([#2466](https://github.com/OHIF/Viewers/issues/2466)) ([8f26045](https://github.com/OHIF/Viewers/commit/8f2604509d24092b721f1333289d838820d68cac))
+
+
+
+
+
+## [4.9.24](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.23...@ohif/viewer@4.9.24) (2021-09-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.23](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.22...@ohif/viewer@4.9.23) (2021-08-30)
+
+
+### Bug Fixes
+
+* MPR metadata parsing for spacings ([#2517](https://github.com/OHIF/Viewers/issues/2517)) ([715dfc5](https://github.com/OHIF/Viewers/commit/715dfc556a3883de31d74012dcc99e431d91f57d))
+
+
+
+
+
+## [4.9.22](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.21...@ohif/viewer@4.9.22) (2021-08-19)
+
+
+### Bug Fixes
+
+* Remove internet dependency for workbox (addressing [#2109](https://github.com/OHIF/Viewers/issues/2109)) ([#2151](https://github.com/OHIF/Viewers/issues/2151)) ([5f92f6e](https://github.com/OHIF/Viewers/commit/5f92f6ec7faa11d3fdc33ef8f22971a0bab87a36))
+
+
+
+
+
+## [4.9.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.20...@ohif/viewer@4.9.21) (2021-07-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.9.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.19...@ohif/viewer@4.9.20) (2021-06-03)
 
 **Note:** Version bump only for package @ohif/viewer

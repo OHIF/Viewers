@@ -85,12 +85,32 @@ Tools can be configured through extension configuration using the tools key:
   ...
 ```
 
+## Stack prefetch configuration
+
+Stack prefetch can be configured through extension configuration using the
+stackPrefetch key:
+
+```js
+  ...
+  cornerstoneExtensionConfig: {
+    stackPrefetch: {
+      enabled: true,
+      maxImagesToPrefetch: Infinity,
+      preserveExistingPool: false,
+      maxSimultaneousRequests: 20,
+    },
+  },
+  ...
+```
+
 ## Annotate Tools Configuration
 
-*We currently support one property for annotation tools.*
+_We currently support one property for annotation tools._
 
 ### Hide handles
-This extension configuration allows you to toggle on/off handle rendering for all annotate tools:
+
+This extension configuration allows you to toggle on/off handle rendering for
+all annotate tools:
 
 ```js
   ...
@@ -119,3 +139,4 @@ This extension configuration allows you to toggle on/off handle rendering for al
 [cornerstone-tools]: https://github.com/cornerstonejs/cornerstoneTools
 [cornerstone]: https://github.com/cornerstonejs/cornerstone
 <!-- prettier-ignore-end -->
+```

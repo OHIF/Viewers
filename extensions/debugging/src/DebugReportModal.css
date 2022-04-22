@@ -24,3 +24,21 @@
   overflow: scroll;
   max-height: 300px;
 }
+
+.debug-overflowText {
+  margin: 0 auto;
+  max-width: 300px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.debug-overflowText-border {
+  margin: 0 auto;
+  max-width: 300px;
+  border: solid 2px #ccc;
+  padding: 12px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}

@@ -13,6 +13,7 @@ class RoundedButtonGroup extends Component {
       PropTypes.shape({
         value: PropTypes.any,
         label: PropTypes.string,
+        stateEvent: PropTypes.string,
         icon: PropTypes.oneOfType([
           PropTypes.string,
           PropTypes.shape({
@@ -30,6 +31,15 @@ class RoundedButtonGroup extends Component {
     value: null,
   };
 
+  state = {
+    badgeNumbers: [],
+  };
+
+  constructor() {
+    super();
+    this.onStateEvent = this.onStateEvent.bind(this);
+  }
+
   onClickOption = value => {
     let newValue = value;
     if (this.props.value === value) {
@@ -40,6 +50,48 @@ class RoundedButtonGroup extends Component {
       this.props.onValueChanged(newValue);
     }
   };
+
+  onStateEvent(event) {
+    const optionIndex = this.props.options.findIndex(
+      o => o.value === event.detail.target
+    );
+    if (optionIndex > -1) {
+      const badgeNumbers = this.state.badgeNumbers;
+      badgeNumbers[optionIndex] = event.detail.badgeNumber;
+      this.setState({ badgeNumbers });
+    }
+  }
+
+  componentDidMount() {
+    this.props.options.forEach(option => {
+      if (option.stateEvent) {
+        document.addEventListener(option.stateEvent, this.onStateEvent);
+      }
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    this.props.options.forEach((option, index) => {
+      if (
+        option.stateEvent &&
+        option.stateEvent !==
+          (prevProps.options[index]
+            ? prevProps.options[index].stateEvent
+            : null)
+      ) {
+        document.removeEventListener(option.stateEvent, this.onStateEvent);
+        document.addEventListener(option.stateEvent, this.onStateEvent);
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.options.forEach(option => {
+      if (option.stateEvent) {
+        document.removeEventListener(option.stateEvent, this.onStateEvent);
+      }
+    });
+  }
 
   render() {
     let className = classnames(
@@ -62,6 +114,14 @@ class RoundedButtonGroup extends Component {
         <div className="bottomLabel">{option.bottomLabel}</div>
       );
 
+      let badgeNumber = this.state.badgeNumbers[index];
+      const badgeNumberOverflow = String(badgeNumber).length > 2;
+      badgeNumber = badgeNumber
+        ? badgeNumberOverflow
+          ? 99
+          : badgeNumber
+        : null;
+
       return (
         <div
           key={index}
@@ -70,6 +130,14 @@ class RoundedButtonGroup extends Component {
         >
           <div className="roundedButton">
             {optionText}
+            {badgeNumber && (
+              <div className="badgeNumber-container">
+                <span className="badgeNumber">
+                  {badgeNumber}
+                  {badgeNumberOverflow && '+'}
+                </span>
+              </div>
+            )}
             {iconProps && <Icon {...iconProps} />}
           </div>
           {bottomLabel}

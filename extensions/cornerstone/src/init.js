@@ -5,6 +5,8 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+import dicomSRModule from './tools/modules/dicomSRModule';
+import srModuleId from './tools/id';
 
 /**
  *
@@ -14,6 +16,8 @@ import measurementServiceMappingsFactory from './utils/measurementServiceMapping
  */
 export default function init({ servicesManager, configuration }) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
+
+  csTools.register('module', srModuleId, dicomSRModule);
 
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
@@ -37,7 +41,14 @@ export default function init({ servicesManager, configuration }) {
     }
   };
 
-  const { csToolsConfig } = configuration;
+  const {
+    csToolsConfig,
+    stackPrefetch = {
+      maxImagesToPrefetch: Infinity,
+      preserveExistingPool: false,
+      maxSimultaneousRequests: 20,
+    },
+  } = configuration;
   const metadataProvider = OHIF.cornerstone.metadataProvider;
 
   cornerstone.metaData.addProvider(
@@ -52,7 +63,7 @@ export default function init({ servicesManager, configuration }) {
     autoResizeViewports: false,
   };
 
-  initCornerstoneTools(defaultCsToolsConfig);
+  initCornerstoneTools({ ...defaultCsToolsConfig, ...stackPrefetch });
 
   const toolsGroupedByType = {
     touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
