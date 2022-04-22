@@ -340,10 +340,18 @@ class StudyMetadata extends Metadata {
     if (referencedSeriesInstanceUID) {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet => {
-          return (
-            StudyMetadata.getReferencedDisplaySet(displaySet, [this])
-              .SeriesInstanceUID === referencedSeriesInstanceUID
+          const referencedDisplaySet = StudyMetadata.getReferencedDisplaySet(
+            displaySet,
+            [this]
           );
+          if (referencedDisplaySet) {
+            return (
+              referencedDisplaySet.SeriesInstanceUID ===
+              referencedSeriesInstanceUID
+            );
+          } else {
+            return false;
+          }
         }
       );
     }
