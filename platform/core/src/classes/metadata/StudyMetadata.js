@@ -38,7 +38,7 @@ class StudyMetadata extends Metadata {
         configurable: false,
         enumerable: false,
         writable: false,
-        value: [],
+        value: this.getData().displaySets ? this.getData().displaySets : [],
       },
       _derivedDisplaySets: {
         configurable: false,

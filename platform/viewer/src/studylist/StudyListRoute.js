@@ -53,7 +53,7 @@ function StudyListRoute(props) {
     error: null,
   });
   const [activeModalId, setActiveModalId] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(200);
   const [pageNumber, setPageNumber] = useState(0);
   const appContext = useContext(AppContext);
   // ~~ RESPONSIVE

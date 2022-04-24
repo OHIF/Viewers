@@ -5,8 +5,8 @@ import { withTranslation } from '../../contextProviders';
 
 class TablePagination extends PureComponent {
   static defaultProps = {
-    pageOptions: [5, 10, 25, 50, 100],
-    rowsPerPage: 25,
+    pageOptions: [5, 10, 25, 50, 100, 200],
+    rowsPerPage: 200,
     currentPage: 0,
   };
 
