@@ -29,6 +29,10 @@
     {
       "packageName": "@ohif/mode-basic-viewer-cs3d",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/mode-longitudinal",
+      "version": "3.0.0"
     }
   ]
 }

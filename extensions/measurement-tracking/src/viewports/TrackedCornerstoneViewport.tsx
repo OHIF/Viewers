@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
 
 import OHIF, { utils } from '@ohif/core';
 import {
@@ -17,24 +15,6 @@ import setActiveAndPassiveToolsForElement from '../_shared/setActiveAndPassiveTo
 import getTools from '../_shared/getTools';
 
 const { formatDate } = utils;
-
-// TODO -> Get this list from the list of tracked measurements.
-// TODO -> We can now get a list of tool names from the measurement service.
-// Use the toolnames to check which tools we have instead, using the
-// Classes isn't really extensible unless we add the classes to the measurement
-// Service definition, which feels wrong.
-const {
-  ArrowAnnotateTool,
-  BidirectionalTool,
-  EllipticalRoiTool,
-  LengthTool,
-} = cornerstoneTools;
-
-const BaseAnnotationTool = cornerstoneTools.importInternal(
-  'base/BaseAnnotationTool'
-);
-
-const { StackManager } = OHIF.utils;
 
 function TrackedCornerstoneViewport(props) {
   const {
@@ -63,6 +43,7 @@ function TrackedCornerstoneViewport(props) {
   const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
   const [element, setElement] = useState(null);
 
+  /*
   const onElementEnabled = evt => {
     const eventData = evt.detail;
     const targetElement = eventData.element;
@@ -124,7 +105,9 @@ function TrackedCornerstoneViewport(props) {
 
     document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
+  */
 
+  /*
   useEffect(() => {
     if (!element) {
       return;
@@ -153,6 +136,7 @@ function TrackedCornerstoneViewport(props) {
       cornerstone.updateImage(element);
     }
   }, [isTracked]);
+  */
 
   // We have...
   // StudyInstanceUid, DisplaySetInstanceUid
@@ -232,15 +216,9 @@ function TrackedCornerstoneViewport(props) {
 
   const renderViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
+      '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
     );
-    return (
-      <Component
-        onElementEnabled={onElementEnabled}
-        element={element}
-        {...props}
-      ></Component>
-    );
+    return <Component element={element} {...props}></Component>;
   };
 
   const cine = cines[viewportIndex];

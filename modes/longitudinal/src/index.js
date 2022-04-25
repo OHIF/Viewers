@@ -2,6 +2,11 @@ import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 
+const configs = {
+  Length: {},
+  //
+};
+
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
@@ -35,7 +40,7 @@ const dicompdf = {
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-3d': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-dicom-sr': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
@@ -53,27 +58,73 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      // Note: If tool's aren't initialized, this doesn't have viewport/tools
-      // to "set active". This is mostly for the toolbar UI state?
-      // Could update tool manager to be always persistent, and to set state
-      // on load?
-      const { ToolBarService } = servicesManager.services;
-      const interaction = {
-        groupId: 'primary',
-        itemId: 'Wwwc',
-        interactionType: 'tool',
-        commands: [
+      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone-3d.utilityModule.tools'
+      );
+
+      const { toolNames, Enums } = utilityModule.exports;
+
+      const tools = {
+        active: [
           {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'WindowLevel',
-            },
-            context: 'CORNERSTONE',
+            toolName: toolNames.WindowLevel,
+            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
           },
+          {
+            toolName: toolNames.Pan,
+            bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+          },
+          {
+            toolName: toolNames.Zoom,
+            bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+          },
+          { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
         ],
+        passive: [
+          { toolName: toolNames.Length },
+          { toolName: toolNames.Bidirectional },
+          { toolName: toolNames.Probe },
+          { toolName: toolNames.EllipticalROI },
+          { toolName: toolNames.RectangleROI },
+          { toolName: toolNames.StackScroll },
+        ],
+        // enabled
+        // disabled
       };
 
-      ToolBarService.recordInteraction(interaction);
+      const toolGroupId = 'default';
+      ToolGroupService.createToolGroup(toolGroupId, tools, configs);
+
+      let unsubscribe;
+
+      const activateTool = () => {
+        ToolBarService.recordInteraction({
+          groupId: 'WindowLevel',
+          itemId: 'WindowLevel',
+          interactionType: 'tool',
+          commands: [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE3D',
+            },
+          ],
+        });
+
+        // We don't need to reset the active tool whenever a viewport is getting
+        // added to the toolGroup.
+        unsubscribe();
+      };
+
+      // Since we only have one viewport for the basic cs3d mode and it has
+      // only one hanging protocol, we can just use the first viewport
+      ({ unsubscribe } = ToolGroupService.subscribe(
+        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+        activateTool
+      ));
 
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
@@ -82,10 +133,22 @@ function modeFactory({ modeConfiguration }) {
         'Zoom',
         'WindowLevel',
         'Pan',
-        'Capture',
         'Layout',
         'MoreTools',
       ]);
+    },
+    onModeExit: ({ servicesManager }) => {
+      const {
+        ToolGroupService,
+        MeasurementService,
+        SegmentationService,
+        ToolBarService,
+      } = servicesManager.services;
+
+      ToolBarService.reset();
+      MeasurementService.clearMeasurements();
+      SegmentationService.clearSegmentations();
+      ToolGroupService.destroy();
     },
     onModeExit: ({ servicesManager }) => {
       const {
