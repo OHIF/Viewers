@@ -48,7 +48,7 @@ function _createWwwcPreset(preset, title, subtitle) {
         commandOptions: {
           windowLevel: windowLevelPresets[preset],
         },
-        context: 'CORNERSTONE',
+        context: 'CORNERSTONE3D',
       },
     ],
   };
@@ -73,7 +73,7 @@ export default [
             commandOptions: {
               toolName: 'Length',
             },
-            context: 'CORNERSTONE',
+            context: 'CORNERSTONE3D',
           },
         ],
         'Length'
@@ -95,7 +95,7 @@ export default [
               commandOptions: {
                 toolName: 'Length',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Length Tool'
@@ -110,7 +110,7 @@ export default [
               commandOptions: {
                 toolName: 'Bidirectional',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Bidirectional Tool'
@@ -125,7 +125,7 @@ export default [
               commandOptions: {
                 toolName: 'ArrowAnnotate',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Arrow Annotate'
@@ -140,7 +140,7 @@ export default [
               commandOptions: {
                 toolName: 'EllipticalRoi',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Ellipse Tool'
@@ -162,7 +162,7 @@ export default [
           commandOptions: {
             toolName: 'Zoom',
           },
-          context: 'CORNERSTONE',
+          context: 'CORNERSTONE3D',
         },
       ],
     },
@@ -183,7 +183,7 @@ export default [
             commandOptions: {
               toolName: 'Wwwc',
             },
-            context: 'CORNERSTONE',
+            context: 'CORNERSTONE3D',
           },
         ],
         'Window Level'
@@ -219,7 +219,7 @@ export default [
           commandOptions: {
             toolName: 'Pan',
           },
-          context: 'CORNERSTONE',
+          context: 'CORNERSTONE3D',
         },
       ],
     },
@@ -235,7 +235,7 @@ export default [
         {
           commandName: 'showDownloadViewportModal',
           commandOptions: {},
-          context: 'CORNERSTONE',
+          context: 'CORNERSTONE3D',
         },
       ],
     },
@@ -259,7 +259,7 @@ export default [
           {
             commandName: 'resetViewport',
             commandOptions: {},
-            context: 'CORNERSTONE',
+            context: 'CORNERSTONE3D',
           },
         ],
         'Reset'
@@ -279,7 +279,7 @@ export default [
             {
               commandName: 'resetViewport',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Reset'
@@ -292,7 +292,7 @@ export default [
             {
               commandName: 'rotateViewportCW',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Rotate +90'
@@ -305,7 +305,7 @@ export default [
             {
               commandName: 'flipViewportHorizontal',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Flip Horizontal'
@@ -320,7 +320,7 @@ export default [
               commandOptions: {
                 toolName: 'StackScroll',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Stack Scroll'
@@ -335,7 +335,7 @@ export default [
               commandOptions: {
                 toolName: 'Magnify',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Magnify'
@@ -348,7 +348,7 @@ export default [
             {
               commandName: 'invertViewport',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Invert Colors'
@@ -361,7 +361,7 @@ export default [
             {
               commandName: 'toggleCine',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Cine'
@@ -376,7 +376,7 @@ export default [
               commandOptions: {
                 toolName: 'Angle',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Angle'
@@ -391,7 +391,7 @@ export default [
               commandOptions: {
                 toolName: 'DragProbe',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Probe'
@@ -406,7 +406,7 @@ export default [
               commandOptions: {
                 toolName: 'RectangleRoi',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Rectangle'

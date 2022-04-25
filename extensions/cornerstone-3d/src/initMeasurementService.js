@@ -86,9 +86,27 @@ const connectToolsToMeasurementService = (
 
   /* Measurement Service Events */
   eventTarget.addEventListener(elementEnabledEvt, evt => {
+    function addMeasurement(csToolsEvent) {
+      try {
+        const evtDetail = csToolsEvent.detail;
+        const {
+          annotation: { metadata, annotationUID },
+        } = evtDetail;
+        const { toolName } = metadata;
+
+        evtDetail.uid = annotationUID;
+        annotationToMeasurement(toolName, evtDetail);
+      } catch (error) {
+        console.warn('Failed to update measurement:', error);
+      }
+    }
     function updateMeasurement(csToolsEvent) {
       try {
         const evtDetail = csToolsEvent.detail;
+        // If the measurement hasn't been added, don't modify it
+        if (!evtDetail.uid) {
+          return;
+        }
         const {
           annotation: { metadata, annotationUID },
         } = evtDetail;
@@ -131,11 +149,11 @@ const connectToolsToMeasurementService = (
 
     // on display sets added, check if there are any measurements in measurement service that need to be
     // put into cornerstone tools
-    const addedEvt = csToolsEvents.ANNOTATION_ADDED;
+    const completedEvt = csToolsEvents.ANNOTATION_COMPLETED;
     const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
     const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
 
-    eventTarget.addEventListener(addedEvt, updateMeasurement);
+    eventTarget.addEventListener(completedEvt, addMeasurement);
     eventTarget.addEventListener(updatedEvt, updateMeasurement);
     eventTarget.addEventListener(removedEvt, removeMeasurement);
   });
