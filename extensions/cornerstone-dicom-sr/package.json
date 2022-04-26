@@ -1,5 +1,5 @@
 {
-  "name": "@ohif/extension-dicom-sr",
+  "name": "@ohif/extension-cornerstone-dicom-sr",
   "version": "3.0.0",
   "description": "OHIF extension for an SR Cornerstone Viewport",
   "author": "OHIF",

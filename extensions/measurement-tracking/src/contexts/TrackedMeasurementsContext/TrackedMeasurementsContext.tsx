@@ -18,7 +18,7 @@ TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
 const SR_SOPCLASSHANDLERID =
-  '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr';
+  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
 
 /**
  *

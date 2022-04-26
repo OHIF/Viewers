@@ -22,8 +22,9 @@ const tracked = {
 };
 
 const dicomsr = {
-  sopClassHandler: '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr',
-  viewport: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
@@ -42,7 +43,7 @@ const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone-3d': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
-  '@ohif/extension-dicom-sr': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
 };

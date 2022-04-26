@@ -72,7 +72,7 @@ const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
-  '@ohif/extension-dicom-sr': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
 };
 
 const id = 'viewer'
