@@ -101,6 +101,21 @@ export default [
           'Length Tool'
         ),
         _createToolButton(
+          'Probe',
+          'tool-probe',
+          'Probe',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Probe',
+              },
+              context: 'CORNERSTONE3D',
+            },
+          ],
+          'Probe Tool'
+        ),
+        _createToolButton(
           'Bidirectional',
           'tool-bidirectional',
           'Bidirectional',
@@ -325,21 +340,6 @@ export default [
           ],
           'Stack Scroll'
         ),
-        _createToolButton(
-          'Magnify',
-          'tool-magnify',
-          'Magnify',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Magnify',
-              },
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Magnify'
-        ),
         _createActionButton(
           'invert',
           'tool-invert',
@@ -353,36 +353,8 @@ export default [
           ],
           'Invert Colors'
         ),
-        _createToggleButton(
-          'cine',
-          'tool-cine',
-          'Cine',
-          [
-            {
-              commandName: 'toggleCine',
-              commandOptions: {},
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Cine'
-        ),
         _createToolButton(
-          'Angle',
-          'tool-angle',
-          'Angle',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Angle',
-              },
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Angle'
-        ),
-        _createToolButton(
-          'DragProbe',
+          'Probe',
           'tool-probe',
           'Probe',
           [

@@ -1,6 +1,7 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import onModeEnter from './onModeEnter';
+import commandsModule from './commandsModule';
 import init from './init';
 import { id } from './id.js';
 
@@ -26,6 +27,7 @@ const dicomSRExtension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+  onModeEnter,
 
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
@@ -50,31 +52,37 @@ const dicomSRExtension = {
 
     return [{ name: 'dicom-sr', component: ExtendedOHIFCornerstoneSRViewport }];
   },
-  getCommandsModule({ servicesManager }) {
-    return {
-      definitions: {
-        setToolActive: {
-          commandFn: ({ toolName, element }) => {
-            if (!toolName) {
-              console.warn('No toolname provided to setToolActive command');
-            }
+  // getCommandsModule({ servicesManager }) {
+  //   return {
+  //     definitions: {
+  //       setToolActive: {
+  //         commandFn: ({ toolName, element }) => {
+  //           if (!toolName) {
+  //             console.warn('No toolname provided to setToolActive command');
+  //           }
 
-            // Set same tool or alt tool
-            const toolAlias = _getToolAlias(toolName);
+  //           // Set same tool or alt tool
+  //           const toolAlias = _getToolAlias(toolName);
 
-            cornerstoneTools.setToolActiveForElement(element, toolAlias, {
-              mouseButtonMask: 1,
-            });
-          },
-          storeContexts: [],
-          options: {},
-        },
-      },
-      defaultContext: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
-    };
+  //           cornerstoneTools.setToolActiveForElement(element, toolAlias, {
+  //             mouseButtonMask: 1,
+  //           });
+  //         },
+  //         storeContexts: [],
+  //         options: {},
+  //       },
+  //     },
+  //     defaultContext: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
+  //   };
+  // },
+  getCommandsModule({ servicesManager, commandsManager, extensionManager }) {
+    return commandsModule({
+      servicesManager,
+      commandsManager,
+      extensionManager,
+    });
   },
   getSopClassHandlerModule,
-  onModeEnter,
 };
 
 function _getToolAlias(toolName) {

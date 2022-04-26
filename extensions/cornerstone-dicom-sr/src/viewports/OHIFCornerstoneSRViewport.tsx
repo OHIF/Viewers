@@ -1,8 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import cornerstoneTools from 'cornerstone-tools';
-import cornerstone from 'cornerstone-core';
-import CornerstoneViewport from 'react-cornerstone-viewport';
+import * as cornerstone3DTools from '@cornerstonejs/tools';
+import * as cornerstone from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
 import ViewportOverlay from './ViewportOverlay';
@@ -18,10 +17,8 @@ import { id } from './../id';
 
 const { formatDate } = utils;
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
-const globalImageIdSpecificToolStateManager =
-  cornerstoneTools.globalImageIdSpecificToolStateManager;
 
-const { StackManager, guid } = OHIF.utils;
+const { StackManager } = OHIF.utils;
 
 const MEASUREMENT_TRACKING_EXTENSION_ID =
   '@ohif/extension-measurement-tracking';

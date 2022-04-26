@@ -1,5 +1,5 @@
 import React from 'react';
-import { DICOMSR, DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 
 /**
  *
@@ -11,6 +11,7 @@ import { DICOMSR, DicomMetadataStore } from '@ohif/core';
  */
 async function createReportAsync(
   servicesManager,
+  commandsManager,
   dataSource,
   measurements,
   options
@@ -29,12 +30,18 @@ async function createReportAsync(
   });
 
   try {
-    const naturalizedReport = await DICOMSR.storeMeasurements(
-      measurements,
-      dataSource,
-      ['ArrowAnnotate'],
-      options
+    const naturalizedReport = await commandsManager.runCommand(
+      'storeMeasurements',
+      {
+        measurementData: measurements,
+        dataSource,
+        additionalFindingTypes: ['ArrowAnnotate'],
+        options,
+      },
+      'ACTIVE_VIEWPORT::CORNERSTONE_STRUCTURED_REPORT'
     );
+
+    debugger;
 
     // The "Mode" route listens for DicomMetadataStore changes
     // When a new instance is added, it listens and

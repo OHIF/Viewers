@@ -3,7 +3,6 @@ import { ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes/';
 
 import DICOMWeb from './DICOMWeb';
-import DICOMSR from './DICOMSR';
 import errorHandler from './errorHandler.js';
 import log from './log.js';
 import object from './object.js';
@@ -55,7 +54,6 @@ const OHIF = {
   object,
   log,
   DICOMWeb,
-  DICOMSR,
   viewer: {},
   //
   CineService,
@@ -93,7 +91,6 @@ export {
   object,
   log,
   DICOMWeb,
-  DICOMSR,
   //
   CineService,
   UIDialogService,

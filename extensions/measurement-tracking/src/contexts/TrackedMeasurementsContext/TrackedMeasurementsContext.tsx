@@ -25,7 +25,7 @@ const SR_SOPCLASSHANDLERID =
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider(
-  { servicesManager, extensionManager }, // Bound by consumer
+  { servicesManager, commandsManager, extensionManager }, // Bound by consumer
   { children } // Component props
 ) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -101,6 +101,7 @@ function TrackedMeasurementsContextProvider(
     }),
     promptSaveReport: promptSaveReport.bind(null, {
       servicesManager,
+      commandsManager,
       extensionManager,
     }),
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
@@ -197,6 +198,7 @@ function TrackedMeasurementsContextProvider(
 TrackedMeasurementsContextProvider.propTypes = {
   children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
   servicesManager: PropTypes.object.isRequired,
+  commandsManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.object.isRequired,
 };
 

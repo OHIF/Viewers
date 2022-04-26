@@ -7,7 +7,7 @@ import dcmjs from 'dcmjs';
  * @returns {boolean}
  */
 const isToolSupported = toolName => {
-  const adapter = dcmjs.adapters.Cornerstone;
+  const adapter = dcmjs.adapters.Cornerstone3D;
   return !!adapter[toolName];
 };
 

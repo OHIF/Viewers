@@ -34,6 +34,7 @@
     "classnames": "^2.2.6",
     "@cornerstonejs/core": "^0.6.0",
     "@cornerstonejs/tools": "^0.9.0",
+    "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
     "dcmjs": "0.16.1",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",

@@ -6,7 +6,7 @@ const RESPONSE = {
   SET_STUDY_AND_SERIES: 3,
 };
 
-function promptUser({ servicesManager, extensionManager }, ctx, evt) {
+function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
 
@@ -33,7 +33,7 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
         id: 'prompt-begin-tracking-cancel',
         type: 'cancel',
         text: 'No',
-        value: RESPONSE.CANCEL
+        value: RESPONSE.CANCEL,
       },
       {
         id: 'prompt-begin-tracking-no-do-not-ask-again',
@@ -68,4 +68,4 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
   });
 }
 
-export default promptUser;
+export default promptBeginTracking;

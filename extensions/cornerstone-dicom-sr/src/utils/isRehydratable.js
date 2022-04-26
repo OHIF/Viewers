@@ -1,6 +1,6 @@
 import { adapters } from 'dcmjs';
 
-const cornerstoneAdapters = adapters.Cornerstone;
+const cornerstoneAdapters = adapters.Cornerstone3D;
 
 /**
  * Checks if the given `displaySet`can be rehydrated into the `MeasurementService`.
@@ -40,6 +40,7 @@ export default function isRehydratable(displaySet, mappings) {
     );
 
     if (hydratable) {
+      debugger;
       return true;
     }
   }

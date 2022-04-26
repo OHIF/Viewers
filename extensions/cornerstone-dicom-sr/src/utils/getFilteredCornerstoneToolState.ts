@@ -1,0 +1,111 @@
+import OHIF from '@ohif/core';
+import * as cornerstone3DTools from '@cornerstonejs/tools';
+const { log } = OHIF;
+
+function getFilteredCornerstoneToolState(
+  measurementData,
+  additionalFindingTypes
+) {
+  const filteredToolState = {};
+
+  function addToFilteredToolState(annotation, toolType) {
+    if (!annotation.metadata?.referencedImageId) {
+      log.warn(
+        `[DICOMSR] No referencedImageId found for ${toolType} ${annotation.id}`
+      );
+      return;
+    }
+
+    const imageId = annotation.metadata.referencedImageId;
+
+    if (!filteredToolState[imageId]) {
+      filteredToolState[imageId] = {};
+    }
+
+    const imageIdSpecificToolState = filteredToolState[imageId];
+
+    if (!imageIdSpecificToolState[toolType]) {
+      imageIdSpecificToolState[toolType] = {
+        data: [],
+      };
+    }
+
+    const measurmentDataI = measurementData.find(
+      md => md.uid === annotation.annotationUID
+    );
+    const toolData = imageIdSpecificToolState[toolType].data;
+
+    let finding;
+    const findingSites = [];
+
+    // NOTE -> Any kind of freetext value abuses the DICOM standard,
+    // As CodeValues should map 1:1 with CodeMeanings.
+    // Ideally we would actually use SNOMED codes for this.
+    if (measurmentDataI.label) {
+      if (additionalFindingTypes.includes(toolType)) {
+        finding = {
+          CodeValue: 'CORNERSTONEFREETEXT',
+          CodingSchemeDesignator: 'CST4',
+          CodeMeaning: measurmentDataI.label,
+        };
+      } else {
+        findingSites.push({
+          CodeValue: 'CORNERSTONEFREETEXT',
+          CodingSchemeDesignator: 'CST4',
+          CodeMeaning: measurmentDataI.label,
+        });
+      }
+    }
+
+    const measurement = Object.assign({}, annotation, {
+      finding,
+      findingSites,
+    });
+
+    toolData.push(measurement);
+  }
+
+  const uidFilter = measurementData.map(md => md.uid);
+  const uids = uidFilter.slice();
+
+  const annotationManager = cornerstone3DTools.annotation.state.getDefaultAnnotationManager();
+  const framesOfReference = annotationManager.getFramesOfReference();
+
+  for (let i = 0; i < framesOfReference.length; i++) {
+    const frameOfReference = framesOfReference[i];
+
+    const frameOfReferenceAnnotations = annotationManager.getFrameOfReferenceAnnotations(
+      frameOfReference
+    );
+
+    const toolTypes = Object.keys(frameOfReferenceAnnotations);
+
+    for (let j = 0; j < toolTypes.length; j++) {
+      const toolType = toolTypes[j];
+
+      const annotations = frameOfReferenceAnnotations[toolType];
+
+      if (annotations) {
+        for (let k = 0; k < annotations.length; k++) {
+          const annotation = annotations[k];
+          const uidIndex = uids.findIndex(
+            uid => uid === annotation.annotationUID
+          );
+
+          if (uidIndex !== -1) {
+            addToFilteredToolState(annotation, toolType);
+            uids.splice(uidIndex, 1);
+
+            if (!uids.length) {
+              return filteredToolState;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return filteredToolState;
+}
+
+export default getFilteredCornerstoneToolState;
