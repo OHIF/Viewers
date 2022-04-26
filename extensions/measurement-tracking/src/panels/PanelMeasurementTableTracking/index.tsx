@@ -11,10 +11,8 @@ import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
-import RESPONSES from '../../_shared/PROMPT_RESPONSES';
-import downloadCSVReport from '../../_shared/downloadCSVReport';
 
+const { downloadCSVReport } = utils;
 const { formatDate } = utils;
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
@@ -146,29 +144,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    downloadCSVReport(
-      trackedMeasurements,
-      trackedStudy,
-      trackedSeries,
-      MeasurementService
-    );
+    downloadCSVReport(trackedMeasurements, MeasurementService);
   }
 
-  const jumpToImage = ({ id, isActive }) => {
-    MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, id);
+  const jumpToImage = ({ uid, isActive }) => {
+    MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
 
-    onMeasurementItemClickHandler({ id, isActive });
+    onMeasurementItemClickHandler({ uid, isActive });
   };
 
-  const onMeasurementItemEditHandler = ({ id, isActive }) => {
-    const measurement = MeasurementService.getMeasurement(id);
-    jumpToImage({ id, isActive });
+  const onMeasurementItemEditHandler = ({ uid, isActive }) => {
+    const measurement = MeasurementService.getMeasurement(uid);
+    jumpToImage({ uid, isActive });
 
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
           MeasurementService.update(
-            id,
+            uid,
             {
               ...measurement,
               ...value,
@@ -225,12 +218,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     });
   };
 
-  const onMeasurementItemClickHandler = ({ id, isActive }) => {
+  const onMeasurementItemClickHandler = ({ uid, isActive }) => {
     if (!isActive) {
       const measurements = [...displayMeasurements];
-      const measurement = measurements.find(m => m.id === id);
+      const measurement = measurements.find(m => m.uid === uid);
 
-      measurements.forEach(m => (m.isActive = m.id !== id ? false : true));
+      measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
       measurement.isActive = true;
       setDisplayMeasurements(measurements);
     }
@@ -325,7 +318,7 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
   const { displayText } = measurement;
 
   return {
-    id: measurement.id,
+    uid: measurement.uid,
     label: measurement.label || '(empty)',
     measurementType: measurement.type,
     displayText: displayText || [],

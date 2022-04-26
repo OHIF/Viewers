@@ -5,11 +5,11 @@ import utils from '../utils';
 //   stowSRFromMeasurements,
 // } from './handleStructuredReport';
 import findMostRecentStructuredReport from './utils/findMostRecentStructuredReport';
-import * as cornerstone from '@cornerstonejs/core';
-import * as cornerstoneTools from '@cornerstonejs/tools';
+import * as cornerstone3DTools from '@cornerstonejs/tools';
+import * as cornerstone3D from '@cornerstonejs/core';
 import dcmjs from 'dcmjs';
 
-const { MeasurementReport } = dcmjs.adapters.Cornerstone;
+const { MeasurementReport } = dcmjs.adapters.Cornerstone3D;
 
 /**
  *
@@ -87,7 +87,7 @@ const generateReport = (
   );
   const report = MeasurementReport.generateReport(
     filteredToolState,
-    cornerstone.metaData
+    cornerstone3D.metaData
   );
 
   const { dataset } = report;
@@ -146,20 +146,22 @@ const storeMeasurements = async (
   }
 };
 
-// _getFilteredCornerstoneToolState
-// DIFFERENT IMPLEMENTATION HERE! What's up?
 function _getFilteredCornerstoneToolState(
   measurementData,
   additionalFindingTypes
 ) {
-  const uidFilter = measurementData.map(md => md.id);
-
-  // BROKEN BY CS3D
-  // cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
-  const globalToolState = {};
   const filteredToolState = {};
 
-  function addToFilteredToolState(imageId, toolType, toolDataI) {
+  function addToFilteredToolState(annotation, toolType) {
+    if (!annotation.metadata?.referencedImageId) {
+      log.warn(
+        `[DICOMSR] No referencedImageId found for ${toolType} ${annotation.id}`
+      );
+      return;
+    }
+
+    const imageId = annotation.metadata.referencedImageId;
+
     if (!filteredToolState[imageId]) {
       filteredToolState[imageId] = {};
     }
@@ -172,7 +174,9 @@ function _getFilteredCornerstoneToolState(
       };
     }
 
-    const measurmentDataI = measurementData.find(md => md.id === toolDataI.id);
+    const measurmentDataI = measurementData.find(
+      md => md.uid === annotation.annotationUID
+    );
     const toolData = imageIdSpecificToolState[toolType].data;
 
     let finding;
@@ -197,7 +201,7 @@ function _getFilteredCornerstoneToolState(
       }
     }
 
-    const measurement = Object.assign({}, toolDataI, {
+    const measurement = Object.assign({}, annotation, {
       finding,
       findingSites,
     });
@@ -205,26 +209,35 @@ function _getFilteredCornerstoneToolState(
     toolData.push(measurement);
   }
 
+  const uidFilter = measurementData.map(md => md.uid);
   const uids = uidFilter.slice();
-  const imageIds = Object.keys(globalToolState);
 
-  for (let i = 0; i < imageIds.length; i++) {
-    const imageId = imageIds[i];
-    const imageIdSpecificToolState = globalToolState[imageId];
+  const annotationManager = cornerstone3DTools.annotation.state.getDefaultAnnotationManager();
+  const framesOfReference = annotationManager.getFramesOfReference();
 
-    const toolTypes = Object.keys(imageIdSpecificToolState);
+  for (let i = 0; i < framesOfReference.length; i++) {
+    const frameOfReference = framesOfReference[i];
+
+    const frameOfReferenceAnnotations = annotationManager.getFrameOfReferenceAnnotations(
+      frameOfReference
+    );
+
+    const toolTypes = Object.keys(frameOfReferenceAnnotations);
 
     for (let j = 0; j < toolTypes.length; j++) {
       const toolType = toolTypes[j];
-      const toolData = imageIdSpecificToolState[toolType].data;
 
-      if (toolData) {
-        for (let k = 0; k < toolData.length; k++) {
-          const toolDataK = toolData[k];
-          const uidIndex = uids.findIndex(uid => uid === toolDataK.id);
+      const annotations = frameOfReferenceAnnotations[toolType];
+
+      if (annotations) {
+        for (let k = 0; k < annotations.length; k++) {
+          const annotation = annotations[k];
+          const uidIndex = uids.findIndex(
+            uid => uid === annotation.annotationUID
+          );
 
           if (uidIndex !== -1) {
-            addToFilteredToolState(imageId, toolType, toolDataK);
+            addToFilteredToolState(annotation, toolType);
             uids.splice(uidIndex, 1);
 
             if (!uids.length) {
