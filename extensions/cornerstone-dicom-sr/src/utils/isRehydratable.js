@@ -14,7 +14,7 @@ export default function isRehydratable(displaySet, mappings) {
     return false;
   }
 
-  const mappingDefinitions = mappings.map(m => m.definition);
+  const mappingDefinitions = mappings.map(m => m.annotationType);
   const { measurements } = displaySet;
 
   const adapterKeys = Object.keys(cornerstoneAdapters).filter(
@@ -40,7 +40,6 @@ export default function isRehydratable(displaySet, mappings) {
     );
 
     if (hydratable) {
-      debugger;
       return true;
     }
   }

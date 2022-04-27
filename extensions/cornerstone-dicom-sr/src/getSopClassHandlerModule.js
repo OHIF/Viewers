@@ -117,8 +117,8 @@ function _load(displaySet, servicesManager, extensionManager) {
   displaySet.measurements = _getMeasurements(ContentSequence);
 
   const mappings = MeasurementService.getSourceMappings(
-    'CornerstoneTools',
-    '4'
+    'CornerstoneTools3D',
+    '1'
   );
 
   displaySet.isHydrated = false;

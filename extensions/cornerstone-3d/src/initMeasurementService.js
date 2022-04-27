@@ -1,5 +1,6 @@
 import { eventTarget, EVENTS } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
+import { DicomMetadataStore } from '@ohif/core';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
@@ -88,32 +89,39 @@ const connectToolsToMeasurementService = (
   eventTarget.addEventListener(elementEnabledEvt, evt => {
     function addMeasurement(csToolsEvent) {
       try {
-        const evtDetail = csToolsEvent.detail;
+        const annotationAddedEventDetail = csToolsEvent.detail;
         const {
           annotation: { metadata, annotationUID },
-        } = evtDetail;
+        } = annotationAddedEventDetail;
         const { toolName } = metadata;
 
-        evtDetail.uid = annotationUID;
-        annotationToMeasurement(toolName, evtDetail);
+        // To force the measurementUID be the same as the annotationUID
+        // Todo: this should be changed when a measurement can include multiple annotations
+        // in the future
+        annotationAddedEventDetail.uid = annotationUID;
+        annotationToMeasurement(toolName, annotationAddedEventDetail);
       } catch (error) {
         console.warn('Failed to update measurement:', error);
       }
     }
     function updateMeasurement(csToolsEvent) {
       try {
-        const evtDetail = csToolsEvent.detail;
-        // If the measurement hasn't been added, don't modify it
-        if (!evtDetail.uid) {
-          return;
-        }
+        const annotationModifiedEventDetail = csToolsEvent.detail;
+
         const {
           annotation: { metadata, annotationUID },
-        } = evtDetail;
+        } = annotationModifiedEventDetail;
+
+        // If the measurement hasn't been added, don't modify it
+        const measurement = MeasurementService.getMeasurement(annotationUID);
+
+        if (!measurement) {
+          return;
+        }
         const { toolName } = metadata;
 
-        evtDetail.uid = annotationUID;
-        annotationToMeasurement(toolName, evtDetail);
+        annotationModifiedEventDetail.uid = annotationUID;
+        annotationToMeasurement(toolName, annotationModifiedEventDetail);
       } catch (error) {
         console.warn('Failed to update measurement:', error);
       }
@@ -128,16 +136,16 @@ const connectToolsToMeasurementService = (
     function removeMeasurement(csToolsEvent) {
       try {
         try {
-          const evtDetail = csToolsEvent.detail;
+          const annotationRemovedEventDetail = csToolsEvent.detail;
           const {
             annotation: { annotationUID },
-          } = evtDetail;
+          } = annotationRemovedEventDetail;
 
           const measurement = MeasurementService.getMeasurement(annotationUID);
 
           if (measurement) {
             console.log('~~ removeEvt', csToolsEvent);
-            remove(annotationUID, evtDetail);
+            remove(annotationUID, annotationRemovedEventDetail);
           }
         } catch (error) {
           console.warn('Failed to update measurement:', error);
@@ -215,12 +223,40 @@ const connectMeasurementServiceToTools = (
 
   MeasurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
-    ({ source, measurement, data, dataSource }) => {
+    ({ source, measurement, data: toolData, dataSource }) => {
       if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
         return;
       }
-      // Todo: handle raw measurements added (the case where a measurement is added from
-      // another source.)
+
+      const {
+        referenceSeriesUID,
+        referenceStudyUID,
+        SOPInstanceUID,
+      } = measurement;
+
+      const instance = DicomMetadataStore.getInstance(
+        referenceStudyUID,
+        referenceSeriesUID,
+        SOPInstanceUID
+      );
+
+      const imageId = dataSource.getImageIdsForInstance({ instance });
+      const annotationManager = annotation.state.getDefaultAnnotationManager();
+      annotationManager.addAnnotation({
+        annotationUID: measurement.uid,
+        highlighted: false,
+        isLocked: false,
+        invalidated: false,
+        metadata: {
+          toolName: measurement.toolName,
+          FrameOfReferenceUID: measurement.FrameOfReferenceUID,
+          referencedImageId: imageId,
+        },
+        data: {
+          handles: { ...toolData.data.handles },
+          cachedStats: { ...toolData.data.cachedStats },
+        },
+      });
     }
   );
 

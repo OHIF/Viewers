@@ -100,7 +100,7 @@ const testProtocol = {
         type: 'grid',
         properties: {
           rows: 1,
-          columns: 2,
+          columns: 1,
           viewportOptions: [],
         },
       },

@@ -41,8 +41,6 @@ async function createReportAsync(
       'ACTIVE_VIEWPORT::CORNERSTONE_STRUCTURED_REPORT'
     );
 
-    debugger;
-
     // The "Mode" route listens for DicomMetadataStore changes
     // When a new instance is added, it listens and
     // automatically calls makeDisplaySets

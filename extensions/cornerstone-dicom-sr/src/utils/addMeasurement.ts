@@ -1,11 +1,7 @@
-import cornerstoneTools from 'cornerstone-tools';
-import cornerstoneMath from 'cornerstone-math';
-import cornerstone from 'cornerstone-core';
+import { Types, annotation } from '@cornerstonejs/tools';
+import * as cornerstone3D from '@cornerstonejs/core';
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
-
-const globalImageIdSpecificToolStateManager =
-  cornerstoneTools.globalImageIdSpecificToolStateManager;
 
 export default function addMeasurement(
   measurement,
@@ -20,6 +16,7 @@ export default function addMeasurement(
     TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
     renderableData: {},
     labels: measurement.labels,
+    imageId,
   };
 
   measurement.coords.forEach(coord => {
@@ -30,28 +27,34 @@ export default function addMeasurement(
     }
 
     measurementData.renderableData[GraphicType].push(
-      _getRenderableData(GraphicType, GraphicData)
+      _getRenderableData(GraphicType, GraphicData, imageId)
     );
   });
 
-  const toolState = globalImageIdSpecificToolStateManager.saveToolState();
+  // Use the metadata provider to grab its imagePlaneModule metadata
+  const imagePlaneModule = cornerstone3D.metaData.get(
+    'imagePlaneModule',
+    imageId
+  );
 
-  if (toolState[imageId] === undefined) {
-    toolState[imageId] = {};
-  }
+  const annotationManager = annotation.state.getDefaultAnnotationManager();
 
-  const imageIdToolState = toolState[imageId];
+  const SRAnnotation: Types.Annotation = {
+    metadata: {
+      FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
+      toolName: toolName,
+      referencedImageId: imageId,
+    },
+    data: {
+      label: measurement.label,
+      cachedStats: {
+        TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
+        renderableData: measurementData.renderableData,
+      },
+    },
+  };
 
-  // If we don't have tool state for this type of tool, add an empty object
-  if (imageIdToolState[toolName] === undefined) {
-    imageIdToolState[toolName] = {
-      data: [],
-    };
-  }
-
-  const toolData = imageIdToolState[toolName];
-
-  toolData.data.push(measurementData);
+  annotationManager.addAnnotation(SRAnnotation);
 
   measurement.loaded = true;
   measurement.imageId = imageId;
@@ -59,13 +62,13 @@ export default function addMeasurement(
 
   // Remove the unneeded coord now its processed, but keep the SOPInstanceUID.
   // NOTE: We assume that each SCOORD in the MeasurementGroup maps onto one frame,
-  // It'd be super werid if it didn't anyway as a SCOORD.
+  // It'd be super weird if it didn't anyway as a SCOORD.
   measurement.ReferencedSOPInstanceUID =
     measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
   delete measurement.coords;
 }
 
-function _getRenderableData(GraphicType, GraphicData) {
+function _getRenderableData(GraphicType, GraphicData, imageId) {
   let renderableData;
 
   switch (GraphicType) {
@@ -75,10 +78,16 @@ function _getRenderableData(GraphicType, GraphicData) {
       renderableData = [];
 
       for (let i = 0; i < GraphicData.length; i += 2) {
-        renderableData.push({ x: GraphicData[i], y: GraphicData[i + 1] });
+        const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
+          GraphicData[i],
+          GraphicData[i + 1],
+        ]);
+
+        renderableData.push(worldPos);
       }
       break;
-    case SCOORD_TYPES.CIRCLE:
+    case SCOORD_TYPES.CIRCLE: {
+      // Todo:
       const center = { x: GraphicData[0], y: GraphicData[1] };
       const onPerimeter = { x: GraphicData[2], y: GraphicData[3] };
 
@@ -89,7 +98,9 @@ function _getRenderableData(GraphicType, GraphicData) {
         radius,
       };
       break;
-    case SCOORD_TYPES.ELLIPSE:
+    }
+    case SCOORD_TYPES.ELLIPSE: {
+      // Todo:
       console.warn('ROTATED ELLIPSE NOT YET SUPPORTED!');
 
       const majorAxis = [
@@ -132,6 +143,9 @@ function _getRenderableData(GraphicType, GraphicData) {
         corner2,
       };
       break;
+    }
+    default:
+      console.warn('Unsupported GraphicType:', GraphicType);
   }
 
   return renderableData;
