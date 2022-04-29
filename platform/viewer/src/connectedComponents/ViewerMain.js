@@ -154,12 +154,25 @@ class ViewerMain extends Component {
           });
         };
 
-        const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
+        const {
+          referencedDisplaySet,
+          activatedLabelmapPromise,
+        } = displaySet.getSourceDisplaySet(
           this.props.studies,
           true,
           onDisplaySetLoadFailureHandler
         );
         displaySet = referencedDisplaySet;
+
+        activatedLabelmapPromise.then(activatedLabelmapIndex => {
+          const selectionFired = new CustomEvent(
+            'extensiondicomsegmentationsegselected',
+            {
+              detail: { activatedLabelmapIndex: activatedLabelmapIndex },
+            }
+          );
+          document.dispatchEvent(selectionFired);
+        });
       } else {
         displaySet = displaySet.getSourceDisplaySet(this.props.studies);
       }
@@ -177,7 +190,7 @@ class ViewerMain extends Component {
       }
     }
 
-    if (displaySet.isModalitySupported === false) {
+    if (displaySet.isSOPClassUIDSupported === false) {
       const error = new Error('Modality not supported');
       const message = 'Modality not supported';
       LoggerService.error({ error, message });
