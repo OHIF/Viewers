@@ -1,6 +1,5 @@
 # Use Nginx Alpine image
 FROM nginx:stable-alpine
-RUN apk add bash
 
 ## Copy Nginx configuration
 RUN rm -rf /etc/nginx/conf.d
