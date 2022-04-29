@@ -59,7 +59,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     let metadata;
     const isImageStack =
       activeDisplaySet instanceof ImageSet &&
-      activeDisplaySet.isModalitySupported === true;
+      activeDisplaySet.isSOPClassUIDSupported === true;
 
     let instanceList;
 

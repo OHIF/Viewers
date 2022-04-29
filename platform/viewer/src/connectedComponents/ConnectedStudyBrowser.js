@@ -79,7 +79,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         });
       }
 
-      if (displaySet.isModalitySupported === false) {
+      if (displaySet.isSOPClassUIDSupported === false) {
         const error = new Error('Modality not supported');
         const message = 'Modality not supported';
         LoggerService.error({ error, message });
