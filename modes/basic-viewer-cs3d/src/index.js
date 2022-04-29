@@ -89,7 +89,7 @@ function modeFactory({ modeConfiguration }) {
       };
 
       const toolGroupId = 'default';
-      ToolGroupService.createToolGroup(toolGroupId, tools, configs);
+      ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
 
       let unsubscribe;
 

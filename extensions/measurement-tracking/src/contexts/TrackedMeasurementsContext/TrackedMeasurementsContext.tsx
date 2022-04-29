@@ -38,6 +38,7 @@ function TrackedMeasurementsContextProvider(
         DisplaySetService,
         MeasurementService,
       } = servicesManager.services;
+
       const { trackedStudy, trackedSeries } = ctx;
       const measurements = MeasurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
@@ -46,11 +47,11 @@ function TrackedMeasurementsContextProvider(
           trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      const id = trackedMeasurements[0].id;
+      const uid = trackedMeasurements[0].uid;
 
       MeasurementService.jumpToMeasurement(
         viewportGrid.activeViewportIndex,
-        id
+        uid
       );
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
@@ -135,13 +136,15 @@ function TrackedMeasurementsContextProvider(
     if (viewports.length > 0) {
       const activeViewport = viewports[activeViewportIndex];
 
-      if (!activeViewport || !activeViewport.displaySetInstanceUID) {
+      if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
         return;
       }
 
+      // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
+      // tracking fusion viewports yet. This should change when we do.
       const { DisplaySetService } = servicesManager.services;
       const displaySet = DisplaySetService.getDisplaySetByUID(
-        activeViewport.displaySetInstanceUID
+        activeViewport.displaySetInstanceUIDs[0]
       );
 
       // If this is an SR produced by our SR SOPClassHandler,

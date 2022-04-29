@@ -3,8 +3,9 @@ import ReactResizeDetector from 'react-resize-detector';
 import { useViewportGrid, ImageScrollbar } from '@ohif/ui';
 import OHIF from '@ohif/core';
 import * as cs3DTools from '@cornerstonejs/tools';
-import { Enums } from '@cornerstonejs/core';
+import { Enums, eventTarget } from '@cornerstonejs/core';
 
+import { setEnabledElement } from '../state';
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
 import CornerstoneOverlay from './CornerstoneOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
@@ -51,12 +52,13 @@ function areEqual(prevProps, nextProps) {
 // Then we don't need to worry about the re-renders if the props change.
 const OHIFCornerstoneViewport = React.memo(props => {
   const {
-    displaySets,
     viewportIndex,
+    displaySets,
     dataSource,
     viewportOptions,
     displaySetOptions,
     servicesManager,
+    onElementEnabled,
   } = props;
 
   const [viewportData, setViewportData] = useState(null);
@@ -70,6 +72,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     MeasurementService,
     DisplaySetService,
     ToolBarService,
+    ToolGroupService,
   } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
@@ -97,6 +100,48 @@ const OHIFCornerstoneViewport = React.memo(props => {
       Cornerstone3DViewportService.disableElement(viewportIndex);
     };
   }, []);
+
+  useEffect(() => {
+    function elementEnabledHandler(evt) {
+      // check this is this element reference and return early if not matches
+      if (evt.detail.element !== elementRef.current) {
+        return;
+      }
+
+      const { viewportId, element } = evt.detail;
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
+        viewportId
+      );
+      const viewportIndex = viewportInfo.getViewportIndex();
+
+      setEnabledElement(viewportIndex, element);
+
+      // const volumeUID = Cornerstone3DViewportService.getVolumeUIDsForViewportUID(viewportId);
+      const renderingEngineId = viewportInfo.getRenderingEngineId();
+      const toolGroupId = viewportInfo.getToolGroupId();
+      ToolGroupService.addToolGroupViewport(
+        viewportId,
+        renderingEngineId,
+        toolGroupId
+      );
+
+      if (onElementEnabled) {
+        onElementEnabled(evt);
+      }
+    }
+
+    eventTarget.addEventListener(
+      Enums.Events.ELEMENT_ENABLED,
+      elementEnabledHandler.bind(null)
+    );
+
+    return () => {
+      eventTarget.removeEventListener(
+        Enums.Events.ELEMENT_ENABLED,
+        elementEnabledHandler
+      );
+    };
+  });
 
   useEffect(() => {
     const viewportData = _getViewportData(

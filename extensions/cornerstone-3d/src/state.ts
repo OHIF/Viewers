@@ -9,7 +9,11 @@ const state = {
  * @param {HTMLElement} dom Active viewport element.
  * @return void
  */
-const setEnabledElement = (viewportIndex, element, context) => {
+const setEnabledElement = (
+  viewportIndex: number,
+  element: HTMLElement,
+  context?: string
+): void => {
   const targetContext = context || state.DEFAULT_CONTEXT;
 
   state.enabledElements[viewportIndex] = {
@@ -19,7 +23,7 @@ const setEnabledElement = (viewportIndex, element, context) => {
 };
 
 /**
- * Grabs the enabled element `dom` reference of an adective viewport.
+ * Grabs the enabled element `dom` reference of an ative viewport.
  *
  * @return {HTMLElement} Active viewport element.
  */

@@ -284,7 +284,7 @@ function getHangingProtocolModule() {
   return [
     {
       name: 'default',
-      protocols: [defaultProtocol, testProtocol],
+      protocols: [defaultProtocol],
     },
   ];
 }

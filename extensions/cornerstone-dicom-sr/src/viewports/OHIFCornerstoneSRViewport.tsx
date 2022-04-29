@@ -1,25 +1,21 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import * as cornerstone3DTools from '@cornerstonejs/tools';
-import * as cornerstone3D from '@cornerstonejs/core';
-import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
+import { Settings } from '@cornerstonejs/core';
+import OHIF, { utils } from '@ohif/core';
 import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
-import ViewportOverlay from './ViewportOverlay';
 import {
   Notification,
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
-import TOOL_NAMES from './../constants/toolNames';
-import { adapters } from 'dcmjs';
-import { id } from './../id';
 
 const { formatDate } = utils;
-const { StackManager } = OHIF.utils;
 
 const MEASUREMENT_TRACKING_EXTENSION_ID =
   '@ohif/extension-measurement-tracking';
+
+const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRViewport(props) {
   const {
@@ -34,7 +30,7 @@ function OHIFCornerstoneSRViewport(props) {
   const {
     DisplaySetService,
     MeasurementService,
-    ToolBarService,
+    ToolGroupService,
   } = servicesManager.services;
 
   // SR viewport will always have a single display set
@@ -104,127 +100,71 @@ function OHIFCornerstoneSRViewport(props) {
     isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
   }, [trackedMeasurements]);
 
-  // function _getToolAlias() {
-  //   const primaryToolId = ToolBarService.state.primaryToolId;
-  //   let toolAlias = primaryToolId;
+  const onElementEnabled = evt => {
+    const { viewportId } = evt.detail;
+    const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
 
-  //   switch (primaryToolId) {
-  //     case 'Length':
-  //       toolAlias = 'SRLength';
-  //       break;
-  //     case 'Bidirectional':
-  //       toolAlias = 'SRBidirectional';
-  //       break;
-  //     case 'ArrowAnnotate':
-  //       toolAlias = 'SRArrowAnnotate';
-  //       break;
-  //     case 'EllipticalRoi':
-  //       toolAlias = 'SREllipticalRoi';
-  //       break;
-  //   }
+    const utilityModule = extensionManager.getModuleEntry(
+      '@ohif/extension-cornerstone-3d.utilityModule.tools'
+    );
 
-  //   return toolAlias;
-  // }
+    const { toolNames, Enums } = utilityModule.exports;
 
-  // const onElementEnabled = evt => {
-  //   const eventData = evt.detail;
-  //   const targetElement = eventData.element;
-  //   const toolAlias = _getToolAlias(); // These are 1:1 for built-in only
+    const tools = {
+      active: [
+        {
+          toolName: toolNames.WindowLevel,
+          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        },
+        {
+          toolName: toolNames.Pan,
+          bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+        },
+        {
+          toolName: toolNames.Zoom,
+          bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        },
+        { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      ],
+      passive: [
+        { toolName: toolNames.Length },
+        { toolName: toolNames.Bidirectional },
+        { toolName: toolNames.Probe },
+        { toolName: toolNames.EllipticalROI },
+        { toolName: toolNames.RectangleROI },
+        { toolName: toolNames.StackScroll },
+      ],
+      enabled: [{ toolName: DICOMSRDisplayTool.toolName, bindings: [] }],
+      // disabled
+    };
 
-  //   // ~~ MAGIC
-  //   cornerstoneTools.addToolForElement(targetElement, DICOMSRDisplayTool);
-  //   cornerstoneTools.setToolEnabledForElement(
-  //     targetElement,
-  //     TOOL_NAMES.DICOM_SR_DISPLAY_TOOL
-  //   );
+    Settings.getCustomSettings(
+      `${SR_TOOLGROUP_BASE_NAME}-${viewportIndex}`
+    ).set('tool.style', {
+      lineWidth: '3',
+      lineDash: '2,3',
+    });
 
-  //   // ~~ Variants
-  //   cornerstoneTools.addToolForElement(
-  //     targetElement,
-  //     cornerstoneTools.LengthTool,
-  //     {
-  //       name: 'SRLength',
-  //       configuration: {
-  //         renderDashed: true,
-  //       },
-  //     }
-  //   );
-  //   cornerstoneTools.addToolForElement(
-  //     targetElement,
-  //     cornerstoneTools.ArrowAnnotateTool,
-  //     {
-  //       name: 'SRArrowAnnotate',
-  //       configuration: {
-  //         renderDashed: true,
-  //       },
-  //     }
-  //   );
-  //   cornerstoneTools.addToolForElement(
-  //     targetElement,
-  //     cornerstoneTools.BidirectionalTool,
-  //     {
-  //       name: 'SRBidirectional',
-  //       configuration: {
-  //         renderDashed: true,
-  //       },
-  //     }
-  //   );
-  //   cornerstoneTools.addToolForElement(
-  //     targetElement,
-  //     cornerstoneTools.EllipticalRoiTool,
-  //     {
-  //       name: 'SREllipticalRoi',
-  //       configuration: {
-  //         renderDashed: true,
-  //       },
-  //     }
-  //   );
+    ToolGroupService.addToolsToToolGroup(toolGroup.id, tools);
 
-  //   // ~~ Business as usual
-  //   cornerstoneTools.setToolActiveForElement(targetElement, 'PanMultiTouch', {
-  //     pointers: 2,
-  //   });
-  //   cornerstoneTools.setToolActiveForElement(
-  //     targetElement,
-  //     'ZoomTouchPinch',
-  //     {}
-  //   );
+    // setTrackingUniqueIdentifiersForElement(targetElement);
+    // setElement(targetElement);
 
-  //   // TODO: Add always dashed tool alternative aliases
-  //   // TODO: or same name... alternative config?
-  //   cornerstoneTools.setToolActiveForElement(targetElement, toolAlias, {
-  //     mouseButtonMask: 1,
-  //   });
-  //   cornerstoneTools.setToolActiveForElement(targetElement, 'Pan', {
-  //     mouseButtonMask: 4,
-  //   });
-  //   cornerstoneTools.setToolActiveForElement(targetElement, 'Zoom', {
-  //     mouseButtonMask: 2,
-  //   });
-  //   cornerstoneTools.setToolActiveForElement(
-  //     targetElement,
-  //     'StackScrollMouseWheel',
-  //     {}
-  //   );
+    // // TODO: Enabled Element appears to be incorrect here, it should be called
+    // // 'element' since it is the DOM element, not the enabledElement object
+    // const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
+    //   'ohif-cornerstone-enabled-element-event',
+    //   {
+    //     detail: {
+    //       context: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
+    //       enabledElement: targetElement,
+    //       viewportIndex,
+    //     },
+    //   }
+    // );
 
-  //   setTrackingUniqueIdentifiersForElement(targetElement);
-  //   setElement(targetElement);
-
-  //   // TODO: Enabled Element appears to be incorrect here, it should be called
-  //   // 'element' since it is the DOM element, not the enabledElement object
-  //   const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
-  //     'ohif-cornerstone-enabled-element-event',
-  //     {
-  //       detail: {
-  //         context: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
-  //         enabledElement: targetElement,
-  //         viewportIndex,
-  //       },
-  //     }
-  //   );
-
-  //   document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
-  // };
+    // document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
+  };
 
   useEffect(() => {
     if (!srDisplaySet.isLoaded) {
@@ -272,7 +212,6 @@ function OHIFCornerstoneSRViewport(props) {
         newMeasurementSelected,
         DisplaySetService
       ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
-        // setViewportData({ ...viewportData });
         setActiveImageDisplaySetData(referencedDisplaySet);
         setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
         setMeasurementSelected(newMeasurementSelected);
@@ -334,10 +273,8 @@ function OHIFCornerstoneSRViewport(props) {
     ManufacturerModelName,
     StudyDate,
     SeriesDescription,
-    SeriesInstanceUID,
     SpacingBetweenSlices,
     SeriesNumber,
-    displaySetInstanceUID,
   } = referencedDisplaySetMetadata;
 
   const onMeasurementChange = direction => {
@@ -376,6 +313,10 @@ function OHIFCornerstoneSRViewport(props) {
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
+        viewportOptions={{
+          toolGroupId: `${SR_TOOLGROUP_BASE_NAME}-${viewportIndex}`,
+        }}
+        onElementEnabled={onElementEnabled}
       ></Component>
     );
   };
@@ -399,12 +340,12 @@ function OHIFCornerstoneSRViewport(props) {
           label,
           useAltStyling: true,
           isTracked: false,
-          // isLocked,
+          isLocked,
           isRehydratable: srDisplaySet.isRehydratable,
           isHydrated,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
-          seriesDescription: SeriesDescription,
+          seriesDescription: 'sr viewport',
           modality: Modality,
           patientInformation: {
             patientName: PatientName

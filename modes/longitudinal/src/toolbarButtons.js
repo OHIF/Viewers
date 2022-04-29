@@ -146,14 +146,14 @@ export default [
           'Arrow Annotate'
         ),
         _createToolButton(
-          'EllipticalRoi',
+          'EllipticalROI',
           'tool-elipse',
           'Ellipse',
           [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'EllipticalRoi',
+                toolName: 'EllipticalROI',
               },
               context: 'CORNERSTONE3D',
             },
@@ -376,7 +376,7 @@ export default [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'RectangleRoi',
+                toolName: 'RectangleROI',
               },
               context: 'CORNERSTONE3D',
             },

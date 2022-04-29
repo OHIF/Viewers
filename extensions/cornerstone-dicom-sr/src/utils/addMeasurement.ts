@@ -46,7 +46,10 @@ export default function addMeasurement(
       referencedImageId: imageId,
     },
     data: {
-      label: measurement.label,
+      label: measurement.labels,
+      handles: {
+        textBox: {},
+      },
       cachedStats: {
         TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
         renderableData: measurementData.renderableData,

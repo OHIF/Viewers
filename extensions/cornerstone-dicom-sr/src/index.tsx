@@ -52,29 +52,6 @@ const dicomSRExtension = {
 
     return [{ name: 'dicom-sr', component: ExtendedOHIFCornerstoneSRViewport }];
   },
-  // getCommandsModule({ servicesManager }) {
-  //   return {
-  //     definitions: {
-  //       setToolActive: {
-  //         commandFn: ({ toolName, element }) => {
-  //           if (!toolName) {
-  //             console.warn('No toolname provided to setToolActive command');
-  //           }
-
-  //           // Set same tool or alt tool
-  //           const toolAlias = _getToolAlias(toolName);
-
-  //           cornerstoneTools.setToolActiveForElement(element, toolAlias, {
-  //             mouseButtonMask: 1,
-  //           });
-  //         },
-  //         storeContexts: [],
-  //         options: {},
-  //       },
-  //     },
-  //     defaultContext: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
-  //   };
-  // },
   getCommandsModule({ servicesManager, commandsManager, extensionManager }) {
     return commandsModule({
       servicesManager,
@@ -84,26 +61,5 @@ const dicomSRExtension = {
   },
   getSopClassHandlerModule,
 };
-
-function _getToolAlias(toolName) {
-  let toolAlias = toolName;
-
-  switch (toolName) {
-    case 'Length':
-      toolAlias = 'SRLength';
-      break;
-    case 'Bidirectional':
-      toolAlias = 'SRBidirectional';
-      break;
-    case 'ArrowAnnotate':
-      toolAlias = 'SRArrowAnnotate';
-      break;
-    case 'EllipticalRoi':
-      toolAlias = 'SREllipticalRoi';
-      break;
-  }
-
-  return toolAlias;
-}
 
 export default dicomSRExtension;
