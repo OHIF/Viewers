@@ -263,7 +263,7 @@ const connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source?.name && source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
         return;
       }
       removeAnnotation(removedMeasurementId);

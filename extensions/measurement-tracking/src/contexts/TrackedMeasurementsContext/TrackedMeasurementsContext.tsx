@@ -34,10 +34,7 @@ function TrackedMeasurementsContextProvider(
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const {
-        DisplaySetService,
-        MeasurementService,
-      } = servicesManager.services;
+      const { MeasurementService } = servicesManager.services;
 
       const { trackedStudy, trackedSeries } = ctx;
       const measurements = MeasurementService.getMeasurements();
@@ -61,7 +58,7 @@ function TrackedMeasurementsContextProvider(
 
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex: evt.data.viewportIndex,
-          displaySetInstanceUID: StructuredReportDisplaySetInstanceUID,
+          displaySetInstanceUIDs: [StructuredReportDisplaySetInstanceUID],
         });
       }
     },
@@ -74,16 +71,16 @@ function TrackedMeasurementsContextProvider(
       const measurementIds = filteredMeasurements.map(fm => fm.id);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove(measurementIds[i], 'app-source');
+        MeasurementService.remove(measurementIds[i]);
       }
     },
     clearAllMeasurements: (ctx, evt) => {
       const { MeasurementService } = servicesManager.services;
       const measurements = MeasurementService.getMeasurements();
-      const measurementIds = measurements.map(fm => fm.id);
+      const measurementIds = measurements.map(fm => fm.uid);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove(measurementIds[i], 'app-source');
+        MeasurementService.remove(measurementIds[i]);
       }
     },
   });
