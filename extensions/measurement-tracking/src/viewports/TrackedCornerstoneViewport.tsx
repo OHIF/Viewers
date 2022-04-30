@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import OHIF, { utils } from '@ohif/core';
+
 import {
   Notification,
   ViewportActionBar,
@@ -10,16 +11,12 @@ import {
   useViewportDialog,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from './../getContextModule';
-import setCornerstoneMeasurementActive from '../_shared/setCornerstoneMeasurementActive';
-import setActiveAndPassiveToolsForElement from '../_shared/setActiveAndPassiveToolsForElement';
-import getTools from '../_shared/getTools';
 
 const { formatDate } = utils;
 
 function TrackedCornerstoneViewport(props) {
   const {
     children,
-    dataSource,
     displaySets,
     viewportIndex,
     servicesManager,
@@ -30,132 +27,27 @@ function TrackedCornerstoneViewport(props) {
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
 
-  const { ToolBarService } = servicesManager.services;
-
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [
-    { activeViewportIndex, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [isTracked, setIsTracked] = useState(false);
-  const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
-  const [element, setElement] = useState(null);
-
-  /*
-  const onElementEnabled = evt => {
-    const eventData = evt.detail;
-    const targetElement = eventData.element;
-    const tools = getTools();
-    const toolAlias = ToolBarService.state.primaryToolId;
-
-    // Activate appropriate tool bindings for element
-    setActiveAndPassiveToolsForElement(targetElement, tools);
-    cornerstoneTools.setToolActiveForElement(targetElement, toolAlias, {
-      mouseButtonMask: 1,
-    });
-
-    // Set dashed, based on tracking, for this viewport
-    const allTools = cornerstoneTools.store.state.tools;
-    const toolsForElement = allTools.filter(
-      tool => tool.element === targetElement
-    );
-
-    toolsForElement.forEach(tool => {
-      if (
-        tool instanceof ArrowAnnotateTool ||
-        tool instanceof BidirectionalTool ||
-        tool instanceof EllipticalRoiTool ||
-        tool instanceof LengthTool
-      ) {
-        const configuration = tool.configuration;
-
-        configuration.renderDashed = !isTracked;
-
-        tool.configuration = configuration;
-      } else if (tool instanceof BaseAnnotationTool) {
-        const configuration = tool.configuration;
-
-        configuration.renderDashed = true;
-
-        tool.configuration = configuration;
-      }
-    });
-
-    // Update image after setting tool config
-    const enabledElement = cornerstone.getEnabledElement(targetElement);
-
-    if (enabledElement.image) {
-      cornerstone.updateImage(targetElement);
-    }
-
-    setElement(targetElement);
-
-    const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
-      'ohif-cornerstone-enabled-element-event',
-      {
-        detail: {
-          context: 'ACTIVE_VIEWPORT::TRACKED',
-          enabledElement: targetElement,
-          viewportIndex,
-        },
-      }
-    );
-
-    document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
-  };
-  */
-
-  /*
-  useEffect(() => {
-    if (!element) {
-      return;
-    }
-    const allTools = cornerstoneTools.store.state.tools;
-    const toolsForElement = allTools.filter(tool => tool.element === element);
-
-    toolsForElement.forEach(tool => {
-      if (
-        tool instanceof ArrowAnnotateTool ||
-        tool instanceof BidirectionalTool ||
-        tool instanceof EllipticalRoiTool ||
-        tool instanceof LengthTool
-      ) {
-        const configuration = tool.configuration;
-
-        configuration.renderDashed = !isTracked;
-
-        tool.configuration = configuration;
-      }
-    });
-
-    const enabledElement = cornerstone.getEnabledElement(element);
-
-    if (enabledElement.image) {
-      cornerstone.updateImage(element);
-    }
-  }, [isTracked]);
-  */
-
-  // We have...
-  // StudyInstanceUid, DisplaySetInstanceUid
-  // Use displaySetInstanceUid --> SeriesInstanceUid
-  // Get meta for series, map to actionBar
-  // const displaySet = DisplaySetService.getDisplaySetByUID(
-  //   dSet.displaySetInstanceUID
-  // );
-  // TODO: This display contains the meta for all instances.
-  // That can't be right...
-  // console.log('DISPLAYSET', displaySet);
-  // const seriesMeta = DicomMetadataStore.getSeries(this.props.displaySet.StudyInstanceUID, '');
-  // console.log(seriesMeta);
-
-  // TODO: Share this logic so it isn't out of sync where we retrieve
-  const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(vp =>
-    vp.displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
-  );
+  const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
   const { trackedSeries } = trackedMeasurements.context;
+
+  // useEffect(() => {
+  //   if (isTracked) {
+  //     Settings.getRuntimeSettings().set('tool.style', {
+  //       lineDash: '',
+  //     });
+
+  //     return;
+  //   }
+
+  //   Settings.getRuntimeSettings().set('tool.style', {
+  //     lineDash: '5',
+  //   });
+  // }, [isTracked]);
 
   const {
     Modality,
@@ -182,43 +74,31 @@ function TrackedCornerstoneViewport(props) {
   const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   function switchMeasurement(direction) {
-    if (!element) {
-      // Element not yet enabled.
-      return;
-    }
-
-    const newTrackedMeasurementId = _getNextMeasurementId(
+    const newTrackedMeasurementUID = _getNextMeasurementUID(
       direction,
       servicesManager,
-      trackedMeasurementId,
+      trackedMeasurementUID,
       trackedMeasurements
     );
 
-    if (!newTrackedMeasurementId) {
+    if (!newTrackedMeasurementUID) {
       return;
     }
 
-    setTrackedMeasurementId(newTrackedMeasurementId);
+    setTrackedMeasurementUID(newTrackedMeasurementUID);
 
     const { MeasurementService } = servicesManager.services;
-    const measurements = MeasurementService.getMeasurements();
-    const measurement = measurements.find(
-      m => m.id === newTrackedMeasurementId
-    );
-
-    setCornerstoneMeasurementActive(measurement);
-
     MeasurementService.jumpToMeasurement(
       viewportIndex,
-      newTrackedMeasurementId
+      newTrackedMeasurementUID
     );
   }
 
-  const renderViewport = () => {
+  const getCornerstone3DViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
     );
-    return <Component element={element} {...props}></Component>;
+    return <Component {...props}></Component>;
   };
 
   const cine = cines[viewportIndex];
@@ -272,7 +152,7 @@ function TrackedCornerstoneViewport(props) {
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {renderViewport()}
+        {getCornerstone3DViewport()}
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification
@@ -304,7 +184,7 @@ TrackedCornerstoneViewport.defaultProps = {
 
 const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
-function _getNextMeasurementId(
+function _getNextMeasurementUID(
   direction,
   servicesManager,
   trackedMeasurementId,
@@ -330,8 +210,8 @@ function _getNextMeasurementId(
 
   const measurementCount = filteredMeasurements.length;
 
-  const ids = filteredMeasurements.map(fm => fm.id);
-  let measurementIndex = ids.findIndex(id => id === trackedMeasurementId);
+  const uids = filteredMeasurements.map(fm => fm.uid);
+  let measurementIndex = uids.findIndex(uid => uid === trackedMeasurementId);
 
   if (measurementIndex === -1) {
     // Not tracking a measurement, or previous measurement now deleted, revert to 0.
@@ -352,7 +232,7 @@ function _getNextMeasurementId(
     }
   }
 
-  const newTrackedMeasurementId = ids[measurementIndex];
+  const newTrackedMeasurementId = uids[measurementIndex];
 
   return newTrackedMeasurementId;
 }

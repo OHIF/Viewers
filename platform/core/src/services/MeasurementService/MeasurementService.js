@@ -491,7 +491,6 @@ class MeasurementService {
       /* Convert measurement */
       annotation = toAnnotationSchema(measurement);
     } catch (error) {
-      console.error(error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement to annotation with annotationType ${annotationType}:`,
         error.message
@@ -542,7 +541,6 @@ class MeasurementService {
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
-      console.error(error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
         error.message

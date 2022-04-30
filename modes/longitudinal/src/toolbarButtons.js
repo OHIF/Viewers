@@ -75,6 +75,14 @@ export default [
             },
             context: 'CORNERSTONE3D',
           },
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolGroupId: 'SRToolGroup',
+              toolName: 'SRLength',
+            },
+            context: 'CORNERSTONE3D',
+          },
         ],
         'Length'
       ),
@@ -187,16 +195,16 @@ export default [
     id: 'WindowLevel',
     type: 'ohif.splitButton',
     props: {
-      groupId: 'Wwwc',
+      groupId: 'WindowLevel',
       primary: _createToolButton(
-        'Wwwc',
+        'WindowLevel',
         'tool-window-level',
         'Window Level',
         [
           {
             commandName: 'setToolActive',
             commandOptions: {
-              toolName: 'Wwwc',
+              toolName: 'WindowLevel',
             },
             context: 'CORNERSTONE3D',
           },

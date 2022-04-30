@@ -151,7 +151,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         const textBoxUID = '1';
         const boundingBox = drawing.drawLinkedTextBox(
           svgDrawingHelper,
-          'TextBox',
           annotationUID,
           textBoxUID,
           textLines,
@@ -193,7 +192,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const lineUID = '1';
     drawing.drawLine(
       svgDrawingHelper,
-      'Length',
       annotationUID,
       lineUID,
       canvasCoordinates[0],

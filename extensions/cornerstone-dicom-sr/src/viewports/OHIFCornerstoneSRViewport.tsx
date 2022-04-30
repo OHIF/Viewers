@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { Settings } from '@cornerstonejs/core';
 import OHIF, { utils } from '@ohif/core';
 import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
+import SRLengthTool from '../tools/annotationTools/SRLengthTool';
+
 import {
   Notification,
   ViewportActionBar,
@@ -27,11 +29,7 @@ function OHIFCornerstoneSRViewport(props) {
     extensionManager,
   } = props;
 
-  const {
-    DisplaySetService,
-    MeasurementService,
-    ToolGroupService,
-  } = servicesManager.services;
+  const { DisplaySetService, ToolGroupService } = servicesManager.services;
 
   // SR viewport will always have a single display set
   const srDisplaySet = displaySets[0];
@@ -49,27 +47,6 @@ function OHIFCornerstoneSRViewport(props) {
   ] = useState(null);
   const [isHydrated, setIsHydrated] = useState(srDisplaySet.isHydrated);
   const { viewports, activeViewportIndex } = viewportGrid;
-
-  useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
-      ({ displaySetInstanceUIDs }) => {
-        const activeViewport = viewports[activeViewportIndex];
-        if (
-          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
-        ) {
-          viewportGridService.setDisplaySetsForViewport({
-            viewportIndex: activeViewportIndex,
-            displaySetInstanceUID: undefined,
-          });
-        }
-      }
-    );
-
-    return () => {
-      onDisplaySetsRemovedSubscription.unsubscribe();
-    };
-  }, []);
 
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
@@ -93,12 +70,6 @@ function OHIFCornerstoneSRViewport(props) {
       sendTrackedMeasurementsEvent,
     ] = useTrackedMeasurements();
   }
-
-  // Locked if tracking any series
-  let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
-  useEffect(() => {
-    isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
-  }, [trackedMeasurements]);
 
   const onElementEnabled = evt => {
     const { viewportId } = evt.detail;
@@ -127,44 +98,47 @@ function OHIFCornerstoneSRViewport(props) {
         { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
       ],
       passive: [
-        { toolName: toolNames.Length },
-        { toolName: toolNames.Bidirectional },
-        { toolName: toolNames.Probe },
-        { toolName: toolNames.EllipticalROI },
-        { toolName: toolNames.RectangleROI },
-        { toolName: toolNames.StackScroll },
+        { toolName: SRLengthTool.toolName },
+        // { toolName: toolNames.Bidirectional },
+        // { toolName: toolNames.Probe },
+        // { toolName: toolNames.EllipticalROI },
+        // { toolName: toolNames.RectangleROI },
+        // { toolName: toolNames.StackScroll },
       ],
       enabled: [{ toolName: DICOMSRDisplayTool.toolName, bindings: [] }],
       // disabled
     };
 
-    Settings.getCustomSettings(
-      `${SR_TOOLGROUP_BASE_NAME}-${viewportIndex}`
-    ).set('tool.style', {
-      lineWidth: '3',
-      lineDash: '2,3',
-    });
-
     ToolGroupService.addToolsToToolGroup(toolGroup.id, tools);
-
     // setTrackingUniqueIdentifiersForElement(targetElement);
-    // setElement(targetElement);
-
-    // // TODO: Enabled Element appears to be incorrect here, it should be called
-    // // 'element' since it is the DOM element, not the enabledElement object
-    // const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
-    //   'ohif-cornerstone-enabled-element-event',
-    //   {
-    //     detail: {
-    //       context: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
-    //       enabledElement: targetElement,
-    //       viewportIndex,
-    //     },
-    //   }
-    // );
-
-    // document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
+
+  useEffect(() => {
+    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+      ({ displaySetInstanceUIDs }) => {
+        const activeViewport = viewports[activeViewportIndex];
+        if (
+          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
+        ) {
+          viewportGridService.setDisplaySetsForViewport({
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [],
+          });
+        }
+      }
+    );
+
+    return () => {
+      onDisplaySetsRemovedSubscription.unsubscribe();
+    };
+  }, []);
+
+  // Locked if tracking any series
+  let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  useEffect(() => {
+    isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  }, [trackedMeasurements]);
 
   useEffect(() => {
     if (!srDisplaySet.isLoaded) {
@@ -201,28 +175,58 @@ function OHIFCornerstoneSRViewport(props) {
       }
 
       if (sopClassUids && sopClassUids.length > 1) {
+        // Todo: what happens if there are multiple SOP Classes? Why we are
+        // not throwing an error?
         console.warn(
           'More than one SOPClassUID in the same series is not yet supported.'
         );
       }
 
       _getViewportReferencedDisplaySetData(
-        dataSource,
         srDisplaySet,
         newMeasurementSelected,
         DisplaySetService
       ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
+        setMeasurementSelected(newMeasurementSelected);
         setActiveImageDisplaySetData(referencedDisplaySet);
         setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
-        setMeasurementSelected(newMeasurementSelected);
 
-        // if (element !== null) {
-        //   scrollToIndex(element, viewportData.stack.currentImageIdIndex);
-        //   cornerstone.updateImage(element);
-        // }
+        if (
+          referencedDisplaySet.displaySetInstanceUID ===
+          activeImageDisplaySetData?.displaySetInstanceUID
+        ) {
+          const { measurements } = srDisplaySet;
+
+          // it means that we have a new referenced display set, and the
+          // imageIdIndex will handle it by updating the viewport, but if they
+          // are the same we just need to use MeasurementService to jump to the
+          // new measurement
+          const utilityModule = extensionManager.getModuleEntry(
+            '@ohif/extension-cornerstone-3d.utilityModule.common'
+          );
+
+          const { Cornerstone3DViewportService } = utilityModule.exports;
+          const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+            viewportIndex
+          );
+
+          const csViewport = Cornerstone3DViewportService.getCornerstone3DViewport(
+            viewportInfo.getViewportId()
+          );
+
+          const imageIds = csViewport.getImageIds();
+
+          const imageIdIndex = imageIds.indexOf(
+            measurements[newMeasurementSelected].imageId
+          );
+
+          if (imageIdIndex !== -1) {
+            csViewport.setImageIdIndex(imageIdIndex);
+          }
+        }
       });
     },
-    [dataSource, srDisplaySet]
+    [dataSource, srDisplaySet, activeImageDisplaySetData, viewportIndex]
   );
 
   // useEffect(
@@ -231,17 +235,43 @@ function OHIFCornerstoneSRViewport(props) {
   //       setTrackingUniqueIdentifiersForElement(element);
   //     }
   //   },
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
   //   [dataSource, displaySet]
   // );
 
-  useEffect(
-    () => {
-      updateViewport(measurementSelected);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dataSource, srDisplaySet]
-  );
+  useEffect(() => {
+    updateViewport(measurementSelected);
+  }, [dataSource, srDisplaySet]);
+
+  const getCornerstone3DViewport = useCallback(() => {
+    if (!activeImageDisplaySetData) {
+      return null;
+    }
+
+    const { component: Component } = extensionManager.getModuleEntry(
+      '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
+    );
+
+    const { measurements } = srDisplaySet;
+    const measurement = measurements[measurementSelected];
+
+    if (!measurement) {
+      return null;
+    }
+
+    return (
+      <Component
+        {...props}
+        // should be passed second since we don't want SR displaySet to
+        // override the activeImageDisplaySetData
+        displaySets={[activeImageDisplaySetData]}
+        viewportOptions={{
+          toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
+        }}
+        onElementEnabled={onElementEnabled}
+        initialImageIdOrIndex={measurement.imageId}
+      ></Component>
+    );
+  }, [activeImageDisplaySetData, viewportIndex, measurementSelected]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -298,28 +328,6 @@ function OHIFCornerstoneSRViewport(props) {
   };
 
   const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
-
-  const getCornerstone3DViewport = () => {
-    if (!activeImageDisplaySetData) {
-      return null;
-    }
-
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
-    );
-    return (
-      <Component
-        {...props}
-        // should be passed second since we don't want SR displaySet to
-        // override the activeImageDisplaySetData
-        displaySets={[activeImageDisplaySetData]}
-        viewportOptions={{
-          toolGroupId: `${SR_TOOLGROUP_BASE_NAME}-${viewportIndex}`,
-        }}
-        onElementEnabled={onElementEnabled}
-      ></Component>
-    );
-  };
 
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
   return (
@@ -397,72 +405,13 @@ OHIFCornerstoneSRViewport.defaultProps = {
   customProps: {},
 };
 
-/**
- * Obtain the CornerstoneTools Stack for the specified display set.
- *
- * @param {Object} displaySet
- * @param {Object} dataSource
- * @return {Object} CornerstoneTools Stack
- */
-// function _getCornerstoneStack(
-//   measurement,
-//   dataSource,
-//   DisplaySetService,
-//   element
-// ) {
-//   const { displaySetInstanceUID, TrackingUniqueIdentifier } = measurement;
-
-//   const displaySet = DisplaySetService.getDisplaySetByUID(
-//     displaySetInstanceUID
-//   );
-
-//   // Get stack from Stack Manager
-//   const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
-
-//   // Clone the stack here so we don't mutate it
-//   const stack = Object.assign({}, storedStack);
-
-//   const { imageId } = measurement;
-
-//   stack.currentImageIdIndex = stack.imageIds.findIndex(i => i === imageId);
-
-//   if (element) {
-//     const srModule = cornerstoneTools.getModule(id);
-
-//     srModule.setters.activeTrackingUniqueIdentifierForElement(
-//       element,
-//       TrackingUniqueIdentifier
-//     );
-//   }
-
-//   return stack;
-// }
-
 async function _getViewportReferencedDisplaySetData(
-  dataSource,
   displaySet,
   measurementSelected,
   DisplaySetService
 ) {
   const { measurements } = displaySet;
   const measurement = measurements[measurementSelected];
-
-  // const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
-  //   measurement.displaySetInstanceUID
-  // );
-
-  // const stack = _getCornerstoneStack(
-  //   measurement,
-  //   dataSource,
-  //   DisplaySetService,
-  //   element
-  // );
-
-  // const viewportData = {
-  //   StudyInstanceUID: displaySet.StudyInstanceUID,
-  //   displaySetInstanceUID: displaySet.displaySetInstanceUID,
-  //   // stack,
-  // };
 
   const { displaySetInstanceUID } = measurement;
 
