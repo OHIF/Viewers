@@ -40,9 +40,11 @@ export default function _hydrateStructuredReport(
   );
 
   const sopInstanceUIDToImageId = {};
+  let imageIdsForToolState = [];
 
   displaySet.measurements.forEach(measurement => {
     const { ReferencedSOPInstanceUID, imageId } = measurement;
+    imageIdsForToolState.push(imageId);
     if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
       sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
     }
@@ -55,7 +57,7 @@ export default function _hydrateStructuredReport(
     // for the imageToWorld transformation. The following assumes that the order
     // that measurements were added to the display set are the same order as
     // the measurementGroups in the instance.
-    Object.values(sopInstanceUIDToImageId),
+    imageIdsForToolState,
     cornerstone3D.utilities.imageToWorldCoords
   );
 

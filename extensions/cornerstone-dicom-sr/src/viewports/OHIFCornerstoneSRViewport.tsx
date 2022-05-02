@@ -75,15 +75,18 @@ function OHIFCornerstoneSRViewport(props) {
    * show the SR measurements on the referenced image on the correct viewport,
    * when multiple viewports are used.
    */
-  const setTrackingIdentifiers = useCallback(() => {
-    const { measurements } = srDisplaySet;
+  const setTrackingIdentifiers = useCallback(
+    measurementSelected => {
+      const { measurements } = srDisplaySet;
 
-    setTrackingUniqueIdentifiersForElement(
-      element,
-      measurements.map(measurement => measurement.TrackingUniqueIdentifier),
-      measurementSelected
-    );
-  }, [element, measurementSelected, srDisplaySet]);
+      setTrackingUniqueIdentifiersForElement(
+        element,
+        measurements.map(measurement => measurement.TrackingUniqueIdentifier),
+        measurementSelected
+      );
+    },
+    [element, measurementSelected, srDisplaySet]
+  );
 
   /**
    * OnElementEnabled callback which is called after the cornerstone3DExtension
@@ -271,8 +274,8 @@ function OHIFCornerstoneSRViewport(props) {
         }
       }
 
+      setTrackingIdentifiers(newMeasurementSelected);
       updateViewport(newMeasurementSelected);
-      setTrackingIdentifiers();
     },
     [
       measurementSelected,
@@ -313,7 +316,7 @@ function OHIFCornerstoneSRViewport(props) {
     if (!element) {
       return;
     }
-    setTrackingIdentifiers();
+    setTrackingIdentifiers(measurementSelected);
   }, [measurementSelected, element, setTrackingIdentifiers]);
 
   /**
