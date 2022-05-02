@@ -1,11 +1,7 @@
 import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
-
-const configs = {
-  Length: {},
-  //
-};
+import initToolGroups from './initToolGroups.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -60,42 +56,9 @@ function modeFactory({ modeConfiguration }) {
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
       const { ToolBarService, ToolGroupService } = servicesManager.services;
-      const utilityModule = extensionManager.getModuleEntry(
-        '@ohif/extension-cornerstone-3d.utilityModule.tools'
-      );
 
-      const { toolNames, Enums } = utilityModule.exports;
-
-      const tools = {
-        active: [
-          {
-            toolName: toolNames.WindowLevel,
-            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-          },
-          {
-            toolName: toolNames.Pan,
-            bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
-          },
-          {
-            toolName: toolNames.Zoom,
-            bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
-          },
-          { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
-        ],
-        passive: [
-          { toolName: toolNames.Length },
-          { toolName: toolNames.Bidirectional },
-          { toolName: toolNames.Probe },
-          { toolName: toolNames.EllipticalROI },
-          { toolName: toolNames.RectangleROI },
-          { toolName: toolNames.StackScroll },
-        ],
-        // enabled
-        // disabled
-      };
-
-      const toolGroupId = 'default';
-      ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
+      // Init Default and SR ToolGroups
+      initToolGroups(extensionManager, ToolGroupService);
 
       let unsubscribe;
 

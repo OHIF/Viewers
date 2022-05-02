@@ -39,7 +39,7 @@ const _generateReport = (
   return dataset;
 };
 
-const commandsModule = () => {
+const commandsModule = ({}) => {
   const actions = {
     /**
      *

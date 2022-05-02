@@ -95,66 +95,6 @@ function OHIFCornerstoneSRViewport(props) {
    * the image rendering, element enabling etc.
    */
   const onElementEnabled = evt => {
-    const { viewportId } = evt.detail;
-    const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
-
-    const utilityModule = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone-3d.utilityModule.tools'
-    );
-
-    const { toolNames, Enums } = utilityModule.exports;
-
-    const tools = {
-      active: [
-        {
-          toolName: toolNames.WindowLevel,
-          bindings: [
-            {
-              mouseButton: Enums.MouseBindings.Primary,
-            },
-          ],
-        },
-        {
-          toolName: toolNames.Pan,
-          bindings: [
-            {
-              mouseButton: Enums.MouseBindings.Auxiliary,
-            },
-          ],
-        },
-        {
-          toolName: toolNames.Zoom,
-          bindings: [
-            {
-              mouseButton: Enums.MouseBindings.Secondary,
-            },
-          ],
-        },
-        {
-          toolName: toolNames.StackScrollMouseWheel,
-          bindings: [],
-        },
-      ],
-      passive: [
-        {
-          toolName: SRLengthTool.toolName,
-        },
-        // { toolName: toolNames.Bidirectional },
-        // { toolName: toolNames.Probe },
-        // { toolName: toolNames.EllipticalROI },
-        // { toolName: toolNames.RectangleROI },
-        // { toolName: toolNames.StackScroll },
-      ],
-      enabled: [
-        {
-          toolName: DICOMSRDisplayTool.toolName,
-          bindings: [],
-        },
-      ],
-      // disabled
-    };
-
-    ToolGroupService.addToolsToToolGroup(toolGroup.id, tools);
     setElement(evt.detail.element);
   };
 

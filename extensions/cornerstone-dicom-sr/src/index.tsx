@@ -4,6 +4,7 @@ import onModeEnter from './onModeEnter';
 import commandsModule from './commandsModule';
 import init from './init';
 import { id } from './id.js';
+import toolNames from './tools/toolNames';
 
 const Component = React.lazy(() => {
   return import(
@@ -60,6 +61,16 @@ const dicomSRExtension = {
     });
   },
   getSopClassHandlerModule,
+  getUtilityModule({ servicesManager }) {
+    return [
+      {
+        name: 'tools',
+        exports: {
+          toolNames,
+        },
+      },
+    ];
+  },
 };
 
 export default dicomSRExtension;
