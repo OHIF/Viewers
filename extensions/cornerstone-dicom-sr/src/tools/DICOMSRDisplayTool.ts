@@ -5,7 +5,7 @@ import {
   drawing,
   utilities,
 } from '@cornerstonejs/tools';
-
+import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
 import SCOORD_TYPES from '../constants/scoordTypes';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
@@ -66,39 +66,44 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     }
 
     // Todo: add back
-    // const trackingUniqueIdentifiersForElement = module.getters.trackingUniqueIdentifiersForElement(
-    //   element
-    // );
+    const trackingUniqueIdentifiersForElement = getTrackingUniqueIdentifiersForElement(
+      element
+    );
 
-    // const {
-    //   activeIndex,
-    //   trackingUniqueIdentifiers,
-    // } = trackingUniqueIdentifiersForElement;
+    const {
+      activeIndex,
+      trackingUniqueIdentifiers,
+    } = trackingUniqueIdentifiersForElement;
 
-    // const activeTrackingUniqueIdentifier =
-    //   trackingUniqueIdentifiers[activeIndex];
+    const activeTrackingUniqueIdentifier =
+      trackingUniqueIdentifiers[activeIndex];
 
-    // // Filter toolData to only render the data for the active SR.
-    // const filteredToolData = toolState.data.filter(td =>
-    //   trackingUniqueIdentifiers.includes(td.TrackingUniqueIdentifier)
-    // );
+    // Filter toolData to only render the data for the active SR.
+    const filteredAnnotations = annotations.filter(annotation =>
+      trackingUniqueIdentifiers.includes(
+        annotation.data?.cachedStats?.TrackingUniqueIdentifier
+      )
+    );
 
-    for (let i = 0; i < annotations.length; i++) {
-      // const data = annotations[i];
-      const annotation = annotations[i];
+    if (!viewport._actors?.size) {
+      return;
+    }
+
+    for (let i = 0; i < filteredAnnotations.length; i++) {
+      const annotation = filteredAnnotations[i];
       const settings = Settings.getObjectSettings(
         annotation,
         DICOMSRDisplayTool
       );
       const annotationUID = annotation.annotationUID;
-      const {
-        renderableData,
-        TrackingUniqueIdentifier,
-      } = annotation.data.cachedStats;
-      const { label } = annotation.data;
+      const { renderableData } = annotation.data.cachedStats;
+      const { label, cachedStats } = annotation.data;
       const lineWidth = this.getStyle(settings, 'lineWidth', annotation);
       const lineDash = this.getStyle(settings, 'lineDash', annotation);
-      const color = this.getStyle(settings, 'color', annotation);
+      const color =
+        cachedStats.TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
+          ? 'rgb(0, 255, 0)'
+          : this.getStyle(settings, 'color', annotation);
       const options = {
         color,
         lineDash,
@@ -113,25 +118,34 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           viewport.worldToCanvas(p)
         );
 
+        let renderMethod;
+
         switch (GraphicType) {
           case SCOORD_TYPES.POINT:
-            this.renderPoint(canvasCoordinates, svgDrawingHelper, options);
+            renderMethod = this.renderPoint;
             break;
           case SCOORD_TYPES.MULTIPOINT:
-            this.renderMultipoint(canvasCoordinates, svgDrawingHelper, options);
+            renderMethod = this.renderMultipoint;
             break;
           case SCOORD_TYPES.POLYLINE:
-            this.renderPolyLine(canvasCoordinates, svgDrawingHelper, options);
+            renderMethod = this.renderPolyLine;
             break;
           case SCOORD_TYPES.CIRCLE:
-            this.renderCircle(canvasCoordinates, svgDrawingHelper, options);
+            renderMethod = this.renderCircle;
             break;
           case SCOORD_TYPES.ELLIPSE:
-            this.renderEllipse(canvasCoordinates, svgDrawingHelper, options);
+            renderMethod = this.renderEllipse;
             break;
           default:
             throw new Error(`Unsupported GraphicType: ${GraphicType}`);
         }
+
+        renderMethod(
+          canvasCoordinates,
+          svgDrawingHelper,
+          annotationUID,
+          options
+        );
 
         const textLines = this._getTextBoxLinesFromLabels(label);
 
@@ -149,6 +163,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         );
 
         const textBoxUID = '1';
+
+        const textBoxOptions = this.getLinkedTextBoxStyle(settings, annotation);
+
         const boundingBox = drawing.drawLinkedTextBox(
           svgDrawingHelper,
           annotationUID,
@@ -157,7 +174,10 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           textBoxPosition,
           canvasCoordinates,
           {},
-          this.getLinkedTextBoxStyle(settings, annotation)
+          {
+            ...textBoxOptions,
+            color,
+          }
         );
 
         const { x: left, y: top, width, height } = boundingBox;
@@ -187,8 +207,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   //   }
   // }
 
-  renderPolyLine(canvasCoordinates, svgDrawingHelper, options) {
-    const annotationUID = '123123';
+  renderPolyLine(canvasCoordinates, svgDrawingHelper, annotationUID, options) {
     const lineUID = '1';
     drawing.drawLine(
       svgDrawingHelper,

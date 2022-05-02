@@ -83,88 +83,85 @@ const connectToolsToMeasurementService = (
     csTools3DVer1MeasurementSource
   );
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
-  const elementEnabledEvt = EVENTS.ELEMENT_ENABLED;
 
-  /* Measurement Service Events */
-  eventTarget.addEventListener(elementEnabledEvt, evt => {
-    function addMeasurement(csToolsEvent) {
-      try {
-        const annotationAddedEventDetail = csToolsEvent.detail;
-        const {
-          annotation: { metadata, annotationUID },
-        } = annotationAddedEventDetail;
-        const { toolName } = metadata;
+  //
+  function addMeasurement(csToolsEvent) {
+    try {
+      const annotationAddedEventDetail = csToolsEvent.detail;
+      const {
+        annotation: { metadata, annotationUID },
+      } = annotationAddedEventDetail;
+      const { toolName } = metadata;
 
-        // To force the measurementUID be the same as the annotationUID
-        // Todo: this should be changed when a measurement can include multiple annotations
-        // in the future
-        annotationAddedEventDetail.uid = annotationUID;
-        annotationToMeasurement(toolName, annotationAddedEventDetail);
-      } catch (error) {
-        console.warn('Failed to update measurement:', error);
-      }
+      // To force the measurementUID be the same as the annotationUID
+      // Todo: this should be changed when a measurement can include multiple annotations
+      // in the future
+      annotationAddedEventDetail.uid = annotationUID;
+      annotationToMeasurement(toolName, annotationAddedEventDetail);
+    } catch (error) {
+      console.warn('Failed to update measurement:', error);
     }
-    function updateMeasurement(csToolsEvent) {
+  }
+  function updateMeasurement(csToolsEvent) {
+    try {
+      const annotationModifiedEventDetail = csToolsEvent.detail;
+
+      const {
+        annotation: { metadata, annotationUID },
+      } = annotationModifiedEventDetail;
+
+      // If the measurement hasn't been added, don't modify it
+      const measurement = MeasurementService.getMeasurement(annotationUID);
+
+      if (!measurement) {
+        return;
+      }
+      const { toolName } = metadata;
+
+      annotationModifiedEventDetail.uid = annotationUID;
+      annotationToMeasurement(toolName, annotationModifiedEventDetail);
+    } catch (error) {
+      console.warn('Failed to update measurement:', error);
+    }
+  }
+
+  /**
+   * When csTools fires a removed event, remove the same measurement
+   * from the measurement service
+   *
+   * @param {*} csToolsEvent
+   */
+  function removeMeasurement(csToolsEvent) {
+    try {
       try {
-        const annotationModifiedEventDetail = csToolsEvent.detail;
-
+        const annotationRemovedEventDetail = csToolsEvent.detail;
         const {
-          annotation: { metadata, annotationUID },
-        } = annotationModifiedEventDetail;
+          annotation: { annotationUID },
+        } = annotationRemovedEventDetail;
 
-        // If the measurement hasn't been added, don't modify it
         const measurement = MeasurementService.getMeasurement(annotationUID);
 
-        if (!measurement) {
-          return;
+        if (measurement) {
+          console.log('~~ removeEvt', csToolsEvent);
+          remove(annotationUID, annotationRemovedEventDetail);
         }
-        const { toolName } = metadata;
-
-        annotationModifiedEventDetail.uid = annotationUID;
-        annotationToMeasurement(toolName, annotationModifiedEventDetail);
       } catch (error) {
         console.warn('Failed to update measurement:', error);
       }
+    } catch (error) {
+      console.warn('Failed to remove measurement:', error);
     }
+  }
 
-    /**
-     * When csTools fires a removed event, remove the same measurement
-     * from the measurement service
-     *
-     * @param {*} csToolsEvent
-     */
-    function removeMeasurement(csToolsEvent) {
-      try {
-        try {
-          const annotationRemovedEventDetail = csToolsEvent.detail;
-          const {
-            annotation: { annotationUID },
-          } = annotationRemovedEventDetail;
+  // on display sets added, check if there are any measurements in measurement service that need to be
+  // put into cornerstone tools
+  const completedEvt = csToolsEvents.ANNOTATION_COMPLETED;
+  const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
+  const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
 
-          const measurement = MeasurementService.getMeasurement(annotationUID);
-
-          if (measurement) {
-            console.log('~~ removeEvt', csToolsEvent);
-            remove(annotationUID, annotationRemovedEventDetail);
-          }
-        } catch (error) {
-          console.warn('Failed to update measurement:', error);
-        }
-      } catch (error) {
-        console.warn('Failed to remove measurement:', error);
-      }
-    }
-
-    // on display sets added, check if there are any measurements in measurement service that need to be
-    // put into cornerstone tools
-    const completedEvt = csToolsEvents.ANNOTATION_COMPLETED;
-    const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
-    const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
-
-    eventTarget.addEventListener(completedEvt, addMeasurement);
-    eventTarget.addEventListener(updatedEvt, updateMeasurement);
-    eventTarget.addEventListener(removedEvt, removeMeasurement);
-  });
+  eventTarget.addEventListener(completedEvt, addMeasurement);
+  eventTarget.addEventListener(updatedEvt, updateMeasurement);
+  eventTarget.addEventListener(removedEvt, removeMeasurement);
 
   return csTools3DVer1MeasurementSource;
 };

@@ -217,7 +217,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
-        if (_measurmentReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
+        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
           addMeasurement(
             measurement,
             imageId,
@@ -231,7 +231,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   }
 }
 
-function _measurmentReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
+function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
   const { coords } = measurement;
 
   for (let j = 0; j < coords.length; j++) {

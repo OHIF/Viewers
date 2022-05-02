@@ -1,10 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Settings } from '@cornerstonejs/core';
 import OHIF, { utils } from '@ohif/core';
 import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
 import SRLengthTool from '../tools/annotationTools/SRLengthTool';
-
+import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 import {
   Notification,
   ViewportActionBar,
@@ -46,19 +45,19 @@ function OHIFCornerstoneSRViewport(props) {
     setReferencedDisplaySetMetadata,
   ] = useState(null);
   const [isHydrated, setIsHydrated] = useState(srDisplaySet.isHydrated);
+  const [element, setElement] = useState(null);
   const { viewports, activeViewportIndex } = viewportGrid;
 
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
 
+  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
+    MEASUREMENT_TRACKING_EXTENSION_ID
+  );
+
   // TODO: this is a hook that fails if we register/de-register
-  //
-  if (
-    extensionManager.registeredExtensionIds.includes(
-      MEASUREMENT_TRACKING_EXTENSION_ID
-    )
-  ) {
+  if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
       '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
     );
@@ -71,6 +70,27 @@ function OHIFCornerstoneSRViewport(props) {
     ] = useTrackedMeasurements();
   }
 
+  /**
+   * Store the tracking identifiers per viewport in order to be able to
+   * show the SR measurements on the referenced image on the correct viewport,
+   * when multiple viewports are used.
+   */
+  const setTrackingIdentifiers = useCallback(() => {
+    const { measurements } = srDisplaySet;
+
+    setTrackingUniqueIdentifiersForElement(
+      element,
+      measurements.map(measurement => measurement.TrackingUniqueIdentifier),
+      measurementSelected
+    );
+  }, [element, measurementSelected, srDisplaySet]);
+
+  /**
+   * OnElementEnabled callback which is called after the cornerstone3DExtension
+   * has enabled the element. Note: we delegate all the image rendering to
+   * cornerstone3DExtension, so we don't need to do anything here regarding
+   * the image rendering, element enabling etc.
+   */
   const onElementEnabled = evt => {
     const { viewportId } = evt.detail;
     const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
@@ -85,82 +105,55 @@ function OHIFCornerstoneSRViewport(props) {
       active: [
         {
           toolName: toolNames.WindowLevel,
-          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+          bindings: [
+            {
+              mouseButton: Enums.MouseBindings.Primary,
+            },
+          ],
         },
         {
           toolName: toolNames.Pan,
-          bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+          bindings: [
+            {
+              mouseButton: Enums.MouseBindings.Auxiliary,
+            },
+          ],
         },
         {
           toolName: toolNames.Zoom,
-          bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+          bindings: [
+            {
+              mouseButton: Enums.MouseBindings.Secondary,
+            },
+          ],
         },
-        { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+        {
+          toolName: toolNames.StackScrollMouseWheel,
+          bindings: [],
+        },
       ],
       passive: [
-        { toolName: SRLengthTool.toolName },
+        {
+          toolName: SRLengthTool.toolName,
+        },
         // { toolName: toolNames.Bidirectional },
         // { toolName: toolNames.Probe },
         // { toolName: toolNames.EllipticalROI },
         // { toolName: toolNames.RectangleROI },
         // { toolName: toolNames.StackScroll },
       ],
-      enabled: [{ toolName: DICOMSRDisplayTool.toolName, bindings: [] }],
+      enabled: [
+        {
+          toolName: DICOMSRDisplayTool.toolName,
+          bindings: [],
+        },
+      ],
       // disabled
     };
 
     ToolGroupService.addToolsToToolGroup(toolGroup.id, tools);
-    // setTrackingUniqueIdentifiersForElement(targetElement);
+    setElement(evt.detail.element);
   };
-
-  useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
-      ({ displaySetInstanceUIDs }) => {
-        const activeViewport = viewports[activeViewportIndex];
-        if (
-          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
-        ) {
-          viewportGridService.setDisplaySetsForViewport({
-            viewportIndex: activeViewportIndex,
-            displaySetInstanceUIDs: [],
-          });
-        }
-      }
-    );
-
-    return () => {
-      onDisplaySetsRemovedSubscription.unsubscribe();
-    };
-  }, []);
-
-  // Locked if tracking any series
-  let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
-  useEffect(() => {
-    isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
-  }, [trackedMeasurements]);
-
-  useEffect(() => {
-    if (!srDisplaySet.isLoaded) {
-      srDisplaySet.load();
-    }
-    setIsHydrated(srDisplaySet.isHydrated);
-
-    const numMeasurements = srDisplaySet.measurements.length;
-    setMeasurementCount(numMeasurements);
-  }, [srDisplaySet]);
-
-  // const setTrackingUniqueIdentifiersForElement = useCallback(targetElement => {
-  //   const { measurements } = displaySet;
-
-  //   const srModule = cornerstoneTools.getModule(id);
-
-  //   srModule.setters.trackingUniqueIdentifiersForElement(
-  //     targetElement,
-  //     measurements.map(measurement => measurement.TrackingUniqueIdentifier),
-  //     measurementSelected
-  //   );
-  // });
 
   const updateViewport = useCallback(
     newMeasurementSelected => {
@@ -229,19 +222,6 @@ function OHIFCornerstoneSRViewport(props) {
     [dataSource, srDisplaySet, activeImageDisplaySetData, viewportIndex]
   );
 
-  // useEffect(
-  //   () => {
-  //     if (element !== null) {
-  //       setTrackingUniqueIdentifiersForElement(element);
-  //     }
-  //   },
-  //   [dataSource, displaySet]
-  // );
-
-  useEffect(() => {
-    updateViewport(measurementSelected);
-  }, [dataSource, srDisplaySet]);
-
   const getCornerstone3DViewport = useCallback(() => {
     if (!activeImageDisplaySetData) {
       return null;
@@ -272,6 +252,103 @@ function OHIFCornerstoneSRViewport(props) {
       ></Component>
     );
   }, [activeImageDisplaySetData, viewportIndex, measurementSelected]);
+
+  const onMeasurementChange = useCallback(
+    direction => {
+      let newMeasurementSelected = measurementSelected;
+
+      if (direction === 'right') {
+        newMeasurementSelected++;
+
+        if (newMeasurementSelected >= measurementCount) {
+          newMeasurementSelected = 0;
+        }
+      } else {
+        newMeasurementSelected--;
+
+        if (newMeasurementSelected < 0) {
+          newMeasurementSelected = measurementCount - 1;
+        }
+      }
+
+      updateViewport(newMeasurementSelected);
+      setTrackingIdentifiers();
+    },
+    [
+      measurementSelected,
+      measurementCount,
+      updateViewport,
+      setTrackingIdentifiers,
+    ]
+  );
+
+  /**
+   Cleanup the SR viewport when the viewport is destroyed
+   */
+  useEffect(() => {
+    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+      ({ displaySetInstanceUIDs }) => {
+        const activeViewport = viewports[activeViewportIndex];
+        if (
+          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
+        ) {
+          viewportGridService.setDisplaySetsForViewport({
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [],
+          });
+        }
+      }
+    );
+
+    return () => {
+      onDisplaySetsRemovedSubscription.unsubscribe();
+    };
+  }, []);
+  /**
+   * Hook to update the tracking identifiers when the selected measurement changes or
+   * the element changes
+   */
+  useEffect(() => {
+    if (!element) {
+      return;
+    }
+    setTrackingIdentifiers();
+  }, [measurementSelected, element, setTrackingIdentifiers]);
+
+  /**
+   * Loading the measurements from the SR viewport, which goes through the
+   * isHydratable check, the outcome for the isHydrated state here is always FALSE
+   * since we don't do the hydration here. Todo: can't we just set it as false? why
+   * we are changing the state here? isHydrated is always false at this stage, and
+   * if it is hydrated we don't event use the SR viewport.
+   */
+  useEffect(() => {
+    if (!srDisplaySet.isLoaded) {
+      srDisplaySet.load();
+    }
+    setIsHydrated(srDisplaySet.isHydrated);
+
+    const numMeasurements = srDisplaySet.measurements.length;
+    setMeasurementCount(numMeasurements);
+  }, [srDisplaySet]);
+
+  /**
+   * Todo: what is this, not sure what it does regarding the react aspect,
+   * it is updating a local variable? which is not state.
+   */
+  let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  useEffect(() => {
+    isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  }, [trackedMeasurements]);
+
+  /**
+   * Data fetching for the SR displaySet, which updates the measurements and
+   * also gets the referenced image displaySet that SR is based on.
+   */
+  useEffect(() => {
+    updateViewport(measurementSelected);
+  }, [dataSource, srDisplaySet]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -306,26 +383,6 @@ function OHIFCornerstoneSRViewport(props) {
     SpacingBetweenSlices,
     SeriesNumber,
   } = referencedDisplaySetMetadata;
-
-  const onMeasurementChange = direction => {
-    let newMeasurementSelected = measurementSelected;
-
-    if (direction === 'right') {
-      newMeasurementSelected++;
-
-      if (newMeasurementSelected >= measurementCount) {
-        newMeasurementSelected = 0;
-      }
-    } else {
-      newMeasurementSelected--;
-
-      if (newMeasurementSelected < 0) {
-        newMeasurementSelected = measurementCount - 1;
-      }
-    }
-
-    updateViewport(newMeasurementSelected);
-  };
 
   const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 

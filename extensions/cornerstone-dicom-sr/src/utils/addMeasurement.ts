@@ -40,6 +40,7 @@ export default function addMeasurement(
   const annotationManager = annotation.state.getDefaultAnnotationManager();
 
   const SRAnnotation: Types.Annotation = {
+    annotationUID: measurement.TrackingUniqueIdentifier,
     metadata: {
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       toolName: toolName,

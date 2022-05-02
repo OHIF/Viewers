@@ -1,19 +1,27 @@
-import cornerstone from 'cornerstone-core';
+import * as cornerstone3D from '@cornerstonejs/core';
 
 const state = {
   TrackingUniqueIdentifier: null,
-  trackingIdentifiersByEnabledElementUUID: {},
+  trackingIdentifiersByViewportId: {},
 };
+
+/**
+ * This file is being used to store the per-viewport state of the SR tools,
+ * Since, all the toolStates are added to the cornerstoneTools, when displaying the SRTools,
+ * if there are two viewports rendering the same imageId, we don't want to show
+ * the same SR annotation twice on irrelevant viewport, hence, we are storing the state
+ * of the SR tools in state here, so that we can filter them later.
+ */
 
 function setTrackingUniqueIdentifiersForElement(
   element,
   trackingUniqueIdentifiers,
   activeIndex = 0
 ) {
-  const enabledElement = cornerstone.getEnabledElement(element);
-  const { uuid } = enabledElement;
+  const enabledElement = cornerstone3D.getEnabledElement(element);
+  const { viewport } = enabledElement;
 
-  state.trackingIdentifiersByEnabledElementUUID[uuid] = {
+  state.trackingIdentifiersByViewportId[viewport.id] = {
     trackingUniqueIdentifiers,
     activeIndex,
   };
@@ -23,11 +31,11 @@ function setActiveTrackingUniqueIdentifierForElement(
   element,
   TrackingUniqueIdentifier
 ) {
-  const enabledElement = cornerstone.getEnabledElement(element);
-  const { uuid } = enabledElement;
+  const enabledElement = cornerstone3D.getEnabledElement(element);
+  const { viewport } = enabledElement;
 
   const trackingIdentifiersForElement =
-    state.trackingIdentifiersByEnabledElementUUID[uuid];
+    state.trackingIdentifiersByViewportId[viewport.id];
 
   if (trackingIdentifiersForElement) {
     const activeIndex = trackingIdentifiersForElement.trackingUniqueIdentifiers.findIndex(
@@ -39,23 +47,18 @@ function setActiveTrackingUniqueIdentifierForElement(
 }
 
 function getTrackingUniqueIdentifiersForElement(element) {
-  const enabledElement = cornerstone.getEnabledElement(element);
-  const { uuid } = enabledElement;
+  const enabledElement = cornerstone3D.getEnabledElement(element);
+  const { viewport } = enabledElement;
 
-  if (state.trackingIdentifiersByEnabledElementUUID[uuid]) {
-    return state.trackingIdentifiersByEnabledElementUUID[uuid];
+  if (state.trackingIdentifiersByViewportId[viewport.id]) {
+    return state.trackingIdentifiersByViewportId[viewport.id];
   }
 
   return { trackingUniqueIdentifiers: [] };
 }
 
-export default {
-  state,
-  getters: {
-    trackingUniqueIdentifiersForElement: getTrackingUniqueIdentifiersForElement,
-  },
-  setters: {
-    trackingUniqueIdentifiersForElement: setTrackingUniqueIdentifiersForElement,
-    activeTrackingUniqueIdentifierForElement: setActiveTrackingUniqueIdentifierForElement,
-  },
+export {
+  setTrackingUniqueIdentifiersForElement,
+  setActiveTrackingUniqueIdentifierForElement,
+  getTrackingUniqueIdentifiersForElement,
 };
