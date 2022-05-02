@@ -62,6 +62,7 @@ const _createInternalToolsConfig = UIDialogService => {
 export default function init({
   servicesManager,
   commandsManager,
+  appConfig,
   configuration,
 }) {
   const {
@@ -276,7 +277,8 @@ export default function init({
 
   cs.metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
-  initWADOImageLoader(UserAuthenticationService);
+  const { imageLoaderAcceptHeader } = appConfig;
+  initWADOImageLoader(UserAuthenticationService, imageLoaderAcceptHeader);
 
   // ~~
   const defaultCsToolsConfig = csToolsConfig || {
