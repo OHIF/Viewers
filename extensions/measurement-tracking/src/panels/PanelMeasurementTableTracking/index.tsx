@@ -316,7 +316,6 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
   }
 
   const { displayText } = measurement;
-
   return {
     uid: measurement.uid,
     label: measurement.label || '(empty)',

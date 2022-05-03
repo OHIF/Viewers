@@ -13,6 +13,7 @@ const {
   RectangleROITool,
   EllipticalROITool,
   BidirectionalTool,
+  ArrowTool,
   // CrosshairsTool,
 } = cornerstone3DTools;
 
@@ -27,15 +28,17 @@ export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.addTool(VolumeRotateMouseWheelTool);
   cornerstone3DTools.addTool(MIPJumpToClickTool);
   cornerstone3DTools.addTool(LengthTool);
-  cornerstone3DTools.addTool(ProbeTool);
+  // cornerstone3DTools.addTool(ProbeTool); // Needs proper mapper
   cornerstone3DTools.addTool(RectangleROITool);
   cornerstone3DTools.addTool(EllipticalROITool);
   cornerstone3DTools.addTool(BidirectionalTool);
+  cornerstone3DTools.addTool(ArrowTool);
   // cornerstone3DTools.addTool(CrosshairsTool);
 }
 
 const toolNames = {
   Pan: PanTool.toolName,
+  Arrow: ArrowTool.toolName,
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
   StackScrollMouseWheel: StackScrollMouseWheelTool.toolName,

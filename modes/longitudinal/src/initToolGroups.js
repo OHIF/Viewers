@@ -23,6 +23,7 @@ function initDefaultToolGroup(extensionManager, ToolGroupService) {
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.Arrow },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },

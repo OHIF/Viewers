@@ -108,21 +108,21 @@ export default [
           ],
           'Length Tool'
         ),
-        _createToolButton(
-          'Probe',
-          'tool-probe',
-          'Probe',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Probe',
-              },
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Probe Tool'
-        ),
+        // _createToolButton(
+        //   'Probe',
+        //   'tool-probe',
+        //   'Probe',
+        //   [
+        //     {
+        //       commandName: 'setToolActive',
+        //       commandOptions: {
+        //         toolName: 'Probe',
+        //       },
+        //       context: 'CORNERSTONE3D',
+        //     },
+        //   ],
+        //   'Probe Tool'
+        // ),
         _createToolButton(
           'Bidirectional',
           'tool-bidirectional',
@@ -146,7 +146,7 @@ export default [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'ArrowAnnotate',
+                toolName: 'Arrow',
               },
               context: 'CORNERSTONE3D',
             },

@@ -21,7 +21,7 @@ const initMeasurementService = (
     Length,
     Bidirectional,
     EllipticalROI,
-    RectangleROI,
+    Arrow,
   } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
@@ -59,10 +59,10 @@ const initMeasurementService = (
 
   MeasurementService.addMapping(
     csTools3DVer1MeasurementSource,
-    'RectangleROI',
-    RectangleROI.matchingCriteria,
-    RectangleROI.toAnnotation,
-    RectangleROI.toMeasurement
+    'Arrow',
+    Arrow.matchingCriteria,
+    Arrow.toAnnotation,
+    Arrow.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;
