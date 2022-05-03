@@ -114,17 +114,6 @@ function modeFactory({ modeConfiguration }) {
       SegmentationService.clearSegmentations();
       ToolGroupService.destroy();
     },
-    onModeExit: ({ servicesManager }) => {
-      const {
-        MeasurementService,
-        SegmentationService,
-        ToolBarService,
-      } = servicesManager.services;
-
-      ToolBarService.reset();
-      MeasurementService.clearMeasurements();
-      SegmentationService.clearSegmentations();
-    },
     validationTags: {
       study: [],
       series: [],
