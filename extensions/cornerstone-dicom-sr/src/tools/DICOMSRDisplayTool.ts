@@ -113,11 +113,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       Object.keys(renderableData).forEach(GraphicType => {
         const renderableDataForGraphicType = renderableData[GraphicType];
 
-        // Todo: Don't know why it is returning an array
-        const canvasCoordinates = renderableDataForGraphicType[0].map(p =>
-          viewport.worldToCanvas(p)
-        );
-
         let renderMethod;
 
         switch (GraphicType) {
@@ -140,18 +135,26 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
             throw new Error(`Unsupported GraphicType: ${GraphicType}`);
         }
 
-        renderMethod(
-          canvasCoordinates,
+        const canvasCoordinates = renderMethod(
           svgDrawingHelper,
+          viewport,
+          renderableDataForGraphicType,
           annotationUID,
           options
         );
 
         const textLines = this._getTextBoxLinesFromLabels(label);
 
-        // Need to update to sync w/ annotation while unlinked/not moved
+        let canvasCornersToUseForTextBox = canvasCoordinates;
+
+        if (GraphicType === SCOORD_TYPES.ELLIPSE) {
+          canvasCornersToUseForTextBox = utilities.math.ellipse.getCanvasEllipseCorners(
+            canvasCoordinates
+          );
+        }
+
         const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(
-          canvasCoordinates
+          canvasCornersToUseForTextBox
         );
 
         annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(
@@ -163,7 +166,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         );
 
         const textBoxUID = '1';
-
         const textBoxOptions = this.getLinkedTextBoxStyle(settings, annotation);
 
         const boundingBox = drawing.drawLinkedTextBox(
@@ -207,19 +209,31 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   //   }
   // }
 
-  renderPolyLine(canvasCoordinates, svgDrawingHelper, annotationUID, options) {
-    const lineUID = '1';
-    drawing.drawLine(
-      svgDrawingHelper,
-      annotationUID,
-      lineUID,
-      canvasCoordinates[0],
-      canvasCoordinates[1],
-      {
-        color: options.color,
-        width: options.lineWidth,
-      }
-    );
+  renderPolyLine(
+    svgDrawingHelper,
+    viewport,
+    renderableData,
+    annotationUID,
+    options
+  ) {
+    let canvasCoordinates;
+    renderableData.map((data, index) => {
+      canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
+      const lineUID = `${index}`;
+      drawing.drawLine(
+        svgDrawingHelper,
+        annotationUID,
+        lineUID,
+        canvasCoordinates[0],
+        canvasCoordinates[1],
+        {
+          color: options.color,
+          width: options.lineWidth,
+        }
+      );
+    });
+
+    return canvasCoordinates; // used for drawing textBox
   }
 
   renderMultipoint(renderableData, eventData, options) {
@@ -282,25 +296,40 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     });
   }
 
-  renderEllipse(renderableData, eventData, options) {
-    // Todo: cs3d
-    const { element } = eventData;
+  renderEllipse(
+    svgDrawingHelper,
+    viewport,
+    renderableData,
+    annotationUID,
+    options
+  ) {
+    let canvasCoordinates;
+    renderableData.map((data, index) => {
+      const ellipsePointsWorld = data;
 
-    const context = getNewContext(eventData.canvasContext.canvas);
+      canvasCoordinates = ellipsePointsWorld.map(p =>
+        viewport.worldToCanvas(p)
+      );
 
-    renderableData.forEach(ellipse => {
-      const { corner1, corner2 } = ellipse;
+      const canvasCorners = <Array<Types.Point2>>(
+        utilities.math.ellipse.getCanvasEllipseCorners(canvasCoordinates)
+      );
 
-      drawEllipse(
-        context,
-        element,
-        corner1,
-        corner2,
-        options,
-        'pixel',
-        0 // TODO -> Work our the initial rotation and add it here so we render appropriately rotated ellipses.
+      const lineUID = `${index}`;
+      drawing.drawEllipse(
+        svgDrawingHelper,
+        annotationUID,
+        lineUID,
+        canvasCorners[0],
+        canvasCorners[1],
+        {
+          color: options.color,
+          width: options.lineWidth,
+        }
       );
     });
+
+    return canvasCoordinates;
   }
 }
 

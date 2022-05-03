@@ -91,7 +91,7 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
       }
       break;
     case SCOORD_TYPES.CIRCLE: {
-      // Todo:
+      // Todo: write cornerstone3D circle logic
       const center = { x: GraphicData[0], y: GraphicData[1] };
       const onPerimeter = { x: GraphicData[2], y: GraphicData[3] };
 
@@ -104,48 +104,58 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
       break;
     }
     case SCOORD_TYPES.ELLIPSE: {
-      // Todo:
-      console.warn('ROTATED ELLIPSE NOT YET SUPPORTED!');
+      // GraphicData is ordered as [majorAxisStartX, majorAxisStartY, majorAxisEndX, majorAxisEndY, minorAxisStartX, minorAxisStartY, minorAxisEndX, minorAxisEndY]
+      // But Cornerstone3D points are ordered as top, bottom, left, right for the
+      // ellipse so we need to identify if the majorAxis is horizontal or vertical
+      // and then choose the correct points to use for the ellipse.
 
-      const majorAxis = [
-        { x: GraphicData[0], y: GraphicData[1] },
-        { x: GraphicData[2], y: GraphicData[3] },
-      ];
-      const minorAxis = [
-        { x: GraphicData[4], y: GraphicData[5] },
-        { x: GraphicData[6], y: GraphicData[7] },
-      ];
+      const majorAxisStart = { x: GraphicData[0], y: GraphicData[1] };
+      const majorAxisEnd = { x: GraphicData[2], y: GraphicData[3] };
+      const minorAxisStart = { x: GraphicData[4], y: GraphicData[5] };
+      const minorAxisEnd = { x: GraphicData[6], y: GraphicData[7] };
 
-      // Calculate two opposite corners of box defined by two axes.
+      const majorAxisIsHorizontal = majorAxisStart.y === majorAxisEnd.y;
+      const majorAxisIsVertical = majorAxisStart.x === majorAxisEnd.x;
 
-      const minorAxisLength = cornerstoneMath.point.distance(
-        minorAxis[0],
-        minorAxis[1]
-      );
+      let ellipsePointsImage;
 
-      const minorAxisDirection = {
-        x: (minorAxis[1].x - minorAxis[0].x) / minorAxisLength,
-        y: (minorAxis[1].y - minorAxis[0].y) / minorAxisLength,
-      };
+      if (majorAxisIsVertical) {
+        ellipsePointsImage = [
+          majorAxisStart.x,
+          majorAxisStart.y,
+          majorAxisEnd.x,
+          majorAxisEnd.y,
+          minorAxisStart.x,
+          minorAxisStart.y,
+          minorAxisEnd.x,
+          minorAxisEnd.y,
+        ];
+      } else if (majorAxisIsHorizontal) {
+        ellipsePointsImage = [
+          minorAxisStart.x,
+          minorAxisStart.y,
+          minorAxisEnd.x,
+          minorAxisEnd.y,
+          majorAxisStart.x,
+          majorAxisStart.y,
+          majorAxisEnd.x,
+          majorAxisEnd.y,
+        ];
+      } else {
+        throw new Error('ROTATED ELLIPSE NOT YET SUPPORTED');
+      }
 
-      const halfMinorAxisLength = minorAxisLength / 2;
+      const ellipsePointsWorld = [];
+      for (let i = 0; i < ellipsePointsImage.length; i += 2) {
+        const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
+          ellipsePointsImage[i],
+          ellipsePointsImage[i + 1],
+        ]);
 
-      // First end point of major axis + half minor axis vector
-      const corner1 = {
-        x: majorAxis[0].x + minorAxisDirection.x * halfMinorAxisLength,
-        y: majorAxis[0].y + minorAxisDirection.y * halfMinorAxisLength,
-      };
+        ellipsePointsWorld.push(worldPos);
+      }
 
-      // Second end point of major axis - half of minor axis vector
-      const corner2 = {
-        x: majorAxis[1].x - minorAxisDirection.x * halfMinorAxisLength,
-        y: majorAxis[1].y - minorAxisDirection.y * halfMinorAxisLength,
-      };
-
-      renderableData = {
-        corner1,
-        corner2,
-      };
+      renderableData = ellipsePointsWorld;
       break;
     }
     default:
