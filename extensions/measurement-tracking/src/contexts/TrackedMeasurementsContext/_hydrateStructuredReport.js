@@ -6,6 +6,9 @@ import { adapters } from 'dcmjs';
 const { guid } = OHIF.utils;
 const { MeasurementReport } = adapters.Cornerstone3D;
 
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '1';
+
 /**
  *
  */
@@ -22,8 +25,8 @@ export default function _hydrateStructuredReport(
 
   // TODO -> We should define a strict versioning somewhere.
   const mappings = MeasurementService.getSourceMappings(
-    'CornerstoneTools3D',
-    '1'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   if (!mappings || !mappings.length) {
@@ -140,7 +143,10 @@ export default function _hydrateStructuredReport(
         },
       };
 
-      const source = MeasurementService.getSource('CornerstoneTools3D', '1');
+      const source = MeasurementService.getSource(
+        CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+        CORNERSTONE_3D_TOOLS_SOURCE_VERSION
+      );
       annotation.label = getLabelFromDCMJSImportedToolData(toolData);
 
       const matchingMapping = mappings.find(

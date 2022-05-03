@@ -1,4 +1,4 @@
-import { eventTarget, EVENTS } from '@cornerstonejs/core';
+import { eventTarget } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
 
@@ -8,7 +8,8 @@ const { removeAnnotation } = annotation.state;
 
 const csToolsEvents = Enums.Events;
 
-const CORNERSTONE_TOOLS_3D_SOURCE_NAME = 'CornerstoneTools3D';
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '1';
 
 const initMeasurementService = (
   MeasurementService,
@@ -27,8 +28,8 @@ const initMeasurementService = (
     Cornerstone3DViewportService
   );
   const csTools3DVer1MeasurementSource = MeasurementService.createSource(
-    CORNERSTONE_TOOLS_3D_SOURCE_NAME,
-    '1'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   /* Mappings */
@@ -179,8 +180,8 @@ const connectMeasurementServiceToTools = (
   } = MeasurementService.EVENTS;
 
   const csTools3DVer1MeasurementSource = MeasurementService.getSource(
-    CORNERSTONE_TOOLS_3D_SOURCE_NAME,
-    '1'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   const { measurementToAnnotation } = csTools3DVer1MeasurementSource;
@@ -192,7 +193,7 @@ const connectMeasurementServiceToTools = (
 
     for (const measurement of Object.values(measurements)) {
       const { uid, source } = measurement;
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
       }
 
@@ -203,7 +204,7 @@ const connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     MEASUREMENT_UPDATED,
     ({ source, measurement, notYetUpdatedAtSource }) => {
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
 
@@ -221,7 +222,7 @@ const connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
     ({ source, measurement, data, dataSource }) => {
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
 
@@ -260,7 +261,7 @@ const connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {
-      if (source?.name && source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source?.name && source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
       removeAnnotation(removedMeasurementId);

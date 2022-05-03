@@ -117,7 +117,7 @@ function _load(displaySet, servicesManager, extensionManager) {
   displaySet.measurements = _getMeasurements(ContentSequence);
 
   const mappings = MeasurementService.getSourceMappings(
-    'CornerstoneTools3D',
+    'Cornerstone3DTools',
     '1'
   );
 
