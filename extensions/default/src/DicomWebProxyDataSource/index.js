@@ -1,6 +1,14 @@
 import { IWebApiDataSource } from '@ohif/core';
 import { createDicomWebApi } from '../DicomWebDataSource/index';
 
+/**
+ * This datasource is initialized with a url that returns a JSON object with a
+ * dicomWeb datasource configuration array present in a "servers" object.
+ *
+ * Only the first array item is parsed, if there are multiple items in the
+ * dicomWeb configuration array
+ *
+ */
 function createDicomWebProxyApi(
   dicomWebProxyConfig,
   UserAuthenticationService
@@ -12,27 +20,29 @@ function createDicomWebProxyApi(
     initialize: async ({ params, query, url }) => {
       let studyInstanceUIDs = [];
 
+      // there seem to be a couple of variations of the case for this parameter
+      const queryStudyInstanceUIDs =
+        query.get('studyInstanceUIDs') || query.get('studyInstanceUids');
+      if (!queryStudyInstanceUIDs) {
+        throw new Error(`No studyInstanceUids in request for '${name}'`);
+      }
+
       if (!url) url = query.get('url');
 
       if (!url) {
-        console.error(`No url for '${name}'`);
+        throw new Error(`No url for '${name}'`);
       } else {
         const response = await fetch(url);
         let data = await response.json();
+        if (!data.servers?.dicomWeb?.[0]) {
+          throw new Error('Invalid configuration returned by url');
+        }
 
-        // there seem to be a couple of variations of the case for this parameter
-        const queryStudyInstanceUIDs =
-          query.get('studyInstanceUIDs') || query.get('studyInstanceUids');
-        if (!queryStudyInstanceUIDs) {
-          console.error(`No studyInstanceUids in request for '${name}'`);
-        }
-        if (data.servers && queryStudyInstanceUIDs) {
-          dicomWebDelegate = createDicomWebApi(
-            data.servers.dicomWeb[0],
-            UserAuthenticationService
-          );
-          studyInstanceUIDs = queryStudyInstanceUIDs.split(';');
-        }
+        dicomWebDelegate = createDicomWebApi(
+          data.servers.dicomWeb[0],
+          UserAuthenticationService
+        );
+        studyInstanceUIDs = queryStudyInstanceUIDs.split(';');
       }
       return studyInstanceUIDs;
     },
