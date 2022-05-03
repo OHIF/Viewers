@@ -1,7 +1,6 @@
 import * as cornerstone3D from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
-import getCornerstoneToolStateToMeasurementSchema from './getCornerstoneToolStateToMeasurementSchema';
 import { adapters } from 'dcmjs';
 
 const { guid } = OHIF.utils;
@@ -124,32 +123,35 @@ export default function _hydrateStructuredReport(
 
       const instance = cornerstone3D.metaData.get('instance', imageId);
       const {
-        SOPInstanceUID,
         FrameOfReferenceUID,
-        SeriesInstanceUID,
-        StudyInstanceUID,
+        // SOPInstanceUID,
+        // SeriesInstanceUID,
+        // StudyInstanceUID,
       } = instance;
 
-      // Let the measurement service know we added to toolState
-      const toMeasurementSchema = getCornerstoneToolStateToMeasurementSchema(
-        annotationType,
-        MeasurementService,
-        DisplaySetService,
-        SOPInstanceUID,
-        FrameOfReferenceUID,
-        SeriesInstanceUID,
-        StudyInstanceUID
-      );
+      const annotation = {
+        annotationUID: toolData.uid,
+        data: toolData.data,
+        metadata: {
+          toolName: annotationType,
+          referencedImageId: imageId,
+          FrameOfReferenceUID,
+          label: '',
+        },
+      };
 
       const source = MeasurementService.getSource('CornerstoneTools3D', '1');
+      annotation.label = getLabelFromDCMJSImportedToolData(toolData);
 
-      toolData.label = getLabelFromDCMJSImportedToolData(toolData);
+      const matchingMapping = mappings.find(
+        m => m.annotationType === annotationType
+      );
 
       MeasurementService.addRawMeasurement(
         source,
         annotationType,
-        toolData,
-        toMeasurementSchema,
+        { annotation },
+        matchingMapping.toMeasurementSchema,
         dataSource
       );
 

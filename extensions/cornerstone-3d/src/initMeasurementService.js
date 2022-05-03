@@ -220,7 +220,7 @@ const connectMeasurementServiceToTools = (
 
   MeasurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
-    ({ source, measurement, data: toolData, dataSource }) => {
+    ({ source, measurement, data, dataSource }) => {
       if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
         return;
       }
@@ -250,8 +250,8 @@ const connectMeasurementServiceToTools = (
           referencedImageId: imageId,
         },
         data: {
-          handles: { ...toolData.data.handles },
-          cachedStats: { ...toolData.data.cachedStats },
+          handles: { ...data.annotation.data.handles },
+          cachedStats: { ...data.annotation.data.cachedStats },
         },
       });
     }
