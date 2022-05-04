@@ -363,6 +363,8 @@ function _getViewportComponent(displaySets, viewportComponents) {
       return component;
     }
   }
+  console.warn("Didn't find a viewport component handling", SOPClassHandlerId);
+  return EmptyViewport;
 }
 
 export default ViewerViewportGrid;

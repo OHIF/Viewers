@@ -13,7 +13,7 @@ function initWebWorkers(appConfig) {
   const config = {
     maxWebWorkers: Math.min(
       Math.max(navigator.hardwareConcurrency - 1, 1),
-      appConfig.maxNumberOfWebWorkers
+      appConfig.maxNumberOfWebWorkers || 3
     ),
     startWebWorkersOnDemand: true,
     taskConfiguration: {

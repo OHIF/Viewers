@@ -110,7 +110,10 @@ ThumbnailList.propTypes = {
       imageSrc: PropTypes.string,
       imageAltText: PropTypes.string,
       seriesDate: PropTypes.string,
-      seriesNumber: PropTypes.string,
+      seriesNumber: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]),
       numInstances: PropTypes.number,
       description: PropTypes.string,
       componentType: PropTypes.oneOf([
