@@ -1,1 +1,1 @@
-export default ['Length', 'EllipticalROI', 'Bidirectional', 'Arrow'];
+export default ['Length', 'EllipticalROI', 'Bidirectional', 'ArrowAnnotate'];

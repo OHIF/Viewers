@@ -247,40 +247,31 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     });
   }
 
-  renderPoint(renderableData, eventData, options) {
-    // Todo: cs3d
-    // Render single point as an arrow.
-    const { element, image } = eventData;
-    const { rows, columns } = image;
-    const context = getNewContext(eventData.canvasContext.canvas);
-
-    const { color, lineWidth } = options;
-
-    // Find a suitable length for the image size.
-
-    const xOffset = columns / 10;
-    const yOffset = rows / 10;
-
-    renderableData.forEach(points => {
-      const point = points[0]; // The SCOORD type is POINT so the array length is 1.
-      draw(context, context => {
-        // Draw the arrow
-        const handleStartCanvas = pixelToCanvas(element, point);
-        const handleEndCanvas = pixelToCanvas(element, {
-          x: point.x + xOffset,
-          y: point.y + yOffset,
-        });
-
-        drawArrow(
-          context,
-          handleEndCanvas,
-          handleStartCanvas,
-          color,
-          lineWidth,
-          false
-        );
-      });
+  renderPoint(
+    svgDrawingHelper,
+    viewport,
+    renderableData,
+    annotationUID,
+    options
+  ) {
+    let canvasCoordinates;
+    renderableData.map((data, index) => {
+      canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
+      const arrowUID = `${index}`;
+      drawing.drawArrow(
+        svgDrawingHelper,
+        annotationUID,
+        arrowUID,
+        canvasCoordinates[1],
+        canvasCoordinates[0],
+        {
+          color: options.color,
+          width: options.lineWidth,
+        }
+      );
     });
+
+    return canvasCoordinates; // used for drawing textBox
   }
 
   renderCircle(renderableData, eventData, options) {

@@ -91,7 +91,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-    Arrow: {
+    ArrowAnnotate: {
       toAnnotation: ArrowAnnotate.toAnnotation,
       toMeasurement: csToolsAnnotation =>
         ArrowAnnotate.toMeasurement(

@@ -30,7 +30,7 @@ function getFilteredCornerstoneToolState(
       };
     }
 
-    const measurmentDataI = measurementData.find(
+    const measurementDataI = measurementData.find(
       md => md.uid === annotation.annotationUID
     );
     const toolData = imageIdSpecificToolState[toolType].data;
@@ -41,18 +41,18 @@ function getFilteredCornerstoneToolState(
     // NOTE -> Any kind of freetext value abuses the DICOM standard,
     // As CodeValues should map 1:1 with CodeMeanings.
     // Ideally we would actually use SNOMED codes for this.
-    if (measurmentDataI.label) {
+    if (measurementDataI.label) {
       if (additionalFindingTypes.includes(toolType)) {
         finding = {
           CodeValue: 'CORNERSTONEFREETEXT',
-          CodingSchemeDesignator: 'CST4',
-          CodeMeaning: measurmentDataI.label,
+          CodingSchemeDesignator: 'CS3DT1',
+          CodeMeaning: measurementDataI.label,
         };
       } else {
         findingSites.push({
           CodeValue: 'CORNERSTONEFREETEXT',
-          CodingSchemeDesignator: 'CST4',
-          CodeMeaning: measurmentDataI.label,
+          CodingSchemeDesignator: 'CS3DT1',
+          CodeMeaning: measurementDataI.label,
         });
       }
     }

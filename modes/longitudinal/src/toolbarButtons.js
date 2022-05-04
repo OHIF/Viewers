@@ -146,7 +146,7 @@ export default [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'Arrow',
+                toolName: 'ArrowAnnotate',
               },
               context: 'CORNERSTONE3D',
             },

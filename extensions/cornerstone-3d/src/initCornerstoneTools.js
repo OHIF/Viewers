@@ -13,13 +13,12 @@ const {
   RectangleROITool,
   EllipticalROITool,
   BidirectionalTool,
-  ArrowTool,
+  ArrowAnnotateTool,
   // CrosshairsTool,
 } = cornerstone3DTools;
 
 export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.init(configuration);
-
   cornerstone3DTools.addTool(PanTool);
   cornerstone3DTools.addTool(WindowLevelTool);
   cornerstone3DTools.addTool(StackScrollMouseWheelTool);
@@ -32,13 +31,13 @@ export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.addTool(RectangleROITool);
   cornerstone3DTools.addTool(EllipticalROITool);
   cornerstone3DTools.addTool(BidirectionalTool);
-  cornerstone3DTools.addTool(ArrowTool);
+  cornerstone3DTools.addTool(ArrowAnnotateTool);
   // cornerstone3DTools.addTool(CrosshairsTool);
 }
 
 const toolNames = {
   Pan: PanTool.toolName,
-  Arrow: ArrowTool.toolName,
+  ArrowAnnotate: ArrowAnnotateTool.toolName,
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
   StackScrollMouseWheel: StackScrollMouseWheelTool.toolName,

@@ -21,7 +21,7 @@ const initMeasurementService = (
     Length,
     Bidirectional,
     EllipticalROI,
-    Arrow,
+    ArrowAnnotate,
   } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
@@ -59,10 +59,10 @@ const initMeasurementService = (
 
   MeasurementService.addMapping(
     csTools3DVer1MeasurementSource,
-    'Arrow',
-    Arrow.matchingCriteria,
-    Arrow.toAnnotation,
-    Arrow.toMeasurement
+    'ArrowAnnotate',
+    ArrowAnnotate.matchingCriteria,
+    ArrowAnnotate.toAnnotation,
+    ArrowAnnotate.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;
@@ -251,6 +251,7 @@ const connectMeasurementServiceToTools = (
           referencedImageId: imageId,
         },
         data: {
+          text: data.annotation.data.text,
           handles: { ...data.annotation.data.handles },
           cachedStats: { ...data.annotation.data.cachedStats },
         },
