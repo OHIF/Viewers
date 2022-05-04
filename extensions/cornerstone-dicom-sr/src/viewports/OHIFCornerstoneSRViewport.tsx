@@ -1,8 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
-import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
-import SRLengthTool from '../tools/annotationTools/SRLengthTool';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 import {
   Notification,
@@ -28,9 +26,13 @@ function OHIFCornerstoneSRViewport(props) {
     extensionManager,
   } = props;
 
-  const { DisplaySetService, ToolGroupService } = servicesManager.services;
+  const { DisplaySetService } = servicesManager.services;
 
   // SR viewport will always have a single display set
+  if (displaySets.length > 1) {
+    throw new Error('SR viewport should only have a single display set');
+  }
+
   const srDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();

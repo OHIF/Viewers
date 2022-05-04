@@ -9,7 +9,7 @@ const { removeAnnotation } = annotation.state;
 const csToolsEvents = Enums.Events;
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
-const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '1';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 const initMeasurementService = (
   MeasurementService,

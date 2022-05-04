@@ -5,6 +5,8 @@ import OHIF from '@ohif/core';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 
+import PropTypes from 'prop-types';
+
 import { setEnabledElement } from '../state';
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
 import CornerstoneOverlay from './CornerstoneOverlay';
@@ -59,10 +61,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
     displaySetOptions,
     servicesManager,
     onElementEnabled,
-    // Note: you SHOULD NOT sue the initialImageIdOrIndex for manipulation
+    // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstone3DViewport. This prop is used
-    // for the scenarios where OHIFCornerstone3DViewport is inherited inside
-    // another viewport such as SRViewport.
+    // to set the initial state of the viewport's first image to render
     initialImageIdOrIndex,
   } = props;
 
@@ -96,7 +97,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   const elementEnabledHandler = useCallback(
     evt => {
-      // check this is this element reference and return early if not matches
+      // check this is this element reference and return early if doesn't match
       if (evt.detail.element !== elementRef.current) {
         return;
       }
@@ -109,7 +110,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       setEnabledElement(viewportIndex, element);
 
-      // const volumeUID = Cornerstone3DViewportService.getVolumeUIDsForViewportUID(viewportId);
       const renderingEngineId = viewportInfo.getRenderingEngineId();
       const toolGroupId = viewportInfo.getToolGroupId();
       ToolGroupService.addToolGroupViewport(
@@ -134,7 +134,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
     eventTarget.addEventListener(
       Enums.Events.ELEMENT_ENABLED,
-      elementEnabledHandler.bind(null)
+      elementEnabledHandler
     );
 
     setImageScrollBarHeight();
@@ -451,5 +451,22 @@ function _jumpToMeasurement(
 
 // Component displayName
 OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
+
+OHIFCornerstoneViewport.propTypes = {
+  viewportIndex: PropTypes.number.isRequired,
+  displaySets: PropTypes.array.isRequired,
+  dataSource: PropTypes.object.isRequired,
+  viewportOptions: PropTypes.object,
+  displaySetOptions: PropTypes.arrayOf(PropTypes.object),
+  servicesManager: PropTypes.object.isRequired,
+  onElementEnabled: PropTypes.func,
+  // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
+  // of the imageData in the OHIFCornerstone3DViewport. This prop is used
+  // to set the initial state of the viewport's first image to render
+  initialImageIdOrIndex: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+};
 
 export default OHIFCornerstoneViewport;

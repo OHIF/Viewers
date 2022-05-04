@@ -3,7 +3,6 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const Length = {
-  // Currently we only update the labels
   toAnnotation: measurement => {
     const annotationUID = measurement.uid;
     const cornerstone3DAnnotation = annotation.state.getAnnotation(

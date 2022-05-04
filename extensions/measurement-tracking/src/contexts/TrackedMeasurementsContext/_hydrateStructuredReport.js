@@ -7,7 +7,7 @@ const { guid } = OHIF.utils;
 const { MeasurementReport } = adapters.Cornerstone3D;
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
-const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '1';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 /**
  *
@@ -60,7 +60,8 @@ export default function _hydrateStructuredReport(
     // that measurements were added to the display set are the same order as
     // the measurementGroups in the instance.
     imageIdsForToolState,
-    cornerstone3D.utilities.imageToWorldCoords
+    cornerstone3D.utilities.imageToWorldCoords,
+    cornerstone3D.metaData
   );
 
   // Filter what is found by DICOM SR to measurements we support.

@@ -1,7 +1,10 @@
+import { vec3 } from 'gl-matrix';
 import { Types, annotation } from '@cornerstonejs/tools';
 import * as cornerstone3D from '@cornerstonejs/core';
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
+
+const EPSILON = 1e-4;
 
 export default function addMeasurement(
   measurement,
@@ -73,7 +76,7 @@ export default function addMeasurement(
 }
 
 function _getRenderableData(GraphicType, GraphicData, imageId) {
-  let renderableData;
+  let renderableData: cornerstone3D.Types.Point3[];
 
   switch (GraphicType) {
     case SCOORD_TYPES.POINT:
@@ -92,16 +95,17 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
       break;
     case SCOORD_TYPES.CIRCLE: {
       // Todo: write cornerstone3D circle logic
-      const center = { x: GraphicData[0], y: GraphicData[1] };
-      const onPerimeter = { x: GraphicData[2], y: GraphicData[3] };
+      throw new Error('Not implemented in cs3d yet');
+      // const center = { x: GraphicData[0], y: GraphicData[1] };
+      // const onPerimeter = { x: GraphicData[2], y: GraphicData[3] };
 
-      const radius = cornerstoneMath.point.distance(center, onPerimeter);
+      // const radius = cornerstoneMath.point.distance(center, onPerimeter);
 
-      renderableData = {
-        center,
-        radius,
-      };
-      break;
+      // renderableData = {
+      //   center,
+      //   radius,
+      // };
+      // break;
     }
     case SCOORD_TYPES.ELLIPSE: {
       // GraphicData is ordered as [majorAxisStartX, majorAxisStartY, majorAxisEndX, majorAxisEndY, minorAxisStartX, minorAxisStartY, minorAxisEndX, minorAxisEndY]
@@ -109,53 +113,70 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
       // ellipse so we need to identify if the majorAxis is horizontal or vertical
       // and then choose the correct points to use for the ellipse.
 
-      const majorAxisStart = { x: GraphicData[0], y: GraphicData[1] };
-      const majorAxisEnd = { x: GraphicData[2], y: GraphicData[3] };
-      const minorAxisStart = { x: GraphicData[4], y: GraphicData[5] };
-      const minorAxisEnd = { x: GraphicData[6], y: GraphicData[7] };
-
-      const majorAxisIsHorizontal = majorAxisStart.y === majorAxisEnd.y;
-      const majorAxisIsVertical = majorAxisStart.x === majorAxisEnd.x;
-
-      let ellipsePointsImage;
-
-      if (majorAxisIsVertical) {
-        ellipsePointsImage = [
-          majorAxisStart.x,
-          majorAxisStart.y,
-          majorAxisEnd.x,
-          majorAxisEnd.y,
-          minorAxisStart.x,
-          minorAxisStart.y,
-          minorAxisEnd.x,
-          minorAxisEnd.y,
-        ];
-      } else if (majorAxisIsHorizontal) {
-        ellipsePointsImage = [
-          minorAxisStart.x,
-          minorAxisStart.y,
-          minorAxisEnd.x,
-          minorAxisEnd.y,
-          majorAxisStart.x,
-          majorAxisStart.y,
-          majorAxisEnd.x,
-          majorAxisEnd.y,
-        ];
-      } else {
-        throw new Error('ROTATED ELLIPSE NOT YET SUPPORTED');
-      }
-
-      const ellipsePointsWorld = [];
-      for (let i = 0; i < ellipsePointsImage.length; i += 2) {
+      const pointsWorld: cornerstone3D.Types.Point3[] = [];
+      for (let i = 0; i < GraphicData.length; i += 2) {
         const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
-          ellipsePointsImage[i],
-          ellipsePointsImage[i + 1],
+          GraphicData[i],
+          GraphicData[i + 1],
         ]);
 
-        ellipsePointsWorld.push(worldPos);
+        pointsWorld.push(worldPos);
       }
 
-      renderableData = ellipsePointsWorld;
+      const majorAxisStart = vec3.fromValues(...pointsWorld[0]);
+      const majorAxisEnd = vec3.fromValues(...pointsWorld[1]);
+      const minorAxisStart = vec3.fromValues(...pointsWorld[2]);
+      const minorAxisEnd = vec3.fromValues(...pointsWorld[3]);
+
+      const majorAxisVec = vec3.create();
+      vec3.sub(majorAxisVec, majorAxisEnd, majorAxisStart);
+
+      const minorAxisVec = vec3.create();
+      vec3.sub(minorAxisVec, minorAxisEnd, minorAxisStart);
+
+      const imagePlaneModule = cornerstone3D.metaData.get(
+        'imagePlaneModule',
+        imageId
+      );
+
+      if (!imagePlaneModule) {
+        throw new Error('imageId does not have imagePlaneModule metadata');
+      }
+
+      const {
+        columnCosines,
+      }: { columnCosines: cornerstone3D.Types.Point3 } = imagePlaneModule;
+
+      // find which axis is parallel to the columnCosines
+      const columnCosinesVec = vec3.fromValues(...columnCosines);
+
+      const projectedMajorAxisOnColVec = Math.abs(
+        vec3.dot(columnCosinesVec, majorAxisVec)
+      );
+      const projectedMinorAxisOnColVec = Math.abs(
+        vec3.dot(columnCosinesVec, minorAxisVec)
+      );
+
+      renderableData = [];
+      if (projectedMajorAxisOnColVec < EPSILON) {
+        // minor axis is vertical
+        renderableData = [
+          pointsWorld[2],
+          pointsWorld[3],
+          pointsWorld[0],
+          pointsWorld[1],
+        ];
+      } else if (projectedMinorAxisOnColVec < EPSILON) {
+        // major axis is vertical
+        renderableData = [
+          pointsWorld[0],
+          pointsWorld[1],
+          pointsWorld[2],
+          pointsWorld[3],
+        ];
+      } else {
+        console.warn('OBLIQUE ELLIPSE NOT YET SUPPORTED');
+      }
       break;
     }
     default:

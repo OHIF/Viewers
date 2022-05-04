@@ -6,7 +6,6 @@ import getModalityUnit from './utils/getModalityUnit';
 import { utils } from '@ohif/core';
 
 const EllipticalROI = {
-  // Currently we only update the labels
   toAnnotation: measurement => {
     const annotationUID = measurement.uid;
     const cornerstone3DAnnotation = annotation.state.getAnnotation(

@@ -112,12 +112,6 @@ const commandsModule = ({ servicesManager }) => {
           continue;
         }
 
-        // Commenting this out, since we should be able to set the tool to be
-        // active on a toolGroup whose viewports have not been added yet.
-        // if (!toolGroupViewportIds.includes(viewport.viewportId)) {
-        //   continue;
-        // }
-
         // Find the current active tool and set it to be passive
         const activeTool = toolGroup.getActivePrimaryMouseButtonTool();
 

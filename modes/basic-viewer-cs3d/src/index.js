@@ -136,13 +136,11 @@ function modeFactory({ modeConfiguration }) {
       const {
         ToolGroupService,
         MeasurementService,
-        SegmentationService,
         ToolBarService,
       } = servicesManager.services;
 
       ToolBarService.reset();
       MeasurementService.clearMeasurements();
-      SegmentationService.clearSegmentations();
       ToolGroupService.destroy();
     },
     validationTags: {

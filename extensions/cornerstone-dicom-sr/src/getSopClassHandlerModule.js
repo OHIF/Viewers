@@ -16,6 +16,9 @@ const sopClassUids = [
   '1.2.840.10008.5.1.4.1.1.88.33', //COMPREHENSIVE_SR:
 ];
 
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
+
 const CodeNameCodeSequenceValues = {
   ImagingMeasurementReport: '126000',
   ImageLibrary: '111028',
@@ -26,12 +29,12 @@ const CodeNameCodeSequenceValues = {
   TrackingIdentifier: '112039',
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
-  CornerstoneFreeText: 'CORNERSTONEFREETEXT', // CST4
+  CornerstoneFreeText: 'CORNERSTONEFREETEXT', //
 };
 
 const CodingSchemeDesignators = {
   SRT: 'SRT',
-  cornerstone3DTools1: 'CS3DT1',
+  cornerstone3DTools1: 'CORNERSTONEJS',
 };
 
 const RELATIONSHIP_TYPE = {
@@ -117,8 +120,8 @@ function _load(displaySet, servicesManager, extensionManager) {
   displaySet.measurements = _getMeasurements(ContentSequence);
 
   const mappings = MeasurementService.getSourceMappings(
-    'Cornerstone3DTools',
-    '1'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   displaySet.isHydrated = false;

@@ -65,7 +65,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       return;
     }
 
-    // Todo: add back
     const trackingUniqueIdentifiersForElement = getTrackingUniqueIdentifiersForElement(
       element
     );
@@ -143,6 +142,10 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           options
         );
 
+        if (!canvasCoordinates) {
+          return;
+        }
+
         const textLines = this._getTextBoxLinesFromLabels(label);
 
         let canvasCornersToUseForTextBox = canvasCoordinates;
@@ -194,21 +197,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     }
   };
 
-  // repositionTextBox(toolData, eventData) {
-  //   const toolBoundingBoxes = [];
-
-  //   for (let i = 0; i < toolData.length; i++) {
-  //     const toolDataI = toolData[i];
-
-  //     const { textBox } = toolDataI.handles;
-  //     const { anchorPoints } = textBox;
-
-  //     const boundingBox = _getBoundingBoxFromAnchorPoints(anchorPoints);
-  //     // Get the textbox bounding locations.
-  //     // Get the tool extents.
-  //   }
-  // }
-
   renderPolyLine(
     svgDrawingHelper,
     viewport,
@@ -216,6 +204,8 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     annotationUID,
     options
   ) {
+    // Todo: this needs to use the drawPolyLine from cs3D since it is implemented
+    // now, before it was implemented with a loop over drawLine which is hacky
     let canvasCoordinates;
     renderableData.map((data, index) => {
       canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
@@ -238,13 +228,12 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
   renderMultipoint(renderableData, eventData, options) {
     // Todo: cs3d
-    const context = getNewContext(eventData.canvasContext.canvas);
-
-    renderableData.forEach(points => {
-      draw(context, context => {
-        drawHandles(context, eventData, points, options);
-      });
-    });
+    // const context = getNewContext(eventData.canvasContext.canvas);
+    // renderableData.forEach(points => {
+    //   draw(context, context => {
+    //     drawHandles(context, eventData, points, options);
+    //   });
+    // });
   }
 
   renderPoint(
@@ -276,15 +265,12 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
   renderCircle(renderableData, eventData, options) {
     // Todo: cs3d
-    const { element } = eventData;
-
-    const context = getNewContext(eventData.canvasContext.canvas);
-
-    renderableData.forEach(circle => {
-      const { center, radius } = circle;
-
-      drawCircle(context, element, center, radius, options);
-    });
+    // const { element } = eventData;
+    // const context = getNewContext(eventData.canvasContext.canvas);
+    // renderableData.forEach(circle => {
+    //   const { center, radius } = circle;
+    //   drawCircle(context, element, center, radius, options);
+    // });
   }
 
   renderEllipse(
@@ -296,6 +282,12 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   ) {
     let canvasCoordinates;
     renderableData.map((data, index) => {
+      if (data.length === 0) {
+        // since oblique ellipse is not supported for hydration right now
+        // we just return
+        return;
+      }
+
       const ellipsePointsWorld = data;
 
       canvasCoordinates = ellipsePointsWorld.map(p =>

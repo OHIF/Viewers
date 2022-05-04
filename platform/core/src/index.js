@@ -22,7 +22,6 @@ import {
   DisplaySetService,
   ToolBarService,
   MeasurementService,
-  SegmentationService,
   ViewportGridService,
   HangingProtocolService,
   pubSubServiceInterface,
@@ -63,7 +62,6 @@ const OHIF = {
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  SegmentationService,
   ToolBarService, // TODO: TYPO
   ViewportGridService,
   HangingProtocolService,
@@ -99,7 +97,6 @@ export {
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  SegmentationService,
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,

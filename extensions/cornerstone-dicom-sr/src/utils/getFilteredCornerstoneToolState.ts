@@ -38,20 +38,19 @@ function getFilteredCornerstoneToolState(
     let finding;
     const findingSites = [];
 
-    // NOTE -> Any kind of freetext value abuses the DICOM standard,
-    // As CodeValues should map 1:1 with CodeMeanings.
-    // Ideally we would actually use SNOMED codes for this.
+    // NOTE -> We use the CORNERSTONEJS coding schemeDesignator which we have
+    // defined in the dcmjs adapters
     if (measurementDataI.label) {
       if (additionalFindingTypes.includes(toolType)) {
         finding = {
           CodeValue: 'CORNERSTONEFREETEXT',
-          CodingSchemeDesignator: 'CS3DT1',
+          CodingSchemeDesignator: 'CORNERSTONEJS',
           CodeMeaning: measurementDataI.label,
         };
       } else {
         findingSites.push({
           CodeValue: 'CORNERSTONEFREETEXT',
-          CodingSchemeDesignator: 'CS3DT1',
+          CodingSchemeDesignator: 'CORNERSTONEJS',
           CodeMeaning: measurementDataI.label,
         });
       }

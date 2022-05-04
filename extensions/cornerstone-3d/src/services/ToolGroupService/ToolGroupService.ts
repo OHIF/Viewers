@@ -16,11 +16,8 @@ type Tool = {
 type Tools = {
   active: Tool[];
   passive?: Tool[];
-  // Todo: add enabled, disabled
-};
-
-type configs = {
-  [key: string]: any;
+  enabled?: Tool[];
+  disabled?: Tool[];
 };
 
 export default class ToolGroupService {
@@ -182,7 +179,7 @@ export default class ToolGroupService {
   }
 
   private _setToolsMode(toolGroup, tools) {
-    const { active, passive, enabled } = tools;
+    const { active, passive, enabled, disabled } = tools;
     active.forEach(({ toolName, bindings }) => {
       toolGroup.setToolActive(toolName, { bindings });
     });
@@ -199,7 +196,11 @@ export default class ToolGroupService {
       });
     }
 
-    // Todo: add enabled and disabled
+    if (disabled) {
+      disabled.forEach(({ toolName }) => {
+        toolGroup.setToolDisabled(toolName);
+      });
+    }
   }
 
   private _addTools(toolGroup, tools, configs) {
