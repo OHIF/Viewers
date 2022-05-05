@@ -226,7 +226,6 @@ const SegmentationPanel = ({
     };
   }, [
     activeIndex,
-    updateSegmentationComboBox,
     viewports,
   ]);
 
@@ -234,21 +233,7 @@ const SegmentationPanel = ({
     const index = e.detail.activatedLabelmapIndex;
     if (index !== -1) {
       setState(state => ({ ...state, selectedSegmentation: index }));
-    } else {
-      cleanSegmentationComboBox();
     }
-  };
-
-  const cleanSegmentationComboBox = () => {
-    setState(state => ({
-      ...state,
-      segmentsHidden: [],
-      segmentNumbers: [],
-      labelMapList: [],
-      segmentList: [],
-      isDisabled: true,
-      selectedSegmentation: -1,
-    }));
   };
 
   const refreshSegmentations = () => {
@@ -431,23 +416,43 @@ const SegmentationPanel = ({
     return enabledElements[activeIndex].element;
   };
 
-  const onSegmentVisibilityChangeHandler = (isVisible, segmentNumber) => {
-    /** Get all labelmaps with this segmentNumber (overlapping segments) */
-    const { labelmaps3D } = getBrushStackState();
-    const possibleLabelMaps3D = labelmaps3D.filter(({ labelmaps2D }) => {
-      return labelmaps2D.some(({ segmentsOnLabelmap }) =>
-        segmentsOnLabelmap.includes(segmentNumber)
-      );
-    });
-
+  const onSegmentVisibilityChangeHandler = (
+    isVisible,
+    segmentNumber,
+    labelmap3D
+  ) => {
     let segmentsHidden = [];
-    possibleLabelMaps3D.forEach(labelmap3D => {
-      labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
+    if (labelmap3D.metadata.hasOverlapping) {
+      /** Get all labelmaps with this segmentNumber and that
+       * are from the same series (overlapping segments) */
+      const { labelmaps3D } = getBrushStackState();
 
-      segmentsHidden = [
-        ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
-      ];
-    });
+      const sameSeriesLabelMaps3D = labelmaps3D.filter(({ metadata }) => {
+        return (
+          labelmap3D.metadata.segmentationSeriesInstanceUID ===
+          metadata.segmentationSeriesInstanceUID
+        );
+      });
+
+      const possibleLabelMaps3D = sameSeriesLabelMaps3D.filter(
+        ({ labelmaps2D }) => {
+          return labelmaps2D.some(({ segmentsOnLabelmap }) =>
+            segmentsOnLabelmap.includes(segmentNumber)
+          );
+        }
+      );
+
+      possibleLabelMaps3D.forEach(labelmap3D => {
+        labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
+
+        segmentsHidden = [
+          ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
+        ];
+      });
+    } else {
+      labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
+      segmentsHidden = [...labelmap3D.segmentsHidden];
+    }
 
     setState(state => ({ ...state, segmentsHidden }));
 
@@ -514,6 +519,7 @@ const SegmentationPanel = ({
           label={segmentLabel}
           index={segmentNumber}
           color={color}
+          labelmap3D={labelmap3D}
           visible={!labelmap3D.segmentsHidden[segmentIndex]}
           onVisibilityChange={onSegmentVisibilityChangeHandler}
         />
@@ -688,7 +694,7 @@ const SegmentationPanel = ({
           count={state.segmentList.length}
           isVisible={
             state.segmentsHidden.filter(isHidden => isHidden === true).length <
-            state.segmentNumbers.length
+            state.segmentNumbers.length && state.segmentNumbers.length > 0
           }
           onVisibilityChange={onVisibilityChangeHandler}
         >

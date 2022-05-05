@@ -11,7 +11,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { extensionManager } from './../App.js';
+import { extensionManager, servicesManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
 
 // Contexts
@@ -22,6 +22,8 @@ import AppContext from '../context/AppContext';
 import './Viewer.css';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import StudyLoadingMonitor from '../components/StudyLoadingMonitor';
+
+const { studyMetadataManager } = OHIF.utils;
 
 class Viewer extends Component {
   static propTypes = {
@@ -68,9 +70,11 @@ class Viewer extends Component {
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
 
+    const external = { servicesManager };
+
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
-        retrieve: DICOMSR.retrieveMeasurements,
+        retrieve: server => DICOMSR.retrieveMeasurements(server, external),
         store: DICOMSR.storeMeasurements,
       },
       server,
@@ -101,6 +105,11 @@ class Viewer extends Component {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
+
+    document.removeEventListener(
+      'segmentationLoadingError',
+      this._updateThumbnails
+    );
   }
 
   retrieveTimepoints = filter => {
@@ -208,6 +217,12 @@ class Viewer extends Component {
         ),
       });
     }
+
+    document.addEventListener(
+      'segmentationLoadingError',
+      this._updateThumbnails.bind(this),
+      false
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -249,6 +264,20 @@ class Viewer extends Component {
       this.timepointApi.retrieveTimepoints({ PatientID });
       this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
+  }
+
+  _updateThumbnails() {
+    const { studies, activeViewportIndex, viewports } = this.props;
+
+    const activeViewport = viewports[activeViewportIndex];
+    const activeDisplaySetInstanceUID = activeViewport
+      ? activeViewport.displaySetInstanceUID
+      : undefined;
+
+    this.setState({
+      thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
+      activeDisplaySetInstanceUID,
+    });
   }
 
   _getActiveViewport() {
@@ -430,11 +459,34 @@ class Viewer extends Component {
 export default withDialog(Viewer);
 
 /**
+ * Async function to check if the displaySet has any derived one
+ *
+ * @param {*object} displaySet
+ * @param {*object} study
+ * @returns {bool}
+ */
+const _checkForDerivedDisplaySets = async function(displaySet, study) {
+  let derivedDisplaySetsNumber = 0;
+  if (
+    displaySet.Modality &&
+    !['SEG', 'SR', 'RTSTRUCT', 'RTDOSE'].includes(displaySet.Modality)
+  ) {
+    const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
+
+    const derivedDisplaySets = studyMetadata.getDerivedDatasets({
+      referencedSeriesInstanceUID: displaySet.SeriesInstanceUID,
+    });
+
+    derivedDisplaySetsNumber = derivedDisplaySets.length;
+  }
+
+  return derivedDisplaySetsNumber > 0;
+};
+
+/**
  * Async function to check if there are any inconsistences in the series.
  *
- * For segmentation checks that the geometry is consistent with the source images:
- * 1) no frames out of plane;
- * 2) have the same width and height.
+ * For segmentation returns any error during loading.
  *
  * For reconstructable 3D volume:
  * 1) Is series multiframe?
@@ -448,10 +500,7 @@ export default withDialog(Viewer);
  * @param {*object} displaySet
  * @returns {[string]} an array of strings containing the warnings
  */
-const _checkForSeriesInconsistencesWarnings = async function(
-  displaySet,
-  studies
-) {
+const _checkForSeriesInconsistencesWarnings = async function(displaySet) {
   if (displaySet.inconsistencyWarnings) {
     // warnings already checked and cached in displaySet
     return displaySet.inconsistencyWarnings;
@@ -513,98 +562,18 @@ const _checkForSeriesInconsistencesWarnings = async function(
         'The datasets is missing frames: ' + displaySet.missingFrames + '.'
       );
     }
+
+    if (displaySet.isSOPClassUIDSupported === false) {
+      inconsistencyWarnings.push('The datasets is not supported.');
+    }
+    displaySet.inconsistencyWarnings = inconsistencyWarnings;
   } else {
-    const segMetadata = displaySet.metadata;
-    if (!segMetadata) {
-      return inconsistencyWarnings;
-    }
-
-    const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
-      studies,
-      false
-    );
-    if (!referencedDisplaySet) {
-      return inconsistencyWarnings;
-    }
-
-    const imageIds = referencedDisplaySet.images.map(image =>
-      image.getImageId()
-    );
-    if (!imageIds || imageIds.length === 0) {
-      return inconsistencyWarnings;
-    }
-
-    for (
-      let i = 0,
-        groupsLen = segMetadata.PerFrameFunctionalGroupsSequence.length;
-      i < groupsLen;
-      ++i
-    ) {
-      const PerFrameFunctionalGroups =
-        segMetadata.PerFrameFunctionalGroupsSequence[i];
-      if (!PerFrameFunctionalGroups) {
-        continue;
-      }
-
-      let SourceImageSequence = undefined;
-      if (segMetadata.SourceImageSequence) {
-        SourceImageSequence = segMetadata.SourceImageSequence[i];
-      } else if (PerFrameFunctionalGroups.DerivationImageSequence) {
-        SourceImageSequence =
-          PerFrameFunctionalGroups.DerivationImageSequence.SourceImageSequence;
-      }
-      if (!SourceImageSequence) {
-        if (inconsistencyWarnings.length === 0) {
-          const warningMessage =
-            'The segmentation ' +
-            'has frames out of plane respect to the source images.';
-          inconsistencyWarnings.push(warningMessage);
-        }
-        continue;
-      }
-
-      const { ReferencedSOPInstanceUID } = SourceImageSequence;
-
-      const imageId = imageIds.find(imageId => {
-        const sopCommonModule = cornerstone.metaData.get(
-          'sopCommonModule',
-          imageId
-        );
-        if (!sopCommonModule) {
-          return;
-        }
-
-        return sopCommonModule.sopInstanceUID === ReferencedSOPInstanceUID;
-      });
-
-      if (!imageId) {
-        continue;
-      }
-
-      const sourceImageMetadata = cornerstone.metaData.get('instance', imageId);
-      if (
-        segMetadata.Rows !== sourceImageMetadata.Rows ||
-        segMetadata.Columns !== sourceImageMetadata.Columns
-      ) {
-        const warningMessage =
-          'The segmentation ' +
-          'has frames with different geometry ' +
-          'dimensions (Rows and Columns) respect to the source images.';
-        inconsistencyWarnings.push(warningMessage);
-        break;
-      }
-    }
-
-    if (inconsistencyWarnings.length !== 0) {
-      const warningMessage =
-        'The segmentation format is not supported yet. ' +
-        'The segmentation data (segments) could not be loaded.';
-      inconsistencyWarnings.push(warningMessage);
+    if (displaySet.loadError) {
+      inconsistencyWarnings.push(displaySet.segLoadErrorMessagge);
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
     }
   }
 
-  // cache the warnings
-  displaySet.inconsistencyWarnings = inconsistencyWarnings;
   return inconsistencyWarnings;
 };
 
@@ -684,7 +653,6 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       const {
         displaySetInstanceUID,
         SeriesDescription,
-        InstanceNumber,
         numImageFrames,
         SeriesNumber,
       } = displaySet;
@@ -700,13 +668,17 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
         imageId = displaySet.images[imageIndex].getImageId();
+      } else if (displaySet.isSOPClassUIDSupported === false) {
+        altImageText = displaySet.SOPClassUIDNaturalized;
       } else {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
-      const hasWarnings = _checkForSeriesInconsistencesWarnings(
+      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet);
+
+      const hasDerivedDisplaySets = _checkForDerivedDisplaySets(
         displaySet,
-        studies
+        study
       );
 
       return {
@@ -719,10 +691,10 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         altImageText,
         displaySetInstanceUID,
         SeriesDescription,
-        InstanceNumber,
         numImageFrames,
         SeriesNumber,
         hasWarnings,
+        hasDerivedDisplaySets,
       };
     });
 

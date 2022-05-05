@@ -22,11 +22,15 @@ class MeasurementTableItem extends Component {
   };
 
   render() {
-    const { warningTitle = '', hasWarnings } = this.props.measurementData;
+    const {
+      warningTitle = '',
+      hasWarnings,
+      isReadOnly,
+    } = this.props.measurementData;
 
     return (
       <React.Fragment>
-        {hasWarnings ? (
+        {hasWarnings && !isReadOnly ? (
           <OverlayTrigger
             key={this.props.itemIndex}
             placement="left"
@@ -44,8 +48,8 @@ class MeasurementTableItem extends Component {
             <div>{this.getTableListItem()}</div>
           </OverlayTrigger>
         ) : (
-            <React.Fragment>{this.getTableListItem()}</React.Fragment>
-          )}
+          <React.Fragment>{this.getTableListItem()}</React.Fragment>
+        )}
       </React.Fragment>
     );
   }
@@ -62,9 +66,11 @@ class MeasurementTableItem extends Component {
   };
 
   getTableListItem = () => {
-    const hasWarningClass = this.props.measurementData.hasWarnings
-      ? 'hasWarnings'
-      : '';
+    const hasWarningClass =
+      this.props.measurementData.hasWarnings &&
+      !this.props.measurementData.isReadOnly
+        ? 'hasWarnings'
+        : '';
 
     const actionButtons = [];
 
@@ -102,7 +108,9 @@ class MeasurementTableItem extends Component {
             })}
           </div>
           <div className="displayTexts">{this.getDataDisplayText()}</div>
-          <div className="rowActions">{actionButtons}</div>
+          {!this.props.measurementData.isReadOnly && (
+            <div className="rowActions">{actionButtons}</div>
+          )}
         </div>
       </TableListItem>
     );

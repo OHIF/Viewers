@@ -81,13 +81,10 @@ const RTPanel = ({
   useEffect(() => {
     updateStructureSets();
 
-    document.addEventListener('extensiondicomrtrtloaded', updateStructureSets);
+    document.addEventListener('rt-panel-tab-updated', updateStructureSets);
 
     return () => {
-      document.removeEventListener(
-        'extensiondicomrtrtloaded',
-        updateStructureSets
-      );
+      document.removeEventListener('rt-panel-tab-updated', updateStructureSets);
     };
   }, []);
 

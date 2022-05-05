@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.8](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.7...@ohif/ui@1.10.8) (2022-04-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.10.7](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.6...@ohif/ui@1.10.7) (2022-03-14)
+
+
+### Bug Fixes
+
+* remove docz + node version fix on docker ([#2743](https://github.com/OHIF/Viewers/issues/2743)) ([7164d1a](https://github.com/OHIF/Viewers/commit/7164d1a654571af99c22d2684e56cbdde05b2222))
+
+
+
+
+
+## [1.10.6](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.5...@ohif/ui@1.10.6) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.10.5](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.4...@ohif/ui@1.10.5) (2021-11-30)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.10.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.3...@ohif/ui@1.10.4) (2021-10-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.10.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.2...@ohif/ui@1.10.3) (2021-10-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
 ## [1.10.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.10.1...@ohif/ui@1.10.2) (2021-09-24)
 
 

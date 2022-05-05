@@ -5,8 +5,6 @@ const merge = require('webpack-merge');
 const webpack = require('webpack');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
 // ~~ Plugins
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
@@ -25,6 +23,15 @@ const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
+
+const setHeaders = (res, path) => {
+  res.setHeader('Content-Type', 'text/plain');
+  if (path.indexOf('.gz') !== -1) {
+    res.setHeader('Content-Encoding', 'gzip');
+  } else if (path.indexOf('.br') !== -1) {
+    res.setHeader('Content-Encoding', 'br');
+  }
+};
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
@@ -134,10 +141,39 @@ module.exports = (env, argv) => {
       hot: true,
       open: true,
       port: 3000,
-      host: '0.0.0.0',
-      public: 'http://localhost:' + 3000,
+      client: {
+        overlay: { errors: true, warnings: false },
+      },
+      static: [
+        {
+          directory: path.join(require('os').homedir(), 'dicomweb'),
+          staticOptions: {
+            extensions: ['gz', 'br'],
+            index: 'index.json.gz',
+            redirect: true,
+            setHeaders,
+          },
+          publicPath: '/dicomweb',
+        },
+        {
+          directory: '../../testdata',
+          staticOptions: {
+            extensions: ['gz', 'br'],
+            index: 'index.json.gz',
+            redirect: true,
+            setHeaders,
+          },
+          publicPath: '/testdata',
+        },
+      ],
+      //public: 'http://localhost:' + 3000,
+      //writeToDisk: true,
       historyApiFallback: {
         disableDotRule: true,
+      },
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
       },
     },
   });
