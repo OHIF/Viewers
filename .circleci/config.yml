@@ -93,6 +93,7 @@ jobs:
     working_directory: ~/Viewers
     docker:
       - image: circleci/python:3.7.0-stretch
+    resource_class: large
     steps:
       - checkout
       - install_cloud_sdk
