@@ -53,9 +53,14 @@ class Cornerstone3DViewportService implements IViewportService {
    * @param {*} elementRef
    */
   public enableElement(viewportIndex: number, elementRef: HTMLDivElement) {
-    const viewportInfo = new ViewportInfo(viewportIndex);
+    const viewportId = this.getViewportId(viewportIndex);
+    const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
     viewportInfo.setElement(elementRef);
     this.viewportsInfo.set(viewportIndex, viewportInfo);
+  }
+
+  public getViewportId(viewportIndex: number): string {
+    return `viewport-${viewportIndex}`;
   }
 
   /**

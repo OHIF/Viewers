@@ -1,9 +1,10 @@
-import { Types, Settings } from '@cornerstonejs/core';
+import { Types } from '@cornerstonejs/core';
 import {
   AnnotationTool,
   annotation,
   drawing,
   utilities,
+  Types as cs3DToolsTypes,
 } from '@cornerstonejs/tools';
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
 import SCOORD_TYPES from '../constants/scoordTypes';
@@ -88,21 +89,27 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       return;
     }
 
+    const styleSpecifier: cs3DToolsTypes.AnnotationStyle.StyleSpecifier = {
+      toolGroupId: this.toolGroupId,
+      toolName: this.getToolName(),
+      viewportId: enabledElement.viewport.id,
+    };
+
     for (let i = 0; i < filteredAnnotations.length; i++) {
       const annotation = filteredAnnotations[i];
-      const settings = Settings.getObjectSettings(
-        annotation,
-        DICOMSRDisplayTool
-      );
       const annotationUID = annotation.annotationUID;
       const { renderableData } = annotation.data.cachedStats;
       const { label, cachedStats } = annotation.data;
-      const lineWidth = this.getStyle(settings, 'lineWidth', annotation);
-      const lineDash = this.getStyle(settings, 'lineDash', annotation);
+
+      styleSpecifier.annotationUID = annotationUID;
+
+      const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
+      const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
       const color =
         cachedStats.TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
           ? 'rgb(0, 255, 0)'
-          : this.getStyle(settings, 'color', annotation);
+          : this.getStyle('color', styleSpecifier, annotation);
+
       const options = {
         color,
         lineDash,
@@ -125,7 +132,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
             renderMethod = this.renderPolyLine;
             break;
           case SCOORD_TYPES.CIRCLE:
-            renderMethod = this.renderCircle;
+            renderMethod = this.renderEllipse;
             break;
           case SCOORD_TYPES.ELLIPSE:
             renderMethod = this.renderEllipse;
@@ -169,7 +176,10 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         );
 
         const textBoxUID = '1';
-        const textBoxOptions = this.getLinkedTextBoxStyle(settings, annotation);
+        const textBoxOptions = this.getLinkedTextBoxStyle(
+          styleSpecifier,
+          annotation
+        );
 
         const boundingBox = drawing.drawLinkedTextBox(
           svgDrawingHelper,
@@ -206,34 +216,53 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   ) {
     // Todo: this needs to use the drawPolyLine from cs3D since it is implemented
     // now, before it was implemented with a loop over drawLine which is hacky
+
     let canvasCoordinates;
     renderableData.map((data, index) => {
       canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
-      const lineUID = `${index}`;
-      drawing.drawLine(
-        svgDrawingHelper,
-        annotationUID,
-        lineUID,
-        canvasCoordinates[0],
-        canvasCoordinates[1],
-        {
-          color: options.color,
-          width: options.lineWidth,
-        }
-      );
+
+      if (canvasCoordinates.length === 2) {
+        const lineUID = `${index}`;
+        drawing.drawLine(
+          svgDrawingHelper,
+          annotationUID,
+          lineUID,
+          canvasCoordinates[0],
+          canvasCoordinates[1],
+          {
+            color: options.color,
+            width: options.lineWidth,
+          }
+        );
+      } else {
+        throw new Error('Drawing polyline for SR not yet implemented');
+      }
     });
 
     return canvasCoordinates; // used for drawing textBox
   }
 
-  renderMultipoint(renderableData, eventData, options) {
-    // Todo: cs3d
-    // const context = getNewContext(eventData.canvasContext.canvas);
-    // renderableData.forEach(points => {
-    //   draw(context, context => {
-    //     drawHandles(context, eventData, points, options);
-    //   });
-    // });
+  renderMultipoint(
+    svgDrawingHelper,
+    viewport,
+    renderableData,
+    annotationUID,
+    options
+  ) {
+    let canvasCoordinates;
+    renderableData.map((data, index) => {
+      canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
+      const handleGroupUID = '0';
+      drawing.drawHandles(
+        svgDrawingHelper,
+        annotationUID,
+        handleGroupUID,
+        canvasCoordinates,
+        {
+          color: options.color,
+        }
+      );
+    });
   }
 
   renderPoint(
@@ -261,16 +290,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     });
 
     return canvasCoordinates; // used for drawing textBox
-  }
-
-  renderCircle(renderableData, eventData, options) {
-    // Todo: cs3d
-    // const { element } = eventData;
-    // const context = getNewContext(eventData.canvasContext.canvas);
-    // renderableData.forEach(circle => {
-    //   const { center, radius } = circle;
-    //   drawCircle(context, element, center, radius, options);
-    // });
   }
 
   renderEllipse(

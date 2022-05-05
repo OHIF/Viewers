@@ -32,9 +32,9 @@ class ViewportInfo {
   private displaySetOptions: Array<DisplaySetOptions>;
   private renderingEngineId: string;
 
-  constructor(viewportIndex: number) {
+  constructor(viewportIndex: number, viewportId: string) {
     this.viewportIndex = viewportIndex;
-    this.makeViewportId(viewportIndex);
+    this.viewportId = viewportId;
     const viewportOptions = {
       toolGroupId: 'default',
       viewportType: Enums.ViewportType.STACK,
@@ -109,11 +109,6 @@ class ViewportInfo {
 
   public getOrientation(): Types.Orientation {
     return this.viewportOptions.orientation;
-  }
-
-  private makeViewportId(viewportIndex: number): void {
-    const viewportId = `viewport-${viewportIndex}`;
-    this.setViewportId(viewportId);
   }
 
   private validateDisplaySetOptions(

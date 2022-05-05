@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 import OHIF, { utils } from '@ohif/core';
 
 import {
@@ -10,6 +9,8 @@ import {
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
+
+import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 
 const { formatDate } = utils;
@@ -35,19 +36,38 @@ function TrackedCornerstoneViewport(props) {
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
   const { trackedSeries } = trackedMeasurements.context;
 
-  // useEffect(() => {
-  //   if (isTracked) {
-  //     Settings.getRuntimeSettings().set('tool.style', {
-  //       lineDash: '',
-  //     });
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-3d.utilityModule.common'
+  );
 
-  //     return;
-  //   }
+  const { Cornerstone3DViewportService } = utilityModule.exports;
+  const viewportId = Cornerstone3DViewportService.getViewportId(viewportIndex);
 
-  //   Settings.getRuntimeSettings().set('tool.style', {
-  //     lineDash: '5',
-  //   });
-  // }, [isTracked]);
+  useEffect(() => {
+    if (isTracked) {
+      annotation.config.style.setViewportToolStyles(viewportId, {
+        global: {
+          lineDash: '',
+        },
+      });
+
+      Cornerstone3DViewportService.getRenderingEngine().renderViewport(
+        viewportId
+      );
+
+      return;
+    }
+
+    annotation.config.style.setViewportToolStyles(`viewport-${viewportIndex}`, {
+      global: {
+        lineDash: '4,4',
+      },
+    });
+
+    Cornerstone3DViewportService.getRenderingEngine().renderViewport(
+      viewportId
+    );
+  }, [isTracked]);
 
   const {
     Modality,

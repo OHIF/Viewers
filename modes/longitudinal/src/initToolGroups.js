@@ -25,7 +25,7 @@ function initDefaultToolGroup(extensionManager, ToolGroupService) {
       { toolName: toolNames.Length },
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.Probe },
+      { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
@@ -82,14 +82,13 @@ function initSRToolGroup(extensionManager, ToolGroupService) {
       },
     ],
     passive: [
-      {
-        toolName: SRToolNames.SRLengthTool,
-      },
-      // { toolName: toolNames.Bidirectional },
-      // { toolName: toolNames.Probe },
-      // { toolName: toolNames.EllipticalROI },
-      // { toolName: toolNames.RectangleROI },
-      // { toolName: toolNames.StackScroll },
+      { toolName: toolNames.Length },
+      { toolName: toolNames.ArrowAnnotate },
+      { toolName: toolNames.Bidirectional },
+      { toolName: toolNames.Probe },
+      { toolName: toolNames.EllipticalROI },
+      { toolName: toolNames.RectangleROI },
+      { toolName: toolNames.StackScroll },
     ],
     enabled: [
       {

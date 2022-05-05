@@ -2,9 +2,11 @@ import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
+import { adapters } from 'dcmjs';
+
+const { CodeScheme } = adapters.Cornerstone3D;
 
 const { ImageSet } = classes;
-
 // TODO ->
 // Add SR thumbnail
 // Make viewport
@@ -29,12 +31,12 @@ const CodeNameCodeSequenceValues = {
   TrackingIdentifier: '112039',
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
-  CornerstoneFreeText: 'CORNERSTONEFREETEXT', //
+  CornerstoneFreeText: CodeScheme.codeValues.CORNERSTONEFREETEXT, //
 };
 
 const CodingSchemeDesignators = {
   SRT: 'SRT',
-  cornerstone3DTools1: 'CORNERSTONEJS',
+  cornerstone3DTools1: CodeScheme.CodingSchemeDesignator,
 };
 
 const RELATIONSHIP_TYPE = {

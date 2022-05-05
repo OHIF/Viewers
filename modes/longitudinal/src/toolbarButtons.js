@@ -75,14 +75,6 @@ export default [
             },
             context: 'CORNERSTONE3D',
           },
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolGroupId: 'SRToolGroup',
-              toolName: 'SRLength',
-            },
-            context: 'CORNERSTONE3D',
-          },
         ],
         'Length'
       ),
@@ -108,21 +100,21 @@ export default [
           ],
           'Length Tool'
         ),
-        // _createToolButton(
-        //   'Probe',
-        //   'tool-probe',
-        //   'Probe',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'Probe',
-        //       },
-        //       context: 'CORNERSTONE3D',
-        //     },
-        //   ],
-        //   'Probe Tool'
-        // ),
+        _createToolButton(
+          'Probe',
+          'tool-probe',
+          'Probe',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'DragProbe',
+              },
+              context: 'CORNERSTONE3D',
+            },
+          ],
+          'Probe Tool'
+        ),
         _createToolButton(
           'Bidirectional',
           'tool-bidirectional',

@@ -94,18 +94,65 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
       }
       break;
     case SCOORD_TYPES.CIRCLE: {
-      // Todo: write cornerstone3D circle logic
-      throw new Error('Not implemented in cs3d yet');
       // const center = { x: GraphicData[0], y: GraphicData[1] };
       // const onPerimeter = { x: GraphicData[2], y: GraphicData[3] };
+      const pointsWorld = [];
+      for (let i = 0; i < GraphicData.length; i += 2) {
+        const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
+          GraphicData[i],
+          GraphicData[i + 1],
+        ]);
 
-      // const radius = cornerstoneMath.point.distance(center, onPerimeter);
+        pointsWorld.push(worldPos);
+      }
 
-      // renderableData = {
-      //   center,
-      //   radius,
-      // };
-      // break;
+      // Using the ellipse to draw circle
+      const center = pointsWorld[0];
+      const onPerimeter = pointsWorld[1];
+
+      const radius = vec3.distance(center, onPerimeter);
+
+      const imagePlaneModule = cornerstone3D.metaData.get(
+        'imagePlaneModule',
+        imageId
+      );
+
+      if (!imagePlaneModule) {
+        throw new Error('No imagePlaneModule found');
+      }
+
+      const {
+        columnCosines,
+        rowCosines,
+      }: {
+        columnCosines: cornerstone3D.Types.Point3;
+        rowCosines: cornerstone3D.Types.Point3;
+      } = imagePlaneModule;
+
+      // we need to get major/minor axis (which are both the same size major = minor)
+
+      // first axisStart
+      const firstAxisStart = vec3.create();
+      vec3.scaleAndAdd(firstAxisStart, center, columnCosines, radius);
+
+      const firstAxisEnd = vec3.create();
+      vec3.scaleAndAdd(firstAxisEnd, center, columnCosines, -radius);
+
+      // second axisStart
+      const secondAxisStart = vec3.create();
+      vec3.scaleAndAdd(secondAxisStart, center, rowCosines, radius);
+
+      const secondAxisEnd = vec3.create();
+      vec3.scaleAndAdd(secondAxisEnd, center, rowCosines, -radius);
+
+      renderableData = [
+        firstAxisStart as cornerstone3D.Types.Point3,
+        firstAxisEnd as cornerstone3D.Types.Point3,
+        secondAxisStart as cornerstone3D.Types.Point3,
+        secondAxisEnd as cornerstone3D.Types.Point3,
+      ];
+
+      break;
     }
     case SCOORD_TYPES.ELLIPSE: {
       // GraphicData is ordered as [majorAxisStartX, majorAxisStartY, majorAxisEndX, majorAxisEndY, minorAxisStartX, minorAxisStartY, minorAxisEndX, minorAxisEndY]
@@ -131,8 +178,12 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
       const majorAxisVec = vec3.create();
       vec3.sub(majorAxisVec, majorAxisEnd, majorAxisStart);
 
+      // normalize majorAxisVec to avoid scaling issues
+      vec3.normalize(majorAxisVec, majorAxisVec);
+
       const minorAxisVec = vec3.create();
       vec3.sub(minorAxisVec, minorAxisEnd, minorAxisStart);
+      vec3.normalize(minorAxisVec, minorAxisVec);
 
       const imagePlaneModule = cornerstone3D.metaData.get(
         'imagePlaneModule',
@@ -157,22 +208,23 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
         vec3.dot(columnCosinesVec, minorAxisVec)
       );
 
+      const absoluteOfMajorDotProduct = Math.abs(projectedMajorAxisOnColVec);
+      const absoluteOfMinorDotProduct = Math.abs(projectedMinorAxisOnColVec);
+
       renderableData = [];
-      if (projectedMajorAxisOnColVec < EPSILON) {
-        // minor axis is vertical
+      if (Math.abs(absoluteOfMajorDotProduct - 1) < EPSILON) {
         renderableData = [
-          pointsWorld[2],
-          pointsWorld[3],
           pointsWorld[0],
           pointsWorld[1],
+          pointsWorld[2],
+          pointsWorld[3],
         ];
-      } else if (projectedMinorAxisOnColVec < EPSILON) {
-        // major axis is vertical
+      } else if (Math.abs(absoluteOfMinorDotProduct - 1) < EPSILON) {
         renderableData = [
-          pointsWorld[0],
-          pointsWorld[1],
           pointsWorld[2],
           pointsWorld[3],
+          pointsWorld[0],
+          pointsWorld[1],
         ];
       } else {
         console.warn('OBLIQUE ELLIPSE NOT YET SUPPORTED');

@@ -9,11 +9,12 @@ const {
   VolumeRotateMouseWheelTool,
   MIPJumpToClickTool,
   LengthTool,
-  ProbeTool,
+  // ProbeTool,
   RectangleROITool,
   EllipticalROITool,
   BidirectionalTool,
   ArrowAnnotateTool,
+  DragProbeTool,
   // CrosshairsTool,
 } = cornerstone3DTools;
 
@@ -32,6 +33,7 @@ export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.addTool(EllipticalROITool);
   cornerstone3DTools.addTool(BidirectionalTool);
   cornerstone3DTools.addTool(ArrowAnnotateTool);
+  cornerstone3DTools.addTool(DragProbeTool);
   // cornerstone3DTools.addTool(CrosshairsTool);
 }
 
@@ -45,7 +47,7 @@ const toolNames = {
   VolumeRotateMouseWheel: VolumeRotateMouseWheelTool.toolName,
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,
-  Probe: ProbeTool.toolName,
+  DragProbe: DragProbeTool.toolName,
   RectangleROI: RectangleROITool.toolName,
   EllipticalROI: EllipticalROITool.toolName,
   Bidirectional: BidirectionalTool.toolName,
