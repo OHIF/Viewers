@@ -20,6 +20,7 @@ function TrackedCornerstoneViewport(props) {
     children,
     displaySets,
     viewportIndex,
+    viewportLabel,
     servicesManager,
     extensionManager,
     commandsManager,
@@ -91,8 +92,6 @@ function TrackedCornerstoneViewport(props) {
     setIsTracked(!isTracked);
   }
 
-  const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
-
   function switchMeasurement(direction) {
     const newTrackedMeasurementUID = _getNextMeasurementUID(
       direction,
@@ -134,7 +133,7 @@ function TrackedCornerstoneViewport(props) {
         }}
         onSeriesChange={direction => switchMeasurement(direction)}
         studyData={{
-          label,
+          label: viewportLabel,
           isTracked,
           isLocked: false,
           isRehydratable: false,

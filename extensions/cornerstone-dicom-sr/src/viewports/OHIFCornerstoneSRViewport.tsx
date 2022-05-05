@@ -22,6 +22,7 @@ function OHIFCornerstoneSRViewport(props) {
     dataSource,
     displaySets,
     viewportIndex,
+    viewportLabel,
     servicesManager,
     extensionManager,
   } = props;
@@ -329,8 +330,6 @@ function OHIFCornerstoneSRViewport(props) {
     SeriesNumber,
   } = referencedDisplaySetMetadata;
 
-  const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
-
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
   return (
     <>
@@ -347,7 +346,7 @@ function OHIFCornerstoneSRViewport(props) {
         }}
         onSeriesChange={onMeasurementChange}
         studyData={{
-          label,
+          label: viewportLabel,
           useAltStyling: true,
           isTracked: false,
           isLocked,
@@ -355,7 +354,7 @@ function OHIFCornerstoneSRViewport(props) {
           isHydrated,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
-          seriesDescription: 'sr viewport',
+          seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
             patientName: PatientName
@@ -392,8 +391,6 @@ function OHIFCornerstoneSRViewport(props) {
     </>
   );
 }
-
-const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 OHIFCornerstoneSRViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
