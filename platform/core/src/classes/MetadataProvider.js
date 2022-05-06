@@ -435,7 +435,7 @@ class MetadataProvider {
     if (urlRegex.test(imageId)) {
       imageURI = imageId;
     } else {
-      imageURI = utils.getImageURI(imageId);
+      imageURI = utils.imageIdToURI(imageId);
     }
 
     return this.imageURIToUIDs.get(imageURI);

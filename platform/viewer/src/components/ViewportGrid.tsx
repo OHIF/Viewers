@@ -87,8 +87,13 @@ function ViewerViewportGrid(props) {
         }
       }
     },
-    [viewportGrid, numRows, numCols]
+    [viewportGrid, numRows, numCols, viewportGrid]
   );
+
+  useEffect(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    updateDisplaySetsForViewports(displaySets);
+  }, [numRows, numCols]);
 
   // Layout change based on hanging protocols
   useEffect(() => {
