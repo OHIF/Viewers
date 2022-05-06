@@ -91,10 +91,10 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
           // GCP supports it. Fuzzy searching is searching the patient name using the
           // fuzzy method. Fo us we extract the patient name and filter studies by that
           // UID.
-          const { patientId, studyInstanceUid } = origParams;
+          const { patientId: mrn, studyInstanceUid } = origParams;
           let queryParams = ""
           if(patientId) {
-            queryParams = { patient_id: patientId }
+            queryParams = { mrn }
           } else {
             queryParams = { uid : studyInstanceUid }
           }
