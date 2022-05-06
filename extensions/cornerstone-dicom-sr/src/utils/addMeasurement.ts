@@ -1,7 +1,7 @@
 import { vec3 } from 'gl-matrix';
 import { Types, annotation } from '@cornerstonejs/tools';
 import * as cornerstone3D from '@cornerstonejs/core';
-import TOOL_NAMES from '../constants/toolNames';
+import toolNames from '../tools/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
 
 const EPSILON = 1e-4;
@@ -13,7 +13,7 @@ export default function addMeasurement(
 ) {
   // TODO -> Render rotated ellipse .
 
-  const toolName = TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
+  const toolName = toolNames.DICOMSRDisplay;
 
   const measurementData = {
     TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
@@ -94,8 +94,6 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
       }
       break;
     case SCOORD_TYPES.CIRCLE: {
-      // const center = { x: GraphicData[0], y: GraphicData[1] };
-      // const onPerimeter = { x: GraphicData[2], y: GraphicData[3] };
       const pointsWorld = [];
       for (let i = 0; i < GraphicData.length; i += 2) {
         const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
@@ -106,7 +104,9 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
         pointsWorld.push(worldPos);
       }
 
-      // Using the ellipse to draw circle
+      // We do not have an explicit draw circle svg helper in Cornerstone3D at
+      // this time, but we can use the ellipse svg helper to draw a circle, so
+      // here we reshape the data for that purpose.
       const center = pointsWorld[0];
       const onPerimeter = pointsWorld[1];
 

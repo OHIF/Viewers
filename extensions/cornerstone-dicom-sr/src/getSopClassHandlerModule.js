@@ -4,7 +4,7 @@ import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adapters } from 'dcmjs';
 
-const { CodeScheme } = adapters.Cornerstone3D;
+const { CodeScheme: Cornerstone3DCodeScheme } = adapters.Cornerstone3D;
 
 const { ImageSet } = classes;
 // TODO ->
@@ -31,12 +31,12 @@ const CodeNameCodeSequenceValues = {
   TrackingIdentifier: '112039',
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
-  CornerstoneFreeText: CodeScheme.codeValues.CORNERSTONEFREETEXT, //
+  CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT, //
 };
 
 const CodingSchemeDesignators = {
   SRT: 'SRT',
-  cornerstone3DTools1: CodeScheme.CodingSchemeDesignator,
+  cornerstone3DTools1: Cornerstone3DCodeScheme.CodingSchemeDesignator,
 };
 
 const RELATIONSHIP_TYPE = {

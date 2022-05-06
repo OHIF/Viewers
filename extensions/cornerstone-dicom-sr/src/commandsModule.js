@@ -135,7 +135,7 @@ const commandsModule = ({}) => {
   return {
     actions,
     definitions,
-    defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE_STRUCTURED_REPORT',
+    defaultContext: 'CORNERSTONE_STRUCTURED_REPORT',
   };
 };
 

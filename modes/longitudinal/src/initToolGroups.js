@@ -49,7 +49,6 @@ function initSRToolGroup(extensionManager, ToolGroupService) {
 
   const { toolNames: SRToolNames } = SRUtilityModule.exports;
   const { toolNames, Enums } = CS3DUtilityModule.exports;
-
   const tools = {
     active: [
       {
@@ -82,23 +81,19 @@ function initSRToolGroup(extensionManager, ToolGroupService) {
       },
     ],
     passive: [
-      { toolName: toolNames.Length },
-      { toolName: toolNames.ArrowAnnotate },
-      { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.Probe },
-      { toolName: toolNames.EllipticalROI },
-      { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
+      { toolName: SRToolNames.SRLength },
+      { toolName: SRToolNames.SRArrowAnnotate },
+      { toolName: SRToolNames.SRBidirectional },
+      { toolName: SRToolNames.SREllipticalROI },
     ],
     enabled: [
       {
-        toolName: SRToolNames.DICOMSRDisplayTool,
+        toolName: SRToolNames.DICOMSRDisplay,
         bindings: [],
       },
     ],
     // disabled
   };
-
   const toolGroupId = 'SRToolGroup';
   ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
 }

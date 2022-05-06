@@ -38,7 +38,7 @@ async function createReportAsync(
         additionalFindingTypes: ['ArrowAnnotate'],
         options,
       },
-      'ACTIVE_VIEWPORT::CORNERSTONE_STRUCTURED_REPORT'
+      'CORNERSTONE_STRUCTURED_REPORT'
     );
 
     // The "Mode" route listens for DicomMetadataStore changes

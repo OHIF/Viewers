@@ -68,6 +68,10 @@ function TrackedCornerstoneViewport(props) {
     Cornerstone3DViewportService.getRenderingEngine().renderViewport(
       viewportId
     );
+
+    return () => {
+      annotation.config.style.setViewportToolStyles(viewportId, {});
+    };
   }, [isTracked]);
 
   const {

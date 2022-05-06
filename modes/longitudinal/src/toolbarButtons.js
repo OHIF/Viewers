@@ -54,7 +54,7 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-export default [
+const toolbarButtons = [
   // Measurement
   {
     id: 'MeasurementTools',
@@ -73,6 +73,15 @@ export default [
             commandOptions: {
               toolName: 'Length',
             },
+            context: 'CORNERSTONE3D',
+          },
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'SRLength',
+              toolGroupId: 'SRToolGroup',
+            },
+            // we can use the setToolActive command for this from Cornerstone3D commandsModule
             context: 'CORNERSTONE3D',
           },
         ],
@@ -97,23 +106,17 @@ export default [
               },
               context: 'CORNERSTONE3D',
             },
-          ],
-          'Length Tool'
-        ),
-        _createToolButton(
-          'Probe',
-          'tool-probe',
-          'Probe',
-          [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'DragProbe',
+                toolName: 'SRLength',
+                toolGroupId: 'SRToolGroup',
               },
+              // we can use the setToolActive command for this from Cornerstone3D commandsModule
               context: 'CORNERSTONE3D',
             },
           ],
-          'Probe Tool'
+          'Length Tool'
         ),
         _createToolButton(
           'Bidirectional',
@@ -124,6 +127,14 @@ export default [
               commandName: 'setToolActive',
               commandOptions: {
                 toolName: 'Bidirectional',
+              },
+              context: 'CORNERSTONE3D',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRBidirectional',
+                toolGroupId: 'SRToolGroup',
               },
               context: 'CORNERSTONE3D',
             },
@@ -142,6 +153,14 @@ export default [
               },
               context: 'CORNERSTONE3D',
             },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRArrowAnnotate',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE3D',
+            },
           ],
           'Arrow Annotate'
         ),
@@ -154,6 +173,14 @@ export default [
               commandName: 'setToolActive',
               commandOptions: {
                 toolName: 'EllipticalROI',
+              },
+              context: 'CORNERSTONE3D',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SREllipticalROI',
+                toolGroupId: 'SRToolGroup',
               },
               context: 'CORNERSTONE3D',
             },
@@ -387,3 +414,5 @@ export default [
     },
   },
 ];
+
+export default toolbarButtons;
