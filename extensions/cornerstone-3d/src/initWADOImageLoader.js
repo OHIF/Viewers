@@ -11,6 +11,10 @@ let initialized = false;
 
 function initWebWorkers(appConfig) {
   const config = {
+    // Sets the default max number of web workers to 3 if not already set
+    // Then takes the minimum of the hardware concurrency-1 and the
+    // max web workers.  Typically that results in 3 web workers, which
+    // prevents a crash on Windows Chrome.
     maxWebWorkers: Math.min(
       Math.max(navigator.hardwareConcurrency - 1, 1),
       appConfig.maxNumberOfWebWorkers || 3

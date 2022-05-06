@@ -140,6 +140,8 @@ StudyBrowser.propTypes = {
               imageSrc: PropTypes.string,
               imageAltText: PropTypes.string,
               seriesDate: PropTypes.string,
+              // Series numbers can be strings or numbers depending on the
+              // DICOMweb implementation, and on if they are modified elsewhere.
               seriesNumber: PropTypes.oneOfType([
                 PropTypes.string,
                 PropTypes.number

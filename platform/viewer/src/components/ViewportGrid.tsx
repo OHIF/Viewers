@@ -363,7 +363,10 @@ function _getViewportComponent(displaySets, viewportComponents) {
       return component;
     }
   }
-  console.warn("Didn't find a viewport component handling", SOPClassHandlerId);
+
+  // This happens when there is a display set matched, but there isn't actually
+  // a viewport control for it.  TODO - add a warning box viewport.
+  console.error("Didn't find a viewport component handling", SOPClassHandlerId);
   return EmptyViewport;
 }
 
