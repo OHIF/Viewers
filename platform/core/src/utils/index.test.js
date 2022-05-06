@@ -17,7 +17,6 @@ describe('Top level exports', () => {
       //'loadAndCacheDerivedDisplaySets',
       'isDisplaySetReconstructable',
       'isImage',
-      'DicomLoaderService',
       'urlUtil',
       'makeDeferred',
       'makeCancelable',

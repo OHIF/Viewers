@@ -30,9 +30,6 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "^0.6.0",
-    "@cornerstonejs/tools": "^0.9.0",
-    "@cornerstonejs/streaming-image-volume-loader": "^0.2.13",
     "cornerstone-math": "0.1.9",
     "cornerstone-wado-image-loader": "^4.1.0",
     "dicom-parser": "^1.8.9",

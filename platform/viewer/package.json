@@ -45,10 +45,6 @@
     "dist",
     "README.md"
   ],
-  "peerDependencies": {
-    "@cornerstonejs/core": "^0.6.0",
-    "cornerstone-core": "^2.6.0"
-  },
   "dependencies": {
     "@babel/runtime": "7.16.3",
     "@ohif/core": "^3.0.0",
