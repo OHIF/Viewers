@@ -3,20 +3,7 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const Length = {
-  toAnnotation: measurement => {
-    const annotationUID = measurement.uid;
-    const cornerstone3DAnnotation = annotation.state.getAnnotation(
-      annotationUID
-    );
-
-    if (!cornerstone3DAnnotation) {
-      return;
-    }
-
-    if (cornerstone3DAnnotation.data.label !== measurement.label) {
-      cornerstone3DAnnotation.data.label = measurement.label;
-    }
-  },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

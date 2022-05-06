@@ -83,7 +83,7 @@ const connectToolsToMeasurementService = (
     Cornerstone3DViewportService,
     csTools3DVer1MeasurementSource
   );
-  const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
+  const { addOrUpdate, remove } = csTools3DVer1MeasurementSource;
 
   //
   function addMeasurement(csToolsEvent) {
@@ -98,7 +98,7 @@ const connectToolsToMeasurementService = (
       // Todo: this should be changed when a measurement can include multiple annotations
       // in the future
       annotationAddedEventDetail.uid = annotationUID;
-      annotationToMeasurement(toolName, annotationAddedEventDetail);
+      addOrUpdate(toolName, annotationAddedEventDetail);
     } catch (error) {
       console.warn('Failed to update measurement:', error);
     }
@@ -120,7 +120,7 @@ const connectToolsToMeasurementService = (
       const { toolName } = metadata;
 
       annotationModifiedEventDetail.uid = annotationUID;
-      annotationToMeasurement(toolName, annotationModifiedEventDetail);
+      addOrUpdate(toolName, annotationModifiedEventDetail);
     } catch (error) {
       console.warn('Failed to update measurement:', error);
     }
@@ -184,8 +184,6 @@ const connectMeasurementServiceToTools = (
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
-  const { measurementToAnnotation } = csTools3DVer1MeasurementSource;
-
   MeasurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements }) => {
     if (!Object.keys(measurements).length) {
       return;
@@ -214,8 +212,17 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const annotationType = measurement.metadata.toolName;
-      measurementToAnnotation(annotationType, measurement);
+      const { id, label } = measurement;
+
+      const sourceAnnotation = annotation.state.getAnnotation(id);
+
+      if (sourceAnnotation) {
+        sourceAnnotation.label = label;
+        if (sourceAnnotation.hasOwnProperty('text')) {
+          // Deal with the weird case of ArrowAnnotate.
+          sourceAnnotation.text = label;
+        }
+      }
     }
   );
 

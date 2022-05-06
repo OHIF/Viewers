@@ -5,20 +5,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
 const Bidirectional = {
-  toAnnotation: measurement => {
-    const annotationUID = measurement.uid;
-    const cornerstone3DAnnotation = annotation.state.getAnnotation(
-      annotationUID
-    );
-
-    if (!cornerstone3DAnnotation) {
-      return;
-    }
-
-    if (cornerstone3DAnnotation.data.label !== measurement.label) {
-      cornerstone3DAnnotation.data.label = measurement.label;
-    }
-  },
+  toAnnotation: measurement => {},
   toMeasurement: (
     csToolsEventDetail,
     DisplaySetService,
