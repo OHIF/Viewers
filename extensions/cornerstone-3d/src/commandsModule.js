@@ -137,8 +137,8 @@ const commandsModule = ({ servicesManager }) => {
 
       if (viewport instanceof cornerstone3D.StackViewport) {
         const { rotation: currentRotation } = viewport.getProperties();
-
-        viewport.setProperties({ rotation: currentRotation + rotation });
+        const newRotation = (currentRotation + rotation) % 360;
+        viewport.setProperties({ rotation: newRotation });
         viewport.render();
       }
     },
