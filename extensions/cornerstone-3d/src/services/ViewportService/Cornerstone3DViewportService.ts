@@ -9,6 +9,7 @@ import {
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, { ViewportOptions, DisplaySetOptions } from './Viewport';
+import { IStackViewport } from '@cornerstonejs/core/dist/esm/types';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -52,9 +53,14 @@ class Cornerstone3DViewportService implements IViewportService {
    * @param {*} elementRef
    */
   public enableElement(viewportIndex: number, elementRef: HTMLDivElement) {
-    const viewportInfo = new ViewportInfo(viewportIndex);
+    const viewportId = this.getViewportId(viewportIndex);
+    const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
     viewportInfo.setElement(elementRef);
     this.viewportsInfo.set(viewportIndex, viewportInfo);
+  }
+
+  public getViewportId(viewportIndex: number): string {
+    return `viewport-${viewportIndex}`;
   }
 
   /**
@@ -174,18 +180,28 @@ class Cornerstone3DViewportService implements IViewportService {
       },
     };
 
+    // Todo: this is not optimal at all, we are re-enabling the already enabled
+    // element which is not what we want. But enabledElement as part of the
+    // renderingEngine is designed to be used like this. This will trigger
+    // ENABLED_ELEMENT again and again, which will run onEnableElement callbacks
     renderingEngine.enableElement(viewportInput);
     this._setDisplaySets(viewportId, viewportData, viewportInfo);
   }
 
-  public getCornerstone3DViewport(viewportId: string): StackViewport | null {
+  public getCornerstone3DViewport(viewportId: string): IStackViewport | null {
     const viewportInfo = this.getViewportInfoById(viewportId);
 
-    if (!viewportInfo) {
+    if (
+      !viewportInfo ||
+      !this.renderingEngine ||
+      this.renderingEngine.hasBeenDestroyed
+    ) {
       return null;
     }
 
-    const viewport = this.renderingEngine.getViewport(viewportId);
+    const viewport = this.renderingEngine.getViewport(
+      viewportId
+    ) as IStackViewport;
 
     return viewport;
   }
@@ -214,7 +230,6 @@ class Cornerstone3DViewportService implements IViewportService {
 
     const { imageIds, initialImageIdIndex } = viewportData.stack;
     const { voi, voiInverted } = displaySetOptions[0];
-
     const properties = {};
     if (voi.windowWidth || voi.windowCenter) {
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(

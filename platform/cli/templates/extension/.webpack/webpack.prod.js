@@ -8,7 +8,7 @@ const outputFolder = path.join(__dirname, '../dist');
 const config = {
   mode: 'production',
   entry: rootDir + '/' + pkg.module,
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   output: {
     path: outputFolder,
     filename: outputFile,

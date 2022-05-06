@@ -1,5 +1,6 @@
-import { eventTarget, EVENTS } from '@cornerstonejs/core';
+import { eventTarget } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
+import { DicomMetadataStore } from '@ohif/core';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
@@ -7,7 +8,8 @@ const { removeAnnotation } = annotation.state;
 
 const csToolsEvents = Enums.Events;
 
-const CORNERSTONE_TOOLS_3D_SOURCE_NAME = 'CornerstoneTools3D';
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 const initMeasurementService = (
   MeasurementService,
@@ -19,15 +21,15 @@ const initMeasurementService = (
     Length,
     Bidirectional,
     EllipticalROI,
-    RectangleROI,
+    ArrowAnnotate,
   } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
     Cornerstone3DViewportService
   );
   const csTools3DVer1MeasurementSource = MeasurementService.createSource(
-    CORNERSTONE_TOOLS_3D_SOURCE_NAME,
-    '1'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   /* Mappings */
@@ -57,10 +59,10 @@ const initMeasurementService = (
 
   MeasurementService.addMapping(
     csTools3DVer1MeasurementSource,
-    'RectangleROI',
-    RectangleROI.matchingCriteria,
-    RectangleROI.toAnnotation,
-    RectangleROI.toMeasurement
+    'ArrowAnnotate',
+    ArrowAnnotate.matchingCriteria,
+    ArrowAnnotate.toAnnotation,
+    ArrowAnnotate.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;
@@ -82,63 +84,85 @@ const connectToolsToMeasurementService = (
     csTools3DVer1MeasurementSource
   );
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
-  const elementEnabledEvt = EVENTS.ELEMENT_ENABLED;
 
-  /* Measurement Service Events */
-  eventTarget.addEventListener(elementEnabledEvt, evt => {
-    function updateMeasurement(csToolsEvent) {
+  //
+  function addMeasurement(csToolsEvent) {
+    try {
+      const annotationAddedEventDetail = csToolsEvent.detail;
+      const {
+        annotation: { metadata, annotationUID },
+      } = annotationAddedEventDetail;
+      const { toolName } = metadata;
+
+      // To force the measurementUID be the same as the annotationUID
+      // Todo: this should be changed when a measurement can include multiple annotations
+      // in the future
+      annotationAddedEventDetail.uid = annotationUID;
+      annotationToMeasurement(toolName, annotationAddedEventDetail);
+    } catch (error) {
+      console.warn('Failed to update measurement:', error);
+    }
+  }
+  function updateMeasurement(csToolsEvent) {
+    try {
+      const annotationModifiedEventDetail = csToolsEvent.detail;
+
+      const {
+        annotation: { metadata, annotationUID },
+      } = annotationModifiedEventDetail;
+
+      // If the measurement hasn't been added, don't modify it
+      const measurement = MeasurementService.getMeasurement(annotationUID);
+
+      if (!measurement) {
+        return;
+      }
+      const { toolName } = metadata;
+
+      annotationModifiedEventDetail.uid = annotationUID;
+      annotationToMeasurement(toolName, annotationModifiedEventDetail);
+    } catch (error) {
+      console.warn('Failed to update measurement:', error);
+    }
+  }
+
+  /**
+   * When csTools fires a removed event, remove the same measurement
+   * from the measurement service
+   *
+   * @param {*} csToolsEvent
+   */
+  function removeMeasurement(csToolsEvent) {
+    try {
       try {
-        const evtDetail = csToolsEvent.detail;
+        const annotationRemovedEventDetail = csToolsEvent.detail;
         const {
-          annotation: { metadata, annotationUID },
-        } = evtDetail;
-        const { toolName } = metadata;
+          annotation: { annotationUID },
+        } = annotationRemovedEventDetail;
 
-        evtDetail.uid = annotationUID;
-        annotationToMeasurement(toolName, evtDetail);
+        const measurement = MeasurementService.getMeasurement(annotationUID);
+
+        if (measurement) {
+          console.log('~~ removeEvt', csToolsEvent);
+          remove(annotationUID, annotationRemovedEventDetail);
+        }
       } catch (error) {
         console.warn('Failed to update measurement:', error);
       }
+    } catch (error) {
+      console.warn('Failed to remove measurement:', error);
     }
+  }
 
-    /**
-     * When csTools fires a removed event, remove the same measurement
-     * from the measurement service
-     *
-     * @param {*} csToolsEvent
-     */
-    function removeMeasurement(csToolsEvent) {
-      try {
-        try {
-          const evtDetail = csToolsEvent.detail;
-          const {
-            annotation: { annotationUID },
-          } = evtDetail;
+  // on display sets added, check if there are any measurements in measurement service that need to be
+  // put into cornerstone tools
+  const completedEvt = csToolsEvents.ANNOTATION_COMPLETED;
+  const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
+  const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
 
-          const measurement = MeasurementService.getMeasurement(annotationUID);
-
-          if (measurement) {
-            console.log('~~ removeEvt', csToolsEvent);
-            remove(annotationUID, evtDetail);
-          }
-        } catch (error) {
-          console.warn('Failed to update measurement:', error);
-        }
-      } catch (error) {
-        console.warn('Failed to remove measurement:', error);
-      }
-    }
-
-    // on display sets added, check if there are any measurements in measurement service that need to be
-    // put into cornerstone tools
-    const addedEvt = csToolsEvents.ANNOTATION_ADDED;
-    const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
-    const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
-
-    eventTarget.addEventListener(addedEvt, updateMeasurement);
-    eventTarget.addEventListener(updatedEvt, updateMeasurement);
-    eventTarget.addEventListener(removedEvt, removeMeasurement);
-  });
+  eventTarget.addEventListener(completedEvt, addMeasurement);
+  eventTarget.addEventListener(updatedEvt, updateMeasurement);
+  eventTarget.addEventListener(removedEvt, removeMeasurement);
 
   return csTools3DVer1MeasurementSource;
 };
@@ -156,8 +180,8 @@ const connectMeasurementServiceToTools = (
   } = MeasurementService.EVENTS;
 
   const csTools3DVer1MeasurementSource = MeasurementService.getSource(
-    CORNERSTONE_TOOLS_3D_SOURCE_NAME,
-    '1'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   const { measurementToAnnotation } = csTools3DVer1MeasurementSource;
@@ -169,7 +193,7 @@ const connectMeasurementServiceToTools = (
 
     for (const measurement of Object.values(measurements)) {
       const { uid, source } = measurement;
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
       }
 
@@ -180,7 +204,7 @@ const connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     MEASUREMENT_UPDATED,
     ({ source, measurement, notYetUpdatedAtSource }) => {
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
 
@@ -198,18 +222,47 @@ const connectMeasurementServiceToTools = (
   MeasurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
     ({ source, measurement, data, dataSource }) => {
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
-      // Todo: handle raw measurements added (the case where a measurement is added from
-      // another source.)
+
+      const {
+        referenceSeriesUID,
+        referenceStudyUID,
+        SOPInstanceUID,
+      } = measurement;
+
+      const instance = DicomMetadataStore.getInstance(
+        referenceStudyUID,
+        referenceSeriesUID,
+        SOPInstanceUID
+      );
+
+      const imageId = dataSource.getImageIdsForInstance({ instance });
+      const annotationManager = annotation.state.getDefaultAnnotationManager();
+      annotationManager.addAnnotation({
+        annotationUID: measurement.uid,
+        highlighted: false,
+        isLocked: false,
+        invalidated: false,
+        metadata: {
+          toolName: measurement.toolName,
+          FrameOfReferenceUID: measurement.FrameOfReferenceUID,
+          referencedImageId: imageId,
+        },
+        data: {
+          text: data.annotation.data.text,
+          handles: { ...data.annotation.data.handles },
+          cachedStats: { ...data.annotation.data.cachedStats },
+        },
+      });
     }
   );
 
   MeasurementService.subscribe(
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {
-      if (source.name !== CORNERSTONE_TOOLS_3D_SOURCE_NAME) {
+      if (source?.name && source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
       removeAnnotation(removedMeasurementId);

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
@@ -18,14 +18,14 @@ TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
 const SR_SOPCLASSHANDLERID =
-  '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr';
+  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
 
 /**
  *
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider(
-  { servicesManager, extensionManager }, // Bound by consumer
+  { servicesManager, commandsManager, extensionManager }, // Bound by consumer
   { children } // Component props
 ) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -34,10 +34,8 @@ function TrackedMeasurementsContextProvider(
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const {
-        DisplaySetService,
-        MeasurementService,
-      } = servicesManager.services;
+      const { MeasurementService } = servicesManager.services;
+
       const { trackedStudy, trackedSeries } = ctx;
       const measurements = MeasurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
@@ -46,11 +44,11 @@ function TrackedMeasurementsContextProvider(
           trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      const id = trackedMeasurements[0].id;
+      const uid = trackedMeasurements[0].uid;
 
       MeasurementService.jumpToMeasurement(
         viewportGrid.activeViewportIndex,
-        id
+        uid
       );
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
@@ -60,7 +58,7 @@ function TrackedMeasurementsContextProvider(
 
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex: evt.data.viewportIndex,
-          displaySetInstanceUID: StructuredReportDisplaySetInstanceUID,
+          displaySetInstanceUIDs: [StructuredReportDisplaySetInstanceUID],
         });
       }
     },
@@ -73,16 +71,16 @@ function TrackedMeasurementsContextProvider(
       const measurementIds = filteredMeasurements.map(fm => fm.id);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove(measurementIds[i], 'app-source');
+        MeasurementService.remove(measurementIds[i]);
       }
     },
     clearAllMeasurements: (ctx, evt) => {
       const { MeasurementService } = servicesManager.services;
       const measurements = MeasurementService.getMeasurements();
-      const measurementIds = measurements.map(fm => fm.id);
+      const measurementIds = measurements.map(fm => fm.uid);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove(measurementIds[i], 'app-source');
+        MeasurementService.remove(measurementIds[i]);
       }
     },
   });
@@ -101,6 +99,7 @@ function TrackedMeasurementsContextProvider(
     }),
     promptSaveReport: promptSaveReport.bind(null, {
       servicesManager,
+      commandsManager,
       extensionManager,
     }),
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
@@ -134,13 +133,15 @@ function TrackedMeasurementsContextProvider(
     if (viewports.length > 0) {
       const activeViewport = viewports[activeViewportIndex];
 
-      if (!activeViewport || !activeViewport.displaySetInstanceUID) {
+      if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
         return;
       }
 
+      // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
+      // tracking fusion viewports yet. This should change when we do.
       const { DisplaySetService } = servicesManager.services;
       const displaySet = DisplaySetService.getDisplaySetByUID(
-        activeViewport.displaySetInstanceUID
+        activeViewport.displaySetInstanceUIDs[0]
       );
 
       // If this is an SR produced by our SR SOPClassHandler,
@@ -197,6 +198,7 @@ function TrackedMeasurementsContextProvider(
 TrackedMeasurementsContextProvider.propTypes = {
   children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
   servicesManager: PropTypes.object.isRequired,
+  commandsManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.object.isRequired,
 };
 

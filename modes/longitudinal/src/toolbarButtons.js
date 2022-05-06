@@ -48,13 +48,13 @@ function _createWwwcPreset(preset, title, subtitle) {
         commandOptions: {
           windowLevel: windowLevelPresets[preset],
         },
-        context: 'CORNERSTONE',
+        context: 'CORNERSTONE3D',
       },
     ],
   };
 }
 
-export default [
+const toolbarButtons = [
   // Measurement
   {
     id: 'MeasurementTools',
@@ -73,7 +73,16 @@ export default [
             commandOptions: {
               toolName: 'Length',
             },
-            context: 'CORNERSTONE',
+            context: 'CORNERSTONE3D',
+          },
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'SRLength',
+              toolGroupId: 'SRToolGroup',
+            },
+            // we can use the setToolActive command for this from Cornerstone3D commandsModule
+            context: 'CORNERSTONE3D',
           },
         ],
         'Length'
@@ -95,7 +104,16 @@ export default [
               commandOptions: {
                 toolName: 'Length',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRLength',
+                toolGroupId: 'SRToolGroup',
+              },
+              // we can use the setToolActive command for this from Cornerstone3D commandsModule
+              context: 'CORNERSTONE3D',
             },
           ],
           'Length Tool'
@@ -110,7 +128,15 @@ export default [
               commandOptions: {
                 toolName: 'Bidirectional',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRBidirectional',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE3D',
             },
           ],
           'Bidirectional Tool'
@@ -125,22 +151,38 @@ export default [
               commandOptions: {
                 toolName: 'ArrowAnnotate',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRArrowAnnotate',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE3D',
             },
           ],
           'Arrow Annotate'
         ),
         _createToolButton(
-          'EllipticalRoi',
+          'EllipticalROI',
           'tool-elipse',
           'Ellipse',
           [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'EllipticalRoi',
+                toolName: 'EllipticalROI',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SREllipticalROI',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE3D',
             },
           ],
           'Ellipse Tool'
@@ -162,7 +204,7 @@ export default [
           commandOptions: {
             toolName: 'Zoom',
           },
-          context: 'CORNERSTONE',
+          context: 'CORNERSTONE3D',
         },
       ],
     },
@@ -172,18 +214,18 @@ export default [
     id: 'WindowLevel',
     type: 'ohif.splitButton',
     props: {
-      groupId: 'Wwwc',
+      groupId: 'WindowLevel',
       primary: _createToolButton(
-        'Wwwc',
+        'WindowLevel',
         'tool-window-level',
         'Window Level',
         [
           {
             commandName: 'setToolActive',
             commandOptions: {
-              toolName: 'Wwwc',
+              toolName: 'WindowLevel',
             },
-            context: 'CORNERSTONE',
+            context: 'CORNERSTONE3D',
           },
         ],
         'Window Level'
@@ -219,7 +261,7 @@ export default [
           commandOptions: {
             toolName: 'Pan',
           },
-          context: 'CORNERSTONE',
+          context: 'CORNERSTONE3D',
         },
       ],
     },
@@ -235,7 +277,7 @@ export default [
         {
           commandName: 'showDownloadViewportModal',
           commandOptions: {},
-          context: 'CORNERSTONE',
+          context: 'CORNERSTONE3D',
         },
       ],
     },
@@ -259,7 +301,7 @@ export default [
           {
             commandName: 'resetViewport',
             commandOptions: {},
-            context: 'CORNERSTONE',
+            context: 'CORNERSTONE3D',
           },
         ],
         'Reset'
@@ -279,7 +321,7 @@ export default [
             {
               commandName: 'resetViewport',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Reset'
@@ -292,7 +334,7 @@ export default [
             {
               commandName: 'rotateViewportCW',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Rotate +90'
@@ -305,7 +347,7 @@ export default [
             {
               commandName: 'flipViewportHorizontal',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Flip Horizontal'
@@ -320,25 +362,10 @@ export default [
               commandOptions: {
                 toolName: 'StackScroll',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Stack Scroll'
-        ),
-        _createToolButton(
-          'Magnify',
-          'tool-magnify',
-          'Magnify',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Magnify',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Magnify'
         ),
         _createActionButton(
           'invert',
@@ -348,41 +375,13 @@ export default [
             {
               commandName: 'invertViewport',
               commandOptions: {},
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Invert Colors'
         ),
-        _createToggleButton(
-          'cine',
-          'tool-cine',
-          'Cine',
-          [
-            {
-              commandName: 'toggleCine',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Cine'
-        ),
         _createToolButton(
-          'Angle',
-          'tool-angle',
-          'Angle',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Angle',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Angle'
-        ),
-        _createToolButton(
-          'DragProbe',
+          'Probe',
           'tool-probe',
           'Probe',
           [
@@ -391,7 +390,7 @@ export default [
               commandOptions: {
                 toolName: 'DragProbe',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Probe'
@@ -404,9 +403,9 @@ export default [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'RectangleRoi',
+                toolName: 'RectangleROI',
               },
-              context: 'CORNERSTONE',
+              context: 'CORNERSTONE3D',
             },
           ],
           'Rectangle'
@@ -415,3 +414,5 @@ export default [
     },
   },
 ];
+
+export default toolbarButtons;

@@ -4,7 +4,6 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
 const Length = {
-  // Currently we only update the labels
   toAnnotation: measurement => {
     const annotationUID = measurement.uid;
     const cornerstone3DAnnotation = annotation.state.getAnnotation(

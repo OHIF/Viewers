@@ -31,7 +31,6 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "@ohif/ui": "^2.0.0",
-    "cornerstone-math": "0.1.9",
     "cornerstone-wado-image-loader": "^4.1.0",
     "dcmjs": "0.16.1",
     "dicom-parser": "^1.8.9",

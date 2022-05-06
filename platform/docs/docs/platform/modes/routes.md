@@ -58,9 +58,9 @@ function modeFactory() {
                   ],
                 },
                 {
-                  namespace: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
+                  namespace: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
                   displaySetsToDisplay: [
-                    '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr',
+                    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
                   ],
                 },
               ],

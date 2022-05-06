@@ -491,7 +491,6 @@ class MeasurementService {
       /* Convert measurement */
       annotation = toAnnotationSchema(measurement);
     } catch (error) {
-      console.error(error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement to annotation with annotationType ${annotationType}:`,
         error.message
@@ -511,10 +510,10 @@ class MeasurementService {
    *
    * @param {MeasurementSource} source The measurement source instance
    * @param {string} annotationType The source annotationType
-   * @param {EventDetail} sourceAnnotationEvent for the annotation event
+   * @param {EventDetail} sourceAnnotationDetail for the annotation event
    * @return {string} A measurement uid
    */
-  annotationToMeasurement(source, annotationType, sourceAnnotationEvent) {
+  annotationToMeasurement(source, annotationType, sourceAnnotationDetail) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
@@ -539,10 +538,9 @@ class MeasurementService {
       );
 
       /* Convert measurement */
-      measurement = toMeasurementSchema(sourceAnnotationEvent);
+      measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
-      console.error(error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
         error.message
@@ -556,7 +554,7 @@ class MeasurementService {
     }
 
     // Todo: we are using uid on the eventDetail, it should be uid of annotation
-    let internalUID = sourceAnnotationEvent.uid;
+    let internalUID = sourceAnnotationDetail.uid;
     if (!internalUID) {
       internalUID = guid();
       log.info(
