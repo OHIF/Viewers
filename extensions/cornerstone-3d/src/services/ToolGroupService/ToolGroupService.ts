@@ -1,6 +1,9 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
 
 import { pubSubServiceInterface } from '@ohif/core';
+
+import Cornerstone3DViewportService from '../ViewportService/Cornerstone3DViewportService';
+
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone-3d::toolgroupservice:viewportadded',
 };
@@ -13,11 +16,8 @@ type Tool = {
 type Tools = {
   active: Tool[];
   passive?: Tool[];
-  // Todo: add enabled, disabled
-};
-
-type configs = {
-  [key: string]: any;
+  enabled?: Tool[];
+  disabled?: Tool[];
 };
 
 export default class ToolGroupService {
@@ -51,7 +51,11 @@ export default class ToolGroupService {
   }
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
-    return ToolGroupManager.getToolGroupForViewport(viewportId);
+    const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+    return ToolGroupManager.getToolGroupForViewport(
+      viewportId,
+      renderingEngine.id
+    );
   }
 
   public getActiveToolForViewport(viewportId: string): string {
@@ -98,9 +102,9 @@ export default class ToolGroupService {
         toolGroup.addViewport(viewportId, renderingEngineId);
       });
     } else {
-      const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+      let toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
       if (!toolGroup) {
-        throw new Error(`ToolGroup ${toolGroupId} does not exist`);
+        toolGroup = this.createToolGroup(toolGroupId);
       }
 
       toolGroup.addViewport(viewportId, renderingEngineId);
@@ -109,12 +113,7 @@ export default class ToolGroupService {
     this._broadcastEvent(EVENTS.VIEWPORT_ADDED, { viewportId });
   }
 
-  public createToolGroup(
-    toolGroupId: string,
-    tools: Array<Tool>,
-    configs: any = {}
-  ): Types.IToolGroup {
-    // check if the toolGroup already exists
+  public createToolGroup(toolGroupId: string): Types.IToolGroup {
     if (this.getToolGroup(toolGroupId)) {
       throw new Error(`ToolGroup ${toolGroupId} already exists`);
     }
@@ -123,10 +122,27 @@ export default class ToolGroupService {
     const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
     this.toolGroupIds.add(toolGroupId);
 
+    return toolGroup;
+  }
+
+  public addToolsToToolGroup(
+    toolGroupId: string,
+    tools: Array<Tool>,
+    configs: any = {}
+  ): void {
+    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
     // this.changeConfigurationIfNecessary(toolGroup, volumeId);
     this._addTools(toolGroup, tools, configs);
     this._setToolsMode(toolGroup, tools);
+  }
 
+  public createToolGroupAndAddTools(
+    toolGroupId: string,
+    tools: Array<Tool>,
+    configs: any = {}
+  ): Types.IToolGroup {
+    const toolGroup = this.createToolGroup(toolGroupId);
+    this.addToolsToToolGroup(toolGroupId, tools, configs);
     return toolGroup;
   }
 
@@ -152,11 +168,18 @@ export default class ToolGroupService {
         toolNames.push(tool.toolName);
       });
     }
+
+    if (toolGroupTools.enabled) {
+      toolGroupTools.enabled.forEach(tool => {
+        toolNames.push(tool.toolName);
+      });
+    }
+
     return toolNames;
   }
 
   private _setToolsMode(toolGroup, tools) {
-    const { active, passive } = tools;
+    const { active, passive, enabled, disabled } = tools;
     active.forEach(({ toolName, bindings }) => {
       toolGroup.setToolActive(toolName, { bindings });
     });
@@ -167,12 +190,21 @@ export default class ToolGroupService {
       });
     }
 
-    // Todo: add enabled and disabled
+    if (enabled) {
+      enabled.forEach(({ toolName }) => {
+        toolGroup.setToolEnabled(toolName);
+      });
+    }
+
+    if (disabled) {
+      disabled.forEach(({ toolName }) => {
+        toolGroup.setToolDisabled(toolName);
+      });
+    }
   }
 
   private _addTools(toolGroup, tools, configs) {
     const toolNames = this._getToolNames(tools);
-
     toolNames.forEach(toolName => {
       // Initialize the toolConfig if no configuration is provided
       const toolConfig = configs[toolName] ?? {};

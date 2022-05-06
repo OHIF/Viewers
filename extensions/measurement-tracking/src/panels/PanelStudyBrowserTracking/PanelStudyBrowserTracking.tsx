@@ -49,7 +49,7 @@ function PanelStudyBrowserTracking({
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     viewportGridService.setDisplaySetsForViewport({
       viewportIndex: activeViewportIndex,
-      displaySetInstanceUID,
+      displaySetInstanceUIDs: [displaySetInstanceUID],
     });
   };
 
@@ -402,8 +402,12 @@ function _mapDisplaySets(
     const viewportIdentificator = isSingleViewport
       ? []
       : viewports.reduce((acc, viewportData, index) => {
-          if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
-            acc.push(_viewportLabels[index]);
+          if (
+            viewportData?.displaySetInstanceUIDs?.includes(
+              ds.displaySetInstanceUID
+            )
+          ) {
+            acc.push(viewportData.viewportLabel);
           }
           return acc;
         }, []);

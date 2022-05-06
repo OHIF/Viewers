@@ -13,7 +13,6 @@ import { Enums, utilities } from '@cornerstonejs/tools';
 import initWADOImageLoader from './initWADOImageLoader';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import initCornerstoneTools from './initCornerstoneTools';
-import { setEnabledElement } from './state';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import callInputDialog from './callInputDialog';
@@ -199,22 +198,7 @@ export default async function init({
   // };
 
   function elementEnabledHandler(evt) {
-    const { viewportId, element } = evt.detail;
-    const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
-      viewportId
-    );
-    const viewportIndex = viewportInfo.getViewportIndex();
-
-    setEnabledElement(viewportIndex, element);
-
-    // const volumeUID = Cornerstone3DViewportService.getVolumeUIDsForViewportUID(viewportId);
-    const renderingEngineId = viewportInfo.getRenderingEngineId();
-    const toolGroupId = viewportInfo.getToolGroupId();
-    ToolGroupService.addToolGroupViewport(
-      viewportId,
-      renderingEngineId,
-      toolGroupId
-    );
+    const { element } = evt.detail;
 
     element.addEventListener(
       cs3DToolsEvents.MOUSE_CLICK,
@@ -223,12 +207,17 @@ export default async function init({
   }
 
   function elementDisabledHandler(evt) {
-    const { viewportId } = evt.detail;
+    const { viewportId, element } = evt.detail;
 
     const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
       viewportId
     );
     ToolGroupService.disable(viewportInfo);
+
+    element.removeEventListener(
+      cs3DToolsEvents.MOUSE_CLICK,
+      contextMenuHandleClick
+    );
   }
 
   eventTarget.addEventListener(

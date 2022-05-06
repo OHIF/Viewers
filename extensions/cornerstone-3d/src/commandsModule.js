@@ -54,7 +54,6 @@ const commandsModule = ({ servicesManager }) => {
     },
     setToolActive: ({ toolName, toolGroupId = null }) => {
       let toolGroupIdToUse = toolGroupId;
-
       if (!toolGroupIdToUse) {
         // Use the active viewport's tool group if no tool group id is provided
         const enabledElement = _getActiveViewportEnabledElement();
@@ -84,10 +83,11 @@ const commandsModule = ({ servicesManager }) => {
       const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
 
       if (!toolGroup) {
-        throw new Error(
-          `setToolActive: toolGroup with id ${toolGroupIdToUse} does not exist`
-        );
+        console.warn('No tool group found for toolGroupId:', toolGroupId);
+        return;
       }
+      // Todo: we need to check if the viewports of the toolGroup is actually
+      // parts of the ViewportGrid's viewports, if not we return
 
       const { viewports } = ViewportGridService.getState() || {
         viewports: [],
@@ -109,11 +109,6 @@ const commandsModule = ({ servicesManager }) => {
         );
 
         if (!viewport) {
-          continue;
-        }
-
-        // only use the toolGroup viewport
-        if (!toolGroupViewportIds.includes(viewport.viewportId)) {
           continue;
         }
 

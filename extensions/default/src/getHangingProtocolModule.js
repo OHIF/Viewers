@@ -100,7 +100,7 @@ const testProtocol = {
         type: 'grid',
         properties: {
           rows: 1,
-          columns: 2,
+          columns: 1,
           viewportOptions: [],
         },
       },
@@ -284,7 +284,7 @@ function getHangingProtocolModule() {
   return [
     {
       name: 'default',
-      protocols: [defaultProtocol, testProtocol],
+      protocols: [defaultProtocol],
     },
   ];
 }

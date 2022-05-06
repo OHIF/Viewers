@@ -1,12 +1,13 @@
-import cornerstoneTools from 'cornerstone-tools';
+import * as cornerstone3D from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
-import getCornerstoneToolStateToMeasurementSchema from './getCornerstoneToolStateToMeasurementSchema';
 import { adapters } from 'dcmjs';
 
 const { guid } = OHIF.utils;
-const globalImageIdSpecificToolStateManager =
-  cornerstoneTools.globalImageIdSpecificToolStateManager;
+const { MeasurementReport } = adapters.Cornerstone3D;
+
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 /**
  *
@@ -24,8 +25,8 @@ export default function _hydrateStructuredReport(
 
   // TODO -> We should define a strict versioning somewhere.
   const mappings = MeasurementService.getSourceMappings(
-    'CornerstoneTools',
-    '4'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   if (!mappings || !mappings.length) {
@@ -40,29 +41,36 @@ export default function _hydrateStructuredReport(
     displaySet.SOPInstanceUID
   );
 
-  const { MeasurementReport } = adapters.Cornerstone;
-
   const sopInstanceUIDToImageId = {};
+  let imageIdsForToolState = [];
 
   displaySet.measurements.forEach(measurement => {
     const { ReferencedSOPInstanceUID, imageId } = measurement;
+    imageIdsForToolState.push(imageId);
     if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
       sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
     }
   });
 
   // Use dcmjs to generate toolState.
-  const storedMeasurementByToolType = MeasurementReport.generateToolState(
-    instance
+  const storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
+    instance,
+    // NOTE: we need to pass in the imageIds to dcmjs since the we use them
+    // for the imageToWorld transformation. The following assumes that the order
+    // that measurements were added to the display set are the same order as
+    // the measurementGroups in the instance.
+    imageIdsForToolState,
+    cornerstone3D.utilities.imageToWorldCoords,
+    cornerstone3D.metaData
   );
 
   // Filter what is found by DICOM SR to measurements we support.
-  const mappingDefinitions = mappings.map(m => m.definition);
+  const mappingDefinitions = mappings.map(m => m.annotationType);
   const hydratableMeasurementsInSR = {};
 
-  Object.keys(storedMeasurementByToolType).forEach(key => {
+  Object.keys(storedMeasurementByAnnotationType).forEach(key => {
     if (mappingDefinitions.includes(key)) {
-      hydratableMeasurementsInSR[key] = storedMeasurementByToolType[key];
+      hydratableMeasurementsInSR[key] = storedMeasurementByAnnotationType[key];
     }
   });
 
@@ -70,12 +78,13 @@ export default function _hydrateStructuredReport(
   const imageIds = [];
 
   // TODO: notification if no hydratable?
-  Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
-    const toolDataForToolType = hydratableMeasurementsInSR[toolType];
+  Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
+    const toolDataForAnnotationType =
+      hydratableMeasurementsInSR[annotationType];
 
-    toolDataForToolType.forEach(data => {
+    toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
-      const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
+      const imageId = sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
       if (!imageIds.includes(imageId)) {
         imageIds.push(imageId);
@@ -88,7 +97,7 @@ export default function _hydrateStructuredReport(
 
   for (let i = 0; i < imageIds.length; i++) {
     const imageId = imageIds[i];
-    const { SeriesInstanceUID, StudyInstanceUID } = cornerstone.metaData.get(
+    const { SeriesInstanceUID, StudyInstanceUID } = cornerstone3D.metaData.get(
       'instance',
       imageId
     );
@@ -106,43 +115,50 @@ export default function _hydrateStructuredReport(
     }
   }
 
-  Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
-    const toolDataForToolType = hydratableMeasurementsInSR[toolType];
+  Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
+    const toolDataForAnnotationType =
+      hydratableMeasurementsInSR[annotationType];
 
-    toolDataForToolType.forEach(data => {
+    toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
-      const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
+      const imageId = sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
-      data.id = guid();
+      toolData.uid = guid();
 
-      const instance = cornerstone.metaData.get('instance', imageId);
+      const instance = cornerstone3D.metaData.get('instance', imageId);
       const {
-        SOPInstanceUID,
         FrameOfReferenceUID,
-        SeriesInstanceUID,
-        StudyInstanceUID,
+        // SOPInstanceUID,
+        // SeriesInstanceUID,
+        // StudyInstanceUID,
       } = instance;
 
-      // Let the measurement service know we added to toolState
-      const toMeasurementSchema = getCornerstoneToolStateToMeasurementSchema(
-        toolType,
-        MeasurementService,
-        DisplaySetService,
-        SOPInstanceUID,
-        FrameOfReferenceUID,
-        SeriesInstanceUID,
-        StudyInstanceUID
+      const annotation = {
+        annotationUID: toolData.uid,
+        data: toolData.data,
+        metadata: {
+          toolName: annotationType,
+          referencedImageId: imageId,
+          FrameOfReferenceUID,
+          label: '',
+        },
+      };
+
+      const source = MeasurementService.getSource(
+        CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+        CORNERSTONE_3D_TOOLS_SOURCE_VERSION
       );
+      annotation.label = getLabelFromDCMJSImportedToolData(toolData);
 
-      const source = MeasurementService.getSource('CornerstoneTools', '4');
-
-      data.label = getLabelFromDCMJSImportedToolData(data);
+      const matchingMapping = mappings.find(
+        m => m.annotationType === annotationType
+      );
 
       MeasurementService.addRawMeasurement(
         source,
-        toolType,
-        data,
-        toMeasurementSchema,
+        annotationType,
+        { annotation },
+        matchingMapping.toMeasurementSchema,
         dataSource
       );
 

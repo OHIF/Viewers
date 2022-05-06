@@ -179,7 +179,7 @@ export default class DisplaySetService {
     }
 
     // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
-    // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent uneccessary broadcasts?
+    // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent unnecessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {

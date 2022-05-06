@@ -7,7 +7,7 @@ const RESPONSE = {
   NO_NOT_FOR_SERIES: 4,
 };
 
-function promptUser({ servicesManager, extensionManager }, ctx, evt) {
+function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
 
@@ -105,4 +105,4 @@ function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
   });
 }
 
-export default promptUser;
+export default promptTrackNewSeries;

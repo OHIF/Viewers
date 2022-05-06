@@ -1,5 +1,4 @@
 import MeasurementService from './MeasurementService';
-import SegmentationService from './SegmentationService';
 import ServicesManager from './ServicesManager.js';
 import UIDialogService from './UIDialogService';
 import UIModalService from './UIModalService';
@@ -16,7 +15,6 @@ import UserAuthenticationService from './UserAuthenticationService';
 
 export {
   MeasurementService,
-  SegmentationService,
   ServicesManager,
   UIDialogService,
   UIModalService,

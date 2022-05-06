@@ -98,7 +98,13 @@ function CornerstoneOverlay({
           return;
         }
 
-        const { dimensions, spacing } = viewport.getImageData();
+        const imageData = viewport.getImageData();
+
+        if (!imageData) {
+          return;
+        }
+
+        const { dimensions, spacing } = imageData;
 
         // Todo: handle for the volume viewports with directions
         const scale = (dimensions[0] * spacing[0]) / camera.parallelScale;

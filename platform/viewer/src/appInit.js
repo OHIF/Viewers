@@ -8,7 +8,6 @@ import {
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
-  SegmentationService,
   DisplaySetService,
   ToolBarService,
   ViewportGridService,
@@ -63,7 +62,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     HangingProtocolService,
     CineService,
     UserAuthenticationService,
-    SegmentationService,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

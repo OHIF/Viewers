@@ -3,8 +3,11 @@ import ReactResizeDetector from 'react-resize-detector';
 import { useViewportGrid, ImageScrollbar } from '@ohif/ui';
 import OHIF from '@ohif/core';
 import * as cs3DTools from '@cornerstonejs/tools';
-import { Enums } from '@cornerstonejs/core';
+import { Enums, eventTarget } from '@cornerstonejs/core';
 
+import PropTypes from 'prop-types';
+
+import { setEnabledElement } from '../state';
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
 import CornerstoneOverlay from './CornerstoneOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
@@ -51,12 +54,17 @@ function areEqual(prevProps, nextProps) {
 // Then we don't need to worry about the re-renders if the props change.
 const OHIFCornerstoneViewport = React.memo(props => {
   const {
-    displaySets,
     viewportIndex,
+    displaySets,
     dataSource,
     viewportOptions,
     displaySetOptions,
     servicesManager,
+    onElementEnabled,
+    // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
+    // of the imageData in the OHIFCornerstone3DViewport. This prop is used
+    // to set the initial state of the viewport's first image to render
+    initialImageIdOrIndex,
   } = props;
 
   const [viewportData, setViewportData] = useState(null);
@@ -70,6 +78,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     MeasurementService,
     DisplaySetService,
     ToolBarService,
+    ToolGroupService,
   } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
@@ -86,15 +95,55 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
   }, [elementRef]);
 
+  const elementEnabledHandler = useCallback(
+    evt => {
+      // check this is this element reference and return early if doesn't match
+      if (evt.detail.element !== elementRef.current) {
+        return;
+      }
+
+      const { viewportId, element } = evt.detail;
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
+        viewportId
+      );
+      const viewportIndex = viewportInfo.getViewportIndex();
+
+      setEnabledElement(viewportIndex, element);
+
+      const renderingEngineId = viewportInfo.getRenderingEngineId();
+      const toolGroupId = viewportInfo.getToolGroupId();
+      ToolGroupService.addToolGroupViewport(
+        viewportId,
+        renderingEngineId,
+        toolGroupId
+      );
+
+      if (onElementEnabled) {
+        onElementEnabled(evt);
+      }
+    },
+    [viewportIndex, onElementEnabled, ToolGroupService]
+  );
+
   // disable the element upon unmounting
   useEffect(() => {
     Cornerstone3DViewportService.enableElement(
       viewportIndex,
       elementRef.current
     );
+
+    eventTarget.addEventListener(
+      Enums.Events.ELEMENT_ENABLED,
+      elementEnabledHandler
+    );
+
     setImageScrollBarHeight();
     return () => {
       Cornerstone3DViewportService.disableElement(viewportIndex);
+      eventTarget.removeEventListener(
+        Enums.Events.ELEMENT_ENABLED,
+        elementEnabledHandler
+      );
     };
   }, []);
 
@@ -102,8 +151,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const viewportData = _getViewportData(
       dataSource,
       displaySets,
-      viewportOptions.viewportType
+      viewportOptions.viewportType,
+      initialImageIdOrIndex
     );
+
+    setViewportData(viewportData);
 
     Cornerstone3DViewportService.setViewportDisplaySets(
       viewportIndex,
@@ -112,16 +164,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
       displaySetOptions
     );
 
-    setViewportData(viewportData);
-  }, [
-    viewportIndex,
-    viewportOptions,
-    displaySetOptions,
-    displaySets,
-    dataSource,
-  ]);
-
-  useEffect(() => {
     const element = elementRef.current;
 
     const updateIndex = event => {
@@ -139,7 +181,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
     };
-  }, [elementRef, viewportData]);
+  }, [viewportOptions, displaySets, dataSource]);
 
   /**
    * There are two scenarios for jump to click
@@ -152,6 +194,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
    * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
    */
   useEffect(() => {
+    if (!viewportData) {
+      return;
+    }
+
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
       MeasurementService,
       DisplaySetService,
@@ -173,7 +219,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
     };
-  }, [displaySets, elementRef, viewportIndex]);
+  }, [displaySets, elementRef, viewportIndex, viewportData]);
 
   const onImageScrollbarChange = useCallback(
     (imageIndex, viewportIndex) => {
@@ -259,7 +305,12 @@ function _getCornerstoneStack(displaySet, dataSource) {
   return stack;
 }
 
-function _getViewportData(dataSource, displaySets, viewportType) {
+function _getViewportData(
+  dataSource,
+  displaySets,
+  viewportType,
+  initialImageIdOrIndex
+) {
   viewportType = viewportType || STACK;
   if (viewportType !== STACK) {
     throw new Error('Only STACK viewport type is supported now');
@@ -269,6 +320,14 @@ function _getViewportData(dataSource, displaySets, viewportType) {
   const displaySet = displaySets[0];
 
   const stack = _getCornerstoneStack(displaySet, dataSource);
+
+  if (initialImageIdOrIndex !== undefined && stack?.imageIds) {
+    if (typeof initialImageIdOrIndex === 'number') {
+      stack.initialImageIdIndex = initialImageIdOrIndex;
+    } else {
+      stack.initialImageIdIndex = stack.imageIds.indexOf(initialImageIdOrIndex);
+    }
+  }
 
   const viewportData = {
     StudyInstanceUID: displaySet.StudyInstanceUID,
@@ -392,5 +451,22 @@ function _jumpToMeasurement(
 
 // Component displayName
 OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
+
+OHIFCornerstoneViewport.propTypes = {
+  viewportIndex: PropTypes.number.isRequired,
+  displaySets: PropTypes.array.isRequired,
+  dataSource: PropTypes.object.isRequired,
+  viewportOptions: PropTypes.object,
+  displaySetOptions: PropTypes.arrayOf(PropTypes.object),
+  servicesManager: PropTypes.object.isRequired,
+  onElementEnabled: PropTypes.func,
+  // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
+  // of the imageData in the OHIFCornerstone3DViewport. This prop is used
+  // to set the initial state of the viewport's first image to render
+  initialImageIdOrIndex: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+};
 
 export default OHIFCornerstoneViewport;

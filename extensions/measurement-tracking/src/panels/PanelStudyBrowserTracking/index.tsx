@@ -24,7 +24,7 @@ function WrappedPanelStudyBrowserTracking({
     dataSource
   );
   const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    commandsManager.getCommand.bind(commandsManager)
+    extensionManager
   );
   const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,
@@ -56,15 +56,14 @@ function WrappedPanelStudyBrowserTracking({
  * @returns {func} getImageSrcFromImageId - A utility function powered by
  * cornerstone
  */
-function _createGetImageSrcFromImageIdFn(getCommand) {
-  try {
-    const command = getCommand('getCornerstoneLibraries', 'CORNERSTONE');
-    if (!command) {
-      return;
-    }
-    const { cornerstone } = command.commandFn();
+function _createGetImageSrcFromImageIdFn(extensionManager) {
+  const utilities = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-3d.utilityModule.common'
+  );
 
-    return getImageSrcFromImageId.bind(null, cornerstone);
+  try {
+    const { cornerstone3D } = utilities.exports.getCornerstoneLibraries();
+    return getImageSrcFromImageId.bind(null, cornerstone3D);
   } catch (ex) {
     throw new Error('Required command not found');
   }
