@@ -21,11 +21,10 @@
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
-FROM node:14.3.0-slim as json-copier
+FROM node:16.15.0-slim as json-copier
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
-
 
 COPY ["package.json", "yarn.lock", "./"]
 COPY extensions /usr/src/app/extensions
@@ -33,12 +32,12 @@ COPY modes /usr/src/app/modes
 COPY platform /usr/src/app/platform
 
 # Find and remove non-package.json files
-RUN find extensions \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-RUN find modes \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-RUN find platform \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
+RUN find extensions \! \( -name \package.json -o -name \yarn.lock \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
+RUN find modes \! \( -name \package.json -o -name \yarn.lock \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
+RUN find platform \! \( -name \package.json -o -name \yarn.lock \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
 
 # Copy Files
-FROM node:14.3.0-slim as builder
+FROM node:16.15.0-slim as builder
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
@@ -62,7 +61,7 @@ RUN yarn run build
 
 # Stage 3: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginx:1.15.5-alpine
+FROM nginx:1.15.5-alpine as final
 RUN apk add --no-cache bash
 RUN rm -rf /etc/nginx/conf.d
 COPY .docker/Viewer-v2.x /etc/nginx/conf.d
