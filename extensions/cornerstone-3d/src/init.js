@@ -33,11 +33,6 @@ export default async function init({
   appConfig,
 }) {
   await cs3DInit();
-
-  // Todo: CornerstoneTools init is separate from the cornerstone-core init.
-  // Since cs3d is async, we want the tools to be ready as soon as possible
-  // to create toolGroups etc. We should make extension registrations async
-  // so that the order be core init -> tools init
   initCornerstoneTools();
 
   const {
@@ -63,7 +58,6 @@ export default async function init({
 
   initWADOImageLoader(UserAuthenticationService, appConfig);
 
-  // Register the cornerstone-tools-measurement-tool
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
     MeasurementService,
