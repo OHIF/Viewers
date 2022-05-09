@@ -30,7 +30,7 @@ const commandsModule = ({ servicesManager }) => {
         viewportId
       );
 
-      if (toolGroupId !== viewportToolGroupId) {
+      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
         return;
       }
 

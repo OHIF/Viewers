@@ -1,4 +1,4 @@
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '../services/DicomMetadataStore/DicomMetadataStore';
 
 export default function downloadCSVReport(measurementData) {
   if (measurementData.length === 0) {

@@ -87,7 +87,7 @@ function ViewerViewportGrid(props) {
         }
       }
     },
-    [viewportGrid, numRows, numCols, viewportGrid]
+    [viewportGrid, numRows, numCols]
   );
 
   useEffect(() => {

@@ -3,9 +3,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
 const Length = {
-  toAnnotation: measurement => {
-    debugger;
-  },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
