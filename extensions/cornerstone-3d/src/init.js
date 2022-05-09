@@ -23,7 +23,6 @@ let CONTEXT_MENU_OPEN = false;
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone3D;
-
 /**
  *
  */
