@@ -27,7 +27,7 @@ import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
 
 // Commented out unused functionality.
-// Need to implement new mechanism for dervived displaySets using the displaySetManager.
+// Need to implement new mechanism for derived displaySets using the displaySetManager.
 
 const utils = {
   guid,

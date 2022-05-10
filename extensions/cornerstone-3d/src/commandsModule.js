@@ -1,6 +1,8 @@
 import * as cornerstone3D from '@cornerstonejs/core';
 import * as cornerstone3DTools from '@cornerstonejs/tools';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+
 import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
@@ -125,6 +127,21 @@ const commandsModule = ({ servicesManager }) => {
         });
 
         return;
+      }
+    },
+    showDownloadViewportModal: () => {
+      const { activeViewportIndex } = ViewportGridService.getState();
+      const { UIModalService } = servicesManager.services;
+
+      if (UIModalService) {
+        UIModalService.show({
+          content: CornerstoneViewportDownloadForm,
+          title: 'Download High Quality Image',
+          contentProps: {
+            activeViewportIndex,
+            onClose: UIModalService.hide,
+          },
+        });
       }
     },
     rotateViewport: ({ rotation }) => {
@@ -316,6 +333,11 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.scroll,
       storeContexts: [],
       options: { direction: -1 },
+    },
+    showDownloadViewportModal: {
+      commandFn: actions.showDownloadViewportModal,
+      storeContexts: [],
+      options: {},
     },
   };
 

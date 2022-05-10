@@ -32,7 +32,8 @@ const FILE_TYPE_OPTIONS = [
 ];
 
 const DEFAULT_FILENAME = 'image';
-const REFRESH_VIEWPORT_TIMEOUT = 1000;
+
+const REFRESH_VIEWPORT_TIMEOUT = 100;
 
 const ViewportDownloadForm = ({
   activeViewport,
@@ -275,7 +276,9 @@ const ViewportDownloadForm = ({
   return (
     <div>
       <Typography variant="h6">
-        {t('Please specify the dimensions, filename, and desired type for the output image.')}
+        {t(
+          'Please specify the dimensions, filename, and desired type for the output image.'
+        )}
       </Typography>
 
       <div className="flex flex-col mt-6">
@@ -284,7 +287,7 @@ const ViewportDownloadForm = ({
             data-cy="file-name"
             value={filename}
             onChange={evt => setFilename(evt.target.value)}
-            label={t("File Name")}
+            label={t('File Name')}
           />
           {renderErrorHandler('filename')}
         </div>
@@ -296,9 +299,11 @@ const ViewportDownloadForm = ({
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
-                  label={t("Image width (px)")}
+                  label={t('Image width (px)')}
                   value={dimensions.width}
-                  onChange={evt => onDimensionsChange(evt.target.value, 'width')}
+                  onChange={evt =>
+                    onDimensionsChange(evt.target.value, 'width')
+                  }
                   data-cy="image-width"
                 />
                 {renderErrorHandler('width')}
@@ -308,9 +313,11 @@ const ViewportDownloadForm = ({
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
-                  label={t("Image height (px)")}
+                  label={t('Image height (px)')}
                   value={dimensions.height}
-                  onChange={evt => onDimensionsChange(evt.target.value, 'height')}
+                  onChange={evt =>
+                    onDimensionsChange(evt.target.value, 'height')
+                  }
                   data-cy="image-height"
                 />
                 {renderErrorHandler('height')}
@@ -337,7 +344,7 @@ const ViewportDownloadForm = ({
             <div>
               <InputLabelWrapper
                 sortDirection="none"
-                label={t("File Type")}
+                label={t('File Type')}
                 isSortable={false}
                 onLabelClick={() => {}}
               >
@@ -365,7 +372,7 @@ const ViewportDownloadForm = ({
                   checked={showAnnotations}
                   onChange={event => setShowAnnotations(event.target.checked)}
                 />
-                <Typography>{t("Show Annotations")}</Typography>
+                <Typography>{t('Show Annotations')}</Typography>
               </label>
             </div>
           </div>
@@ -373,41 +380,32 @@ const ViewportDownloadForm = ({
       </div>
 
       <div className="mt-8">
-          <div
-            className="p-4 rounded bg-secondary-dark border-secondary-primary"
-            data-cy="image-preview"
-          >
-          <Typography variant="h5">{t("Image preview")}</Typography>
-            {activeViewport && (<div
-            className="mx-auto my-0"
+        <div
+          className="p-4 rounded bg-secondary-dark border-secondary-primary"
+          data-cy="image-preview"
+        >
+          <Typography variant="h5">{t('Image preview')}</Typography>
+          {activeViewport && (
+            <div
+              className="mx-auto my-0"
               style={{
                 height: viewportElementDimensions.height,
                 width: viewportElementDimensions.width,
               }}
               ref={ref => setViewportElement(ref)}
-            >
-              <canvas
-                className={classnames('block', canvasClass)}
-                style={{
-                  height: downloadCanvas.height,
-                  width: downloadCanvas.width,
-                }}
-                width={downloadCanvas.width}
-                height={downloadCanvas.height}
-                ref={downloadCanvas.ref}
-              ></canvas>
-            </div>)}
-            {!activeViewport &&
-              <Typography className="mt-4">
-            {t("Active viewport has no displayed image")}
-              </Typography>
-            }
-          </div>
+            ></div>
+          )}
+          {!activeViewport && (
+            <Typography className="mt-4">
+              {t('Active viewport has no displayed image')}
+            </Typography>
+          )}
+        </div>
       </div>
 
       <div className="flex justify-end mt-4">
         <Button data-cy="cancel-btn" variant="outlined" onClick={onClose}>
-          {t("Cancel")}
+          {t('Cancel')}
         </Button>
         <Button
           className="ml-2"
@@ -416,7 +414,7 @@ const ViewportDownloadForm = ({
           color="primary"
           data-cy="download-btn"
         >
-          {t("Download")}
+          {t('Download')}
         </Button>
       </div>
     </div>
