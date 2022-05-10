@@ -7,7 +7,12 @@ import {
   processSeriesResults,
 } from './qido.js';
 import dcm4cheeReject from './dcm4cheeReject';
-import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler } from '@ohif/core';
+import {
+  DicomMetadataStore,
+  IWebApiDataSource,
+  utils,
+  errorHandler,
+} from '@ohif/core';
 
 import getImageId from './utils/getImageId';
 import dcmjs from 'dcmjs';
@@ -16,7 +21,6 @@ import {
   deleteStudyMetadataPromise,
 } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient.js';
-
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -66,7 +70,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   // TODO -> Two clients sucks, but its better than 1000.
   // TODO -> We'll need to merge auth later.
-  const qidoDicomWebClient = staticWado ? new StaticWadoClient(qidoConfig) : new api.DICOMwebClient(wadoConfig);
+  const qidoDicomWebClient = staticWado
+    ? new StaticWadoClient(qidoConfig)
+    : new api.DICOMwebClient(wadoConfig);
   const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
@@ -85,20 +91,21 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
-
+        search: async function(origParams) {
           // Sometimes Ohif does Fuzzy searching which is a dicom standard
           // GCP supports it. Fuzzy searching is searching the patient name using the
           // fuzzy method. Fo us we extract the patient name and filter studies by that
           // UID.
           const { patientId: mrn, studyInstanceUid } = origParams;
-          let queryParams = ""
-          if(patientId) {
-            queryParams = { mrn }
+          let queryParams = '';
+          if (mrn) {
+            queryParams = { mrn };
           } else {
-            queryParams = { uid : studyInstanceUid }
+            queryParams = { uid: studyInstanceUid };
           }
-          const studyResponse = await nlApi.get("/api/studies/", { params: queryParams });
+          const studyResponse = await nlApi.get('/api/studies/', {
+            params: queryParams,
+          });
 
           return studyResponse.data.results;
         },
@@ -106,7 +113,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
+        search: async function(studyInstanceUid) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -235,40 +242,34 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
           'Unable to query for SeriesMetadata without StudyInstanceUID'
         );
       }
-      const studyResponse = await nlApi.get("/api/studies/", {
+      const studyResponse = await nlApi.get('/api/studies/', {
         params: {
-          uid: StudyInstanceUID
-        }}
-      );
-      if(studyResponse.status !== 200){
-        throw new Error(
-          'Unable to fetch study metadata'
-        );
+          uid: StudyInstanceUID,
+        },
+      });
+      if (studyResponse.status !== 200) {
+        throw new Error('Unable to fetch study metadata');
       }
 
-      const patientResponse = await nlApi.get("/api/patients/", {
+      const patientResponse = await nlApi.get('/api/patients/', {
         params: {
-          id: studyResponse.data.results[0].patient_id
-        }}
-      );
-      if(patientResponse.status !== 200){
-        throw new Error(
-          'Unable to fetch patient metadata'
-        );
+          id: studyResponse.data.results[0].patient_id,
+        },
+      });
+      if (patientResponse.status !== 200) {
+        throw new Error('Unable to fetch patient metadata');
       }
 
-      const seriesResponse = await nlApi.get("/api/series/", {
+      const seriesResponse = await nlApi.get('/api/series/', {
         params: {
-          study_id: studyResponse.data.results[0].id
-        }}
-      );
-      if(seriesResponse.status !== 200){
-        throw new Error(
-          'Unable to fetch series metadata'
-        );
+          study_id: studyResponse.data.results[0].id,
+        },
+      });
+      if (seriesResponse.status !== 200) {
+        throw new Error('Unable to fetch series metadata');
       }
 
-      const seriesSummaryMetadata = seriesResponse.data.results
+      const seriesSummaryMetadata = seriesResponse.data.results;
 
       function setSuccessFlag() {
         const study = DicomMetadataStore.getStudy(
@@ -283,16 +284,20 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
       const numberOfSeries = seriesSummaryMetadata.length;
       seriesSummaryMetadata.forEach(async (series, index) => {
-        const instancesResponse = await nlApi.get("/api/instances/", {
+        const instancesResponse = await nlApi.get('/api/instances/', {
           params: {
-            series_id: series.id
-          }}
-        );
-        const instances = instancesResponse.data.results.map(instance => ({...instance, ...series, ...patientResponse.data.results[0], ...studyResponse.data.results[0], ...instance.overlay_data }))
-        if(instancesResponse.status !== 200){
-          throw new Error(
-            'Unable to fetch instance metadata'
-          );
+            series_id: series.id,
+          },
+        });
+        const instances = instancesResponse.data.results.map(instance => ({
+          ...instance,
+          ...series,
+          ...patientResponse.data.results[0],
+          ...studyResponse.data.results[0],
+          ...instance.overlay_data,
+        }));
+        if (instancesResponse.status !== 200) {
+          throw new Error('Unable to fetch instance metadata');
         }
         DicomMetadataStore.addInstances(instances, madeInClient);
         if (index === numberOfSeries - 1) setSuccessFlag();
