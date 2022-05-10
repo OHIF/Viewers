@@ -83,7 +83,7 @@ const connectToolsToMeasurementService = (
     Cornerstone3DViewportService,
     csTools3DVer1MeasurementSource
   );
-  const { addOrUpdate, remove } = csTools3DVer1MeasurementSource;
+  const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
 
   //
   function addMeasurement(csToolsEvent) {
@@ -98,7 +98,7 @@ const connectToolsToMeasurementService = (
       // Todo: this should be changed when a measurement can include multiple annotations
       // in the future
       annotationAddedEventDetail.uid = annotationUID;
-      addOrUpdate(toolName, annotationAddedEventDetail);
+      annotationToMeasurement(toolName, annotationAddedEventDetail);
     } catch (error) {
       console.warn('Failed to update measurement:', error);
     }
@@ -120,7 +120,7 @@ const connectToolsToMeasurementService = (
       const { toolName } = metadata;
 
       annotationModifiedEventDetail.uid = annotationUID;
-      addOrUpdate(toolName, annotationModifiedEventDetail);
+      annotationToMeasurement(toolName, annotationModifiedEventDetail);
     } catch (error) {
       console.warn('Failed to update measurement:', error);
     }

@@ -217,8 +217,8 @@ class MeasurementService {
       version,
     };
 
-    source.addOrUpdate = (annotationType, annotation) => {
-      return this.addOrUpdate(source, annotationType, annotation);
+    source.annotationToMeasurement = (annotationType, annotation) => {
+      return this.annotationToMeasurement(source, annotationType, annotation);
     };
 
     source.remove = (measurementUID, eventDetails) => {
@@ -468,7 +468,7 @@ class MeasurementService {
    * @param {EventDetail} sourceAnnotationDetail for the annotation event
    * @return {string} A measurement uid
    */
-  addOrUpdate(source, annotationType, sourceAnnotationDetail) {
+  annotationToMeasurement(source, annotationType, sourceAnnotationDetail) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }

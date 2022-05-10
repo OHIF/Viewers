@@ -169,7 +169,10 @@ describe('MeasurementService.js', () => {
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.addOrUpdate(annotationType, annotation);
+      const measurementId = source.annotationToMeasurement(
+        annotationType,
+        annotation
+      );
       const mappedAnnotation = source.getAnnotation(
         annotationType,
         measurementId
@@ -186,7 +189,10 @@ describe('MeasurementService.js', () => {
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.addOrUpdate(annotationType, annotation);
+      const measurementId = source.annotationToMeasurement(
+        annotationType,
+        annotation
+      );
       const mappedAnnotation = source.getAnnotation(
         annotationType,
         measurementId
@@ -212,8 +218,8 @@ describe('MeasurementService.js', () => {
         toMeasurement
       );
 
-      source.addOrUpdate(annotationType, measurement);
-      source.addOrUpdate(annotationType, anotherMeasurement);
+      source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, anotherMeasurement);
 
       const measurements = measurementService.getMeasurements();
 
@@ -231,7 +237,7 @@ describe('MeasurementService.js', () => {
         toMeasurement
       );
 
-      const uid = source.addOrUpdate(annotationType, measurement);
+      const uid = source.annotationToMeasurement(annotationType, measurement);
       const returnedMeasurement = measurementService.getMeasurement(uid);
 
       /* Clear dynamic data */
@@ -241,7 +247,7 @@ describe('MeasurementService.js', () => {
     });
   });
 
-  describe('addOrUpdate()', () => {
+  describe('annotationToMeasurement()', () => {
     it('adds new measurements', () => {
       measurementService.addMapping(
         source,
@@ -251,8 +257,8 @@ describe('MeasurementService.js', () => {
         toMeasurement
       );
 
-      source.addOrUpdate(annotationType, measurement);
-      source.addOrUpdate(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, measurement);
 
       const measurements = measurementService.getMeasurements();
 
@@ -261,7 +267,7 @@ describe('MeasurementService.js', () => {
 
     it('fails to add new measurements when no mapping', () => {
       expect(() => {
-        source.addOrUpdate(annotationType, measurement);
+        source.annotationToMeasurement(annotationType, measurement);
       }).toThrow();
     });
 
@@ -275,7 +281,7 @@ describe('MeasurementService.js', () => {
       );
 
       expect(() => {
-        source.addOrUpdate(annotationType, measurement);
+        source.annotationToMeasurement(annotationType, measurement);
       }).toThrow();
     });
 
@@ -291,7 +297,7 @@ describe('MeasurementService.js', () => {
       );
 
       /* Add new measurement */
-      source.addOrUpdate(annotationType, newMeasurement);
+      source.annotationToMeasurement(annotationType, newMeasurement);
       const savedMeasurement = measurementService.getMeasurement(
         newMeasurement.uid
       );
@@ -315,7 +321,7 @@ describe('MeasurementService.js', () => {
       );
 
       expect(() => {
-        source.addOrUpdate(annotationType, measurement);
+        source.annotationToMeasurement(annotationType, measurement);
       }).toThrow();
     });
 
@@ -328,11 +334,11 @@ describe('MeasurementService.js', () => {
         toMeasurement
       );
 
-      const uid = source.addOrUpdate(annotationType, measurement);
+      const uid = source.annotationToMeasurement(annotationType, measurement);
 
       measurement.unit = 'HU';
 
-      source.addOrUpdate(annotationType, { uid, ...measurement });
+      source.annotationToMeasurement(annotationType, { uid, ...measurement });
       const updatedMeasurement = measurementService.getMeasurement(uid);
 
       expect(updatedMeasurement.unit).toBe('HU');
@@ -359,7 +365,7 @@ describe('MeasurementService.js', () => {
       );
 
       /* Add new measurement */
-      source.addOrUpdate(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, measurement);
 
       expect(addCallbackWasCalled).toBe(true);
     });
@@ -383,10 +389,10 @@ describe('MeasurementService.js', () => {
       );
 
       /* Create measurement */
-      const uid = source.addOrUpdate(annotationType, measurement);
+      const uid = source.annotationToMeasurement(annotationType, measurement);
 
       /* Update measurement */
-      source.addOrUpdate(annotationType, { uid, ...measurement });
+      source.annotationToMeasurement(annotationType, { uid, ...measurement });
 
       expect(updateCallbackWasCalled).toBe(true);
     });
@@ -413,7 +419,7 @@ describe('MeasurementService.js', () => {
       unsubscribe();
 
       /* Create measurement */
-      source.addOrUpdate(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, measurement);
 
       expect(updateCallbackWasCalled).toBe(false);
     });

@@ -24,9 +24,7 @@
     "dev:cornerstone": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
-    "start": "yarn run dev",
-    "test:unit": "jest --watchAll",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage"
+    "start": "yarn run dev"
   },
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
