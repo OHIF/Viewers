@@ -36,7 +36,7 @@ const DEFAULT_FILENAME = 'image';
 const REFRESH_VIEWPORT_TIMEOUT = 100;
 
 const ViewportDownloadForm = ({
-  activeViewport,
+  activeViewportElement,
   onClose,
   updateViewportPreview,
   enableViewport,
@@ -181,13 +181,13 @@ const ViewportDownloadForm = ({
 
   const loadAndUpdateViewports = useCallback(async () => {
     const { width: scaledWidth, height: scaledHeight } = await loadImage(
-      activeViewport,
+      activeViewportElement,
       viewportElement,
       dimensions.width,
       dimensions.height
     );
 
-    toggleAnnotations(showAnnotations, viewportElement);
+    toggleAnnotations(showAnnotations, viewportElement, activeViewportElement);
 
     const scaledDimensions = {
       height: validSize(scaledHeight),
@@ -218,7 +218,7 @@ const ViewportDownloadForm = ({
     }));
   }, [
     loadImage,
-    activeViewport,
+    activeViewportElement,
     viewportElement,
     dimensions.width,
     dimensions.height,
@@ -248,7 +248,7 @@ const ViewportDownloadForm = ({
       loadAndUpdateViewports();
     }, REFRESH_VIEWPORT_TIMEOUT);
   }, [
-    activeViewport,
+    activeViewportElement,
     viewportElement,
     showAnnotations,
     dimensions,
@@ -385,7 +385,7 @@ const ViewportDownloadForm = ({
           data-cy="image-preview"
         >
           <Typography variant="h5">{t('Image preview')}</Typography>
-          {activeViewport && (
+          {activeViewportElement && (
             <div
               className="mx-auto my-0"
               style={{
@@ -395,7 +395,7 @@ const ViewportDownloadForm = ({
               ref={ref => setViewportElement(ref)}
             ></div>
           )}
-          {!activeViewport && (
+          {!activeViewportElement && (
             <Typography className="mt-4">
               {t('Active viewport has no displayed image')}
             </Typography>

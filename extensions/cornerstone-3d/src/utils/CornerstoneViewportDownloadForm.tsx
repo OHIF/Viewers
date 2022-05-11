@@ -12,10 +12,11 @@ const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
 const VIEWPORT_ID = 'cornerstone-viewport-download-form';
+const TOOLGROUP_ID = 'cornerstone-viewport-download-form-toolgroup';
 
 const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
   const enabledElement = getEnabledElement(activeViewportIndex);
-  const activeEnabledElement = enabledElement?.element;
+  const activeViewportElement = enabledElement?.element;
 
   const enableViewport = viewportElement => {
     if (viewportElement) {
@@ -35,7 +36,10 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
     if (viewportElement) {
       const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
 
-      renderingEngine.disableElement(VIEWPORT_ID);
+      return new Promise(resolve => {
+        renderingEngine.disableElement(VIEWPORT_ID);
+        cornerstoneTools.ToolGroupManager.destroyToolGroup(TOOLGROUP_ID);
+      });
     }
   };
 
@@ -127,13 +131,61 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
       }
     });
 
-  const toggleAnnotations = (toggle, viewportElement) => {
-    return;
-    cornerstoneTools.store.state.tools.forEach(({ name }) => {
+  const toggleAnnotations = (
+    toggle,
+    viewportElement,
+    activeViewportElement
+  ) => {
+    const activeViewportEnabledElement = cornerstone.getEnabledElement(
+      activeViewportElement
+    );
+
+    const downloadViewportElement = cornerstone.getEnabledElement(
+      viewportElement
+    );
+
+    const {
+      viewportId: activeViewportId,
+      renderingEngineId,
+    } = activeViewportEnabledElement;
+    const { viewportId: downloadViewportId } = downloadViewportElement;
+
+    if (!activeViewportEnabledElement || !downloadViewportElement) {
+      return;
+    }
+
+    const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
+      activeViewportId,
+      renderingEngineId
+    );
+
+    let downloadToolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
+      downloadViewportId,
+      renderingEngineId
+    );
+
+    if (downloadToolGroup === undefined) {
+      downloadToolGroup = cornerstoneTools.ToolGroupManager.createToolGroup(
+        TOOLGROUP_ID
+      );
+
+      // what tools were in the active viewport?
+      // make them all enabled instances so that they can not be interacted
+      // with in the download viewport
+      Object.values(toolGroup._toolInstances).forEach(tool => {
+        downloadToolGroup.addTool(tool.getToolName());
+      });
+
+      // add the viewport to the toolGroup
+      downloadToolGroup.addViewport(downloadViewportId);
+    }
+
+    Object.values(downloadToolGroup._toolInstances).forEach(tool => {
+      const toolName = tool.getToolName();
       if (toggle) {
-        cornerstoneTools.setToolEnabledForElement(viewportElement, name);
+        downloadToolGroup.setToolEnabled(toolName);
       } else {
-        cornerstoneTools.setToolDisabledForElement(viewportElement, name);
+        downloadToolGroup.setToolDisabled(toolName);
       }
     });
   };
@@ -166,7 +218,7 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
       maximumSize={MAX_TEXTURE_SIZE}
       defaultSize={DEFAULT_SIZE}
       canvasClass={'cornerstone-canvas'}
-      activeViewport={activeEnabledElement}
+      activeViewportElement={activeViewportElement}
       enableViewport={enableViewport}
       disableViewport={disableViewport}
       updateViewportPreview={updateViewportPreview}
