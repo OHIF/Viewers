@@ -105,7 +105,7 @@ const StudyBrowser = ({
           })}
         </ButtonGroup>
       </div>
-      <div className="flex flex-col flex-1 overflow-auto">
+      <div className="flex flex-col flex-1 overflow-auto ohif-scrollbar ">
         {getTabContent()}
       </div>
     </React.Fragment>

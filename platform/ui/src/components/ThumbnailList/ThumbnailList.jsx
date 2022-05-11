@@ -11,7 +11,7 @@ const ThumbnailList = ({
   onClickUntrack,
 }) => {
   return (
-    <div className="py-3 bg-black overflow-y-hidden ohif-scrollbar">
+    <div className="py-3 bg-black overflow-y-hidden ohif-scrollbar" style={{ minHeight: '210px' }}>
       {thumbnails.map(
         ({
           displaySetInstanceUID,
