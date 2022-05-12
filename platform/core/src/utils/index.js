@@ -5,7 +5,6 @@ import guid from './guid';
 import sortBy from './sortBy.js';
 import sortBySeriesDate from './sortBySeriesDate.js';
 import writeScript from './writeScript.js';
-import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
 //import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import urlUtil from './urlUtil';
@@ -28,7 +27,7 @@ import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
 
 // Commented out unused functionality.
-// Need to implement new mechanism for dervived displaySets using the displaySetManager.
+// Need to implement new mechanism for derived displaySets using the displaySetManager.
 
 const utils = {
   guid,
@@ -41,8 +40,8 @@ const utils = {
   formatPN,
   b64toBlob,
   StackManager,
-  DicomLoaderService,
   urlUtil,
+  imageIdToURI,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
@@ -55,7 +54,6 @@ const utils = {
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
-  imageIdToURI,
   debounce,
   roundNumber,
   downloadCSVReport,
@@ -70,7 +68,6 @@ export {
   writeScript,
   b64toBlob,
   StackManager,
-  DicomLoaderService,
   urlUtil,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,

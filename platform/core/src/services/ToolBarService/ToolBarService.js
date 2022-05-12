@@ -63,13 +63,15 @@ export default class ToolBarService {
     switch (interactionType) {
       case 'action': {
         commands.forEach(({ commandName, commandOptions, context }) => {
-          commandsManager.runCommand(commandName, commandOptions, context);
+          if (commandName) {
+            commandsManager.runCommand(commandName, commandOptions, context);
+          }
         });
         break;
       }
       case 'tool': {
         this.state.primaryToolId = itemId;
-        commands.forEach(({ commandName, commandOptions, context }) => {
+        commands.forEach(({ commandOptions, context }) => {
           commandsManager.runCommand('setToolActive', commandOptions, context);
         });
         break;
@@ -79,10 +81,16 @@ export default class ToolBarService {
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
-        // Todo: Adapt to toolGroup concept...
-        if (commandOptions) {
-          commandOptions.toggledState = this.state.toggles[itemId];
-        }
+        commands.forEach(({ commandName, commandOptions, context }) => {
+          if (!commandOptions) {
+            commandOptions = {};
+          }
+
+          if (commandName) {
+            commandOptions.toggledState = this.state.toggles[itemId];
+            commandsManager.runCommand(commandName, commandOptions, context);
+          }
+        });
         break;
       }
       default:

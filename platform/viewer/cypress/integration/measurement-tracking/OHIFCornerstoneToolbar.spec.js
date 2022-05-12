@@ -42,8 +42,8 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mousedown', 'center', { buttons: 1 })
+      .trigger('mousemove', 'top', { buttons: 1 })
       .trigger('mouseup');
     const expectedText =
       'Ser: 1Img: 1 1/26256 x 256Loc: -30.00 mm Thick: 5.00 mm';
@@ -58,15 +58,19 @@ describe('OHIF Cornerstone Toolbar', () => {
         cy.wrap($zoomBtn).should('have.class', 'active');
       });
 
-    //drags the mouse inside the viewport to be able to interact with series
+    // IMPORTANT: Cypress sends out a mouseEvent which doesn't have the buttons
+    // property. This is a workaround to simulate a mouseEvent with the buttons property
+    // which is consumed by cornerstone3D
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { button: 1 })
+      .trigger('mousedown', 'center', { buttons: 1 })
       .trigger('mousemove', 'top', {
-        button: 1,
+        buttons: 1,
       })
-      .trigger('mouseup');
+      .trigger('mouseup', {
+        buttons: 1,
+      });
 
-    const expectedText = 'Zoom:0.45x';
+    const expectedText = 'Zoom:0.96x';
     cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
   });
 
@@ -81,19 +85,13 @@ describe('OHIF Cornerstone Toolbar', () => {
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
       .click({ force: true })
-      .trigger('mousemove', 'center', { which: 1 })
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', {
-        which: 1,
-      })
-      .trigger('mouseup')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'left', {
-        which: 1,
-      })
-      .trigger('mouseup');
+      .trigger('mousedown', 'center', { buttons: 1 })
+      // Since we have scrollbar on the right side of the viewport, we need to
+      // force the mousemove since it goes to another element
+      .trigger('mousemove', 'right', { buttons: 1, force: true })
+      .trigger('mouseup', { buttons: 1 });
 
-    const expectedText = 'W:731L:226';
+    const expectedText = 'W:1926L:479';
     cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
   });
 
@@ -106,8 +104,8 @@ describe('OHIF Cornerstone Toolbar', () => {
       });
 
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'bottom', { which: 1 })
+      .trigger('mousedown', 'center', { buttons: 1 })
+      .trigger('mousemove', 'bottom', { buttons: 1 })
       .trigger('mouseup', 'bottom');
   });
 

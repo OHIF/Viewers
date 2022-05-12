@@ -53,13 +53,13 @@ describe('OHIF Cornerstone Hotkeys', () => {
 
     // Hotkey +
     cy.get('body').type('+++'); // Press hotkey 3 times
-    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:2.07x');
+    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:2.30x');
     // Hotkey -
     cy.get('body').type('-');
-    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:1.88x');
+    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:2.09x');
     // Hotkey =
     cy.get('body').type('=');
-    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:1.51x');
+    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:1.67x');
   });
 
   it('checks if hotkey "SPACEBAR" can reset the image', () => {
@@ -74,13 +74,13 @@ describe('OHIF Cornerstone Hotkeys', () => {
     cy.get('body').type('V+++I');
     cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
     cy.get('@viewportInfoMidTop').should('contains.text', 'A');
-    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:2.07x');
+    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:2.30x');
 
     // Hotkey SPACEBAR
     cy.get('body').type(' ');
     cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
     cy.get('@viewportInfoMidTop').should('contains.text', 'A');
-    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:1.51x');
+    cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:1.67x');
   });
 
   /*

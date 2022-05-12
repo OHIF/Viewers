@@ -25,7 +25,7 @@ const seriesSortCriteria = {
 };
 
 const instancesSortCriteria = {
-  default: (a, b) => a.InstanceNumber - b.InstanceNumber,
+  default: (a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber),
 };
 
 const sortingCriteria = {

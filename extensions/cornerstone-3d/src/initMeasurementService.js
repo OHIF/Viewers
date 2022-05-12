@@ -184,8 +184,6 @@ const connectMeasurementServiceToTools = (
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
-  const { measurementToAnnotation } = csTools3DVer1MeasurementSource;
-
   MeasurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements }) => {
     if (!Object.keys(measurements).length) {
       return;
@@ -214,8 +212,17 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const annotationType = measurement.metadata.toolName;
-      measurementToAnnotation(annotationType, measurement);
+      const { id, label } = measurement;
+
+      const sourceAnnotation = annotation.state.getAnnotation(id);
+
+      if (sourceAnnotation) {
+        sourceAnnotation.label = label;
+        if (sourceAnnotation.hasOwnProperty('text')) {
+          // Deal with the weird case of ArrowAnnotate.
+          sourceAnnotation.text = label;
+        }
+      }
     }
   );
 
