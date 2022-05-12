@@ -28,14 +28,6 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  if (prevProps.CINEIsPlaying !== nextProps.CINEIsPlaying) {
-    return false;
-  }
-
-  if (prevProps.CINEFrameRate !== nextProps.CINEFrameRate) {
-    return false;
-  }
-
   // Todo: handle fusion
   // Todo: handle orientation
   const prevDisplaySets = prevProps.displaySets[0];
@@ -73,9 +65,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // of the imageData in the OHIFCornerstone3DViewport. This prop is used
     // to set the initial state of the viewport's first image to render
     initialImageIdOrIndex,
-    // CINE props.
-    CINEIsPlaying,
-    CINEFrameRate,
   } = props;
 
   const [viewportData, setViewportData] = useState(null);
@@ -193,19 +182,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
       element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
     };
   }, [viewportOptions, displaySets, dataSource]);
-
-  useEffect(() => {
-    if (!CINEFrameRate) {
-      return;
-    }
-
-    const validFrameRate = Math.max(CINEFrameRate, 1);
-    if (CINEIsPlaying) {
-      cs3DTools.utilities.cine.playClip(elementRef.current, validFrameRate);
-    } else {
-      cs3DTools.utilities.cine.stopClip(elementRef.current);
-    }
-  }, [CINEIsPlaying, CINEFrameRate, viewportData]);
 
   /**
    * There are two scenarios for jump to click

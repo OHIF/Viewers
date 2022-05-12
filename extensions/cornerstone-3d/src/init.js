@@ -16,6 +16,7 @@ import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import callInputDialog from './callInputDialog';
+import initCineService from './initCineService';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -41,6 +42,7 @@ export default async function init({
     MeasurementService,
     DisplaySetService,
     UIDialogService,
+    CineService,
   } = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
@@ -64,6 +66,8 @@ export default async function init({
     DisplaySetService,
     Cornerstone3DViewportService
   );
+
+  initCineService(CineService);
 
   const _getDefaultPosition = event => ({
     x: (event && event.currentPoints.client[0]) || 0,

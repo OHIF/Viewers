@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 
@@ -26,15 +26,19 @@ function TrackedCornerstoneViewport(props) {
     commandsManager,
   } = props;
 
+  const { MeasurementService } = servicesManager.services;
+
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
 
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
+  const [{ activeViewportIndex }] = useViewportGrid();
   const [{ isCineEnabled, cines }, cineService] = useCine();
-  const [viewportDialogState, viewportDialogApi] = useViewportDialog();
+  const [viewportDialogState] = useViewportDialog();
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
+  const [element, setElement] = useState(null);
+
   const { trackedSeries } = trackedMeasurements.context;
 
   const utilityModule = extensionManager.getModuleEntry(
@@ -43,6 +47,24 @@ function TrackedCornerstoneViewport(props) {
 
   const { Cornerstone3DViewportService } = utilityModule.exports;
   const viewportId = Cornerstone3DViewportService.getViewportId(viewportIndex);
+
+  const {
+    Modality,
+    SeriesDate,
+    SeriesDescription,
+    SeriesInstanceUID,
+    SeriesNumber,
+  } = displaySet;
+
+  const {
+    PatientID,
+    PatientName,
+    PatientSex,
+    PatientAge,
+    SliceThickness,
+    SpacingBetweenSlices,
+    ManufacturerModelName,
+  } = displaySet.images[0];
 
   useEffect(() => {
     if (isTracked) {
@@ -74,27 +96,39 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
-  const {
-    Modality,
-    SeriesDate,
-    SeriesDescription,
-    SeriesInstanceUID,
-    SeriesNumber,
-  } = displaySet;
+  useEffect(() => {
+    if (!cines || !cines[viewportIndex]) {
+      return;
+    }
 
-  const {
-    PatientID,
-    PatientName,
-    PatientSex,
-    PatientAge,
-    SliceThickness,
-    SpacingBetweenSlices,
-    ManufacturerModelName,
-  } = displaySet.images[0];
+    const cine = cines[viewportIndex];
+    const isPlaying = (cine && cine.isPlaying) || false;
+    const frameRate = (cine && cine.frameRate) || 24;
+
+    const validFrameRate = Math.max(frameRate, 1);
+
+    if (isPlaying) {
+      cineService.playClip(element, {
+        framesPerSecond: validFrameRate,
+      });
+    } else {
+      cineService.stopClip(element);
+    }
+  }, [cines, viewportIndex, cineService, element, displaySet]);
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
   }
+
+  /**
+   * OnElementEnabled callback which is called after the cornerstone3DExtension
+   * has enabled the element. Note: we delegate all the image rendering to
+   * cornerstone3DExtension, so we don't need to do anything here regarding
+   * the image rendering, element enabling etc.
+   */
+  const onElementEnabled = evt => {
+    setElement(evt.detail.element);
+  };
 
   function switchMeasurement(direction) {
     const newTrackedMeasurementUID = _getNextMeasurementUID(
@@ -110,29 +144,19 @@ function TrackedCornerstoneViewport(props) {
 
     setTrackedMeasurementUID(newTrackedMeasurementUID);
 
-    const { MeasurementService } = servicesManager.services;
     MeasurementService.jumpToMeasurement(
       viewportIndex,
       newTrackedMeasurementUID
     );
   }
 
-  const getCornerstone3DViewport = useCallback(() => {
+  const getCornerstone3DViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
     );
 
-    const cine = cines[viewportIndex];
-    const isPlaying = (cine && cine.isPlaying) || false;
-
-    return (
-      <Component
-        {...props}
-        CINEIsPlaying={isPlaying}
-        CINEFrameRate={cine?.frameRate}
-      />
-    );
-  }, [cines, props, viewportIndex]);
+    return <Component {...props} onElementEnabled={onElementEnabled} />;
+  };
 
   const cine = cines[viewportIndex];
   const isPlaying = (cine && cine.isPlaying) || false;
@@ -177,9 +201,15 @@ function TrackedCornerstoneViewport(props) {
           isPlaying,
           onClose: () => commandsManager.runCommand('toggleCine'),
           onPlayPauseChange: isPlaying =>
-            cineService.setCine({ id: activeViewportIndex, isPlaying }),
+            cineService.setCine({
+              id: activeViewportIndex,
+              isPlaying,
+            }),
           onFrameRateChange: frameRate =>
-            cineService.setCine({ id: activeViewportIndex, frameRate }),
+            cineService.setCine({
+              id: activeViewportIndex,
+              frameRate,
+            }),
         }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
@@ -213,8 +243,6 @@ TrackedCornerstoneViewport.propTypes = {
 TrackedCornerstoneViewport.defaultProps = {
   customProps: {},
 };
-
-const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 function _getNextMeasurementUID(
   direction,
