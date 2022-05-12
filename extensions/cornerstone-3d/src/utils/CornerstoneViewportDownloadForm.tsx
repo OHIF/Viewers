@@ -1,9 +1,10 @@
 import React from 'react';
+import domtoimage from 'dom-to-image';
+
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
 import PropTypes from 'prop-types';
-
 import { ViewportDownloadForm } from '@ohif/ui';
 
 import { getEnabledElement } from '../state';
@@ -190,24 +191,17 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
     });
   };
 
-  const downloadBlob = (
-    filename,
-    fileType,
-    viewportElement,
-    downloadCanvas
-  ) => {
+  const downloadBlob = (filename, fileType) => {
     const file = `${filename}.${fileType}`;
-    const mimetype = `image/${fileType}`;
+    const divForDownloadViewport = document.querySelector(
+      `div[data-viewport-uid="${VIEWPORT_ID}"]`
+    );
 
-    viewportElement.querySelector('canvas').toBlob(blob => {
-      const URLObj = window.URL || window.webkitURL;
-      const a = document.createElement('a');
-
-      a.href = URLObj.createObjectURL(blob);
-      a.download = file;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    domtoimage.toPng(divForDownloadViewport).then(dataUrl => {
+      const link = document.createElement('a');
+      link.download = file;
+      link.href = dataUrl;
+      link.click();
     });
   };
 
