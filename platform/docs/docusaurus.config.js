@@ -15,24 +15,24 @@ const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(
 );
 
 // This probably only makes sense for the beta phase, temporary
-function getNextBetaVersionName() {
-  const expectedPrefix = '';
+// function getNextBetaVersionName() {
+//   const expectedPrefix = '';
 
-  const lastReleasedVersion = versions[0];
-  if (!lastReleasedVersion.includes(expectedPrefix)) {
-    throw new Error(
-      'this code is only meant to be used during the 2.0 beta phase.'
-    );
-  }
-  const version = parseInt(lastReleasedVersion.replace(expectedPrefix, ''), 10);
-  return `${expectedPrefix}${version + 1}`;
-}
+//   const lastReleasedVersion = versions[0];
+//   if (!lastReleasedVersion.includes(expectedPrefix)) {
+//     throw new Error(
+//       'this code is only meant to be used during the 2.0 beta phase.'
+//     );
+//   }
+//   const version = parseInt(lastReleasedVersion.replace(expectedPrefix, ''), 10);
+//   return `${expectedPrefix}${version + 1}`;
+// }
 
-const allDocHomesPaths = [
-  '/docs/',
-  '/docs/next/',
-  ...versions.slice(1).map(version => `/docs/${version}/`),
-];
+// const allDocHomesPaths = [
+//   '/docs/',
+//   '/docs/next/',
+//   ...versions.slice(1).map(version => `/docs/${version}/`),
+// ];
 
 const isDev = process.env.NODE_ENV === 'development';
 
