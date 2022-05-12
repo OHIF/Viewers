@@ -395,6 +395,18 @@ const toolbarButtons = [
           ],
           'Probe'
         ),
+        _createToggleButton(
+          'cine',
+          'tool-cine',
+          'Cine',
+          [
+            {
+              commandName: 'toggleCine',
+              context: 'CORNERSTONE3D',
+            },
+          ],
+          'Cine'
+        ),
         _createToolButton(
           'Angle',
           'tool-angle',

@@ -8,7 +8,12 @@ import { Enums } from '@cornerstonejs/tools';
 import { getEnabledElement } from './state';
 
 const commandsModule = ({ servicesManager }) => {
-  const { ViewportGridService, ToolGroupService } = servicesManager.services;
+  const {
+    ViewportGridService,
+    ToolGroupService,
+    CineService,
+    ToolBarService,
+  } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
@@ -20,6 +25,15 @@ const commandsModule = ({ servicesManager }) => {
   const actions = {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
+    },
+    toggleCine: () => {
+      const { viewports } = ViewportGridService.getState();
+      const { isCineEnabled } = CineService.getState();
+      CineService.setIsCineEnabled(!isCineEnabled);
+      ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
+      viewports.forEach((_, index) =>
+        CineService.setCine({ id: index, isPlaying: false })
+      );
     },
     setWindowLevel({ windowLevel, toolGroupId }) {
       const { window: windowWidth, level: windowCenter } = windowLevel;
@@ -336,6 +350,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
+      storeContexts: [],
+      options: {},
+    },
+    toggleCine: {
+      commandFn: actions.toggleCine,
       storeContexts: [],
       options: {},
     },

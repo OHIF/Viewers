@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 
@@ -117,16 +117,25 @@ function TrackedCornerstoneViewport(props) {
     );
   }
 
-  const getCornerstone3DViewport = () => {
+  const getCornerstone3DViewport = useCallback(() => {
     const { component: Component } = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
     );
-    return <Component {...props}></Component>;
-  };
+
+    const cine = cines[viewportIndex];
+    const isPlaying = (cine && cine.isPlaying) || false;
+
+    return (
+      <Component
+        {...props}
+        CINEIsPlaying={isPlaying}
+        CINEFrameRate={cine?.frameRate}
+      />
+    );
+  }, [cines, props, viewportIndex]);
 
   const cine = cines[viewportIndex];
   const isPlaying = (cine && cine.isPlaying) || false;
-  const frameRate = (cine && cine.frameRate) || 24;
 
   return (
     <>
