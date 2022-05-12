@@ -97,6 +97,7 @@ function modeFactory({ modeConfiguration }) {
         'Zoom',
         'WindowLevel',
         'Pan',
+        'Capture',
         'Layout',
         'MoreTools',
       ]);

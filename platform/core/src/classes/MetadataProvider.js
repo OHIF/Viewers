@@ -1,6 +1,6 @@
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
-import { utils } from '@ohif/core';
+import { imageIdToURI } from '../utils';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
@@ -37,12 +37,12 @@ class MetadataProvider {
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
-    const imageURI = utils.imageIdToURI(imageId);
+    const imageURI = imageIdToURI(imageId);
     this.imageURIToUIDs.set(imageURI, uids);
   }
 
   addCustomMetadata(imageId, type, metadata) {
-    const imageURI = utils.imageIdToURI(imageId);
+    const imageURI = imageIdToURI(imageId);
     if (!this.customMetadata.has(type)) {
       this.customMetadata.set(type, {});
     }
@@ -76,7 +76,7 @@ class MetadataProvider {
     // check inside custom metadata
     if (this.customMetadata.has(query)) {
       const customMetadata = this.customMetadata.get(query);
-      const imageURI = utils.imageIdToURI(imageId);
+      const imageURI = imageIdToURI(imageId);
       if (customMetadata[imageURI]) {
         return customMetadata[imageURI];
       }
@@ -435,7 +435,7 @@ class MetadataProvider {
     if (urlRegex.test(imageId)) {
       imageURI = imageId;
     } else {
-      imageURI = utils.getImageURI(imageId);
+      imageURI = imageIdToURI(imageId);
     }
 
     return this.imageURIToUIDs.get(imageURI);

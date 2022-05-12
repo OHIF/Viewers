@@ -29,6 +29,8 @@ function initDefaultToolGroup(extensionManager, ToolGroupService) {
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
+      { toolName: toolNames.Angle },
+      { toolName: toolNames.Magnify },
     ],
     // enabled
     // disabled

@@ -184,12 +184,14 @@ function CornerstoneOverlay({
       return null;
     }
 
+    const instanceNumberInt = parseInt(instanceNumber);
+
     return (
       <div className="flex flex-row">
         <span className="mr-1">I:</span>
         <span className="font-light">
-          {instanceNumber !== undefined
-            ? `${instanceNumber} (${imageIndex + 1}/${stackSize})`
+          {instanceNumberInt !== undefined
+            ? `${instanceNumberInt} (${imageIndex + 1}/${stackSize})`
             : `${imageIndex + 1}/${stackSize}`}
         </span>
       </div>

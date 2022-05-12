@@ -21,13 +21,13 @@ describe('HotkeysManager', () => {
   });
   it('has expected properties', () => {
     const allProperties = Object.keys(hotkeysManager);
-    const expectedProprties = [
+    const expectedProperties = [
       'hotkeyDefinitions',
       'hotkeyDefaults',
       'isEnabled',
     ];
 
-    const containsAllExpectedProperties = expectedProprties.every(expected =>
+    const containsAllExpectedProperties = expectedProperties.every(expected =>
       allProperties.includes(expected)
     );
 

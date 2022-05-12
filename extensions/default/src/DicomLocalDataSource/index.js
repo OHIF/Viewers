@@ -128,6 +128,8 @@ function createDicomLocalApi(dicomLocalConfig) {
                 SOPInstanceUID,
               } = instance;
 
+              instance.imageId = imageId;
+
               // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
               metadataProvider.addImageIdToUIDs(imageId, {
                 StudyInstanceUID,

@@ -14,7 +14,7 @@ const defaultProtocol = {
       id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
-        layoutType: 'grid',
+        type: 'grid',
         properties: {
           rows: 1,
           columns: 1,

@@ -16,6 +16,7 @@ import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import callInputDialog from './callInputDialog';
+import initCineService from './initCineService';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -23,7 +24,6 @@ let CONTEXT_MENU_OPEN = false;
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone3D;
-
 /**
  *
  */
@@ -34,11 +34,6 @@ export default async function init({
   appConfig,
 }) {
   await cs3DInit();
-
-  // Todo: CornerstoneTools init is separate from the cornerstone-core init.
-  // Since cs3d is async, we want the tools to be ready as soon as possible
-  // to create toolGroups etc. We should make extension registrations async
-  // so that the order be core init -> tools init
   initCornerstoneTools();
 
   const {
@@ -47,6 +42,7 @@ export default async function init({
     MeasurementService,
     DisplaySetService,
     UIDialogService,
+    CineService,
   } = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
@@ -64,13 +60,14 @@ export default async function init({
 
   initWADOImageLoader(UserAuthenticationService, appConfig);
 
-  // Register the cornerstone-tools-measurement-tool
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
     MeasurementService,
     DisplaySetService,
     Cornerstone3DViewportService
   );
+
+  initCineService(CineService);
 
   const _getDefaultPosition = event => ({
     x: (event && event.currentPoints.client[0]) || 0,

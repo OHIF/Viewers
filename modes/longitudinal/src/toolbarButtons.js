@@ -395,6 +395,48 @@ const toolbarButtons = [
           ],
           'Probe'
         ),
+        _createToggleButton(
+          'cine',
+          'tool-cine',
+          'Cine',
+          [
+            {
+              commandName: 'toggleCine',
+              context: 'CORNERSTONE3D',
+            },
+          ],
+          'Cine'
+        ),
+        _createToolButton(
+          'Angle',
+          'tool-angle',
+          'Angle',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Angle',
+              },
+              context: 'CORNERSTONE3D',
+            },
+          ],
+          'Angle'
+        ),
+        _createToolButton(
+          'Magnify',
+          'tool-magnify',
+          'Magnify',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Magnify',
+              },
+              context: 'CORNERSTONE3D',
+            },
+          ],
+          'Magnify'
+        ),
         _createToolButton(
           'Rectangle',
           'tool-rectangle',
