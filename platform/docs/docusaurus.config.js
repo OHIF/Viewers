@@ -340,6 +340,14 @@ module.exports = {
                   href: versionUrl,
                 })
               ),
+              {
+                type: 'html',
+                value: '<hr class="dropdown-separator">',
+              },
+              {
+                to: '/versions',
+                label: 'All versions',
+              },
             ],
           },
           {
