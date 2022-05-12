@@ -95,7 +95,15 @@ The simplest toolbarButtons definition has the following properties:
     type: 'tool',
     icon: 'tool-zoom',
     label: 'Zoom',
-    commandOptions: { toolName: 'Zoom' },
+    commands: [
+      {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'Length',
+            },
+            context: 'CORNERSTONE3D',
+          },
+    ],
   },
 },
 ```
