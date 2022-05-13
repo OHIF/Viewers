@@ -25,8 +25,8 @@ Workflow" and is common for Open Source projects. The GitHub blog has a [good
 graphic that illustrates this setup][triangular-workflow].
 
 ### `v3-stable` branch
-Currently the stable branch for OHIF-v3 is `v3-stable`. After the parity of the
-v3-stable branch is complete, we will merge the v3-stable branch into the master branch.
+Currently the stable branch for OHIF-v3 is `v3-stable`. Once the v3-stable branch has
+feature parity with the master branch, `v3-stable` will be pushed to the master branch.
 You can read more about the roadmap timeline [here](https://ohif.org/roadmap).
 
 ### Private
