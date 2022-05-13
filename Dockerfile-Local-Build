@@ -12,9 +12,10 @@ EXPOSE 80
 
 ## Change entrypoint permissions and run
 RUN chmod 777 /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["sh","/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
 
 #### Build and Push Docker Image
-# export PUBLIC_URL=./ && yarn build && docker build -f Dockerfile-Local-Build -t oitrepo.ccr.cancer.gov/mibair/ohif_viewer . && docker push oitrepo.ccr.cancer.gov/mibair/ohif_viewer:latest
+# export PUBLIC_URL=./ && yarn build && docker build -f Dockerfile-Local-Build -t oitrepo.ccr.cancer.gov/mibair/ohif_viewer .
+# docker push oitrepo.ccr.cancer.gov/mibair/ohif_viewer:latest
