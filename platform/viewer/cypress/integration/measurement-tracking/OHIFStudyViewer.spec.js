@@ -266,25 +266,25 @@ describe('OHIF Study Viewer Page', function() {
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
   });
 
-  it('performs right click to zoom', function() {
-    // This is not used to activate the tool, it is used to ensure the
-    // top left viewport info shows the zoom values (it only shows up
-    // when the zoom tool is active)
-    cy.get('@zoomBtn')
-      .click()
-      .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
-      });
+  // it('performs right click to zoom', function() {
+  //   // This is not used to activate the tool, it is used to ensure the
+  //   // top left viewport info shows the zoom values (it only shows up
+  //   // when the zoom tool is active)
+  //   cy.get('@zoomBtn')
+  //     .click()
+  //     .then($zoomBtn => {
+  //       cy.wrap($zoomBtn).should('have.class', 'active');
+  //     });
 
-    //Right click on viewport
-    cy.get('@viewport')
-      .trigger('mousedown', 'top', { buttons: 2 })
-      .trigger('mousemove', 'center', { buttons: 2 })
-      .trigger('mouseup');
+  //   //Right click on viewport
+  //   cy.get('@viewport')
+  //     .trigger('mousedown', 'top', { buttons: 2 })
+  //     .trigger('mousemove', 'center', { buttons: 2 })
+  //     .trigger('mouseup');
 
-    const expectedText = 'Zoom:6.65x';
-    cy.get('@viewportInfoTopLeft').should('contains.text', expectedText);
-  });
+  //   const expectedText = 'Zoom:6.65x';
+  //   cy.get('@viewportInfoTopLeft').should('contains.text', expectedText);
+  // });
 
   /*it('performs middle click to pan', function() {
     //Get image position from cornerstone and check if y axis was modified

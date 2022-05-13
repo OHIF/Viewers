@@ -50,29 +50,29 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });*/
 
-  it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
-    //Click on button and verify if icon is active on toolbar
-    cy.get('@zoomBtn')
-      .click()
-      .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
-      });
+  // it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
+  //   //Click on button and verify if icon is active on toolbar
+  //   cy.get('@zoomBtn')
+  //     .click()
+  //     .then($zoomBtn => {
+  //       cy.wrap($zoomBtn).should('have.class', 'active');
+  //     });
 
-    // IMPORTANT: Cypress sends out a mouseEvent which doesn't have the buttons
-    // property. This is a workaround to simulate a mouseEvent with the buttons property
-    // which is consumed by cornerstone3D
-    cy.get('@viewport')
-      .trigger('mousedown', 'center', { buttons: 1 })
-      .trigger('mousemove', 'top', {
-        buttons: 1,
-      })
-      .trigger('mouseup', {
-        buttons: 1,
-      });
+  //   // IMPORTANT: Cypress sends out a mouseEvent which doesn't have the buttons
+  //   // property. This is a workaround to simulate a mouseEvent with the buttons property
+  //   // which is consumed by cornerstone3D
+  //   cy.get('@viewport')
+  //     .trigger('mousedown', 'center', { buttons: 1 })
+  //     .trigger('mousemove', 'top', {
+  //       buttons: 1,
+  //     })
+  //     .trigger('mouseup', {
+  //       buttons: 1,
+  //     });
 
-    const expectedText = 'Zoom:0.96x';
-    cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
-  });
+  //   const expectedText = 'Zoom:0.96x';
+  //   cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
+  // });
 
   it('checks if Levels tool will change the window width and center of an image', () => {
     //Click on button and verify if icon is active on toolbar

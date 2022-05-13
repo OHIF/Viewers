@@ -251,16 +251,6 @@ function OHIFCornerstoneSRViewport(props) {
       onDisplaySetsRemovedSubscription.unsubscribe();
     };
   }, []);
-  /**
-   * Hook to update the tracking identifiers when the selected measurement changes or
-   * the element changes
-   */
-  useEffect(() => {
-    if (!element) {
-      return;
-    }
-    setTrackingIdentifiers(measurementSelected);
-  }, [measurementSelected, element, setTrackingIdentifiers]);
 
   /**
    * Loading the measurements from the SR viewport, which goes through the
@@ -278,6 +268,17 @@ function OHIFCornerstoneSRViewport(props) {
     const numMeasurements = srDisplaySet.measurements.length;
     setMeasurementCount(numMeasurements);
   }, [srDisplaySet]);
+
+  /**
+   * Hook to update the tracking identifiers when the selected measurement changes or
+   * the element changes
+   */
+  useEffect(() => {
+    if (!element || !srDisplaySet.isLoaded) {
+      return;
+    }
+    setTrackingIdentifiers(measurementSelected);
+  }, [measurementSelected, element, setTrackingIdentifiers, srDisplaySet]);
 
   /**
    * Todo: what is this, not sure what it does regarding the react aspect,
