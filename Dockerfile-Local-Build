@@ -15,7 +15,6 @@ RUN chmod 777 /entrypoint.sh
 ## Copy Content
 COPY ./platform/viewer/dist /usr/share/nginx/html
 
-
 ## Expose Port 80
 EXPOSE 80
 
