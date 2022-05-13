@@ -12,7 +12,7 @@ Key features:
 
 - Designed to load large radiology studies as quickly as possible. Retrieves
   metadata ahead of time and streams in imaging pixel data as needed.
-- Leverages [Cornerstone.js](https://cornerstonejs.org/) for decoding,
+- Leverages [Cornerstone3D](https://github.com/cornerstonejs/cornerstone3D-beta) for decoding,
   rendering, and annotating medical images.
 - Works out-of-the-box with Image Archives that support [DICOMWeb][dicom-web].
   Offers a Data Source API for communicating with archives over proprietary API
