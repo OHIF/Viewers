@@ -11,6 +11,15 @@ and other resources that we have provided to the community in the past:
 
 ## 2022
 
+### The Imaging Network Ontario - Remote
+
+The Imaging Network Ontario (ImNO) is an annual symposium that brings together
+medical imaging researchers and scientists from across Canada to share
+knowledge, ideas, and experiences.
+[[Slides]](https://docs.google.com/presentation/d/18XZDon4-Sitc2a70V5sFyhyUVZI_mIgfXHGtdxhZMjE/edit?usp=sharing)
+[[Video]](https://vimeo.com/691134870/ad7d308a44)
+
+
 ### [NA-MIC Project Week 36th 2022 - Remote](https://github.com/NA-MIC/ProjectWeek/blob/master/PW36_2022_Virtual/README.md)
 
 The Project Week is a week-long hackathon of hands-on activity in which medical
