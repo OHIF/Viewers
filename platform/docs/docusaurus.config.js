@@ -219,7 +219,7 @@ module.exports = {
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
             const nextVersionDocsDirPath = 'docs';
-            return `https://github.com/OHIF/Viewers/edit/master/website/${nextVersionDocsDirPath}/${docPath}`;
+            return `https://github.com/OHIF/Viewers/edit/v3-stable/platform/docs/${docPath}`;
           },
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,

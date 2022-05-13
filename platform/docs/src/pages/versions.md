@@ -10,7 +10,7 @@ deprecated.
 There are two types of versions that we need to consider here:
 
 - Product Version: which is the end user visible version of the viewer
-- Package Version: which is the underlying libraries/packages of the platform.
+- Package Version: which is the underlying libraries/packages of the platform on npm.
 
 Currently we have three product versions:
 
@@ -18,22 +18,30 @@ Currently we have three product versions:
 - Version 2 (master branch): Front end image viewer built with React
 - Version 3 (alpha release): Re-architected Version 2.0 to allow for a more modular and customizable viewer.
 
+As per package versioning, we follow semantic versioning which looks like *a.b.c* where:
 
-## Maintained Branches
+- *a* is for major breaking changes
+- *b* is for new features
+- *c* is for patches/bug fixes
+
+You can read more semantic versioning [here](https://semver.org/).
+
+
+## Maintained Product Versions
 
 ### Version 3.1 Cornerstone3D
 
 OHIF Version 3.1 is the next major upcoming release of the OHIF platform. It uses
 the next generation of the cornerstone library, [Cornerstone 3D](https://github.com/cornerstonejs/cornerstone3D-beta).
-We are in the process of doing a parity check between this version and the master
+We are in the process of performing a parity check between this version and the `master`
 branch before we merge it into the master branch. You can read more about the
-roadmap timelines [here](https://ohif.org/roadmap/)
+roadmap timelines [here](https://ohif.org/roadmap/).
 
 ### Version 2.0: Master branch
 
-Currently, the master branch of OHIF is on Version 2.0.
+Currently, the master branch of OHIF is on Product Version 2.0.
 
-## Archived Branches
+## Archived Versions
 
 ### Version 3.0 Cornerstone Legacy
 
