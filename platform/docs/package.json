@@ -9,7 +9,8 @@
       "@docusaurus/preset-classic",
       "@docusaurus/preset-classic/**",
       "**/react-router-dom",
-      "**/react-router"
+      "**/react-router",
+      "**/history"
     ]
   },
   "scripts": {
