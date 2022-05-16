@@ -6,9 +6,15 @@ import {
   init as cs3DInit,
   eventTarget,
   EVENTS,
+  volumeLoader,
+  imageLoader,
   imageLoadPoolManager,
 } from '@cornerstonejs/core';
 import { Enums, utilities } from '@cornerstonejs/tools';
+import {
+  cornerstoneStreamingImageVolumeLoader,
+  sharedArrayBufferImageLoader,
+} from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
@@ -46,6 +52,19 @@ export default async function init({
   } = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
+
+  volumeLoader.registerUnknownVolumeLoader(
+    cornerstoneStreamingImageVolumeLoader
+  );
+  volumeLoader.registerVolumeLoader(
+    'cornerstoneStreamingImageVolume',
+    cornerstoneStreamingImageVolumeLoader
+  );
+
+  imageLoader.registerImageLoader(
+    'streaming-wadors',
+    sharedArrayBufferImageLoader
+  );
 
   cornerstone3D.metaData.addProvider(
     metadataProvider.get.bind(metadataProvider),

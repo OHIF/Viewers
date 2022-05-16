@@ -1,7 +1,8 @@
 import { cache as cs3DCache, Enums } from '@cornerstonejs/core';
+import { utils } from '@ohif/core';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
-type StackData = {
+export type StackData = {
   StudyInstanceUID: string;
   displaySetInstanceUID: string;
   imageIds: string[];
@@ -10,7 +11,7 @@ type StackData = {
   initialImageIdIndex?: number | string | null;
 };
 
-type VolumeData = {
+export type VolumeData = {
   StudyInstanceUID: string;
   displaySetInstanceUIDs: string[]; // can have more than one displaySet (fusion)
   imageIds: string[][]; // can have more than one imageId list (fusion)
@@ -103,6 +104,9 @@ class Cornerstone3DCacheService {
     displaySets,
     initialView
   ): VolumeData {
+    // Check the cache for multiple scenarios to see if we need to
+    // decache the volume data from other viewports or not
+
     const volumeImageIdsArray = [];
 
     displaySets.forEach(displaySet => {
@@ -155,8 +159,7 @@ class Cornerstone3DCacheService {
     );
 
     return stackImageIds.map(imageId => {
-      const colonIndex = imageId.indexOf(':');
-      const imageURI = imageId.substring(colonIndex);
+      const imageURI = utils.imageIdToURI(imageId);
       return `${VOLUME_LOADER_SCHEME}:${imageURI}`;
     });
   }

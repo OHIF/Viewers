@@ -1,4 +1,6 @@
 import { Types } from '@cornerstonejs/core';
+import { StackData, VolumeData } from './Cornerstone3DCacheService';
+import { DisplaySetOptions, PublicViewportOptions } from './Viewport';
 
 /**
  * Handles cornerstone-3D viewport logic including enabling, disabling, and
@@ -57,9 +59,8 @@ export interface IViewportService {
    */
   setViewportDisplaySets(
     viewportIndex: number,
-    displaySets: unknown[],
-    viewportOptions: unknown,
-    displaySetOptions: unknown[],
-    dataSource: unknown
+    viewportData: StackData | VolumeData,
+    publicViewportOptions: PublicViewportOptions,
+    publicDisplaySetOptions: DisplaySetOptions[]
   ): void;
 }

@@ -100,7 +100,7 @@ const testProtocol = {
         layoutType: 'grid',
         properties: {
           rows: 1,
-          columns: 3,
+          columns: 1,
           viewportOptions: [],
         },
       },
@@ -198,45 +198,25 @@ const testProtocol = {
         },
       ],
       viewports: [
-        {
-          viewportOptions: {
-            viewportId: 'ctSagittal',
-            viewportType: 'stack',
-            background: [0, 0, 0],
-            orientation: 'SAGITTAL',
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              id: 'ctDisplaySet',
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            viewportId: 'ptSagittal',
-            viewportType: 'stack',
-            background: [1, 1, 1],
-            orientation: 'SAGITTAL',
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              options: {
-                voi: {
-                  windowWidth: 5,
-                  windowCenter: 2.5,
-                },
-                voiInverted: true,
-              },
-              id: 'ptDisplaySet',
-            },
-          ],
-        },
         // {
         //   viewportOptions: {
-        //     viewportId: 'fusionSagittal',
-        //     viewportType: 'stack',
+        //     viewportId: 'ctSagittal',
+        //     viewportType: 'volume',
+        //     background: [0, 0, 0],
+        //     orientation: 'SAGITTAL',
+        //     toolGroupId: 'default',
+        //   },
+        //   displaySets: [
+        //     {
+        //       id: 'ctDisplaySet',
+        //     },
+        //   ],
+        // },
+        // {
+        //   viewportOptions: {
+        //     viewportId: 'ptSagittal',
+        //     viewportType: 'volume',
+        //     background: [1, 1, 1],
         //     orientation: 'SAGITTAL',
         //     toolGroupId: 'default',
         //   },
@@ -249,11 +229,52 @@ const testProtocol = {
         //         },
         //         voiInverted: true,
         //       },
-        //       id: 'ptACDisplaySet',
+        //       id: 'ptDisplaySet',
         //     },
+        //   ],
+        // },
+        {
+          viewportOptions: {
+            viewportId: 'fusionSagittal',
+            viewportType: 'volume',
+            orientation: 'SAGITTAL',
+            toolGroupId: 'default',
+          },
+          displaySets: [
+            {
+              id: 'ctDisplaySet',
+            },
+            {
+              options: {
+                colormap: 'hsv',
+                voi: {
+                  windowWidth: 5,
+                  windowCenter: 2.5,
+                },
+              },
+              id: 'ptDisplaySet',
+            },
+          ],
+        },
+        // {
+        //   viewportOptions: {
+        //     viewportId: 'mipSagittal',
+        //     viewportType: 'volume',
+        //     orientation: 'SAGITTAL',
+        //     background: [0, 0, 0],
+        //     toolGroupId: 'default',
+        //   },
+        //   displaySets: [
         //     {
-        //       options: {},
-        //       id: 'ctDisplaySet',
+        //       options: {
+        //         // blendMode: 'MIP',
+        //         voi: {
+        //           windowWidth: 5,
+        //           windowCenter: 2.5,
+        //         },
+        //         voiInverted: true,
+        //       },
+        //       id: 'ptDisplaySet',
         //     },
         //   ],
         // },

@@ -6,6 +6,8 @@ import {
   getRenderingEngine,
   utilities as csUtils,
   Enums,
+  volumeLoader,
+  VolumeViewport,
 } from '@cornerstonejs/core';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
@@ -14,6 +16,12 @@ import ViewportInfo, {
   DisplaySetOptions,
   PublicViewportOptions,
 } from './Viewport';
+import { StackData, VolumeData } from './Cornerstone3DCacheService';
+import {
+  setColorTransferFunctionFromVolumeMetadata,
+  setColormap,
+  setLowerUpperColorTransferFunction,
+} from '../../utils/colormap/transferFunctionHelpers';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -33,7 +41,7 @@ class Cornerstone3DViewportService implements IViewportService {
    * Service-specific
    */
   EVENTS: { [key: string]: string };
-  listeners: { [key: string]: Function[] };
+  listeners: { [key: string]: Array<(...args: any[]) => void> };
   _broadcastEvent: unknown; // we should be able to extend the PubSub class to get this
   // Some configs
   enableResizeDetector: true;
@@ -94,6 +102,7 @@ class Cornerstone3DViewportService implements IViewportService {
     const immediate = true;
     const resetPan = false;
     const resetZoom = false;
+
     this.renderingEngine.resize(immediate, resetPan, resetZoom);
     this.renderingEngine.render();
   }
@@ -138,7 +147,7 @@ class Cornerstone3DViewportService implements IViewportService {
    */
   public setViewportDisplaySets(
     viewportIndex: number,
-    viewportData: unknown,
+    viewportData: StackData | VolumeData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[]
   ): void {
@@ -223,13 +232,17 @@ class Cornerstone3DViewportService implements IViewportService {
     return null;
   }
 
-  _setStackViewport(viewport, viewportData, viewportInfo) {
+  _setStackViewport(
+    viewport: Types.IStackViewport,
+    viewportData: StackData,
+    viewportInfo: ViewportInfo
+  ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
     const { imageIds, initialImageIdIndex } = viewportData;
     const { voi, voiInverted } = displaySetOptions[0];
     const properties = {};
-    if (voi.windowWidth || voi.windowCenter) {
+    if (voi && (voi.windowWidth || voi.windowCenter)) {
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(
         voi.windowWidth,
         voi.windowCenter
@@ -247,17 +260,274 @@ class Cornerstone3DViewportService implements IViewportService {
     });
   }
 
+  async _setVolumeViewport(
+    viewport: Types.IVolumeViewport,
+    viewportData: VolumeData,
+    viewportInfo: ViewportInfo
+  ): Promise<void> {
+    // TODO: We need to overhaul the way data sources work so requests can be made
+    // async. I think we should follow the image loader pattern which is async and
+    // has a cache behind it.
+    // The problem is that to set this volume, we need the metadata, but the request is
+    // already in-flight, and the promise is not cached, so we have no way to wait for
+    // it and know when it has fully arrived.
+    // loadStudyMetadata(StudyInstanceUID) => Promise([instances for study])
+    // loadSeriesMetadata(StudyInstanceUID, SeriesInstanceUID) => Promise([instances for series])
+    // If you call loadStudyMetadata and it's not in the DicomMetadataStore cache, it should fire
+    // a request through the data source?
+    // (This call may or may not create sub-requests for series metadata)
+    //
+    // If you call loadSeriesMetadata and a request is ongoing for the study, you have to wait for
+    // that? Or should it force a separate request? May be slower?
+    // For the moment I just stuck this whole operation in a setTimeout so we are sure the
+    // metadata has arrived
+    // const viewportVolumeInputs = {};
+    // const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
+
+    // for (let i = 0; i < viewportData.imageIds.length; i++) {
+    //   const imageIds = viewportData.imageIds[i];
+    //   const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
+    //   const displaySetOptions = displaySetOptionsArray[i];
+
+    //   // We need to get the volumeId again here since, for toolGroups
+    //   // right now we only have one volume per viewport, but for
+    //   // rendering we can have multiple volumes per viewport
+    //   const volumeId = displaySetInstanceUID;
+
+    //   // if (displaySet.needsRerendering) {
+    //   //   console.warn('Removing volume from cache', volumeId);
+    //   //   cache.removeVolumeLoadObject(volumeId);
+    //   //   displaySet.needsRerendering = false;
+    //   //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
+    //   // }
+
+    //   // let blendMode = option.blendMode ? option.blendMode : undefined;
+    //   // let sbThickness = option.slabThickness ? option.slabThickness : undefined;
+
+    //   const callback = this._getVOICallback(volumeId, displaySetOptions);
+
+    //   viewportVolumeInputs[volumeId] = {
+    //     imageIds,
+    //     volumeId,
+    //     callback,
+    //     blendMode: displaySetOptions.blendMode,
+    //     slabThickness: displaySetOptions.blendMode
+    //       ? displaySetOptions.slabThickness || 500
+    //       : undefined,
+    //   };
+    // }
+
+    // const volumes = [];
+
+    // for (const viewportVolumeInput of Object.values(viewportVolumeInputs)) {
+    //   const { imageIds, volumeId } = viewportVolumeInput;
+    //   const volume = await volumeLoader.createAndCacheVolume(volumeId, {
+    //     imageIds,
+    //   });
+
+    //   volumes.push(volume);
+    // }
+
+    // // Todo: this is only for the first load from hanging protocol, if
+    // // viewport gets a new display set (from drag and drop) we don't want to
+    // // use the hanging protocol image loading strategy
+    // // const hasCustomLoad = this.HangingProtocolService.hasCustomImageLoadStrategy();
+
+    // // If the hangingProtocol has specified a custom image loading strategy, use it.
+    // // Otherwise, use the default image loading strategy which is based on the
+    // // sorted imageIds in the volume. In addition, if displaysets has been
+    // // invalidated and need to be re-rendered, we need to use the default image
+    // // loading strategy.
+    // // const displaySetShouldReRender = displaySets.some(displaySet => {
+    // //   return this.displaySetsNeedRerendering.has(
+    // //     displaySet.displaySetInstanceUID
+    // //   );
+    // // });
+
+    // // if (!displaySetShouldReRender && hasCustomLoad) {
+    // //   return;
+    // // }
+
+    // volumes.forEach(volume => {
+    //   volume.load();
+    // });
+
+    // // this.initiateLoad(viewport.uid);
+
+    // // const volumeInputs = this.sceneVolumeInputs.get(sceneUID);
+    // // const viewportOptions = this.viewportOptions.get(viewportUID);
+
+    // // if (viewportOptions && viewportOptions.initialView) {
+    // //   this._setInitialView(viewportUID, sceneUID, viewportOptions.initialView);
+    // // }
+    // viewport.setVolumes(Object.values(viewportVolumeInputs));
+
+    const callbacks = [];
+    const blendModes = [];
+    const slabThickness = [];
+    const viewportVolumeInputs = {};
+    const volumeIds = [];
+    const displaySetOptions = viewportInfo.getDisplaySetOptions();
+
+    for (let i = 0; i < viewportData.imageIds.length; i++) {
+      const imageIds = viewportData.imageIds[i];
+      const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
+
+      // We need to get the volumeId again here since, for toolGroups
+      // right now we only have one volume per viewport, but for
+      // rendering we can have multiple volumes per viewport
+      const volumeId = displaySetInstanceUID;
+
+      viewportVolumeInputs[volumeId] = {
+        imageIds,
+      };
+
+      // if (displaySet.needsRerendering) {
+      //   console.warn('Removing volume from cache', volumeId);
+      //   cache.removeVolumeLoadObject(volumeId);
+      //   displaySet.needsRerendering = false;
+      //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
+      // }
+
+      // let blendMode = option.blendMode ? option.blendMode : undefined;
+      // let sbThickness = option.slabThickness ? option.slabThickness : undefined;
+
+      // if (blendMode && blendMode === MIP) {
+      //   // Only make the MIP as large as it needs to be.
+      //   blendMode = BlendMode.MAXIMUM_INTENSITY_BLEND;
+
+      //   if (sbThickness) {
+      //     // const { dimensions } = volume;
+      //     // Todo: We don't have the volume dimensions yet.
+      //     // we are setting it to a high value for now, but we need to get the
+      //     // volume dimensions from the volume or from options
+      //     sbThickness = 500;
+      //   }
+      // }
+
+      const callback = this._getVOICallback(volumeId, displaySetOptions[i]);
+
+      volumeIds.push(volumeId);
+      callbacks.push(callback);
+      // blendModes.push(blendMode);
+      // slabThickness.push(sbThickness);
+    }
+
+    const volumeInputs = [];
+    volumeIds.forEach((volumeId, index) => {
+      volumeInputs.push({
+        volumeId: volumeIds[index],
+        callback: callbacks[index],
+        // blendMode: blendModes[index],
+        // slabThickness: slabThickness[index],
+      });
+    });
+
+    const volumes = [];
+    for (const volumeId of Object.keys(viewportVolumeInputs)) {
+      const { imageIds } = viewportVolumeInputs[volumeId];
+      const volume = await volumeLoader.createAndCacheVolume(volumeId, {
+        imageIds,
+      });
+      volumes.push(volume);
+
+      volume.load();
+    }
+
+    // Todo: this is only for the first load from hanging protocol, if
+    // viewport gets a new display set (from drag and drop) we don't want to
+    // use the hanging protocol image loading strategy
+    // const hasCustomLoad = this.HangingProtocolService.hasCustomImageLoadStrategy();
+
+    // If the hangingProtocl has specified a custom image loading strategy, use it.
+    // Otherwise, use the default image loading strategy which is based on the
+    // sorted imageIds in the volume. In addition, if displaysets has been
+    // invalidated and need to be re-rendered, we need to use the default image
+    // loading strategy.
+    // const displaySetShouldReRender = displaySets.some(displaySet => {
+    //   return this.displaySetsNeedRerendering.has(
+    //     displaySet.displaySetInstanceUID
+    //   );
+    // });
+
+    // if (!displaySetShouldReRender && hasCustomLoad) {
+    //   return;
+    // }
+
+    volumes.forEach(volume => {
+      volume.load();
+    });
+
+    // this.initiateLoad(viewport.uid);
+
+    // const volumeInputs = this.sceneVolumeInputs.get(sceneUID);
+    // const viewportOptions = this.viewportOptions.get(viewportUID);
+
+    // if (viewportOptions && viewportOptions.initialView) {
+    //   this._setInitialView(viewportUID, sceneUID, viewportOptions.initialView);
+    // }
+    viewport.setVolumes([
+      ...volumeInputs.map(({ volumeId, callback }) => {
+        return {
+          volumeId,
+          callback,
+        };
+      }),
+    ]);
+  }
+
+  _getVOICallback(volumeId, displaySetOptions) {
+    const { voi, voiInverted: inverted, colormap } = displaySetOptions;
+
+    // If colormap is set, use it to set the color transfer function
+    let voiCallback;
+    if (colormap) {
+      voiCallback = ({ volumeActor }) => setColormap(volumeActor, colormap);
+      return voiCallback;
+    }
+
+    if (voi instanceof Object && voi.windowWidth && voi.windowCenter) {
+      const { windowWidth, windowCenter } = voi;
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
+        windowWidth,
+        windowCenter
+      );
+      voiCallback = ({ volumeActor }) =>
+        setLowerUpperColorTransferFunction({
+          volumeActor,
+          lower,
+          upper,
+          inverted,
+        });
+    } else {
+      voiCallback = ({ volumeActor }) =>
+        setColorTransferFunctionFromVolumeMetadata({
+          volumeActor,
+          volumeId,
+          inverted,
+        });
+    }
+
+    return voiCallback;
+  }
+
   _setDisplaySets(
     viewportId: string,
-    viewportData: unknown,
+    viewportData: StackData | VolumeData,
     viewportInfo: ViewportInfo
   ): void {
     const viewport = this.getCornerstone3DViewport(viewportId);
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData, viewportInfo);
+      this._setStackViewport(viewport, viewportData as StackData, viewportInfo);
+    } else if (viewport instanceof VolumeViewport) {
+      this._setVolumeViewport(
+        viewport,
+        viewportData as VolumeData,
+        viewportInfo
+      );
     } else {
-      throw new Error('Unsupported viewport type');
+      throw new Error('Unknown viewport type');
     }
   }
 
@@ -286,7 +556,6 @@ class Cornerstone3DViewportService implements IViewportService {
     const currentDisplaySetOptions = viewportInfo.getDisplaySetOptions();
 
     let viewportOptionsToUse = currentViewportOptions;
-    let displaySetOptionsToUse = currentDisplaySetOptions;
 
     // Creating a temporary viewportInfo to handle defaults
     const newViewportInfo = new ViewportInfo(
@@ -294,16 +563,27 @@ class Cornerstone3DViewportService implements IViewportService {
       viewportInfo.getViewportId()
     );
     newViewportInfo.setPublicViewportOptions(publicViewportOptions);
+    newViewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
 
     const newViewportOptions = newViewportInfo.getViewportOptions();
+    const newDisplaySetOptions = newViewportInfo.getDisplaySetOptions();
 
     viewportOptionsToUse = {
       ...currentViewportOptions,
       ...newViewportOptions,
     };
 
-    if (publicDisplaySetOptions?.length) {
-      displaySetOptionsToUse = [...publicDisplaySetOptions];
+    const displaySetOptionsToUse = [];
+    for (const index in newDisplaySetOptions) {
+      const newDisplaySetOption = newDisplaySetOptions[index];
+      const currentDisplaySetOption = currentDisplaySetOptions[index];
+
+      if (newDisplaySetOption) {
+        displaySetOptionsToUse.push({
+          ...currentDisplaySetOption,
+          ...newDisplaySetOption,
+        });
+      }
     }
 
     return {

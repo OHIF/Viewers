@@ -1,4 +1,5 @@
 import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
 export type ViewportOptions = {
@@ -7,7 +8,6 @@ export type ViewportOptions = {
   viewportId: string;
   orientation?: Types.Orientation;
   background?: Types.Point3;
-  blendMode?: number;
   initialView?: string;
 };
 
@@ -17,18 +17,26 @@ export type PublicViewportOptions = {
   viewportId?: string;
   orientation?: string;
   background?: Types.Point3;
-  blendMode?: number;
   initialView?: string;
+};
+
+export type PublicDisplaySetOptions = {
+  voi?: VOI;
+  voiInverted?: boolean;
+  blendMode?: string;
+  colormap?: string;
+};
+
+export type DisplaySetOptions = {
+  voi?: VOI;
+  voiInverted: boolean;
+  blendMode?: Enums.BlendModes;
+  colormap?: string;
 };
 
 type VOI = {
   windowWidth: number;
   windowCenter: number;
-};
-
-export type DisplaySetOptions = {
-  voi: 'default' | VOI;
-  voiInverted: boolean;
 };
 
 export type DisplaySet = {
@@ -50,6 +58,8 @@ class ViewportInfo {
   constructor(viewportIndex: number, viewportId: string) {
     this.viewportIndex = viewportIndex;
     this.viewportId = viewportId;
+    this.setPublicViewportOptions({});
+    this.setPublicDisplaySetOptions([{}]);
   }
 
   public setRenderingEngineId(renderingEngineId: string): void {
@@ -83,6 +93,19 @@ class ViewportInfo {
     return this.viewportId;
   }
 
+  public setPublicDisplaySetOptions(
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
+  ): void {
+    // validate the displaySetOptions and check if they are undefined then set them to default values
+    const displaySetOptions = this.validateDisplaySetOptions(
+      publicDisplaySetOptions
+    );
+
+    this.setDisplaySetOptions({
+      ...displaySetOptions,
+    });
+  }
+
   public setPublicViewportOptions(
     viewportOptionsEntry: PublicViewportOptions
   ): void {
@@ -111,13 +134,13 @@ class ViewportInfo {
       toolGroupId = DEFAULT_TOOLGROUP_ID;
     }
 
-    this.viewportOptions = {
+    this.setViewportOptions({
       ...viewportOptionsEntry,
       viewportId: this.viewportId,
       viewportType: viewportType as Enums.ViewportType,
       orientation,
       toolGroupId,
-    };
+    });
   }
 
   public setViewportOptions(viewportOptions: ViewportOptions): void {
@@ -131,8 +154,6 @@ class ViewportInfo {
   public setDisplaySetOptions(
     displaySetOptions: Array<DisplaySetOptions>
   ): void {
-    // validate the displaySetOptions and check if they are undefined then set them to default values
-    this.validateDisplaySetOptions(displaySetOptions);
     this.displaySetOptions = displaySetOptions;
   }
 
@@ -159,18 +180,36 @@ class ViewportInfo {
   private _getCornerstone3DViewportOrientation(
     orientation: string
   ): Types.Orientation {
-    if (!orientation) {
-      return CONSTANTS.ORIENTATION.AXIAL;
+    switch (orientation.toLowerCase()) {
+      case 'axial':
+        return CONSTANTS.ORIENTATION.AXIAL;
+      case 'coronal':
+        return CONSTANTS.ORIENTATION.CORONAL;
+      case 'sagittal':
+        return CONSTANTS.ORIENTATION.SAGITTAL;
+      default:
+        return CONSTANTS.ORIENTATION.AXIAL;
     }
   }
 
   private validateDisplaySetOptions(
-    displaySetOptions: Array<DisplaySetOptions>
-  ): void {
-    for (const displaySetOption of displaySetOptions) {
-      displaySetOption.voi = displaySetOption.voi || 'default';
-      displaySetOption.voiInverted = displaySetOption.voiInverted || false;
-    }
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
+  ): Array<DisplaySetOptions> {
+    const displaySetOptions: Array<DisplaySetOptions> = [];
+
+    publicDisplaySetOptions.forEach(publicDisplaySetOption => {
+      const blendMode = getCornerstoneBlendMode(
+        publicDisplaySetOption.blendMode
+      );
+
+      displaySetOptions.push({
+        voi: publicDisplaySetOption.voi || ({} as VOI),
+        voiInverted: publicDisplaySetOption.voiInverted || false,
+        colormap: publicDisplaySetOption.colormap || undefined,
+      });
+    });
+
+    return displaySetOptions;
   }
 }
 

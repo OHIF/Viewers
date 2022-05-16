@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import { setEnabledElement } from '../state';
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
-import Cornerstone3DCacheService from '../services/CacheService/Cornerstone3DCacheService';
+import Cornerstone3DCacheService from '../services/ViewportService/Cornerstone3DCacheService';
 import CornerstoneOverlay from './CornerstoneOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
@@ -26,8 +26,6 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  // Todo: handle fusion
-  // Todo: handle orientation
   const prevDisplaySets = prevProps.displaySets[0];
   const nextDisplaySets = nextProps.displaySets[0];
 

@@ -167,7 +167,11 @@ function CornerstoneOverlay({
   }, [voi, scale, activeTools]);
 
   const getTopRightContent = useCallback(() => {
-    const imageId = viewportData.imageIds[imageIndex];
+    const imageIds = Array.isArray(viewportData.imageIds)
+      ? viewportData.imageIds[0]
+      : viewportData.imageIds;
+
+    const imageId = imageIds[imageIndex];
 
     if (!imageId) {
       return null;
@@ -177,7 +181,7 @@ function CornerstoneOverlay({
       metaData.get('generalImageModule', imageId) || {};
     const { instanceNumber } = generalImageModule;
 
-    const stackSize = viewportData.imageIds ? viewportData.imageIds.length : 0;
+    const stackSize = imageIds.length;
 
     if (stackSize <= 1) {
       return null;
