@@ -56,10 +56,7 @@ Cypress.Commands.add('openStudy', PatientName => {
 Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
   cy.location('pathname').then($url => {
     cy.log($url);
-    if (
-      $url == 'blank' ||
-      !$url.includes(`/measurement-tracking/${StudyInstanceUID}`)
-    ) {
+    if ($url == 'blank' || !$url.includes(`/viewer/${StudyInstanceUID}`)) {
       cy.openStudyInViewer(StudyInstanceUID);
       cy.waitDicomImage();
     }
@@ -67,7 +64,7 @@ Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
 });
 
 Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
-  cy.visit(`/measurement-tracking?StudyInstanceUIDs=${StudyInstanceUID}`);
+  cy.visit(`/viewer?StudyInstanceUIDs=${StudyInstanceUID}`);
 });
 
 /**
@@ -92,9 +89,9 @@ Cypress.Commands.add('openStudyModality', Modality => {
 /**
  * Command to wait and check if a new page was loaded
  *
- * @param {string} url - part of the expected url. Default value is /measurement-tracking
+ * @param {string} url - part of the expected url. Default value is /viewer
  */
-Cypress.Commands.add('isPageLoaded', (url = '/measurement-tracking') => {
+Cypress.Commands.add('isPageLoaded', (url = '/viewer') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
 });
 
