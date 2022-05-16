@@ -1,12 +1,19 @@
 import * as cornerstone3D from '@cornerstonejs/core';
 import * as cornerstone3DTools from '@cornerstonejs/tools';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+
 import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
 
 const commandsModule = ({ servicesManager }) => {
-  const { ViewportGridService, ToolGroupService } = servicesManager.services;
+  const {
+    ViewportGridService,
+    ToolGroupService,
+    CineService,
+    ToolBarService,
+  } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
@@ -19,6 +26,15 @@ const commandsModule = ({ servicesManager }) => {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
     },
+    toggleCine: () => {
+      const { viewports } = ViewportGridService.getState();
+      const { isCineEnabled } = CineService.getState();
+      CineService.setIsCineEnabled(!isCineEnabled);
+      ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
+      viewports.forEach((_, index) =>
+        CineService.setCine({ id: index, isPlaying: false })
+      );
+    },
     setWindowLevel({ windowLevel, toolGroupId }) {
       const { window: windowWidth, level: windowCenter } = windowLevel;
       // convert to numbers
@@ -30,7 +46,7 @@ const commandsModule = ({ servicesManager }) => {
         viewportId
       );
 
-      if (toolGroupId !== viewportToolGroupId) {
+      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
         return;
       }
 
@@ -54,7 +70,6 @@ const commandsModule = ({ servicesManager }) => {
     },
     setToolActive: ({ toolName, toolGroupId = null }) => {
       let toolGroupIdToUse = toolGroupId;
-
       if (!toolGroupIdToUse) {
         // Use the active viewport's tool group if no tool group id is provided
         const enabledElement = _getActiveViewportEnabledElement();
@@ -84,10 +99,11 @@ const commandsModule = ({ servicesManager }) => {
       const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
 
       if (!toolGroup) {
-        throw new Error(
-          `setToolActive: toolGroup with id ${toolGroupIdToUse} does not exist`
-        );
+        console.warn('No tool group found for toolGroupId:', toolGroupId);
+        return;
       }
+      // Todo: we need to check if the viewports of the toolGroup is actually
+      // parts of the ViewportGrid's viewports, if not we return
 
       const { viewports } = ViewportGridService.getState() || {
         viewports: [],
@@ -112,11 +128,6 @@ const commandsModule = ({ servicesManager }) => {
           continue;
         }
 
-        // only use the toolGroup viewport
-        if (!toolGroupViewportIds.includes(viewport.viewportId)) {
-          continue;
-        }
-
         // Find the current active tool and set it to be passive
         const activeTool = toolGroup.getActivePrimaryMouseButtonTool();
 
@@ -132,6 +143,21 @@ const commandsModule = ({ servicesManager }) => {
         return;
       }
     },
+    showDownloadViewportModal: () => {
+      const { activeViewportIndex } = ViewportGridService.getState();
+      const { UIModalService } = servicesManager.services;
+
+      if (UIModalService) {
+        UIModalService.show({
+          content: CornerstoneViewportDownloadForm,
+          title: 'Download High Quality Image',
+          contentProps: {
+            activeViewportIndex,
+            onClose: UIModalService.hide,
+          },
+        });
+      }
+    },
     rotateViewport: ({ rotation }) => {
       const enabledElement = _getActiveViewportEnabledElement();
       if (!enabledElement) {
@@ -142,8 +168,8 @@ const commandsModule = ({ servicesManager }) => {
 
       if (viewport instanceof cornerstone3D.StackViewport) {
         const { rotation: currentRotation } = viewport.getProperties();
-
-        viewport.setProperties({ rotation: currentRotation + rotation });
+        const newRotation = (currentRotation + rotation) % 360;
+        viewport.setProperties({ rotation: newRotation });
         viewport.render();
       }
     },
@@ -321,6 +347,16 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.scroll,
       storeContexts: [],
       options: { direction: -1 },
+    },
+    showDownloadViewportModal: {
+      commandFn: actions.showDownloadViewportModal,
+      storeContexts: [],
+      options: {},
+    },
+    toggleCine: {
+      commandFn: actions.toggleCine,
+      storeContexts: [],
+      options: {},
     },
   };
 

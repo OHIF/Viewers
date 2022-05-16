@@ -7,12 +7,13 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
+import viewportLabels from '../utils/viewportLabels';
+
 const DEFAULT_STATE = {
   numRows: null,
   numCols: null,
   layoutType: 'grid',
   viewports: [
-    // % of the parent
     {
       displaySetInstanceUIDs: [],
       viewportOptions: {},
@@ -21,6 +22,7 @@ const DEFAULT_STATE = {
       y: 0, // top
       width: 100,
       height: 100,
+      viewportLabel: null,
     },
   ],
   activeViewportIndex: 0,
@@ -60,6 +62,7 @@ export function ViewportGridProvider({ children, service }) {
           displaySetInstanceUIDs,
           viewportOptions,
           displaySetOptions,
+          viewportLabel: viewportLabels[viewportIndex],
         };
 
         return { ...state, ...{ viewports }, cachedLayout: null };

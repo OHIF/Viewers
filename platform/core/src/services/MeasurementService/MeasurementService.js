@@ -221,10 +221,6 @@ class MeasurementService {
       return this.annotationToMeasurement(source, annotationType, annotation);
     };
 
-    source.measurementToAnnotation = (annotationType, measurement) => {
-      return this.measurementToAnnotation(source, annotationType, measurement);
-    };
-
     source.remove = (measurementUID, eventDetails) => {
       return this.remove(measurementUID, source, eventDetails);
     };
@@ -464,57 +460,15 @@ class MeasurementService {
     return newMeasurement.id;
   }
 
-  measurementToAnnotation(source, annotationType, measurement) {
-    if (!this._isValidSource(source)) {
-      throw new Error('Invalid source.');
-    }
-
-    if (!annotationType) {
-      throw new Error('No source annotationType provided.');
-    }
-
-    const sourceInfo = this._getSourceToString(source);
-
-    if (!this._sourceHasMappings(source)) {
-      throw new Error(
-        `No measurement mappings found for '${sourceInfo}' source. Exiting early.`
-      );
-    }
-
-    let annotation = {};
-    try {
-      const sourceMappings = this.mappings[source.uid];
-      const { toAnnotationSchema } = sourceMappings.find(
-        mapping => mapping.annotationType === annotationType
-      );
-
-      /* Convert measurement */
-      annotation = toAnnotationSchema(measurement);
-    } catch (error) {
-      console.error(error);
-      throw new Error(
-        `Failed to map '${sourceInfo}' measurement to annotation with annotationType ${annotationType}:`,
-        error.message
-      );
-    }
-
-    const newAnnotation = {
-      ...annotation,
-      modifiedTimestamp: Math.floor(Date.now() / 1000),
-    };
-
-    return newAnnotation;
-  }
-
   /**
    * Adds or update persisted measurements.
    *
    * @param {MeasurementSource} source The measurement source instance
    * @param {string} annotationType The source annotationType
-   * @param {EventDetail} sourceAnnotationEvent for the annotation event
+   * @param {EventDetail} sourceAnnotationDetail for the annotation event
    * @return {string} A measurement uid
    */
-  annotationToMeasurement(source, annotationType, sourceAnnotationEvent) {
+  annotationToMeasurement(source, annotationType, sourceAnnotationDetail) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
@@ -539,10 +493,9 @@ class MeasurementService {
       );
 
       /* Convert measurement */
-      measurement = toMeasurementSchema(sourceAnnotationEvent);
+      measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
-      console.error(error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
         error.message
@@ -556,7 +509,7 @@ class MeasurementService {
     }
 
     // Todo: we are using uid on the eventDetail, it should be uid of annotation
-    let internalUID = sourceAnnotationEvent.uid;
+    let internalUID = sourceAnnotationDetail.uid;
     if (!internalUID) {
       internalUID = guid();
       log.info(

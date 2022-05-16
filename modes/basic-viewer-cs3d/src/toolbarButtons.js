@@ -116,21 +116,6 @@ const toolbarButtons = [
           'Bidirectional Tool'
         ),
         _createToolButton(
-          'RectangleROI',
-          'tool-rectangle',
-          'Rectangle',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'RectangleROI',
-              },
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Rectangle Tool'
-        ),
-        _createToolButton(
           'EllipticalROI',
           'tool-elipse',
           'Ellipse',

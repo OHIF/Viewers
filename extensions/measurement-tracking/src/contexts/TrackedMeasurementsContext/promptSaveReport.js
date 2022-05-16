@@ -3,7 +3,11 @@ import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
 import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
 
-function promptUser({ servicesManager, extensionManager }, ctx, evt) {
+function promptSaveReport(
+  { servicesManager, commandsManager, extensionManager },
+  ctx,
+  evt
+) {
   const {
     UIDialogService,
     MeasurementService,
@@ -45,6 +49,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
 
       displaySetInstanceUIDs = await createReportAsync(
         servicesManager,
+        commandsManager,
         dataSource,
         trackedMeasurements,
         {
@@ -67,4 +72,4 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-export default promptUser;
+export default promptSaveReport;

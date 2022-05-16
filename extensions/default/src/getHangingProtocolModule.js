@@ -14,7 +14,7 @@ const defaultProtocol = {
       id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
-        layoutType: 'grid',
+        type: 'grid',
         properties: {
           rows: 1,
           columns: 1,
@@ -97,10 +97,10 @@ const testProtocol = {
       id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
-        type: 'grid',
+        layoutType: 'grid',
         properties: {
           rows: 1,
-          columns: 2,
+          columns: 1,
           viewportOptions: [],
         },
       },
@@ -156,6 +156,8 @@ const testProtocol = {
           ],
           studyMatchingRules: [],
         },
+      ],
+      viewports: [
         {
           id: 'ptACDisplaySet',
           imageMatchingRules: [],
@@ -284,7 +286,7 @@ function getHangingProtocolModule() {
   return [
     {
       name: 'default',
-      protocols: [defaultProtocol, testProtocol],
+      protocols: [defaultProtocol],
     },
   ];
 }

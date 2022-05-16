@@ -24,15 +24,16 @@ you'll see the following:
 ```bash
 │
 ├── extensions
-│   ├── _example             # Skeleton of example extension
-│   ├── default              # default functionalities
-│   ├── cornerstone          # 2D images w/ Cornerstone.js
-│   ├── measurement-tracking # measurement tracking
-│   ├── dicom-sr             # Structured reports
-│   └── dicom-pdf            # View DICOM wrapped PDFs in viewport
+│   ├── _example              # Skeleton of example extension
+│   ├── default               # default functionalities
+│   ├── cornerstone-3d        # 2D images w/ Cornerstone.js
+│   ├── measurement-tracking  # measurement tracking
+│   ├── cornerstone-dicom-sr  # Structured reports
+│   └── dicom-pdf             # View DICOM wrapped PDFs in viewport
 │
 ├── modes
 │   └── longitudinal         # longitudinal measurement tracking mode
+|   └── basic-viewer-cs3d    # basic viewer with Cornerstone3D (a developer focused mode)
 │
 ├── platform
 │   ├── core                 # Business Logic

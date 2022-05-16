@@ -13,10 +13,10 @@ import { Enums, utilities } from '@cornerstonejs/tools';
 import initWADOImageLoader from './initWADOImageLoader';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import initCornerstoneTools from './initCornerstoneTools';
-import { setEnabledElement } from './state';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import callInputDialog from './callInputDialog';
+import initCineService from './initCineService';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -24,7 +24,6 @@ let CONTEXT_MENU_OPEN = false;
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone3D;
-
 /**
  *
  */
@@ -35,11 +34,6 @@ export default async function init({
   appConfig,
 }) {
   await cs3DInit();
-
-  // Todo: CornerstoneTools init is separate from the cornerstone-core init.
-  // Since cs3d is async, we want the tools to be ready as soon as possible
-  // to create toolGroups etc. We should make extension registrations async
-  // so that the order be core init -> tools init
   initCornerstoneTools();
 
   const {
@@ -48,6 +42,7 @@ export default async function init({
     MeasurementService,
     DisplaySetService,
     UIDialogService,
+    CineService,
   } = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
@@ -65,13 +60,14 @@ export default async function init({
 
   initWADOImageLoader(UserAuthenticationService, appConfig);
 
-  // Register the cornerstone-tools-measurement-tool
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
     MeasurementService,
     DisplaySetService,
     Cornerstone3DViewportService
   );
+
+  initCineService(CineService);
 
   const _getDefaultPosition = event => ({
     x: (event && event.currentPoints.client[0]) || 0,
@@ -199,22 +195,7 @@ export default async function init({
   // };
 
   function elementEnabledHandler(evt) {
-    const { viewportId, element } = evt.detail;
-    const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
-      viewportId
-    );
-    const viewportIndex = viewportInfo.getViewportIndex();
-
-    setEnabledElement(viewportIndex, element);
-
-    // const volumeUID = Cornerstone3DViewportService.getVolumeUIDsForViewportUID(viewportId);
-    const renderingEngineId = viewportInfo.getRenderingEngineId();
-    const toolGroupId = viewportInfo.getToolGroupId();
-    ToolGroupService.addToolGroupViewport(
-      viewportId,
-      renderingEngineId,
-      toolGroupId
-    );
+    const { element } = evt.detail;
 
     element.addEventListener(
       cs3DToolsEvents.MOUSE_CLICK,
@@ -223,12 +204,17 @@ export default async function init({
   }
 
   function elementDisabledHandler(evt) {
-    const { viewportId } = evt.detail;
+    const { viewportId, element } = evt.detail;
 
     const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
       viewportId
     );
     ToolGroupService.disable(viewportInfo);
+
+    element.removeEventListener(
+      cs3DToolsEvents.MOUSE_CLICK,
+      contextMenuHandleClick
+    );
   }
 
   eventTarget.addEventListener(

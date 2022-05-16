@@ -98,7 +98,13 @@ function CornerstoneOverlay({
           return;
         }
 
-        const { dimensions, spacing } = viewport.getImageData();
+        const imageData = viewport.getImageData();
+
+        if (!imageData) {
+          return;
+        }
+
+        const { dimensions, spacing } = imageData;
 
         // Todo: handle for the volume viewports with directions
         const scale = (dimensions[0] * spacing[0]) / camera.parallelScale;
@@ -178,12 +184,14 @@ function CornerstoneOverlay({
       return null;
     }
 
+    const instanceNumberInt = parseInt(instanceNumber);
+
     return (
       <div className="flex flex-row">
         <span className="mr-1">I:</span>
         <span className="font-light">
-          {instanceNumber !== undefined
-            ? `${instanceNumber} (${imageIndex + 1}/${stackSize})`
+          {instanceNumberInt !== undefined
+            ? `${instanceNumberInt} (${imageIndex + 1}/${stackSize})`
             : `${imageIndex + 1}/${stackSize}`}
         </span>
       </div>

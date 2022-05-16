@@ -1,7 +1,7 @@
 import Length from './Length';
 import Bidirectional from './Bidirectional';
 import EllipticalROI from './EllipticalROI';
-import RectangleROI from './RectangleROI';
+import ArrowAnnotate from './ArrowAnnotate';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
@@ -91,10 +91,10 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-    RectangleROI: {
-      toAnnotation: RectangleROI.toAnnotation,
+    ArrowAnnotate: {
+      toAnnotation: ArrowAnnotate.toAnnotation,
       toMeasurement: csToolsAnnotation =>
-        RectangleROI.toMeasurement(
+        ArrowAnnotate.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
           Cornerstone3DViewportService,
@@ -102,7 +102,8 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.RECTANGLE,
+          valueType: MeasurementService.VALUE_TYPES.POINT,
+          points: 1,
         },
       ],
     },

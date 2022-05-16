@@ -90,6 +90,11 @@ function ViewerViewportGrid(props) {
     [viewportGrid, numRows, numCols]
   );
 
+  useEffect(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    updateDisplaySetsForViewports(displaySets);
+  }, [numRows, numCols]);
+
   // Layout change based on hanging protocols
   useEffect(() => {
     const { unsubscribe } = HangingProtocolService.subscribe(
@@ -258,6 +263,7 @@ function ViewerViewportGrid(props) {
         y: viewportY,
         width: viewportWidth,
         height: viewportHeight,
+        viewportLabel,
       } = paneMetadata;
 
       const displaySetInstanceUIDsToUse = displaySetInstanceUIDs || [];
@@ -318,6 +324,7 @@ function ViewerViewportGrid(props) {
             <ViewportComponent
               displaySets={displaySets}
               viewportIndex={viewportIndex}
+              viewportLabel={viewports.length > 1 ? viewportLabel : ''}
               dataSource={dataSource}
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}

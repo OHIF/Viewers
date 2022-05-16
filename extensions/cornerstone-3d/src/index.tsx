@@ -13,6 +13,8 @@ import commandsModule from './commandsModule';
 import ToolGroupService from './services/ToolGroupService';
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement } from './state';
+import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
+import dicomLoaderService from './utils/dicomLoaderService';
 
 import { id } from './id';
 
@@ -103,6 +105,8 @@ const cornerstone3DExtension = {
             return { cornerstone3D, cornerstone3DTools };
           },
           getEnabledElement,
+          Cornerstone3DViewportService,
+          dicomLoaderService,
         },
       },
       {

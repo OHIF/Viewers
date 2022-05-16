@@ -6,21 +6,7 @@ import getModalityUnit from './utils/getModalityUnit';
 import { utils } from '@ohif/core';
 
 const EllipticalROI = {
-  // Currently we only update the labels
-  toAnnotation: measurement => {
-    const annotationUID = measurement.uid;
-    const cornerstone3DAnnotation = annotation.state.getAnnotation(
-      annotationUID
-    );
-
-    if (!cornerstone3DAnnotation) {
-      return;
-    }
-
-    if (cornerstone3DAnnotation.data.label !== measurement.label) {
-      cornerstone3DAnnotation.data.label = measurement.label;
-    }
-  },
+  toAnnotation: measurement => {},
   toMeasurement: (
     csToolsEventDetail,
     DisplaySetService,
@@ -96,7 +82,7 @@ const EllipticalROI = {
 function getMappedAnnotations(annotation, DisplaySetService) {
   const { metadata, data } = annotation;
   const { cachedStats } = data;
-  const { referencedImageId, referencedSeriesInstanceUID } = metadata;
+  const { referencedImageId } = metadata;
   const targets = Object.keys(cachedStats);
 
   if (!targets.length) {
@@ -205,16 +191,19 @@ function getDisplayText(mappedAnnotations) {
 
   mappedAnnotations.forEach(mappedAnnotation => {
     const { mean, unit, max, SeriesNumber } = mappedAnnotation;
-    const roundedMean = utils.roundNumber(mean, 2);
-    const roundedMax = utils.roundNumber(max, 2);
-    // const roundedStdDev = utils.roundNumber(stdDev, 2);
 
-    displayText.push(
-      `S:${SeriesNumber} - max: ${roundedMax} <small>${unit}</small>`
-    );
-    displayText.push(
-      `S:${SeriesNumber} - mean: ${roundedMean} <small>${unit}</small>`
-    );
+    if (mean && max) {
+      const roundedMean = utils.roundNumber(mean, 2);
+      const roundedMax = utils.roundNumber(max, 2);
+      // const roundedStdDev = utils.roundNumber(stdDev, 2);
+
+      displayText.push(
+        `S:${SeriesNumber} - max: ${roundedMax} <small>${unit}</small>`
+      );
+      displayText.push(
+        `S:${SeriesNumber} - mean: ${roundedMean} <small>${unit}</small>`
+      );
+    }
   });
 
   return displayText;

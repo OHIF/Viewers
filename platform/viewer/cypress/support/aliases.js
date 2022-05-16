@@ -22,12 +22,12 @@ export function initCornerstoneToolsAliases() {
 
 //Creating aliases for Common page elements
 export function initCommonElementsAliases() {
-  cy.get('[data-cy="measure-btn"]').as('measurementsBtn');
+  cy.get('[data-cy="trackedMeasurements-btn"]').as('measurementsBtn');
   cy.get('.cornerstone3D-viewport-element').as('viewport');
   cy.get('[data-cy="seriesList-btn"]').as('seriesBtn');
 
   // TODO: Panels are not in DOM when closed, move this somewhere else
-  cy.get('[data-cy="measurements-panel"]').as('measurementsPanel');
+  cy.get('[data-cy="trackedMeasurements-panel"]').as('measurementsPanel');
   cy.get('[data-cy="studyBrowser-panel"]').as('seriesPanel');
   cy.get('[data-cy="viewport-overlay-top-right"]').as('viewportInfoTopRight');
   cy.get('[data-cy="viewport-overlay-top-left"]').as('viewportInfoTopLeft');

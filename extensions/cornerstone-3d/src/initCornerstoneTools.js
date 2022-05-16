@@ -9,16 +9,18 @@ const {
   VolumeRotateMouseWheelTool,
   MIPJumpToClickTool,
   LengthTool,
-  ProbeTool,
   RectangleROITool,
   EllipticalROITool,
   BidirectionalTool,
+  ArrowAnnotateTool,
+  DragProbeTool,
+  AngleTool,
+  MagnifyTool,
   // CrosshairsTool,
 } = cornerstone3DTools;
 
 export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.init(configuration);
-
   cornerstone3DTools.addTool(PanTool);
   cornerstone3DTools.addTool(WindowLevelTool);
   cornerstone3DTools.addTool(StackScrollMouseWheelTool);
@@ -27,15 +29,19 @@ export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.addTool(VolumeRotateMouseWheelTool);
   cornerstone3DTools.addTool(MIPJumpToClickTool);
   cornerstone3DTools.addTool(LengthTool);
-  cornerstone3DTools.addTool(ProbeTool);
   cornerstone3DTools.addTool(RectangleROITool);
   cornerstone3DTools.addTool(EllipticalROITool);
   cornerstone3DTools.addTool(BidirectionalTool);
+  cornerstone3DTools.addTool(ArrowAnnotateTool);
+  cornerstone3DTools.addTool(DragProbeTool);
+  cornerstone3DTools.addTool(AngleTool);
+  cornerstone3DTools.addTool(MagnifyTool);
   // cornerstone3DTools.addTool(CrosshairsTool);
 }
 
 const toolNames = {
   Pan: PanTool.toolName,
+  ArrowAnnotate: ArrowAnnotateTool.toolName,
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
   StackScrollMouseWheel: StackScrollMouseWheelTool.toolName,
@@ -43,10 +49,12 @@ const toolNames = {
   VolumeRotateMouseWheel: VolumeRotateMouseWheelTool.toolName,
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,
-  Probe: ProbeTool.toolName,
+  DragProbe: DragProbeTool.toolName,
   RectangleROI: RectangleROITool.toolName,
   EllipticalROI: EllipticalROITool.toolName,
   Bidirectional: BidirectionalTool.toolName,
+  Angle: AngleTool.toolName,
+  Magnify: MagnifyTool.toolName,
   // crosshairs: CrosshairsTool.toolName,
 };
 

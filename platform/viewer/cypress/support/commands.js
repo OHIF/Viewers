@@ -56,7 +56,10 @@ Cypress.Commands.add('openStudy', PatientName => {
 Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
   cy.location('pathname').then($url => {
     cy.log($url);
-    if ($url == 'blank' || !$url.includes(`/viewer/${StudyInstanceUID}`)) {
+    if (
+      $url == 'blank' ||
+      !$url.includes(`/measurement-tracking/${StudyInstanceUID}`)
+    ) {
       cy.openStudyInViewer(StudyInstanceUID);
       cy.waitDicomImage();
     }
@@ -64,7 +67,7 @@ Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
 });
 
 Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
-  cy.visit(`/viewer?StudyInstanceUIDs=${StudyInstanceUID}`);
+  cy.visit(`/measurement-tracking?StudyInstanceUIDs=${StudyInstanceUID}`);
 });
 
 /**
@@ -89,9 +92,9 @@ Cypress.Commands.add('openStudyModality', Modality => {
 /**
  * Command to wait and check if a new page was loaded
  *
- * @param {string} url - part of the expected url. Default value is /viewer/
+ * @param {string} url - part of the expected url. Default value is /measurement-tracking
  */
-Cypress.Commands.add('isPageLoaded', (url = '/viewer') => {
+Cypress.Commands.add('isPageLoaded', (url = '/measurement-tracking') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
 });
 
@@ -248,8 +251,8 @@ Cypress.Commands.add('imageZoomIn', () => {
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
-    .trigger('mousedown', 'top', { which: 1 })
-    .trigger('mousemove', 'center', { which: 1 })
+    .trigger('mousedown', 'top', { buttons: 1 })
+    .trigger('mousemove', 'center', { buttons: 1 })
     .trigger('mouseup');
 });
 
@@ -259,8 +262,8 @@ Cypress.Commands.add('imageContrast', () => {
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
-    .trigger('mousedown', 'center', { which: 1 })
-    .trigger('mousemove', 'top', { which: 1 })
+    .trigger('mousedown', 'center', { buttons: 1 })
+    .trigger('mousemove', 'top', { buttons: 1 })
     .trigger('mouseup');
 });
 
