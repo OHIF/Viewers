@@ -159,93 +159,11 @@ const testProtocol = {
       ],
       viewports: [
         {
-          id: 'ptACDisplaySet',
-          imageMatchingRules: [],
-          seriesMatchingRules: [
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'Modality',
-              constraint: {
-                equals: {
-                  value: 'PT',
-                },
-              },
-              required: true,
-            },
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: 'Corrected',
-                },
-              },
-              required: false,
-            },
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: 'AC',
-                },
-              },
-              required: false,
-            },
-          ],
-          studyMatchingRules: [],
-        },
-        {
-          id: 'ptNACDisplaySet',
-          imageMatchingRules: [],
-          seriesMatchingRules: [
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'Modality',
-              constraint: {
-                equals: {
-                  value: 'PT',
-                },
-              },
-              required: true,
-            },
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: 'Uncorrected',
-                },
-              },
-              required: false,
-            },
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: 'NAC',
-                },
-              },
-              required: false,
-            },
-          ],
-          studyMatchingRules: [],
-        },
-      ],
-      viewports: [
-        {
           viewportOptions: {
             viewportId: 'ctAxial',
             viewportType: 'stack',
             background: [0, 0, 0],
-            orientation: 'AXIAL',
+            orientation: 'SAGITTAL',
             toolGroupId: 'default',
           },
           displaySets: [
@@ -259,7 +177,7 @@ const testProtocol = {
             viewportId: 'ptAxial',
             viewportType: 'stack',
             background: [1, 1, 1],
-            orientation: 'AXIAL',
+            orientation: 'SAGITTAL',
             toolGroupId: 'default',
           },
           displaySets: [
@@ -286,7 +204,7 @@ function getHangingProtocolModule() {
   return [
     {
       name: 'default',
-      protocols: [defaultProtocol],
+      protocols: [defaultProtocol, testProtocol],
     },
   ];
 }

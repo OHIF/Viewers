@@ -5,11 +5,11 @@ import {
   Types,
   getRenderingEngine,
   utilities as csUtils,
+  Enums,
 } from '@cornerstonejs/core';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, { ViewportOptions, DisplaySetOptions } from './Viewport';
-import { IStackViewport } from '@cornerstonejs/core/dist/esm/types';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -170,10 +170,12 @@ class Cornerstone3DViewportService implements IViewportService {
     const background = viewportInfo.getBackground();
     const orientation = viewportInfo.getOrientation();
 
+    const typeToUse = this.getCornerstone3DViewportType(type);
+
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
       element,
-      type,
+      type: typeToUse,
       defaultOptions: {
         background,
         orientation,
@@ -188,7 +190,9 @@ class Cornerstone3DViewportService implements IViewportService {
     this._setDisplaySets(viewportId, viewportData, viewportInfo);
   }
 
-  public getCornerstone3DViewport(viewportId: string): IStackViewport | null {
+  public getCornerstone3DViewport(
+    viewportId: string
+  ): Types.IStackViewport | null {
     const viewportInfo = this.getViewportInfoById(viewportId);
 
     if (
@@ -223,6 +227,20 @@ class Cornerstone3DViewportService implements IViewportService {
       }
     }
     return null;
+  }
+
+  getCornerstone3DViewportType(type: string): Enums.ViewportType {
+    if (type.toLowerCase() === 'stack') {
+      return Enums.ViewportType.STACK;
+    }
+
+    if (type.toLowerCase() === 'volume') {
+      return Enums.ViewportType.ORTHOGRAPHIC;
+    }
+
+    throw new Error(
+      `Invalid viewport type: ${type}. Valid types are: stack, volume`
+    );
   }
 
   _setStackViewport(viewport, viewportData, viewportInfo) {

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { useViewportGrid, ImageScrollbar } from '@ohif/ui';
-import OHIF from '@ohif/core';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 
@@ -9,13 +8,12 @@ import PropTypes from 'prop-types';
 
 import { setEnabledElement } from '../state';
 import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
+import Cornerstone3DCacheService from '../services/CacheService/Cornerstone3DCacheService';
 import CornerstoneOverlay from './CornerstoneOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 
 import './OHIFCornerstone3DViewport.css';
-
-const { StackManager } = OHIF.utils;
 
 const STACK = 'stack';
 
@@ -148,7 +146,12 @@ const OHIFCornerstoneViewport = React.memo(props => {
   }, []);
 
   useEffect(() => {
-    const viewportData = _getViewportData(
+    // handle the default viewportType to be stack
+    if (!viewportOptions.viewportType) {
+      viewportOptions.viewportType = STACK;
+    }
+
+    const viewportData = Cornerstone3DCacheService.getViewportData(
       dataSource,
       displaySets,
       viewportOptions.viewportType,
@@ -294,49 +297,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     </div>
   );
 }, areEqual);
-
-function _getCornerstoneStack(displaySet, dataSource) {
-  // Get stack from Stack Manager
-  const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
-
-  // Clone the stack here so we don't mutate it
-  const stack = Object.assign({}, storedStack);
-
-  return stack;
-}
-
-function _getViewportData(
-  dataSource,
-  displaySets,
-  viewportType,
-  initialImageIdOrIndex
-) {
-  viewportType = viewportType || STACK;
-  if (viewportType !== STACK) {
-    throw new Error('Only STACK viewport type is supported now');
-  }
-
-  // For Stack Viewport we don't have fusion currently
-  const displaySet = displaySets[0];
-
-  const stack = _getCornerstoneStack(displaySet, dataSource);
-
-  if (initialImageIdOrIndex !== undefined && stack?.imageIds) {
-    if (typeof initialImageIdOrIndex === 'number') {
-      stack.initialImageIdIndex = initialImageIdOrIndex;
-    } else {
-      stack.initialImageIdIndex = stack.imageIds.indexOf(initialImageIdOrIndex);
-    }
-  }
-
-  const viewportData = {
-    StudyInstanceUID: displaySet.StudyInstanceUID,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
-    stack,
-  };
-
-  return viewportData;
-}
 
 function _subscribeToJumpToMeasurementEvents(
   MeasurementService,
