@@ -167,8 +167,7 @@ function CornerstoneOverlay({
   }, [voi, scale, activeTools]);
 
   const getTopRightContent = useCallback(() => {
-    const { stack } = viewportData;
-    const imageId = stack.imageIds[imageIndex];
+    const imageId = viewportData.imageIds[imageIndex];
 
     if (!imageId) {
       return null;
@@ -178,7 +177,7 @@ function CornerstoneOverlay({
       metaData.get('generalImageModule', imageId) || {};
     const { instanceNumber } = generalImageModule;
 
-    const stackSize = stack.imageIds ? stack.imageIds.length : 0;
+    const stackSize = viewportData.imageIds ? viewportData.imageIds.length : 0;
 
     if (stackSize <= 1) {
       return null;
@@ -202,10 +201,7 @@ function CornerstoneOverlay({
     return null;
   }
 
-  // Todo: fix this for volume later
-  const { stack } = viewportData;
-
-  if (!stack || stack.imageIds.length === 0) {
+  if (!viewportData || viewportData.imageIds.length === 0) {
     throw new Error(
       'ViewportOverlay: only viewports with imageIds is supported at this time'
     );

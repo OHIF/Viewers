@@ -1,7 +1,7 @@
 import { cache as cs3DCache, Enums } from '@cornerstonejs/core';
-import Cornerstone3DViewportService from '../ViewportService/Cornerstone3DViewportService';
+import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
-type StackMap = {
+type StackData = {
   StudyInstanceUID: string;
   displaySetInstanceUID: string;
   imageIds: string[];
@@ -10,21 +10,18 @@ type StackMap = {
   initialImageIdIndex?: number | string | null;
 };
 
-type StackViewportData = {
-  stack: StackMap;
+type VolumeData = {
   StudyInstanceUID: string;
-  displaySetInstanceUID: string;
+  displaySetInstanceUIDs: string[]; // can have more than one displaySet (fusion)
+  imageIds: string[][]; // can have more than one imageId list (fusion)
+  initialView?: 'string';
 };
 
-type VolumeViewportData = {
-  stack: StackMap;
-  StudyInstanceUID: string;
-  displaySetInstanceUID: string;
-};
+const VOLUME_LOADER_SCHEME = 'streaming-wadors';
 
 class Cornerstone3DCacheService {
-  stackMap: Map<string, StackMap> = new Map();
-  volumeMap: Map<string, StackMap> = new Map();
+  stackImageIds: Map<string, string[]> = new Map();
+  volumeImageIds: Map<string, string[]> = new Map();
 
   constructor() {}
 
@@ -41,10 +38,8 @@ class Cornerstone3DCacheService {
     displaySets: unknown[],
     viewportType: string,
     initialImageIdOrIndex?: number | string
-  ): StackViewportData | VolumeViewportData {
-    const cs3DViewportType = Cornerstone3DViewportService.getCornerstone3DViewportType(
-      viewportType
-    );
+  ): VolumeData | StackData {
+    const cs3DViewportType = getCornerstoneViewportType(viewportType);
 
     if (cs3DViewportType === Enums.ViewportType.STACK) {
       return this._getStackViewportData(
@@ -53,66 +48,117 @@ class Cornerstone3DCacheService {
         initialImageIdOrIndex
       );
     }
+
+    if (cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+      return this._getVolumeViewportData(
+        dataSource,
+        displaySets,
+        initialImageIdOrIndex
+      );
+    }
+
+    throw new Error('Unknown viewport type, cannot get viewport data');
   }
 
   private _getStackViewportData(
     dataSource,
     displaySets,
     initialImageIdOrIndex
-  ): StackViewportData {
+  ): StackData {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
 
-    let stack = this.stackMap.get(displaySet.displaySetInstanceUID);
+    let stackImageIds = this.stackImageIds.get(
+      displaySet.displaySetInstanceUID
+    );
 
-    if (!stack || !stack.imageIds) {
-      stack = this._getCornerstoneStack(displaySet, dataSource);
-      this.stackMap.set(displaySet.displaySetInstanceUID, stack);
+    if (!stackImageIds) {
+      stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+      this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    if (initialImageIdOrIndex !== undefined && stack.imageIds) {
+    const { displaySetInstanceUID, StudyInstanceUID } = displaySet;
+
+    const stackData: StackData = {
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      imageIds: stackImageIds,
+    };
+
+    if (initialImageIdOrIndex !== undefined) {
       if (typeof initialImageIdOrIndex === 'number') {
-        stack.initialImageIdIndex = initialImageIdOrIndex;
+        stackData.initialImageIdIndex = initialImageIdOrIndex;
       } else {
-        stack.initialImageIdIndex = stack.imageIds.indexOf(
+        stackData.initialImageIdIndex = stackData.imageIds.indexOf(
           initialImageIdOrIndex
         );
       }
     }
 
-    const viewportData = {
-      StudyInstanceUID: displaySet.StudyInstanceUID,
-      displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      stack,
-    };
-
-    return viewportData;
+    return stackData;
   }
 
-  private _getCornerstoneStack(displaySet, dataSource) {
-    const {
-      images,
-      displaySetInstanceUID,
-      StudyInstanceUID,
-      frameRate,
-      isClip,
-      initialImageIdIndex,
-    } = displaySet;
+  private _getVolumeViewportData(
+    dataSource,
+    displaySets,
+    initialView
+  ): VolumeData {
+    const volumeImageIdsArray = [];
 
-    if (!images) {
-      return;
-    }
+    displaySets.forEach(displaySet => {
+      let volumeImageIds = this.volumeImageIds.get(
+        displaySet.displaySetInstanceUID
+      );
 
-    const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+      if (!volumeImageIds) {
+        volumeImageIds = this._getCornerstoneVolumeImageIds(
+          displaySet,
+          dataSource
+        );
+
+        this.volumeImageIds.set(
+          displaySet.displaySetInstanceUID,
+          volumeImageIds
+        );
+      }
+
+      volumeImageIdsArray.push(volumeImageIds);
+    });
+
+    // assert displaySets are from the same study
+    const { StudyInstanceUID } = displaySets[0];
+    const displaySetInstanceUIDs = [];
+
+    displaySets.forEach(displaySet => {
+      if (displaySet.StudyInstanceUID !== StudyInstanceUID) {
+        throw new Error('Display sets are not from the same study');
+      }
+
+      displaySetInstanceUIDs.push(displaySet.displaySetInstanceUID);
+    });
 
     return {
       StudyInstanceUID,
-      displaySetInstanceUID,
-      imageIds,
-      frameRate,
-      isClip,
-      initialImageIdIndex,
+      displaySetInstanceUIDs,
+      imageIds: volumeImageIdsArray,
     };
+  }
+
+  private _getCornerstoneStackImageIds(displaySet, dataSource): string[] {
+    return dataSource.getImageIdsForDisplaySet(displaySet);
+  }
+
+  private _getCornerstoneVolumeImageIds(displaySet, dataSource): string[] {
+    const stackImageIds = this._getCornerstoneStackImageIds(
+      displaySet,
+      dataSource
+    );
+
+    return stackImageIds.map(imageId => {
+      const colonIndex = imageId.indexOf(':');
+      const imageURI = imageId.substring(colonIndex);
+      return `${VOLUME_LOADER_SCHEME}:${imageURI}`;
+    });
   }
 }
 

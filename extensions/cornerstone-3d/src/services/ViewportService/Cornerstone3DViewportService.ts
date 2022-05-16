@@ -9,7 +9,11 @@ import {
 } from '@cornerstonejs/core';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, { ViewportOptions, DisplaySetOptions } from './Viewport';
+import ViewportInfo, {
+  ViewportOptions,
+  DisplaySetOptions,
+  PublicViewportOptions,
+} from './Viewport';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -135,32 +139,24 @@ class Cornerstone3DViewportService implements IViewportService {
   public setViewportDisplaySets(
     viewportIndex: number,
     viewportData: unknown,
-    viewportOptions: ViewportOptions,
-    displaySetOptions: DisplaySetOptions[]
+    publicViewportOptions: PublicViewportOptions,
+    publicDisplaySetOptions: DisplaySetOptions[]
   ): void {
     const renderingEngine = this.getRenderingEngine();
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    // If new viewportOptions are provided and have keys that are not in the
-    // current viewportOptions, then we need to update the viewportOptions,
-    // else we inherit the current viewportOptions.
-    const currentViewportOptions = viewportInfo.getViewportOptions();
-    let viewportOptionsToUse = currentViewportOptions;
-    if (Object.keys(viewportOptions)) {
-      viewportOptionsToUse = {
-        ...currentViewportOptions,
-        ...viewportOptions,
-      };
-    }
-    viewportInfo.setViewportOptions(viewportOptionsToUse);
+    const {
+      viewportOptions,
+      displaySetOptions,
+    } = this._getViewportAndDisplaySetOptions(
+      publicViewportOptions,
+      publicDisplaySetOptions,
+      viewportInfo
+    );
 
-    const currentDisplaySetOptions = viewportInfo.getDisplaySetOptions();
-    let displaySetOptionsToUse = currentDisplaySetOptions;
-    if (displaySetOptions?.length) {
-      displaySetOptionsToUse = [...displaySetOptions];
-    }
-    viewportInfo.setDisplaySetOptions(displaySetOptionsToUse);
+    viewportInfo.setViewportOptions(viewportOptions);
+    viewportInfo.setDisplaySetOptions(displaySetOptions);
 
     this._broadcastEvent(EVENTS.VIEWPORT_INFO_CREATED, viewportInfo);
 
@@ -170,12 +166,10 @@ class Cornerstone3DViewportService implements IViewportService {
     const background = viewportInfo.getBackground();
     const orientation = viewportInfo.getOrientation();
 
-    const typeToUse = this.getCornerstone3DViewportType(type);
-
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
       element,
-      type: typeToUse,
+      type,
       defaultOptions: {
         background,
         orientation,
@@ -205,7 +199,7 @@ class Cornerstone3DViewportService implements IViewportService {
 
     const viewport = this.renderingEngine.getViewport(
       viewportId
-    ) as IStackViewport;
+    ) as Types.IStackViewport;
 
     return viewport;
   }
@@ -229,24 +223,10 @@ class Cornerstone3DViewportService implements IViewportService {
     return null;
   }
 
-  getCornerstone3DViewportType(type: string): Enums.ViewportType {
-    if (type.toLowerCase() === 'stack') {
-      return Enums.ViewportType.STACK;
-    }
-
-    if (type.toLowerCase() === 'volume') {
-      return Enums.ViewportType.ORTHOGRAPHIC;
-    }
-
-    throw new Error(
-      `Invalid viewport type: ${type}. Valid types are: stack, volume`
-    );
-  }
-
   _setStackViewport(viewport, viewportData, viewportInfo) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIdIndex } = viewportData.stack;
+    const { imageIds, initialImageIdIndex } = viewportData;
     const { voi, voiInverted } = displaySetOptions[0];
     const properties = {};
     if (voi.windowWidth || voi.windowCenter) {
@@ -289,6 +269,50 @@ class Cornerstone3DViewportService implements IViewportService {
       this.viewportGridResizeObserver.disconnect();
     }
   }
+
+  _getViewportAndDisplaySetOptions(
+    publicViewportOptions: PublicViewportOptions,
+    publicDisplaySetOptions: DisplaySetOptions[],
+    viewportInfo: ViewportInfo
+  ): {
+    viewportOptions: ViewportOptions;
+    displaySetOptions: DisplaySetOptions[];
+  } {
+    const viewportIndex = viewportInfo.getViewportIndex();
+    // If new viewportOptions are provided and have keys that are not in the
+    // current viewportOptions, then we need to update the viewportOptions,
+    // else we inherit the current viewportOptions.
+    const currentViewportOptions = viewportInfo.getViewportOptions();
+    const currentDisplaySetOptions = viewportInfo.getDisplaySetOptions();
+
+    let viewportOptionsToUse = currentViewportOptions;
+    let displaySetOptionsToUse = currentDisplaySetOptions;
+
+    // Creating a temporary viewportInfo to handle defaults
+    const newViewportInfo = new ViewportInfo(
+      viewportIndex,
+      viewportInfo.getViewportId()
+    );
+    newViewportInfo.setPublicViewportOptions(publicViewportOptions);
+
+    const newViewportOptions = newViewportInfo.getViewportOptions();
+
+    viewportOptionsToUse = {
+      ...currentViewportOptions,
+      ...newViewportOptions,
+    };
+
+    if (publicDisplaySetOptions?.length) {
+      displaySetOptionsToUse = [...publicDisplaySetOptions];
+    }
+
+    return {
+      viewportOptions: viewportOptionsToUse,
+      displaySetOptions: displaySetOptionsToUse,
+    };
+  }
 }
 
-export default new Cornerstone3DViewportService();
+const cornerstone3DViewportService = new Cornerstone3DViewportService();
+window.cornerstone3DViewportService = cornerstone3DViewportService;
+export default cornerstone3DViewportService;

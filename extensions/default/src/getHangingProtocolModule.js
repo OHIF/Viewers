@@ -100,7 +100,7 @@ const testProtocol = {
         layoutType: 'grid',
         properties: {
           rows: 1,
-          columns: 1,
+          columns: 3,
           viewportOptions: [],
         },
       },
@@ -156,11 +156,51 @@ const testProtocol = {
           ],
           studyMatchingRules: [],
         },
+        {
+          id: 'ptDisplaySet',
+          imageMatchingRules: [],
+          seriesMatchingRules: [
+            {
+              id: 'GPEYqFLv2dwzCM322',
+              weight: 1,
+              attribute: 'Modality',
+              constraint: {
+                equals: {
+                  value: 'PT',
+                },
+              },
+              required: true,
+            },
+            {
+              id: 'GPEYqFLv2dwzCM322',
+              weight: 1,
+              attribute: 'SeriesDescription',
+              constraint: {
+                contains: {
+                  value: 'Corrected',
+                },
+              },
+              required: false,
+            },
+            {
+              id: 'GPEYqFLv2dwzCM322',
+              weight: 2,
+              attribute: 'SeriesDescription',
+              constraint: {
+                doesNotContain: {
+                  value: 'Uncorrected',
+                },
+              },
+              required: false,
+            },
+          ],
+          studyMatchingRules: [],
+        },
       ],
       viewports: [
         {
           viewportOptions: {
-            viewportId: 'ctAxial',
+            viewportId: 'ctSagittal',
             viewportType: 'stack',
             background: [0, 0, 0],
             orientation: 'SAGITTAL',
@@ -174,7 +214,7 @@ const testProtocol = {
         },
         {
           viewportOptions: {
-            viewportId: 'ptAxial',
+            viewportId: 'ptSagittal',
             viewportType: 'stack',
             background: [1, 1, 1],
             orientation: 'SAGITTAL',
@@ -189,10 +229,34 @@ const testProtocol = {
                 },
                 voiInverted: true,
               },
-              id: 'ptACDisplaySet',
+              id: 'ptDisplaySet',
             },
           ],
         },
+        // {
+        //   viewportOptions: {
+        //     viewportId: 'fusionSagittal',
+        //     viewportType: 'stack',
+        //     orientation: 'SAGITTAL',
+        //     toolGroupId: 'default',
+        //   },
+        //   displaySets: [
+        //     {
+        //       options: {
+        //         voi: {
+        //           windowWidth: 5,
+        //           windowCenter: 2.5,
+        //         },
+        //         voiInverted: true,
+        //       },
+        //       id: 'ptACDisplaySet',
+        //     },
+        //     {
+        //       options: {},
+        //       id: 'ctDisplaySet',
+        //     },
+        //   ],
+        // },
       ],
       createdDate: '2021-02-23T18:32:42.850Z',
     },

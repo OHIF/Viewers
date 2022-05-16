@@ -1,10 +1,21 @@
-import { Types, Enums } from '@cornerstonejs/core';
+import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
 export type ViewportOptions = {
   viewportType: Enums.ViewportType;
   toolGroupId: string;
-  viewportId?: string;
+  viewportId: string;
   orientation?: Types.Orientation;
+  background?: Types.Point3;
+  blendMode?: number;
+  initialView?: string;
+};
+
+export type PublicViewportOptions = {
+  viewportType?: string;
+  toolGroupId?: string;
+  viewportId?: string;
+  orientation?: string;
   background?: Types.Point3;
   blendMode?: number;
   initialView?: string;
@@ -24,6 +35,10 @@ export type DisplaySet = {
   displaySetInstanceUID: string;
 };
 
+const STACK = 'stack';
+const VOLUME = 'volume';
+const DEFAULT_TOOLGROUP_ID = 'default';
+
 class ViewportInfo {
   private viewportId = '';
   private viewportIndex: number;
@@ -35,13 +50,6 @@ class ViewportInfo {
   constructor(viewportIndex: number, viewportId: string) {
     this.viewportIndex = viewportIndex;
     this.viewportId = viewportId;
-    const viewportOptions = {
-      toolGroupId: 'default',
-      viewportType: Enums.ViewportType.STACK,
-    };
-    const displaySetOptions = [{} as DisplaySetOptions];
-    this.setViewportOptions(viewportOptions);
-    this.setDisplaySetOptions(displaySetOptions);
   }
 
   public setRenderingEngineId(renderingEngineId: string): void {
@@ -73,6 +81,43 @@ class ViewportInfo {
 
   public getViewportId(): string {
     return this.viewportId;
+  }
+
+  public setPublicViewportOptions(
+    viewportOptionsEntry: PublicViewportOptions
+  ): void {
+    let viewportType = viewportOptionsEntry.viewportType;
+    let toolGroupId = viewportOptionsEntry.toolGroupId;
+    let orientation;
+
+    if (!viewportType) {
+      viewportType = getCornerstoneViewportType(STACK);
+    } else {
+      viewportType = getCornerstoneViewportType(
+        viewportOptionsEntry.viewportType
+      );
+    }
+
+    // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
+    if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
+      orientation = this._getCornerstone3DViewportOrientation(
+        viewportOptionsEntry.orientation
+      );
+    } else {
+      orientation = CONSTANTS.ORIENTATION.AXIAL;
+    }
+
+    if (!toolGroupId) {
+      toolGroupId = DEFAULT_TOOLGROUP_ID;
+    }
+
+    this.viewportOptions = {
+      ...viewportOptionsEntry,
+      viewportId: this.viewportId,
+      viewportType: viewportType as Enums.ViewportType,
+      orientation,
+      toolGroupId,
+    };
   }
 
   public setViewportOptions(viewportOptions: ViewportOptions): void {
@@ -109,6 +154,14 @@ class ViewportInfo {
 
   public getOrientation(): Types.Orientation {
     return this.viewportOptions.orientation;
+  }
+
+  private _getCornerstone3DViewportOrientation(
+    orientation: string
+  ): Types.Orientation {
+    if (!orientation) {
+      return CONSTANTS.ORIENTATION.AXIAL;
+    }
   }
 
   private validateDisplaySetOptions(
