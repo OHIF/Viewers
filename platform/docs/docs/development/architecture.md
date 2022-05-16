@@ -33,7 +33,7 @@ you'll see the following:
 │
 ├── modes
 │   └── longitudinal         # longitudinal measurement tracking mode
-|   └── basic-viewer-cs3d    # basic viewer with Cornerstone3D (a developer focused mode)
+|   └── basic-dev-mode    # basic viewer with Cornerstone3D (a developer focused mode)
 │
 ├── platform
 │   ├── core                 # Business Logic

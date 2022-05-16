@@ -49,8 +49,8 @@ function modeFactory({ modeConfiguration }) {
     // TODO: We're using this as a route segment
     // We should not be.
     id,
-    routeName: 'measurement-tracking',
-    displayName: 'Measurement Tracking',
+    routeName: 'viewer',
+    displayName: 'Basic Viewer',
     /**
      * Lifecycle hooks
      */
@@ -125,7 +125,7 @@ function modeFactory({ modeConfiguration }) {
     },
     routes: [
       {
-        path: 'measurementTracking',
+        path: 'longitudinal',
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
