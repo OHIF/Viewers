@@ -281,106 +281,18 @@ class Cornerstone3DViewportService implements IViewportService {
     // that? Or should it force a separate request? May be slower?
     // For the moment I just stuck this whole operation in a setTimeout so we are sure the
     // metadata has arrived
-    // const viewportVolumeInputs = {};
-    // const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
-
-    // for (let i = 0; i < viewportData.imageIds.length; i++) {
-    //   const imageIds = viewportData.imageIds[i];
-    //   const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
-    //   const displaySetOptions = displaySetOptionsArray[i];
-
-    //   // We need to get the volumeId again here since, for toolGroups
-    //   // right now we only have one volume per viewport, but for
-    //   // rendering we can have multiple volumes per viewport
-    //   const volumeId = displaySetInstanceUID;
-
-    //   // if (displaySet.needsRerendering) {
-    //   //   console.warn('Removing volume from cache', volumeId);
-    //   //   cache.removeVolumeLoadObject(volumeId);
-    //   //   displaySet.needsRerendering = false;
-    //   //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
-    //   // }
-
-    //   // let blendMode = option.blendMode ? option.blendMode : undefined;
-    //   // let sbThickness = option.slabThickness ? option.slabThickness : undefined;
-
-    //   const callback = this._getVOICallback(volumeId, displaySetOptions);
-
-    //   viewportVolumeInputs[volumeId] = {
-    //     imageIds,
-    //     volumeId,
-    //     callback,
-    //     blendMode: displaySetOptions.blendMode,
-    //     slabThickness: displaySetOptions.blendMode
-    //       ? displaySetOptions.slabThickness || 500
-    //       : undefined,
-    //   };
-    // }
-
-    // const volumes = [];
-
-    // for (const viewportVolumeInput of Object.values(viewportVolumeInputs)) {
-    //   const { imageIds, volumeId } = viewportVolumeInput;
-    //   const volume = await volumeLoader.createAndCacheVolume(volumeId, {
-    //     imageIds,
-    //   });
-
-    //   volumes.push(volume);
-    // }
-
-    // // Todo: this is only for the first load from hanging protocol, if
-    // // viewport gets a new display set (from drag and drop) we don't want to
-    // // use the hanging protocol image loading strategy
-    // // const hasCustomLoad = this.HangingProtocolService.hasCustomImageLoadStrategy();
-
-    // // If the hangingProtocol has specified a custom image loading strategy, use it.
-    // // Otherwise, use the default image loading strategy which is based on the
-    // // sorted imageIds in the volume. In addition, if displaysets has been
-    // // invalidated and need to be re-rendered, we need to use the default image
-    // // loading strategy.
-    // // const displaySetShouldReRender = displaySets.some(displaySet => {
-    // //   return this.displaySetsNeedRerendering.has(
-    // //     displaySet.displaySetInstanceUID
-    // //   );
-    // // });
-
-    // // if (!displaySetShouldReRender && hasCustomLoad) {
-    // //   return;
-    // // }
-
-    // volumes.forEach(volume => {
-    //   volume.load();
-    // });
-
-    // // this.initiateLoad(viewport.uid);
-
-    // // const volumeInputs = this.sceneVolumeInputs.get(sceneUID);
-    // // const viewportOptions = this.viewportOptions.get(viewportUID);
-
-    // // if (viewportOptions && viewportOptions.initialView) {
-    // //   this._setInitialView(viewportUID, sceneUID, viewportOptions.initialView);
-    // // }
-    // viewport.setVolumes(Object.values(viewportVolumeInputs));
-
-    const callbacks = [];
-    const blendModes = [];
-    const slabThickness = [];
     const viewportVolumeInputs = {};
-    const volumeIds = [];
-    const displaySetOptions = viewportInfo.getDisplaySetOptions();
+    const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
 
     for (let i = 0; i < viewportData.imageIds.length; i++) {
       const imageIds = viewportData.imageIds[i];
       const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
+      const displaySetOptions = displaySetOptionsArray[i];
 
       // We need to get the volumeId again here since, for toolGroups
       // right now we only have one volume per viewport, but for
       // rendering we can have multiple volumes per viewport
       const volumeId = displaySetInstanceUID;
-
-      viewportVolumeInputs[volumeId] = {
-        imageIds,
-      };
 
       // if (displaySet.needsRerendering) {
       //   console.warn('Removing volume from cache', volumeId);
@@ -392,46 +304,28 @@ class Cornerstone3DViewportService implements IViewportService {
       // let blendMode = option.blendMode ? option.blendMode : undefined;
       // let sbThickness = option.slabThickness ? option.slabThickness : undefined;
 
-      // if (blendMode && blendMode === MIP) {
-      //   // Only make the MIP as large as it needs to be.
-      //   blendMode = BlendMode.MAXIMUM_INTENSITY_BLEND;
+      const callback = this._getVOICallback(volumeId, displaySetOptions);
 
-      //   if (sbThickness) {
-      //     // const { dimensions } = volume;
-      //     // Todo: We don't have the volume dimensions yet.
-      //     // we are setting it to a high value for now, but we need to get the
-      //     // volume dimensions from the volume or from options
-      //     sbThickness = 500;
-      //   }
-      // }
-
-      const callback = this._getVOICallback(volumeId, displaySetOptions[i]);
-
-      volumeIds.push(volumeId);
-      callbacks.push(callback);
-      // blendModes.push(blendMode);
-      // slabThickness.push(sbThickness);
+      viewportVolumeInputs[volumeId] = {
+        imageIds,
+        volumeId,
+        callback,
+        blendMode: displaySetOptions.blendMode,
+        slabThickness: displaySetOptions.blendMode
+          ? displaySetOptions.slabThickness || 500
+          : undefined,
+      };
     }
 
-    const volumeInputs = [];
-    volumeIds.forEach((volumeId, index) => {
-      volumeInputs.push({
-        volumeId: volumeIds[index],
-        callback: callbacks[index],
-        // blendMode: blendModes[index],
-        // slabThickness: slabThickness[index],
-      });
-    });
-
     const volumes = [];
-    for (const volumeId of Object.keys(viewportVolumeInputs)) {
-      const { imageIds } = viewportVolumeInputs[volumeId];
+
+    for (const viewportVolumeInput of Object.values(viewportVolumeInputs)) {
+      const { imageIds, volumeId } = viewportVolumeInput;
       const volume = await volumeLoader.createAndCacheVolume(volumeId, {
         imageIds,
       });
-      volumes.push(volume);
 
-      volume.load();
+      volumes.push(volume);
     }
 
     // Todo: this is only for the first load from hanging protocol, if
@@ -439,7 +333,7 @@ class Cornerstone3DViewportService implements IViewportService {
     // use the hanging protocol image loading strategy
     // const hasCustomLoad = this.HangingProtocolService.hasCustomImageLoadStrategy();
 
-    // If the hangingProtocl has specified a custom image loading strategy, use it.
+    // If the hangingProtocol has specified a custom image loading strategy, use it.
     // Otherwise, use the default image loading strategy which is based on the
     // sorted imageIds in the volume. In addition, if displaysets has been
     // invalidated and need to be re-rendered, we need to use the default image
@@ -466,14 +360,7 @@ class Cornerstone3DViewportService implements IViewportService {
     // if (viewportOptions && viewportOptions.initialView) {
     //   this._setInitialView(viewportUID, sceneUID, viewportOptions.initialView);
     // }
-    viewport.setVolumes([
-      ...volumeInputs.map(({ volumeId, callback }) => {
-        return {
-          volumeId,
-          callback,
-        };
-      }),
-    ]);
+    viewport.setVolumes(Object.values(viewportVolumeInputs));
   }
 
   _getVOICallback(volumeId, displaySetOptions) {

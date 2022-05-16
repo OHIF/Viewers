@@ -206,6 +206,7 @@ class ViewportInfo {
         voi: publicDisplaySetOption.voi || ({} as VOI),
         voiInverted: publicDisplaySetOption.voiInverted || false,
         colormap: publicDisplaySetOption.colormap || undefined,
+        blendMode,
       });
     });
 
