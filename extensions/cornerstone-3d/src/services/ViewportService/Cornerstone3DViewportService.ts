@@ -64,8 +64,13 @@ class Cornerstone3DViewportService implements IViewportService {
    * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  public enableElement(viewportIndex: number, elementRef: HTMLDivElement) {
-    const viewportId = this.getViewportId(viewportIndex);
+  public enableElement(
+    viewportIndex: number,
+    viewportOptions: PublicViewportOptions,
+    elementRef: HTMLDivElement
+  ) {
+    const viewportId =
+      viewportOptions.viewportId || this.getViewportId(viewportIndex);
     const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
     viewportInfo.setElement(elementRef);
     this.viewportsInfo.set(viewportIndex, viewportInfo);
@@ -317,16 +322,16 @@ class Cornerstone3DViewportService implements IViewportService {
       };
     }
 
-    const volumes = [];
+    // const volumes = [];
 
-    for (const viewportVolumeInput of Object.values(viewportVolumeInputs)) {
-      const { imageIds, volumeId } = viewportVolumeInput;
-      const volume = await volumeLoader.createAndCacheVolume(volumeId, {
-        imageIds,
-      });
+    // for (const viewportVolumeInput of Object.values(viewportVolumeInputs)) {
+    //   const { imageIds, volumeId } = viewportVolumeInput;
+    //   const volume = await volumeLoader.createAndCacheVolume(volumeId, {
+    //     imageIds,
+    //   });
 
-      volumes.push(volume);
-    }
+    //   volumes.push(volume);
+    // }
 
     // Todo: this is only for the first load from hanging protocol, if
     // viewport gets a new display set (from drag and drop) we don't want to
@@ -348,7 +353,7 @@ class Cornerstone3DViewportService implements IViewportService {
     //   return;
     // }
 
-    volumes.forEach(volume => {
+    viewportData.volumes.forEach(volume => {
       volume.load();
     });
 
@@ -436,11 +441,7 @@ class Cornerstone3DViewportService implements IViewportService {
     displaySetOptions: DisplaySetOptions[];
   } {
     const viewportIndex = viewportInfo.getViewportIndex();
-    // If new viewportOptions are provided and have keys that are not in the
-    // current viewportOptions, then we need to update the viewportOptions,
-    // else we inherit the current viewportOptions.
     const currentViewportOptions = viewportInfo.getViewportOptions();
-    const currentDisplaySetOptions = viewportInfo.getDisplaySetOptions();
 
     let viewportOptionsToUse = currentViewportOptions;
 
@@ -449,6 +450,9 @@ class Cornerstone3DViewportService implements IViewportService {
       viewportIndex,
       viewportInfo.getViewportId()
     );
+
+    // To handle setting the default values if missing for the viewportOptions and
+    // displaySetOptions
     newViewportInfo.setPublicViewportOptions(publicViewportOptions);
     newViewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
 
@@ -458,24 +462,14 @@ class Cornerstone3DViewportService implements IViewportService {
     viewportOptionsToUse = {
       ...currentViewportOptions,
       ...newViewportOptions,
+      // Preserving the viewportType by inheriting it from the current viewport
+      // viewportType:
+      //   currentViewportOptions.viewportType ?? newViewportOptions.viewportType,
     };
-
-    const displaySetOptionsToUse = [];
-    for (const index in newDisplaySetOptions) {
-      const newDisplaySetOption = newDisplaySetOptions[index];
-      const currentDisplaySetOption = currentDisplaySetOptions[index];
-
-      if (newDisplaySetOption) {
-        displaySetOptionsToUse.push({
-          ...currentDisplaySetOption,
-          ...newDisplaySetOption,
-        });
-      }
-    }
 
     return {
       viewportOptions: viewportOptionsToUse,
-      displaySetOptions: displaySetOptionsToUse,
+      displaySetOptions: newDisplaySetOptions,
     };
   }
 }

@@ -125,6 +125,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   useEffect(() => {
     Cornerstone3DViewportService.enableElement(
       viewportIndex,
+      viewportOptions,
       elementRef.current
     );
 
@@ -149,39 +150,46 @@ const OHIFCornerstoneViewport = React.memo(props => {
       viewportOptions.viewportType = STACK;
     }
 
-    const viewportData = Cornerstone3DCacheService.getViewportData(
-      dataSource,
-      displaySets,
-      viewportOptions.viewportType,
-      initialImageIdOrIndex
-    );
+    const loadViewportData = async () => {
+      const viewportData = await Cornerstone3DCacheService.getViewportData(
+        dataSource,
+        displaySets,
+        viewportOptions.viewportType,
+        initialImageIdOrIndex
+      );
 
-    setViewportData(viewportData);
+      setViewportData(viewportData);
 
-    Cornerstone3DViewportService.setViewportDisplaySets(
-      viewportIndex,
-      viewportData,
-      viewportOptions,
-      displaySetOptions
-    );
-
-    const element = elementRef.current;
-
-    const updateIndex = event => {
-      const { imageId } = event.detail;
-      // find the index of imageId in the imageIds
-      const index = viewportData.stack?.imageIds.indexOf(imageId);
-
-      if (index !== -1) {
-        setImageIndex(index);
-      }
+      Cornerstone3DViewportService.setViewportDisplaySets(
+        viewportIndex,
+        viewportData,
+        viewportOptions,
+        displaySetOptions
+      );
     };
 
-    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
+    loadViewportData();
+    // const updateIndex = event => {
+    //   const { imageId } = event.detail;
+    //   // find the index of imageId in the imageIds
+    //   const index = viewportData.stack?.imageIds.indexOf(imageId);
 
-    return () => {
-      element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
-    };
+    //   if (index !== -1) {
+    //     setImageIndex(index);
+    //   }
+    // };
+
+    // elementRef.current.addEventListener(
+    //   Enums.Events.STACK_NEW_IMAGE,
+    //   updateIndex
+    // );
+
+    // return () => {
+    //   elementRef.current.removeEventListener(
+    //     Enums.Events.STACK_NEW_IMAGE,
+    //     updateIndex
+    //   );
+    // };
   }, [viewportOptions, displaySets, dataSource]);
 
   /**
@@ -267,12 +275,12 @@ const OHIFCornerstoneViewport = React.memo(props => {
         onMouseDown={e => e.preventDefault()}
         ref={elementRef}
       ></div>
-      <ImageScrollbar
+      {/* <ImageScrollbar
         onChange={evt => onImageScrollbarChange(evt, viewportIndex)}
         max={viewportData ? viewportData.stack?.imageIds?.length - 1 : 0}
         height={scrollbarHeight}
         value={imageIndex}
-      />
+      /> */}
       <CornerstoneOverlay
         viewportData={viewportData}
         imageIndex={imageIndex}

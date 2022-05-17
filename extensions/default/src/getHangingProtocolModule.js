@@ -101,7 +101,32 @@ const testProtocol = {
         properties: {
           rows: 2,
           columns: 2,
-          viewportOptions: [],
+          viewportOptions: [
+            // {
+            //   x: 0,
+            //   y: 0,
+            //   width: 1 / 3,
+            //   height: 1 / 3,
+            // },
+            // {
+            //   x: 1 / 3,
+            //   y: 0,
+            //   width: 1 / 3,
+            //   height: 1 / 3,
+            // },
+            // {
+            //   x: 0,
+            //   y: 1 / 3,
+            //   width: 2 / 3,
+            //   height: 2 / 3,
+            // },
+            // {
+            //   x: 2 / 3,
+            //   y: 0,
+            //   width: 1 / 3,
+            //   height: 1,
+            // },
+          ],
         },
       },
       displaySets: [
@@ -202,9 +227,12 @@ const testProtocol = {
           viewportOptions: {
             viewportId: 'ctSagittal',
             viewportType: 'volume',
-            background: [0, 0, 0],
             orientation: 'SAGITTAL',
             toolGroupId: 'default',
+            // initialImageIndex: {
+            //   index: 100,
+            //   preset: 'first', // 'middle', 'last',
+            // }
           },
           displaySets: [
             {

@@ -6,7 +6,7 @@ export default function getCornerstoneBlendMode(
   blendMode: string
 ): Enums.BlendModes {
   if (!blendMode) {
-    return Enums.BlendModes.COMPOSITE;
+    return Enums.BlendModes.COMPOSITE_BLEND;
   }
 
   if (blendMode.toLowerCase() === MIP) {

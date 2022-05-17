@@ -1,5 +1,6 @@
 import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
+import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
 export type ViewportOptions = {
@@ -123,9 +124,7 @@ class ViewportInfo {
 
     // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
     if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
-      orientation = this._getCornerstone3DViewportOrientation(
-        viewportOptionsEntry.orientation
-      );
+      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     } else {
       orientation = CONSTANTS.ORIENTATION.AXIAL;
     }
@@ -175,21 +174,6 @@ class ViewportInfo {
 
   public getOrientation(): Types.Orientation {
     return this.viewportOptions.orientation;
-  }
-
-  private _getCornerstone3DViewportOrientation(
-    orientation: string
-  ): Types.Orientation {
-    switch (orientation.toLowerCase()) {
-      case 'axial':
-        return CONSTANTS.ORIENTATION.AXIAL;
-      case 'coronal':
-        return CONSTANTS.ORIENTATION.CORONAL;
-      case 'sagittal':
-        return CONSTANTS.ORIENTATION.SAGITTAL;
-      default:
-        return CONSTANTS.ORIENTATION.AXIAL;
-    }
   }
 
   private validateDisplaySetOptions(

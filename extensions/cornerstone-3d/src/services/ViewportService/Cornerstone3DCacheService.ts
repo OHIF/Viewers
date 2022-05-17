@@ -1,4 +1,9 @@
-import { cache as cs3DCache, Enums } from '@cornerstonejs/core';
+import {
+  cache as cs3DCache,
+  Enums,
+  Types,
+  volumeLoader,
+} from '@cornerstonejs/core';
 import { utils } from '@ohif/core';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
@@ -15,7 +20,7 @@ export type VolumeData = {
   StudyInstanceUID: string;
   displaySetInstanceUIDs: string[]; // can have more than one displaySet (fusion)
   imageIds: string[][]; // can have more than one imageId list (fusion)
-  initialView?: 'string';
+  volumes: Types.IVolumes[];
 };
 
 const VOLUME_LOADER_SCHEME = 'streaming-wadors';
@@ -34,12 +39,12 @@ class Cornerstone3DCacheService {
     return cs3DCache.getBytesAvailable();
   }
 
-  public getViewportData(
+  public async getViewportData(
     dataSource: unknown,
     displaySets: unknown[],
     viewportType: string,
     initialImageIdOrIndex?: number | string
-  ): VolumeData | StackData {
+  ): Promise<StackData | VolumeData> {
     const cs3DViewportType = getCornerstoneViewportType(viewportType);
 
     if (cs3DViewportType === Enums.ViewportType.STACK) {
@@ -99,26 +104,35 @@ class Cornerstone3DCacheService {
     return stackData;
   }
 
-  private _getVolumeViewportData(
+  private async _getVolumeViewportData(
     dataSource,
     displaySets,
     initialView
-  ): VolumeData {
+  ): Promise<VolumeData> {
     // Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not
 
     const volumeImageIdsArray = [];
+    const volumes = [];
 
-    displaySets.forEach(displaySet => {
+    for (const displaySet of displaySets) {
+      const volumeId = displaySet.displaySetInstanceUID;
+
       let volumeImageIds = this.volumeImageIds.get(
         displaySet.displaySetInstanceUID
       );
 
-      if (!volumeImageIds) {
+      let volume = cs3DCache.getVolume(volumeId);
+
+      if (!volumeImageIds || !volume) {
         volumeImageIds = this._getCornerstoneVolumeImageIds(
           displaySet,
           dataSource
         );
+
+        volume = await volumeLoader.createAndCacheVolume(volumeId, {
+          imageIds: volumeImageIds,
+        });
 
         this.volumeImageIds.set(
           displaySet.displaySetInstanceUID,
@@ -127,7 +141,8 @@ class Cornerstone3DCacheService {
       }
 
       volumeImageIdsArray.push(volumeImageIds);
-    });
+      volumes.push(volume);
+    }
 
     // assert displaySets are from the same study
     const { StudyInstanceUID } = displaySets[0];
@@ -145,6 +160,7 @@ class Cornerstone3DCacheService {
       StudyInstanceUID,
       displaySetInstanceUIDs,
       imageIds: volumeImageIdsArray,
+      volumes,
     };
   }
 
