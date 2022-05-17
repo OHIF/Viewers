@@ -4,7 +4,8 @@ import {
   Types,
   volumeLoader,
 } from '@cornerstonejs/core';
-import { utils } from '@ohif/core';
+import { utils, pubSubServiceInterface } from '@ohif/core';
+
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
 export type StackData = {
@@ -25,11 +26,21 @@ export type VolumeData = {
 
 const VOLUME_LOADER_SCHEME = 'streaming-wadors';
 
+const EVENTS = {
+  VIEWPORT_DATA_CHANGED: 'event::cornerstone-3d::viewportdatachanged',
+};
+
 class Cornerstone3DCacheService {
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
+  listeners: { [key: string]: (...args: any[]) => void } = {};
+  EVENTS: { [key: string]: string };
 
-  constructor() {}
+  constructor() {
+    this.listeners = {};
+    this.EVENTS = EVENTS;
+    Object.assign(this, pubSubServiceInterface);
+  }
 
   public getCacheSize() {
     return cs3DCache.getCacheSize();
@@ -40,15 +51,17 @@ class Cornerstone3DCacheService {
   }
 
   public async getViewportData(
-    dataSource: unknown,
+    viewportIndex: number,
     displaySets: unknown[],
     viewportType: string,
+    dataSource: unknown,
     initialImageIdOrIndex?: number | string
   ): Promise<StackData | VolumeData> {
     const cs3DViewportType = getCornerstoneViewportType(viewportType);
+    let viewportData: StackData | VolumeData;
 
     if (cs3DViewportType === Enums.ViewportType.STACK) {
-      return this._getStackViewportData(
+      viewportData = await this._getStackViewportData(
         dataSource,
         displaySets,
         initialImageIdOrIndex
@@ -56,14 +69,19 @@ class Cornerstone3DCacheService {
     }
 
     if (cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-      return this._getVolumeViewportData(
+      viewportData = await this._getVolumeViewportData(
         dataSource,
         displaySets,
         initialImageIdOrIndex
       );
     }
 
-    throw new Error('Unknown viewport type, cannot get viewport data');
+    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+      viewportData,
+      viewportIndex,
+    });
+
+    return viewportData;
   }
 
   private _getStackViewportData(

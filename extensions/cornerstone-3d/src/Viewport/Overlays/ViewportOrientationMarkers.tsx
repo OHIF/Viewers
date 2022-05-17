@@ -4,7 +4,7 @@ import { metaData, Enums, Types } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
 import './ViewportOrientationMarkers.css';
-import { getEnabledElement } from '../state';
+import { getEnabledElement } from '../../state';
 
 /**
  *

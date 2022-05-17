@@ -200,7 +200,7 @@ class Cornerstone3DViewportService implements IViewportService {
 
   public getCornerstone3DViewport(
     viewportId: string
-  ): Types.IStackViewport | null {
+  ): Types.IStackViewport | Types.IVolumeViewport | null {
     const viewportInfo = this.getViewportInfoById(viewportId);
 
     if (
@@ -211,9 +211,27 @@ class Cornerstone3DViewportService implements IViewportService {
       return null;
     }
 
+    const viewport = this.renderingEngine.getViewport(viewportId);
+
+    return viewport;
+  }
+
+  public getCornerstone3DViewportByIndex(
+    viewportIndex: number
+  ): Types.IStackViewport | Types.IVolumeViewport | null {
+    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
+
+    if (
+      !viewportInfo ||
+      !this.renderingEngine ||
+      this.renderingEngine.hasBeenDestroyed
+    ) {
+      return null;
+    }
+
     const viewport = this.renderingEngine.getViewport(
-      viewportId
-    ) as Types.IStackViewport;
+      viewportInfo.getViewportId()
+    );
 
     return viewport;
   }
@@ -306,9 +324,6 @@ class Cornerstone3DViewportService implements IViewportService {
       //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
       // }
 
-      // let blendMode = option.blendMode ? option.blendMode : undefined;
-      // let sbThickness = option.slabThickness ? option.slabThickness : undefined;
-
       const callback = this._getVOICallback(volumeId, displaySetOptions);
 
       viewportVolumeInputs[volumeId] = {
@@ -321,17 +336,6 @@ class Cornerstone3DViewportService implements IViewportService {
           : undefined,
       };
     }
-
-    // const volumes = [];
-
-    // for (const viewportVolumeInput of Object.values(viewportVolumeInputs)) {
-    //   const { imageIds, volumeId } = viewportVolumeInput;
-    //   const volume = await volumeLoader.createAndCacheVolume(volumeId, {
-    //     imageIds,
-    //   });
-
-    //   volumes.push(volume);
-    // }
 
     // Todo: this is only for the first load from hanging protocol, if
     // viewport gets a new display set (from drag and drop) we don't want to
