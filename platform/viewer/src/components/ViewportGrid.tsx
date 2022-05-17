@@ -163,15 +163,7 @@ function ViewerViewportGrid(props) {
    * Loading indicator until numCols and numRows are gotten from the HangingProtocolService
    */
   if (!numRows || !numCols) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
-        <div className="flex p-4 space-x-3 rounded-full bg-secondary-main loader">
-          <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
-          <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
-          <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   /**

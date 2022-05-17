@@ -441,9 +441,6 @@ class Cornerstone3DViewportService implements IViewportService {
     displaySetOptions: DisplaySetOptions[];
   } {
     const viewportIndex = viewportInfo.getViewportIndex();
-    const currentViewportOptions = viewportInfo.getViewportOptions();
-
-    let viewportOptionsToUse = currentViewportOptions;
 
     // Creating a temporary viewportInfo to handle defaults
     const newViewportInfo = new ViewportInfo(
@@ -459,16 +456,8 @@ class Cornerstone3DViewportService implements IViewportService {
     const newViewportOptions = newViewportInfo.getViewportOptions();
     const newDisplaySetOptions = newViewportInfo.getDisplaySetOptions();
 
-    viewportOptionsToUse = {
-      ...currentViewportOptions,
-      ...newViewportOptions,
-      // Preserving the viewportType by inheriting it from the current viewport
-      // viewportType:
-      //   currentViewportOptions.viewportType ?? newViewportOptions.viewportType,
-    };
-
     return {
-      viewportOptions: viewportOptionsToUse,
+      viewportOptions: newViewportOptions,
       displaySetOptions: newDisplaySetOptions,
     };
   }

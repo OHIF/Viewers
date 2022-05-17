@@ -17,7 +17,7 @@ const DEFAULT_STATE = {
     {
       displaySetInstanceUIDs: [],
       viewportOptions: {},
-      displaySetOptions: [],
+      displaySetOptions: [{}],
       x: 0, // left
       y: 0, // top
       width: 100,
@@ -172,7 +172,7 @@ export function ViewportGridProvider({ children, service }) {
       viewportIndex,
       displaySetInstanceUIDs,
       viewportOptions = {},
-      displaySetOptions = [],
+      displaySetOptions = [{}],
     }) =>
       dispatch({
         type: 'SET_DISPLAYSET_FOR_VIEWPORT',

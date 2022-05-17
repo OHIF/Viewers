@@ -102,9 +102,7 @@ class ViewportInfo {
       publicDisplaySetOptions
     );
 
-    this.setDisplaySetOptions({
-      ...displaySetOptions,
-    });
+    this.setDisplaySetOptions(displaySetOptions);
   }
 
   public setPublicViewportOptions(

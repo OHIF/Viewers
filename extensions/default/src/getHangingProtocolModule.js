@@ -227,7 +227,7 @@ const testProtocol = {
           viewportOptions: {
             viewportId: 'ctSagittal',
             viewportType: 'volume',
-            orientation: 'SAGITTAL',
+            orientation: 'AXIAL',
             toolGroupId: 'default',
             // initialImageIndex: {
             //   index: 100,
