@@ -99,7 +99,7 @@ const testProtocol = {
       viewportStructure: {
         layoutType: 'grid',
         properties: {
-          rows: 2,
+          rows: 1,
           columns: 2,
           viewportOptions: [
             // {
@@ -226,7 +226,7 @@ const testProtocol = {
         {
           viewportOptions: {
             viewportId: 'ctSagittal',
-            viewportType: 'volume',
+            viewportType: 'stack',
             orientation: 'AXIAL',
             toolGroupId: 'default',
             // initialImageIndex: {
@@ -236,7 +236,7 @@ const testProtocol = {
           },
           displaySets: [
             {
-              id: 'ctDisplaySet',
+              id: 'ptDisplaySet',
             },
           ],
         },

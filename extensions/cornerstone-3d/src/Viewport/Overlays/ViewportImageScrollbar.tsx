@@ -13,10 +13,6 @@ function CornerstoneImageScrollbar({
   imageIndex,
   scrollbarHeight,
 }) {
-  const cornerstoneViewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
-    viewportIndex
-  );
-
   const onImageScrollbarChange = useCallback(
     (imageIndex, viewportIndex) => {
       const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
@@ -45,7 +41,7 @@ function CornerstoneImageScrollbar({
   );
 
   useEffect(() => {
-    if (!(cornerstoneViewport instanceof StackViewport)) {
+    if (viewportData && viewportData.volumes) {
       return;
     }
 
@@ -89,7 +85,7 @@ function CornerstoneImageScrollbar({
   return (
     <ImageScrollbar
       onChange={evt => onImageScrollbarChange(evt, viewportIndex)}
-      max={viewportData ? viewportData.stack?.imageIds?.length - 1 : 0}
+      max={viewportData ? viewportData?.imageIds?.length - 1 : 0}
       height={scrollbarHeight}
       value={imageIndex}
     />

@@ -60,7 +60,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     initialImageIdOrIndex,
   } = props;
 
-  const [viewportData, setViewportData] = useState(null);
+  const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [_, viewportGridService] = useViewportGrid();
 
   const elementRef = useRef();
@@ -72,10 +72,17 @@ const OHIFCornerstoneViewport = React.memo(props => {
     ToolGroupService,
   } = servicesManager.services;
 
+  // useCallback for scroll bar height calculation
+  const setImageScrollBarHeight = useCallback(() => {
+    const scrollbarHeight = `${elementRef.current.clientHeight - 20}px`;
+    setScrollbarHeight(scrollbarHeight);
+  }, [elementRef]);
+
   // useCallback for onResize
   const onResize = useCallback(() => {
     if (elementRef.current) {
       Cornerstone3DViewportService.resize();
+      setImageScrollBarHeight();
     }
   }, [elementRef]);
 
@@ -122,6 +129,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       elementEnabledHandler
     );
 
+    setImageScrollBarHeight();
+
     return () => {
       Cornerstone3DViewportService.disableElement(viewportIndex);
       eventTarget.removeEventListener(
@@ -146,8 +155,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIdOrIndex
       );
 
-      setViewportData(viewportData);
-
       Cornerstone3DViewportService.setViewportDisplaySets(
         viewportIndex,
         viewportData,
@@ -170,10 +177,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
    * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
    */
   useEffect(() => {
-    if (!viewportData) {
-      return;
-    }
-
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
       MeasurementService,
       DisplaySetService,
@@ -195,7 +198,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
     };
-  }, [displaySets, elementRef, viewportIndex, viewportData]);
+  }, [displaySets, elementRef, viewportIndex]);
 
   return (
     <div className="viewport-wrapper">
@@ -216,9 +219,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
         ref={elementRef}
       ></div>
       <CornerstoneOverlays
-        viewportData={viewportData}
         viewportIndex={viewportIndex}
         ToolBarService={ToolBarService}
+        element={elementRef.current}
+        scrollbarHeight={scrollbarHeight}
       />
     </div>
   );
