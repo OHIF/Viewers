@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
-
-import { Enums, eventTarget } from '@cornerstonejs/core';
+import React, { useEffect, useState } from 'react';
 
 import ViewportImageScrollbar from './ViewportImageScrollbar';
 import ViewportOverlay from './ViewportOverlay';
@@ -10,22 +8,19 @@ import Cornerstone3DCacheService from '../../services/ViewportService/Cornerston
 
 function CornerstoneOverlays(props) {
   const { viewportIndex, ToolBarService, element, scrollbarHeight } = props;
-  const [imageIndex, setImageIndex] = useState(0);
+  const [imageSliceData, setImageSliceData] = useState({
+    imageIndex: 0,
+    numberOfSlices: 0,
+  });
   const [viewportData, setViewportData] = useState(null);
 
   useEffect(() => {
     const { unsubscribe } = Cornerstone3DCacheService.subscribe(
       Cornerstone3DCacheService.EVENTS.VIEWPORT_DATA_CHANGED,
       props => {
-        console.debug(
-          'tryign to set viewport data for viewport',
-          viewportIndex
-        );
         if (props.viewportIndex !== viewportIndex) {
           return;
         }
-
-        console.debug('setting viewport data for viewport', viewportIndex);
 
         setViewportData(props.viewportData);
       }
@@ -46,19 +41,19 @@ function CornerstoneOverlays(props) {
         viewportIndex={viewportIndex}
         viewportData={viewportData}
         element={element}
-        imageIndex={imageIndex}
-        setImageIndex={setImageIndex}
+        imageSliceData={imageSliceData}
+        setImageSliceData={setImageSliceData}
         scrollbarHeight={scrollbarHeight}
       />
       <ViewportOverlay
-        imageIndex={imageIndex}
+        imageSliceData={imageSliceData}
         viewportData={viewportData}
         viewportIndex={viewportIndex}
         ToolBarService={ToolBarService}
       />
       <ViewportLoadingIndicator viewportData={viewportData} element={element} />
       <ViewportOrientationMarkers
-        imageIndex={imageIndex}
+        imageSliceData={imageSliceData}
         viewportData={viewportData}
         viewportIndex={viewportIndex}
       />

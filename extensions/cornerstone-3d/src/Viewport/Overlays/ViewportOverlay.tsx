@@ -16,7 +16,7 @@ const EPSILON = 1e-4;
 
 function CornerstoneOverlay({
   viewportData,
-  imageIndex,
+  imageSliceData,
   viewportIndex,
   ToolBarService,
 }) {
@@ -177,33 +177,30 @@ function CornerstoneOverlay({
 
   const getTopRightContent = useCallback(() => {
     const viewport = getCornerstoneViewport(viewportIndex);
-
+    let { imageIndex, numberOfSlices } = imageSliceData;
     if (!viewport || imageIndex === undefined) {
       return;
     }
 
-    let stackSize, instanceNumber;
+    let instanceNumber;
 
     if (viewport instanceof StackViewport) {
-      const stackInfo = _getStackInfo(viewportData, imageIndex);
+      const instanceNumber = _getInstanceNumberFromStack(
+        viewportData,
+        imageIndex
+      );
 
-      if (!stackInfo) {
+      if (!instanceNumber) {
         return null;
       }
 
-      ({ stackSize, instanceNumber } = stackInfo);
+      imageIndex = imageIndex + 1;
     } else if (viewport instanceof VolumeViewport) {
-      const volumeInfo = _getVolumeInfo(
+      instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
         imageIndex,
         viewportIndex
       );
-
-      if (!volumeInfo) {
-        return null;
-      }
-
-      ({ stackSize, instanceNumber } = volumeInfo);
     }
 
     return (
@@ -211,12 +208,12 @@ function CornerstoneOverlay({
         <span className="mr-1">I:</span>
         <span className="font-light">
           {instanceNumber !== undefined
-            ? `${instanceNumber} (${imageIndex + 1}/${stackSize})`
-            : `${imageIndex + 1}/${stackSize}`}
+            ? `${instanceNumber} (${imageIndex}/${numberOfSlices})`
+            : `${imageIndex}/${numberOfSlices}`}
         </span>
       </div>
     );
-  }, [imageIndex, viewportData, viewportIndex]);
+  }, [imageSliceData, viewportData, viewportIndex]);
 
   if (!viewportData) {
     return null;
@@ -236,12 +233,12 @@ function CornerstoneOverlay({
   );
 }
 
-function _getStackInfo(viewportData, imageIndex) {
+function _getInstanceNumberFromStack(viewportData, imageIndex) {
   const imageIds = viewportData.imageIds;
   const imageId = imageIds[imageIndex];
 
   if (!imageId) {
-    return null;
+    return;
   }
 
   const generalImageModule = metaData.get('generalImageModule', imageId) || {};
@@ -250,33 +247,29 @@ function _getStackInfo(viewportData, imageIndex) {
   const stackSize = imageIds.length;
 
   if (stackSize <= 1) {
-    return null;
+    return;
   }
 
-  return {
-    instanceNumber: parseInt(instanceNumber),
-    stackSize,
-  };
+  return parseInt(instanceNumber);
 }
 
-function _getVolumeInfo(viewportData, imageIndex, viewportIndex) {
+function _getInstanceNumberFromVolume(viewportData, imageIndex, viewportIndex) {
   const volumes = viewportData.volumes;
 
-  // Todo: support fusion
+  // Todo: support fusion of acquisition plane which has instanceNumber
   if (!volumes || volumes.length > 1) {
-    return null;
+    return;
   }
 
   const volume = volumes[0];
-
-  const { dimensions, direction, imageIds } = volume;
+  const { direction, imageIds } = volume;
 
   const cornerstoneViewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
     viewportIndex
   );
 
   if (!cornerstoneViewport) {
-    return null;
+    return;
   }
 
   const camera = cornerstoneViewport.getCamera();
@@ -292,13 +285,8 @@ function _getVolumeInfo(viewportData, imageIndex, viewportIndex) {
   if (isAcquisitionPlane) {
     const { instanceNumber } =
       metaData.get('generalImageModule', imageIds[imageIndex]) || {};
-    return {
-      stackSize: imageIds.length,
-      instanceNumber: parseInt(instanceNumber),
-    };
+    return parseInt(instanceNumber);
   }
-
-  return null;
 }
 
 CornerstoneOverlay.propTypes = {

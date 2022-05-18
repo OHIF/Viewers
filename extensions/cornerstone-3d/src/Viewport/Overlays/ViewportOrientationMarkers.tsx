@@ -81,7 +81,7 @@ function getOrientationMarkers(
 
 function ViewportOrientationMarkers({
   viewportData,
-  imageIndex,
+  imageSliceData,
   viewportIndex,
   orientationMarkers = ['top', 'left'],
 }) {
@@ -132,7 +132,16 @@ function ViewportOrientationMarkers({
 
   const getMarkers = useCallback(
     orientationMarkers => {
-      const imageId = viewportData?.stack?.imageIds[imageIndex];
+      // Todo: support orientation markers for the volume viewports
+      if (
+        !viewportData ||
+        viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC
+      ) {
+        return '';
+      }
+
+      const imageIndex = imageSliceData.imageIndex;
+      const imageId = viewportData?.imageIds[imageIndex];
 
       // Workaround for below TODO stub
       if (!imageId) {
@@ -167,7 +176,7 @@ function ViewportOrientationMarkers({
         </div>
       ));
     },
-    [flipHorizontal, flipVertical, rotation, viewportData, imageIndex]
+    [flipHorizontal, flipVertical, rotation, viewportData, imageSliceData]
   );
 
   return (

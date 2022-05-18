@@ -15,6 +15,7 @@ export type StackData = {
   frameRate?: number;
   isClip?: boolean;
   initialImageIdIndex?: number | string | null;
+  viewportType: Enums.ViewportType;
 };
 
 export type VolumeData = {
@@ -22,6 +23,7 @@ export type VolumeData = {
   displaySetInstanceUIDs: string[]; // can have more than one displaySet (fusion)
   imageIds: string[][]; // can have more than one imageId list (fusion)
   volumes: Types.IVolumes[];
+  viewportType: Enums.ViewportType;
 };
 
 const VOLUME_LOADER_SCHEME = 'streaming-wadors';
@@ -75,6 +77,8 @@ class Cornerstone3DCacheService {
         initialImageIdOrIndex
       );
     }
+
+    viewportData.viewportType = cs3DViewportType;
 
     this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
       viewportData,

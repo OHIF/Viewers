@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Enums, StackViewport, VolumeViewport } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/core';
+import { utilities } from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
 
 import Cornerstone3DViewportService from '../../services/ViewportService/Cornerstone3DViewportService';
@@ -9,8 +10,8 @@ function CornerstoneImageScrollbar({
   viewportData,
   viewportIndex,
   element,
-  setImageIndex,
-  imageIndex,
+  imageSliceData,
+  setImageSliceData,
   scrollbarHeight,
 }) {
   const onImageScrollbarChange = useCallback(
@@ -24,70 +25,78 @@ function CornerstoneImageScrollbar({
         viewportId
       );
 
-      // if getCurrentImageId is not a method on viewport
-      if (!(viewport instanceof StackViewport)) {
-        throw new Error('cannot use scrollbar for non-stack viewports');
-      }
-
-      // Later scrollThroughStack should return two values the current index
-      // and the total number of indices (volume it is different)
-      viewport.setImageIdIndex(imageIndex).then(() => {
-        // Update scrollbar index
-        const currentIndex = viewport.getCurrentImageIdIndex();
-        setImageIndex(currentIndex);
+      utilities.jumpToSlice(viewport.element, { imageIndex }).then(() => {
+        setImageSliceData({
+          ...imageSliceData,
+          imageIndex: imageIndex,
+        });
       });
     },
-    [viewportIndex, viewportData]
+    [viewportIndex, viewportData, imageSliceData]
   );
 
   useEffect(() => {
-    if (viewportData && viewportData.volumes) {
+    if (
+      !viewportData ||
+      viewportData.viewportType !== Enums.ViewportType.STACK
+    ) {
       return;
     }
 
-    const updateIndex = event => {
+    const updateStackIndex = event => {
       const { imageId } = event.detail;
       // find the index of imageId in the imageIds
       const index = viewportData?.imageIds?.indexOf(imageId);
       if (index !== -1) {
-        setImageIndex(index);
+        setImageSliceData({
+          imageIndex: index,
+          numberOfSlices: viewportData.imageIds.length,
+        });
       }
     };
 
-    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
+    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateStackIndex);
 
     return () => {
-      element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
+      element.removeEventListener(
+        Enums.Events.STACK_NEW_IMAGE,
+        updateStackIndex
+      );
     };
-  }, [viewportData]);
+  }, [viewportData, element]);
 
-  // useEffect(() => {
-  //   if (!(cornerstoneViewport instanceof VolumeViewport)) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (
+      !viewportData ||
+      viewportData.viewportType !== Enums.ViewportType.ORTHOGRAPHIC
+    ) {
+      return;
+    }
 
-  //   const updateIndex = event => {
-  //     const { imageId } = event.detail;
-  //     // find the index of imageId in the imageIds
-  //     const index = viewportData?.imageIds?.indexOf(imageId);
-  //     if (index !== -1) {
-  //       setImageIndex(index);
-  //     }
-  //   };
+    const updateVolumeIndex = event => {
+      const { imageIndex, numberOfSlices } = event.detail;
+      // find the index of imageId in the imageIds
+      setImageSliceData({ imageIndex, numberOfSlices });
+    };
 
-  //   element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
+    element.addEventListener(Enums.Events.VOLUME_NEW_IMAGE, updateVolumeIndex);
 
-  //   return () => {
-  //     element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
-  //   };
-  // }, [viewportData]);
+    return () => {
+      element.removeEventListener(
+        Enums.Events.VOLUME_NEW_IMAGE,
+        updateVolumeIndex
+      );
+    };
+  }, [viewportData, element]);
 
   return (
     <ImageScrollbar
       onChange={evt => onImageScrollbarChange(evt, viewportIndex)}
-      max={viewportData ? viewportData?.imageIds?.length - 1 : 0}
+      max={
+        imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0
+      }
       height={scrollbarHeight}
-      value={imageIndex}
+      value={imageSliceData.imageIndex}
     />
   );
 }
@@ -97,8 +106,8 @@ CornerstoneImageScrollbar.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
   element: PropTypes.instanceOf(Element),
   scrollbarHeight: PropTypes.string,
-  setImageIndex: PropTypes.func.isRequired,
-  imageIndex: PropTypes.number.isRequired,
+  imageSliceData: PropTypes.object.isRequired,
+  setImageSliceData: PropTypes.func.isRequired,
 };
 
 export default CornerstoneImageScrollbar;
