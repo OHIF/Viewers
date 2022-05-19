@@ -138,7 +138,7 @@ function CornerstoneViewportOverlay({
   }, [voi, scale, activeTools]);
 
   const getTopRightContent = useCallback(() => {
-    let { imageIndex, numberOfSlices } = imageSliceData;
+    const { imageIndex, numberOfSlices } = imageSliceData;
     if (!viewportData) {
       return;
     }
@@ -154,8 +154,6 @@ function CornerstoneViewportOverlay({
       if (!instanceNumber) {
         return null;
       }
-
-      imageIndex = imageIndex + 1;
     } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
       instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
@@ -169,8 +167,8 @@ function CornerstoneViewportOverlay({
         <span className="mr-1">I:</span>
         <span className="font-light">
           {instanceNumber !== undefined
-            ? `${instanceNumber} (${imageIndex}/${numberOfSlices})`
-            : `${imageIndex}/${numberOfSlices}`}
+            ? `${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`
+            : `${imageIndex + 1}/${numberOfSlices}`}
         </span>
       </div>
     );

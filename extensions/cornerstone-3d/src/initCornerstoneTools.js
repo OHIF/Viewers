@@ -16,7 +16,7 @@ const {
   DragProbeTool,
   AngleTool,
   MagnifyTool,
-  // CrosshairsTool,
+  CrosshairsTool,
 } = cornerstone3DTools;
 
 export default function initCornerstone3DTools(configuration = {}) {
@@ -36,7 +36,7 @@ export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.addTool(DragProbeTool);
   cornerstone3DTools.addTool(AngleTool);
   cornerstone3DTools.addTool(MagnifyTool);
-  // cornerstone3DTools.addTool(CrosshairsTool);
+  cornerstone3DTools.addTool(CrosshairsTool);
 }
 
 const toolNames = {
@@ -55,7 +55,7 @@ const toolNames = {
   Bidirectional: BidirectionalTool.toolName,
   Angle: AngleTool.toolName,
   Magnify: MagnifyTool.toolName,
-  // crosshairs: CrosshairsTool.toolName,
+  Crosshairs: CrosshairsTool.toolName,
 };
 
 export { toolNames };

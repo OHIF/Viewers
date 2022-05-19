@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Enums } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/tools';
+import { Enums, Types, utilities } from '@cornerstonejs/core';
 import { ImageScrollbar } from '@ohif/ui';
 
 import Cornerstone3DViewportService from '../../services/ViewportService/Cornerstone3DViewportService';
@@ -34,6 +33,49 @@ function CornerstoneImageScrollbar({
     },
     [viewportIndex, viewportData, imageSliceData]
   );
+
+  useEffect(() => {
+    if (!viewportData) {
+      return;
+    }
+
+    const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+      viewportIndex
+    );
+
+    if (!viewport) {
+      return;
+    }
+
+    if (viewportData.viewportType === Enums.ViewportType.STACK) {
+      const imageId = viewport.getCurrentImageId();
+      const index = viewportData?.imageIds?.indexOf(imageId);
+
+      if (index === -1) {
+        return;
+      }
+
+      setImageSliceData({
+        imageIndex: index,
+        numberOfSlices: viewportData.imageIds.length,
+      });
+
+      return;
+    }
+
+    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+      const sliceData = utilities.getImageSliceDataForVolumeViewport(
+        viewport as Types.IVolumeViewport
+      );
+
+      if (!sliceData) {
+        return;
+      }
+
+      const { imageIndex, numberOfSlices } = sliceData;
+      setImageSliceData({ imageIndex, numberOfSlices });
+    }
+  }, [viewportIndex, viewportData]);
 
   useEffect(() => {
     if (

@@ -1,7 +1,4 @@
-/**
- * CSS Grid Reference: http://grid.malven.co/
- */
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
@@ -99,12 +96,12 @@ function ViewerViewportGrid(props) {
   useEffect(() => {
     const { unsubscribe } = HangingProtocolService.subscribe(
       HangingProtocolService.EVENTS.NEW_LAYOUT,
-      ({ layoutType, numRows, numCols, viewportOptions }) => {
+      ({ layoutType, numRows, numCols, layoutOptions }) => {
         viewportGridService.setLayout({
           numRows,
           numCols,
           layoutType,
-          viewportOptions,
+          layoutOptions,
         });
       }
     );
@@ -159,91 +156,10 @@ function ViewerViewportGrid(props) {
     };
   }, [viewports]);
 
-  /**
-   * Loading indicator until numCols and numRows are gotten from the HangingProtocolService
-   */
-  if (!numRows || !numCols) {
-    return null;
-  }
-
-  /**
-  //Changing the Hanging protocol while viewing
-  useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
-    updateDisplaySetsForViewports(displaySets);
-  }, [viewports]);
-
-
-  // subscribe to displayset metadata changes
-  useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_METADATA_UPDATED,
-      displaySets => {
-        // Todo: properly refresh the viewportGrid to use the new displaySet
-        // with the new metadata.
-        setState({});
-      }
-    );
-    return () => {
-      unsubscribe();
-    };
-  }, [viewports]);
-
-  const onDoubleClick = viewportIndex => {
-    // TODO -> Disabled for now.
-    // onNewImage on a cornerstone viewport is firing setDisplaySetsForViewport.
-    // Which it really really shouldn't. We need a larger fix for jump to
-    // measurements and all cornerstone "imageIndex" state to fix this.
-    if (cachedLayout) {
-      viewportGridService.set({
-        numCols: cachedLayout.numCols,
-        numRows: cachedLayout.numRows,
-        activeViewportIndex: cachedLayout.activeViewportIndex,
-        viewports: cachedLayout.viewports,
-        cachedLayout: null,
-      });
-
-      return;
-    }
-
-    const cachedViewports = viewports.map(viewport => {
-      return {
-        displaySetInstanceUID: viewport.displaySetInstanceUID,
-      };
-    });
-
-    viewportGridService.set({
-      numCols: 1,
-      numRows: 1,
-      activeViewportIndex: 0,
-      viewports: [
-        {
-          displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
-          imageIndex: undefined,
-        },
-      ],
-      cachedLayout: {
-        numCols,
-        numRows,
-        viewports: cachedViewports,
-        activeViewportIndex: viewportIndex,
-      },
-    });
-  };
-
-  */
-  const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
-    viewportGridService.setDisplaySetsForViewport({
-      viewportIndex,
-      displaySetInstanceUIDs: [displaySetInstanceUID],
-    });
-  };
-
-  const getViewportPanes = () => {
+  const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
-    const numViewportPanes = numCols * numRows;
 
-    for (let i = 0; i < numViewportPanes; i++) {
+    for (let i = 0; i < viewports.length; i++) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
@@ -328,6 +244,86 @@ function ViewerViewportGrid(props) {
     }
 
     return viewportPanes;
+  }, [viewports, activeViewportIndex, viewportComponents, dataSource]);
+
+  /**
+   * Loading indicator until numCols and numRows are gotten from the HangingProtocolService
+   */
+  if (!numRows || !numCols) {
+    return null;
+  }
+
+  /**
+  //Changing the Hanging protocol while viewing
+  useEffect(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    updateDisplaySetsForViewports(displaySets);
+  }, [viewports]);
+
+
+  // subscribe to displayset metadata changes
+  useEffect(() => {
+    const { unsubscribe } = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_METADATA_UPDATED,
+      displaySets => {
+        // Todo: properly refresh the viewportGrid to use the new displaySet
+        // with the new metadata.
+        setState({});
+      }
+    );
+    return () => {
+      unsubscribe();
+    };
+  }, [viewports]);
+
+  const onDoubleClick = viewportIndex => {
+    // TODO -> Disabled for now.
+    // onNewImage on a cornerstone viewport is firing setDisplaySetsForViewport.
+    // Which it really really shouldn't. We need a larger fix for jump to
+    // measurements and all cornerstone "imageIndex" state to fix this.
+    if (cachedLayout) {
+      viewportGridService.set({
+        numCols: cachedLayout.numCols,
+        numRows: cachedLayout.numRows,
+        activeViewportIndex: cachedLayout.activeViewportIndex,
+        viewports: cachedLayout.viewports,
+        cachedLayout: null,
+      });
+
+      return;
+    }
+
+    const cachedViewports = viewports.map(viewport => {
+      return {
+        displaySetInstanceUID: viewport.displaySetInstanceUID,
+      };
+    });
+
+    viewportGridService.set({
+      numCols: 1,
+      numRows: 1,
+      activeViewportIndex: 0,
+      viewports: [
+        {
+          displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
+          imageIndex: undefined,
+        },
+      ],
+      cachedLayout: {
+        numCols,
+        numRows,
+        viewports: cachedViewports,
+        activeViewportIndex: viewportIndex,
+      },
+    });
+  };
+
+  */
+  const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
+    viewportGridService.setDisplaySetsForViewport({
+      viewportIndex,
+      displaySetInstanceUIDs: [displaySetInstanceUID],
+    });
   };
 
   return (

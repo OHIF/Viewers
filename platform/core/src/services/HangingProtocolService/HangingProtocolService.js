@@ -333,17 +333,13 @@ class HangingProtocolService {
       return;
     }
 
-    const {
-      columns: numCols,
-      rows: numRows,
-      viewportOptions = [],
-    } = layoutProps;
+    const { columns: numCols, rows: numRows, layoutOptions = [] } = layoutProps;
 
     this._broadcastChange(this.EVENTS.NEW_LAYOUT, {
       layoutType,
       numRows,
       numCols,
-      viewportOptions,
+      layoutOptions,
     });
 
     // Matching the displaySets

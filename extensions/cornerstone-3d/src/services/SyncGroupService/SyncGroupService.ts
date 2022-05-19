@@ -96,6 +96,14 @@ export default class SyncGroupService {
         viewportId,
         renderingEngineId,
       });
+
+      // check if any viewport is left in any of syncs, if not delete that sync
+      const sourceViewports = synchronizer.getSourceViewports();
+      const targetViewports = synchronizer.getTargetViewports();
+
+      if (!sourceViewports.length && !targetViewports.length) {
+        SynchronizerManager.destroySynchronizer(synchronizer.id);
+      }
     });
   }
 }

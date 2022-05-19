@@ -22,7 +22,7 @@ export type VolumeData = {
   StudyInstanceUID: string;
   displaySetInstanceUIDs: string[]; // can have more than one displaySet (fusion)
   imageIds: string[][]; // can have more than one imageId list (fusion)
-  volumes: Types.IVolumes[];
+  volumes: Types.IVolume[];
   viewportType: Enums.ViewportType;
 };
 
