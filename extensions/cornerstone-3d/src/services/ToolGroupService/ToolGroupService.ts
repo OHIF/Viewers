@@ -90,7 +90,7 @@ export default class ToolGroupService {
     }
   }
 
-  public addToolGroupViewport(
+  public addViewportToToolGroup(
     viewportId: string,
     renderingEngineId: string,
     toolGroupId?: string

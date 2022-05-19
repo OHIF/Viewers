@@ -11,6 +11,7 @@ import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import init from './init.js';
 import commandsModule from './commandsModule';
 import ToolGroupService from './services/ToolGroupService';
+import SyncGroupService from './services/SyncGroupService';
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement } from './state';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
@@ -63,6 +64,7 @@ const cornerstone3DExtension = {
     appConfig,
   }) {
     servicesManager.registerService(ToolGroupService(servicesManager));
+    servicesManager.registerService(SyncGroupService(servicesManager));
     await init({ servicesManager, commandsManager, configuration, appConfig });
   },
   getViewportModule({ servicesManager, commandsManager }) {

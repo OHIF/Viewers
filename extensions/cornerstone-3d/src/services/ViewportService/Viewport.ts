@@ -2,6 +2,7 @@ import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
+import { SyncGroup } from '../SyncGroupService/SyncGroupService';
 
 export type ViewportOptions = {
   viewportType: Enums.ViewportType;
@@ -10,6 +11,7 @@ export type ViewportOptions = {
   orientation?: Types.Orientation;
   background?: Types.Point3;
   initialView?: string;
+  syncGroups?: SyncGroup[];
 };
 
 export type PublicViewportOptions = {
@@ -19,6 +21,7 @@ export type PublicViewportOptions = {
   orientation?: string;
   background?: Types.Point3;
   initialView?: string;
+  syncGroups?: SyncGroup[];
 };
 
 export type PublicDisplaySetOptions = {
@@ -152,6 +155,10 @@ class ViewportInfo {
     displaySetOptions: Array<DisplaySetOptions>
   ): void {
     this.displaySetOptions = displaySetOptions;
+  }
+
+  public getSyncGroups(): SyncGroup[] {
+    return this.viewportOptions.syncGroups || [];
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {

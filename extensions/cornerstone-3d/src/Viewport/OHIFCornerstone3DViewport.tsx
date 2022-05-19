@@ -70,6 +70,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     DisplaySetService,
     ToolBarService,
     ToolGroupService,
+    SyncGroupService,
   } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
@@ -103,10 +104,18 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       const renderingEngineId = viewportInfo.getRenderingEngineId();
       const toolGroupId = viewportInfo.getToolGroupId();
-      ToolGroupService.addToolGroupViewport(
+      const syncGroups = viewportInfo.getSyncGroups();
+
+      ToolGroupService.addViewportToToolGroup(
         viewportId,
         renderingEngineId,
         toolGroupId
+      );
+
+      SyncGroupService.addViewportToSyncGroup(
+        viewportId,
+        renderingEngineId,
+        syncGroups
       );
 
       if (onElementEnabled) {
@@ -132,7 +141,23 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+        viewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+      const renderingEngineId = viewportInfo.getRenderingEngineId();
+      const syncGroups = viewportInfo.getSyncGroups();
+
+      ToolGroupService.disable(viewportId, renderingEngineId);
+      SyncGroupService.removeViewportFromSyncGroup(
+        viewportId,
+        renderingEngineId,
+        syncGroups
+      );
+
       Cornerstone3DViewportService.disableElement(viewportIndex);
+
       eventTarget.removeEventListener(
         Enums.Events.ELEMENT_ENABLED,
         elementEnabledHandler

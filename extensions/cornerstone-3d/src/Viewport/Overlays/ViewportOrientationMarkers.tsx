@@ -80,6 +80,7 @@ function getOrientationMarkers(
 }
 
 function ViewportOrientationMarkers({
+  element,
   viewportData,
   imageSliceData,
   viewportIndex,
@@ -91,14 +92,6 @@ function ViewportOrientationMarkers({
   const [flipVertical, setFlipVertical] = useState(false);
 
   useEffect(() => {
-    const ohifEnabledElement = getEnabledElement(viewportIndex);
-
-    if (!ohifEnabledElement || !ohifEnabledElement.element) {
-      return;
-    }
-
-    const { element } = ohifEnabledElement;
-
     const cameraModifiedListener = (
       evt: Types.EventTypes.CameraModifiedEventDetail
     ) => {

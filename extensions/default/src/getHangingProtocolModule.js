@@ -225,87 +225,113 @@ const testProtocol = {
       viewports: [
         {
           viewportOptions: {
-            viewportId: 'ctSagittal',
-            viewportType: 'stack',
-            orientation: 'AXIAL',
+            viewportId: 'ctAXIAL',
+            viewportType: 'volume',
+            orientation: 'axial',
             toolGroupId: 'default',
             // initialImageIndex: {
             //   index: 100,
             //   preset: 'first', // 'middle', 'last',
             // }
-          },
-          displaySets: [
-            {
-              id: 'ptDisplaySet',
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            viewportId: 'ptSagittal',
-            viewportType: 'volume',
-            background: [1, 1, 1],
-            orientation: 'SAGITTAL',
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              options: {
-                voi: {
-                  windowWidth: 5,
-                  windowCenter: 2.5,
-                },
-                voiInverted: true,
+            syncGroups: [
+              {
+                type: 'cameraPosition',
+                id: 'axialSync',
+                source: true,
+                target: true,
               },
-              id: 'ptDisplaySet',
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            viewportId: 'fusionSagittal',
-            viewportType: 'volume',
-            orientation: 'SAGITTAL',
-            toolGroupId: 'default',
+              {
+                type: 'voi',
+                id: 'ctWLSync',
+                source: true,
+                target: false,
+              },
+            ],
           },
           displaySets: [
             {
               id: 'ctDisplaySet',
             },
-            {
-              options: {
-                colormap: 'hsv',
-                voi: {
-                  windowWidth: 5,
-                  windowCenter: 2.5,
-                },
-              },
-              id: 'ptDisplaySet',
-            },
           ],
         },
         {
           viewportOptions: {
-            viewportId: 'mipSagittal',
+            viewportId: 'ctAXIAL2',
             viewportType: 'volume',
-            orientation: 'SAGITTAL',
-            background: [1, 1, 1],
+            orientation: 'axial',
             toolGroupId: 'default',
+            syncGroups: [
+              {
+                type: 'cameraPosition',
+                id: 'axialSync',
+                source: true,
+                target: true,
+              },
+              {
+                type: 'voi',
+                id: 'ctWLSync',
+                source: false,
+                target: true,
+              },
+            ],
           },
           displaySets: [
             {
               options: {
-                blendMode: 'MIP',
                 voi: {
-                  windowWidth: 5,
-                  windowCenter: 2.5,
+                  windowWidth: 1500,
+                  windowCenter: -600,
                 },
-                voiInverted: true,
               },
-              id: 'ptDisplaySet',
+              id: 'ctDisplaySet',
             },
           ],
         },
+        // {
+        //   viewportOptions: {
+        //     viewportId: 'fusionSagittal',
+        //     viewportType: 'volume',
+        //     orientation: 'SAGITTAL',
+        //     toolGroupId: 'default',
+        //   },
+        //   displaySets: [
+        //     {
+        //       id: 'ctDisplaySet',
+        //     },
+        //     {
+        //       options: {
+        //         colormap: 'hsv',
+        //         voi: {
+        //           windowWidth: 5,
+        //           windowCenter: 2.5,
+        //         },
+        //       },
+        //       id: 'ptDisplaySet',
+        //     },
+        //   ],
+        // },
+        // {
+        //   viewportOptions: {
+        //     viewportId: 'mipSagittal',
+        //     viewportType: 'volume',
+        //     orientation: 'sagittal',
+        //     background: [1, 1, 1],
+        //     toolGroupId: 'default',
+        //   },
+        //   displaySets: [
+        //     {
+        //       options: {
+        //         blendMode: 'MIP',
+        //         voi: {
+        //           windowWidth: 5,
+        //           windowCenter: 2.5,
+        //         },
+        //         voiInverted: true,
+        //       },
+        //       id: 'ptDisplaySet',
+        //     },
+        //   ],
+        // },
       ],
       createdDate: '2021-02-23T18:32:42.850Z',
     },

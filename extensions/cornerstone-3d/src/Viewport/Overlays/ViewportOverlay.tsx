@@ -1,20 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { vec2, vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
-import {
-  metaData,
-  Enums,
-  utilities,
-  StackViewport,
-  VolumeViewport,
-} from '@cornerstonejs/core';
+import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ViewportOverlay } from '@ohif/ui';
 
 import Cornerstone3DViewportService from '../../services/ViewportService/Cornerstone3DViewportService';
 
 const EPSILON = 1e-4;
 
-function CornerstoneOverlay({
+function CornerstoneViewportOverlay({
+  element,
   viewportData,
   imageSliceData,
   viewportIndex,
@@ -23,26 +18,6 @@ function CornerstoneOverlay({
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
-
-  const getCornerstoneViewport = useCallback(
-    viewportIndex => {
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
-
-      if (!viewportInfo) {
-        return;
-      }
-
-      const viewportId = viewportInfo.getViewportId();
-      const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
-        viewportId
-      );
-
-      return viewport;
-    },
-    [viewportIndex, viewportData]
-  );
 
   /**
    * Initial toolbar state
@@ -55,14 +30,6 @@ function CornerstoneOverlay({
    * Updating the VOI when the viewport changes its voi
    */
   useEffect(() => {
-    const viewport = getCornerstoneViewport(viewportIndex);
-
-    if (!viewport) {
-      return;
-    }
-
-    const { element } = viewport;
-
     const updateVOI = eventDetail => {
       const { range } = eventDetail.detail;
 
@@ -90,18 +57,13 @@ function CornerstoneOverlay({
    * Updating the scale when the viewport changes its zoom
    */
   useEffect(() => {
-    const viewport = getCornerstoneViewport(viewportIndex);
-    if (!viewport) {
-      return;
-    }
-
-    const { element } = viewport;
-
     const updateScale = eventDetail => {
       const { previousCamera, camera } = eventDetail.detail;
 
       if (previousCamera.parallelScale !== camera.parallelScale) {
-        const viewport = getCornerstoneViewport(viewportIndex);
+        const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+          viewportIndex
+        );
 
         if (!viewport) {
           return;
@@ -176,15 +138,14 @@ function CornerstoneOverlay({
   }, [voi, scale, activeTools]);
 
   const getTopRightContent = useCallback(() => {
-    const viewport = getCornerstoneViewport(viewportIndex);
     let { imageIndex, numberOfSlices } = imageSliceData;
-    if (!viewport || imageIndex === undefined) {
+    if (!viewportData) {
       return;
     }
 
     let instanceNumber;
 
-    if (viewport instanceof StackViewport) {
+    if (viewportData.viewportType === Enums.ViewportType.STACK) {
       const instanceNumber = _getInstanceNumberFromStack(
         viewportData,
         imageIndex
@@ -195,7 +156,7 @@ function CornerstoneOverlay({
       }
 
       imageIndex = imageIndex + 1;
-    } else if (viewport instanceof VolumeViewport) {
+    } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
       instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
         imageIndex,
@@ -289,10 +250,10 @@ function _getInstanceNumberFromVolume(viewportData, imageIndex, viewportIndex) {
   }
 }
 
-CornerstoneOverlay.propTypes = {
+CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
   viewportIndex: PropTypes.number,
 };
 
-export default CornerstoneOverlay;
+export default CornerstoneViewportOverlay;

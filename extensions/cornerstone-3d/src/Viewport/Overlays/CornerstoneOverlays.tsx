@@ -50,10 +50,12 @@ function CornerstoneOverlays(props) {
         viewportData={viewportData}
         viewportIndex={viewportIndex}
         ToolBarService={ToolBarService}
+        element={element}
       />
       <ViewportLoadingIndicator viewportData={viewportData} element={element} />
       <ViewportOrientationMarkers
         imageSliceData={imageSliceData}
+        element={element}
         viewportData={viewportData}
         viewportIndex={viewportIndex}
       />
