@@ -4,6 +4,11 @@ import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import { SyncGroup } from '../SyncGroupService/SyncGroupService';
 
+export type InitialImageOptions = {
+  index?: number;
+  preset?: string;
+};
+
 export type ViewportOptions = {
   viewportType: Enums.ViewportType;
   toolGroupId: string;
@@ -12,6 +17,7 @@ export type ViewportOptions = {
   background?: Types.Point3;
   initialView?: string;
   syncGroups?: SyncGroup[];
+  initialImageOptions?: InitialImageOptions;
 };
 
 export type PublicViewportOptions = {
@@ -22,6 +28,7 @@ export type PublicViewportOptions = {
   background?: Types.Point3;
   initialView?: string;
   syncGroups?: SyncGroup[];
+  initialImageOptions?: InitialImageOptions;
 };
 
 export type PublicDisplaySetOptions = {
@@ -179,6 +186,10 @@ class ViewportInfo {
 
   public getOrientation(): Types.Orientation {
     return this.viewportOptions.orientation;
+  }
+
+  public getInitialImageOptions(): InitialImageOptions {
+    return this.viewportOptions.initialImageOptions;
   }
 
   private validateDisplaySetOptions(

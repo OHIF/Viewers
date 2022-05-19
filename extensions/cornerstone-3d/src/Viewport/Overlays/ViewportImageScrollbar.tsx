@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Enums, Types, utilities } from '@cornerstonejs/core';
+import { Enums, Types } from '@cornerstonejs/core';
+import { utilities } from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
 
 import Cornerstone3DViewportService from '../../services/ViewportService/Cornerstone3DViewportService';

@@ -32,6 +32,10 @@ const defaultProtocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
+            initialImageOptions: {
+              // index: 180,
+              preset: 'middle', // 'first', 'last', 'middle'
+            },
           },
           displaySets: [
             {
