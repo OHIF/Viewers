@@ -37,6 +37,20 @@ export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.addTool(AngleTool);
   cornerstone3DTools.addTool(MagnifyTool);
   // cornerstone3DTools.addTool(CrosshairsTool);
+
+  // Modify annotation tools to use dashed lines on SR
+  const annotationStyle = {
+    textBoxFontSize: '15px',
+    lineWidth: '1.5',
+  };
+
+  const defaultStyles = cornerstone3DTools.annotation.config.style.getDefaultToolStyles();
+  cornerstone3DTools.annotation.config.style.setDefaultToolStyles({
+    global: {
+      ...defaultStyles.global,
+      ...annotationStyle,
+    },
+  });
 }
 
 const toolNames = {
