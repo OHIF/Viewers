@@ -63,6 +63,9 @@ const cornerstone3DExtension = {
     configuration = {},
     appConfig,
   }) {
+    servicesManager.registerService(
+      Cornerstone3DViewportService(servicesManager)
+    );
     servicesManager.registerService(ToolGroupService(servicesManager));
     servicesManager.registerService(SyncGroupService(servicesManager));
     await init({ servicesManager, commandsManager, configuration, appConfig });
@@ -107,7 +110,6 @@ const cornerstone3DExtension = {
             return { cornerstone3D, cornerstone3DTools };
           },
           getEnabledElement,
-          Cornerstone3DViewportService,
           dicomLoaderService,
         },
       },

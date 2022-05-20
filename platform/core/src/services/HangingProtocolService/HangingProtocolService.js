@@ -45,8 +45,8 @@ class HangingProtocolService {
     this.customViewportSettings = [];
     this.customAttributeRetrievalCallbacks = {};
     this.listeners = {};
-    this.imageLoadStrategies = {};
-    this.activeImageLoadStrategy = null;
+    this.registeredImageLoadStrategies = {};
+    this.activeImageLoadStrategyName = null;
     this.customImageLoadPerformed = false;
     Object.defineProperty(this, 'EVENTS', {
       value: EVENTS,
@@ -114,52 +114,15 @@ class HangingProtocolService {
    */
   hasCustomImageLoadStrategy() {
     return (
-      this.activeImageLoadStrategy !== null &&
-      this.imageLoadStrategies[this.activeImageLoadStrategy] instanceof Function
+      this.activeImageLoadStrategyName !== null &&
+      this.registeredImageLoadStrategies[
+        this.activeImageLoadStrategyName
+      ] instanceof Function
     );
   }
 
   getCustomImageLoadPerformed() {
     return this.customImageLoadPerformed;
-  }
-
-  /**
-   * Executes the callback function for the custom loading strategy for the images
-   * if no strategy is set, the default strategy is used
-   * @param {Object} props Properties to be passed to the loaders
-   * @param {string} strategyName The name of the strategy to be used
-   */
-  runImageLoadStrategy(props, strategyName) {
-    if (strategyName) {
-      this.activeImageLoadStrategy = strategyName;
-    }
-
-    const displaySetsMatchDetails = this.getDisplaySetsMatchDetails();
-    if (this.activeImageLoadStrategy) {
-      const loader = this.imageLoadStrategies[this.activeImageLoadStrategy];
-      const loadedProps = loader({ ...props, displaySetsMatchDetails });
-
-      // if loader successfully re-arranged the data with the custom strategy
-      // and returned the new props, then broadcast them
-      if (!loadedProps) {
-        return;
-      }
-
-      this.customImageLoadPerformed = true;
-
-      this._broadcastChange(
-        this.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
-        loadedProps
-      );
-    }
-  }
-
-  /**
-   * Set the name of the active imageLoadStrategy
-   * @param {string} name strategy name
-   */
-  setActiveImageLoadStrategy(name) {
-    this.activeImageLoadStrategy = name;
   }
 
   /**
@@ -169,8 +132,7 @@ class HangingProtocolService {
    */
   registerImageLoadStrategy(name, callback) {
     if (callback instanceof Function && name) {
-      this.imageLoadStrategies[name] = callback;
-      this.activeImageLoadStrategy = name;
+      this.registeredImageLoadStrategies[name] = callback;
     }
   }
 
@@ -227,6 +189,30 @@ class HangingProtocolService {
     }
   }
 
+  /**
+   * Executes the callback function for the custom loading strategy for the images
+   * if no strategy is set, the default strategy is used
+   */
+  runImageLoadStrategy(data) {
+    const loader = this.registeredImageLoadStrategies[
+      this.activeImageLoadStrategyName
+    ];
+    const loadedData = loader({
+      data,
+      displaySetsMatchDetails: this.getDisplaySetsMatchDetails(),
+      matchDetails: this.matchDetails,
+    });
+
+    // if loader successfully re-arranged the data with the custom strategy
+    // and returned the new props, then broadcast them
+    if (!loadedData) {
+      return;
+    }
+
+    this.customImageLoadPerformed = true;
+    this._broadcastChange(this.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED, loadedData);
+  }
+
   _validateProtocol(protocol) {
     protocol.id = protocol.id || protocol.name;
     // Automatically compute some number of attributes if they
@@ -268,10 +254,17 @@ class HangingProtocolService {
     // which are entered manually
     this.stage = 0;
     this.protocol = protocol;
-    if (protocol.imageLoadStrategy) {
-      this.activeImageLoadStrategy = protocol.imageLoadStrategy;
+    const { imageLoadStrategy } = protocol;
+    if (imageLoadStrategy) {
+      // check if the imageLoadStrategy is a valid strategy
+      if (
+        this.registeredImageLoadStrategies[imageLoadStrategy] instanceof
+        Function
+      ) {
+        this.activeImageLoadStrategyName = imageLoadStrategy;
+      }
     }
-    this._updateViewports(protocol);
+    this._updateViewports();
   }
 
   /**

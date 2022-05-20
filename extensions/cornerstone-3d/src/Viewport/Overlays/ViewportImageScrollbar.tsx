@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Enums, Types } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/tools';
+import { Enums, Types, utilities } from '@cornerstonejs/core';
+import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
-
-import Cornerstone3DViewportService from '../../services/ViewportService/Cornerstone3DViewportService';
 
 function CornerstoneImageScrollbar({
   viewportData,
@@ -13,6 +11,7 @@ function CornerstoneImageScrollbar({
   imageSliceData,
   setImageSliceData,
   scrollbarHeight,
+  Cornerstone3DViewportService,
 }) {
   const onImageScrollbarChange = useCallback(
     (imageIndex, viewportIndex) => {
@@ -25,7 +24,7 @@ function CornerstoneImageScrollbar({
         viewportId
       );
 
-      utilities.jumpToSlice(viewport.element, { imageIndex }).then(() => {
+      csToolsUtils.jumpToSlice(viewport.element, { imageIndex }).then(() => {
         setImageSliceData({
           ...imageSliceData,
           imageIndex: imageIndex,

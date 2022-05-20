@@ -6,7 +6,6 @@ import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
-import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
 import Cornerstone3DCacheService from '../services/ViewportService/Cornerstone3DCacheService';
 
 import './OHIFCornerstone3DViewport.css';
@@ -71,6 +70,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     ToolBarService,
     ToolGroupService,
     SyncGroupService,
+    Cornerstone3DViewportService,
   } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
@@ -248,6 +248,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         ToolBarService={ToolBarService}
         element={elementRef.current}
         scrollbarHeight={scrollbarHeight}
+        Cornerstone3DViewportService={Cornerstone3DViewportService}
       />
     </div>
   );

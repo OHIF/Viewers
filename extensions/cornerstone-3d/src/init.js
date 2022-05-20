@@ -17,12 +17,13 @@ import {
 } from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
-import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import callInputDialog from './callInputDialog';
 import initCineService from './initCineService';
+import interleaveCenterLoader from './utils/interleaveCenterLoader';
+import interleaveTopToBottom from './utils/interleaveTopToBottom';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -49,6 +50,8 @@ export default async function init({
     DisplaySetService,
     UIDialogService,
     CineService,
+    Cornerstone3DViewportService,
+    HangingProtocolService,
   } = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
@@ -59,6 +62,15 @@ export default async function init({
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
     cornerstoneStreamingImageVolumeLoader
+  );
+
+  HangingProtocolService.registerImageLoadStrategy(
+    'interleaveCenter',
+    interleaveCenterLoader
+  );
+  HangingProtocolService.registerImageLoadStrategy(
+    'interleaveTopToBottom',
+    interleaveTopToBottom
   );
 
   imageLoader.registerImageLoader(
@@ -193,6 +205,24 @@ export default async function init({
 
     UIDialogService.dismiss({ id: 'context-menu' });
   };
+
+  // When a custom image load is performed, update the relevant viewports
+  HangingProtocolService.subscribe(
+    HangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
+    volumeInputArrayMap => {
+      for (const entry of volumeInputArrayMap.entries()) {
+        const [viewportId, volumeInputArray] = entry;
+        const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
+          viewportId
+        );
+
+        Cornerstone3DViewportService.setVolumesForViewport(
+          viewport,
+          volumeInputArray
+        );
+      }
+    }
+  );
 
   /*
    * Because click gives us the native "mouse up", buttons will always be `0`

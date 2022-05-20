@@ -1,4 +1,5 @@
 import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -6,7 +7,7 @@ import { SyncGroup } from '../SyncGroupService/SyncGroupService';
 
 export type InitialImageOptions = {
   index?: number;
-  preset?: string;
+  preset?: csToolsEnums.JumpPresets;
 };
 
 export type ViewportOptions = {

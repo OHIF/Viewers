@@ -5,10 +5,13 @@ import {
   Types,
   getRenderingEngine,
   utilities as csUtils,
-  Enums,
-  volumeLoader,
   VolumeViewport,
 } from '@cornerstonejs/core';
+
+import {
+  utilities as csToolsUtils,
+  Enums as csToolsEnums,
+} from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, {
@@ -48,13 +51,15 @@ class Cornerstone3DViewportService implements IViewportService {
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
 
-  constructor() {
+  constructor(servicesManager) {
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;
     this.viewportsInfo = new Map();
     //
     this.listeners = {};
     this.EVENTS = EVENTS;
+    const { HangingProtocolService } = servicesManager.services;
+    this.HangingProtocolService = HangingProtocolService;
     Object.assign(this, pubSubServiceInterface);
     //
   }
@@ -263,6 +268,14 @@ class Cornerstone3DViewportService implements IViewportService {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
     const { imageIds, initialImageIdIndex } = viewportData;
+
+    let initialImageIdIndexToUse = initialImageIdIndex;
+
+    if (!initialImageIdIndexToUse) {
+      initialImageIdIndexToUse =
+        this._getInitialImageIndexForStackViewport(viewportInfo) || 0;
+    }
+
     const { voi, voiInverted } = displaySetOptions[0];
     const properties = {};
     if (voi && (voi.windowWidth || voi.windowCenter)) {
@@ -277,10 +290,53 @@ class Cornerstone3DViewportService implements IViewportService {
       properties.invert = voiInverted;
     }
 
-    viewport.setStack(imageIds, initialImageIdIndex).then(() => {
+    viewport.setStack(imageIds, initialImageIdIndexToUse).then(() => {
       viewport.setProperties(properties);
       csUtils.prefetchStack(imageIds);
     });
+  }
+
+  private _getInitialImageIndexForStackViewport(
+    viewportInfo: ViewportInfo,
+    imageIds?: string[]
+  ): number {
+    const initialImageOptions = viewportInfo.getInitialImageOptions();
+
+    if (!initialImageOptions) {
+      return;
+    }
+
+    let imageIndex;
+    const { index, preset } = initialImageOptions;
+
+    if (index !== undefined) {
+      imageIndex = initialImageOptions.index;
+    } else if (preset !== undefined) {
+      imageIndex = this._getInitialImageIndexByPreset(
+        initialImageOptions.preset,
+        imageIds
+      );
+    }
+    imageIndex = Math.min(imageIds.length - 1, Math.max(0, imageIndex));
+
+    return imageIndex;
+  }
+
+  private _getInitialImageIndexByPreset(
+    preset: string,
+    imageIds: string[]
+  ): number {
+    if (preset === csToolsEnums.JumpPresets.First) {
+      return 0;
+    }
+
+    if (preset === csToolsEnums.JumpPresets.Middle) {
+      return Math.floor(imageIds.length / 2);
+    }
+
+    if (preset === csToolsEnums.JumpPresets.Last) {
+      return imageIds.length - 1;
+    }
   }
 
   async _setVolumeViewport(
@@ -299,12 +355,7 @@ class Cornerstone3DViewportService implements IViewportService {
     // If you call loadStudyMetadata and it's not in the DicomMetadataStore cache, it should fire
     // a request through the data source?
     // (This call may or may not create sub-requests for series metadata)
-    //
-    // If you call loadSeriesMetadata and a request is ongoing for the study, you have to wait for
-    // that? Or should it force a separate request? May be slower?
-    // For the moment I just stuck this whole operation in a setTimeout so we are sure the
-    // metadata has arrived
-    const viewportVolumeInputs = {};
+    const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
 
     for (let i = 0; i < viewportData.imageIds.length; i++) {
@@ -312,9 +363,6 @@ class Cornerstone3DViewportService implements IViewportService {
       const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
       const displaySetOptions = displaySetOptionsArray[i];
 
-      // We need to get the volumeId again here since, for toolGroups
-      // right now we only have one volume per viewport, but for
-      // rendering we can have multiple volumes per viewport
       const volumeId = displaySetInstanceUID;
 
       // if (displaySet.needsRerendering) {
@@ -324,9 +372,13 @@ class Cornerstone3DViewportService implements IViewportService {
       //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
       // }
 
-      const callback = this._getVOICallback(volumeId, displaySetOptions);
+      const voiCallback = this._getVOICallback(volumeId, displaySetOptions);
 
-      viewportVolumeInputs[volumeId] = {
+      const callback = ({ volumeActor }) => {
+        voiCallback(volumeActor);
+      };
+
+      volumeInputArray.push({
         imageIds,
         volumeId,
         callback,
@@ -334,42 +386,44 @@ class Cornerstone3DViewportService implements IViewportService {
         slabThickness: displaySetOptions.blendMode
           ? displaySetOptions.slabThickness || 500
           : undefined,
-      };
+      });
     }
 
-    // Todo: this is only for the first load from hanging protocol, if
-    // viewport gets a new display set (from drag and drop) we don't want to
-    // use the hanging protocol image loading strategy
-    // const hasCustomLoad = this.HangingProtocolService.hasCustomImageLoadStrategy();
-
-    // If the hangingProtocol has specified a custom image loading strategy, use it.
-    // Otherwise, use the default image loading strategy which is based on the
-    // sorted imageIds in the volume. In addition, if displaysets has been
-    // invalidated and need to be re-rendered, we need to use the default image
-    // loading strategy.
-    // const displaySetShouldReRender = displaySets.some(displaySet => {
-    //   return this.displaySetsNeedRerendering.has(
-    //     displaySet.displaySetInstanceUID
-    //   );
-    // });
-
-    // if (!displaySetShouldReRender && hasCustomLoad) {
-    //   return;
-    // }
+    if (this.HangingProtocolService.hasCustomImageLoadStrategy()) {
+      // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
+      return this.HangingProtocolService.runImageLoadStrategy({
+        viewportId: viewport.id,
+        volumeInputArray,
+      });
+    }
 
     viewportData.volumes.forEach(volume => {
       volume.load();
     });
 
-    // this.initiateLoad(viewport.uid);
+    this.setVolumesForViewport(viewport, volumeInputArray);
+  }
 
-    // const volumeInputs = this.sceneVolumeInputs.get(sceneUID);
-    // const viewportOptions = this.viewportOptions.get(viewportUID);
+  public setVolumesForViewport(viewport, volumeInputArray) {
+    viewport.setVolumes(volumeInputArray).then(() => {
+      const viewportInfo = this.getViewportInfoById(viewport.id);
+      const initialImageOptions = viewportInfo.getInitialImageOptions();
 
-    // if (viewportOptions && viewportOptions.initialView) {
-    //   this._setInitialView(viewportUID, sceneUID, viewportOptions.initialView);
-    // }
-    viewport.setVolumes(Object.values(viewportVolumeInputs));
+      if (
+        initialImageOptions &&
+        (initialImageOptions.preset !== undefined ||
+          initialImageOptions.index !== undefined)
+      ) {
+        const { index, preset } = initialImageOptions;
+
+        csToolsUtils.jumpToSlice(viewport.element, {
+          imageIndex: index,
+          preset,
+        });
+      }
+
+      viewport.render();
+    });
   }
 
   _getVOICallback(volumeId, displaySetOptions) {
@@ -378,7 +432,7 @@ class Cornerstone3DViewportService implements IViewportService {
     // If colormap is set, use it to set the color transfer function
     let voiCallback;
     if (colormap) {
-      voiCallback = ({ volumeActor }) => setColormap(volumeActor, colormap);
+      voiCallback = volumeActor => setColormap(volumeActor, colormap);
       return voiCallback;
     }
 
@@ -388,7 +442,7 @@ class Cornerstone3DViewportService implements IViewportService {
         windowWidth,
         windowCenter
       );
-      voiCallback = ({ volumeActor }) =>
+      voiCallback = volumeActor =>
         setLowerUpperColorTransferFunction({
           volumeActor,
           lower,
@@ -396,7 +450,7 @@ class Cornerstone3DViewportService implements IViewportService {
           inverted,
         });
     } else {
-      voiCallback = ({ volumeActor }) =>
+      voiCallback = volumeActor =>
         setColorTransferFunctionFromVolumeMetadata({
           volumeActor,
           volumeId,
@@ -467,6 +521,11 @@ class Cornerstone3DViewportService implements IViewportService {
   }
 }
 
-const cornerstone3DViewportService = new Cornerstone3DViewportService();
-window.cornerstone3DViewportService = cornerstone3DViewportService;
-export default cornerstone3DViewportService;
+export default function ExtendedCornerstoneViewportService(serviceManager) {
+  return {
+    name: 'Cornerstone3DViewportService',
+    create: ({ configuration = {} }) => {
+      return new Cornerstone3DViewportService(serviceManager);
+    },
+  };
+}

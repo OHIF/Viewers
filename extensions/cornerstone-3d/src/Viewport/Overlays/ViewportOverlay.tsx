@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ViewportOverlay } from '@ohif/ui';
 
-import Cornerstone3DViewportService from '../../services/ViewportService/Cornerstone3DViewportService';
-
 const EPSILON = 1e-4;
 
 function CornerstoneViewportOverlay({
@@ -13,6 +11,7 @@ function CornerstoneViewportOverlay({
   viewportData,
   imageSliceData,
   viewportIndex,
+  Cornerstone3DViewportService,
   ToolBarService,
 }) {
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
@@ -158,7 +157,8 @@ function CornerstoneViewportOverlay({
       instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
         imageIndex,
-        viewportIndex
+        viewportIndex,
+        Cornerstone3DViewportService
       );
     }
 
@@ -212,7 +212,12 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
   return parseInt(instanceNumber);
 }
 
-function _getInstanceNumberFromVolume(viewportData, imageIndex, viewportIndex) {
+function _getInstanceNumberFromVolume(
+  viewportData,
+  imageIndex,
+  viewportIndex,
+  Cornerstone3DViewportService
+) {
   const volumes = viewportData.volumes;
 
   // Todo: support fusion of acquisition plane which has instanceNumber
