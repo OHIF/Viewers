@@ -2,6 +2,9 @@ import { adapters } from 'dcmjs';
 
 const cornerstoneAdapters = adapters.Cornerstone3D;
 
+const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
+const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;
+
 /**
  * Checks if the given `displaySet`can be rehydrated into the `MeasurementService`.
  *
@@ -35,9 +38,18 @@ export default function isRehydratable(displaySet, mappings) {
 
   for (let i = 0; i < measurements.length; i++) {
     const TrackingIdentifier = measurements[i].TrackingIdentifier;
-    const hydratable = adapters.some(adapter =>
-      adapter.isValidCornerstoneTrackingIdentifier(TrackingIdentifier)
-    );
+    const hydratable = adapters.some(adapter => {
+      let [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
+      if (supportedLegacyCornerstoneTags.includes(cornerstoneTag)) {
+        cornerstoneTag = CORNERSTONE_3D_TAG;
+      }
+
+      const mappedTrackingIdentifier = `${cornerstoneTag}:${toolName}`;
+
+      return adapter.isValidCornerstoneTrackingIdentifier(
+        mappedTrackingIdentifier
+      );
+    });
 
     if (hydratable) {
       return true;

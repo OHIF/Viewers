@@ -6,13 +6,14 @@ import SCOORD_TYPES from '../constants/scoordTypes';
 
 const EPSILON = 1e-4;
 
+const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
+
 export default function addMeasurement(
   measurement,
   imageId,
   displaySetInstanceUID
 ) {
   // TODO -> Render rotated ellipse .
-
   const toolName = toolNames.DICOMSRDisplay;
 
   const measurementData = {
@@ -30,7 +31,12 @@ export default function addMeasurement(
     }
 
     measurementData.renderableData[GraphicType].push(
-      _getRenderableData(GraphicType, GraphicData, imageId)
+      _getRenderableData(
+        GraphicType,
+        GraphicData,
+        imageId,
+        measurement.TrackingIdentifier
+      )
     );
   });
 
@@ -75,7 +81,14 @@ export default function addMeasurement(
   delete measurement.coords;
 }
 
-function _getRenderableData(GraphicType, GraphicData, imageId) {
+function _getRenderableData(
+  GraphicType,
+  GraphicData,
+  imageId,
+  TrackingIdentifier
+) {
+  const [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
+
   let renderableData: cornerstone3D.Types.Point3[];
 
   switch (GraphicType) {
@@ -91,6 +104,36 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
         ]);
 
         renderableData.push(worldPos);
+      }
+
+      // In Cornerstone-Legacy only one point is saved in the SR and not the start and
+      // finish of the arrow. Therefore we need to come up with a proportional offset to add as the end point.
+      if (
+        toolName === 'ArrowAnnotate' &&
+        supportedLegacyCornerstoneTags.includes(cornerstoneTag)
+      ) {
+        if (renderableData.length === 1) {
+          const imagePixelModule = cornerstone3D.metaData.get(
+            'imagePixelModule',
+            imageId
+          );
+
+          let xOffset = 10;
+          let yOffset = 10;
+
+          if (imagePixelModule) {
+            const { columns, rows } = imagePixelModule;
+            xOffset = columns / 10;
+            yOffset = rows / 10;
+          }
+
+          const secondPoint = cornerstone3D.utilities.imageToWorldCoords(
+            imageId,
+            [GraphicData[0] + xOffset, GraphicData[1] + yOffset]
+          );
+
+          renderableData.push(secondPoint);
+        }
       }
       break;
     case SCOORD_TYPES.CIRCLE: {

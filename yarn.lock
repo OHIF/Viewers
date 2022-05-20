@@ -8978,10 +8978,10 @@ dayjs@^1.10.4:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.2.tgz#fa0f5223ef0d6724b3d8327134890cfe3d72fbe5"
   integrity sha512-F4LXf1OeU9hrSYRPTTj/6FbO4HTjPKXvEIC1P2kcnFurViINCVk3ZV0xAS3XVx9MkMsXbbqlK6hjseaYbgKEHw==
 
-dcmjs@0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.22.0.tgz#2b3ce332d0b546461c69f94ada168b2eac726e5a"
-  integrity sha512-yIptgOUJyoXqp179OGDq05uJI7d06jb+M7aKunPctaiG/FPPmfkaEXokdJyTV0MwsdRqQr4c7Q/bA8dTCUo9Kg==
+dcmjs@0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.24.0.tgz#25991f418b2420fedfb03d466c81a8baa5184cfa"
+  integrity sha512-IMO/uxceHprWlX9VbXmdOM3YLWRb1w3CLdCJfrMHzJL7NzGu7N1GJl67zfP4OcuWmI/KM+8/yzERg688OZhamg==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     gl-matrix "^3.1.0"
