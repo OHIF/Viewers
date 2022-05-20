@@ -1,6 +1,5 @@
 import * as cornerstone3D from '@cornerstonejs/core';
 import * as cornerstone3DTools from '@cornerstonejs/tools';
-import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
 import { Enums } from '@cornerstonejs/tools';
@@ -13,6 +12,7 @@ const commandsModule = ({ servicesManager }) => {
     ToolGroupService,
     CineService,
     ToolBarService,
+    Cornerstone3DViewportService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
@@ -154,6 +154,7 @@ const commandsModule = ({ servicesManager }) => {
           contentProps: {
             activeViewportIndex,
             onClose: UIModalService.hide,
+            Cornerstone3DViewportService,
           },
         });
       }
@@ -268,12 +269,8 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      let options = {};
-      if (viewport instanceof cornerstone3D.StackViewport) {
-        options = { direction };
-      } else {
-        throw new Error('scroll: volume viewport is not supported yet');
-      }
+      // This is a constant 1 slice scroll
+      const options = { delta: direction };
 
       cornerstone3DTools.utilities.stackScrollTool.scrollThroughStack(
         viewport,

@@ -5,11 +5,26 @@ import {
   Types,
   getRenderingEngine,
   utilities as csUtils,
+  VolumeViewport,
 } from '@cornerstonejs/core';
+
+import {
+  utilities as csToolsUtils,
+  Enums as csToolsEnums,
+} from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, { ViewportOptions, DisplaySetOptions } from './Viewport';
-import { IStackViewport } from '@cornerstonejs/core/dist/esm/types';
+import ViewportInfo, {
+  ViewportOptions,
+  DisplaySetOptions,
+  PublicViewportOptions,
+} from './Viewport';
+import { StackData, VolumeData } from './Cornerstone3DCacheService';
+import {
+  setColorTransferFunctionFromVolumeMetadata,
+  setColormap,
+  setLowerUpperColorTransferFunction,
+} from '../../utils/colormap/transferFunctionHelpers';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -29,20 +44,22 @@ class Cornerstone3DViewportService implements IViewportService {
    * Service-specific
    */
   EVENTS: { [key: string]: string };
-  listeners: { [key: string]: Function[] };
+  listeners: { [key: string]: Array<(...args: any[]) => void> };
   _broadcastEvent: unknown; // we should be able to extend the PubSub class to get this
   // Some configs
   enableResizeDetector: true;
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
 
-  constructor() {
+  constructor(servicesManager) {
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;
     this.viewportsInfo = new Map();
     //
     this.listeners = {};
     this.EVENTS = EVENTS;
+    const { HangingProtocolService } = servicesManager.services;
+    this.HangingProtocolService = HangingProtocolService;
     Object.assign(this, pubSubServiceInterface);
     //
   }
@@ -52,8 +69,13 @@ class Cornerstone3DViewportService implements IViewportService {
    * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  public enableElement(viewportIndex: number, elementRef: HTMLDivElement) {
-    const viewportId = this.getViewportId(viewportIndex);
+  public enableElement(
+    viewportIndex: number,
+    viewportOptions: PublicViewportOptions,
+    elementRef: HTMLDivElement
+  ) {
+    const viewportId =
+      viewportOptions.viewportId || this.getViewportId(viewportIndex);
     const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
     viewportInfo.setElement(elementRef);
     this.viewportsInfo.set(viewportIndex, viewportInfo);
@@ -90,6 +112,7 @@ class Cornerstone3DViewportService implements IViewportService {
     const immediate = true;
     const resetPan = false;
     const resetZoom = false;
+
     this.renderingEngine.resize(immediate, resetPan, resetZoom);
     this.renderingEngine.render();
   }
@@ -134,33 +157,25 @@ class Cornerstone3DViewportService implements IViewportService {
    */
   public setViewportDisplaySets(
     viewportIndex: number,
-    viewportData: unknown,
-    viewportOptions: ViewportOptions,
-    displaySetOptions: DisplaySetOptions[]
+    viewportData: StackData | VolumeData,
+    publicViewportOptions: PublicViewportOptions,
+    publicDisplaySetOptions: DisplaySetOptions[]
   ): void {
     const renderingEngine = this.getRenderingEngine();
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    // If new viewportOptions are provided and have keys that are not in the
-    // current viewportOptions, then we need to update the viewportOptions,
-    // else we inherit the current viewportOptions.
-    const currentViewportOptions = viewportInfo.getViewportOptions();
-    let viewportOptionsToUse = currentViewportOptions;
-    if (Object.keys(viewportOptions)) {
-      viewportOptionsToUse = {
-        ...currentViewportOptions,
-        ...viewportOptions,
-      };
-    }
-    viewportInfo.setViewportOptions(viewportOptionsToUse);
+    const {
+      viewportOptions,
+      displaySetOptions,
+    } = this._getViewportAndDisplaySetOptions(
+      publicViewportOptions,
+      publicDisplaySetOptions,
+      viewportInfo
+    );
 
-    const currentDisplaySetOptions = viewportInfo.getDisplaySetOptions();
-    let displaySetOptionsToUse = currentDisplaySetOptions;
-    if (displaySetOptions?.length) {
-      displaySetOptionsToUse = [...displaySetOptions];
-    }
-    viewportInfo.setDisplaySetOptions(displaySetOptionsToUse);
+    viewportInfo.setViewportOptions(viewportOptions);
+    viewportInfo.setDisplaySetOptions(displaySetOptions);
 
     this._broadcastEvent(EVENTS.VIEWPORT_INFO_CREATED, viewportInfo);
 
@@ -188,7 +203,9 @@ class Cornerstone3DViewportService implements IViewportService {
     this._setDisplaySets(viewportId, viewportData, viewportInfo);
   }
 
-  public getCornerstone3DViewport(viewportId: string): IStackViewport | null {
+  public getCornerstone3DViewport(
+    viewportId: string
+  ): Types.IStackViewport | Types.IVolumeViewport | null {
     const viewportInfo = this.getViewportInfoById(viewportId);
 
     if (
@@ -199,9 +216,27 @@ class Cornerstone3DViewportService implements IViewportService {
       return null;
     }
 
+    const viewport = this.renderingEngine.getViewport(viewportId);
+
+    return viewport;
+  }
+
+  public getCornerstone3DViewportByIndex(
+    viewportIndex: number
+  ): Types.IStackViewport | Types.IVolumeViewport | null {
+    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
+
+    if (
+      !viewportInfo ||
+      !this.renderingEngine ||
+      this.renderingEngine.hasBeenDestroyed
+    ) {
+      return null;
+    }
+
     const viewport = this.renderingEngine.getViewport(
-      viewportId
-    ) as IStackViewport;
+      viewportInfo.getViewportId()
+    );
 
     return viewport;
   }
@@ -225,13 +260,25 @@ class Cornerstone3DViewportService implements IViewportService {
     return null;
   }
 
-  _setStackViewport(viewport, viewportData, viewportInfo) {
+  _setStackViewport(
+    viewport: Types.IStackViewport,
+    viewportData: StackData,
+    viewportInfo: ViewportInfo
+  ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIdIndex } = viewportData.stack;
+    const { imageIds, initialImageIdIndex } = viewportData;
+
+    let initialImageIdIndexToUse = initialImageIdIndex;
+
+    if (!initialImageIdIndexToUse) {
+      initialImageIdIndexToUse =
+        this._getInitialImageIndexForStackViewport(viewportInfo) || 0;
+    }
+
     const { voi, voiInverted } = displaySetOptions[0];
     const properties = {};
-    if (voi.windowWidth || voi.windowCenter) {
+    if (voi && (voi.windowWidth || voi.windowCenter)) {
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(
         voi.windowWidth,
         voi.windowCenter
@@ -243,23 +290,194 @@ class Cornerstone3DViewportService implements IViewportService {
       properties.invert = voiInverted;
     }
 
-    viewport.setStack(imageIds, initialImageIdIndex).then(() => {
+    viewport.setStack(imageIds, initialImageIdIndexToUse).then(() => {
       viewport.setProperties(properties);
       csUtils.prefetchStack(imageIds);
     });
   }
 
+  private _getInitialImageIndexForStackViewport(
+    viewportInfo: ViewportInfo,
+    imageIds?: string[]
+  ): number {
+    const initialImageOptions = viewportInfo.getInitialImageOptions();
+
+    if (!initialImageOptions) {
+      return;
+    }
+
+    let imageIndex;
+    const { index, preset } = initialImageOptions;
+
+    if (index !== undefined) {
+      imageIndex = initialImageOptions.index;
+    } else if (preset !== undefined) {
+      imageIndex = this._getInitialImageIndexByPreset(
+        initialImageOptions.preset,
+        imageIds
+      );
+    }
+    imageIndex = Math.min(imageIds.length - 1, Math.max(0, imageIndex));
+
+    return imageIndex;
+  }
+
+  private _getInitialImageIndexByPreset(
+    preset: string,
+    imageIds: string[]
+  ): number {
+    if (preset === csToolsEnums.JumpPresets.First) {
+      return 0;
+    }
+
+    if (preset === csToolsEnums.JumpPresets.Middle) {
+      return Math.floor(imageIds.length / 2);
+    }
+
+    if (preset === csToolsEnums.JumpPresets.Last) {
+      return imageIds.length - 1;
+    }
+  }
+
+  async _setVolumeViewport(
+    viewport: Types.IVolumeViewport,
+    viewportData: VolumeData,
+    viewportInfo: ViewportInfo
+  ): Promise<void> {
+    // TODO: We need to overhaul the way data sources work so requests can be made
+    // async. I think we should follow the image loader pattern which is async and
+    // has a cache behind it.
+    // The problem is that to set this volume, we need the metadata, but the request is
+    // already in-flight, and the promise is not cached, so we have no way to wait for
+    // it and know when it has fully arrived.
+    // loadStudyMetadata(StudyInstanceUID) => Promise([instances for study])
+    // loadSeriesMetadata(StudyInstanceUID, SeriesInstanceUID) => Promise([instances for series])
+    // If you call loadStudyMetadata and it's not in the DicomMetadataStore cache, it should fire
+    // a request through the data source?
+    // (This call may or may not create sub-requests for series metadata)
+    const volumeInputArray = [];
+    const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
+
+    for (let i = 0; i < viewportData.imageIds.length; i++) {
+      const imageIds = viewportData.imageIds[i];
+      const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
+      const displaySetOptions = displaySetOptionsArray[i];
+
+      const volumeId = displaySetInstanceUID;
+
+      // if (displaySet.needsRerendering) {
+      //   console.warn('Removing volume from cache', volumeId);
+      //   cache.removeVolumeLoadObject(volumeId);
+      //   displaySet.needsRerendering = false;
+      //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
+      // }
+
+      const voiCallback = this._getVOICallback(volumeId, displaySetOptions);
+
+      const callback = ({ volumeActor }) => {
+        voiCallback(volumeActor);
+      };
+
+      volumeInputArray.push({
+        imageIds,
+        volumeId,
+        callback,
+        blendMode: displaySetOptions.blendMode,
+        slabThickness: displaySetOptions.blendMode
+          ? displaySetOptions.slabThickness || 500
+          : undefined,
+      });
+    }
+
+    if (this.HangingProtocolService.hasCustomImageLoadStrategy()) {
+      // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
+      return this.HangingProtocolService.runImageLoadStrategy({
+        viewportId: viewport.id,
+        volumeInputArray,
+      });
+    }
+
+    viewportData.volumes.forEach(volume => {
+      volume.load();
+    });
+
+    this.setVolumesForViewport(viewport, volumeInputArray);
+  }
+
+  public setVolumesForViewport(viewport, volumeInputArray) {
+    viewport.setVolumes(volumeInputArray).then(() => {
+      const viewportInfo = this.getViewportInfoById(viewport.id);
+      const initialImageOptions = viewportInfo.getInitialImageOptions();
+
+      if (
+        initialImageOptions &&
+        (initialImageOptions.preset !== undefined ||
+          initialImageOptions.index !== undefined)
+      ) {
+        const { index, preset } = initialImageOptions;
+
+        csToolsUtils.jumpToSlice(viewport.element, {
+          imageIndex: index,
+          preset,
+        });
+      }
+
+      viewport.render();
+    });
+  }
+
+  _getVOICallback(volumeId, displaySetOptions) {
+    const { voi, voiInverted: inverted, colormap } = displaySetOptions;
+
+    // If colormap is set, use it to set the color transfer function
+    let voiCallback;
+    if (colormap) {
+      voiCallback = volumeActor => setColormap(volumeActor, colormap);
+      return voiCallback;
+    }
+
+    if (voi instanceof Object && voi.windowWidth && voi.windowCenter) {
+      const { windowWidth, windowCenter } = voi;
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
+        windowWidth,
+        windowCenter
+      );
+      voiCallback = volumeActor =>
+        setLowerUpperColorTransferFunction({
+          volumeActor,
+          lower,
+          upper,
+          inverted,
+        });
+    } else {
+      voiCallback = volumeActor =>
+        setColorTransferFunctionFromVolumeMetadata({
+          volumeActor,
+          volumeId,
+          inverted,
+        });
+    }
+
+    return voiCallback;
+  }
+
   _setDisplaySets(
     viewportId: string,
-    viewportData: unknown,
+    viewportData: StackData | VolumeData,
     viewportInfo: ViewportInfo
   ): void {
     const viewport = this.getCornerstone3DViewport(viewportId);
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData, viewportInfo);
+      this._setStackViewport(viewport, viewportData as StackData, viewportInfo);
+    } else if (viewport instanceof VolumeViewport) {
+      this._setVolumeViewport(
+        viewport,
+        viewportData as VolumeData,
+        viewportInfo
+      );
     } else {
-      throw new Error('Unsupported viewport type');
+      throw new Error('Unknown viewport type');
     }
   }
 
@@ -271,6 +489,43 @@ class Cornerstone3DViewportService implements IViewportService {
       this.viewportGridResizeObserver.disconnect();
     }
   }
+
+  _getViewportAndDisplaySetOptions(
+    publicViewportOptions: PublicViewportOptions,
+    publicDisplaySetOptions: DisplaySetOptions[],
+    viewportInfo: ViewportInfo
+  ): {
+    viewportOptions: ViewportOptions;
+    displaySetOptions: DisplaySetOptions[];
+  } {
+    const viewportIndex = viewportInfo.getViewportIndex();
+
+    // Creating a temporary viewportInfo to handle defaults
+    const newViewportInfo = new ViewportInfo(
+      viewportIndex,
+      viewportInfo.getViewportId()
+    );
+
+    // To handle setting the default values if missing for the viewportOptions and
+    // displaySetOptions
+    newViewportInfo.setPublicViewportOptions(publicViewportOptions);
+    newViewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
+
+    const newViewportOptions = newViewportInfo.getViewportOptions();
+    const newDisplaySetOptions = newViewportInfo.getDisplaySetOptions();
+
+    return {
+      viewportOptions: newViewportOptions,
+      displaySetOptions: newDisplaySetOptions,
+    };
+  }
 }
 
-export default new Cornerstone3DViewportService();
+export default function ExtendedCornerstoneViewportService(serviceManager) {
+  return {
+    name: 'Cornerstone3DViewportService',
+    create: ({ configuration = {} }) => {
+      return new Cornerstone3DViewportService(serviceManager);
+    },
+  };
+}

@@ -2,8 +2,6 @@ import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
 
 import { pubSubServiceInterface } from '@ohif/core';
 
-import Cornerstone3DViewportService from '../ViewportService/Cornerstone3DViewportService';
-
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone-3d::toolgroupservice:viewportadded',
 };
@@ -30,7 +28,8 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(serviceManager) {
-    this.serviceManager = serviceManager;
+    const { Cornerstone3DViewportService } = serviceManager.services;
+    this.Cornerstone3DViewportService = Cornerstone3DViewportService;
     this.listeners = {};
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
@@ -51,7 +50,7 @@ export default class ToolGroupService {
   }
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
-    const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+    const renderingEngine = this.Cornerstone3DViewportService.getRenderingEngine();
     return ToolGroupManager.getToolGroupForViewport(
       viewportId,
       renderingEngine.id
@@ -90,7 +89,7 @@ export default class ToolGroupService {
     }
   }
 
-  public addToolGroupViewport(
+  public addViewportToToolGroup(
     viewportId: string,
     renderingEngineId: string,
     toolGroupId?: string

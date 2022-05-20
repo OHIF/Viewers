@@ -1,13 +1,49 @@
-import { Types, Enums } from '@cornerstonejs/core';
+import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import { Enums as csToolsEnums } from '@cornerstonejs/tools';
+import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
+import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
+import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
+import { SyncGroup } from '../SyncGroupService/SyncGroupService';
+
+export type InitialImageOptions = {
+  index?: number;
+  preset?: csToolsEnums.JumpPresets;
+};
 
 export type ViewportOptions = {
   viewportType: Enums.ViewportType;
   toolGroupId: string;
-  viewportId?: string;
+  viewportId: string;
   orientation?: Types.Orientation;
   background?: Types.Point3;
-  blendMode?: number;
   initialView?: string;
+  syncGroups?: SyncGroup[];
+  initialImageOptions?: InitialImageOptions;
+};
+
+export type PublicViewportOptions = {
+  viewportType?: string;
+  toolGroupId?: string;
+  viewportId?: string;
+  orientation?: string;
+  background?: Types.Point3;
+  initialView?: string;
+  syncGroups?: SyncGroup[];
+  initialImageOptions?: InitialImageOptions;
+};
+
+export type PublicDisplaySetOptions = {
+  voi?: VOI;
+  voiInverted?: boolean;
+  blendMode?: string;
+  colormap?: string;
+};
+
+export type DisplaySetOptions = {
+  voi?: VOI;
+  voiInverted: boolean;
+  blendMode?: Enums.BlendModes;
+  colormap?: string;
 };
 
 type VOI = {
@@ -15,14 +51,13 @@ type VOI = {
   windowCenter: number;
 };
 
-export type DisplaySetOptions = {
-  voi: 'default' | VOI;
-  voiInverted: boolean;
-};
-
 export type DisplaySet = {
   displaySetInstanceUID: string;
 };
+
+const STACK = 'stack';
+const VOLUME = 'volume';
+const DEFAULT_TOOLGROUP_ID = 'default';
 
 class ViewportInfo {
   private viewportId = '';
@@ -35,13 +70,8 @@ class ViewportInfo {
   constructor(viewportIndex: number, viewportId: string) {
     this.viewportIndex = viewportIndex;
     this.viewportId = viewportId;
-    const viewportOptions = {
-      toolGroupId: 'default',
-      viewportType: Enums.ViewportType.STACK,
-    };
-    const displaySetOptions = [{} as DisplaySetOptions];
-    this.setViewportOptions(viewportOptions);
-    this.setDisplaySetOptions(displaySetOptions);
+    this.setPublicViewportOptions({});
+    this.setPublicDisplaySetOptions([{}]);
   }
 
   public setRenderingEngineId(renderingEngineId: string): void {
@@ -75,6 +105,52 @@ class ViewportInfo {
     return this.viewportId;
   }
 
+  public setPublicDisplaySetOptions(
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
+  ): void {
+    // map the displaySetOptions and check if they are undefined then set them to default values
+    const displaySetOptions = this.mapDisplaySetOptions(
+      publicDisplaySetOptions
+    );
+
+    this.setDisplaySetOptions(displaySetOptions);
+  }
+
+  public setPublicViewportOptions(
+    viewportOptionsEntry: PublicViewportOptions
+  ): void {
+    let viewportType = viewportOptionsEntry.viewportType;
+    let toolGroupId = viewportOptionsEntry.toolGroupId;
+    let orientation;
+
+    if (!viewportType) {
+      viewportType = getCornerstoneViewportType(STACK);
+    } else {
+      viewportType = getCornerstoneViewportType(
+        viewportOptionsEntry.viewportType
+      );
+    }
+
+    // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
+    if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
+      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
+    } else {
+      orientation = CONSTANTS.ORIENTATION.AXIAL;
+    }
+
+    if (!toolGroupId) {
+      toolGroupId = DEFAULT_TOOLGROUP_ID;
+    }
+
+    this.setViewportOptions({
+      ...viewportOptionsEntry,
+      viewportId: this.viewportId,
+      viewportType: viewportType as Enums.ViewportType,
+      orientation,
+      toolGroupId,
+    });
+  }
+
   public setViewportOptions(viewportOptions: ViewportOptions): void {
     this.viewportOptions = viewportOptions;
   }
@@ -86,9 +162,11 @@ class ViewportInfo {
   public setDisplaySetOptions(
     displaySetOptions: Array<DisplaySetOptions>
   ): void {
-    // validate the displaySetOptions and check if they are undefined then set them to default values
-    this.validateDisplaySetOptions(displaySetOptions);
     this.displaySetOptions = displaySetOptions;
+  }
+
+  public getSyncGroups(): SyncGroup[] {
+    return this.viewportOptions.syncGroups || [];
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {
@@ -111,13 +189,29 @@ class ViewportInfo {
     return this.viewportOptions.orientation;
   }
 
-  private validateDisplaySetOptions(
-    displaySetOptions: Array<DisplaySetOptions>
-  ): void {
-    for (const displaySetOption of displaySetOptions) {
-      displaySetOption.voi = displaySetOption.voi || 'default';
-      displaySetOption.voiInverted = displaySetOption.voiInverted || false;
-    }
+  public getInitialImageOptions(): InitialImageOptions {
+    return this.viewportOptions.initialImageOptions;
+  }
+
+  private mapDisplaySetOptions(
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
+  ): Array<DisplaySetOptions> {
+    const displaySetOptions: Array<DisplaySetOptions> = [];
+
+    publicDisplaySetOptions.forEach(publicDisplaySetOption => {
+      const blendMode = getCornerstoneBlendMode(
+        publicDisplaySetOption.blendMode
+      );
+
+      displaySetOptions.push({
+        voi: publicDisplaySetOption.voi || ({} as VOI),
+        voiInverted: publicDisplaySetOption.voiInverted || false,
+        colormap: publicDisplaySetOption.colormap || undefined,
+        blendMode,
+      });
+    });
+
+    return displaySetOptions;
   }
 }
 

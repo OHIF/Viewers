@@ -15,7 +15,6 @@ describe('Top level exports', () => {
       'imageIdToURI',
       'roundNumber',
       'b64toBlob',
-      'StackManager',
       'formatDate',
       'formatPN',
       //'loadAndCacheDerivedDisplaySets',

@@ -1,21 +1,15 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import { useViewportGrid, ImageScrollbar } from '@ohif/ui';
-import OHIF from '@ohif/core';
+import PropTypes from 'prop-types';
+import { useViewportGrid } from '@ohif/ui';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 
-import PropTypes from 'prop-types';
-
 import { setEnabledElement } from '../state';
-import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
-import CornerstoneOverlay from './CornerstoneOverlay';
-import ViewportLoadingIndicator from './ViewportLoadingIndicator';
-import ViewportOrientationMarkers from './ViewportOrientationMarkers';
+import Cornerstone3DCacheService from '../services/ViewportService/Cornerstone3DCacheService';
 
 import './OHIFCornerstone3DViewport.css';
-
-const { StackManager } = OHIF.utils;
+import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 
 const STACK = 'stack';
 
@@ -28,8 +22,6 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  // Todo: handle fusion
-  // Todo: handle orientation
   const prevDisplaySets = prevProps.displaySets[0];
   const nextDisplaySets = nextProps.displaySets[0];
 
@@ -67,8 +59,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     initialImageIdOrIndex,
   } = props;
 
-  const [viewportData, setViewportData] = useState(null);
-  const [imageIndex, setImageIndex] = useState(0);
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [_, viewportGridService] = useViewportGrid();
 
@@ -79,6 +69,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     DisplaySetService,
     ToolBarService,
     ToolGroupService,
+    SyncGroupService,
+    Cornerstone3DViewportService,
   } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
@@ -112,10 +104,18 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       const renderingEngineId = viewportInfo.getRenderingEngineId();
       const toolGroupId = viewportInfo.getToolGroupId();
-      ToolGroupService.addToolGroupViewport(
+      const syncGroups = viewportInfo.getSyncGroups();
+
+      ToolGroupService.addViewportToToolGroup(
         viewportId,
         renderingEngineId,
         toolGroupId
+      );
+
+      SyncGroupService.addViewportToSyncGroup(
+        viewportId,
+        renderingEngineId,
+        syncGroups
       );
 
       if (onElementEnabled) {
@@ -129,6 +129,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   useEffect(() => {
     Cornerstone3DViewportService.enableElement(
       viewportIndex,
+      viewportOptions,
       elementRef.current
     );
 
@@ -138,8 +139,25 @@ const OHIFCornerstoneViewport = React.memo(props => {
     );
 
     setImageScrollBarHeight();
+
     return () => {
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+        viewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+      const renderingEngineId = viewportInfo.getRenderingEngineId();
+      const syncGroups = viewportInfo.getSyncGroups();
+
+      ToolGroupService.disable(viewportId, renderingEngineId);
+      SyncGroupService.removeViewportFromSyncGroup(
+        viewportId,
+        renderingEngineId,
+        syncGroups
+      );
+
       Cornerstone3DViewportService.disableElement(viewportIndex);
+
       eventTarget.removeEventListener(
         Enums.Events.ELEMENT_ENABLED,
         elementEnabledHandler
@@ -148,39 +166,29 @@ const OHIFCornerstoneViewport = React.memo(props => {
   }, []);
 
   useEffect(() => {
-    const viewportData = _getViewportData(
-      dataSource,
-      displaySets,
-      viewportOptions.viewportType,
-      initialImageIdOrIndex
-    );
+    // handle the default viewportType to be stack
+    if (!viewportOptions.viewportType) {
+      viewportOptions.viewportType = STACK;
+    }
 
-    setViewportData(viewportData);
+    const loadViewportData = async () => {
+      const viewportData = await Cornerstone3DCacheService.getViewportData(
+        viewportIndex,
+        displaySets,
+        viewportOptions.viewportType,
+        dataSource,
+        initialImageIdOrIndex
+      );
 
-    Cornerstone3DViewportService.setViewportDisplaySets(
-      viewportIndex,
-      viewportData,
-      viewportOptions,
-      displaySetOptions
-    );
-
-    const element = elementRef.current;
-
-    const updateIndex = event => {
-      const { imageId } = event.detail;
-      // find the index of imageId in the imageIds
-      const index = viewportData.stack?.imageIds.indexOf(imageId);
-
-      if (index !== -1) {
-        setImageIndex(index);
-      }
+      Cornerstone3DViewportService.setViewportDisplaySets(
+        viewportIndex,
+        viewportData,
+        viewportOptions,
+        displaySetOptions
+      );
     };
 
-    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
-
-    return () => {
-      element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, updateIndex);
-    };
+    loadViewportData();
   }, [viewportOptions, displaySets, dataSource]);
 
   /**
@@ -194,10 +202,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
    * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
    */
   useEffect(() => {
-    if (!viewportData) {
-      return;
-    }
-
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
       MeasurementService,
       DisplaySetService,
@@ -219,34 +223,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
     };
-  }, [displaySets, elementRef, viewportIndex, viewportData]);
-
-  const onImageScrollbarChange = useCallback(
-    (imageIndex, viewportIndex) => {
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
-
-      const viewportId = viewportInfo.getViewportId();
-      const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
-        viewportId
-      );
-
-      // if getCurrentImageId is not a method on viewport
-      if (!viewport.getCurrentImageId) {
-        throw new Error('cannot use scrollbar for non-stack viewports');
-      }
-
-      // Later scrollThroughStack should return two values the current index
-      // and the total number of indices (volume it is different)
-      viewport.setImageIdIndex(imageIndex).then(() => {
-        // Update scrollbar index
-        const currentIndex = viewport.getCurrentImageIdIndex();
-        setImageIndex(currentIndex);
-      });
-    },
-    [viewportIndex, viewportData]
-  );
+  }, [displaySets, elementRef, viewportIndex]);
 
   return (
     <div className="viewport-wrapper">
@@ -266,77 +243,16 @@ const OHIFCornerstoneViewport = React.memo(props => {
         onMouseDown={e => e.preventDefault()}
         ref={elementRef}
       ></div>
-      <ImageScrollbar
-        onChange={evt => onImageScrollbarChange(evt, viewportIndex)}
-        max={viewportData ? viewportData.stack?.imageIds?.length - 1 : 0}
-        height={scrollbarHeight}
-        value={imageIndex}
-      />
-      <CornerstoneOverlay
-        viewportData={viewportData}
-        imageIndex={imageIndex}
+      <CornerstoneOverlays
         viewportIndex={viewportIndex}
         ToolBarService={ToolBarService}
+        element={elementRef.current}
+        scrollbarHeight={scrollbarHeight}
+        Cornerstone3DViewportService={Cornerstone3DViewportService}
       />
-      {viewportData && (
-        <>
-          <ViewportLoadingIndicator
-            viewportData={viewportData}
-            element={elementRef.current}
-          />
-          <ViewportOrientationMarkers
-            viewportData={viewportData}
-            imageIndex={imageIndex}
-            viewportIndex={viewportIndex}
-          />
-        </>
-      )}
     </div>
   );
 }, areEqual);
-
-function _getCornerstoneStack(displaySet, dataSource) {
-  // Get stack from Stack Manager
-  const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
-
-  // Clone the stack here so we don't mutate it
-  const stack = Object.assign({}, storedStack);
-
-  return stack;
-}
-
-function _getViewportData(
-  dataSource,
-  displaySets,
-  viewportType,
-  initialImageIdOrIndex
-) {
-  viewportType = viewportType || STACK;
-  if (viewportType !== STACK) {
-    throw new Error('Only STACK viewport type is supported now');
-  }
-
-  // For Stack Viewport we don't have fusion currently
-  const displaySet = displaySets[0];
-
-  const stack = _getCornerstoneStack(displaySet, dataSource);
-
-  if (initialImageIdOrIndex !== undefined && stack?.imageIds) {
-    if (typeof initialImageIdOrIndex === 'number') {
-      stack.initialImageIdIndex = initialImageIdOrIndex;
-    } else {
-      stack.initialImageIdIndex = stack.imageIds.indexOf(initialImageIdOrIndex);
-    }
-  }
-
-  const viewportData = {
-    StudyInstanceUID: displaySet.StudyInstanceUID,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
-    stack,
-  };
-
-  return viewportData;
-}
 
 function _subscribeToJumpToMeasurementEvents(
   MeasurementService,
