@@ -108,8 +108,8 @@ class ViewportInfo {
   public setPublicDisplaySetOptions(
     publicDisplaySetOptions: Array<PublicDisplaySetOptions>
   ): void {
-    // validate the displaySetOptions and check if they are undefined then set them to default values
-    const displaySetOptions = this.validateDisplaySetOptions(
+    // map the displaySetOptions and check if they are undefined then set them to default values
+    const displaySetOptions = this.mapDisplaySetOptions(
       publicDisplaySetOptions
     );
 
@@ -193,7 +193,7 @@ class ViewportInfo {
     return this.viewportOptions.initialImageOptions;
   }
 
-  private validateDisplaySetOptions(
+  private mapDisplaySetOptions(
     publicDisplaySetOptions: Array<PublicDisplaySetOptions>
   ): Array<DisplaySetOptions> {
     const displaySetOptions: Array<DisplaySetOptions> = [];

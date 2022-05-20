@@ -212,6 +212,9 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
   return parseInt(instanceNumber);
 }
 
+// Since volume viewports can be in any view direction, they can render
+// a reconstructed image which don't have imageIds; therefore, no instance and instanceNumber
+// Here we check if viewport is in the acquisition direction and if so, we get the instanceNumber
 function _getInstanceNumberFromVolume(
   viewportData,
   imageIndex,
