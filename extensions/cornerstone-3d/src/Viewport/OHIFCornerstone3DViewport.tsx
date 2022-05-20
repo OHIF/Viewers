@@ -437,11 +437,9 @@ function _jumpToMeasurement(
   viewportGridService.setActiveViewportIndex(viewportIndex);
 
   if (targetElement !== null) {
-    const metadata = {
-      ...measurement.metadata,
-      imageIdIndex,
-    };
-    cs3DTools.utilities.jumpToSlice(targetElement, metadata);
+    cs3DTools.utilities.jumpToSlice(targetElement, {
+      imageIndex: imageIdIndex,
+    });
 
     cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
     // Jump to measurement consumed, remove.

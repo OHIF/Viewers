@@ -199,10 +199,10 @@ function _getMappedMeasurements(MeasurementService) {
 }
 
 function _mapMeasurementToDisplay(measurement, index, types) {
-  const { displayText, id, label, type } = measurement;
+  const { displayText, uid, label, type } = measurement;
 
   return {
-    id,
+    uid,
     label: label || '(empty)',
     measurementType: type,
     displayText: displayText || [],

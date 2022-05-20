@@ -268,12 +268,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      let options = {};
-      if (viewport instanceof cornerstone3D.StackViewport) {
-        options = { direction };
-      } else {
-        throw new Error('scroll: volume viewport is not supported yet');
-      }
+      const options = { delta: direction };
 
       cornerstone3DTools.utilities.stackScrollTool.scrollThroughStack(
         viewport,

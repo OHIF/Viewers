@@ -74,7 +74,7 @@ const Length = {
       referenceStudyUID: StudyInstanceUID,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: metadata.label,
+      label: data.label,
       displayText: displayText,
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
