@@ -1,6 +1,6 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import { utils } from '@ohif/core';
+import { DisplaySetService, utils } from '@ohif/core';
 
 const Length = {
   toAnnotation: measurement => {},
@@ -60,7 +60,7 @@ const Length = {
       DisplaySetService
     );
 
-    const displayText = getDisplayText(mappedAnnotations);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
@@ -99,10 +99,11 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     let displaySet;
 
+    let SeriesInstanceUID, SOPInstanceUID;
     if (targetId.startsWith('imageId:')) {
-      const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
+      ({ SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
         referencedImageId
-      );
+      ));
 
       displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
@@ -114,12 +115,13 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       throw new Error('Not implemented');
     }
 
-    const { SeriesNumber, SeriesInstanceUID } = displaySet;
+    const { SeriesNumber } = displaySet;
     const { length } = targetStats;
     const unit = 'mm';
 
     annotations.push({
       SeriesInstanceUID,
+      SOPInstanceUID,
       SeriesNumber,
       unit,
       length,
@@ -167,7 +169,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   };
 }
 
-function getDisplayText(mappedAnnotations) {
+function getDisplayText(mappedAnnotations, displaySet) {
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return '';
   }
@@ -175,9 +177,23 @@ function getDisplayText(mappedAnnotations) {
   const displayText = [];
 
   // Area is the same for all series
-  const { length, SeriesNumber } = mappedAnnotations[0];
+  const { length, SeriesNumber, SOPInstanceUID } = mappedAnnotations[0];
+
+  const instance = displaySet.images.find(
+    image => image.SOPInstanceUID === SOPInstanceUID
+  );
+
+  let InstanceNumber;
+  if (instance) {
+    InstanceNumber = instance.InstanceNumber;
+  }
+
   const roundedLength = utils.roundNumber(length, 2);
-  displayText.push(`${roundedLength} mm (S: ${SeriesNumber})`);
+  displayText.push(
+    InstanceNumber
+      ? `${roundedLength} mm (S: ${SeriesNumber} I: ${InstanceNumber})`
+      : `${roundedLength} mm (S: ${SeriesNumber})`
+  );
 
   return displayText;
 }

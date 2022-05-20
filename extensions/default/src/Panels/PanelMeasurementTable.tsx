@@ -199,12 +199,12 @@ function _getMappedMeasurements(MeasurementService) {
 }
 
 function _mapMeasurementToDisplay(measurement, index, types) {
-  const { displayText } = measurement;
+  const { displayText, id, label, type } = measurement;
 
   return {
-    uid: measurement.uid,
-    label: measurement.label || '(empty)',
-    measurementType: measurement.type,
+    id,
+    label: label || '(empty)',
+    measurementType: type,
     displayText: displayText || [],
     // TODO: handle one layer down
     isActive: false, // activeMeasurementItem === i + 1,

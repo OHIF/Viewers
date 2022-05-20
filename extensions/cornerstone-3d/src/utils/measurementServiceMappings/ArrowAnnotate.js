@@ -60,7 +60,7 @@ const Length = {
       DisplaySetService
     );
 
-    const displayText = getDisplayText(mappedAnnotations);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
 
     return {
       uid: annotationUID,
@@ -104,6 +104,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
   annotations.push({
     SeriesInstanceUID,
+    SOPInstanceUID,
     SeriesNumber,
     text,
   });
@@ -111,7 +112,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
   return annotations;
 }
 
-function getDisplayText(mappedAnnotations) {
+function getDisplayText(mappedAnnotations, displaySet) {
   if (!mappedAnnotations) {
     return '';
   }
@@ -119,8 +120,22 @@ function getDisplayText(mappedAnnotations) {
   const displayText = [];
 
   // Area is the same for all series
-  const { SeriesNumber } = mappedAnnotations[0];
-  displayText.push(`(S: ${SeriesNumber})`);
+  const { SeriesNumber, SOPInstanceUID } = mappedAnnotations[0];
+
+  const instance = displaySet.images.find(
+    image => image.SOPInstanceUID === SOPInstanceUID
+  );
+
+  let InstanceNumber;
+  if (instance) {
+    InstanceNumber = instance.InstanceNumber;
+  }
+
+  displayText.push(
+    InstanceNumber
+      ? `(S: ${SeriesNumber} I: ${InstanceNumber})`
+      : `(S: ${SeriesNumber})`
+  );
 
   return displayText;
 }
