@@ -58,7 +58,7 @@ function Toolbar({ servicesManager }) {
         }
         // Also need... to filter list for splitButton, and set primary based on most recently clicked
         // Also need to kill the radioGroup button's magic logic
-        // Everything should be reactive off these props, so commands can inform ToolBarService
+        // Everything should be reactive off these props, so commands can inform ToolbarService
 
         // These can... Trigger toolbar events based on updates?
         // Then sync using useEffect, or simply modify the state here?
@@ -162,11 +162,6 @@ function ViewerLayout({
 
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
-
-    if (!entry) {
-      throw new Error(`Could not find module entry for id: ${id}`);
-    }
-
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
     const content = entry.component;
 
@@ -207,7 +202,7 @@ function ViewerLayout({
       </Header>
       <div
         className="flex flex-row items-stretch w-full overflow-hidden flex-nowrap"
-        style={{ height: 'calc(100vh - 60px' }}
+        style={{ height: 'calc(100vh - 52px' }}
       >
         {/* LEFT SIDEPANELS */}
         {leftPanelComponents.length && (

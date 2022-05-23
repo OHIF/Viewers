@@ -10,7 +10,6 @@ function ViewportGrid({ numRows, numCols, layoutType, children }) {
         height: '100%',
         width: '100%',
       }}
-      className="p-2"
     >
       {children}
     </div>

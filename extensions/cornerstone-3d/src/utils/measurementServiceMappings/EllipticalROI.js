@@ -199,29 +199,27 @@ function getDisplayText(mappedAnnotations, displaySet) {
   }
 
   const roundedArea = utils.roundNumber(area, 2);
-  displayText.push(
-    InstanceNumber
-      ? `${roundedArea} mm<sup>2</sup> (S: ${SeriesNumber} I: ${InstanceNumber})`
-      : `${roundedArea} mm<sup>2</sup> (S: ${SeriesNumber})`
-  );
+  displayText.push(`${roundedArea} mm<sup>2</sup>`);
 
   // Todo: we need a better UI for displaying all these information
-  // mappedAnnotations.forEach(mappedAnnotation => {
-  //   const { mean, unit, max, SeriesNumber } = mappedAnnotation;
+  mappedAnnotations.forEach(mappedAnnotation => {
+    const { mean, unit, max, SeriesNumber } = mappedAnnotation;
 
-  //   if (mean && max) {
-  //     const roundedMean = utils.roundNumber(mean, 2);
-  //     const roundedMax = utils.roundNumber(max, 2);
-  //     // const roundedStdDev = utils.roundNumber(stdDev, 2);
+    if (mean && max) {
+      // const roundedMean = utils.roundNumber(mean, 2);
+      const roundedMax = utils.roundNumber(max, 2);
+      // const roundedStdDev = utils.roundNumber(stdDev, 2);
 
-  //     displayText.push(
-  //       `max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber})`
-  //     );
-  //     displayText.push(
-  //       `mean: ${roundedMean} <small>${unit}</small> (S:${SeriesNumber})`
-  //     );
-  //   }
-  // });
+      displayText.push(
+        InstanceNumber
+          ? `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber} I:${InstanceNumber})`
+          : `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber})`
+      );
+      // displayText.push(
+      //   `mean: ${roundedMean} <small>${unit}</small> (S:${SeriesNumber})`
+      // );
+    }
+  });
 
   return displayText;
 }

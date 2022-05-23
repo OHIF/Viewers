@@ -7,6 +7,7 @@ import {
   eventTarget,
   EVENTS,
   imageLoadPoolManager,
+  Settings,
 } from '@cornerstonejs/core';
 import { Enums, utilities } from '@cornerstonejs/tools';
 
@@ -35,6 +36,9 @@ export default async function init({
 }) {
   await cs3DInit();
   initCornerstoneTools();
+
+  // Don't use cursors in viewports
+  Settings.getRuntimeSettings().set('useCursors', false);
 
   const {
     UserAuthenticationService,
