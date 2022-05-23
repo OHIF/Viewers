@@ -26,7 +26,10 @@ function TrackedCornerstoneViewport(props) {
     commandsManager,
   } = props;
 
-  const { MeasurementService } = servicesManager.services;
+  const {
+    MeasurementService,
+    Cornerstone3DViewportService,
+  } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
@@ -41,11 +44,6 @@ function TrackedCornerstoneViewport(props) {
 
   const { trackedSeries } = trackedMeasurements.context;
 
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.common'
-  );
-
-  const { Cornerstone3DViewportService } = utilityModule.exports;
   const viewportId = Cornerstone3DViewportService.getViewportId(viewportIndex);
 
   const {

@@ -1,4 +1,4 @@
-import { pubSubServiceInterface } from '@ohif/core';
+import { pubSubServiceInterface, utils } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
@@ -272,7 +272,7 @@ class Cornerstone3DViewportService implements IViewportService {
 
     if (!initialImageIdIndexToUse) {
       initialImageIdIndexToUse =
-        this._getInitialImageIndexForStackViewport(viewportInfo) || 0;
+        this._getInitialImageIndexForStackViewport(viewportInfo, imageIds) || 0;
     }
 
     const { voi, voiInverted } = displaySetOptions[0];
@@ -368,10 +368,10 @@ class Cornerstone3DViewportService implements IViewportService {
       //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
       // }
 
-      const voiCallback = this._getVOICallback(volumeId, displaySetOptions);
+      const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
 
       const callback = ({ volumeActor }) => {
-        voiCallback(volumeActor);
+        voiCallbacks.forEach(callback => callback(volumeActor));
       };
 
       volumeInputArray.push({
@@ -431,14 +431,14 @@ class Cornerstone3DViewportService implements IViewportService {
     });
   }
 
-  _getVOICallback(volumeId, displaySetOptions) {
+  _getVOICallbacks(volumeId, displaySetOptions) {
     const { voi, voiInverted: inverted, colormap } = displaySetOptions;
 
+    const voiCallbackArray = [];
+
     // If colormap is set, use it to set the color transfer function
-    let voiCallback;
     if (colormap) {
-      voiCallback = volumeActor => setColormap(volumeActor, colormap);
-      return voiCallback;
+      voiCallbackArray.push(volumeActor => setColormap(volumeActor, colormap));
     }
 
     if (voi instanceof Object && voi.windowWidth && voi.windowCenter) {
@@ -447,23 +447,17 @@ class Cornerstone3DViewportService implements IViewportService {
         windowWidth,
         windowCenter
       );
-      voiCallback = volumeActor =>
+      voiCallbackArray.push(volumeActor =>
         setLowerUpperColorTransferFunction({
           volumeActor,
           lower,
           upper,
           inverted,
-        });
-    } else {
-      voiCallback = volumeActor =>
-        setColorTransferFunctionFromVolumeMetadata({
-          volumeActor,
-          volumeId,
-          inverted,
-        });
+        })
+      );
     }
 
-    return voiCallback;
+    return voiCallbackArray;
   }
 
   _setDisplaySets(
