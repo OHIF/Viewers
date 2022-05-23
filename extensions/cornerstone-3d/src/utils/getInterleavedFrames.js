@@ -12,21 +12,24 @@ export default function getInterleavedFrames(imageIds) {
     { imageId: imageIds[middleImageIdIndex], imageIdIndex: middleImageIdIndex },
   ];
 
-  // 0: From current stack position down to minimum.
-  // 1: From current stack position up to maximum.
-
-  const prefetchQueuedFilled = [false, false];
+  const prefetchQueuedFilled = {
+    currentPositionDownToMinimum: false,
+    currentPositionUpToMaximum: false,
+  };
 
   // Check if on edges and some criteria is already fulfilled
 
   if (middleImageIdIndex === minImageIdIndex) {
-    prefetchQueuedFilled[0] = true;
+    prefetchQueuedFilled.currentPositionDownToMinimum = true;
   } else if (middleImageIdIndex === maxImageIdIndex) {
-    prefetchQueuedFilled[1] = true;
+    prefetchQueuedFilled.currentPositionUpToMaximum = true;
   }
 
-  while (!prefetchQueuedFilled[0] || !prefetchQueuedFilled[1]) {
-    if (!prefetchQueuedFilled[0]) {
+  while (
+    !prefetchQueuedFilled.currentPositionDownToMinimum ||
+    !prefetchQueuedFilled.currentPositionUpToMaximum
+  ) {
+    if (!prefetchQueuedFilled.currentPositionDownToMinimum) {
       // Add imageId bellow
       lowerImageIdIndex--;
       imageIdsToPrefetch.push({
@@ -35,11 +38,11 @@ export default function getInterleavedFrames(imageIds) {
       });
 
       if (lowerImageIdIndex === minImageIdIndex) {
-        prefetchQueuedFilled[0] = true;
+        prefetchQueuedFilled.currentPositionDownToMinimum = true;
       }
     }
 
-    if (!prefetchQueuedFilled[1]) {
+    if (!prefetchQueuedFilled.currentPositionUpToMaximum) {
       // Add imageId above
       upperImageIdIndex++;
       imageIdsToPrefetch.push({
@@ -48,7 +51,7 @@ export default function getInterleavedFrames(imageIds) {
       });
 
       if (upperImageIdIndex === maxImageIdIndex) {
-        prefetchQueuedFilled[1] = true;
+        prefetchQueuedFilled.currentPositionUpToMaximum = true;
       }
     }
   }

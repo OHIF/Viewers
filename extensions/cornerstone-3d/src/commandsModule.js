@@ -268,8 +268,6 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       const { viewport } = enabledElement;
-
-      // This is a constant 1 slice scroll
       const options = { delta: direction };
 
       cornerstone3DTools.utilities.stackScrollTool.scrollThroughStack(

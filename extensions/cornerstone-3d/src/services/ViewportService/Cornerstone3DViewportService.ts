@@ -8,10 +8,7 @@ import {
   VolumeViewport,
 } from '@cornerstonejs/core';
 
-import {
-  utilities as csToolsUtils,
-  Enums as csToolsEnums,
-} from '@cornerstonejs/tools';
+import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, {
@@ -25,6 +22,8 @@ import {
   setColormap,
   setLowerUpperColorTransferFunction,
 } from '../../utils/colormap/transferFunctionHelpers';
+
+import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -306,37 +305,34 @@ class Cornerstone3DViewportService implements IViewportService {
       return;
     }
 
-    let imageIndex;
     const { index, preset } = initialImageOptions;
-
-    if (index !== undefined) {
-      imageIndex = initialImageOptions.index;
-    } else if (preset !== undefined) {
-      imageIndex = this._getInitialImageIndexByPreset(
-        initialImageOptions.preset,
-        imageIds
-      );
-    }
-    imageIndex = Math.min(imageIds.length - 1, Math.max(0, imageIndex));
-
-    return imageIndex;
+    return this._getInitialImageIndex(imageIds.length, index, preset);
   }
 
-  private _getInitialImageIndexByPreset(
-    preset: string,
-    imageIds: string[]
+  _getInitialImageIndex(
+    numberOfSlices: number,
+    imageIndex?: number,
+    preset?: JumpPresets
   ): number {
-    if (preset === csToolsEnums.JumpPresets.First) {
+    const lastSliceIndex = numberOfSlices - 1;
+
+    if (imageIndex !== undefined) {
+      return csToolsUtils.clip(imageIndex, 0, lastSliceIndex);
+    }
+
+    if (preset === JumpPresets.First) {
       return 0;
     }
 
-    if (preset === csToolsEnums.JumpPresets.Middle) {
-      return Math.floor(imageIds.length / 2);
+    if (preset === JumpPresets.Last) {
+      return lastSliceIndex;
     }
 
-    if (preset === csToolsEnums.JumpPresets.Last) {
-      return imageIds.length - 1;
+    if (preset === JumpPresets.Middle) {
+      return Math.floor(lastSliceIndex / 2);
     }
+
+    return 0;
   }
 
   async _setVolumeViewport(
@@ -416,9 +412,18 @@ class Cornerstone3DViewportService implements IViewportService {
       ) {
         const { index, preset } = initialImageOptions;
 
+        const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
+          viewport
+        );
+
+        const imageIndex = this._getInitialImageIndex(
+          numberOfSlices,
+          index,
+          preset
+        );
+
         csToolsUtils.jumpToSlice(viewport.element, {
-          imageIndex: index,
-          preset,
+          imageIndex,
         });
       }
 
