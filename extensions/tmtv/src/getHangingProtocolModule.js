@@ -558,6 +558,14 @@ const ptCT = {
             orientation: 'sagittal',
             background: [1, 1, 1],
             toolGroupId: 'mipToolGroup',
+            // Custom props can be used to set custom properties which extensions
+            // can react on.
+            customViewportOptions: {
+              // We use viewportDisplay to filter the viewports which are displayed
+              // in mip and we set the scrollbar according to their rotation index
+              // in the cornerstone3D extension.
+              hideOverlays: true,
+            },
           },
           displaySets: [
             {

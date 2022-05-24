@@ -1,4 +1,4 @@
-import { pubSubServiceInterface, utils } from '@ohif/core';
+import { pubSubServiceInterface } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
@@ -6,6 +6,7 @@ import {
   getRenderingEngine,
   utilities as csUtils,
   VolumeViewport,
+  cache,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils } from '@cornerstonejs/tools';
@@ -18,7 +19,6 @@ import ViewportInfo, {
 } from './Viewport';
 import { StackData, VolumeData } from './Cornerstone3DCacheService';
 import {
-  setColorTransferFunctionFromVolumeMetadata,
   setColormap,
   setLowerUpperColorTransferFunction,
 } from '../../utils/colormap/transferFunctionHelpers';
@@ -124,6 +124,7 @@ class Cornerstone3DViewportService implements IViewportService {
     this.viewportGridResizeObserver = null;
     this.renderingEngine.destroy();
     this.renderingEngine = null;
+    cache.purgeCache();
   }
 
   /**

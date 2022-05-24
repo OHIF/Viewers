@@ -61,7 +61,20 @@ function initToolGroups(extensionManager, ToolGroupService) {
     ],
   };
 
-  ToolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
+  const mipToolGroupConfig = {
+    [toolNames.VolumeRotateMouseWheel]: {
+      rotateIncrementDegrees: 0.1,
+    },
+    [toolNames.MipJumpToClick]: {
+      targetViewportIds: ['ptAXIAL', 'ptCORONAL', 'ptSAGITTAL'],
+    },
+  };
+
+  ToolGroupService.createToolGroupAndAddTools(
+    toolGroupIds.MIP,
+    mipTools,
+    mipToolGroupConfig
+  );
 }
 
 export default initToolGroups;
