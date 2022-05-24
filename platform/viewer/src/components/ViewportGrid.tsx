@@ -301,10 +301,10 @@ function ViewerViewportGrid(props) {
           onInteraction={onInteractionHandler}
           customStyle={{
             position: 'absolute',
-            top: viewportY * 100 + 0.5 + '%',
-            left: viewportX * 100 + 0.5 + '%',
-            width: viewportWidth * 100 - 0.5 + '%',
-            height: viewportHeight * 100 - 0.5 + '%',
+            top: viewportY * 100 + 0.15 + '%',
+            left: viewportX * 100 + 0.15 + '%',
+            width: viewportWidth * 100 - 0.3 + '%',
+            height: viewportHeight * 100 - 0.3 + '%',
           }}
           isActive={isActive}
         >

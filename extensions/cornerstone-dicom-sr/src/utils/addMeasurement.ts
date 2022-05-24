@@ -106,35 +106,6 @@ function _getRenderableData(
         renderableData.push(worldPos);
       }
 
-      // In Cornerstone-Legacy only one point is saved in the SR and not the start and
-      // finish of the arrow. Therefore we need to come up with a proportional offset to add as the end point.
-      if (
-        toolName === 'ArrowAnnotate' &&
-        supportedLegacyCornerstoneTags.includes(cornerstoneTag)
-      ) {
-        if (renderableData.length === 1) {
-          const imagePixelModule = cornerstone3D.metaData.get(
-            'imagePixelModule',
-            imageId
-          );
-
-          let xOffset = 10;
-          let yOffset = 10;
-
-          if (imagePixelModule) {
-            const { columns, rows } = imagePixelModule;
-            xOffset = columns / 10;
-            yOffset = rows / 10;
-          }
-
-          const secondPoint = cornerstone3D.utilities.imageToWorldCoords(
-            imageId,
-            [GraphicData[0] + xOffset, GraphicData[1] + yOffset]
-          );
-
-          renderableData.push(secondPoint);
-        }
-      }
       break;
     case SCOORD_TYPES.CIRCLE: {
       const pointsWorld = [];
