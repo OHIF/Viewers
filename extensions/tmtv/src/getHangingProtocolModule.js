@@ -13,7 +13,7 @@ const ptCT = {
     'fusionToolGroup',
     'mipToolGroup',
   ],
-  imageLoadStrategy: 'interleaveCenter', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
     {
       id: 'wauZK2QNEfDPwcAQo',
@@ -222,10 +222,10 @@ const ptCT = {
             viewportType: 'volume',
             orientation: 'axial',
             toolGroupId: 'ctToolGroup',
-            // initialImageOptions: {
-            //   // index: 5,
-            //   preset: 'first', // 'first', 'last', 'middle'
-            // },
+            initialImageOptions: {
+              // index: 5,
+              preset: 'first', // 'first', 'last', 'middle'
+            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -308,10 +308,10 @@ const ptCT = {
             background: [1, 1, 1],
             orientation: 'axial',
             toolGroupId: 'ptToolGroup',
-            // initialImageOptions: {
-            //   // index: 5,
-            //   preset: 'first', // 'first', 'last', 'middle'
-            // },
+            initialImageOptions: {
+              // index: 5,
+              preset: 'first', // 'first', 'last', 'middle'
+            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -416,10 +416,10 @@ const ptCT = {
             viewportType: 'volume',
             orientation: 'axial',
             toolGroupId: 'fusionToolGroup',
-            // initialImageOptions: {
-            //   // index: 5,
-            //   preset: 'first', // 'first', 'last', 'middle'
-            // },
+            initialImageOptions: {
+              // index: 5,
+              preset: 'first', // 'first', 'last', 'middle'
+            },
             syncGroups: [
               {
                 type: 'cameraPosition',

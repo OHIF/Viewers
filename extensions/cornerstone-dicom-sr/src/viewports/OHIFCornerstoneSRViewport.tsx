@@ -27,7 +27,10 @@ function OHIFCornerstoneSRViewport(props) {
     extensionManager,
   } = props;
 
-  const { DisplaySetService } = servicesManager.services;
+  const {
+    DisplaySetService,
+    Cornerstone3DViewportService,
+  } = servicesManager.services;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -140,11 +143,6 @@ function OHIFCornerstoneSRViewport(props) {
           // imageIdIndex will handle it by updating the viewport, but if they
           // are the same we just need to use MeasurementService to jump to the
           // new measurement
-          const utilityModule = extensionManager.getModuleEntry(
-            '@ohif/extension-cornerstone-3d.utilityModule.common'
-          );
-
-          const { Cornerstone3DViewportService } = utilityModule.exports;
           const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
             viewportIndex
           );

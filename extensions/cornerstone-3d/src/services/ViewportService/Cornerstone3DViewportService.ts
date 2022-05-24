@@ -1,4 +1,4 @@
-import { pubSubServiceInterface } from '@ohif/core';
+import { pubSubServiceInterface, utils } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
@@ -8,10 +8,7 @@ import {
   VolumeViewport,
 } from '@cornerstonejs/core';
 
-import {
-  utilities as csToolsUtils,
-  Enums as csToolsEnums,
-} from '@cornerstonejs/tools';
+import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, {
@@ -25,6 +22,8 @@ import {
   setColormap,
   setLowerUpperColorTransferFunction,
 } from '../../utils/colormap/transferFunctionHelpers';
+
+import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
@@ -273,7 +272,7 @@ class Cornerstone3DViewportService implements IViewportService {
 
     if (!initialImageIdIndexToUse) {
       initialImageIdIndexToUse =
-        this._getInitialImageIndexForStackViewport(viewportInfo) || 0;
+        this._getInitialImageIndexForStackViewport(viewportInfo, imageIds) || 0;
     }
 
     const { voi, voiInverted } = displaySetOptions[0];
@@ -306,37 +305,34 @@ class Cornerstone3DViewportService implements IViewportService {
       return;
     }
 
-    let imageIndex;
     const { index, preset } = initialImageOptions;
-
-    if (index !== undefined) {
-      imageIndex = initialImageOptions.index;
-    } else if (preset !== undefined) {
-      imageIndex = this._getInitialImageIndexByPreset(
-        initialImageOptions.preset,
-        imageIds
-      );
-    }
-    imageIndex = Math.min(imageIds.length - 1, Math.max(0, imageIndex));
-
-    return imageIndex;
+    return this._getInitialImageIndex(imageIds.length, index, preset);
   }
 
-  private _getInitialImageIndexByPreset(
-    preset: string,
-    imageIds: string[]
+  _getInitialImageIndex(
+    numberOfSlices: number,
+    imageIndex?: number,
+    preset?: JumpPresets
   ): number {
-    if (preset === csToolsEnums.JumpPresets.First) {
+    const lastSliceIndex = numberOfSlices - 1;
+
+    if (imageIndex !== undefined) {
+      return csToolsUtils.clip(imageIndex, 0, lastSliceIndex);
+    }
+
+    if (preset === JumpPresets.First) {
       return 0;
     }
 
-    if (preset === csToolsEnums.JumpPresets.Middle) {
-      return Math.floor(imageIds.length / 2);
+    if (preset === JumpPresets.Last) {
+      return lastSliceIndex;
     }
 
-    if (preset === csToolsEnums.JumpPresets.Last) {
-      return imageIds.length - 1;
+    if (preset === JumpPresets.Middle) {
+      return Math.floor(lastSliceIndex / 2);
     }
+
+    return 0;
   }
 
   async _setVolumeViewport(
@@ -372,10 +368,10 @@ class Cornerstone3DViewportService implements IViewportService {
       //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
       // }
 
-      const voiCallback = this._getVOICallback(volumeId, displaySetOptions);
+      const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
 
       const callback = ({ volumeActor }) => {
-        voiCallback(volumeActor);
+        voiCallbacks.forEach(callback => callback(volumeActor));
       };
 
       volumeInputArray.push({
@@ -416,9 +412,18 @@ class Cornerstone3DViewportService implements IViewportService {
       ) {
         const { index, preset } = initialImageOptions;
 
+        const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
+          viewport
+        );
+
+        const imageIndex = this._getInitialImageIndex(
+          numberOfSlices,
+          index,
+          preset
+        );
+
         csToolsUtils.jumpToSlice(viewport.element, {
-          imageIndex: index,
-          preset,
+          imageIndex,
         });
       }
 
@@ -426,14 +431,14 @@ class Cornerstone3DViewportService implements IViewportService {
     });
   }
 
-  _getVOICallback(volumeId, displaySetOptions) {
+  _getVOICallbacks(volumeId, displaySetOptions) {
     const { voi, voiInverted: inverted, colormap } = displaySetOptions;
 
+    const voiCallbackArray = [];
+
     // If colormap is set, use it to set the color transfer function
-    let voiCallback;
     if (colormap) {
-      voiCallback = volumeActor => setColormap(volumeActor, colormap);
-      return voiCallback;
+      voiCallbackArray.push(volumeActor => setColormap(volumeActor, colormap));
     }
 
     if (voi instanceof Object && voi.windowWidth && voi.windowCenter) {
@@ -442,23 +447,17 @@ class Cornerstone3DViewportService implements IViewportService {
         windowWidth,
         windowCenter
       );
-      voiCallback = volumeActor =>
+      voiCallbackArray.push(volumeActor =>
         setLowerUpperColorTransferFunction({
           volumeActor,
           lower,
           upper,
           inverted,
-        });
-    } else {
-      voiCallback = volumeActor =>
-        setColorTransferFunctionFromVolumeMetadata({
-          volumeActor,
-          volumeId,
-          inverted,
-        });
+        })
+      );
     }
 
-    return voiCallback;
+    return voiCallbackArray;
   }
 
   _setDisplaySets(
