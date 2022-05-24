@@ -38,6 +38,7 @@ export default async function init({
   initCornerstoneTools();
 
   // Don't use cursors in viewports
+  // Todo: this should come from extension/app configuration
   Settings.getRuntimeSettings().set('useCursors', false);
 
   const {

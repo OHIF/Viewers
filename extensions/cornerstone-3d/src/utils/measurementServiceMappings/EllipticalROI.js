@@ -187,7 +187,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { area, SOPInstanceUID, SeriesNumber } = mappedAnnotations[0];
+  const { area, SOPInstanceUID } = mappedAnnotations[0];
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID
@@ -203,21 +203,16 @@ function getDisplayText(mappedAnnotations, displaySet) {
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
-    const { mean, unit, max, SeriesNumber } = mappedAnnotation;
+    const { unit, max, SeriesNumber } = mappedAnnotation;
 
-    if (mean && max) {
-      // const roundedMean = utils.roundNumber(mean, 2);
+    if (max) {
       const roundedMax = utils.roundNumber(max, 2);
-      // const roundedStdDev = utils.roundNumber(stdDev, 2);
 
       displayText.push(
         InstanceNumber
           ? `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber} I:${InstanceNumber})`
           : `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber})`
       );
-      // displayText.push(
-      //   `mean: ${roundedMean} <small>${unit}</small> (S:${SeriesNumber})`
-      // );
     }
   });
 

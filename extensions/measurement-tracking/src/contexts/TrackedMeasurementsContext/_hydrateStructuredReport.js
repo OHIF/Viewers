@@ -1,5 +1,4 @@
 import * as cornerstone3D from '@cornerstonejs/core';
-import * as cornerstone3DTools from '@cornerstonejs/tools';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
 import { adapters } from 'dcmjs';
@@ -119,10 +118,6 @@ export default function _hydrateStructuredReport(
       );
     }
   }
-
-  // When Hydrating the structure report we need to cleanup the cornerstone state
-  // since it will result to a duplicated states
-  cornerstone3DTools.annotation.state.removeAllAnnotations();
 
   Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
     const toolDataForAnnotationType =
