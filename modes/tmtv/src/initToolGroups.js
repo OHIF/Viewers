@@ -41,7 +41,7 @@ function initToolGroups(extensionManager, ToolGroupService) {
       { toolName: toolNames.Magnify },
     ],
     // enabled
-    // disabled
+    disabled: [{ toolName: toolNames.Crosshairs }],
   };
 
   ToolGroupService.createToolGroupAndAddTools(toolGroupIds.CT, tools);

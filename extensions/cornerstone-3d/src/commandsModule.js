@@ -68,6 +68,51 @@ const commandsModule = ({ servicesManager }) => {
         viewport.render();
       }
     },
+    disableCrosshairs({ toolName, toolGroupId }) {
+      let toolGroupIdToUse = toolGroupId;
+      if (!toolGroupIdToUse) {
+        // Use the active viewport's tool group if no tool group id is provided
+        const enabledElement = _getActiveViewportEnabledElement();
+
+        if (!enabledElement) {
+          return;
+        }
+
+        const { renderingEngineId, viewportId } = enabledElement;
+        const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroupForViewport(
+          viewportId,
+          renderingEngineId
+        );
+
+        if (!toolGroup) {
+          console.warn(
+            'No tool group found for viewportId:',
+            viewportId,
+            'and renderingEngineId:',
+            renderingEngineId
+          );
+        }
+
+        toolGroupIdToUse = toolGroup.id;
+      }
+      const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroup(
+        toolGroupIdToUse
+      );
+      toolGroup.setToolDisabled(toolName);
+
+      // Get the primary toolId from the ToolBarService and set it to active
+      // Since it was set to passive if not already active
+      const primaryActiveTool = ToolBarService.state.primaryToolId;
+      if (
+        toolGroup.toolOptions[primaryActiveTool] &&
+        toolGroup.toolOptions[primaryActiveTool].mode ===
+          cornerstone3DTools.Enums.ToolModes.Passive
+      ) {
+        toolGroup.setToolActive(primaryActiveTool, {
+          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        });
+      }
+    },
     setToolActive: ({ toolName, toolGroupId = null }) => {
       let toolGroupIdToUse = toolGroupId;
       if (!toolGroupIdToUse) {
@@ -108,8 +153,6 @@ const commandsModule = ({ servicesManager }) => {
       const { viewports } = ViewportGridService.getState() || {
         viewports: [],
       };
-
-      const toolGroupViewportIds = toolGroup.getViewportIds();
 
       // iterate over all viewports and set the tool active for the
       // viewports that belong to the toolGroup
@@ -285,6 +328,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     setToolActive: {
       commandFn: actions.setToolActive,
+      storeContexts: [],
+      options: {},
+    },
+    disableCrosshairs: {
+      commandFn: actions.disableCrosshairs,
       storeContexts: [],
       options: {},
     },

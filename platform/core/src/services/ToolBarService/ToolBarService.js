@@ -81,7 +81,15 @@ export default class ToolBarService {
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
-        commands.forEach(({ commandName, commandOptions, context }) => {
+
+        const { commands } = interaction;
+
+        let commandsToUse = commands.defaultCommands;
+        if (!this.state.toggles[itemId] && commands.disableCommands) {
+          commandsToUse = commands.disableCommands.slice();
+        }
+
+        commandsToUse.forEach(({ commandName, commandOptions, context }) => {
           if (!commandOptions) {
             commandOptions = {};
           }

@@ -174,6 +174,12 @@ export default class ToolGroupService {
       });
     }
 
+    if (toolGroupTools.disabled) {
+      toolGroupTools.disabled.forEach(tool => {
+        toolNames.push(tool.toolName);
+      });
+    }
+
     return toolNames;
   }
 
