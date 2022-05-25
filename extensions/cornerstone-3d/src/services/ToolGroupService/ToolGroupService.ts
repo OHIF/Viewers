@@ -4,6 +4,7 @@ import { pubSubServiceInterface } from '@ohif/core';
 
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone-3d::toolgroupservice:viewportadded',
+  TOOLGROUP_CREATED: 'event::cornerstone-3d::toolgroupservice:toolgroupcreated',
 };
 
 type Tool = {
@@ -109,7 +110,7 @@ export default class ToolGroupService {
       toolGroup.addViewport(viewportId, renderingEngineId);
     }
 
-    this._broadcastEvent(EVENTS.VIEWPORT_ADDED, { viewportId });
+    this._broadcastEvent(EVENTS.VIEWPORT_ADDED, { viewportId, toolGroupId });
   }
 
   public createToolGroup(toolGroupId: string): Types.IToolGroup {
@@ -120,6 +121,8 @@ export default class ToolGroupService {
     // if the toolGroup doesn't exist, create it
     const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
     this.toolGroupIds.add(toolGroupId);
+
+    this._broadcastEvent(EVENTS.TOOLGROUP_CREATED, { toolGroupId });
 
     return toolGroup;
   }
@@ -155,7 +158,40 @@ export default class ToolGroupService {
     //   }
     // });
   }
+  */
+
+  /**
+   * Get the tool's configuration based on the tool name and tool group id
+   * @param toolGroupId - The id of the tool group that the tool instance belongs to.
+   * @param toolName - The name of the tool
+   * @returns The configuration of the tool.
    */
+  public getToolConfiguration(toolGroupId: string, toolName: string) {
+    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+    if (!toolGroup) {
+      return null;
+    }
+
+    const tool = toolGroup.getToolInstance(toolName);
+    if (!tool) {
+      return null;
+    }
+
+    return tool.configuration;
+  }
+
+  /**
+   * Set the tool instance configuration. This will update the tool instance configuration
+   * on the toolGroup
+   * @param toolGroupId - The id of the tool group that the tool instance belongs to.
+   * @param toolName - The name of the tool
+   * @param config - The configuration object that you want to set.
+   */
+  public setToolConfiguration(toolGroupId, toolName, config) {
+    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+    const toolInstance = toolGroup.getToolInstance(toolName);
+    toolInstance.configuration = config;
+  }
 
   private _getToolNames(toolGroupTools: Tools): string[] {
     const toolNames = [];

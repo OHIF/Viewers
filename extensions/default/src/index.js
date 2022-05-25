@@ -5,6 +5,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getToolbarModule from './getToolbarModule';
 import commandsModule from './commandsModule';
+import getStudiesForPatientByStudyInstanceUID from './Panels/getStudiesForPatientByStudyInstanceUID';
 import { id } from './id.js';
 import init from './init';
 
@@ -24,6 +25,16 @@ const defaultExtension = {
   getToolbarModule,
   getCommandsModule({ servicesManager, commandsManager }) {
     return commandsModule({ servicesManager, commandsManager });
+  },
+  getUtilityModule({ servicesManager }) {
+    return [
+      {
+        name: 'common',
+        exports: {
+          getStudiesForPatientByStudyInstanceUID,
+        },
+      },
+    ];
   },
 };
 

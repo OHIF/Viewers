@@ -88,6 +88,35 @@ class Cornerstone3DCacheService {
     return viewportData;
   }
 
+  public async invalidateViewportData(
+    viewportData: VolumeData,
+    invalidatedDisplaySetInstanceUID: string,
+    dataSource,
+    DisplaySetService
+  ) {
+    if (viewportData.viewportType === Enums.ViewportType.STACK) {
+      throw new Error('Invalidation of StackViewport is not supported yet');
+    }
+
+    const volumeId = invalidatedDisplaySetInstanceUID;
+    const volume = cs3DCache.getVolume(volumeId);
+
+    if (volume) {
+      cs3DCache.removeVolumeLoadObject(volumeId);
+    }
+
+    const displaySets = viewportData.displaySetInstanceUIDs.map(
+      DisplaySetService.getDisplaySetByUID
+    );
+
+    const newViewportData = await this._getVolumeViewportData(
+      dataSource,
+      displaySets
+    );
+
+    return newViewportData;
+  }
+
   private _getStackViewportData(
     dataSource,
     displaySets,
@@ -128,8 +157,7 @@ class Cornerstone3DCacheService {
 
   private async _getVolumeViewportData(
     dataSource,
-    displaySets,
-    initialView
+    displaySets
   ): Promise<VolumeData> {
     // Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not

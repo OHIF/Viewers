@@ -206,11 +206,11 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="flex flex-row items-stretch w-full overflow-hidden flex-nowrap"
+        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap"
         style={{ height: 'calc(100vh - 60px' }}
       >
         {/* LEFT SIDEPANELS */}
-        {leftPanelComponents.length && (
+        {leftPanelComponents.length ? (
           <ErrorBoundary context="Left Panel">
             <SidePanel
               side="left"
@@ -218,7 +218,7 @@ function ViewerLayout({
               childComponents={leftPanelComponents}
             />
           </ErrorBoundary>
-        )}
+        ) : null}
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full p-1">
           <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black">
@@ -231,7 +231,7 @@ function ViewerLayout({
             </ErrorBoundary>
           </div>
         </div>
-        {rightPanelComponents.length && (
+        {rightPanelComponents.length ? (
           <ErrorBoundary context="Right Panel">
             <SidePanel
               side="right"
@@ -239,7 +239,7 @@ function ViewerLayout({
               childComponents={rightPanelComponents}
             />
           </ErrorBoundary>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -38,7 +38,7 @@ export type PublicDisplaySetOptions = {
   voi?: VOI;
   voiInverted?: boolean;
   blendMode?: string;
-  slabThicknessEnabled?: boolean;
+  slabThickness?: number;
   colormap?: string;
 };
 
@@ -46,7 +46,7 @@ export type DisplaySetOptions = {
   voi?: VOI;
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
-  slabThicknessEnabled?: boolean;
+  slabThickness?: number;
   colormap?: string;
 };
 
@@ -209,7 +209,7 @@ class ViewportInfo {
         voi: option.voi || ({} as VOI),
         voiInverted: option.voiInverted || false,
         colormap: option.colormap || undefined,
-        slabThicknessEnabled: option.slabThicknessEnabled,
+        slabThickness: option.slabThickness || undefined,
         blendMode,
       });
     });

@@ -8,6 +8,7 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
+  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
 const cs3d = {
@@ -16,6 +17,7 @@ const cs3d = {
 
 const tmtv = {
   hangingProtocols: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
+  petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
 };
 
 const extensionDependencies = {
@@ -36,10 +38,21 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const {
+        ToolBarService,
+        ToolGroupService,
+        HangingProtocolService,
+        DisplaySetService,
+      } = servicesManager.services;
+
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone-3d.utilityModule.tools'
+      );
+
+      const { toolNames, Enums } = utilityModule.exports;
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, ToolGroupService);
+      initToolGroups(toolNames, Enums, ToolGroupService);
 
       let unsubscribe;
 
@@ -52,7 +65,7 @@ function modeFactory({ modeConfiguration }) {
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'WindowLevel',
+                toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.CT,
               },
               context: 'CORNERSTONE3D',
@@ -60,7 +73,7 @@ function modeFactory({ modeConfiguration }) {
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'WindowLevel',
+                toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.PT,
               },
               context: 'CORNERSTONE3D',
@@ -68,13 +81,42 @@ function modeFactory({ modeConfiguration }) {
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'WindowLevel',
+                toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.Fusion,
               },
               context: 'CORNERSTONE3D',
             },
           ],
         });
+
+        // For fusion toolGroup we need to add the volumeIds for the crosshairs
+        // since in the fusion viewport we don't want both PT and CT to render MIP
+        // when slabThickness is modified
+        const matches = HangingProtocolService.getDisplaySetsMatchDetails();
+
+        // Todo: we are tying the displaySetId (in the hangingProtocols)
+        // to the modes. Maybe the HangingProtocols should be set at the mode
+        // level (not extension level?)
+        const { SeriesInstanceUID } = matches.get('ctDisplaySet');
+        const displaySets = DisplaySetService.getDisplaySetsForSeries(
+          SeriesInstanceUID
+        );
+
+        const toolConfig = ToolGroupService.getToolConfiguration(
+          toolGroupIds.Fusion,
+          toolNames.Crosshairs
+        );
+
+        const crosshairsConfig = {
+          ...toolConfig,
+          actorUIDsForSlabThickness: [displaySets[0].displaySetInstanceUID],
+        };
+
+        ToolGroupService.setToolConfiguration(
+          toolGroupIds.Fusion,
+          toolNames.Crosshairs,
+          crosshairsConfig
+        );
 
         // We don't need to reset the active tool whenever a viewport is getting
         // added to the toolGroup.
@@ -137,7 +179,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [ohif.measurements],
+              rightPanels: [tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

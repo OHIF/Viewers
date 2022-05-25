@@ -261,20 +261,7 @@ function ViewerViewportGrid(props) {
   }, [viewports]);
 
 
-  // subscribe to displayset metadata changes
-  useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_METADATA_UPDATED,
-      displaySets => {
-        // Todo: properly refresh the viewportGrid to use the new displaySet
-        // with the new metadata.
-        setState({});
-      }
-    );
-    return () => {
-      unsubscribe();
-    };
-  }, [viewports]);
+
 
   const onDoubleClick = viewportIndex => {
     // TODO -> Disabled for now.

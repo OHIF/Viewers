@@ -462,7 +462,6 @@ const ptCT = {
             },
             {
               options: {
-                slabThicknessEnabled: false,
                 colormap: 'hsv',
                 voi: {
                   windowWidth: 5,
@@ -513,7 +512,6 @@ const ptCT = {
             },
             {
               options: {
-                slabThicknessEnabled: false,
                 colormap: 'hsv',
                 voi: {
                   windowWidth: 5,
@@ -564,7 +562,6 @@ const ptCT = {
             },
             {
               options: {
-                slabThicknessEnabled: false,
                 colormap: 'hsv',
                 voi: {
                   windowWidth: 5,
@@ -595,7 +592,7 @@ const ptCT = {
             {
               options: {
                 blendMode: 'MIP',
-                slabThicknessEnabled: true,
+                slabThickness: 'auto',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,

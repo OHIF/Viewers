@@ -2,6 +2,7 @@ import { pubSubServiceInterface } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
+  Enums,
   Types,
   getRenderingEngine,
   utilities as csUtils,
@@ -354,6 +355,7 @@ class Cornerstone3DViewportService implements IViewportService {
     // (This call may or may not create sub-requests for series metadata)
     const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
+    const { HangingProtocolService } = this;
 
     for (let i = 0; i < viewportData.imageIds.length; i++) {
       const imageIds = viewportData.imageIds[i];
@@ -380,14 +382,16 @@ class Cornerstone3DViewportService implements IViewportService {
         volumeId,
         callback,
         blendMode: displaySetOptions.blendMode,
-        slabThickness: this._getSlabThickness(volumeId, displaySetOptions),
-        slabThicknessEnabled: displaySetOptions.slabThicknessEnabled,
+        slabThickness: this._getSlabThickness(displaySetOptions, volumeId),
       });
     }
 
-    if (this.HangingProtocolService.hasCustomImageLoadStrategy()) {
+    if (
+      HangingProtocolService.hasCustomImageLoadStrategy() &&
+      !HangingProtocolService.customImageLoadPerformed
+    ) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      return this.HangingProtocolService.runImageLoadStrategy({
+      return HangingProtocolService.runImageLoadStrategy({
         viewportId: viewport.id,
         volumeInputArray,
       });
@@ -429,6 +433,15 @@ class Cornerstone3DViewportService implements IViewportService {
 
       viewport.render();
     });
+  }
+
+  public updateViewport(viewportIndex, viewportData) {
+    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
+
+    const viewportId = viewportInfo.getViewportId();
+    const viewport = this.getCornerstone3DViewport(viewportId);
+
+    this._setVolumeViewport(viewport, viewportData, viewportInfo);
   }
 
   _getVOICallbacks(volumeId, displaySetOptions) {
@@ -489,22 +502,33 @@ class Cornerstone3DViewportService implements IViewportService {
     }
   }
 
-  _getSlabThickness(volumeId, displaySetOptions) {
-    const { blendMode, slabThicknessEnabled } = displaySetOptions;
-    if (blendMode === undefined || !slabThicknessEnabled) {
+  _getSlabThickness(displaySetOptions, volumeId) {
+    const { blendMode } = displaySetOptions;
+    if (blendMode === undefined || !displaySetOptions.slabThickness) {
       return;
     }
 
-    const imageVolume = cache.getVolume(volumeId);
+    // if there is a slabThickness set as a number then use it
+    if (
+      displaySetOptions.slabThickness &&
+      typeof displaySetOptions.slabThickness === 'number'
+    ) {
+      return displaySetOptions.slabThickness;
+    }
 
-    const { dimensions } = imageVolume;
-    const slabThickness = Math.sqrt(
-      dimensions[0] * dimensions[0] +
-        dimensions[1] * dimensions[1] +
-        dimensions[2] * dimensions[2]
-    );
+    if (displaySetOptions.slabThickness === 'auto') {
+      // calculate the slab thickness based on the volume dimensions
+      const imageVolume = cache.getVolume(volumeId);
 
-    return slabThickness;
+      const { dimensions } = imageVolume;
+      const slabThickness = Math.sqrt(
+        dimensions[0] * dimensions[0] +
+          dimensions[1] * dimensions[1] +
+          dimensions[2] * dimensions[2]
+      );
+
+      return slabThickness;
+    }
   }
 
   _getViewportAndDisplaySetOptions(

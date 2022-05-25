@@ -6,13 +6,7 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function initToolGroups(extensionManager, ToolGroupService) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.tools'
-  );
-
-  const { toolNames, Enums } = utilityModule.exports;
-
+function initToolGroups(toolNames, Enums, ToolGroupService) {
   const tools = {
     active: [
       {
