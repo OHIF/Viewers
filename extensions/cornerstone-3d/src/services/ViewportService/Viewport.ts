@@ -38,6 +38,7 @@ export type PublicDisplaySetOptions = {
   voi?: VOI;
   voiInverted?: boolean;
   blendMode?: string;
+  slabThicknessEnabled?: boolean;
   colormap?: string;
 };
 
@@ -45,6 +46,7 @@ export type DisplaySetOptions = {
   voi?: VOI;
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
+  slabThicknessEnabled?: boolean;
   colormap?: string;
 };
 
@@ -200,15 +202,14 @@ class ViewportInfo {
   ): Array<DisplaySetOptions> {
     const displaySetOptions: Array<DisplaySetOptions> = [];
 
-    publicDisplaySetOptions.forEach(publicDisplaySetOption => {
-      const blendMode = getCornerstoneBlendMode(
-        publicDisplaySetOption.blendMode
-      );
+    publicDisplaySetOptions.forEach(option => {
+      const blendMode = getCornerstoneBlendMode(option.blendMode);
 
       displaySetOptions.push({
-        voi: publicDisplaySetOption.voi || ({} as VOI),
-        voiInverted: publicDisplaySetOption.voiInverted || false,
-        colormap: publicDisplaySetOption.colormap || undefined,
+        voi: option.voi || ({} as VOI),
+        voiInverted: option.voiInverted || false,
+        colormap: option.colormap || undefined,
+        slabThicknessEnabled: option.slabThicknessEnabled,
         blendMode,
       });
     });

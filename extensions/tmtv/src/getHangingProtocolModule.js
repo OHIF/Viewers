@@ -244,6 +244,9 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
+              options: {
+                blendMode: 'MIP',
+              },
             },
           ],
         },
@@ -271,6 +274,9 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
+              options: {
+                blendMode: 'MIP',
+              },
             },
           ],
         },
@@ -298,6 +304,9 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
+              options: {
+                blendMode: 'MIP',
+              },
             },
           ],
         },
@@ -330,6 +339,7 @@ const ptCT = {
           displaySets: [
             {
               options: {
+                blendMode: 'MIP',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,
@@ -365,6 +375,7 @@ const ptCT = {
           displaySets: [
             {
               options: {
+                blendMode: 'MIP',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,
@@ -400,6 +411,7 @@ const ptCT = {
           displaySets: [
             {
               options: {
+                blendMode: 'MIP',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,
@@ -444,9 +456,13 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
+              options: {
+                blendMode: 'MIP',
+              },
             },
             {
               options: {
+                slabThicknessEnabled: false,
                 colormap: 'hsv',
                 voi: {
                   windowWidth: 5,
@@ -491,9 +507,13 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
+              options: {
+                blendMode: 'MIP',
+              },
             },
             {
               options: {
+                slabThicknessEnabled: false,
                 colormap: 'hsv',
                 voi: {
                   windowWidth: 5,
@@ -538,9 +558,13 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
+              options: {
+                blendMode: 'MIP',
+              },
             },
             {
               options: {
+                slabThicknessEnabled: false,
                 colormap: 'hsv',
                 voi: {
                   windowWidth: 5,
@@ -571,6 +595,7 @@ const ptCT = {
             {
               options: {
                 blendMode: 'MIP',
+                slabThicknessEnabled: true,
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,

@@ -44,10 +44,36 @@ function initToolGroups(extensionManager, ToolGroupService) {
     disabled: [{ toolName: toolNames.Crosshairs }],
   };
 
-  ToolGroupService.createToolGroupAndAddTools(toolGroupIds.CT, tools);
-  ToolGroupService.createToolGroupAndAddTools(toolGroupIds.PT, tools);
-  ToolGroupService.createToolGroupAndAddTools(toolGroupIds.Fusion, tools);
-  ToolGroupService.createToolGroupAndAddTools(toolGroupIds.default, tools);
+  const toolsConfig = {
+    [toolNames.Crosshairs]: {
+      viewportIndicators: false,
+      autoPan: {
+        enabled: true,
+        panSize: 10,
+      },
+    },
+  };
+
+  ToolGroupService.createToolGroupAndAddTools(
+    toolGroupIds.CT,
+    tools,
+    toolsConfig
+  );
+  ToolGroupService.createToolGroupAndAddTools(
+    toolGroupIds.PT,
+    tools,
+    toolsConfig
+  );
+  ToolGroupService.createToolGroupAndAddTools(
+    toolGroupIds.Fusion,
+    tools,
+    toolsConfig
+  );
+  ToolGroupService.createToolGroupAndAddTools(
+    toolGroupIds.default,
+    tools,
+    toolsConfig
+  );
 
   const mipTools = {
     active: [
@@ -61,7 +87,7 @@ function initToolGroups(extensionManager, ToolGroupService) {
     ],
   };
 
-  const mipToolGroupConfig = {
+  const mipToolsConfig = {
     [toolNames.VolumeRotateMouseWheel]: {
       rotateIncrementDegrees: 0.1,
     },
@@ -73,7 +99,7 @@ function initToolGroups(extensionManager, ToolGroupService) {
   ToolGroupService.createToolGroupAndAddTools(
     toolGroupIds.MIP,
     mipTools,
-    mipToolGroupConfig
+    mipToolsConfig
   );
 }
 

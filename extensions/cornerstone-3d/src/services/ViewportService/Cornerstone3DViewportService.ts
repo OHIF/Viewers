@@ -380,9 +380,8 @@ class Cornerstone3DViewportService implements IViewportService {
         volumeId,
         callback,
         blendMode: displaySetOptions.blendMode,
-        slabThickness: displaySetOptions.blendMode
-          ? displaySetOptions.slabThickness || 500
-          : undefined,
+        slabThickness: this._getSlabThickness(volumeId, displaySetOptions),
+        slabThicknessEnabled: displaySetOptions.slabThicknessEnabled,
       });
     }
 
@@ -488,6 +487,24 @@ class Cornerstone3DViewportService implements IViewportService {
     if (this.viewportGridResizeObserver) {
       this.viewportGridResizeObserver.disconnect();
     }
+  }
+
+  _getSlabThickness(volumeId, displaySetOptions) {
+    const { blendMode, slabThicknessEnabled } = displaySetOptions;
+    if (blendMode === undefined || !slabThicknessEnabled) {
+      return;
+    }
+
+    const imageVolume = cache.getVolume(volumeId);
+
+    const { dimensions } = imageVolume;
+    const slabThickness = Math.sqrt(
+      dimensions[0] * dimensions[0] +
+        dimensions[1] * dimensions[1] +
+        dimensions[2] * dimensions[2]
+    );
+
+    return slabThickness;
   }
 
   _getViewportAndDisplaySetOptions(
