@@ -8,7 +8,6 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
-  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
 const cs3d = {
@@ -97,8 +96,6 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
-        'Layout',
-        'MoreTools',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
@@ -139,7 +136,7 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [ohif.thumbnailList],
+              leftPanels: [],
               rightPanels: [ohif.measurements],
               viewports: [
                 {

@@ -22,6 +22,40 @@ const commandsModule = ({ servicesManager }) => {
     return enabledElement;
   }
 
+  function _getToolGroup(toolGroupId) {
+    let toolGroupIdToUse = toolGroupId;
+
+    if (toolGroupIdToUse === undefined) {
+      // Use the active viewport's tool group if no tool group id is provided
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { renderingEngineId, viewportId } = enabledElement;
+      const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroupForViewport(
+        viewportId,
+        renderingEngineId
+      );
+
+      if (!toolGroup) {
+        console.warn(
+          'No tool group found for viewportId:',
+          viewportId,
+          'and renderingEngineId:',
+          renderingEngineId
+        );
+        return;
+      }
+
+      toolGroupIdToUse = toolGroup.id;
+    }
+
+    const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
+    return toolGroup;
+  }
+
   const actions = {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
@@ -68,36 +102,20 @@ const commandsModule = ({ servicesManager }) => {
         viewport.render();
       }
     },
-    disableCrosshairs({ toolName, toolGroupId }) {
-      let toolGroupIdToUse = toolGroupId;
-      if (!toolGroupIdToUse) {
-        // Use the active viewport's tool group if no tool group id is provided
-        const enabledElement = _getActiveViewportEnabledElement();
-
-        if (!enabledElement) {
-          return;
-        }
-
-        const { renderingEngineId, viewportId } = enabledElement;
-        const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroupForViewport(
-          viewportId,
-          renderingEngineId
-        );
-
-        if (!toolGroup) {
-          console.warn(
-            'No tool group found for viewportId:',
-            viewportId,
-            'and renderingEngineId:',
-            renderingEngineId
-          );
-        }
-
-        toolGroupIdToUse = toolGroup.id;
+    toggleCrosshairs({ toolGroupId, toggledState }) {
+      const toolName = 'Crosshairs';
+      // If it is Enabled
+      if (toggledState) {
+        actions.setToolActive({ toolName, toolGroupId });
+        return;
       }
-      const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroup(
-        toolGroupIdToUse
-      );
+
+      const toolGroup = _getToolGroup(toolGroupId);
+
+      if (!toolGroup) {
+        return;
+      }
+
       toolGroup.setToolDisabled(toolName);
 
       // Get the primary toolId from the ToolBarService and set it to active
@@ -114,34 +132,7 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     setToolActive: ({ toolName, toolGroupId = null }) => {
-      let toolGroupIdToUse = toolGroupId;
-      if (!toolGroupIdToUse) {
-        // Use the active viewport's tool group if no tool group id is provided
-        const enabledElement = _getActiveViewportEnabledElement();
-
-        if (!enabledElement) {
-          return;
-        }
-
-        const { renderingEngineId, viewportId } = enabledElement;
-        const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroupForViewport(
-          viewportId,
-          renderingEngineId
-        );
-
-        if (!toolGroup) {
-          console.warn(
-            'No tool group found for viewportId:',
-            viewportId,
-            'and renderingEngineId:',
-            renderingEngineId
-          );
-        }
-
-        toolGroupIdToUse = toolGroup.id;
-      }
-
-      const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
+      const toolGroup = _getToolGroup(toolGroupId);
 
       if (!toolGroup) {
         console.warn('No tool group found for toolGroupId:', toolGroupId);
@@ -331,8 +322,8 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    disableCrosshairs: {
-      commandFn: actions.disableCrosshairs,
+    toggleCrosshairs: {
+      commandFn: actions.toggleCrosshairs,
       storeContexts: [],
       options: {},
     },

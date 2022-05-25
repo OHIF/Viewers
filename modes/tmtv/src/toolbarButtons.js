@@ -54,9 +54,10 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-function _createSetToolActive(toolName, toolGroupIds) {
+function _createCommands(commandName, toolName, toolGroupIds) {
   return toolGroupIds.map(toolGroupId => ({
-    commandName: 'setToolActive',
+    /* It's a command that is being run when the button is clicked. */
+    commandName,
     commandOptions: {
       toolName,
       toolGroupId,
@@ -79,7 +80,7 @@ const toolbarButtons = [
         'tool-length',
         'Length',
         [
-          ..._createSetToolActive('Length', [
+          ..._createCommands('setToolActive', 'Length', [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
@@ -99,7 +100,7 @@ const toolbarButtons = [
           'tool-length',
           'Length',
           [
-            ..._createSetToolActive('Length', [
+            ..._createCommands('setToolActive', 'Length', [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
@@ -112,7 +113,7 @@ const toolbarButtons = [
           'tool-bidirectional',
           'Bidirectional',
           [
-            ..._createSetToolActive('Bidirectional', [
+            ..._createCommands('setToolActive', 'Bidirectional', [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
@@ -125,7 +126,7 @@ const toolbarButtons = [
           'tool-annotate',
           'Annotation',
           [
-            ..._createSetToolActive('ArrowAnnotate', [
+            ..._createCommands('setToolActive', 'ArrowAnnotate', [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
@@ -138,7 +139,7 @@ const toolbarButtons = [
           'tool-elipse',
           'Ellipse',
           [
-            ..._createSetToolActive('EllipticalROI', [
+            ..._createCommands('setToolActive', 'EllipticalROI', [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
@@ -158,7 +159,7 @@ const toolbarButtons = [
       icon: 'tool-zoom',
       label: 'Zoom',
       commands: [
-        ..._createSetToolActive('Zoom', [
+        ..._createCommands('setToolActive', 'Zoom', [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
@@ -177,7 +178,7 @@ const toolbarButtons = [
         'tool-window-level',
         'Window Level',
         [
-          ..._createSetToolActive('WindowLevel', [
+          ..._createCommands('setToolActive', 'WindowLevel', [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
@@ -209,44 +210,13 @@ const toolbarButtons = [
       type: 'toggle',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: {
-        // commands that run for toggle state change
-        defaultCommands: _createSetToolActive('Crosshairs', [
+      commands: [
+        ..._createCommands('toggleCrosshairs', 'Crosshairs', [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
         ]),
-        // optional disableCommands that if defined will run instead of the
-        // commands specified when the toggle state change to be disabled (inactive, false)
-        // By default (if disableCommands is not defined) the commands specified above
-        // will run for both the active and inactive states
-        disableCommands: [
-          {
-            commandName: 'disableCrosshairs',
-            commandOptions: {
-              toolName: 'Crosshairs',
-              toolGroupId: toolGroupIds.CT,
-            },
-            context: 'CORNERSTONE3D',
-          },
-          {
-            commandName: 'disableCrosshairs',
-            commandOptions: {
-              toolName: 'Crosshairs',
-              toolGroupId: toolGroupIds.PT,
-            },
-            context: 'CORNERSTONE3D',
-          },
-          {
-            commandName: 'disableCrosshairs',
-            commandOptions: {
-              toolName: 'Crosshairs',
-              toolGroupId: toolGroupIds.Fusion,
-            },
-            context: 'CORNERSTONE3D',
-          },
-        ],
-      },
+      ],
     },
   },
   // Pan...
@@ -258,198 +228,11 @@ const toolbarButtons = [
       icon: 'tool-move',
       label: 'Pan',
       commands: [
-        ..._createSetToolActive('Pan', [
+        ..._createCommands('setToolActive', 'Pan', [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
         ]),
-      ],
-    },
-  },
-  // {
-  //   id: 'Capture',
-  //   type: 'ohif.action',
-  //   props: {
-  //     icon: 'tool-capture',
-  //     label: 'Capture',
-  //     type: 'action',
-  //     commands: [
-  //       {
-  //         commandName: 'showDownloadViewportModal',
-  //         commandOptions: {},
-  //         context: 'CORNERSTONE3D',
-  //       },
-  //     ],
-  //   },
-  // },
-  {
-    id: 'Layout',
-    type: 'ohif.layoutSelector',
-  },
-  // More...
-  {
-    id: 'MoreTools',
-    type: 'ohif.splitButton',
-    props: {
-      isRadio: true, // ?
-      groupId: 'MoreTools',
-      primary: _createActionButton(
-        'Reset',
-        'tool-reset',
-        'Reset View',
-        [
-          {
-            commandName: 'resetViewport',
-            commandOptions: {},
-            context: 'CORNERSTONE3D',
-          },
-        ],
-        'Reset'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: '',
-        isActive: true,
-        tooltip: 'More Tools',
-      },
-      items: [
-        _createActionButton(
-          'Reset',
-          'tool-reset',
-          'Reset View',
-          [
-            {
-              commandName: 'resetViewport',
-              commandOptions: {},
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Reset'
-        ),
-        _createActionButton(
-          'rotate-right',
-          'tool-rotate-right',
-          'Rotate Right',
-          [
-            {
-              commandName: 'rotateViewportCW',
-              commandOptions: {},
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Rotate +90'
-        ),
-        _createActionButton(
-          'flip-horizontal',
-          'tool-flip-horizontal',
-          'Flip Horizontally',
-          [
-            {
-              commandName: 'flipViewportHorizontal',
-              commandOptions: {},
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Flip Horizontal'
-        ),
-        _createToolButton(
-          'StackScroll',
-          'tool-stack-scroll',
-          'Stack Scroll',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'StackScroll',
-              },
-              context: 'CORNERSTONE3D',
-            },
-          ],
-          'Stack Scroll'
-        ),
-        // _createActionButton(
-        //   'invert',
-        //   'tool-invert',
-        //   'Invert',
-        //   [
-        //     {
-        //       commandName: 'invertViewport',
-        //       commandOptions: {},
-        //       context: 'CORNERSTONE3D',
-        //     },
-        //   ],
-        //   'Invert Colors'
-        // ),
-        _createToolButton(
-          'Probe',
-          'tool-probe',
-          'Probe',
-          [
-            ..._createSetToolActive('DragProbe', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-            ]),
-          ],
-          'Probe'
-        ),
-        // _createToggleButton(
-        //   'cine',
-        //   'tool-cine',
-        //   'Cine',
-        //   [
-        //     {
-        //       commandName: 'toggleCine',
-        //       context: 'CORNERSTONE3D',
-        //     },
-        //   ],
-        //   'Cine'
-        // ),
-        // _createToolButton(
-        //   'Angle',
-        //   'tool-angle',
-        //   'Angle',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'Angle',
-        //       },
-        //       context: 'CORNERSTONE3D',
-        //     },
-        //   ],
-        //   'Angle'
-        // ),
-        // _createToolButton(
-        //   'Magnify',
-        //   'tool-magnify',
-        //   'Magnify',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'Magnify',
-        //       },
-        //       context: 'CORNERSTONE3D',
-        //     },
-        //   ],
-        //   'Magnify'
-        // ),
-        // _createToolButton(
-        //   'Rectangle',
-        //   'tool-rectangle',
-        //   'Rectangle',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'RectangleROI',
-        //       },
-        //       context: 'CORNERSTONE3D',
-        //     },
-        //   ],
-        //   'Rectangle'
-        // ),
       ],
     },
   },
