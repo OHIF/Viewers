@@ -91,7 +91,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mousemove', 'right', { buttons: 1, force: true })
       .trigger('mouseup', { buttons: 1 });
 
-    const expectedText = 'W:1930L:479';
+    const expectedText = 'W:1942L:479';
     cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
   });
 
