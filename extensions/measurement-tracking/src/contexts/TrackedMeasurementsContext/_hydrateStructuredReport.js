@@ -144,7 +144,6 @@ export default function _hydrateStructuredReport(
           toolName: annotationType,
           referencedImageId: imageId,
           FrameOfReferenceUID,
-          label: '',
         },
       };
 
@@ -152,7 +151,7 @@ export default function _hydrateStructuredReport(
         CORNERSTONE_3D_TOOLS_SOURCE_NAME,
         CORNERSTONE_3D_TOOLS_SOURCE_VERSION
       );
-      annotation.label = getLabelFromDCMJSImportedToolData(toolData);
+      annotation.data.label = getLabelFromDCMJSImportedToolData(toolData);
 
       const matchingMapping = mappings.find(
         m => m.annotationType === annotationType
