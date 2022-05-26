@@ -236,6 +236,33 @@ const toolbarButtons = [
       ],
     },
   },
+  {
+    id: 'RectangleROIStartEndThreshold',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'pencil',
+      label: 'Rectangle ROI Threshold',
+      commands: [
+        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
+          toolGroupIds.PT,
+        ]),
+        {
+          commandName: 'displayNotification',
+          commandOptions: {
+            text:
+              'RectangleROI Threshold tool should be used on PT Axial Viewport',
+          },
+        },
+        {
+          commandName: 'setViewportActive',
+          commandOptions: {
+            viewportId: 'ptAXIAL',
+          },
+        },
+      ],
+    },
+  },
 ];
 
 export default toolbarButtons;

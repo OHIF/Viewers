@@ -209,7 +209,7 @@ class ViewportInfo {
         voi: option.voi || ({} as VOI),
         voiInverted: option.voiInverted || false,
         colormap: option.colormap || undefined,
-        slabThickness: option.slabThickness || undefined,
+        slabThickness: option.slabThickness,
         blendMode,
       });
     });

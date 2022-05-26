@@ -60,6 +60,18 @@ const commandsModule = ({ servicesManager }) => {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
     },
+    setViewportActive: ({ viewportId }) => {
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
+        viewportId
+      );
+      if (!viewportInfo) {
+        console.warn('No viewport found for viewportId:', viewportId);
+        return;
+      }
+
+      const viewportIndex = viewportInfo.getViewportIndex();
+      ViewportGridService.setActiveViewportIndex(viewportIndex);
+    },
     toggleCine: () => {
       const { viewports } = ViewportGridService.getState();
       const { isCineEnabled } = CineService.getState();
@@ -116,8 +128,6 @@ const commandsModule = ({ servicesManager }) => {
         return;
       }
 
-      toolGroup.setToolDisabled(toolName);
-
       // Get the primary toolId from the ToolBarService and set it to active
       // Since it was set to passive if not already active
       const primaryActiveTool = ToolBarService.state.primaryToolId;
@@ -126,6 +136,7 @@ const commandsModule = ({ servicesManager }) => {
         toolGroup.toolOptions[primaryActiveTool].mode ===
           cornerstone3DTools.Enums.ToolModes.Passive
       ) {
+        toolGroup.setToolDisabled(toolName);
         toolGroup.setToolActive(primaryActiveTool, {
           bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
         });
@@ -389,6 +400,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     toggleCine: {
       commandFn: actions.toggleCine,
+      storeContexts: [],
+      options: {},
+    },
+    setViewportActive: {
+      commandFn: actions.setViewportActive,
       storeContexts: [],
       options: {},
     },

@@ -100,28 +100,27 @@ export default class ExtensionManager {
    * @param {Object[]} extensions - Array of extensions
    */
   registerExtensions = async (extensions, dataSources = []) => {
-    const promises = extensions.map(extension => {
+    // Todo: we ideally should be able to run registrations in parallel
+    // but currently since some extensions need to be registered before
+    // others, we need to run them sequentially. We need a postInit hook
+    // to avoid this sequential async registration
+    for (const extension of extensions) {
       const hasConfiguration = Array.isArray(extension);
-      let promise;
       try {
         if (hasConfiguration) {
           const [ohifExtension, configuration] = extension;
-          promise = this.registerExtension(
+          await this.registerExtension(
             ohifExtension,
             configuration,
             dataSources
           );
         } else {
-          promise = this.registerExtension(extension, {}, dataSources);
+          await this.registerExtension(extension, {}, dataSources);
         }
       } catch (error) {
         console.error(error);
       }
-
-      return promise;
-    });
-
-    await Promise.all(promises);
+    }
   };
 
   /**

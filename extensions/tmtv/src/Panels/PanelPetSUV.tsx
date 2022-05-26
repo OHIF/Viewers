@@ -51,23 +51,40 @@ export default function PanelPetSUV({ servicesManager, extensionManager }) {
     [metadata]
   );
 
+  const getMatchingPTDisplaySet = useCallback(() => {
+    const matches = HangingProtocolService.getDisplaySetsMatchDetails();
+
+    const ptDisplaySet = _getMatchedPtDisplaySet(matches, DisplaySetService);
+
+    if (!ptDisplaySet) {
+      return;
+    }
+
+    const metadata = _getPtMetadata(dataSource, ptDisplaySet);
+    return {
+      ptDisplaySet,
+      metadata,
+    };
+  }, [dataSource, DisplaySetService, HangingProtocolService]);
+
+  useEffect(() => {
+    const displaySets = DisplaySetService.activeDisplaySets;
+
+    if (!displaySets.length) {
+      return;
+    }
+
+    const { ptDisplaySet, metadata } = getMatchingPTDisplaySet();
+    setPtDisplaySet(ptDisplaySet);
+    setMetadata(metadata);
+  }, []);
+
   // get the patientMetadata from the StudyInstanceUIDs and update the state
   useEffect(() => {
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      ({ displaySetsAdded }) => {
-        const matches = HangingProtocolService.getDisplaySetsMatchDetails();
-
-        const ptDisplaySet = _getMatchedPtDisplaySet(
-          matches,
-          DisplaySetService
-        );
-
-        if (!ptDisplaySet) {
-          return;
-        }
-
-        const metadata = _getPtMetadata(dataSource, ptDisplaySet);
+      () => {
+        const { ptDisplaySet, metadata } = getMatchingPTDisplaySet();
         setPtDisplaySet(ptDisplaySet);
         setMetadata(metadata);
       }
@@ -75,7 +92,7 @@ export default function PanelPetSUV({ servicesManager, extensionManager }) {
     return () => {
       unsubscribe();
     };
-  }, [DisplaySetService, dataSource]);
+  }, []);
 
   function updateMetadata() {
     if (!ptDisplaySet) {

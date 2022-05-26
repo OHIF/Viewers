@@ -207,7 +207,7 @@ class Cornerstone3DViewportService implements IViewportService {
   public getCornerstone3DViewport(
     viewportId: string
   ): Types.IStackViewport | Types.IVolumeViewport | null {
-    const viewportInfo = this.getViewportInfoById(viewportId);
+    const viewportInfo = this.getViewportInfo(viewportId);
 
     if (
       !viewportInfo ||
@@ -251,7 +251,7 @@ class Cornerstone3DViewportService implements IViewportService {
     return this.viewportsInfo.get(viewportIndex);
   }
 
-  public getViewportInfoById(viewportId: string): ViewportInfo {
+  public getViewportInfo(viewportId: string): ViewportInfo {
     // @ts-ignore
     for (const [index, viewport] of this.viewportsInfo.entries()) {
       if (viewport.getViewportId() === viewportId) {
@@ -406,7 +406,7 @@ class Cornerstone3DViewportService implements IViewportService {
 
   public setVolumesForViewport(viewport, volumeInputArray) {
     viewport.setVolumes(volumeInputArray).then(() => {
-      const viewportInfo = this.getViewportInfoById(viewport.id);
+      const viewportInfo = this.getViewportInfo(viewport.id);
       const initialImageOptions = viewportInfo.getInitialImageOptions();
 
       if (
@@ -504,19 +504,19 @@ class Cornerstone3DViewportService implements IViewportService {
 
   _getSlabThickness(displaySetOptions, volumeId) {
     const { blendMode } = displaySetOptions;
-    if (blendMode === undefined || !displaySetOptions.slabThickness) {
+    if (
+      blendMode === undefined ||
+      displaySetOptions.slabThickness === undefined
+    ) {
       return;
     }
 
     // if there is a slabThickness set as a number then use it
-    if (
-      displaySetOptions.slabThickness &&
-      typeof displaySetOptions.slabThickness === 'number'
-    ) {
+    if (typeof displaySetOptions.slabThickness === 'number') {
       return displaySetOptions.slabThickness;
     }
 
-    if (displaySetOptions.slabThickness === 'auto') {
+    if (displaySetOptions.slabThickness.toLowerCase() === 'fullvolume') {
       // calculate the slab thickness based on the volume dimensions
       const imageVolume = cache.getVolume(volumeId);
 

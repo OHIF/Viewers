@@ -255,7 +255,7 @@ export default async function init({
   function elementDisabledHandler(evt) {
     const { viewportId, element } = evt.detail;
 
-    const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
+    const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
       viewportId
     );
     ToolGroupService.disable(viewportInfo);

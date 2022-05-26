@@ -1,5 +1,5 @@
 import React from 'react';
-import { PanelPetSUV } from './Panels';
+import { PanelPetSUV, PanelROIThresholdSegmentation } from './Panels';
 
 // TODO:
 // - No loading UI exists yet
@@ -21,6 +21,16 @@ function getPanelModule({
     );
   };
 
+  const wrappedROIThresholdSeg = () => {
+    return (
+      <PanelROIThresholdSegmentation
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+      />
+    );
+  };
+
   return [
     {
       name: 'petSUV',
@@ -28,6 +38,13 @@ function getPanelModule({
       iconLabel: 'PET SUV',
       label: 'PET-SUV',
       component: wrappedPanelPetSuv,
+    },
+    {
+      name: 'ROIThresholdSeg',
+      iconName: 'circled-checkmark',
+      iconLabel: 'Threshold Seg',
+      label: 'Threshold-Seg',
+      component: wrappedROIThresholdSeg,
     },
   ];
 }

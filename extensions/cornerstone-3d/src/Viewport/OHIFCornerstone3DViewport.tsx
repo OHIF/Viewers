@@ -96,7 +96,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
 
       const { viewportId, element } = evt.detail;
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
         viewportId
       );
       const viewportIndex = viewportInfo.getViewportIndex();
@@ -172,6 +172,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
   // we need to remove the old volume from the cache, and let the
   // viewport to re-add it which will use the new metadata. Otherwise, the
   // viewport will use the cached volume and the new metadata will not be used.
+  // Note: this approach does not actually end of sending network requests
+  // and it uses the network cache
   useEffect(() => {
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,

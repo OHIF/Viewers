@@ -11,9 +11,6 @@ describe('CommandsManager', () => {
       storeContexts: ['viewers'],
       options: { passMeToCommandFn: ':wave:' },
     },
-    commandsManagerConfig = {
-      getActiveContexts: () => ['VIEWER', 'ACTIVE_VIEWER::CORNERSTONE'],
-    };
 
   beforeEach(() => {
     commandsManager = new CommandsManager(commandsManagerConfig);
@@ -29,11 +26,6 @@ describe('CommandsManager', () => {
     expect(localCommandsManager.contexts).toEqual({});
   });
 
-  it('throws Error if instantiated without getActiveContexts', () => {
-    expect(() => {
-      new CommandsManager();
-    }).toThrow(new Error('CommandsManager was instantiated without getActiveContexts()'));
-  });
 
   describe('createContext()', () => {
     it('creates a context', () => {

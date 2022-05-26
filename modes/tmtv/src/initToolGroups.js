@@ -55,7 +55,14 @@ function initToolGroups(toolNames, Enums, ToolGroupService) {
   );
   ToolGroupService.createToolGroupAndAddTools(
     toolGroupIds.PT,
-    tools,
+    {
+      active: tools.active,
+      passive: [
+        ...tools.passive,
+        { toolName: toolNames.RectangleROIStartEndThreshold },
+      ],
+      disabled: tools.disabled,
+    },
     toolsConfig
   );
   ToolGroupService.createToolGroupAndAddTools(

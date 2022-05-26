@@ -31,13 +31,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const commandsManagerConfig = {
     getAppState: () => {},
-    /** Used by commands to determine active context */
-    getActiveContexts: () => [
-      'VIEWER',
-      'DEFAULT',
-      'CORNERSTONE',
-      'CORNERSTONE3D',
-    ],
   };
 
   const commandsManager = new CommandsManager(commandsManagerConfig);

@@ -2,9 +2,17 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
     MeasurementService,
     HangingProtocolService,
+    UINotificationService,
   } = servicesManager.services;
 
   const actions = {
+    displayNotification: ({ text }) => {
+      UINotificationService.show({
+        title: 'RectangleROI Threshold Tip',
+        message: text,
+        type: 'info',
+      });
+    },
     clearMeasurements: () => {
       MeasurementService.clear();
     },
@@ -23,7 +31,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       storeContexts: [],
       options: {},
     },
-
+    displayNotification: {
+      commandFn: actions.displayNotification,
+      storeContexts: [],
+      options: {},
+    },
     nextStage: {
       commandFn: actions.nextStage,
       storeContexts: [],

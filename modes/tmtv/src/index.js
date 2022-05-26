@@ -18,6 +18,7 @@ const cs3d = {
 const tmtv = {
   hangingProtocols: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
+  ROIThresholdPanel: '@ohif/extension-tmtv.panelModule.ROIThresholdSeg',
 };
 
 const extensionDependencies = {
@@ -109,7 +110,9 @@ function modeFactory({ modeConfiguration }) {
 
         const crosshairsConfig = {
           ...toolConfig,
-          actorUIDsForSlabThickness: [displaySets[0].displaySetInstanceUID],
+          filterActorUIDsToSetSlabThickness: [
+            displaySets[0].displaySetInstanceUID,
+          ],
         };
 
         ToolGroupService.setToolConfiguration(
@@ -138,6 +141,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
+        'RectangleROIStartEndThreshold',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
@@ -179,7 +183,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [tmtv.petSUV],
+              rightPanels: [tmtv.petSUV, tmtv.ROIThresholdPanel],
               viewports: [
                 {
                   namespace: cs3d.viewport,

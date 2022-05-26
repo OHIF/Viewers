@@ -244,9 +244,6 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
-              options: {
-                blendMode: 'MIP',
-              },
             },
           ],
         },
@@ -274,9 +271,6 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
-              options: {
-                blendMode: 'MIP',
-              },
             },
           ],
         },
@@ -304,9 +298,6 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
-              options: {
-                blendMode: 'MIP',
-              },
             },
           ],
         },
@@ -456,9 +447,6 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
-              options: {
-                blendMode: 'MIP',
-              },
             },
             {
               options: {
@@ -506,9 +494,6 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
-              options: {
-                blendMode: 'MIP',
-              },
             },
             {
               options: {
@@ -556,9 +541,6 @@ const ptCT = {
           displaySets: [
             {
               id: 'ctDisplaySet',
-              options: {
-                blendMode: 'MIP',
-              },
             },
             {
               options: {
@@ -592,7 +574,7 @@ const ptCT = {
             {
               options: {
                 blendMode: 'MIP',
-                slabThickness: 'auto',
+                slabThickness: 'fullVolume',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,
