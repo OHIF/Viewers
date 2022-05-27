@@ -1,11 +1,12 @@
 import { vec3 } from 'gl-matrix';
-import * as cornerstone from '@cornerstonejs/core';
-import * as cornerstoneTools from '@cornerstonejs/tools';
+import * as cs from '@cornerstonejs/core';
+import * as csTools from '@cornerstonejs/tools';
 import { classes, DicomMetadataStore } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
 import { Enums, annotation } from '@cornerstonejs/tools';
+import getThresholdValues from './utils/getThresholdValue';
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
@@ -33,8 +34,21 @@ const commandsModule = ({
   function _getActiveViewportsEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
     const { element } = getEnabledElement(activeViewportIndex) || {};
-    const enabledElement = cornerstone.getEnabledElement(element);
+    const enabledElement = cs.getEnabledElement(element);
     return enabledElement;
+  }
+
+  function _getMatchedViewportsToolGroupIds() {
+    const [matchedViewports] = HangingProtocolService.getState();
+    const toolGroupIds = [];
+    matchedViewports.forEach(({ viewportOptions }) => {
+      const { toolGroupId } = viewportOptions;
+      if (toolGroupIds.indexOf(toolGroupId) === -1) {
+        toolGroupIds.push(toolGroupId);
+      }
+    });
+
+    return toolGroupIds;
   }
 
   const actions = {
@@ -148,7 +162,7 @@ const commandsModule = ({
 
       return metadata;
     },
-    createNewLabelmapForPT: async () => {
+    createNewLabelmapFromPT: async () => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
       const ptDisplaySet = actions.getMatchingPTDisplaySet();
@@ -165,41 +179,99 @@ const commandsModule = ({
         }
       );
 
-      const ptVolumeId = ptDisplaySet.displaySetInstanceUID;
-      // find the viewport that is displaying the PT Volume
-      const { viewports } = ViewportGridService.getState();
+      const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
-      const ptViewportIndex = viewports.findIndex(
-        viewport =>
-          viewport.displaySetInstanceUIDs.length === 1 &&
-          viewport.displaySetInstanceUIDs[0] === ptVolumeId
+      const options = {
+        representationType: csTools.Enums.SegmentationRepresentations.Labelmap,
+      };
+
+      for (const toolGroupId of toolGroupIds) {
+        await commandsManager.runCommand(
+          'addSegmentationRepresentationToToolGroup',
+          { segmentationId, toolGroupId: toolGroupId, options }
+        );
+      }
+    },
+    setSegmentationActiveForToolGroups: ({ segmentationId }) => {
+      const toolGroupIds = _getMatchedViewportsToolGroupIds();
+
+      toolGroupIds.forEach(toolGroupId => {
+        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
+          toolGroupId
+        );
+
+        if (segmentationRepresentations.length === 0) {
+          return;
+        }
+
+        // Todo: this finds the first segmentation representation that matches the segmentationId
+        // If there are two labelmap representations from the same segmentation, this will not work
+
+        const representation = segmentationRepresentations.find(
+          representation => representation.segmentationId === segmentationId
+        );
+
+        csTools.segmentation.activeSegmentation.setActiveSegmentationRepresentation(
+          toolGroupId,
+          representation.segmentationRepresentationUID
+        );
+      });
+    },
+    thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
+      const segmentation = csTools.segmentation.state.getSegmentation(
+        segmentationId
       );
 
-      const ptViewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
-        ptViewportIndex
+      const { representationData } = segmentation;
+      const { volumeId: segVolumeId } = representationData[
+        csTools.Enums.SegmentationRepresentations.Labelmap
+      ];
+
+      const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
+
+      const labelmapVolume = cs.cache.getVolume(segmentationId);
+      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+
+      if (!referencedVolume) {
+        throw new Error('No Reference volume found');
+      }
+
+      if (!labelmapVolume) {
+        throw new Error('No Reference labelmap found');
+      }
+
+      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
+        RECTANGLE_ROI_THRESHOLD_MANUAL
       );
 
-      if (!ptViewport) {
+      if (annotationUIDs.length === 0) {
+        UINotificationService.show({
+          title: 'Commands Module',
+          message: 'No ROIThreshold Tool is Selected',
+          type: 'error',
+        });
         return;
       }
 
-      const renderingEngineId = ptViewport.getRenderingEngine().id;
-      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
-        ptViewport.id,
-        renderingEngineId
+      const { lower, higher } = getThresholdValues(
+        annotationUIDs,
+        referencedVolume,
+        config
       );
 
-      const options = {
-        representationType:
-          cornerstoneTools.Enums.SegmentationRepresentations.Labelmap,
+      const configToUse = {
+        lower,
+        higher,
+        overwrite: true,
       };
 
-      await commandsManager.runCommand(
-        'addSegmentationRepresentationToToolGroup',
-        { segmentationId, toolGroupId: toolGroup.id, options }
+      csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
+        annotationUIDs,
+        labelmapVolume,
+        [referencedVolume],
+        configToUse
       );
     },
-
     // setPTColormap: ({ toolGroupUID, colormap }) => {
     //   const toolGroup = ToolGroupManager.getToolGroupById(toolGroupUID);
 
@@ -247,8 +319,8 @@ const commandsModule = ({
     //   return _getActiveViewportsEnabledElement();
     // },
     // thresholdVolume: ({ labelmapUID, config }) => {
-    //   const labelmap = cornerstone.cache.getVolume(labelmapUID);
-    //   const volume = cornerstone.cache.getVolume(labelmap.referenceVolumeUID);
+    //   const labelmap = cs.cache.getVolume(labelmapUID);
+    //   const volume = cs.cache.getVolume(labelmap.referenceVolumeUID);
 
     //   if (!volume) {
     //     throw new Error('No Reference volume found');
@@ -289,8 +361,8 @@ const commandsModule = ({
 
     //   const thresholdVolumeMethod =
     //     config.strategy === 'range'
-    //       ? csToolsUtils.segmentation.thresholdVolumeByRange
-    //       : csToolsUtils.segmentation.thresholdVolumeByRoiStats;
+    //       ? csTools.Utils.segmentation.thresholdVolumeByRange
+    //       : csTools.Utils.segmentation.thresholdVolumeByRoiStats;
 
     //   return thresholdVolumeMethod(
     //     selectedToolDataList,
@@ -302,18 +374,18 @@ const commandsModule = ({
     // calculateSuvPeak: ({ labelmap }) => {
     //   const { viewport } = _getActiveViewportsEnabledElement();
 
-    //   if (viewport instanceof cornerstone.StackViewport) {
+    //   if (viewport instanceof cs.StackViewport) {
     //     throw new Error('Cannot create a labelmap from a stack viewport');
     //   }
 
     //   const { uid } = viewport.getDefaultActor();
-    //   const volume = cornerstone.getVolume(uid);
+    //   const volume = cs.getVolume(uid);
 
     //   const toolData = toolDataSelection.getSelectedToolDataByToolName(
     //     RECTANGLE_ROI_THRESHOLD_MANUAL
     //   );
 
-    //   const suvPeak = csToolsUtils.segmentation.calculateSuvPeak(
+    //   const suvPeak = csTools.Utils.segmentation.calculateSuvPeak(
     //     viewport,
     //     labelmap,
     //     volume,
@@ -328,9 +400,9 @@ const commandsModule = ({
     //   };
     // },
     // getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
-    //   const { scalarData, spacing } = cornerstone.getVolume(labelmap.uid);
+    //   const { scalarData, spacing } = cs.getVolume(labelmap.uid);
 
-    //   const { scalarData: referencedScalarData } = cornerstone.getVolume(
+    //   const { scalarData: referencedScalarData } = cs.getVolume(
     //     labelmap.referenceVolumeUID
     //   );
 
@@ -375,12 +447,12 @@ const commandsModule = ({
     // },
     // getTotalLesionGlycolysis: ({ segmentations }) => {
     //   const labelmapVolumes = segmentations.map(segmentation => {
-    //     return cornerstone.cache.getVolume(segmentation.id);
+    //     return cs.cache.getVolume(segmentation.id);
     //   });
 
     //   // merge labelmap will through an error if labels maps are not the same size
     //   // or same direction or ....
-    //   const mergedLabelmap = csToolsUtils.segmentation.createMergedLabelmap(
+    //   const mergedLabelmap = csTools.Utils.segmentation.createMergedLabelmap(
     //     labelmapVolumes
     //   );
 
@@ -391,7 +463,7 @@ const commandsModule = ({
     //     throw new Error('No Reference volume found');
     //   }
 
-    //   const ptVolume = cornerstone.getVolume(referenceVolumeUID);
+    //   const ptVolume = cs.getVolume(referenceVolumeUID);
 
     //   const mergedLabelData = mergedLabelmap.scalarData;
 
@@ -422,7 +494,7 @@ const commandsModule = ({
     // getLabelmapVolumes: () => {
     //   const segmentations = SegmentationService.getSegmentations();
     //   const labelmapVolumes = segmentations.map(segmentation => {
-    //     return cornerstone.cache.getVolume(segmentation.id);
+    //     return cs.cache.getVolume(segmentation.id);
     //   });
 
     //   return labelmapVolumes;
@@ -431,15 +503,13 @@ const commandsModule = ({
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
 
-      const selectedAnnotationUIDs = cornerstoneTools.annotation.selection.getAnnotationsSelectedByToolName(
+      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
         RECTANGLE_ROI_THRESHOLD_MANUAL
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
-      const annotation = cornerstoneTools.annotation.state.getAnnotation(
-        annotationUID
-      );
+      const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
       const { handles } = annotation.data;
       const { points } = handles;
@@ -469,15 +539,13 @@ const commandsModule = ({
     setEndSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
 
-      const selectedAnnotationUIDs = cornerstoneTools.annotation.selection.getAnnotationsSelectedByToolName(
+      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
         RECTANGLE_ROI_THRESHOLD_MANUAL
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
-      const annotation = cornerstoneTools.annotation.state.getAnnotation(
-        annotationUID
-      );
+      const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
       // get the current slice Index
       const sliceIndex = viewport.getCurrentImageIdIndex();
@@ -509,8 +577,18 @@ const commandsModule = ({
       storeContexts: [],
       options: {},
     },
-    createNewLabelmapForPT: {
-      commandFn: actions.createNewLabelmapForPT,
+    createNewLabelmapFromPT: {
+      commandFn: actions.createNewLabelmapFromPT,
+      storeContexts: [],
+      options: {},
+    },
+    setSegmentationActiveForToolGroups: {
+      commandFn: actions.setSegmentationActiveForToolGroups,
+      storeContexts: [],
+      options: {},
+    },
+    thresholdSegmentationByRectangleROITool: {
+      commandFn: actions.thresholdSegmentationByRectangleROITool,
       storeContexts: [],
       options: {},
     },

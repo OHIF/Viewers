@@ -1,98 +1,85 @@
 import { eventTarget, Enums } from '@cornerstonejs/core';
 import { segmentation, Enums as csToolsEnums } from '@cornerstonejs/tools';
+import Labelmap from './utils/segmentationServiceMappings/Labelmap';
 
-import SegmentationServiceMappingsFactory from './utils/segmentationServiceMappings/segmentationServiceMappingsFactory';
-
-const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
-const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
-
-const connectToolsToSegmentationService = (
+function initSegmentationService(
   SegmentationService,
-  DisplaySetService,
   Cornerstone3DViewportService
-) => {
-  const cs3DToolsSegmentationSource = initSegmentationService(
+) {
+  connectToolsToSegmentationService(
     SegmentationService,
-    DisplaySetService
+    Cornerstone3DViewportService
   );
+
   connectSegmentationServiceToTools(
     SegmentationService,
-    Cornerstone3DViewportService,
-    cs3DToolsSegmentationSource
+    Cornerstone3DViewportService
   );
-  const { addOrUpdate, remove } = cs3DToolsSegmentationSource;
+}
+
+function connectToolsToSegmentationService(
+  SegmentationService,
+  Cornerstone3DViewportService
+) {
+  connectSegmentationServiceToTools(
+    SegmentationService,
+    Cornerstone3DViewportService
+  );
   const segmentationUpdated = csToolsEnums.Events.SEGMENTATION_MODIFIED;
 
   eventTarget.addEventListener(segmentationUpdated, evt => {
     const { segmentationId } = evt.detail;
-
-    const activeSegmentIndex = segmentation.state.getSegmentation(
+    const segmentationState = segmentation.state.getSegmentation(
       segmentationId
     );
 
+    if (
+      !Object.keys(segmentationState.representationData).includes(
+        csToolsEnums.SegmentationRepresentations.Labelmap
+      )
+    ) {
+      throw new Error('Non-labelmap representations are not supported yet');
+    }
+
+    // Todo: handle other representations when available in cornerstone3D
+    const segmentationSchema = Labelmap.toSegmentation(segmentationState);
+
     try {
-      const representationId = 'Labelmap';
-      addOrUpdate(representationId, {
+      SegmentationService.addOrUpdateSegmentation(
         segmentationId,
-        activeSegmentIndex,
-      });
+        segmentationSchema
+      );
     } catch (error) {
-      console.warn('Failed to update measurement:', error);
+      console.warn(
+        `Failed to add/update segmentation ${segmentationId}`,
+        error
+      );
     }
   });
+}
 
-  return cs3DToolsSegmentationSource;
-};
-
-const initSegmentationService = (SegmentationService, DisplaySetService) => {
-  /* Initialization */
-  const { Labelmap } = SegmentationServiceMappingsFactory(
-    SegmentationService,
-    DisplaySetService
-  );
-  const cs3DToolsSegmentationSource = SegmentationService.createSource(
-    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
-    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
-  );
-
-  /* Mappings */
-  SegmentationService.addMapping(
-    cs3DToolsSegmentationSource,
-    'Labelmap',
-    Labelmap.matchingCriteria,
-    () => {}, // to source
-    Labelmap.toSegmentation
-  );
-
-  return cs3DToolsSegmentationSource;
-};
-
-const connectSegmentationServiceToTools = (
+function connectSegmentationServiceToTools(
   SegmentationService,
-  Cornerstone3DViewportService,
-  segmentationSource
-) => {
+  Cornerstone3DViewportService
+) {
   const {
     SEGMENTATIONS_CLEARED,
     SEGMENTATION_UPDATED,
+    SEGMENTATION_ADDED,
     SEGMENTATION_REMOVED,
   } = SegmentationService.EVENTS;
-  const sourceId = segmentationSource.id;
 
-  SegmentationService.subscribe(
-    SEGMENTATION_REMOVED,
-    ({ source, segmentationId }) => {
-      debugger;
-      // Todo: for now remove from all viewports
-      const removeFromCache = true;
-      SegmentationModule.removeLabelmapForAllElements(
-        segmentationId,
-        removeFromCache
-      );
+  SegmentationService.subscribe(SEGMENTATION_REMOVED, ({ source, id }) => {
+    debugger;
+    // Todo: for now remove from all viewports
+    const removeFromCache = true;
+    SegmentationModule.removeLabelmapForAllElements(
+      segmentationId,
+      removeFromCache
+    );
 
-      Cornerstone3DViewportService.getRenderingEngine().render();
-    }
-  );
+    Cornerstone3DViewportService.getRenderingEngine().render();
+  });
 
   SegmentationService.subscribe(SEGMENTATIONS_CLEARED, () => {
     debugger;
@@ -120,10 +107,6 @@ const connectSegmentationServiceToTools = (
       });
     }
   );
-};
+}
 
-export {
-  initSegmentationService,
-  connectToolsToSegmentationService,
-  connectSegmentationServiceToTools,
-};
+export default initSegmentationService;

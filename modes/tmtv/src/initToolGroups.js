@@ -102,6 +102,7 @@ function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
     ],
+    enabled: [{ toolName: toolNames.SegmentationDisplay }],
   };
 
   const mipToolsConfig = {

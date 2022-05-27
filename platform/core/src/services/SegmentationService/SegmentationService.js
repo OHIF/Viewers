@@ -25,25 +25,55 @@ class SegmentationService {
   }
 
   /**
-   * Get all measurements.
+   * Get all segmentations.
    *
-   * @return {Measurement[]} Array of measurements
+   * @return Array of segmentations
    */
-  getSegmentations() {}
+  getSegmentations() {
+    const segmentations = this._arrayOfObjects(this.segmentations);
+    return (
+      segmentations &&
+      segmentations.map(m => this.segmentations[Object.keys(m)[0]])
+    );
+  }
 
   /**
-   * Get specific measurement by its id.
+   * Get specific segmentation by its id.
    *
-   * @param {string} id If of the measurement
-   * @return {Measurement} Measurement instance
+   * @param id If of the segmentation
+   * @return segmentation instance
    */
   getSegmentation(id) {}
+
+  addOrUpdateSegmentation(id, segmentationSchema) {
+    const segmentation = this.segmentations[id];
+
+    if (segmentation) {
+      Object.assign(segmentation, segmentationSchema);
+
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+        id,
+        segmentation,
+      });
+
+      return;
+    }
+
+    this.segmentations[id] = {
+      ...segmentationSchema,
+    };
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+      id,
+      segmentation,
+    });
+  }
 
   /**
    * Toggles the visibility of a segmentation in the state, and broadcasts the event.
    * Note: this method does not update the segmentation state in the source. It only
    * updates the state, and there should be separate listeners for that.
-   * @param {string[]} ids segmentation ids
+   * @param ids segmentation ids
    */
   toggleSegmentationsVisibility(ids) {
     // ids.forEach(id => {
@@ -59,15 +89,15 @@ class SegmentationService {
   }
 
   /**
-   * Removes a measurement and broadcasts the removed event.
+   * Removes a segmentation and broadcasts the removed event.
    *
-   * @param {string} id The measurement id
-   * @param {segmentationsource} source The measurement source instance
-   * @return {string} The removed measurement id
+   * @param {string} id The segmentation id
+   * @param {segmentationsource} source The segmentation source instance
+   * @return {string} The removed segmentation id
    */
   remove(id, source) {
     // if (!id || !this.segmentations[id]) {
-    //   log.warn(`No id provided, or unable to find measurement by id.`);
+    //   log.warn(`No id provided, or unable to find segmentation by id.`);
     //   return;
     // }
     // delete this.segmentations[id];
@@ -77,14 +107,8 @@ class SegmentationService {
     // });
   }
 
-  clearSegmentations() {
-    this.segmentations = {};
-    this._jumpToMeasurementCache = {};
-    this._broadcastEvent(this.EVENTS.SEGMENTATIONS_CLEARED);
-  }
-
   /**
-   * Clear all measurements and broadcasts cleared event.
+   * Clear all segmentations and broadcasts cleared event.
    */
   clear() {
     this.segmentations = {};

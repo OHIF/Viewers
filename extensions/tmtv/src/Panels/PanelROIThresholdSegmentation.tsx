@@ -21,34 +21,32 @@ export default function PanelRoiThresholdSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const { t } = useTranslation('PanelSUV');
-  const [showConfig, setShowConfig] = useState(false);
-  const [labelmapLoading, setLabelmapLoading] = useState(false);
-  const [activeSegmentationId, setActiveSegmentationId] = useState('');
-  const [segmentations, setSegmentations] = useState([]);
-  const [tmtvValue, setTmtvValue] = useState(0);
-
-  // keep track of old segmentations
-  const oldSegmentations = useRef([]);
-
   const {
     SegmentationService,
     UINotificationService,
     UIDialogService,
   } = servicesManager.services;
 
+  const { t } = useTranslation('PanelSUV');
+  const [showConfig, setShowConfig] = useState(false);
+  const [labelmapLoading, setLabelmapLoading] = useState(false);
+  const [selectedSegmentationId, setSelectedSegmentationId] = useState('');
+  const [segmentations, setSegmentations] = useState(() =>
+    SegmentationService.getSegmentations()
+  );
   const [config, setConfig] = useState({
     strategy: 'roiStat',
     minValue: 0,
     maxValue: 100,
-    numSlices: 1,
     weight: 0.41,
   });
 
-  useEffect(() => {
-    // ~~ Initial
-    setSegmentations(SegmentationService.getSegmentations());
+  const [tmtvValue, setTmtvValue] = useState(0);
 
+  // keep track of old segmentations
+  const oldSegmentations = useRef([]);
+
+  useEffect(() => {
     // ~~ Subscription
     const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
     const updated = SegmentationService.EVENTS.SEGMENTATION_UPDATED;
@@ -56,14 +54,15 @@ export default function PanelRoiThresholdSegmentation({
     const subscriptions = [];
 
     [added, updated, removed].forEach(evt => {
-      subscriptions.push(
-        SegmentationService.subscribe(evt, () => {
-          if (isMounted.current) {
-            const segmentations = SegmentationService.getSegmentations();
-            setSegmentations(segmentations);
-          }
-        }).unsubscribe
-      );
+      const { unsubscribe } = SegmentationService.subscribe(evt, () => {
+        const segmentations = SegmentationService.getSegmentations();
+        setSegmentations(segmentations);
+
+        if (!selectedSegmentationId) {
+          setSelectedSegmentationId(segmentations[0].id);
+        }
+      });
+      subscriptions.push(unsubscribe);
     });
 
     return () => {
@@ -71,7 +70,7 @@ export default function PanelRoiThresholdSegmentation({
         unsub();
       });
     };
-  }, [SegmentationService]);
+  }, []);
 
   // // calculate the suv peak value for each segmentation
   // // check if the segmentations have changed compared to the old segmentations
@@ -113,13 +112,20 @@ export default function PanelRoiThresholdSegmentation({
 
   const handleCreateLabelmap = () => {
     setLabelmapLoading(true);
-    commandsManager.runCommand('createNewLabelmapForPT').then(() => {
+    commandsManager.runCommand('createNewLabelmapFromPT').then(() => {
       setLabelmapLoading(false);
     });
   };
 
   const handleRoiThresholding = () => {
-    const labelmap = SegmentationService.getSegmentation(activeSegmentationId);
+    commandsManager.runCommand('thresholdSegmentationByRectangleROITool', {
+      segmentationId: selectedSegmentationId,
+      config,
+    });
+    return;
+    const labelmap = SegmentationService.getSegmentation(
+      selectedSegmentationId
+    );
 
     if (!labelmap) {
       UINotificationService.show({
@@ -132,7 +138,7 @@ export default function PanelRoiThresholdSegmentation({
 
     const thresholdedLabelmap = commandsManager.runCommand('thresholdVolume', {
       config,
-      labelmapUID: activeSegmentationId,
+      labelmapUID: selectedSegmentationId,
     });
 
     const lesionStats = commandsManager.runCommand('getLesionStats', {
@@ -158,7 +164,7 @@ export default function PanelRoiThresholdSegmentation({
 
     const notYetUpdatedAtSource = true;
     SegmentationService.update(
-      activeSegmentationId,
+      selectedSegmentationId,
       labelmap,
       notYetUpdatedAtSource
     );
@@ -187,13 +193,17 @@ export default function PanelRoiThresholdSegmentation({
   };
 
   const handleSegmentationClick = segmentationId => {
-    const {
-      viewport: { element },
-    } = commandsManager.runCommand('getActiveViewportsEnabledElement', {});
-    activeLabelmapController.setActiveLabelmapByLabelmapUID(
-      element,
-      segmentationId
-    );
+    commandsManager.runCommand('setSegmentationActiveForToolGroups', {
+      segmentationId,
+    });
+    // const {
+    //   viewport: { element },
+    // } = commandsManager.runCommand('getActiveViewportsEnabledElement', {});
+    // activeLabelmapController.setActiveLabelmapByLabelmapUID(
+    //   element,
+    //   segmentationId
+    // );
+    setSelectedSegmentationId(segmentationId);
   };
 
   const handleSegmentationHide = segmentationId => {
@@ -293,16 +303,13 @@ export default function PanelRoiThresholdSegmentation({
         ) : null}
         {/* show segmentation table */}
         <div className="mt-4">
-          {segmentations.length ? (
+          {segmentations?.length ? (
             <SegmentationTable
               title={t('Segmentations')}
               amount={segmentations.length}
               segmentations={segmentations}
-              activeSegmentationId={activeSegmentationId}
-              onClick={id => {
-                setActiveSegmentationId(id);
-                handleSegmentationClick(id);
-              }}
+              activeSegmentationId={selectedSegmentationId}
+              onClick={handleSegmentationClick}
               onToggleVisibility={id => {
                 handleSegmentationHide(id);
               }}

@@ -25,7 +25,7 @@ import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
-import { connectToolsToSegmentationService } from './initSegmentationService';
+import initSegmentationService from './initSegmentationService';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -102,11 +102,7 @@ export default async function init({
     Cornerstone3DViewportService
   );
 
-  connectToolsToSegmentationService(
-    SegmentationService,
-    DisplaySetService,
-    Cornerstone3DViewportService
-  );
+  initSegmentationService(SegmentationService, Cornerstone3DViewportService);
 
   initCineService(CineService);
 

@@ -1,5 +1,4 @@
-import { cache, getEnabledElement } from '@cornerstonejs/core';
-import { segmentation } from '@cornerstonejs/tools';
+import { segmentation, Enums as csToolsEnums } from '@cornerstonejs/tools';
 
 const getDisplayTextFromCachedStats = stats => {
   let displayText = [];
@@ -12,55 +11,27 @@ const getDisplayTextFromCachedStats = stats => {
 };
 
 const Labelmap = {
-  toSegmentation: (segmentation, DisplaySetService) => {
+  toSegmentation: segmentationState => {
     const {
       activeSegmentIndex,
-      element,
-      labelmapIndex,
-      labelmapUID,
-    } = segmentation;
+      cachedStats: data,
+      segmentsLocked,
+      representationData,
+      label,
+      segmentationId,
+    } = segmentationState;
 
-    debugger;
-
-    return {};
-
-    const globalState = SegmentationModule.getGlobalStateForLabelmapUID(
-      labelmapUID
-    );
-
-    const { label, cachedStats } = globalState;
-
-    if (!labelmapUID) {
-      console.warn('No labelmapUID found');
-      return null;
-    }
-
-    const volume = getVolume(labelmapUID);
-
-    if (!volume) {
-      throw new Error(`No volume found for labelmapUID: ${labelmapUID}`);
-    }
-
-    const { viewport } = getEnabledElement(element);
-    const { dimensions, sizeInBytes, metadata } = volume;
-
-    const displayText = getDisplayTextFromCachedStats(cachedStats);
+    const labelmapRepresentationData =
+      representationData[csToolsEnums.SegmentationRepresentations.Labelmap];
 
     return {
-      id: labelmapUID,
+      id: segmentationId,
+      activeSegmentIndex,
+      segmentsLocked,
+      data,
       label,
-      labelmapIndex,
-      activeLabelmapIndex,
-      dimensions,
-      sizeInBytes,
-      cachedStats,
-      FrameOfReferenceUID: viewport.getFrameOfReferenceUID(),
-      // referenceSeriesUID: SeriesInstanceUID,
-      // referenceStudyUID: StudyInstanceUID,
-      // displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      type: 'Labelmap',
-      displayText,
-      metadata,
+      volumeId: labelmapRepresentationData.volumeId,
+      displayText: getDisplayTextFromCachedStats(data),
     };
   },
 };

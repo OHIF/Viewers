@@ -329,7 +329,7 @@ const commandsModule = ({ servicesManager }) => {
       const volumeId = displaySetInstanceUID;
 
       const segmentationUID = cornerstone.utilities.uuidv4();
-      const segmentationId = `${volumeId}-${segmentationUID}`;
+      const segmentationId = `${volumeId}::${segmentationUID}`;
 
       await cornerstone.volumeLoader.createAndCacheDerivedVolume(volumeId, {
         volumeId: segmentationId,

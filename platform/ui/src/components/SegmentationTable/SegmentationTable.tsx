@@ -17,7 +17,7 @@ const SegmentationTable = ({
   const [hiddenSegmentationIds, setHiddenSegmentationIds] = useState([]);
 
   const handleToggleAll = () => {
-    // filter segmentaion ids that are hidden
+    // filter segmentation ids that are hidden
     const visibleSegmentationsIds = segmentations
       .filter(segmentation => !hiddenSegmentationIds.includes(segmentation.id))
       .map(segmentation => segmentation.id);
@@ -63,14 +63,14 @@ const SegmentationTable = ({
       </div>
       <div className="overflow-x-hidden overflow-y-auto ohif-scrollbar max-h-64">
         {!!segmentations.length &&
-          segmentations.map((segData, i) => {
-            const { id, label, displayText } = segData;
+          segmentations.map((segmentation, i) => {
+            const { id, label, displayText = [] } = segmentation;
             return (
               <SegmentationItem
                 key={id}
                 id={id}
                 index={i + 1}
-                label={label}
+                label={label ?? `Segmentation ${i + 1}`}
                 displayText={displayText}
                 isActive={activeSegmentationId === id}
                 isVisible={!hiddenSegmentationIds.includes(id)}

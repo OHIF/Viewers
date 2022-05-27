@@ -1313,28 +1313,28 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-0.1.1.tgz#5bd1c52a33a425299299e970312731fa0cc2711b"
   integrity sha512-HOMMOLV6xy8O/agNGGvrl0a8DwShpBvWxAzEzv2pqq12d3r5z/3MyIgNA3Oj/8bIBVvvVXxh9RX7rMDRHJdowg==
 
-"@cornerstonejs/core@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.8.1.tgz#27f578a19e12f037bee55aa40b60f626eb26e6a0"
-  integrity sha512-ZNQ+uHo8eLi0JTQ5/7MxtX2Joittk7gLZY1BJ5FpPbM4rX+eCoJYNajMz0XybB9Lz89jwGX/3/9i+RGIX3Z7rA==
+"@cornerstonejs/core@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.10.2.tgz#3386d212eaf232ef08930a03ba9ff995085bab8f"
+  integrity sha512-ZWenW21jwO/SP1hKeAp87UIw3eE5qBSihhvMMbe63Ou+OhVYPv2trHHqsX0ymKrty9997Oyh7I/sfDzRzzRfbA==
   dependencies:
     detect-gpu "^4.0.7"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.2.26":
-  version "0.2.26"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.2.26.tgz#b7d8ef8e2429647ec7b82522ba52e9ef388e7871"
-  integrity sha512-b4WpxA8EkssKr4/yAVW2utZURSWJec+xoaHK2Qlj67+slRKhbSeyaWI2QaPd3exIWEXs0095XN3tKBhoU2Yxlg==
+"@cornerstonejs/streaming-image-volume-loader@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.3.2.tgz#0047457eddf232babbd23945958cfd2031ec57a2"
+  integrity sha512-/rbLQekb2Vdnq8x89OWhjqXFwdzd9FSdWGqmwErE0Vk5k1KbuMOcfLJ/BY4S0E4aXU58/Ah0HbwkPYV04Nlx/w==
   dependencies:
-    "@cornerstonejs/core" "^0.8.1"
+    "@cornerstonejs/core" "^0.10.2"
     cornerstone-wado-image-loader "^4.1.2"
 
-"@cornerstonejs/tools@^0.15.0":
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.15.2.tgz#743dc6a0b5229ddbf58c6f35ac408aba5672f786"
-  integrity sha512-cGdOMpRynIMqGOP4q/MpDnClNhmoqbpzkFoPzUnZdP8wxRAObYb70wBTsrg3+3BM+L1GEspVpcZ+KsHX8gM8Fg==
+"@cornerstonejs/tools@^0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.17.2.tgz#2bcea8436db446a38f04b643ed473f48321f1d57"
+  integrity sha512-Hu7dFvR/TLJ2lPDBNExlgHNI7YeZWZnIZVi3k9szxkhEVi5jvQcgW7Fyf/5RxcCGqG2qwlTvgL+lPg/jZsn6xw==
   dependencies:
-    "@cornerstonejs/core" "^0.8.1"
+    "@cornerstonejs/core" "^0.10.2"
     lodash.clonedeep "4.5.0"
 
 "@csstools/postcss-color-function@^1.1.0":
