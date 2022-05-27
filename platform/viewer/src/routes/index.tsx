@@ -34,6 +34,7 @@ const createRoutes = ({
   extensionManager,
   servicesManager,
   hotkeysManager,
+  commandsManager,
   routerBasename,
 }) => {
   const routes =
@@ -42,6 +43,7 @@ const createRoutes = ({
       dataSources,
       extensionManager,
       servicesManager,
+      commandsManager,
       hotkeysManager,
     }) || [];
 

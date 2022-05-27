@@ -1,9 +1,13 @@
 import { vec3 } from 'gl-matrix';
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
+import { classes, DicomMetadataStore } from '@ohif/core';
+
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
 import { Enums, annotation } from '@cornerstonejs/tools';
+
+const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
 
 const commandsModule = ({
@@ -16,7 +20,8 @@ const commandsModule = ({
     UINotificationService,
     SegmentationService,
     DisplaySetService,
-    ViewportService,
+    Cornerstone3DViewportService,
+    HangingProtocolService,
   } = servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
@@ -33,31 +38,168 @@ const commandsModule = ({
   }
 
   const actions = {
-    // createNewLabelmapForPT: async () => {
-    //   const renderingEngine = ViewportService.getRenderingEngine();
+    getMatchingPTDisplaySet: () => {
+      // Todo: this is assuming that the hanging protocol has successfully matched
+      // the correct PT. For future, we should have a way to filter out the PTs
+      // that are in the viewer layout (but then we have the problem of the attenuation
+      // corrected PT vs the non-attenuation correct PT)
+      const matches = HangingProtocolService.getDisplaySetsMatchDetails();
 
-    //   const viewports = renderingEngine.getViewports();
+      const matchedSeriesInstanceUIDs = Array.from(matches.values()).map(
+        ({ SeriesInstanceUID }) => SeriesInstanceUID
+      );
 
-    //   // Find the viewport that has a volume loaded of PT
-    //   const viewport = viewports.find(viewport => {
-    //     const { uid } = viewport.getDefaultActor();
-    //     const volume = cache.getVolume(uid);
-    //     return volume?.metadata?.Modality === 'PT';
-    //   });
+      let ptDisplaySet = null;
+      for (const SeriesInstanceUID of matchedSeriesInstanceUIDs) {
+        const displaySets = DisplaySetService.getDisplaySetsForSeries(
+          SeriesInstanceUID
+        );
 
-    //   if (!viewport) {
-    //     console.warn('No viewport found with PT loaded yet');
-    //   }
+        if (!displaySets || displaySets.length === 0) {
+          continue;
+        }
 
-    //   const { element } = viewport;
-    //   const labelmapIndex = activeLabelmapController.getNextLabelmapIndex(
-    //     element
-    //   );
-    //   await activeLabelmapController.setActiveLabelmapIndex(
-    //     element,
-    //     labelmapIndex
-    //   );
-    // },
+        const displaySet = displaySets[0];
+        if (displaySet.Modality !== 'PT') {
+          continue;
+        }
+
+        ptDisplaySet = displaySet;
+      }
+
+      return ptDisplaySet;
+    },
+    getPTMetadata: ({ ptDisplaySet }) => {
+      const dataSource = extensionManager.getDataSources()[0];
+      const imageIds = dataSource.getImageIdsForDisplaySet(ptDisplaySet);
+
+      const firstImageId = imageIds[0];
+      const SeriesTime = metadataProvider.get('SeriesTime', firstImageId);
+      const metadata = {};
+
+      if (SeriesTime) {
+        metadata.SeriesTime = SeriesTime;
+      }
+
+      // get metadata from the first image
+      const seriesModule = metadataProvider.get(
+        'generalSeriesModule',
+        firstImageId
+      );
+
+      if (seriesModule && seriesModule.modality !== 'PT') {
+        return;
+      }
+
+      // get metadata from the first image
+      const demographic = metadataProvider.get(
+        'patientDemographicModule',
+        firstImageId
+      );
+
+      if (demographic) {
+        // naturalized dcmjs version
+        metadata.PatientSex = demographic.patientSex;
+      }
+
+      // patientStudyModule
+      const studyModule = metadataProvider.get(
+        'patientStudyModule',
+        firstImageId
+      );
+
+      if (studyModule) {
+        // naturalized dcmjs version
+        metadata.PatientWeight = studyModule.patientWeight;
+      }
+
+      // total dose
+      const petSequenceModule = metadataProvider.get(
+        'petIsotopeModule',
+        firstImageId
+      );
+      const { radiopharmaceuticalInfo } = petSequenceModule;
+
+      const {
+        radionuclideHalfLife,
+        radionuclideTotalDose,
+        radiopharmaceuticalStartTime,
+      } = radiopharmaceuticalInfo;
+
+      const {
+        hours,
+        minutes,
+        seconds,
+        fractionalSeconds,
+      } = radiopharmaceuticalStartTime;
+
+      // pad number with leading zero if less than 10
+      const hoursString = hours < 10 ? `0${hours}` : hours;
+      const minutesString = minutes < 10 ? `0${minutes}` : minutes;
+      const secondsString = seconds < 10 ? `0${seconds}` : seconds;
+
+      if (radiopharmaceuticalInfo) {
+        metadata.RadiopharmaceuticalInformationSequence = {
+          RadionuclideTotalDose: radionuclideTotalDose,
+          RadionuclideHalfLife: radionuclideHalfLife,
+          RadiopharmaceuticalStartTime: `${hoursString}${minutesString}${secondsString}.${fractionalSeconds}`,
+        };
+      }
+
+      return metadata;
+    },
+    createNewLabelmapForPT: async () => {
+      // Create a segmentation of the same resolution as the source data
+      // using volumeLoader.createAndCacheDerivedVolume.
+      const ptDisplaySet = actions.getMatchingPTDisplaySet();
+
+      if (!ptDisplaySet) {
+        UINotificationService.error('No matching PT display set found');
+        return;
+      }
+
+      const segmentationId = await commandsManager.runCommand(
+        'createSegmentationForDisplaySet',
+        {
+          displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
+        }
+      );
+
+      const ptVolumeId = ptDisplaySet.displaySetInstanceUID;
+      // find the viewport that is displaying the PT Volume
+      const { viewports } = ViewportGridService.getState();
+
+      const ptViewportIndex = viewports.findIndex(
+        viewport =>
+          viewport.displaySetInstanceUIDs.length === 1 &&
+          viewport.displaySetInstanceUIDs[0] === ptVolumeId
+      );
+
+      const ptViewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+        ptViewportIndex
+      );
+
+      if (!ptViewport) {
+        return;
+      }
+
+      const renderingEngineId = ptViewport.getRenderingEngine().id;
+      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
+        ptViewport.id,
+        renderingEngineId
+      );
+
+      const options = {
+        representationType:
+          cornerstoneTools.Enums.SegmentationRepresentations.Labelmap,
+      };
+
+      await commandsManager.runCommand(
+        'addSegmentationRepresentationToToolGroup',
+        { segmentationId, toolGroupId: toolGroup.id, options }
+      );
+    },
+
     // setPTColormap: ({ toolGroupUID, colormap }) => {
     //   const toolGroup = ToolGroupManager.getToolGroupById(toolGroupUID);
 
@@ -357,11 +499,21 @@ const commandsModule = ({
       storeContexts: [],
       options: {},
     },
-    // createNewLabelmapForPT: {
-    //   commandFn: actions.createNewLabelmapForPT,
-    //   storeContexts: [],
-    //   options: {},
-    // },
+    getMatchingPTDisplaySet: {
+      commandFn: actions.getMatchingPTDisplaySet,
+      storeContexts: [],
+      options: {},
+    },
+    getPTMetadata: {
+      commandFn: actions.getPTMetadata,
+      storeContexts: [],
+      options: {},
+    },
+    createNewLabelmapForPT: {
+      commandFn: actions.createNewLabelmapForPT,
+      storeContexts: [],
+      options: {},
+    },
     // setPTColormap: {
     //   commandFn: actions.setPTColormap,
     //   storeContexts: [],

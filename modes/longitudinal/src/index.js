@@ -54,11 +54,11 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager }) => {
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
       const { ToolBarService, ToolGroupService } = servicesManager.services;
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, ToolGroupService);
+      initToolGroups(extensionManager, ToolGroupService, commandsManager);
 
       let unsubscribe;
 

@@ -383,7 +383,7 @@ function _jumpToMeasurement(
     displaySetInstanceUID
   );
 
-  const imageIdIndex = referencedDisplaySet.images.findIndex(
+  const imageIndex = referencedDisplaySet.images.findIndex(
     i => i.SOPInstanceUID === SOPInstanceUID
   );
 
@@ -396,7 +396,7 @@ function _jumpToMeasurement(
   if (targetElement !== null) {
     const metadata = {
       ...measurement.metadata,
-      imageIdIndex,
+      imageIndex,
     };
     cs3DTools.utilities.jumpToSlice(targetElement, metadata);
 

@@ -212,17 +212,19 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const { id, label } = measurement;
+      const { uid, label } = measurement;
 
-      const sourceAnnotation = annotation.state.getAnnotation(id);
-
-      if (sourceAnnotation) {
-        sourceAnnotation.label = label;
-        if (sourceAnnotation.hasOwnProperty('text')) {
+      const sourceAnnotation = annotation.state.getAnnotation(uid);
+      const data = sourceAnnotation.data;
+      if (data) {
+        data.label = label;
+        if (data.hasOwnProperty('text')) {
           // Deal with the weird case of ArrowAnnotate.
-          sourceAnnotation.text = label;
+          data.text = label;
         }
       }
+
+      // Todo: trigger render for annotation
     }
   );
 

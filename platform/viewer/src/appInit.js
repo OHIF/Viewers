@@ -12,6 +12,7 @@ import {
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,
+  SegmentationService,
   CineService,
   UserAuthenticationService,
   errorHandler,
@@ -53,6 +54,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     ToolBarService,
     ViewportGridService,
     HangingProtocolService,
+    SegmentationService,
     CineService,
     UserAuthenticationService,
   ]);

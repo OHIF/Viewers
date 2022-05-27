@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next';
 import createAndDownloadTMTVReport from '../utils/createAndDownloadTMTVReport';
 
 const options = [
-  { value: 'roiStat', label: 'Percentage of Max Value' },
-  { value: 'range', label: 'Range Threshold' },
+  { value: 'roiStat', label: 'Percentage of Max Value', placeHolder: ['Max'] },
+  { value: 'range', label: 'Range Threshold', placeHolder: ['Range'] },
 ];
 
 export default function PanelRoiThresholdSegmentation({
@@ -45,33 +45,33 @@ export default function PanelRoiThresholdSegmentation({
     weight: 0.41,
   });
 
-  // useEffect(() => {
-  //   // ~~ Initial
-  //   setSegmentations(SegmentationService.getSegmentations());
+  useEffect(() => {
+    // ~~ Initial
+    setSegmentations(SegmentationService.getSegmentations());
 
-  //   // ~~ Subscription
-  //   const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
-  //   const updated = SegmentationService.EVENTS.SEGMENTATION_UPDATED;
-  //   const removed = SegmentationService.EVENTS.SEGMENTATION_REMOVED;
-  //   const subscriptions = [];
+    // ~~ Subscription
+    const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
+    const updated = SegmentationService.EVENTS.SEGMENTATION_UPDATED;
+    const removed = SegmentationService.EVENTS.SEGMENTATION_REMOVED;
+    const subscriptions = [];
 
-  //   [added, updated, removed].forEach(evt => {
-  //     subscriptions.push(
-  //       SegmentationService.subscribe(evt, () => {
-  //         if (isMounted.current) {
-  //           const segmentations = SegmentationService.getSegmentations();
-  //           setSegmentations(segmentations);
-  //         }
-  //       }).unsubscribe
-  //     );
-  //   });
+    [added, updated, removed].forEach(evt => {
+      subscriptions.push(
+        SegmentationService.subscribe(evt, () => {
+          if (isMounted.current) {
+            const segmentations = SegmentationService.getSegmentations();
+            setSegmentations(segmentations);
+          }
+        }).unsubscribe
+      );
+    });
 
-  //   return () => {
-  //     subscriptions.forEach(unsub => {
-  //       unsub();
-  //     });
-  //   };
-  // }, [SegmentationService]);
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
+  }, [SegmentationService]);
 
   // // calculate the suv peak value for each segmentation
   // // check if the segmentations have changed compared to the old segmentations
@@ -113,7 +113,7 @@ export default function PanelRoiThresholdSegmentation({
 
   const handleCreateLabelmap = () => {
     setLabelmapLoading(true);
-    commandsManager.runCommand('createNewLabelmapForPT', {}).then(() => {
+    commandsManager.runCommand('createNewLabelmapForPT').then(() => {
       setLabelmapLoading(false);
     });
   };
@@ -246,25 +246,18 @@ export default function PanelRoiThresholdSegmentation({
 
   return (
     <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-      <div className="flex flex-col items-center justify-center h-auto px-1 py-4">
-        <div className="text-center">
-          <span className="text-base font-bold tracking-wide text-white uppercase">
-            {t('Roi Threshold Segmentation')}
-          </span>
-        </div>
-      </div>
       <div>
-        <div className="flex mx-4 mb-4 space-x-4">
+        <div className="flex mx-4 my-4 mb-4 space-x-4">
           <Button
             color="primary"
-            onClick={() => handleCreateLabelmap()}
+            onClick={handleCreateLabelmap}
             className="text-xs text-white border-b border-transparent "
           >
             New Label
           </Button>
           <Button
             color="primary"
-            onClick={() => handleRoiThresholding()}
+            onClick={handleRoiThresholding}
             className="text-xs text-white border-b border-transparent "
           >
             Run
@@ -276,10 +269,12 @@ export default function PanelRoiThresholdSegmentation({
             setShowConfig(!showConfig);
           }}
         >
-          <div className="px-4 text-base text-white">{t('Configuration')}</div>
+          <div className="px-4 text-base text-white">
+            {t('ROI Threshold Configuration')}
+          </div>
         </div>
         {showConfig && (
-          <RoiThresholdConfiguration
+          <ROIThresholdConfiguration
             config={config}
             setConfig={setConfig}
             commandsManager={commandsManager}
@@ -288,17 +283,17 @@ export default function PanelRoiThresholdSegmentation({
         {labelmapLoading ? (
           <div className="text-white">Loading Segmentation Panel ... </div>
         ) : null}
-        {tmtvValue && (
+        {tmtvValue !== undefined ? (
           <div className="flex items-baseline justify-between px-2 py-1 mt-10 bg-secondary-dark">
             <span className="text-base font-bold tracking-widest text-white uppercase">
               {'TMTV:'}
             </span>
             <div className="text-white">{`${tmtvValue} mL`}</div>
           </div>
-        )}
+        ) : null}
         {/* show segmentation table */}
         <div className="mt-4">
-          {segmentations && segmentations.length && (
+          {segmentations.length ? (
             <SegmentationTable
               title={t('Segmentations')}
               amount={segmentations.length}
@@ -321,7 +316,7 @@ export default function PanelRoiThresholdSegmentation({
                 handleSegmentationEdit(id);
               }}
             />
-          )}
+          ) : null}
         </div>
         {segmentations?.length ? (
           <div className="flex justify-center mt-4 space-x-2">
@@ -431,19 +426,22 @@ function onSegmentationItemEditHandler({
   });
 }
 
-function RoiThresholdConfiguration({ config, setConfig, commandsManager }) {
-  const { t } = useTranslation('RoiThresholdConfiguration');
+function ROIThresholdConfiguration({ config, setConfig, commandsManager }) {
+  const { t } = useTranslation('ROIThresholdConfiguration');
 
   return (
-    <div className="flex flex-col px-4 mb-8 space-y-4 bg-primary-dark">
+    <div className="flex flex-col px-4 space-y-4 bg-primary-dark">
       <div className="flex items-end space-x-2">
-        <div className="flex flex-col w-1/2 mt-2">
+        <div className="flex flex-col w-1/2 mt-2 ">
           <Select
             label={t('Strategy')}
             closeMenuOnSelect={true}
-            className="mr-2 bg-black border-primary-main"
+            className="mr-2 bg-black border-primary-main "
             options={options}
-            placeholder={'Strategy'}
+            placeholder={
+              options.find(option => option.value === config.strategy)
+                .placeHolder
+            }
             value={config.strategy}
             onChange={({ value }) => {
               setConfig((prevConfig = {}) => {
@@ -460,10 +458,7 @@ function RoiThresholdConfiguration({ config, setConfig, commandsManager }) {
             <Button
               className="px-2 py-2 text-base"
               onClick={() =>
-                commandsManager.runCommand(
-                  'setStartSliceForROIThresholdTool',
-                  {}
-                )
+                commandsManager.runCommand('setStartSliceForROIThresholdTool')
               }
             >
               {t('Start')}
@@ -473,7 +468,7 @@ function RoiThresholdConfiguration({ config, setConfig, commandsManager }) {
             <Button
               className="px-2 py-2 text-base"
               onClick={() =>
-                commandsManager.runCommand('setEndSliceForROIThresholdTool', {})
+                commandsManager.runCommand('setEndSliceForROIThresholdTool')
               }
             >
               {t('End')}
@@ -484,7 +479,7 @@ function RoiThresholdConfiguration({ config, setConfig, commandsManager }) {
 
       {config.strategy === 'roiStat' && (
         <Input
-          label={t('Percentage')}
+          label={t('Percentage of Max SUV')}
           labelClassName="text-white"
           className="mt-2 bg-black border-primary-main"
           type="text"

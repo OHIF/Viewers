@@ -4,8 +4,6 @@ import { Input, Button } from '@ohif/ui';
 import { classes, DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
-const metadataProvider = classes.MetadataProvider;
-
 const DEFAULT_MEATADATA = {
   PatientWeight: null,
   PatientSex: null,
@@ -24,13 +22,9 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
-export default function PanelPetSUV({ servicesManager, extensionManager }) {
+export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const {
-    DisplaySetService,
-    HangingProtocolService,
-  } = servicesManager.services;
-  const dataSource = extensionManager.getDataSources()[0];
+  const { DisplaySetService } = servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -40,7 +34,10 @@ export default function PanelPetSUV({ servicesManager, extensionManager }) {
         const newState = { ...prevState };
         Object.keys(metadata).forEach(key => {
           if (typeof metadata[key] === 'object') {
-            newState[key] = { ...prevState[key], ...metadata[key] };
+            newState[key] = {
+              ...prevState[key],
+              ...metadata[key],
+            };
           } else {
             newState[key] = metadata[key];
           }
@@ -52,20 +49,21 @@ export default function PanelPetSUV({ servicesManager, extensionManager }) {
   );
 
   const getMatchingPTDisplaySet = useCallback(() => {
-    const matches = HangingProtocolService.getDisplaySetsMatchDetails();
-
-    const ptDisplaySet = _getMatchedPtDisplaySet(matches, DisplaySetService);
+    const ptDisplaySet = commandsManager.runCommand('getMatchingPTDisplaySet');
 
     if (!ptDisplaySet) {
       return;
     }
 
-    const metadata = _getPtMetadata(dataSource, ptDisplaySet);
+    const metadata = commandsManager.runCommand('getPTMetadata', {
+      ptDisplaySet,
+    });
+
     return {
       ptDisplaySet,
       metadata,
     };
-  }, [dataSource, DisplaySetService, HangingProtocolService]);
+  }, []);
 
   useEffect(() => {
     const displaySets = DisplaySetService.activeDisplaySets;
@@ -124,7 +122,9 @@ export default function PanelPetSUV({ servicesManager, extensionManager }) {
               containerClassName="mr-2"
               value={metadata.PatientSex}
               onChange={e => {
-                handleMetadataChange({ PatientSex: e.target.value });
+                handleMetadataChange({
+                  PatientSex: e.target.value,
+                });
               }}
             />
             <Input
@@ -135,7 +135,9 @@ export default function PanelPetSUV({ servicesManager, extensionManager }) {
               containerClassName="mr-2"
               value={metadata.PatientWeight}
               onChange={e => {
-                handleMetadataChange({ PatientWeight: e.target.value });
+                handleMetadataChange({
+                  PatientWeight: e.target.value,
+                });
               }}
             />
             <Input
@@ -227,105 +229,3 @@ PanelPetSUV.propTypes = {
     }).isRequired,
   }).isRequired,
 };
-
-function _getMatchedPtDisplaySet(
-  hangingProtocolDisplaySetMatches,
-  DisplaySetService
-) {
-  const matchedSeriesInstanceUIDs = Array.from(
-    hangingProtocolDisplaySetMatches.values()
-  ).map(({ SeriesInstanceUID }) => SeriesInstanceUID);
-
-  for (const SeriesInstanceUID of matchedSeriesInstanceUIDs) {
-    const displaySets = DisplaySetService.getDisplaySetsForSeries(
-      SeriesInstanceUID
-    );
-
-    if (!displaySets || displaySets.length === 0) {
-      continue;
-    }
-
-    const displaySet = displaySets[0];
-    if (displaySet.Modality !== 'PT') {
-      continue;
-    }
-
-    return displaySet;
-  }
-}
-
-function _getPtMetadata(dataSource, displaySet) {
-  const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-
-  const firstImageId = imageIds[0];
-  const SeriesTime = metadataProvider.get('SeriesTime', firstImageId);
-  const metadata = {};
-
-  if (SeriesTime) {
-    metadata.SeriesTime = SeriesTime;
-  }
-
-  // get metadata from the first image
-  const seriesModule = metadataProvider.get(
-    'generalSeriesModule',
-    firstImageId
-  );
-
-  if (seriesModule && seriesModule.modality !== 'PT') {
-    return;
-  }
-
-  // get metadata from the first image
-  const demographic = metadataProvider.get(
-    'patientDemographicModule',
-    firstImageId
-  );
-
-  if (demographic) {
-    // naturalized dcmjs version
-    metadata.PatientSex = demographic.patientSex;
-  }
-
-  // patientStudyModule
-  const studyModule = metadataProvider.get('patientStudyModule', firstImageId);
-
-  if (studyModule) {
-    // naturalized dcmjs version
-    metadata.PatientWeight = studyModule.patientWeight;
-  }
-
-  // total dose
-  const petSequenceModule = metadataProvider.get(
-    'petIsotopeModule',
-    firstImageId
-  );
-  const { radiopharmaceuticalInfo } = petSequenceModule;
-
-  const {
-    radionuclideHalfLife,
-    radionuclideTotalDose,
-    radiopharmaceuticalStartTime,
-  } = radiopharmaceuticalInfo;
-
-  const {
-    hours,
-    minutes,
-    seconds,
-    fractionalSeconds,
-  } = radiopharmaceuticalStartTime;
-
-  // pad number with leading zero if less than 10
-  const hoursString = hours < 10 ? `0${hours}` : hours;
-  const minutesString = minutes < 10 ? `0${minutes}` : minutes;
-  const secondsString = seconds < 10 ? `0${seconds}` : seconds;
-
-  if (radiopharmaceuticalInfo) {
-    metadata.RadiopharmaceuticalInformationSequence = {
-      RadionuclideTotalDose: radionuclideTotalDose,
-      RadionuclideHalfLife: radionuclideHalfLife,
-      RadiopharmaceuticalStartTime: `${hoursString}${minutesString}${secondsString}.${fractionalSeconds}`,
-    };
-  }
-
-  return metadata;
-}

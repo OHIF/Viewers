@@ -6,7 +6,7 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function initToolGroups(toolNames, Enums, ToolGroupService) {
+function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
   const tools = {
     active: [
       {
@@ -34,7 +34,7 @@ function initToolGroups(toolNames, Enums, ToolGroupService) {
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },
     ],
-    // enabled
+    enabled: [{ toolName: toolNames.SegmentationDisplay }],
     disabled: [{ toolName: toolNames.Crosshairs }],
   };
 
@@ -45,6 +45,21 @@ function initToolGroups(toolNames, Enums, ToolGroupService) {
         enabled: true,
         panSize: 10,
       },
+    },
+    [toolNames.ArrowAnnotate]: {
+      getTextCallback: (callback, eventDetails) => {
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          eventDetails,
+        });
+      },
+
+      changeTextCallback: (data, eventDetails, callback) =>
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          data,
+          eventDetails,
+        }),
     },
   };
 
@@ -61,6 +76,7 @@ function initToolGroups(toolNames, Enums, ToolGroupService) {
         ...tools.passive,
         { toolName: toolNames.RectangleROIStartEndThreshold },
       ],
+      enabled: tools.enabled,
       disabled: tools.disabled,
     },
     toolsConfig
