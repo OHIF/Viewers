@@ -1,14 +1,4 @@
-import { segmentation, Enums as csToolsEnums } from '@cornerstonejs/tools';
-
-const getDisplayTextFromCachedStats = stats => {
-  let displayText = [];
-
-  if (stats.suvPeak) {
-    displayText.push(`SUV Peak: ${stats.suvPeak.toFixed(2)}`);
-  }
-
-  return displayText;
-};
+import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 
 const Labelmap = {
   toSegmentation: segmentationState => {
@@ -19,6 +9,7 @@ const Labelmap = {
       representationData,
       label,
       segmentationId,
+      text,
     } = segmentationState;
 
     const labelmapRepresentationData =
@@ -31,7 +22,7 @@ const Labelmap = {
       data,
       label,
       volumeId: labelmapRepresentationData.volumeId,
-      displayText: getDisplayTextFromCachedStats(data),
+      displayText: text || [],
     };
   },
 };

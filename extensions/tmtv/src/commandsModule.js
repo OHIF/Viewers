@@ -7,6 +7,8 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 
 import { Enums, annotation } from '@cornerstonejs/tools';
 import getThresholdValues from './utils/getThresholdValue';
+import calculateSuvPeak from './utils/calculateSUVPeak';
+import calculateTMTV from './utils/calculateTMTV';
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
@@ -265,13 +267,44 @@ const commandsModule = ({
         overwrite: true,
       };
 
-      csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
+      return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
         [referencedVolume],
         configToUse
       );
     },
+    toggleSegmentationVisibility: ({ segmentationId }) => {
+      const toolGroupIds = _getMatchedViewportsToolGroupIds();
+
+      toolGroupIds.forEach(toolGroupId => {
+        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
+          toolGroupId
+        );
+
+        if (segmentationRepresentations.length === 0) {
+          return;
+        }
+
+        // Todo: this finds the first segmentation representation that matches the segmentationId
+        // If there are two labelmap representations from the same segmentation, this will not work
+        const representation = segmentationRepresentations.find(
+          representation => representation.segmentationId === segmentationId
+        );
+
+        const visibility = csTools.segmentation.config.visibility.getSegmentationVisibility(
+          toolGroupId,
+          representation.segmentationRepresentationUID
+        );
+
+        csTools.segmentation.config.visibility.setSegmentationVisibility(
+          toolGroupId,
+          representation.segmentationRepresentationUID,
+          !visibility
+        );
+      });
+    },
+
     // setPTColormap: ({ toolGroupUID, colormap }) => {
     //   const toolGroup = ToolGroupManager.getToolGroupById(toolGroupUID);
 
@@ -320,7 +353,7 @@ const commandsModule = ({
     // },
     // thresholdVolume: ({ labelmapUID, config }) => {
     //   const labelmap = cs.cache.getVolume(labelmapUID);
-    //   const volume = cs.cache.getVolume(labelmap.referenceVolumeUID);
+    //   const volume = cs.cache.getVolume(labelmap.referencedVolumeId);
 
     //   if (!volume) {
     //     throw new Error('No Reference volume found');
@@ -371,80 +404,80 @@ const commandsModule = ({
     //     configToUse
     //   );
     // },
-    // calculateSuvPeak: ({ labelmap }) => {
-    //   const { viewport } = _getActiveViewportsEnabledElement();
+    calculateSuvPeak: ({ labelmap }) => {
+      const { referencedVolumeId } = labelmap;
 
-    //   if (viewport instanceof cs.StackViewport) {
-    //     throw new Error('Cannot create a labelmap from a stack viewport');
-    //   }
+      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
-    //   const { uid } = viewport.getDefaultActor();
-    //   const volume = cs.getVolume(uid);
+      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
+        RECTANGLE_ROI_THRESHOLD_MANUAL
+      );
 
-    //   const toolData = toolDataSelection.getSelectedToolDataByToolName(
-    //     RECTANGLE_ROI_THRESHOLD_MANUAL
-    //   );
+      const annotations = annotationUIDs.map(annotationUID =>
+        csTools.annotation.state.getAnnotation(annotationUID)
+      );
 
-    //   const suvPeak = csTools.Utils.segmentation.calculateSuvPeak(
-    //     viewport,
-    //     labelmap,
-    //     volume,
-    //     toolData
-    //   );
+      const suvPeak = calculateSuvPeak(labelmap, referencedVolume, annotations);
+      return {
+        suvPeak: suvPeak.mean,
+        suvMax: suvPeak.max,
+        suvMaxIJK: suvPeak.maxIJK,
+        suvMaxLPS: suvPeak.maxLPS,
+      };
+    },
+    getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
+      const { scalarData, spacing } = labelmap;
 
-    //   return {
-    //     suvPeak: suvPeak.mean,
-    //     suvMax: suvPeak.max,
-    //     suvMaxIJK: suvPeak.maxIJK,
-    //     suvMaxLPS: suvPeak.maxLPS,
-    //   };
-    // },
-    // getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
-    //   const { scalarData, spacing } = cs.getVolume(labelmap.uid);
+      const { scalarData: referencedScalarData } = cs.cache.getVolume(
+        labelmap.referencedVolumeId
+      );
 
-    //   const { scalarData: referencedScalarData } = cs.getVolume(
-    //     labelmap.referenceVolumeUID
-    //   );
+      let segmentationMax = -Infinity;
+      let segmentationMin = Infinity;
+      let segmentationValues = [];
 
-    //   let segmentationMax = -Infinity;
-    //   let segmentationMin = Infinity;
-    //   let segmentationValues = [];
+      let voxelCount = 0;
+      for (let i = 0; i < scalarData.length; i++) {
+        if (scalarData[i] === segmentIndex) {
+          const value = referencedScalarData[i];
+          segmentationValues.push(value);
+          if (value > segmentationMax) {
+            segmentationMax = value;
+          }
+          if (value < segmentationMin) {
+            segmentationMin = value;
+          }
+          voxelCount++;
+        }
+      }
 
-    //   let voxelCount = 0;
-    //   for (let i = 0; i < scalarData.length; i++) {
-    //     if (scalarData[i] === segmentIndex) {
-    //       const value = referencedScalarData[i];
-    //       segmentationValues.push(value);
-    //       if (value > segmentationMax) {
-    //         segmentationMax = value;
-    //       }
-    //       if (value < segmentationMin) {
-    //         segmentationMin = value;
-    //       }
-    //       voxelCount++;
-    //     }
-    //   }
+      const stats = {
+        minValue: segmentationMin,
+        maxValue: segmentationMax,
+        meanValue: segmentationValues.reduce((a, b) => a + b, 0) / voxelCount,
+        stdValue: Math.sqrt(
+          segmentationValues.reduce((a, b) => a + b * b, 0) / voxelCount -
+            segmentationValues.reduce((a, b) => a + b, 0) / voxelCount ** 2
+        ),
+        volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
+      };
 
-    //   const stats = {
-    //     minValue: segmentationMin,
-    //     maxValue: segmentationMax,
-    //     meanValue: segmentationValues.reduce((a, b) => a + b, 0) / voxelCount,
-    //     stdValue: Math.sqrt(
-    //       segmentationValues.reduce((a, b) => a + b * b, 0) / voxelCount -
-    //         segmentationValues.reduce((a, b) => a + b, 0) / voxelCount ** 2
-    //     ),
-    //     volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
-    //   };
+      return stats;
+    },
+    calculateLesionGlycolysis: ({ lesionStats }) => {
+      const { meanValue, volume } = lesionStats;
 
-    //   return stats;
-    // },
-    // calculateLesionGlycolysis: ({ lesionStats }) => {
-    //   const { meanValue, volume } = lesionStats;
+      return {
+        lesionGlyoclysisStats: volume * meanValue,
+      };
+    },
+    calculateTMTV: ({ segmentations }) => {
+      const labelmaps = segmentations.map(segmentation =>
+        cs.cache.getVolume(segmentation.id)
+      );
 
-    //   return {
-    //     lesionGlyoclysisStats: volume * meanValue,
-    //   };
-    // },
+      return calculateTMTV(labelmaps);
+    },
     // getTotalLesionGlycolysis: ({ segmentations }) => {
     //   const labelmapVolumes = segmentations.map(segmentation => {
     //     return cs.cache.getVolume(segmentation.id);
@@ -457,13 +490,13 @@ const commandsModule = ({
     //   );
 
     //   // grabbing the first labelmap referenceVolume since it will be the same for all
-    //   const { referenceVolumeUID, spacing } = labelmapVolumes[0];
+    //   const { referencedVolumeId, spacing } = labelmapVolumes[0];
 
-    //   if (!referenceVolumeUID) {
+    //   if (!referencedVolumeId) {
     //     throw new Error('No Reference volume found');
     //   }
 
-    //   const ptVolume = cs.getVolume(referenceVolumeUID);
+    //   const ptVolume = cs.getVolume(referencedVolumeId);
 
     //   const mergedLabelData = mergedLabelmap.scalarData;
 
@@ -491,14 +524,14 @@ const commandsModule = ({
     //     1e-3
     //   );
     // },
-    // getLabelmapVolumes: () => {
-    //   const segmentations = SegmentationService.getSegmentations();
-    //   const labelmapVolumes = segmentations.map(segmentation => {
-    //     return cs.cache.getVolume(segmentation.id);
-    //   });
+    getLabelmapVolumes: () => {
+      const segmentations = SegmentationService.getSegmentations();
+      const labelmapVolumes = segmentations.map(segmentation => {
+        return cs.cache.getVolume(segmentation.id);
+      });
 
-    //   return labelmapVolumes;
-    // },
+      return labelmapVolumes;
+    },
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
@@ -592,6 +625,11 @@ const commandsModule = ({
       storeContexts: [],
       options: {},
     },
+    toggleSegmentationVisibility: {
+      commandFn: actions.toggleSegmentationVisibility,
+      storeContexts: [],
+      options: {},
+    },
     // setPTColormap: {
     //   commandFn: actions.setPTColormap,
     //   storeContexts: [],
@@ -602,36 +640,26 @@ const commandsModule = ({
     //   storeContexts: [],
     //   options: {},
     // },
-    // thresholdVolume: {
-    //   commandFn: actions.thresholdVolume,
-    //   storeContexts: [],
-    //   options: {},
-    // },
-    // getLabelmapVolumes: {
-    //   commandFn: actions.getLabelmapVolumes,
-    //   storeContexts: [],
-    //   options: {},
-    // },
     // getTotalLesionGlycolysis: {
     //   commandFn: actions.getTotalLesionGlycolysis,
     //   storeContexts: [],
     //   options: {},
     // },
-    // calculateSuvPeak: {
-    //   commandFn: actions.calculateSuvPeak,
-    //   storeContexts: [],
-    //   options: {},
-    // },
-    // getLesionStats: {
-    //   commandFn: actions.getLesionStats,
-    //   storeContexts: [],
-    //   options: {},
-    // },
-    // calculateLesionGlycolysis: {
-    //   commandFn: actions.calculateLesionGlycolysis,
-    //   storeContexts: [],
-    //   options: {},
-    // },
+    calculateSuvPeak: {
+      commandFn: actions.calculateSuvPeak,
+      storeContexts: [],
+      options: {},
+    },
+    getLesionStats: {
+      commandFn: actions.getLesionStats,
+      storeContexts: [],
+      options: {},
+    },
+    calculateTMTV: {
+      commandFn: actions.calculateTMTV,
+      storeContexts: [],
+      options: {},
+    },
   };
 
   return {

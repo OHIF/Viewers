@@ -1,5 +1,6 @@
-import { eventTarget, Enums } from '@cornerstonejs/core';
-import { segmentation, Enums as csToolsEnums } from '@cornerstonejs/tools';
+import { eventTarget, Enums, triggerEvent } from '@cornerstonejs/core';
+import * as csTools from '@cornerstonejs/tools';
+import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 import Labelmap from './utils/segmentationServiceMappings/Labelmap';
 
 function initSegmentationService(
@@ -29,7 +30,7 @@ function connectToolsToSegmentationService(
 
   eventTarget.addEventListener(segmentationUpdated, evt => {
     const { segmentationId } = evt.detail;
-    const segmentationState = segmentation.state.getSegmentation(
+    const segmentationState = csTools.segmentation.state.getSegmentation(
       segmentationId
     );
 
@@ -63,47 +64,46 @@ function connectSegmentationServiceToTools(
   Cornerstone3DViewportService
 ) {
   const {
-    SEGMENTATIONS_CLEARED,
     SEGMENTATION_UPDATED,
-    SEGMENTATION_ADDED,
     SEGMENTATION_REMOVED,
   } = SegmentationService.EVENTS;
 
-  SegmentationService.subscribe(SEGMENTATION_REMOVED, ({ source, id }) => {
-    debugger;
-    // Todo: for now remove from all viewports
+  SegmentationService.subscribe(SEGMENTATION_REMOVED, ({ id }) => {
     const removeFromCache = true;
-    SegmentationModule.removeLabelmapForAllElements(
-      segmentationId,
-      removeFromCache
-    );
 
-    Cornerstone3DViewportService.getRenderingEngine().render();
-  });
+    const sourceSegState = csTools.segmentation.state.getSegmentation(id);
 
-  SegmentationService.subscribe(SEGMENTATIONS_CLEARED, () => {
     debugger;
-    // globalImageIdSpecificToolStateManager.restoreToolState({});
-    // _refreshViewports();
+
+    // SegmentationModule.removeLabelmapForAllElements(
+    //   segmentationId,
+    //   removeFromCache
+    // );
+
+    // Cornerstone3DViewportService.getRenderingEngine().render();
   });
 
   SegmentationService.subscribe(
     SEGMENTATION_UPDATED,
-    ({ source, segmentation, notYetUpdatedAtSource }) => {
-      debugger;
-      if (
-        source.name === 'CornerstoneTools' &&
-        notYetUpdatedAtSource === false
-      ) {
-        // This event was fired by cornerstone telling the measurement service to sync. Already in sync.
+    ({ id, segmentation, notYetUpdatedAtSource }) => {
+      if (notYetUpdatedAtSource === false) {
         return;
       }
+      const { label, text } = segmentation;
 
-      const { id, label, cachedStats } = segmentation;
-      SegmentationModule.setLabelmapGlobalState(id, {
-        volumeUID: id,
-        label,
-        cachedStats,
+      const sourceSegmentation = csTools.segmentation.state.getSegmentation(id);
+
+      // Update the label in the source if necessary
+      if (sourceSegmentation.label !== label) {
+        sourceSegmentation.label = label;
+      }
+
+      if (sourceSegmentation.text !== text) {
+        sourceSegmentation.text = text;
+      }
+
+      triggerEvent(eventTarget, csTools.Enums.Events.SEGMENTATION_MODIFIED, {
+        segmentationId: id,
       });
     }
   );

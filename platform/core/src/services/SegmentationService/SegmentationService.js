@@ -4,7 +4,6 @@ const EVENTS = {
   SEGMENTATION_UPDATED: 'event::segmentation_updated',
   SEGMENTATION_ADDED: 'event::segmentation_added',
   SEGMENTATION_REMOVED: 'event::segmentation_removed',
-  SEGMENTATIONS_CLEARED: 'event::segmentation_cleared',
   SEGMENTATION_VISIBILITY_CHANGED: 'event::SEGMENTATION_VISIBILITY_CHANGED',
 };
 
@@ -43,9 +42,15 @@ class SegmentationService {
    * @param id If of the segmentation
    * @return segmentation instance
    */
-  getSegmentation(id) {}
+  getSegmentation(id) {
+    return this.segmentations[id];
+  }
 
-  addOrUpdateSegmentation(id, segmentationSchema) {
+  addOrUpdateSegmentation(
+    id,
+    segmentationSchema,
+    notYetUpdatedAtSource = false
+  ) {
     const segmentation = this.segmentations[id];
 
     if (segmentation) {
@@ -54,6 +59,7 @@ class SegmentationService {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
         id,
         segmentation,
+        notYetUpdatedAtSource: notYetUpdatedAtSource,
       });
 
       return;
@@ -61,6 +67,7 @@ class SegmentationService {
 
     this.segmentations[id] = {
       ...segmentationSchema,
+      visible: true,
     };
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
@@ -76,43 +83,43 @@ class SegmentationService {
    * @param ids segmentation ids
    */
   toggleSegmentationsVisibility(ids) {
-    // ids.forEach(id => {
-    //   const segmentation = this.segmentations[id];
-    //   if (!segmentation) {
-    //     throw new Error(`Segmentation with id ${id} not found.`);
-    //   }
-    //   segmentation.visible = !segmentation.visible;
-    //   this._broadcastEvent(this.EVENTS.SEGMENTATION_VISIBILITY_CHANGED, {
-    //     segmentation,
-    //   });
-    // });
+    ids.forEach(id => {
+      const segmentation = this.segmentations[id];
+      if (!segmentation) {
+        throw new Error(`Segmentation with id ${id} not found.`);
+      }
+      segmentation.visible = !segmentation.visible;
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_VISIBILITY_CHANGED, {
+        segmentation,
+      });
+    });
   }
 
   /**
    * Removes a segmentation and broadcasts the removed event.
    *
    * @param {string} id The segmentation id
-   * @param {segmentationsource} source The segmentation source instance
-   * @return {string} The removed segmentation id
    */
-  remove(id, source) {
-    // if (!id || !this.segmentations[id]) {
-    //   log.warn(`No id provided, or unable to find segmentation by id.`);
-    //   return;
-    // }
-    // delete this.segmentations[id];
-    // this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
-    //   source,
-    //   segmentationId: id, // This is weird :shrug:
-    // });
+  remove(id) {
+    if (!id || !this.segmentations[id]) {
+      console.warn(`No id provided, or unable to find segmentation by id.`);
+      return;
+    }
+    delete this.segmentations[id];
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
+      id,
+    });
   }
 
   /**
    * Clear all segmentations and broadcasts cleared event.
    */
   clear() {
+    Object.keys(this.segmentations).forEach(id => {
+      this.remove(id);
+    });
+
     this.segmentations = {};
-    this._broadcastEvent(this.EVENTS.SEGMENTATIONS_CLEARED);
   }
 
   /**

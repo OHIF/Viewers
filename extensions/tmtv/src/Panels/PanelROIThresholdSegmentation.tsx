@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { utilities as csToolsUtils } from '@cornerstonejs/core';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Input,
@@ -21,11 +20,7 @@ export default function PanelRoiThresholdSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const {
-    SegmentationService,
-    UINotificationService,
-    UIDialogService,
-  } = servicesManager.services;
+  const { SegmentationService, UIDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
@@ -43,9 +38,53 @@ export default function PanelRoiThresholdSegmentation({
 
   const [tmtvValue, setTmtvValue] = useState(0);
 
-  // keep track of old segmentations
-  const oldSegmentations = useRef([]);
+  const runCommand = useCallback(
+    (commandName, commandOptions = {}) => {
+      return commandsManager.runCommand(commandName, commandOptions);
+    },
+    [commandsManager]
+  );
 
+  const handleROIThresholding = useCallback(() => {
+    const labelmap = runCommand('thresholdSegmentationByRectangleROITool', {
+      segmentationId: selectedSegmentationId,
+      config,
+    });
+
+    const lesionStats = runCommand('getLesionStats', { labelmap });
+    const suvPeak = runCommand('calculateSuvPeak', { labelmap });
+    const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
+
+    // update segDetails with the suv peak for the active segmentation
+
+    const segmentation = SegmentationService.getSegmentation(
+      selectedSegmentationId
+    );
+
+    const data = {
+      lesionStats,
+      suvPeak,
+      lesionGlyoclysisStats,
+    };
+
+    const notYetUpdatedAtSource = true;
+    SegmentationService.addOrUpdateSegmentation(
+      selectedSegmentationId,
+      {
+        ...segmentation,
+        data: Object.assign(segmentation.data, data),
+        text: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
+      },
+      notYetUpdatedAtSource
+    );
+
+    // Update TMTV Value
+    handleTMTVCalculation();
+  }, [selectedSegmentationId, config]);
+
+  /**
+   * Update UI based on segmentation changes (added, removed, updated)
+   */
   useEffect(() => {
     // ~~ Subscription
     const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
@@ -72,152 +111,33 @@ export default function PanelRoiThresholdSegmentation({
     };
   }, []);
 
-  // // calculate the suv peak value for each segmentation
-  // // check if the segmentations have changed compared to the old segmentations
-  // useEffect(() => {
-  //   if (oldSegmentations.current.length !== segmentations.length) {
-  //     const newSegmentation = segmentations.find(seg => {
-  //       // check if the segmentationId is not in the old segmentations
-  //       return !oldSegmentations.current.find(oldSeg => oldSeg.id === seg.id);
-  //     });
-
-  //     if (newSegmentation) {
-  //       setActiveSegmentationId(newSegmentation.id);
-  //     }
-  //     oldSegmentations.current = segmentations;
-  //   }
-  // }, [segmentations]);
-
-  // useEffect(() => {
-  //   const subscription = SegmentationService.subscribe(
-  //     SegmentationService.EVENTS.SEGMENTATION_VISIBILITY_CHANGED,
-  //     ({ segmentation }) => {
-  //       if (isMounted.current) {
-  //         const { id } = segmentation;
-  //         const { viewport } = commandsManager.runCommand(
-  //           'getActiveViewportsEnabledElement'
-  //         );
-
-  //         hideSegmentController.toggleSegmentationVisibility(
-  //           viewport.element,
-  //           id
-  //         );
-  //       }
-  //     }
-  //   );
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [SegmentationService]);
-
-  const handleCreateLabelmap = () => {
-    setLabelmapLoading(true);
-    commandsManager.runCommand('createNewLabelmapFromPT').then(() => {
-      setLabelmapLoading(false);
-    });
-  };
-
-  const handleRoiThresholding = () => {
-    commandsManager.runCommand('thresholdSegmentationByRectangleROITool', {
-      segmentationId: selectedSegmentationId,
-      config,
-    });
-    return;
-    const labelmap = SegmentationService.getSegmentation(
-      selectedSegmentationId
+  /**
+   * Toggle visibility of the segmentation
+   */
+  useEffect(() => {
+    const subscription = SegmentationService.subscribe(
+      SegmentationService.EVENTS.SEGMENTATION_VISIBILITY_CHANGED,
+      ({ segmentation }) => {
+        runCommand('toggleSegmentationVisibility', {
+          segmentationId: segmentation.id,
+        });
+      }
     );
-
-    if (!labelmap) {
-      UINotificationService.show({
-        title: 'Segmentation Service',
-        message: 'No Active Segmentation is Selected',
-        type: 'error',
-      });
-      return;
-    }
-
-    const thresholdedLabelmap = commandsManager.runCommand('thresholdVolume', {
-      config,
-      labelmapUID: selectedSegmentationId,
-    });
-
-    const lesionStats = commandsManager.runCommand('getLesionStats', {
-      labelmap: thresholdedLabelmap,
-    });
-
-    // Todo: right now it thresholds based on the active viewport's volume
-    const suvPeak = commandsManager.runCommand('calculateSuvPeak', {
-      labelmap: thresholdedLabelmap,
-    });
-
-    const lesionGlyoclysisStats = commandsManager.runCommand(
-      'calculateLesionGlycolysis',
-      { lesionStats }
-    );
-
-    // update segDetails with the suv peak for the active segmentation
-    labelmap.cachedStats = {
-      ...lesionStats,
-      ...suvPeak,
-      ...lesionGlyoclysisStats,
+    return () => {
+      subscription.unsubscribe();
     };
-
-    const notYetUpdatedAtSource = true;
-    SegmentationService.update(
-      selectedSegmentationId,
-      labelmap,
-      notYetUpdatedAtSource
-    );
-    handleTMTVCalculation();
-  };
-
-  const handleSegmentationEdit = id => {
-    onSegmentationItemEditHandler({ id, SegmentationService, UIDialogService });
-  };
-
-  const handleSegmentationDelete = segmentationId => {
-    SegmentationService.remove(segmentationId);
-    handleTMTVCalculation();
-  };
+  }, [SegmentationService]);
 
   const handleTMTVCalculation = () => {
-    const labelmaps = commandsManager.runCommand('getLabelmapVolumes', {});
-
-    if (labelmaps.length === 0) {
-      setTmtvValue(0);
-      return;
-    }
-
-    const tmtv = csToolsUtils.segmentation.calculateTMTV(labelmaps);
+    const segmentations = SegmentationService.getSegmentations();
+    const tmtv = runCommand('calculateTMTV', { segmentations });
     setTmtvValue(tmtv.toFixed(4));
-  };
-
-  const handleSegmentationClick = segmentationId => {
-    commandsManager.runCommand('setSegmentationActiveForToolGroups', {
-      segmentationId,
-    });
-    // const {
-    //   viewport: { element },
-    // } = commandsManager.runCommand('getActiveViewportsEnabledElement', {});
-    // activeLabelmapController.setActiveLabelmapByLabelmapUID(
-    //   element,
-    //   segmentationId
-    // );
-    setSelectedSegmentationId(segmentationId);
-  };
-
-  const handleSegmentationHide = segmentationId => {
-    SegmentationService.toggleSegmentationsVisibility([segmentationId]);
-  };
-
-  const handleSegmentationHideAll = segmentationIds => {
-    SegmentationService.toggleSegmentationsVisibility(segmentationIds);
   };
 
   const handleExportClick = () => {
     // General Segmentation information
-    const segReport = commandsManager.runCommand('getSegmentationReport', {});
-    const tlg = commandsManager.runCommand('getTotalLesionGlycolysis', {
+    const segReport = runCommand('getSegmentationReport');
+    const tlg = runCommand('getTotalLesionGlycolysis', {
       segmentations: SegmentationService.getSegmentations(),
     });
 
@@ -249,7 +169,7 @@ export default function PanelRoiThresholdSegmentation({
       }
     });
 
-    commandsManager.runCommand('saveRTReport', {
+    runCommand('saveRTReport', {
       toolState: roiThresholdManualRois,
     });
   };
@@ -260,14 +180,19 @@ export default function PanelRoiThresholdSegmentation({
         <div className="flex mx-4 my-4 mb-4 space-x-4">
           <Button
             color="primary"
-            onClick={handleCreateLabelmap}
+            onClick={() => {
+              setLabelmapLoading(true);
+              runCommand('createNewLabelmapFromPT').then(() => {
+                setLabelmapLoading(false);
+              });
+            }}
             className="text-xs text-white border-b border-transparent "
           >
             New Label
           </Button>
           <Button
             color="primary"
-            onClick={handleRoiThresholding}
+            onClick={handleROIThresholding}
             className="text-xs text-white border-b border-transparent "
           >
             Run
@@ -287,7 +212,7 @@ export default function PanelRoiThresholdSegmentation({
           <ROIThresholdConfiguration
             config={config}
             setConfig={setConfig}
-            commandsManager={commandsManager}
+            runCommand={runCommand}
           />
         )}
         {labelmapLoading ? (
@@ -309,18 +234,28 @@ export default function PanelRoiThresholdSegmentation({
               amount={segmentations.length}
               segmentations={segmentations}
               activeSegmentationId={selectedSegmentationId}
-              onClick={handleSegmentationClick}
+              onClick={id => {
+                runCommand('setSegmentationActiveForToolGroups', {
+                  segmentationId: id,
+                });
+                setSelectedSegmentationId(id);
+              }}
               onToggleVisibility={id => {
-                handleSegmentationHide(id);
+                SegmentationService.toggleSegmentationsVisibility([id]);
               }}
               onToggleVisibilityAll={ids => {
-                handleSegmentationHideAll(ids);
+                SegmentationService.toggleSegmentationsVisibility(ids);
               }}
               onDelete={id => {
-                handleSegmentationDelete(id);
+                SegmentationService.remove(id);
+                handleTMTVCalculation();
               }}
               onEdit={id => {
-                handleSegmentationEdit(id);
+                onSegmentationItemEditHandler({
+                  id,
+                  SegmentationService,
+                  UIDialogService,
+                });
               }}
             />
           ) : null}
@@ -375,7 +310,7 @@ function onSegmentationItemEditHandler({
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save': {
-        SegmentationService.update(
+        SegmentationService.addOrUpdateSegmentation(
           id,
           {
             ...segmentation,
@@ -433,7 +368,7 @@ function onSegmentationItemEditHandler({
   });
 }
 
-function ROIThresholdConfiguration({ config, setConfig, commandsManager }) {
+function ROIThresholdConfiguration({ config, setConfig, runCommand }) {
   const { t } = useTranslation('ROIThresholdConfiguration');
 
   return (
@@ -464,9 +399,7 @@ function ROIThresholdConfiguration({ config, setConfig, commandsManager }) {
           <ButtonGroup color="black" size="inherit">
             <Button
               className="px-2 py-2 text-base"
-              onClick={() =>
-                commandsManager.runCommand('setStartSliceForROIThresholdTool')
-              }
+              onClick={() => runCommand('setStartSliceForROIThresholdTool')}
             >
               {t('Start')}
             </Button>
@@ -474,9 +407,7 @@ function ROIThresholdConfiguration({ config, setConfig, commandsManager }) {
           <ButtonGroup color="black" size="inherit">
             <Button
               className="px-2 py-2 text-base"
-              onClick={() =>
-                commandsManager.runCommand('setEndSliceForROIThresholdTool')
-              }
+              onClick={() => runCommand('setEndSliceForROIThresholdTool')}
             >
               {t('End')}
             </Button>
