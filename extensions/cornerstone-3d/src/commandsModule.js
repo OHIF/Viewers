@@ -6,6 +6,7 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
+import callInputDialog from './utils/callInputDialog';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -13,6 +14,7 @@ const commandsModule = ({ servicesManager }) => {
     ToolGroupService,
     CineService,
     ToolBarService,
+    UIDialogService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
@@ -25,6 +27,9 @@ const commandsModule = ({ servicesManager }) => {
   const actions = {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
+    },
+    arrowTextCallback: ({ callback, data }) => {
+      callInputDialog(UIDialogService, data, callback);
     },
     toggleCine: () => {
       const { viewports } = ViewportGridService.getState();
@@ -350,6 +355,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     toggleCine: {
       commandFn: actions.toggleCine,
+      storeContexts: [],
+      options: {},
+    },
+    arrowTextCallback: {
+      commandFn: actions.arrowTextCallback,
       storeContexts: [],
       options: {},
     },

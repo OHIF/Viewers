@@ -61,6 +61,7 @@ export default function ModeRoute({
   dataSourceName,
   extensionManager,
   servicesManager,
+  commandsManager,
   hotkeysManager,
 }) {
   // Parse route params/querystring
@@ -206,7 +207,7 @@ export default function ModeRoute({
     DisplaySetService.init(extensionManager, sopClassHandlers);
 
     extensionManager.onModeEnter();
-    mode?.onModeEnter({ servicesManager, extensionManager });
+    mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
     // Adding hanging protocols of extensions after onModeEnter since
     // it will reset the protocols

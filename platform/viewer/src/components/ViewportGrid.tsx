@@ -301,8 +301,8 @@ function ViewerViewportGrid(props) {
           onInteraction={onInteractionHandler}
           customStyle={{
             position: 'absolute',
-            top: viewportY * 100 + 0.15 + '%',
-            left: viewportX * 100 + 0.15 + '%',
+            top: viewportY * 100 + 0.2 + '%',
+            left: viewportX * 100 + 0.2 + '%',
             width: viewportWidth * 100 - 0.3 + '%',
             height: viewportHeight * 100 - 0.3 + '%',
           }}

@@ -59,6 +59,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     dataSources,
     extensionManager,
     servicesManager,
+    commandsManager,
     hotkeysManager,
     routerBasename,
   });

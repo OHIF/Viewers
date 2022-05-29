@@ -202,7 +202,7 @@ function ViewerLayout({
       </Header>
       <div
         className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap"
-        style={{ height: 'calc(100vh - 60px' }}
+        style={{ height: 'calc(100vh - 52px' }}
       >
         {/* LEFT SIDEPANELS */}
         {leftPanelComponents.length ? (

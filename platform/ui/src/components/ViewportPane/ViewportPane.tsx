@@ -64,23 +64,29 @@ function ViewportPane({
       onScroll={onInteractionHandler}
       onWheel={onInteractionHandler}
       className={classnames(
-        'flex flex-col w-full h-full',
-        'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
+        'w-full h-full rounded-lg overflow-hidden hover:border-primary-light transition duration-300 group',
         {
-          'border border-primary-light': isActive,
-          'border border-secondary-light': !isActive,
+          'border-2 border-primary-light': isActive,
+          'border-2 border-transparent': !isActive,
         },
         className
       )}
-      // Normally, we'd use tailwindcss classes here, but margin and border classes use different units
-      // m-# (rem), border-# (px). To make sure we don't change the box size of our viewports
-      // and trigger a canvas resize, we have to use this little trick for margin.
-      // Assumes a :root font-fize of `16px`
       style={{
         ...customStyle,
       }}
     >
-      {children}
+      <div
+        className={classnames(
+          'rounded-lg w-full h-full overflow-hidden group-hover:border-transparent',
+          {
+            'border border-transparent': isActive,
+            'border border-secondary-light': !isActive,
+          },
+          className
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 }

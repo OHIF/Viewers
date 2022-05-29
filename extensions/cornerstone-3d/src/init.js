@@ -16,7 +16,7 @@ import Cornerstone3DViewportService from './services/ViewportService/Cornerstone
 import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
-import callInputDialog from './callInputDialog';
+import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
 
 const cs3DToolsEvents = Enums.Events;
