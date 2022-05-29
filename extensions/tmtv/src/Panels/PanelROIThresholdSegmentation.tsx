@@ -142,22 +142,6 @@ export default function PanelRoiThresholdSegmentation({
     handleTMTVCalculation();
   }, [segmentations, selectedSegmentationId]);
 
-  const handleExportClick = () => {
-    // General Segmentation information
-    const segReport = runCommand('getSegmentationReport');
-    const tlg = runCommand('getTotalLesionGlycolysis', {
-      segmentations: SegmentationService.getSegmentations(),
-    });
-
-    const additionalReportRows = [
-      { key: 'Total Metabolic Tumor Volume', value: { tmtv: tmtvValue } },
-      { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
-      { key: 'Threshold Configuration', value: { ...config } },
-    ];
-
-    createAndDownloadTMTVReport(segReport, additionalReportRows);
-  };
-
   const handleRTExport = () => {
     // get all the RoiThresholdManual Rois
     const toolStates = getDefaultToolStateManager();
@@ -249,7 +233,6 @@ export default function PanelRoiThresholdSegmentation({
                 SegmentationService.toggleSegmentationsVisibility(ids);
               }}
               onDelete={id => {
-                debugger;
                 SegmentationService.remove(id);
               }}
               onEdit={id => {
@@ -275,13 +258,24 @@ export default function PanelRoiThresholdSegmentation({
             <ButtonGroup color="black" size="inherit">
               <Button
                 className="px-2 py-2 text-base"
-                onClick={handleExportClick}
+                disabled={tmtvValue === null}
+                onClick={() => {
+                  runCommand('exportTMTVReportCSV', {
+                    segmentations,
+                    tmtv: tmtvValue,
+                    config,
+                  });
+                }}
               >
                 {t('Export CSV')}
               </Button>
             </ButtonGroup>
             <ButtonGroup color="black" size="inherit">
-              <Button className="px-2 py-2 text-base" onClick={handleRTExport}>
+              <Button
+                className="px-2 py-2 text-base"
+                onClick={handleRTExport}
+                disabled={tmtvValue === null}
+              >
                 {t('Create RT Report')}
               </Button>
             </ButtonGroup>

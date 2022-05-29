@@ -42,6 +42,11 @@ function CornerstoneViewportOverlay({
         upper
       );
 
+      // Don't set VOI if already set
+      if (voi.windowCenter !== null || voi.windowWidth !== null) {
+        return;
+      }
+
       setVOI({ windowCenter, windowWidth });
     };
 
@@ -50,7 +55,7 @@ function CornerstoneViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
     };
-  }, [viewportIndex, viewportData]);
+  }, [viewportIndex, viewportData, voi, element]);
 
   /**
    * Updating the scale when the viewport changes its zoom

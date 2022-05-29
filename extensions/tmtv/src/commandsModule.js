@@ -9,6 +9,7 @@ import { Enums, annotation } from '@cornerstonejs/tools';
 import getThresholdValues from './utils/getThresholdValue';
 import calculateSuvPeak from './utils/calculateSUVPeak';
 import calculateTMTV from './utils/calculateTMTV';
+import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
@@ -210,7 +211,6 @@ const commandsModule = ({
 
         // Todo: this finds the first segmentation representation that matches the segmentationId
         // If there are two labelmap representations from the same segmentation, this will not work
-
         const representation = segmentationRepresentations.find(
           representation => representation.segmentationId === segmentationId
         );
@@ -306,7 +306,6 @@ const commandsModule = ({
         );
       });
     },
-
     // setPTColormap: ({ toolGroupUID, colormap }) => {
     //   const toolGroup = ToolGroupManager.getToolGroupById(toolGroupUID);
 
@@ -474,9 +473,9 @@ const commandsModule = ({
       };
     },
     calculateTMTV: ({ segmentations }) => {
-      const labelmaps = segmentations.map(segmentation =>
-        cs.cache.getVolume(segmentation.id)
-      );
+      const labelmaps = commandsManager.runCommand('getLabelmapVolumes', {
+        segmentations,
+      });
 
       if (!labelmaps.length) {
         return;
@@ -484,60 +483,79 @@ const commandsModule = ({
 
       return calculateTMTV(labelmaps);
     },
-    // getTotalLesionGlycolysis: ({ segmentations }) => {
-    //   const labelmapVolumes = segmentations.map(segmentation => {
-    //     return cs.cache.getVolume(segmentation.id);
-    //   });
-
-    //   // merge labelmap will through an error if labels maps are not the same size
-    //   // or same direction or ....
-    //   const mergedLabelmap = csTools.Utils.segmentation.createMergedLabelmap(
-    //     labelmapVolumes
-    //   );
-
-    //   // grabbing the first labelmap referenceVolume since it will be the same for all
-    //   const { referencedVolumeId, spacing } = labelmapVolumes[0];
-
-    //   if (!referencedVolumeId) {
-    //     throw new Error('No Reference volume found');
-    //   }
-
-    //   const ptVolume = cs.getVolume(referencedVolumeId);
-
-    //   const mergedLabelData = mergedLabelmap.scalarData;
-
-    //   let Suvs = 0;
-    //   let totalLesionVoxelCount = 0;
-    //   for (let i = 0; i < mergedLabelData.length; i++) {
-    //     // if not backgournd
-    //     if (mergedLabelData[i] !== 0) {
-    //       const ptSuv = ptVolume.scalarData[i];
-    //       Suvs += ptSuv;
-    //       totalLesionVoxelCount += 1;
-    //     }
-    //   }
-
-    //   // Average SUV for the merged labelmap
-    //   const averageSuv = Suvs / totalLesionVoxelCount;
-
-    //   // total Lesion Glycolysis [suv * ml]
-    //   return (
-    //     averageSuv *
-    //     totalLesionVoxelCount *
-    //     spacing[0] *
-    //     spacing[1] *
-    //     spacing[2] *
-    //     1e-3
-    //   );
-    // },
-    getLabelmapVolumes: () => {
-      const segmentations = SegmentationService.getSegmentations();
-      const labelmapVolumes = segmentations.map(segmentation => {
-        return cs.cache.getVolume(segmentation.id);
+    exportTMTVReportCSV: ({ segmentations, tmtv, config }) => {
+      const segReport = commandsManager.runCommand('getSegmentationReport', {
+        segmentations,
       });
 
-      return labelmapVolumes;
+      const tlg = actions.getTotalLesionGlycolysis({ segmentations });
+      const additionalReportRows = [
+        { key: 'Total Metabolic Tumor Volume', value: { tmtv } },
+        { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
+        { key: 'Threshold Configuration', value: { ...config } },
+      ];
+
+      createAndDownloadTMTVReport(segReport, additionalReportRows);
     },
+    getTotalLesionGlycolysis: ({ segmentations }) => {
+      const labelmapVolumes = commandsManager.runCommand('getLabelmapVolumes', {
+        segmentations,
+      });
+
+      let mergedLabelmap;
+      // merge labelmap will through an error if labels maps are not the same size
+      // or same direction or ....
+      try {
+        mergedLabelmap = csTools.utilities.segmentation.createMergedLabelmapForIndex(
+          labelmapVolumes
+        );
+      } catch (e) {
+        console.error('commandsModule::getTotalLesionGlycolysis', e);
+        return;
+      }
+
+      // grabbing the first labelmap referenceVolume since it will be the same for all
+      const { referencedVolumeId, spacing } = labelmapVolumes[0];
+
+      if (!referencedVolumeId) {
+        console.error(
+          'commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found'
+        );
+      }
+
+      const ptVolume = cs.cache.getVolume(referencedVolumeId);
+      const mergedLabelData = mergedLabelmap.scalarData;
+
+      if (mergedLabelData.length !== ptVolume.scalarData.length) {
+        console.error(
+          'commandsModule::getTotalLesionGlycolysis:Labelmap and ptVolume are not the same size'
+        );
+      }
+
+      let suv = 0;
+      let totalLesionVoxelCount = 0;
+      for (let i = 0; i < mergedLabelData.length; i++) {
+        // if not background
+        if (mergedLabelData[i] !== 0) {
+          suv += ptVolume.scalarData[i];
+          totalLesionVoxelCount += 1;
+        }
+      }
+
+      // Average SUV for the merged labelmap
+      const averageSuv = suv / totalLesionVoxelCount;
+
+      // total Lesion Glycolysis [suv * ml]
+      return (
+        averageSuv *
+        totalLesionVoxelCount *
+        spacing[0] *
+        spacing[1] *
+        spacing[2] *
+        1e-3
+      );
+    },
+
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
@@ -663,6 +681,11 @@ const commandsModule = ({
     },
     calculateTMTV: {
       commandFn: actions.calculateTMTV,
+      storeContexts: [],
+      options: {},
+    },
+    exportTMTVReportCSV: {
+      commandFn: actions.exportTMTVReportCSV,
       storeContexts: [],
       options: {},
     },
