@@ -46,11 +46,7 @@ function CornerstoneOverlays(props) {
       viewportIndex
     );
 
-    if (
-      viewportInfo &&
-      viewportInfo.viewportOptions?.customViewportOptions &&
-      viewportInfo.viewportOptions?.customViewportOptions?.hideOverlays
-    ) {
+    if (viewportInfo?.viewportOptions?.customViewportOptions?.hideOverlays) {
       return null;
     }
   }

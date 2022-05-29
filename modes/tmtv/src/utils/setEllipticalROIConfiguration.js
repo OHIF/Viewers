@@ -6,7 +6,14 @@ export default function setEllipticalROIConfiguration(
   ToolGroupService,
   DisplaySetService
 ) {
-  const { SeriesInstanceUID } = matches.get('ptDisplaySet');
+  const matchDetails = matches.get('ptDisplaySet');
+
+  if (!matchDetails) {
+    return;
+  }
+
+  const { SeriesInstanceUID } = matchDetails;
+
   const displaySets = DisplaySetService.getDisplaySetsForSeries(
     SeriesInstanceUID
   );
@@ -20,7 +27,7 @@ export default function setEllipticalROIConfiguration(
     ...toolConfig,
     volumeId: displaySets[0].displaySetInstanceUID,
   };
-  debugger;
+
   ToolGroupService.setToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.EllipticalROI,

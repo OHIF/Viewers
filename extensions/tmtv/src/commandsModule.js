@@ -1,11 +1,7 @@
 import { vec3 } from 'gl-matrix';
 import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
-import { classes, DicomMetadataStore } from '@ohif/core';
-
-import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-
-import { Enums, annotation } from '@cornerstonejs/tools';
+import { classes } from '@ohif/core';
 import getThresholdValues from './utils/getThresholdValue';
 import calculateSuvPeak from './utils/calculateSUVPeak';
 import calculateTMTV from './utils/calculateTMTV';
@@ -22,9 +18,7 @@ const commandsModule = ({
   const {
     ViewportGridService,
     UINotificationService,
-    SegmentationService,
     DisplaySetService,
-    Cornerstone3DViewportService,
     HangingProtocolService,
   } = servicesManager.services;
 
@@ -306,105 +300,6 @@ const commandsModule = ({
         );
       });
     },
-    // setPTColormap: ({ toolGroupUID, colormap }) => {
-    //   const toolGroup = ToolGroupManager.getToolGroupById(toolGroupUID);
-
-    //   if (!toolGroup) {
-    //     return;
-    //   }
-
-    //   const { viewports } = toolGroup;
-
-    //   const renderingEngine = ViewportService.getRenderingEngine();
-
-    //   const { viewportUID } = viewports[0];
-
-    //   const viewport = renderingEngine.getViewport(viewportUID);
-    //   const actors = viewport.getActors();
-
-    //   const displaySetUIDs = ViewportService.getDisplaySetUIDsForViewportUID(
-    //     viewportUID
-    //   );
-
-    //   let ptDisplaySetUID;
-    //   displaySetUIDs.forEach(displaySetUID => {
-    //     const displaySet = DisplaySetService.getDisplaySetByUID(displaySetUID);
-    //     if (displaySet.Modality === 'PT') {
-    //       ptDisplaySetUID = displaySetUID;
-    //     }
-    //   });
-
-    //   if (!ptDisplaySetUID) {
-    //     return;
-    //   }
-
-    //   const ptActor = actors.find(a => a.uid.includes(ptDisplaySetUID));
-
-    //   if (!ptActor) {
-    //     return;
-    //   }
-
-    //   const { volumeActor } = ptActor;
-    //   setColormap(volumeActor, colormap);
-
-    //   viewport.getScene().render();
-    // },
-    // getActiveViewportsEnabledElement: () => {
-    //   return _getActiveViewportsEnabledElement();
-    // },
-    // thresholdVolume: ({ labelmapUID, config }) => {
-    //   const labelmap = cs.cache.getVolume(labelmapUID);
-    //   const volume = cs.cache.getVolume(labelmap.referencedVolumeId);
-
-    //   if (!volume) {
-    //     throw new Error('No Reference volume found');
-    //   }
-
-    //   if (!labelmap) {
-    //     throw new Error('No Reference labelmap found');
-    //   }
-
-    //   // const RoiThresholdToolDataList = toolDataSelection.getSelectedToolDataByToolName(
-    //   //   RECTANGLE_ROI_THRESHOLD
-    //   // );
-    //   const RoiThresholdManualToolDataList = toolDataSelection.getSelectedToolDataByToolName(
-    //     RECTANGLE_ROI_THRESHOLD_MANUAL
-    //   );
-
-    //   const selectedToolDataList = [
-    //     // ...RoiThresholdToolDataList,
-    //     ...RoiThresholdManualToolDataList,
-    //   ];
-
-    //   if (selectedToolDataList.length === 0) {
-    //     UINotificationService.show({
-    //       title: 'Commands Module',
-    //       message: 'No RoiThreshold Tool is Selected',
-    //       type: 'error',
-    //     });
-    //     return;
-    //   }
-
-    //   const configToUse = {
-    //     lowerThreshold: config.minValue,
-    //     higherThreshold: config.maxValue,
-    //     overwrite: true,
-    //     statistic: 'max',
-    //     weight: config.weight,
-    //   };
-
-    //   const thresholdVolumeMethod =
-    //     config.strategy === 'range'
-    //       ? csTools.Utils.segmentation.thresholdVolumeByRange
-    //       : csTools.Utils.segmentation.thresholdVolumeByRoiStats;
-
-    //   return thresholdVolumeMethod(
-    //     selectedToolDataList,
-    //     [volume],
-    //     labelmap,
-    //     configToUse
-    //   );
-    // },
     calculateSuvPeak: ({ labelmap }) => {
       const { referencedVolumeId } = labelmap;
 
@@ -590,7 +485,9 @@ const commandsModule = ({
       });
 
       handles.points = newPoints;
-      annotation.data.invalidated = true; // IMPORTANT: invalidate the toolData for the cached stat to get updated
+      // IMPORTANT: invalidate the toolData for the cached stat to get updated
+      // and re-calculate the projection points
+      annotation.invalidated = true;
       viewport.render();
     },
     setEndSliceForROIThresholdTool: () => {
@@ -607,7 +504,10 @@ const commandsModule = ({
       // get the current slice Index
       const sliceIndex = viewport.getCurrentImageIdIndex();
       annotation.data.endSlice = sliceIndex;
-      annotation.data.invalidated = true; // IMPORTANT: invalidate the toolData for the cached stat to get updated
+
+      // IMPORTANT: invalidate the toolData for the cached stat to get updated
+      // and re-calculate the projection points
+      annotation.invalidated = true;
 
       viewport.render();
     },
@@ -670,11 +570,6 @@ const commandsModule = ({
       storeContexts: [],
       options: {},
     },
-    // setPTColormap: {
-    //   commandFn: actions.setPTColormap,
-    //   storeContexts: [],
-    //   options: {},
-    // },
     getTotalLesionGlycolysis: {
       commandFn: actions.getTotalLesionGlycolysis,
       storeContexts: [],

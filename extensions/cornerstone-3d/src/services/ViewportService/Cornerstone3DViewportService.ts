@@ -441,7 +441,15 @@ class Cornerstone3DViewportService implements IViewportService {
     const viewportId = viewportInfo.getViewportId();
     const viewport = this.getCornerstone3DViewport(viewportId);
 
-    this._setVolumeViewport(viewport, viewportData, viewportInfo);
+    if (viewport instanceof VolumeViewport) {
+      this._setVolumeViewport(viewport, viewportData, viewportInfo);
+      return;
+    }
+
+    if (viewport instanceof StackViewport) {
+      this._setStackViewport(viewport, viewportData, viewportInfo);
+      return;
+    }
   }
 
   _getVOICallbacks(volumeId, displaySetOptions) {

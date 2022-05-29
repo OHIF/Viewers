@@ -30,6 +30,7 @@ const extensionDependencies = {
   '@ohif/extension-tmtv': '^3.0.0',
 };
 
+let unsubscriptions = [];
 function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
@@ -57,9 +58,7 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(toolNames, Enums, ToolGroupService, commandsManager);
 
-      let unsubscribe;
-
-      const activateTool = () => {
+      const activateWindowLevel = () => {
         ToolBarService.recordInteraction({
           groupId: 'WindowLevel',
           itemId: 'WindowLevel',
@@ -91,38 +90,36 @@ function modeFactory({ modeConfiguration }) {
             },
           ],
         });
-
-        // For fusion toolGroup we need to add the volumeIds for the crosshairs
-        // since in the fusion viewport we don't want both PT and CT to render MIP
-        // when slabThickness is modified
-        const matches = HangingProtocolService.getDisplaySetsMatchDetails();
-
-        setCrosshairsConfiguration(
-          matches,
-          toolNames,
-          ToolGroupService,
-          DisplaySetService
-        );
-
-        setEllipticalROIConfiguration(
-          matches,
-          toolNames,
-          ToolGroupService,
-          DisplaySetService
-        );
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
       };
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
+      const { unsubscribe } = ToolGroupService.subscribe(
         ToolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
+        () => {
+          activateWindowLevel();
+          // For fusion toolGroup we need to add the volumeIds for the crosshairs
+          // since in the fusion viewport we don't want both PT and CT to render MIP
+          // when slabThickness is modified
+          const matches = HangingProtocolService.getDisplaySetsMatchDetails();
 
+          setCrosshairsConfiguration(
+            matches,
+            toolNames,
+            ToolGroupService,
+            DisplaySetService
+          );
+
+          setEllipticalROIConfiguration(
+            matches,
+            toolNames,
+            ToolGroupService,
+            DisplaySetService
+          );
+        }
+      );
+
+      unsubscriptions.push(unsubscribe);
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
       ToolBarService.createButtonSection('primary', [
@@ -142,6 +139,7 @@ function modeFactory({ modeConfiguration }) {
         ToolBarService,
       } = servicesManager.services;
 
+      unsubscriptions.forEach(unsubscribe => unsubscribe());
       ToolBarService.reset();
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
@@ -173,7 +171,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
+              rightPanels: [tmtv.petSUV, tmtv.ROIThresholdPanel],
               viewports: [
                 {
                   namespace: cs3d.viewport,

@@ -6,7 +6,13 @@ export default function setCrosshairsConfiguration(
   ToolGroupService,
   DisplaySetService
 ) {
-  const { SeriesInstanceUID } = matches.get('ctDisplaySet');
+  const matchDetails = matches.get('ctDisplaySet');
+
+  if (!matchDetails) {
+    return;
+  }
+
+  const { SeriesInstanceUID } = matchDetails;
   const displaySets = DisplaySetService.getDisplaySetsForSeries(
     SeriesInstanceUID
   );

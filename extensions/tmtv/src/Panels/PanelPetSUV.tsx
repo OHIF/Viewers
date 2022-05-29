@@ -72,7 +72,13 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       return;
     }
 
-    const { ptDisplaySet, metadata } = getMatchingPTDisplaySet();
+    const displaySetInfo = getMatchingPTDisplaySet();
+
+    if (!displaySetInfo) {
+      return;
+    }
+
+    const { ptDisplaySet, metadata } = displaySetInfo;
     setPtDisplaySet(ptDisplaySet);
     setMetadata(metadata);
   }, []);
@@ -82,7 +88,13 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
       () => {
-        const { ptDisplaySet, metadata } = getMatchingPTDisplaySet();
+        const displaySetInfo = getMatchingPTDisplaySet();
+
+        if (!displaySetInfo) {
+          return;
+        }
+
+        const { ptDisplaySet, metadata } = displaySetInfo;
         setPtDisplaySet(ptDisplaySet);
         setMetadata(metadata);
       }

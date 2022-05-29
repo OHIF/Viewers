@@ -129,22 +129,21 @@ const commandsModule = ({ servicesManager }) => {
         actions.setToolActive({ toolName, toolGroupId });
         return;
       }
-
       const toolGroup = _getToolGroup(toolGroupId);
 
       if (!toolGroup) {
         return;
       }
 
+      toolGroup.setToolDisabled(toolName);
+
       // Get the primary toolId from the ToolBarService and set it to active
       // Since it was set to passive if not already active
       const primaryActiveTool = ToolBarService.state.primaryToolId;
       if (
-        toolGroup.toolOptions[primaryActiveTool] &&
-        toolGroup.toolOptions[primaryActiveTool].mode ===
-          cornerstoneTools.Enums.ToolModes.Passive
+        toolGroup?.toolOptions[primaryActiveTool]?.mode ===
+        cornerstoneTools.Enums.ToolModes.Passive
       ) {
-        toolGroup.setToolDisabled(toolName);
         toolGroup.setToolActive(primaryActiveTool, {
           bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
         });

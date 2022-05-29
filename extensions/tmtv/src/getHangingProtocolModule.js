@@ -330,7 +330,6 @@ const ptCT = {
           displaySets: [
             {
               options: {
-                blendMode: 'MIP',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,
@@ -366,7 +365,6 @@ const ptCT = {
           displaySets: [
             {
               options: {
-                blendMode: 'MIP',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,
@@ -402,7 +400,6 @@ const ptCT = {
           displaySets: [
             {
               options: {
-                blendMode: 'MIP',
                 voi: {
                   windowWidth: 5,
                   windowCenter: 2.5,
