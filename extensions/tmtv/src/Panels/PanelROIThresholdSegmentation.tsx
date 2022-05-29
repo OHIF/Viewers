@@ -142,30 +142,6 @@ export default function PanelRoiThresholdSegmentation({
     handleTMTVCalculation();
   }, [segmentations, selectedSegmentationId]);
 
-  const handleRTExport = () => {
-    // get all the RoiThresholdManual Rois
-    const toolStates = getDefaultToolStateManager();
-
-    // iterate inside all the frameOfReferenceUIDs inside the toolState
-    let roiThresholdManualRois = [];
-
-    const framesOfReference = toolStates.getFramesOfReference();
-    framesOfReference.forEach(frameOfReferenceUID => {
-      const toolState = toolStates.get(
-        frameOfReferenceUID,
-        'RectangleRoiStartEndThreshold'
-      );
-
-      if (toolState) {
-        roiThresholdManualRois = roiThresholdManualRois.concat(toolState);
-      }
-    });
-
-    runCommand('saveRTReport', {
-      toolState: roiThresholdManualRois,
-    });
-  };
-
   return (
     <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
       <div>
@@ -273,7 +249,9 @@ export default function PanelRoiThresholdSegmentation({
             <ButtonGroup color="black" size="inherit">
               <Button
                 className="px-2 py-2 text-base"
-                onClick={handleRTExport}
+                onClick={() => {
+                  runCommand('createTMTVRTReport');
+                }}
                 disabled={tmtvValue === null}
               >
                 {t('Create RT Report')}

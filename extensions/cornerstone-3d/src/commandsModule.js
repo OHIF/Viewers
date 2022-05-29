@@ -7,6 +7,7 @@ import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
+import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -459,6 +460,9 @@ const commandsModule = ({ servicesManager }) => {
 
       return report;
     },
+    exportRTReportForAnnotations: ({ annotations }) => {
+      dicomRTAnnotationExport(annotations);
+    },
   };
 
   const definitions = {
@@ -569,6 +573,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     getLabelmapVolumes: {
       commandFn: actions.getLabelmapVolumes,
+      storeContexts: [],
+      options: {},
+    },
+    exportRTReportForAnnotations: {
+      commandFn: actions.exportRTReportForAnnotations,
       storeContexts: [],
       options: {},
     },

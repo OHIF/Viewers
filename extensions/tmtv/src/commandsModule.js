@@ -611,6 +611,22 @@ const commandsModule = ({
 
       viewport.render();
     },
+    createTMTVRTReport: () => {
+      // get all Rectangle ROI annotation
+      const stateManager = csTools.annotation.state.getDefaultAnnotationManager();
+
+      const annotations = [];
+
+      Object.keys(stateManager.annotations).forEach(frameOfReferenceUID => {
+        const forAnnotations = stateManager.annotations[frameOfReferenceUID];
+        const ROIAnnotations = forAnnotations[RECTANGLE_ROI_THRESHOLD_MANUAL];
+        annotations.push(...ROIAnnotations);
+      });
+
+      commandsManager.runCommand('exportRTReportForAnnotations', {
+        annotations,
+      });
+    },
   };
 
   const definitions = {
@@ -659,16 +675,11 @@ const commandsModule = ({
     //   storeContexts: [],
     //   options: {},
     // },
-    // getActiveViewportsEnabledElement: {
-    //   commandFn: actions.getActiveViewportsEnabledElement,
-    //   storeContexts: [],
-    //   options: {},
-    // },
-    // getTotalLesionGlycolysis: {
-    //   commandFn: actions.getTotalLesionGlycolysis,
-    //   storeContexts: [],
-    //   options: {},
-    // },
+    getTotalLesionGlycolysis: {
+      commandFn: actions.getTotalLesionGlycolysis,
+      storeContexts: [],
+      options: {},
+    },
     calculateSuvPeak: {
       commandFn: actions.calculateSuvPeak,
       storeContexts: [],
@@ -686,6 +697,11 @@ const commandsModule = ({
     },
     exportTMTVReportCSV: {
       commandFn: actions.exportTMTVReportCSV,
+      storeContexts: [],
+      options: {},
+    },
+    createTMTVRTReport: {
+      commandFn: actions.createTMTVRTReport,
       storeContexts: [],
       options: {},
     },
