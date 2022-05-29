@@ -16,13 +16,13 @@ export default function init({
   const {
     MeasurementService,
     DisplaySetService,
-    ViewportService,
+    Cornerstone3DViewportService,
   } = servicesManager.services;
 
-  const { RectangleRoiStartEndThreshold } = measurementServiceMappingsFactory(
+  const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
-    ViewportService
+    Cornerstone3DViewportService
   );
 
   // Todo: this needs to be run after cornerstone3D creates the namespace
@@ -34,9 +34,9 @@ export default function init({
 
   MeasurementService.addMapping(
     csTools3DVer1MeasurementSource,
-    'RectangleRoiStartEndThreshold',
-    RectangleRoiStartEndThreshold.matchingCriteria,
-    RectangleRoiStartEndThreshold.toAnnotation,
-    RectangleRoiStartEndThreshold.toMeasurement
+    'RectangleROIStartEndThreshold',
+    RectangleROIStartEndThreshold.matchingCriteria,
+    RectangleROIStartEndThreshold.toAnnotation,
+    RectangleROIStartEndThreshold.toMeasurement
   );
 }

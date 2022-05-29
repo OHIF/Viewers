@@ -2,6 +2,8 @@ import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups, { toolGroupIds } from './initToolGroups.js';
+import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
+import setEllipticalROIConfiguration from './utils/setEllipticalROIConfiguration.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -95,30 +97,18 @@ function modeFactory({ modeConfiguration }) {
         // when slabThickness is modified
         const matches = HangingProtocolService.getDisplaySetsMatchDetails();
 
-        // Todo: we are tying the displaySetId (in the hangingProtocols)
-        // to the modes. Maybe the HangingProtocols should be set at the mode
-        // level (not extension level?)
-        const { SeriesInstanceUID } = matches.get('ctDisplaySet');
-        const displaySets = DisplaySetService.getDisplaySetsForSeries(
-          SeriesInstanceUID
+        setCrosshairsConfiguration(
+          matches,
+          toolNames,
+          ToolGroupService,
+          DisplaySetService
         );
 
-        const toolConfig = ToolGroupService.getToolConfiguration(
-          toolGroupIds.Fusion,
-          toolNames.Crosshairs
-        );
-
-        const crosshairsConfig = {
-          ...toolConfig,
-          filterActorUIDsToSetSlabThickness: [
-            displaySets[0].displaySetInstanceUID,
-          ],
-        };
-
-        ToolGroupService.setToolConfiguration(
-          toolGroupIds.Fusion,
-          toolNames.Crosshairs,
-          crosshairsConfig
+        setEllipticalROIConfiguration(
+          matches,
+          toolNames,
+          ToolGroupService,
+          DisplaySetService
         );
 
         // We don't need to reset the active tool whenever a viewport is getting

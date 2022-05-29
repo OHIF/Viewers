@@ -1,4 +1,3 @@
-import { annotation } from '@cornerstonejs/tools';
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 

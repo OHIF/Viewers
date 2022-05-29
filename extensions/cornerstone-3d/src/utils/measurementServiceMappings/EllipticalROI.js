@@ -1,5 +1,3 @@
-import { annotation } from '@cornerstonejs/tools';
-
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import getModalityUnit from './utils/getModalityUnit';
@@ -95,7 +93,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     let displaySet;
 
-    if (targetId.startsWith('imageId:')) {
+    if (referencedImageId) {
       const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
         referencedImageId
       );
@@ -105,9 +103,10 @@ function getMappedAnnotations(annotation, DisplaySetService) {
         SeriesInstanceUID
       );
     } else {
-      // Todo: separate imageId and volumeId, for now just implementing the
-      // referenceImageId
-      throw new Error('Not implemented');
+      // Todo: Non-acquisition plane measurement mapping not supported yet
+      throw new Error(
+        'Non-acquisition plane measurement mapping not supported'
+      );
     }
 
     const { SeriesNumber, SeriesInstanceUID } = displaySet;

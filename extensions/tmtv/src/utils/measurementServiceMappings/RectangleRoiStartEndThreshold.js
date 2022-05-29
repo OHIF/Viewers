@@ -1,7 +1,7 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
-const RectangleRoiStartEndThreshold = {
+const RectangleROIStartEndThreshold = {
   toAnnotation: (measurement, definition) => {},
 
   /**
@@ -11,26 +11,20 @@ const RectangleRoiStartEndThreshold = {
    * @return {Measurement} Measurement instance
    */
   toMeasurement: (
-    csToolsAnnotation,
+    csToolsEventDetail,
     DisplaySetService,
-    ViewportService,
+    Cornerstone3DViewportService,
     getValueTypeFromToolType
   ) => {
-    const { toolData, sceneUID } = csToolsAnnotation;
-    const { metadata, data } = toolData;
+    const { annotation, viewportId } = csToolsEventDetail;
+    const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
     }
 
-    const {
-      toolName,
-      referencedImageId,
-      FrameOfReferenceUID,
-      toolDataUID,
-    } = metadata;
-
+    const { toolName, referencedImageId, FrameOfReferenceUID } = metadata;
     const validToolType = SUPPORTED_TOOLS.includes(toolName);
 
     if (!validToolType) {
@@ -41,7 +35,11 @@ const RectangleRoiStartEndThreshold = {
       SOPInstanceUID,
       SeriesInstanceUID,
       StudyInstanceUID,
-    } = getSOPInstanceAttributes(ViewportService, referencedImageId, sceneUID);
+    } = getSOPInstanceAttributes(
+      referencedImageId,
+      Cornerstone3DViewportService,
+      viewportId
+    );
 
     let displaySet;
 
@@ -55,59 +53,24 @@ const RectangleRoiStartEndThreshold = {
     }
 
     const { cachedStats } = data;
-    // const { displayText, details } = getDataFromAnnotation(toolData);
-
-    // /*
-    // This function is used to convert the measurement data to a format that is
-    // suitable for the report generation (e.g. for the csv report). The report
-    // returns a list of columns and corresponding values.
-    // */
-    // const getReport = details => {
-    //   const { Length } = details;
-    //   const { value, unit } = Length;
-
-    //   const columns = [`Length ${unit}`];
-    //   const values = [value];
-
-    //   const { FrameOfReferenceUID } = toolData.metadata;
-    //   const { points } = toolData.data.handles;
-    //   if (FrameOfReferenceUID) {
-    //     columns.push('FrameOfReferenceUID');
-    //     values.push(FrameOfReferenceUID);
-    //   }
-
-    //   if (points) {
-    //     columns.push('points');
-    //     // points has the form of [[x1, y1, z1], [x2, y2, z2], ...]
-    //     // convert it to string of [[x1 y1 z1];[x2 y2 z2];...]
-    //     // so that it can be used in the csv report
-    //     values.push(points.map(p => p.join(' ')).join(';'));
-    //   }
-
-    //   return {
-    //     columns,
-    //     values,
-    //   };
-    // };
 
     return {
-      id: toolDataUID,
+      uid: annotationUID,
+      SOPInstanceUID,
       FrameOfReferenceUID,
-      SOPInstanceUID: SOPInstanceUID,
+      // points,
+      metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: metadata.label,
-      toolName: metadata.toolName,
-      // description: 'measurementData.description',
-      type: getValueTypeFromToolType(toolName),
-      points: data.handles,
       // displayText: displayText,
-      // getReport: () => getReport(details),
-      data: cachedStats,
-      metadata,
+      data: data.cachedStats,
+      type: getValueTypeFromToolType(toolName),
+      // getReport,
     };
   },
 };
 
-export default RectangleRoiStartEndThreshold;
+export default RectangleROIStartEndThreshold;

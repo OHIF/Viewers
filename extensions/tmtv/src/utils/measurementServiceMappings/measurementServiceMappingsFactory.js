@@ -1,9 +1,9 @@
-import RectangleRoiStartEndThreshold from './RectangleRoiStartEndThreshold';
+import RectangleROIStartEndThreshold from './RectangleROIStartEndThreshold';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
   DisplaySetService,
-  ViewportService
+  Cornerstone3DViewportService
 ) => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
@@ -27,13 +27,13 @@ const measurementServiceMappingsFactory = (
   };
 
   return {
-    RectangleRoiStartEndThreshold: {
-      toAnnotation: RectangleRoiStartEndThreshold.toAnnotation,
+    RectangleROIStartEndThreshold: {
+      toAnnotation: RectangleROIStartEndThreshold.toAnnotation,
       toMeasurement: csToolsAnnotation =>
-        RectangleRoiStartEndThreshold.toMeasurement(
+        RectangleROIStartEndThreshold.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
-          ViewportService,
+          Cornerstone3DViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
