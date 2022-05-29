@@ -1,4 +1,4 @@
-import { eventTarget, Enums, triggerEvent } from '@cornerstonejs/core';
+import { eventTarget, cache, triggerEvent } from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 import Labelmap from './utils/segmentationServiceMappings/Labelmap';
@@ -33,6 +33,10 @@ function connectToolsToSegmentationService(
     const segmentationState = csTools.segmentation.state.getSegmentation(
       segmentationId
     );
+
+    if (!segmentationState) {
+      return;
+    }
 
     if (
       !Object.keys(segmentationState.representationData).includes(
@@ -69,18 +73,43 @@ function connectSegmentationServiceToTools(
   } = SegmentationService.EVENTS;
 
   SegmentationService.subscribe(SEGMENTATION_REMOVED, ({ id }) => {
+    // Todo: This should be from the configuration
     const removeFromCache = true;
 
     const sourceSegState = csTools.segmentation.state.getSegmentation(id);
 
-    debugger;
+    if (!sourceSegState) {
+      return;
+    }
 
-    // SegmentationModule.removeLabelmapForAllElements(
-    //   segmentationId,
-    //   removeFromCache
-    // );
+    const toolGroupIds = csTools.segmentation.state.getToolGroupsWithSegmentation(
+      id
+    );
 
-    // Cornerstone3DViewportService.getRenderingEngine().render();
+    toolGroupIds.forEach(toolGroupId => {
+      const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
+        toolGroupId
+      );
+
+      const UIDsToRemove = [];
+      segmentationRepresentations.forEach(representation => {
+        if (representation.segmentationId === id) {
+          UIDsToRemove.push(representation.segmentationRepresentationUID);
+        }
+      });
+
+      csTools.segmentation.removeSegmentationsFromToolGroup(
+        toolGroupId,
+        UIDsToRemove
+      );
+    });
+
+    // cleanup the segmentation state too
+    csTools.segmentation.state.removeSegmentation(id);
+
+    if (removeFromCache) {
+      cache.removeVolumeLoadObject(id);
+    }
   });
 
   SegmentationService.subscribe(

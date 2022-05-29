@@ -193,6 +193,8 @@ const commandsModule = ({
           { segmentationId, toolGroupId: toolGroupId, options }
         );
       }
+
+      return segmentationId;
     },
     setSegmentationActiveForToolGroups: ({ segmentationId }) => {
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
@@ -475,6 +477,10 @@ const commandsModule = ({
       const labelmaps = segmentations.map(segmentation =>
         cs.cache.getVolume(segmentation.id)
       );
+
+      if (!labelmaps.length) {
+        return;
+      }
 
       return calculateTMTV(labelmaps);
     },

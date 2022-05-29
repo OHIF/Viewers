@@ -25,7 +25,7 @@ export default function PanelRoiThresholdSegmentation({
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
-  const [selectedSegmentationId, setSelectedSegmentationId] = useState('');
+  const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentations, setSegmentations] = useState(() =>
     SegmentationService.getSegmentations()
   );
@@ -36,7 +36,7 @@ export default function PanelRoiThresholdSegmentation({
     weight: 0.41,
   });
 
-  const [tmtvValue, setTmtvValue] = useState(0);
+  const [tmtvValue, setTmtvValue] = useState(null);
 
   const runCommand = useCallback(
     (commandName, commandOptions = {}) => {
@@ -44,6 +44,14 @@ export default function PanelRoiThresholdSegmentation({
     },
     [commandsManager]
   );
+
+  const handleTMTVCalculation = useCallback(() => {
+    const tmtv = runCommand('calculateTMTV', { segmentations });
+
+    if (tmtv !== undefined) {
+      setTmtvValue(tmtv.toFixed(2));
+    }
+  }, [segmentations, runCommand]);
 
   const handleROIThresholding = useCallback(() => {
     const labelmap = runCommand('thresholdSegmentationByRectangleROITool', {
@@ -78,7 +86,6 @@ export default function PanelRoiThresholdSegmentation({
       notYetUpdatedAtSource
     );
 
-    // Update TMTV Value
     handleTMTVCalculation();
   }, [selectedSegmentationId, config]);
 
@@ -96,10 +103,6 @@ export default function PanelRoiThresholdSegmentation({
       const { unsubscribe } = SegmentationService.subscribe(evt, () => {
         const segmentations = SegmentationService.getSegmentations();
         setSegmentations(segmentations);
-
-        if (!selectedSegmentationId) {
-          setSelectedSegmentationId(segmentations[0].id);
-        }
       });
       subscriptions.push(unsubscribe);
     });
@@ -128,11 +131,16 @@ export default function PanelRoiThresholdSegmentation({
     };
   }, [SegmentationService]);
 
-  const handleTMTVCalculation = () => {
-    const segmentations = SegmentationService.getSegmentations();
-    const tmtv = runCommand('calculateTMTV', { segmentations });
-    setTmtvValue(tmtv.toFixed(4));
-  };
+  /**
+   * Whenever the segmentations change, update the TMTV calculations
+   */
+  useEffect(() => {
+    if (!selectedSegmentationId && segmentations.length > 0) {
+      setSelectedSegmentationId(segmentations[0].id);
+    }
+
+    handleTMTVCalculation();
+  }, [segmentations, selectedSegmentationId]);
 
   const handleExportClick = () => {
     // General Segmentation information
@@ -182,8 +190,9 @@ export default function PanelRoiThresholdSegmentation({
             color="primary"
             onClick={() => {
               setLabelmapLoading(true);
-              runCommand('createNewLabelmapFromPT').then(() => {
+              runCommand('createNewLabelmapFromPT').then(segmentationId => {
                 setLabelmapLoading(false);
+                setSelectedSegmentationId(segmentationId);
               });
             }}
             className="text-xs text-white border-b border-transparent "
@@ -218,14 +227,7 @@ export default function PanelRoiThresholdSegmentation({
         {labelmapLoading ? (
           <div className="text-white">Loading Segmentation Panel ... </div>
         ) : null}
-        {tmtvValue !== undefined ? (
-          <div className="flex items-baseline justify-between px-2 py-1 mt-10 bg-secondary-dark">
-            <span className="text-base font-bold tracking-widest text-white uppercase">
-              {'TMTV:'}
-            </span>
-            <div className="text-white">{`${tmtvValue} mL`}</div>
-          </div>
-        ) : null}
+
         {/* show segmentation table */}
         <div className="mt-4">
           {segmentations?.length ? (
@@ -247,8 +249,8 @@ export default function PanelRoiThresholdSegmentation({
                 SegmentationService.toggleSegmentationsVisibility(ids);
               }}
               onDelete={id => {
+                debugger;
                 SegmentationService.remove(id);
-                handleTMTVCalculation();
               }}
               onEdit={id => {
                 onSegmentationItemEditHandler({
@@ -260,6 +262,14 @@ export default function PanelRoiThresholdSegmentation({
             />
           ) : null}
         </div>
+        {tmtvValue !== null ? (
+          <div className="flex items-baseline justify-between px-2 py-1 mt-4 bg-secondary-dark">
+            <span className="text-base font-bold tracking-widest text-white uppercase">
+              {'TMTV:'}
+            </span>
+            <div className="text-white">{`${tmtvValue} mL`}</div>
+          </div>
+        ) : null}
         {segmentations?.length ? (
           <div className="flex justify-center mt-4 space-x-2">
             <ButtonGroup color="black" size="inherit">
