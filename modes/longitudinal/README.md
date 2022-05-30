@@ -1,5 +1,7 @@
 # Measurement Tracking Mode
 
+
+
 ## Introduction
 Measurement tracking mode allows you to:
 
@@ -33,8 +35,6 @@ Below, you can see different icons that appear for a tracked vs. untracked serie
 
 ![](https://raw.githubusercontent.com/OHIF/Viewers/fix/tracking-qa/modes/longitudinal/assets/workflow.png)
 
-### Overview video for starting the tracking for measurements:
-[](https://user-images.githubusercontent.com/7490180/171058922-b3749d26-87f5-4bc7-ad87-e217fc1bd2e8.mp4)
 
 
 ### Reading and Writing DICOM SR
@@ -50,12 +50,9 @@ The full workflow for saving measurements to SR and loading SR into the viewer i
 
 ![](https://raw.githubusercontent.com/OHIF/Viewers/fix/tracking-qa/modes/longitudinal/assets/sr-import.png)
 
-[insert video]
 
 ### Loading DICOM SR into an Already Tracked Series
 
 If you have an already tracked series and try to load a DICOM SR measurements, you will be shown the following lock icon. This means that, you can review the DICOM SR measurement, manipulate image and draw "temporary" measurements; however, you cannot edit the DICOM SR measurement.
 
 ![](https://raw.githubusercontent.com/OHIF/Viewers/fix/tracking-qa/modes/longitudinal/assets/locked.png)
-
-[indert video]
