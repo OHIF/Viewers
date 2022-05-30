@@ -1,3 +1,5 @@
+import * as cornerstone3DTools from '@cornerstonejs/tools';
+
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
@@ -38,5 +40,11 @@ export default function init({
     RectangleROIStartEndThreshold.matchingCriteria,
     RectangleROIStartEndThreshold.toAnnotation,
     RectangleROIStartEndThreshold.toMeasurement
+  );
+}
+
+function initCornerstone3DTools(configuration = {}) {
+  cornerstone3DTools.addTool(
+    cornerstone3DTools.RectangleROIStartEndThresholdTool
   );
 }

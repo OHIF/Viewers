@@ -106,11 +106,14 @@ function calculateSuvPeak(
   const direction = labelmapImageData
     .getDirection()
     .slice(0, 3) as Types.Point3;
+
   /**
    * 2. Find the bottom and top of the great circle for the second sphere (1cc sphere)
-   * diameter of 12mm = 1.2cm ~ = 1cc sphere
+   * V = (4/3)πr3
    */
-  const diameter = 12;
+  const radius = Math.pow(1 / ((4 / 3) * Math.PI), 1 / 3) * 10;
+  const diameter = radius * 2;
+
   const secondaryCircleWorld = vec3.create();
   const bottomWorld = vec3.create();
   const topWorld = vec3.create();

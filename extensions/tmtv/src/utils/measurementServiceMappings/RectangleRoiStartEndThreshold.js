@@ -13,8 +13,7 @@ const RectangleROIStartEndThreshold = {
   toMeasurement: (
     csToolsEventDetail,
     DisplaySetService,
-    Cornerstone3DViewportService,
-    getValueTypeFromToolType
+    Cornerstone3DViewportService
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
@@ -67,7 +66,7 @@ const RectangleROIStartEndThreshold = {
       label: metadata.label,
       // displayText: displayText,
       data: data.cachedStats,
-      type: getValueTypeFromToolType(toolName),
+      type: 'RectangleROIStartEndThreshold',
       // getReport,
     };
   },

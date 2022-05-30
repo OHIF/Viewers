@@ -74,7 +74,7 @@ function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
       active: tools.active,
       passive: [
         ...tools.passive,
-        { toolName: toolNames.RectangleROIStartEndThreshold },
+        { toolName: 'RectangleROIStartEndThreshold' },
       ],
       enabled: tools.enabled,
       disabled: tools.disabled,
