@@ -23,6 +23,8 @@ const commandsModule = ({
     UINotificationService,
     DisplaySetService,
     HangingProtocolService,
+    ToolGroupService,
+    Cornerstone3DViewportService,
   } = servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
@@ -607,6 +609,39 @@ const commandsModule = ({
     exportRTReportForAnnotations: ({ annotations }) => {
       dicomRTAnnotationExport(annotations);
     },
+    setFusionPTColormap: ({ toolGroupId, colormap }) => {
+      const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+
+      const ptDisplaySet = actions.getMatchingPTDisplaySet();
+
+      if (!ptDisplaySet) {
+        return;
+      }
+
+      const fusionViewportIds = toolGroup.getViewportIds();
+
+      let viewports = [];
+      fusionViewportIds.forEach(viewportId => {
+        const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
+          viewportId
+        );
+
+        const viewportIndex = viewportInfo.getViewportIndex();
+        commandsManager.runCommand('setViewportColormap', {
+          viewportIndex,
+          displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
+          colormap,
+        });
+
+        viewports.push(
+          Cornerstone3DViewportService.getCornerstone3DViewport(viewportId)
+        );
+      });
+
+      viewports.forEach(viewport => {
+        viewport.render();
+      });
+    },
   };
 
   const definitions = {
@@ -687,6 +722,11 @@ const commandsModule = ({
     },
     exportRTReportForAnnotations: {
       commandFn: actions.exportRTReportForAnnotations,
+      storeContexts: [],
+      options: {},
+    },
+    setFusionPTColormap: {
+      commandFn: actions.setFusionPTColormap,
       storeContexts: [],
       options: {},
     },

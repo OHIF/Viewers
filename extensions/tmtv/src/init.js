@@ -1,6 +1,7 @@
 import * as cornerstone3DTools from '@cornerstonejs/tools';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+import colormaps from './utils/colormaps';
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
@@ -10,16 +11,16 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
  * @param {Object} configuration
  * @param {Object|Array} configuration.csToolsConfig
  */
-export default function init({
-  servicesManager,
-  commandsManager,
-  configuration,
-}) {
+export default function init({ servicesManager, extensionManager }) {
   const {
     MeasurementService,
     DisplaySetService,
     Cornerstone3DViewportService,
   } = servicesManager.services;
+
+  cornerstone3DTools.addTool(
+    cornerstone3DTools.RectangleROIStartEndThresholdTool
+  );
 
   const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
     MeasurementService,
@@ -27,8 +28,6 @@ export default function init({
     Cornerstone3DViewportService
   );
 
-  // Todo: this needs to be run after cornerstone3D creates the namespace
-  // for the measurement tools and all tools have been added to cornerstone3D
   const csTools3DVer1MeasurementSource = MeasurementService.getSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
@@ -41,10 +40,16 @@ export default function init({
     RectangleROIStartEndThreshold.toAnnotation,
     RectangleROIStartEndThreshold.toMeasurement
   );
+
+  initColormaps(extensionManager);
 }
 
-function initCornerstone3DTools(configuration = {}) {
-  cornerstone3DTools.addTool(
-    cornerstone3DTools.RectangleROIStartEndThresholdTool
+function initColormaps(extensionManager) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-3d.utilityModule.common'
   );
+
+  const { registerColormap } = utilityModule.exports;
+
+  colormaps.forEach(registerColormap);
 }

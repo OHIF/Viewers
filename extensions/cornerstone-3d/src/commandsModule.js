@@ -6,6 +6,7 @@ import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
+import { setColormap } from './utils/colormap/transferFunctionHelpers';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -380,6 +381,30 @@ const commandsModule = ({ servicesManager }) => {
 
       return labelmapVolumes;
     },
+    setViewportColormap: ({
+      viewportIndex,
+      displaySetInstanceUID,
+      colormap,
+      immediate = false,
+    }) => {
+      const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+        viewportIndex
+      );
+
+      const actorEntries = viewport.getActors();
+
+      const actorEntry = actorEntries.find(actorEntry => {
+        return actorEntry.uid === displaySetInstanceUID;
+      });
+
+      const { actor: volumeActor } = actorEntry;
+
+      setColormap(volumeActor, colormap);
+
+      if (immediate) {
+        viewport.render();
+      }
+    },
   };
 
   const definitions = {
@@ -486,6 +511,11 @@ const commandsModule = ({ servicesManager }) => {
 
     getLabelmapVolumes: {
       commandFn: actions.getLabelmapVolumes,
+      storeContexts: [],
+      options: {},
+    },
+    setViewportColormap: {
+      commandFn: actions.setViewportColormap,
       storeContexts: [],
       options: {},
     },

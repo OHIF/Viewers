@@ -129,6 +129,7 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'Pan',
         'RectangleROIStartEndThreshold',
+        'fusionPTColormap',
       ]);
     },
     onModeExit: ({ servicesManager }) => {

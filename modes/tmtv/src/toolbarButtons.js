@@ -1,10 +1,6 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import {
-  // ExpandableToolbarButton,
-  // ListMenu,
-  WindowLevelMenuItem,
-} from '@ohif/ui';
+import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults } from '@ohif/core';
 import { toolGroupIds } from './initToolGroups';
 const { windowLevelPresets } = defaults;
@@ -23,6 +19,31 @@ function _createButton(type, id, icon, label, commands, tooltip) {
     type,
     commands,
     tooltip,
+  };
+}
+
+function _createColormap(label, colormap) {
+  return {
+    id: label.toString(),
+    title: label,
+    subtitle: label,
+    type: 'action',
+    commands: [
+      {
+        commandName: 'setFusionPTColormap',
+        commandOptions: {
+          toolGroupId: toolGroupIds.Fusion,
+          colormap,
+        },
+      },
+      {
+        commandName: 'setFusionPTColormap',
+        commandOptions: {
+          toolGroupId: toolGroupIds.Fusion,
+          colormap,
+        },
+      },
+    ],
   };
 }
 
@@ -262,6 +283,39 @@ const toolbarButtons = [
             viewportId: 'ptAXIAL',
           },
         },
+      ],
+    },
+  },
+  {
+    id: 'fusionPTColormap',
+    type: 'ohif.splitButton',
+    props: {
+      groupId: 'fusionPTColormap',
+      primary: _createToolButton(
+        'fusionPTColormap',
+        'tool-window-level',
+        'Fusion PT Colormap',
+        [],
+        'Fusion PT Colormap'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: 'PT Colormap',
+        isActive: true,
+        tooltip: 'PET Image Colormap',
+      },
+      isAction: true, // ?
+      renderer: WindowLevelMenuItem,
+      items: [
+        _createColormap('Hot Iron', 'hot_iron'),
+        _createColormap('S PET', 's_pet'),
+        _createColormap('Ret Hot', 'red_hot'),
+        _createColormap('Perfusion', 'perfusion'),
+        _createColormap('Rainbow', 'rainbow_2'),
+        _createColormap('SUV', 'suv'),
+        _createColormap('GE 256', 'ge_256'),
+        _createColormap('GE', 'ge'),
+        _createColormap('Siemens', 'siemens'),
       ],
     },
   },

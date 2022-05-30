@@ -16,6 +16,7 @@ import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement } from './state';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
+import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
 
@@ -111,6 +112,7 @@ const cornerstone3DExtension = {
           },
           getEnabledElement,
           dicomLoaderService,
+          registerColormap,
         },
       },
       {

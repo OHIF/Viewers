@@ -12,8 +12,13 @@ const tmtvExtension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
-  preRegistration({ servicesManager, commandsManager, configuration = {} }) {
-    init({ servicesManager, commandsManager, configuration });
+  preRegistration({
+    servicesManager,
+    commandsManager,
+    extensionManager,
+    configuration = {},
+  }) {
+    init({ servicesManager, commandsManager, extensionManager, configuration });
   },
   getPanelModule,
   getHangingProtocolModule,

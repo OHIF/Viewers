@@ -3,6 +3,12 @@ import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/C
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkPiecewiseFunction from '@kitware/vtk.js/Common/DataModel/PiecewiseFunction';
 
+const colormaps = {};
+
+export function registerColormap(colormap) {
+  colormaps[colormap.Name] = colormap;
+}
+
 function setColorTransferFunctionFromVolumeMetadata({
   volumeActor,
   volumeId,
@@ -57,7 +63,15 @@ function setColormap(volumeActor, colormap) {
   mapper.setSampleDistance(1.0);
 
   const cfun = vtkColorTransferFunction.newInstance();
-  const preset = vtkColorMaps.getPresetByName(colormap);
+
+  // if we have a custom colormap, use it
+  let preset;
+  if (colormaps[colormap]) {
+    preset = colormaps[colormap];
+  } else {
+    preset = vtkColorMaps.getPresetByName(colormap);
+  }
+
   cfun.applyColorMap(preset);
   cfun.setMappingRange(0, 5);
 

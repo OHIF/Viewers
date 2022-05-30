@@ -159,6 +159,7 @@ export default class ExtensionManager {
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
         hotkeysManager: this._hotkeysManager,
+        extensionManager: this,
         appConfig: this._appConfig,
         configuration,
       });
