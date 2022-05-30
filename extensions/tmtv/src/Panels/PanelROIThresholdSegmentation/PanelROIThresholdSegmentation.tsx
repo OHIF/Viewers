@@ -1,26 +1,46 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Input,
-  SegmentationTable,
-  Select,
-  Button,
-  ButtonGroup,
-  Dialog,
-} from '@ohif/ui';
+import { SegmentationTable, Button } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
-import createAndDownloadTMTVReport from '../utils/createAndDownloadTMTVReport';
+import segmentationEditHandler from './segmentationEditHandler';
+import ExportReports from './ExportReports';
+import ROIThresholdConfiguration, {
+  ROI_STAT,
+} from './ROIThresholdConfiguration';
 
-const options = [
-  { value: 'roiStat', label: 'Percentage of Max Value', placeHolder: ['Max'] },
-  { value: 'range', label: 'Range Threshold', placeHolder: ['Range'] },
-];
+const LOWER_THRESHOLD_DEFAULT = 0;
+const UPPER_THRESHOLD_DEFAULT = 100;
+const WEIGHT_DEFAULT = 0.41;
+const DEFAULT_STRATEGY = ROI_STAT;
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'setStrategy':
+      return {
+        ...state,
+        strategy: action.strategy,
+      };
+    case 'setThreshold':
+      return {
+        ...state,
+        lower: action.lower ? action.lower : state.lower,
+        upper: action.upper ? action.upper : state.upper,
+      };
+    case 'setWeight':
+      return {
+        ...state,
+        weight: action.weight,
+      };
+    default:
+      return state;
+  }
+}
 
 export default function PanelRoiThresholdSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const { SegmentationService, UIDialogService } = servicesManager.services;
+  const { SegmentationService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
@@ -29,11 +49,12 @@ export default function PanelRoiThresholdSegmentation({
   const [segmentations, setSegmentations] = useState(() =>
     SegmentationService.getSegmentations()
   );
-  const [config, setConfig] = useState({
-    strategy: 'roiStat',
-    minValue: 0,
-    maxValue: 100,
-    weight: 0.41,
+
+  const [config, dispatch] = useReducer(reducer, {
+    strategy: DEFAULT_STRATEGY,
+    lower: LOWER_THRESHOLD_DEFAULT,
+    upper: UPPER_THRESHOLD_DEFAULT,
+    weight: WEIGHT_DEFAULT,
   });
 
   const [tmtvValue, setTmtvValue] = useState(null);
@@ -64,7 +85,6 @@ export default function PanelRoiThresholdSegmentation({
     const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
     // update segDetails with the suv peak for the active segmentation
-
     const segmentation = SegmentationService.getSegmentation(
       selectedSegmentationId
     );
@@ -96,10 +116,9 @@ export default function PanelRoiThresholdSegmentation({
     // ~~ Subscription
     const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
     const updated = SegmentationService.EVENTS.SEGMENTATION_UPDATED;
-    const removed = SegmentationService.EVENTS.SEGMENTATION_REMOVED;
     const subscriptions = [];
 
-    [added, updated, removed].forEach(evt => {
+    [added, updated].forEach(evt => {
       const { unsubscribe } = SegmentationService.subscribe(evt, () => {
         const segmentations = SegmentationService.getSegmentations();
         setSegmentations(segmentations);
@@ -111,6 +130,28 @@ export default function PanelRoiThresholdSegmentation({
       subscriptions.forEach(unsub => {
         unsub();
       });
+    };
+  }, []);
+
+  useEffect(() => {
+    const removed = SegmentationService.EVENTS.SEGMENTATION_REMOVED;
+
+    const { unsubscribe } = SegmentationService.subscribe(removed, () => {
+      const segmentations = SegmentationService.getSegmentations();
+      setSegmentations(segmentations);
+
+      if (segmentations.length > 0) {
+        setSelectedSegmentationId(segmentations[0].id);
+        handleTMTVCalculation();
+        return;
+      }
+
+      setSelectedSegmentationId(null);
+      setTmtvValue(null);
+    });
+
+    return () => {
+      unsubscribe();
     };
   }, []);
 
@@ -180,7 +221,7 @@ export default function PanelRoiThresholdSegmentation({
         {showConfig && (
           <ROIThresholdConfiguration
             config={config}
-            setConfig={setConfig}
+            dispatch={dispatch}
             runCommand={runCommand}
           />
         )}
@@ -212,10 +253,9 @@ export default function PanelRoiThresholdSegmentation({
                 SegmentationService.remove(id);
               }}
               onEdit={id => {
-                onSegmentationItemEditHandler({
+                segmentationEditHandler({
                   id,
-                  SegmentationService,
-                  UIDialogService,
+                  servicesManager,
                 });
               }}
             />
@@ -229,36 +269,12 @@ export default function PanelRoiThresholdSegmentation({
             <div className="text-white">{`${tmtvValue} mL`}</div>
           </div>
         ) : null}
-        {segmentations?.length ? (
-          <div className="flex justify-center mt-4 space-x-2">
-            <ButtonGroup color="black" size="inherit">
-              <Button
-                className="px-2 py-2 text-base"
-                disabled={tmtvValue === null}
-                onClick={() => {
-                  runCommand('exportTMTVReportCSV', {
-                    segmentations,
-                    tmtv: tmtvValue,
-                    config,
-                  });
-                }}
-              >
-                {t('Export CSV')}
-              </Button>
-            </ButtonGroup>
-            <ButtonGroup color="black" size="inherit">
-              <Button
-                className="px-2 py-2 text-base"
-                onClick={() => {
-                  runCommand('createTMTVRTReport');
-                }}
-                disabled={tmtvValue === null}
-              >
-                {t('Create RT Report')}
-              </Button>
-            </ButtonGroup>
-          </div>
-        ) : null}
+        <ExportReports
+          segmentations={segmentations}
+          tmtvValue={tmtvValue}
+          config={config}
+          commandsManager={commandsManager}
+        />
       </div>
     </div>
   );
@@ -281,176 +297,3 @@ PanelRoiThresholdSegmentation.propTypes = {
     }).isRequired,
   }).isRequired,
 };
-
-function onSegmentationItemEditHandler({
-  id,
-  SegmentationService,
-  UIDialogService,
-}) {
-  const segmentation = SegmentationService.getSegmentation(id);
-
-  const onSubmitHandler = ({ action, value }) => {
-    switch (action.id) {
-      case 'save': {
-        SegmentationService.addOrUpdateSegmentation(
-          id,
-          {
-            ...segmentation,
-            ...value,
-          },
-          true
-        );
-      }
-    }
-    UIDialogService.dismiss({ id: 'enter-annotation' });
-  };
-
-  UIDialogService.create({
-    id: 'enter-annotation',
-    centralize: true,
-    isDraggable: false,
-    showOverlay: true,
-    content: Dialog,
-    contentProps: {
-      title: 'Enter your annotation',
-      noCloseButton: true,
-      value: { label: segmentation.label || '' },
-      body: ({ value, setValue }) => {
-        const onChangeHandler = event => {
-          event.persist();
-          setValue(value => ({ ...value, label: event.target.value }));
-        };
-
-        const onKeyPressHandler = event => {
-          if (event.key === 'Enter') {
-            onSubmitHandler({ value, action: { id: 'save' } });
-          }
-        };
-        return (
-          <div className="p-4 bg-primary-dark">
-            <Input
-              autoFocus
-              className="mt-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
-              value={value.label}
-              onChange={onChangeHandler}
-              onKeyPress={onKeyPressHandler}
-            />
-          </div>
-        );
-      },
-      actions: [
-        // temp: swap button types until colors are updated
-        { id: 'cancel', text: 'Cancel', type: 'primary' },
-        { id: 'save', text: 'Save', type: 'secondary' },
-      ],
-      onSubmit: onSubmitHandler,
-    },
-  });
-}
-
-function ROIThresholdConfiguration({ config, setConfig, runCommand }) {
-  const { t } = useTranslation('ROIThresholdConfiguration');
-
-  return (
-    <div className="flex flex-col px-4 space-y-4 bg-primary-dark">
-      <div className="flex items-end space-x-2">
-        <div className="flex flex-col w-1/2 mt-2 ">
-          <Select
-            label={t('Strategy')}
-            closeMenuOnSelect={true}
-            className="mr-2 bg-black border-primary-main "
-            options={options}
-            placeholder={
-              options.find(option => option.value === config.strategy)
-                .placeHolder
-            }
-            value={config.strategy}
-            onChange={({ value }) => {
-              setConfig((prevConfig = {}) => {
-                return {
-                  ...prevConfig,
-                  strategy: value,
-                };
-              });
-            }}
-          />
-        </div>
-        <div className="w-1/2">
-          <ButtonGroup color="black" size="inherit">
-            <Button
-              className="px-2 py-2 text-base"
-              onClick={() => runCommand('setStartSliceForROIThresholdTool')}
-            >
-              {t('Start')}
-            </Button>
-          </ButtonGroup>
-          <ButtonGroup color="black" size="inherit">
-            <Button
-              className="px-2 py-2 text-base"
-              onClick={() => runCommand('setEndSliceForROIThresholdTool')}
-            >
-              {t('End')}
-            </Button>
-          </ButtonGroup>
-        </div>
-      </div>
-
-      {config.strategy === 'roiStat' && (
-        <Input
-          label={t('Percentage of Max SUV')}
-          labelClassName="text-white"
-          className="mt-2 bg-black border-primary-main"
-          type="text"
-          containerClassName="mr-2"
-          value={config.weight}
-          onChange={e => {
-            setConfig((prevConfig = {}) => {
-              return {
-                ...prevConfig,
-                weight: Number(e.target.value),
-              };
-            });
-          }}
-        />
-      )}
-      {config.strategy !== 'roiStat' && (
-        <div className="flex justify-between">
-          <Input
-            label={t('Min Value')}
-            labelClassName="text-white"
-            className="mt-2 bg-black border-primary-main"
-            type="text"
-            containerClassName="mr-2"
-            value={config.minValue}
-            onChange={e => {
-              setConfig((prevConfig = {}) => {
-                return {
-                  ...prevConfig,
-                  minValue: Number(e.target.value),
-                };
-              });
-            }}
-          />
-          <Input
-            label={t('Max Value')}
-            labelClassName="text-white"
-            className="mt-2 bg-black border-primary-main"
-            type="text"
-            containerClassName="mr-2"
-            value={config.maxValue}
-            onChange={e => {
-              setConfig((prevConfig = {}) => {
-                return {
-                  ...prevConfig,
-                  maxValue: Number(e.target.value),
-                };
-              });
-            }}
-          />
-        </div>
-      )}
-    </div>
-  );
-}

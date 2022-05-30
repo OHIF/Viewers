@@ -1,13 +1,11 @@
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import OHIF from '@ohif/core';
 
 import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
-import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -358,10 +356,8 @@ const commandsModule = ({ servicesManager }) => {
     async addSegmentationRepresentationToToolGroup({
       segmentationId,
       toolGroupId,
-      options,
+      representationType,
     }) {
-      const { representationType } = options;
-
       // // Add the segmentation representation to the toolgroup
       await cornerstoneTools.segmentation.addSegmentationRepresentations(
         toolGroupId,
@@ -383,84 +379,6 @@ const commandsModule = ({ servicesManager }) => {
       });
 
       return labelmapVolumes;
-    },
-    getSegmentationReport: ({ segmentations }) => {
-      if (!segmentations || !segmentations.length) {
-        segmentations = SegmentationService.getSegmentations();
-      }
-
-      let report = {};
-
-      for (const segmentation of segmentations) {
-        const { id, label, data } = segmentation;
-
-        const segReport = { id, label };
-
-        if (!data) {
-          report[id] = segReport;
-          continue;
-        }
-
-        Object.keys(data).forEach(key => {
-          if (typeof data[key] !== 'object') {
-            segReport[key] = data[key];
-          } else {
-            Object.keys(data[key]).forEach(subKey => {
-              const newKey = `${key}_${subKey}`;
-              segReport[newKey] = data[key][subKey];
-            });
-          }
-        });
-
-        const labelmapVolume = cornerstone.cache.getVolume(id);
-
-        if (!labelmapVolume) {
-          report[id] = segReport;
-          continue;
-        }
-
-        const referencedVolumeId = labelmapVolume.referencedVolumeId;
-        segReport.referencedVolumeId = referencedVolumeId;
-
-        const referencedVolume = cornerstone.cache.getVolume(
-          referencedVolumeId
-        );
-
-        if (!referencedVolume) {
-          report[id] = segReport;
-          continue;
-        }
-
-        if (!referencedVolume.imageIds || !referencedVolume.imageIds.length) {
-          report[id] = segReport;
-          continue;
-        }
-
-        const firstImageId = referencedVolume.imageIds[0];
-        const instance = OHIF.classes.MetadataProvider.get(
-          'instance',
-          firstImageId
-        );
-
-        if (!instance) {
-          report[id] = segReport;
-          continue;
-        }
-
-        report[id] = {
-          ...segReport,
-          PatientID: instance.PatientID,
-          PatientName: instance.PatientName.Alphabetic,
-          StudyInstanceUID: instance.StudyInstanceUID,
-          SeriesInstanceUID: instance.SeriesInstanceUID,
-          StudyDate: instance.StudyDate,
-        };
-      }
-
-      return report;
-    },
-    exportRTReportForAnnotations: ({ annotations }) => {
-      dicomRTAnnotationExport(annotations);
     },
   };
 
@@ -565,18 +483,9 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    getSegmentationReport: {
-      commandFn: actions.getSegmentationReport,
-      storeContexts: [],
-      options: {},
-    },
+
     getLabelmapVolumes: {
       commandFn: actions.getLabelmapVolumes,
-      storeContexts: [],
-      options: {},
-    },
-    exportRTReportForAnnotations: {
-      commandFn: actions.exportRTReportForAnnotations,
       storeContexts: [],
       options: {},
     },

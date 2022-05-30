@@ -1,4 +1,5 @@
 import { vec3 } from 'gl-matrix';
+import OHIF from '@ohif/core';
 import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
@@ -6,6 +7,8 @@ import getThresholdValues from './utils/getThresholdValue';
 import calculateSuvPeak from './utils/calculateSUVPeak';
 import calculateTMTV from './utils/calculateTMTV';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
+
+import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
@@ -178,14 +181,13 @@ const commandsModule = ({
 
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
-      const options = {
-        representationType: csTools.Enums.SegmentationRepresentations.Labelmap,
-      };
+      const representationType =
+        csTools.Enums.SegmentationRepresentations.Labelmap;
 
       for (const toolGroupId of toolGroupIds) {
         await commandsManager.runCommand(
           'addSegmentationRepresentationToToolGroup',
-          { segmentationId, toolGroupId: toolGroupId, options }
+          { segmentationId, toolGroupId: toolGroupId, representationType }
         );
       }
 
@@ -379,7 +381,7 @@ const commandsModule = ({
       return calculateTMTV(labelmaps);
     },
     exportTMTVReportCSV: ({ segmentations, tmtv, config }) => {
-      const segReport = commandsManager.runCommand('getSegmentationReport', {
+      const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
         segmentations,
       });
 
@@ -527,6 +529,84 @@ const commandsModule = ({
         annotations,
       });
     },
+    getSegmentationCSVReport: ({ segmentations }) => {
+      if (!segmentations || !segmentations.length) {
+        segmentations = SegmentationService.getSegmentations();
+      }
+
+      let report = {};
+
+      for (const segmentation of segmentations) {
+        const { id, label, data } = segmentation;
+
+        const segReport = { id, label };
+
+        if (!data) {
+          report[id] = segReport;
+          continue;
+        }
+
+        Object.keys(data).forEach(key => {
+          if (typeof data[key] !== 'object') {
+            segReport[key] = data[key];
+          } else {
+            Object.keys(data[key]).forEach(subKey => {
+              const newKey = `${key}_${subKey}`;
+              segReport[newKey] = data[key][subKey];
+            });
+          }
+        });
+
+        const labelmapVolume = cornerstone.cache.getVolume(id);
+
+        if (!labelmapVolume) {
+          report[id] = segReport;
+          continue;
+        }
+
+        const referencedVolumeId = labelmapVolume.referencedVolumeId;
+        segReport.referencedVolumeId = referencedVolumeId;
+
+        const referencedVolume = cornerstone.cache.getVolume(
+          referencedVolumeId
+        );
+
+        if (!referencedVolume) {
+          report[id] = segReport;
+          continue;
+        }
+
+        if (!referencedVolume.imageIds || !referencedVolume.imageIds.length) {
+          report[id] = segReport;
+          continue;
+        }
+
+        const firstImageId = referencedVolume.imageIds[0];
+        const instance = OHIF.classes.MetadataProvider.get(
+          'instance',
+          firstImageId
+        );
+
+        if (!instance) {
+          report[id] = segReport;
+          continue;
+        }
+
+        report[id] = {
+          ...segReport,
+          PatientID: instance.PatientID,
+          PatientName: instance.PatientName.Alphabetic,
+          StudyInstanceUID: instance.StudyInstanceUID,
+          SeriesInstanceUID: instance.SeriesInstanceUID,
+          StudyDate: instance.StudyDate,
+        };
+      }
+
+      return report;
+    },
+    exportRTReportForAnnotations: ({ annotations }) => {
+      dicomRTAnnotationExport(annotations);
+    },
   };
 
   const definitions = {
@@ -597,6 +677,16 @@ const commandsModule = ({
     },
     createTMTVRTReport: {
       commandFn: actions.createTMTVRTReport,
+      storeContexts: [],
+      options: {},
+    },
+    getSegmentationCSVReport: {
+      commandFn: actions.getSegmentationCSVReport,
+      storeContexts: [],
+      options: {},
+    },
+    exportRTReportForAnnotations: {
+      commandFn: actions.exportRTReportForAnnotations,
       storeContexts: [],
       options: {},
     },

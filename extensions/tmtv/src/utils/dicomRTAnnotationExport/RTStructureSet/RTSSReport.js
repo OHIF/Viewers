@@ -8,8 +8,11 @@ export default class RTSSReport {
   constructor() {}
 
   /**
-   * Convert Cornerstone tool annotation data to RTSSReport report object
-   * containing the dcmjs dicom dataset
+   * Convert handles to RTSSReport report object containing the dcmjs dicom dataset.
+   *
+   * Note: The tool data needs to be formatted in a specific way, and currently
+   * it is limited to the RectangleROIStartEndTool in the Cornerstone3D.
+   *
    * @param annotations Array of Cornerstone tool annotation data
    * @param metadataProvider Metadata provider
    * @param options report generation options
@@ -122,11 +125,11 @@ function initializeDataset(annotations, metadataProvider) {
     Manufacturer: 'dcmjs',
     Modality: 'RTSTRUCT',
     FrameOfReferenceUID,
-    PositionReferenceIndicator: 'Todo',
-    StructureSetLabel: 'Todo: label',
-    StructureSetName: 'Todo: name',
-    ReferringPhysicianName: 'Todo: name',
-    OperatorsName: 'Todo: name',
+    PositionReferenceIndicator: '',
+    StructureSetLabel: '',
+    StructureSetName: '',
+    ReferringPhysicianName: '',
+    OperatorsName: '',
     StructureSetDate: DicomMetaDictionary.date(),
     StructureSetTime: DicomMetaDictionary.time(),
   };

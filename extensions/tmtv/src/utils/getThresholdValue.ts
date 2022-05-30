@@ -4,11 +4,11 @@ function getThresholdValues(
   annotationUIDs,
   referencedVolume,
   config
-): { lower: number; higher: number } {
+): { lower: number; upper: number } {
   if (config.strategy === 'range') {
     return {
       lower: config.minValue,
-      higher: config.maxValue,
+      upper: config.maxValue,
     };
   }
 
@@ -28,7 +28,7 @@ function getThresholdValues(
     csTools.annotation.state.getAnnotation(annotationUID)
   );
 
-  const boundsIJK = csTools.utilities.boundingBox.getBoundsIJKFromRectangleAnnotations(
+  const boundsIJK = csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
     annotations,
     referencedVolume
   );
@@ -46,7 +46,7 @@ function getThresholdValues(
 
   return {
     lower: weight * value,
-    higher: +Infinity,
+    upper: +Infinity,
   };
 }
 

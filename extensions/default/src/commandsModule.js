@@ -6,11 +6,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
   } = servicesManager.services;
 
   const actions = {
-    displayNotification: ({ text }) => {
+    displayNotification: ({ text, title, type }) => {
       UINotificationService.show({
-        title: 'RectangleROI Threshold Tip',
+        title: title,
         message: text,
-        type: 'info',
+        type: type,
       });
     },
     clearMeasurements: () => {

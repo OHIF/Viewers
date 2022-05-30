@@ -215,13 +215,18 @@ const connectMeasurementServiceToTools = (
       const { uid, label } = measurement;
 
       const sourceAnnotation = annotation.state.getAnnotation(uid);
-      const data = sourceAnnotation.data;
-      if (data) {
+      const { data, metadata } = sourceAnnotation;
+
+      if (!data) {
+        return;
+      }
+
+      if (data.label !== label) {
         data.label = label;
-        if (data.hasOwnProperty('text')) {
-          // Deal with the weird case of ArrowAnnotate.
-          data.text = label;
-        }
+      }
+
+      if (metadata.toolName === 'ArrowAnnotate') {
+        data.text = label;
       }
 
       // Todo: trigger render for annotation

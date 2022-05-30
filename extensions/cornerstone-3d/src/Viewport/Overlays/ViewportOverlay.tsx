@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { vec2, vec3 } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ViewportOverlay } from '@ohif/ui';
@@ -43,7 +43,7 @@ function CornerstoneViewportOverlay({
       );
 
       // Don't set VOI if already set
-      if (voi.windowCenter !== null || voi.windowWidth !== null) {
+      if (voi.windowCenter !== null && voi.windowWidth !== null) {
         return;
       }
 
