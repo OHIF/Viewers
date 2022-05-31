@@ -10,7 +10,7 @@ import ROIThresholdConfiguration, {
 
 const LOWER_THRESHOLD_DEFAULT = 0;
 const UPPER_THRESHOLD_DEFAULT = 100;
-const WEIGHT_DEFAULT = 0.41;
+const WEIGHT_DEFAULT = 0.41; // a default weight for suv max often used in the literature
 const DEFAULT_STRATEGY = ROI_STAT;
 
 function reducer(state, action) {
@@ -137,21 +137,21 @@ export default function PanelRoiThresholdSegmentation({
   }, []);
 
   useEffect(() => {
-    const removed = SegmentationService.EVENTS.SEGMENTATION_REMOVED;
+    const { unsubscribe } = SegmentationService.subscribe(
+      SegmentationService.EVENTS.SEGMENTATION_REMOVED,
+      () => {
+        const segmentations = SegmentationService.getSegmentations();
+        setSegmentations(segmentations);
 
-    const { unsubscribe } = SegmentationService.subscribe(removed, () => {
-      const segmentations = SegmentationService.getSegmentations();
-      setSegmentations(segmentations);
-
-      if (segmentations.length > 0) {
-        setSelectedSegmentationId(segmentations[0].id);
-        handleTMTVCalculation();
-        return;
+        if (segmentations.length > 0) {
+          setSelectedSegmentationId(segmentations[0].id);
+          handleTMTVCalculation();
+        } else {
+          setSelectedSegmentationId(null);
+          setTmtvValue(null);
+        }
       }
-
-      setSelectedSegmentationId(null);
-      setTmtvValue(null);
-    });
+    );
 
     return () => {
       unsubscribe();
