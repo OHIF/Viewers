@@ -6,7 +6,8 @@
 Total Metabolic Tumor Volume (TMTV) workflow mode enables quantitatively measurement of a tumor volume in a patient's body.
 This mode is accessible in any study that has a PT and CT image series as you can see below
 
-![](https://raw.githubusercontent.com/OHIF/Viewers/feat/segmentation-service/modes/tmtv/assets/modeValid.png)
+
+![modeValid](https://user-images.githubusercontent.com/7490180/171256138-7a948654-6836-460c-817a-fa9a1929926b.png)
 
 Note: If the study does not have a PT and CT image series, the TMTV workflow mode will not be available
 and will become grayed out.
@@ -25,7 +26,8 @@ The last row contains the fusion volume and the viewport to the right is a MIP o
 Volume in the Sagittal view.
 
 
-![](https://raw.githubusercontent.com/OHIF/Viewers/feat/segmentation-service/modes/tmtv/assets/modeLayout.png)
+
+![modeLayout](https://user-images.githubusercontent.com/7490180/171256159-1e94edac-985f-4de3-8759-27a077541f8f.png)
 
 ## Synchronization
 
