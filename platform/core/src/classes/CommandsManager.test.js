@@ -11,6 +11,13 @@ describe('CommandsManager', () => {
       storeContexts: ['viewers'],
       options: { passMeToCommandFn: ':wave:' },
     },
+    commandsManagerConfig = {
+      getAppState: () => {
+        return {
+          viewers: 'Test',
+        };
+      },
+    };
 
   beforeEach(() => {
     commandsManager = new CommandsManager(commandsManagerConfig);
@@ -25,7 +32,6 @@ describe('CommandsManager', () => {
     expect(localCommandsManager).toHaveProperty('contexts');
     expect(localCommandsManager.contexts).toEqual({});
   });
-
 
   describe('createContext()', () => {
     it('creates a context', () => {
