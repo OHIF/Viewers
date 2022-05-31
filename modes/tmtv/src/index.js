@@ -172,7 +172,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [tmtv.petSUV, tmtv.ROIThresholdPanel],
+              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

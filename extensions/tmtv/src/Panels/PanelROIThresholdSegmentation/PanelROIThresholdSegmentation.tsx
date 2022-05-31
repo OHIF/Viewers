@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationTable, Button } from '@ohif/ui';
+import { SegmentationTable, Button, Icon } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import segmentationEditHandler from './segmentationEditHandler';
 import ExportReports from './ExportReports';
@@ -184,8 +184,8 @@ export default function PanelRoiThresholdSegmentation({
   }, [segmentations, selectedSegmentationId]);
 
   return (
-    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-      <div>
+    <div className="flex flex-col justify-between h-full">
+      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         <div className="flex mx-4 my-4 mb-4 space-x-4">
           <Button
             color="primary"
@@ -228,7 +228,6 @@ export default function PanelRoiThresholdSegmentation({
         {labelmapLoading ? (
           <div className="text-white">Loading Segmentation Panel ... </div>
         ) : null}
-
         {/* show segmentation table */}
         <div className="mt-4">
           {segmentations?.length ? (
@@ -275,6 +274,24 @@ export default function PanelRoiThresholdSegmentation({
           config={config}
           commandsManager={commandsManager}
         />
+      </div>
+      <div
+        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mb-4 cursor-pointer"
+        onClick={() => {
+          // navigate to a url in a new tab
+          window.open(
+            'https://github.com/OHIF/Viewers/blob/feat/segmentation-service/modes/tmtv/README.md',
+            '_blank'
+          );
+        }}
+      >
+        <Icon
+          width="15px"
+          height="15px"
+          name={'info'}
+          className={'ml-4 mr-3 text-primary-active'}
+        />
+        <span>{'About'}</span>
       </div>
     </div>
   );
