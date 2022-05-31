@@ -42,11 +42,6 @@ function CornerstoneViewportOverlay({
         upper
       );
 
-      // Don't set VOI if already set
-      if (voi.windowCenter !== null && voi.windowWidth !== null) {
-        return;
-      }
-
       setVOI({ windowCenter, windowWidth });
     };
 
@@ -150,10 +145,7 @@ function CornerstoneViewportOverlay({
     let instanceNumber;
 
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      const instanceNumber = _getInstanceNumberFromStack(
-        viewportData,
-        imageIndex
-      );
+      instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
 
       if (!instanceNumber) {
         return null;
