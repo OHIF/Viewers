@@ -14,22 +14,25 @@ const WEIGHT_DEFAULT = 0.41;
 const DEFAULT_STRATEGY = ROI_STAT;
 
 function reducer(state, action) {
+  const { payload } = action;
+  const { strategy, lower, upper, weight } = payload;
+
   switch (action.type) {
     case 'setStrategy':
       return {
         ...state,
-        strategy: action.strategy,
+        strategy,
       };
     case 'setThreshold':
       return {
         ...state,
-        lower: action.lower ? action.lower : state.lower,
-        upper: action.upper ? action.upper : state.upper,
+        lower: lower ? lower : state.lower,
+        upper: upper ? upper : state.upper,
       };
     case 'setWeight':
       return {
         ...state,
-        weight: action.weight,
+        weight,
       };
     default:
       return state;

@@ -6,8 +6,8 @@ export const ROI_STAT = 'roi_stat';
 const RANGE = 'range';
 
 const options = [
-  { value: ROI_STAT, label: 'Percentage of Max Value', placeHolder: ['Max'] },
-  { value: RANGE, label: 'Range Threshold', placeHolder: ['Range'] },
+  { value: ROI_STAT, label: 'Max', placeHolder: 'Max' },
+  { value: RANGE, label: 'Range', placeHolder: 'Range' },
 ];
 
 function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
@@ -29,7 +29,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
             value={config.strategy}
             onChange={({ value }) => {
               dispatch({
-                type: 'setConfig',
+                type: 'setStrategy',
                 payload: {
                   strategy: value,
                 },
