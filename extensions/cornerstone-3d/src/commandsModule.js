@@ -40,11 +40,10 @@ const commandsModule = ({ servicesManager }) => {
         CineService.setCine({ id: index, isPlaying: false })
       );
     },
-    setWindowLevel({ windowLevel, toolGroupId }) {
-      const { window: windowWidth, level: windowCenter } = windowLevel;
+    setWindowLevel({ window, level, toolGroupId }) {
       // convert to numbers
-      const windowWidthNum = Number(windowWidth);
-      const windowCenterNum = Number(windowCenter);
+      const windowWidthNum = Number(window);
+      const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
       const viewportToolGroupId = ToolGroupService.getToolGroupForViewport(

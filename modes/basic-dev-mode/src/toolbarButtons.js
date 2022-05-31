@@ -46,7 +46,7 @@ function _createWwwcPreset(preset, title, subtitle) {
       {
         commandName: 'setWindowLevel',
         commandOptions: {
-          windowLevel: windowLevelPresets[preset],
+          ...windowLevelPresets[preset],
         },
         context: 'CORNERSTONE3D',
       },
