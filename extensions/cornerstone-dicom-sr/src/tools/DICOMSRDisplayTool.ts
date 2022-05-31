@@ -1,4 +1,4 @@
-import { Types } from '@cornerstonejs/core';
+import { Types, metaData, utilities as csUtils } from '@cornerstonejs/core';
 import {
   AnnotationTool,
   annotation,
@@ -100,6 +100,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const annotationUID = annotation.annotationUID;
       const { renderableData } = annotation.data.cachedStats;
       const { label, cachedStats } = annotation.data;
+      const { referencedImageId } = annotation.metadata;
 
       styleSpecifier.annotationUID = annotationUID;
 
@@ -146,6 +147,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           viewport,
           renderableDataForGraphicType,
           annotationUID,
+          referencedImageId,
           options
         );
 
@@ -212,6 +214,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     viewport,
     renderableData,
     annotationUID,
+    referencedImageId,
     options
   ) {
     // Todo: this needs to use the drawPolyLine from cs3D since it is implemented
@@ -247,6 +250,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     viewport,
     renderableData,
     annotationUID,
+    referencedImageId,
     options
   ) {
     let canvasCoordinates;
@@ -270,12 +274,41 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     viewport,
     renderableData,
     annotationUID,
+    referencedImageId,
     options
   ) {
-    let canvasCoordinates;
+    const canvasCoordinates = [];
     renderableData.map((data, index) => {
-      canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
+      const point = data[0];
+      // This gives us one point for arrow
+      canvasCoordinates.push(viewport.worldToCanvas(point));
+
+      // We get the other point for the arrow by using the image size
+      const imagePixelModule = metaData.get(
+        'imagePixelModule',
+        referencedImageId
+      );
+
+      let xOffset = 10;
+      let yOffset = 10;
+
+      if (imagePixelModule) {
+        const { columns, rows } = imagePixelModule;
+        xOffset = columns / 10;
+        yOffset = rows / 10;
+      }
+
+      const imagePoint = csUtils.worldToImageCoords(referencedImageId, point);
+      const arrowEnd = csUtils.imageToWorldCoords(referencedImageId, [
+        imagePoint[0] + xOffset,
+        imagePoint[1] + yOffset,
+      ]);
+
+      canvasCoordinates.push(viewport.worldToCanvas(arrowEnd));
+
       const arrowUID = `${index}`;
+
+      // Todo: handle drawing probe as probe, currently we are drawing it as an arrow
       drawing.drawArrow(
         svgDrawingHelper,
         annotationUID,
@@ -297,6 +330,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     viewport,
     renderableData,
     annotationUID,
+    referencedImageId,
     options
   ) {
     let canvasCoordinates;

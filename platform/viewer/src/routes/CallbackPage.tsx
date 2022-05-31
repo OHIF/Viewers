@@ -11,8 +11,7 @@ function CallbackPage({ userManager, onRedirectSuccess }) {
     .then(user => onRedirectSuccess(user))
     .catch(error => onRedirectError(error));
 
-  // todo: add i18n (or return null?)
-  return <div>Redirecting...</div>;
+  return null;
 }
 
 CallbackPage.propTypes = {

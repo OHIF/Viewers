@@ -27,6 +27,7 @@ export default function buildModeRoutes({
   dataSources,
   extensionManager,
   servicesManager,
+  commandsManager,
   hotkeysManager,
 }) {
   const routes = [];
@@ -58,6 +59,7 @@ export default function buildModeRoutes({
           dataSourceName={dataSourceName}
           extensionManager={extensionManager}
           servicesManager={servicesManager}
+          commandsManager={commandsManager}
           hotkeysManager={hotkeysManager}
         />
       );
@@ -80,6 +82,7 @@ export default function buildModeRoutes({
         dataSourceName={defaultDataSourceName}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
+        commandsManager={commandsManager}
         hotkeysManager={hotkeysManager}
       />
     );

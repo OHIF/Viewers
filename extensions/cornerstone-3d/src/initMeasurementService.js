@@ -212,12 +212,12 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const { id, label } = measurement;
+      const { uid, label } = measurement;
 
-      const sourceAnnotation = annotation.state.getAnnotation(id);
+      const sourceAnnotation = annotation.state.getAnnotation(uid);
 
       if (sourceAnnotation) {
-        sourceAnnotation.label = label;
+        sourceAnnotation.data.label = label;
         if (sourceAnnotation.hasOwnProperty('text')) {
           // Deal with the weird case of ArrowAnnotate.
           sourceAnnotation.text = label;

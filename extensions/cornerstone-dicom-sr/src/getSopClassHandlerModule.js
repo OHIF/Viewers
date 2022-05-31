@@ -36,7 +36,10 @@ const CodeNameCodeSequenceValues = {
 
 const CodingSchemeDesignators = {
   SRT: 'SRT',
-  cornerstone3DTools1: Cornerstone3DCodeScheme.CodingSchemeDesignator,
+  CornerstoneCodeSchemes: [
+    Cornerstone3DCodeScheme.CodingSchemeDesignator,
+    'CST4',
+  ],
 };
 
 const RELATIONSHIP_TYPE = {
@@ -463,8 +466,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 
   if (
     Finding &&
-    Finding.ConceptCodeSequence.CodingSchemeDesignator ===
-      CodingSchemeDesignators.cornerstone3DTools1 &&
+    CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
+      Finding.ConceptCodeSequence.CodingSchemeDesignator
+    ) &&
     Finding.ConceptCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.CornerstoneFreeText
   ) {
@@ -478,8 +482,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   if (FindingSites.length) {
     const cornerstoneFreeTextFindingSite = FindingSites.find(
       FindingSite =>
-        FindingSite.ConceptCodeSequence.CodingSchemeDesignator ===
-          CodingSchemeDesignators.cornerstone3DTools1 &&
+        CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
+          Finding.ConceptCodeSequence.CodingSchemeDesignator
+        ) &&
         FindingSite.ConceptCodeSequence.CodeValue ===
           CodeNameCodeSequenceValues.CornerstoneFreeText
     );

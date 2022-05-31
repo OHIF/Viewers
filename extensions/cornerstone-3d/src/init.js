@@ -7,6 +7,7 @@ import {
   eventTarget,
   EVENTS,
   imageLoadPoolManager,
+  Settings,
 } from '@cornerstonejs/core';
 import { Enums, utilities } from '@cornerstonejs/tools';
 
@@ -15,7 +16,7 @@ import Cornerstone3DViewportService from './services/ViewportService/Cornerstone
 import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
-import callInputDialog from './callInputDialog';
+import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
 
 const cs3DToolsEvents = Enums.Events;
@@ -35,6 +36,10 @@ export default async function init({
 }) {
   await cs3DInit();
   initCornerstoneTools();
+
+  // Don't use cursors in viewports
+  // Todo: this should come from extension/app configuration
+  Settings.getRuntimeSettings().set('useCursors', false);
 
   const {
     UserAuthenticationService,

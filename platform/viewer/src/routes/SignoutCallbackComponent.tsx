@@ -22,8 +22,7 @@ function SignoutCallbackComponent({ userManager }) {
     .then(user => onRedirectSuccess(user))
     .catch(error => onRedirectError(error));
 
-  // todo: add i18n
-  return <div>Redirecting...</div>;
+  return null;
 }
 
 SignoutCallbackComponent.propTypes = {

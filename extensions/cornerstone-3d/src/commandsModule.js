@@ -6,6 +6,7 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
+import callInputDialog from './utils/callInputDialog';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -13,6 +14,7 @@ const commandsModule = ({ servicesManager }) => {
     ToolGroupService,
     CineService,
     ToolBarService,
+    UIDialogService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
@@ -26,6 +28,9 @@ const commandsModule = ({ servicesManager }) => {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
     },
+    arrowTextCallback: ({ callback, data }) => {
+      callInputDialog(UIDialogService, data, callback);
+    },
     toggleCine: () => {
       const { viewports } = ViewportGridService.getState();
       const { isCineEnabled } = CineService.getState();
@@ -35,11 +40,10 @@ const commandsModule = ({ servicesManager }) => {
         CineService.setCine({ id: index, isPlaying: false })
       );
     },
-    setWindowLevel({ windowLevel, toolGroupId }) {
-      const { window: windowWidth, level: windowCenter } = windowLevel;
+    setWindowLevel({ window, level, toolGroupId }) {
       // convert to numbers
-      const windowWidthNum = Number(windowWidth);
-      const windowCenterNum = Number(windowCenter);
+      const windowWidthNum = Number(window);
+      const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
       const viewportToolGroupId = ToolGroupService.getToolGroupForViewport(
@@ -268,12 +272,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      let options = {};
-      if (viewport instanceof cornerstone3D.StackViewport) {
-        options = { direction };
-      } else {
-        throw new Error('scroll: volume viewport is not supported yet');
-      }
+      const options = { delta: direction };
 
       cornerstone3DTools.utilities.stackScrollTool.scrollThroughStack(
         viewport,
@@ -355,6 +354,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     toggleCine: {
       commandFn: actions.toggleCine,
+      storeContexts: [],
+      options: {},
+    },
+    arrowTextCallback: {
+      commandFn: actions.arrowTextCallback,
       storeContexts: [],
       options: {},
     },

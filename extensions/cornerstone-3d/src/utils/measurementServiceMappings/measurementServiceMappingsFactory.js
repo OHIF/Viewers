@@ -22,6 +22,7 @@ const measurementServiceMappingsFactory = (
       ELLIPSE,
       RECTANGLE,
       BIDIRECTIONAL,
+      POINT,
     } = MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attempted, but its not nearly flexible enough.
@@ -32,6 +33,7 @@ const measurementServiceMappingsFactory = (
       EllipticalROI: ELLIPSE,
       RectangleROI: RECTANGLE,
       Bidirectional: BIDIRECTIONAL,
+      ArrowAnnotate: POINT,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];

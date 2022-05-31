@@ -56,7 +56,7 @@ const EllipticalROI = {
       DisplaySetService
     );
 
-    const displayText = getDisplayText(mappedAnnotations);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
@@ -70,7 +70,7 @@ const EllipticalROI = {
       referenceStudyUID: StudyInstanceUID,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: metadata.label,
+      label: data.label,
       displayText: displayText,
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
@@ -95,10 +95,11 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     let displaySet;
 
+    let SeriesInstanceUID, SOPInstanceUID;
     if (targetId.startsWith('imageId:')) {
-      const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
+      ({ SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
         referencedImageId
-      );
+      ));
 
       displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
@@ -110,12 +111,13 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       throw new Error('Not implemented');
     }
 
-    const { SeriesNumber, SeriesInstanceUID } = displaySet;
+    const { SeriesNumber } = displaySet;
     const { mean, stdDev, max, area, Modality } = targetStats;
     const unit = getModalityUnit(Modality);
 
     annotations.push({
       SeriesInstanceUID,
+      SOPInstanceUID,
       SeriesNumber,
       Modality,
       unit,
@@ -177,7 +179,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   };
 }
 
-function getDisplayText(mappedAnnotations) {
+function getDisplayText(mappedAnnotations, displaySet) {
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return '';
   }
@@ -185,23 +187,31 @@ function getDisplayText(mappedAnnotations) {
   const displayText = [];
 
   // Area is the same for all series
-  const { area } = mappedAnnotations[0];
+  const { area, SOPInstanceUID } = mappedAnnotations[0];
+
+  const instance = displaySet.images.find(
+    image => image.SOPInstanceUID === SOPInstanceUID
+  );
+
+  let InstanceNumber;
+  if (instance) {
+    InstanceNumber = instance.InstanceNumber;
+  }
+
   const roundedArea = utils.roundNumber(area, 2);
-  displayText.push(`Area: ${roundedArea} mm<sup>2</sup>`);
+  displayText.push(`${roundedArea} mm<sup>2</sup>`);
 
+  // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
-    const { mean, unit, max, SeriesNumber } = mappedAnnotation;
+    const { unit, max, SeriesNumber } = mappedAnnotation;
 
-    if (mean && max) {
-      const roundedMean = utils.roundNumber(mean, 2);
+    if (max) {
       const roundedMax = utils.roundNumber(max, 2);
-      // const roundedStdDev = utils.roundNumber(stdDev, 2);
 
       displayText.push(
-        `S:${SeriesNumber} - max: ${roundedMax} <small>${unit}</small>`
-      );
-      displayText.push(
-        `S:${SeriesNumber} - mean: ${roundedMean} <small>${unit}</small>`
+        InstanceNumber
+          ? `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber} I:${InstanceNumber})`
+          : `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber})`
       );
     }
   });

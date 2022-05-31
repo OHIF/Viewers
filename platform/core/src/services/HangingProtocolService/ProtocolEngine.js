@@ -96,7 +96,10 @@ export default class ProtocolEngine {
       // We clone it so that we don't accidentally add the
       // numberOfPriorsReferenced rule to the Protocol itself.
       let rules = protocol.protocolMatchingRules.slice();
-      if (!rules) {
+      if (!rules || !rules.length) {
+        console.warn(
+          'ProtocolEngine::findMatchByStudy no matching rules - specify protocolMatchingRules'
+        );
         return;
       }
 

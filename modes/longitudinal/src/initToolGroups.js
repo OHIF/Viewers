@@ -1,4 +1,8 @@
-function initDefaultToolGroup(extensionManager, ToolGroupService) {
+function initDefaultToolGroup(
+  extensionManager,
+  ToolGroupService,
+  commandsManager
+) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-3d.utilityModule.tools'
   );
@@ -36,11 +40,28 @@ function initDefaultToolGroup(extensionManager, ToolGroupService) {
     // disabled
   };
 
+  const toolsConfig = {
+    [toolNames.ArrowAnnotate]: {
+      getTextCallback: (callback, eventDetails) =>
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          eventDetails,
+        }),
+
+      changeTextCallback: (data, eventDetails, callback) =>
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          data,
+          eventDetails,
+        }),
+    },
+  };
+
   const toolGroupId = 'default';
-  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
+  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
 }
 
-function initSRToolGroup(extensionManager, ToolGroupService) {
+function initSRToolGroup(extensionManager, ToolGroupService, commandsManager) {
   const SRUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
@@ -96,13 +117,31 @@ function initSRToolGroup(extensionManager, ToolGroupService) {
     ],
     // disabled
   };
+
+  const toolsConfig = {
+    [toolNames.ArrowAnnotate]: {
+      getTextCallback: (callback, eventDetails) =>
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          eventDetails,
+        }),
+
+      changeTextCallback: (data, eventDetails, callback) =>
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          data,
+          eventDetails,
+        }),
+    },
+  };
+
   const toolGroupId = 'SRToolGroup';
-  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
+  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
 }
 
-function initToolGroups(extensionManager, ToolGroupService) {
-  initDefaultToolGroup(extensionManager, ToolGroupService);
-  initSRToolGroup(extensionManager, ToolGroupService);
+function initToolGroups(extensionManager, ToolGroupService, commandsManager) {
+  initDefaultToolGroup(extensionManager, ToolGroupService, commandsManager);
+  initSRToolGroup(extensionManager, ToolGroupService, commandsManager);
 }
 
 export default initToolGroups;
