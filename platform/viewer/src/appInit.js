@@ -12,6 +12,7 @@ import {
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,
+  SegmentationService,
   CineService,
   UserAuthenticationService,
   errorHandler,
@@ -31,13 +32,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const commandsManagerConfig = {
     getAppState: () => {},
-    /** Used by commands to determine active context */
-    getActiveContexts: () => [
-      'VIEWER',
-      'DEFAULT',
-      'CORNERSTONE',
-      'CORNERSTONE3D',
-    ],
   };
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -60,6 +54,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     ToolBarService,
     ViewportGridService,
     HangingProtocolService,
+    SegmentationService,
     CineService,
     UserAuthenticationService,
   ]);

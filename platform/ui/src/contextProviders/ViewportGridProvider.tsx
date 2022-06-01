@@ -17,7 +17,7 @@ const DEFAULT_STATE = {
     {
       displaySetInstanceUIDs: [],
       viewportOptions: {},
-      displaySetOptions: [],
+      displaySetOptions: [{}],
       x: 0, // left
       y: 0, // top
       width: 100,
@@ -68,15 +68,10 @@ export function ViewportGridProvider({ children, service }) {
         return { ...state, ...{ viewports }, cachedLayout: null };
       }
       case 'SET_LAYOUT': {
-        const {
-          numCols,
-          numRows,
-          layoutType,
-          viewportOptions,
-        } = action.payload;
+        const { numCols, numRows, layoutType, layoutOptions } = action.payload;
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
-        const numPanes = viewportOptions.length || numRows * numCols;
+        const numPanes = layoutOptions.length || numRows * numCols;
         const viewports = state.viewports.slice();
         const activeViewportIndex =
           state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
@@ -91,8 +86,8 @@ export function ViewportGridProvider({ children, service }) {
         for (let i = 0; i < numPanes; i++) {
           let xPos, yPos, w, h;
 
-          if (viewportOptions && viewportOptions[i]) {
-            ({ x: xPos, y: yPos, width: w, height: h } = viewportOptions[i]);
+          if (layoutOptions && layoutOptions[i]) {
+            ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[i]);
           } else {
             const { row, col } = unravelIndex(i, numRows, numCols);
             w = 1 / numCols;
@@ -172,7 +167,7 @@ export function ViewportGridProvider({ children, service }) {
       viewportIndex,
       displaySetInstanceUIDs,
       viewportOptions = {},
-      displaySetOptions = [],
+      displaySetOptions = [{}],
     }) =>
       dispatch({
         type: 'SET_DISPLAYSET_FOR_VIEWPORT',
@@ -187,14 +182,14 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const setLayout = useCallback(
-    ({ layoutType, numRows, numCols, viewportOptions = [] }) =>
+    ({ layoutType, numRows, numCols, layoutOptions = [] }) =>
       dispatch({
         type: 'SET_LAYOUT',
         payload: {
           layoutType,
           numRows,
           numCols,
-          viewportOptions,
+          layoutOptions,
         },
       }),
     [dispatch]

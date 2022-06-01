@@ -71,9 +71,11 @@ export default class ToolBarService {
       }
       case 'tool': {
         this.state.primaryToolId = itemId;
-        commands.forEach(({ commandOptions, context }) => {
-          commandsManager.runCommand('setToolActive', commandOptions, context);
-        });
+        commands.forEach(
+          ({ commandName = 'setToolActive', commandOptions, context }) => {
+            commandsManager.runCommand(commandName, commandOptions, context);
+          }
+        );
         break;
       }
       case 'toggle': {
@@ -81,6 +83,9 @@ export default class ToolBarService {
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
+
+        const { commands } = interaction;
+
         commands.forEach(({ commandName, commandOptions, context }) => {
           if (!commandOptions) {
             commandOptions = {};

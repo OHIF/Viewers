@@ -3,8 +3,16 @@ import PropTypes from 'prop-types';
 //
 import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
-import getStudiesForPatientByStudyInstanceUID from './getStudiesForPatientByStudyInstanceUID';
 import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
+
+function _getStudyForPatientUtility(extensionManager) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-default.utilityModule.common'
+  );
+
+  const { getStudiesForPatientByStudyInstanceUID } = utilityModule.exports;
+  return getStudiesForPatientByStudyInstanceUID;
+}
 
 /**
  * Wraps the PanelStudyBrowser and provides features afforded by managers/services
@@ -19,6 +27,10 @@ function WrappedPanelStudyBrowserTracking({
   servicesManager,
 }) {
   const dataSource = extensionManager.getActiveDataSource()[0];
+
+  const getStudiesForPatientByStudyInstanceUID = _getStudyForPatientUtility(
+    extensionManager
+  );
   const _getStudiesForPatientByStudyInstanceUID = getStudiesForPatientByStudyInstanceUID.bind(
     null,
     dataSource

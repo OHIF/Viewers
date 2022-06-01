@@ -16,7 +16,9 @@ const {
   DragProbeTool,
   AngleTool,
   MagnifyTool,
-  // CrosshairsTool,
+  CrosshairsTool,
+  RectangleROIStartEndThresholdTool,
+  SegmentationDisplayTool,
 } = cornerstone3DTools;
 
 export default function initCornerstone3DTools(configuration = {}) {
@@ -36,7 +38,8 @@ export default function initCornerstone3DTools(configuration = {}) {
   cornerstone3DTools.addTool(DragProbeTool);
   cornerstone3DTools.addTool(AngleTool);
   cornerstone3DTools.addTool(MagnifyTool);
-  // cornerstone3DTools.addTool(CrosshairsTool);
+  cornerstone3DTools.addTool(CrosshairsTool);
+  cornerstone3DTools.addTool(SegmentationDisplayTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -69,7 +72,8 @@ const toolNames = {
   Bidirectional: BidirectionalTool.toolName,
   Angle: AngleTool.toolName,
   Magnify: MagnifyTool.toolName,
-  // crosshairs: CrosshairsTool.toolName,
+  Crosshairs: CrosshairsTool.toolName,
+  SegmentationDisplay: SegmentationDisplayTool.toolName,
 };
 
 export { toolNames };

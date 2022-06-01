@@ -102,37 +102,43 @@ function _getInstanceByImageId(imageId) {
  * @param {*} metadata metadata inform of key value pairs
  * @returns
  */
-function _updateMetadataForStudy(StudyInstanceUID, metadata) {
+function _updateMetadataForSeries(
+  StudyInstanceUID,
+  SeriesInstanceUID,
+  metadata
+) {
   const study = _getStudy(StudyInstanceUID);
 
   if (!study) {
     return;
   }
 
-  for (let series of study.series) {
-    const { SeriesInstanceUID, instances } = series;
-    // update all instances metadata for this series with the new metadata
-    instances.forEach(instance => {
-      Object.keys(metadata).forEach(key => {
-        // if metadata[key] is an object, we need to merge it with the existing
-        // metadata of the instance
-        if (typeof metadata[key] === 'object') {
-          instance[key] = { ...instance[key], ...metadata[key] };
-        }
-        // otherwise, we just replace the existing metadata with the new one
-        else {
-          instance[key] = metadata[key];
-        }
-      });
-    });
+  const series = study.series.find(
+    aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID
+  );
 
-    // broadcast the series updated event
-    this._broadcastEvent(EVENTS.SERIES_UPDATED, {
-      SeriesInstanceUID,
-      StudyInstanceUID,
-      madeInClient: true,
+  const { instances } = series;
+  // update all instances metadata for this series with the new metadata
+  instances.forEach(instance => {
+    Object.keys(metadata).forEach(key => {
+      // if metadata[key] is an object, we need to merge it with the existing
+      // metadata of the instance
+      if (typeof metadata[key] === 'object') {
+        instance[key] = { ...instance[key], ...metadata[key] };
+      }
+      // otherwise, we just replace the existing metadata with the new one
+      else {
+        instance[key] = metadata[key];
+      }
     });
-  }
+  });
+
+  // broadcast the series updated event
+  this._broadcastEvent(EVENTS.SERIES_UPDATED, {
+    SeriesInstanceUID,
+    StudyInstanceUID,
+    madeInClient: true,
+  });
 }
 
 const BaseImplementation = {
@@ -246,7 +252,7 @@ const BaseImplementation = {
   getSeries: _getSeries,
   getInstance: _getInstance,
   getInstanceByImageId: _getInstanceByImageId,
-  updateMetadataForStudy: _updateMetadataForStudy,
+  updateMetadataForSeries: _updateMetadataForSeries,
 };
 const DicomMetadataStore = Object.assign(
   // get study
@@ -257,8 +263,6 @@ const DicomMetadataStore = Object.assign(
   BaseImplementation,
   pubSubServiceInterface
 );
-
-window._model = _model;
 
 export { DicomMetadataStore };
 export default DicomMetadataStore;

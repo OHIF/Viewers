@@ -1,39 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ViewportOverlay } from '@ohif/ui';
 
-import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
+const EPSILON = 1e-4;
 
-function CornerstoneOverlay({
+function CornerstoneViewportOverlay({
+  element,
   viewportData,
-  imageIndex,
+  imageSliceData,
   viewportIndex,
+  Cornerstone3DViewportService,
   ToolBarService,
 }) {
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
-
-  const getCornerstoneViewport = useCallback(
-    viewportIndex => {
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
-
-      if (!viewportInfo) {
-        return;
-      }
-
-      const viewportId = viewportInfo.getViewportId();
-      const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
-        viewportId
-      );
-
-      return viewport;
-    },
-    [viewportIndex, viewportData]
-  );
 
   /**
    * Initial toolbar state
@@ -46,14 +29,6 @@ function CornerstoneOverlay({
    * Updating the VOI when the viewport changes its voi
    */
   useEffect(() => {
-    const viewport = getCornerstoneViewport(viewportIndex);
-
-    if (!viewport) {
-      return;
-    }
-
-    const { element } = viewport;
-
     const updateVOI = eventDetail => {
       const { range } = eventDetail.detail;
 
@@ -75,24 +50,19 @@ function CornerstoneOverlay({
     return () => {
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
     };
-  }, [viewportIndex, viewportData]);
+  }, [viewportIndex, viewportData, voi, element]);
 
   /**
    * Updating the scale when the viewport changes its zoom
    */
   useEffect(() => {
-    const viewport = getCornerstoneViewport(viewportIndex);
-    if (!viewport) {
-      return;
-    }
-
-    const { element } = viewport;
-
     const updateScale = eventDetail => {
       const { previousCamera, camera } = eventDetail.detail;
 
       if (previousCamera.parallelScale !== camera.parallelScale) {
-        const viewport = getCornerstoneViewport(viewportIndex);
+        const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+          viewportIndex
+        );
 
         if (!viewport) {
           return;
@@ -167,45 +137,45 @@ function CornerstoneOverlay({
   }, [voi, scale, activeTools]);
 
   const getTopRightContent = useCallback(() => {
-    const { stack } = viewportData;
-    const imageId = stack.imageIds[imageIndex];
-
-    if (!imageId) {
-      return null;
+    const { imageIndex, numberOfSlices } = imageSliceData;
+    if (!viewportData) {
+      return;
     }
 
-    const generalImageModule =
-      metaData.get('generalImageModule', imageId) || {};
-    const { instanceNumber } = generalImageModule;
+    let instanceNumber;
 
-    const stackSize = stack.imageIds ? stack.imageIds.length : 0;
+    if (viewportData.viewportType === Enums.ViewportType.STACK) {
+      instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
 
-    if (stackSize <= 1) {
-      return null;
+      if (!instanceNumber) {
+        return null;
+      }
+    } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+      instanceNumber = _getInstanceNumberFromVolume(
+        viewportData,
+        imageIndex,
+        viewportIndex,
+        Cornerstone3DViewportService
+      );
     }
-
-    const instanceNumberInt = parseInt(instanceNumber);
 
     return (
       <div className="flex flex-row">
         <span className="mr-1">I:</span>
         <span className="font-light">
-          {instanceNumberInt !== undefined
-            ? `${instanceNumberInt} (${imageIndex + 1}/${stackSize})`
-            : `${imageIndex + 1}/${stackSize}`}
+          {instanceNumber !== undefined
+            ? `${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`
+            : `${imageIndex + 1}/${numberOfSlices}`}
         </span>
       </div>
     );
-  }, [imageIndex, viewportData]);
+  }, [imageSliceData, viewportData, viewportIndex]);
 
   if (!viewportData) {
     return null;
   }
 
-  // Todo: fix this for volume later
-  const { stack } = viewportData;
-
-  if (!stack || stack.imageIds.length === 0) {
+  if (viewportData.imageIds.length === 0) {
     throw new Error(
       'ViewportOverlay: only viewports with imageIds is supported at this time'
     );
@@ -219,10 +189,74 @@ function CornerstoneOverlay({
   );
 }
 
-CornerstoneOverlay.propTypes = {
+function _getInstanceNumberFromStack(viewportData, imageIndex) {
+  const imageIds = viewportData.imageIds;
+  const imageId = imageIds[imageIndex];
+
+  if (!imageId) {
+    return;
+  }
+
+  const generalImageModule = metaData.get('generalImageModule', imageId) || {};
+  const { instanceNumber } = generalImageModule;
+
+  const stackSize = imageIds.length;
+
+  if (stackSize <= 1) {
+    return;
+  }
+
+  return parseInt(instanceNumber);
+}
+
+// Since volume viewports can be in any view direction, they can render
+// a reconstructed image which don't have imageIds; therefore, no instance and instanceNumber
+// Here we check if viewport is in the acquisition direction and if so, we get the instanceNumber
+function _getInstanceNumberFromVolume(
+  viewportData,
+  imageIndex,
+  viewportIndex,
+  Cornerstone3DViewportService
+) {
+  const volumes = viewportData.volumes;
+
+  // Todo: support fusion of acquisition plane which has instanceNumber
+  if (!volumes || volumes.length > 1) {
+    return;
+  }
+
+  const volume = volumes[0];
+  const { direction, imageIds } = volume;
+
+  const cornerstoneViewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+    viewportIndex
+  );
+
+  if (!cornerstoneViewport) {
+    return;
+  }
+
+  const camera = cornerstoneViewport.getCamera();
+  const { viewPlaneNormal } = camera;
+  // checking if camera is looking at the acquisition plane (defined by the direction on the volume)
+
+  const scanAxisNormal = direction.slice(6, 9);
+
+  // check if viewPlaneNormal is parallel to scanAxisNormal
+  const cross = vec3.cross(vec3.create(), viewPlaneNormal, scanAxisNormal);
+  const isAcquisitionPlane = vec3.length(cross) < EPSILON;
+
+  if (isAcquisitionPlane) {
+    const { instanceNumber } =
+      metaData.get('generalImageModule', imageIds[imageIndex]) || {};
+    return parseInt(instanceNumber);
+  }
+}
+
+CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
   viewportIndex: PropTypes.number,
 };
 
-export default CornerstoneOverlay;
+export default CornerstoneViewportOverlay;

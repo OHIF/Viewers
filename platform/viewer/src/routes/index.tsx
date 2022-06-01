@@ -35,6 +35,7 @@ const createRoutes = ({
   servicesManager,
   commandsManager,
   hotkeysManager,
+  commandsManager,
   routerBasename,
 }) => {
   const routes =

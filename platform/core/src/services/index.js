@@ -12,6 +12,7 @@ import CineService from './CineService';
 import HangingProtocolService from './HangingProtocolService';
 import pubSubServiceInterface from './_shared/pubSubServiceInterface';
 import UserAuthenticationService from './UserAuthenticationService';
+import SegmentationService from './SegmentationService';
 
 export {
   MeasurementService,
@@ -28,4 +29,5 @@ export {
   CineService,
   pubSubServiceInterface,
   UserAuthenticationService,
+  SegmentationService,
 };

@@ -61,6 +61,7 @@ export default function buildModeRoutes({
           servicesManager={servicesManager}
           commandsManager={commandsManager}
           hotkeysManager={hotkeysManager}
+          commandsManager={commandsManager}
         />
       );
 
@@ -84,6 +85,7 @@ export default function buildModeRoutes({
         servicesManager={servicesManager}
         commandsManager={commandsManager}
         hotkeysManager={hotkeysManager}
+        commandsManager={commandsManager}
       />
     );
 

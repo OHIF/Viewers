@@ -105,6 +105,7 @@ function modeFactory({ modeConfiguration }) {
     onModeExit: ({ servicesManager }) => {
       const {
         ToolGroupService,
+        SyncGroupService,
         MeasurementService,
         ToolBarService,
       } = servicesManager.services;
@@ -112,6 +113,7 @@ function modeFactory({ modeConfiguration }) {
       ToolBarService.reset();
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
+      SyncGroupService.destroy();
     },
     validationTags: {
       study: [],

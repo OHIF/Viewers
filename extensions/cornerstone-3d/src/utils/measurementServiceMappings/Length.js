@@ -99,29 +99,27 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     let displaySet;
 
-    let SeriesInstanceUID, SOPInstanceUID;
-    if (targetId.startsWith('imageId:')) {
-      ({ SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
+    if (referencedImageId) {
+      const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
         referencedImageId
-      ));
+      );
 
       displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
         SeriesInstanceUID
       );
     } else {
-      // Todo: separate imageId and volumeId, for now just implementing the
-      // referenceImageId
-      throw new Error('Not implemented');
+      throw new Error(
+        'Non-acquisition plane measurement mapping not supported'
+      );
     }
 
-    const { SeriesNumber } = displaySet;
+    const { SeriesNumber, SeriesInstanceUID } = displaySet;
     const { length } = targetStats;
     const unit = 'mm';
 
     annotations.push({
       SeriesInstanceUID,
-      SOPInstanceUID,
       SeriesNumber,
       unit,
       length,

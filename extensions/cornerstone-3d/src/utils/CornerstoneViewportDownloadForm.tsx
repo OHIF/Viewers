@@ -3,7 +3,6 @@ import domtoimage from 'dom-to-image';
 
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
-import Cornerstone3DViewportService from '../services/ViewportService/Cornerstone3DViewportService';
 import PropTypes from 'prop-types';
 import { ViewportDownloadForm } from '@ohif/ui';
 
@@ -15,7 +14,11 @@ const MAX_TEXTURE_SIZE = 10000;
 const VIEWPORT_ID = 'cornerstone-viewport-download-form';
 const TOOLGROUP_ID = 'cornerstone-viewport-download-form-toolgroup';
 
-const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
+const CornerstoneViewportDownloadForm = ({
+  onClose,
+  activeViewportIndex,
+  Cornerstone3DViewportService,
+}) => {
   const enabledElement = getEnabledElement(activeViewportIndex);
   const activeViewportElement = enabledElement?.element;
 

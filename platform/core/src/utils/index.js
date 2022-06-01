@@ -1,5 +1,4 @@
 import ObjectPath from './objectPath';
-import StackManager from './StackManager.js';
 import absoluteUrl from './absoluteUrl';
 import guid from './guid';
 import sortBy from './sortBy.js';
@@ -39,7 +38,6 @@ const utils = {
   formatDate,
   formatPN,
   b64toBlob,
-  StackManager,
   urlUtil,
   imageIdToURI,
   //loadAndCacheDerivedDisplaySets,
@@ -67,7 +65,6 @@ export {
   formatDate,
   writeScript,
   b64toBlob,
-  StackManager,
   urlUtil,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,

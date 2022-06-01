@@ -11,10 +11,12 @@ import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import init from './init.js';
 import commandsModule from './commandsModule';
 import ToolGroupService from './services/ToolGroupService';
+import SyncGroupService from './services/SyncGroupService';
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement } from './state';
 import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
+import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
 
@@ -62,7 +64,11 @@ const cornerstone3DExtension = {
     configuration = {},
     appConfig,
   }) {
+    servicesManager.registerService(
+      Cornerstone3DViewportService(servicesManager)
+    );
     servicesManager.registerService(ToolGroupService(servicesManager));
+    servicesManager.registerService(SyncGroupService(servicesManager));
     await init({ servicesManager, commandsManager, configuration, appConfig });
   },
   getViewportModule({ servicesManager, commandsManager }) {
@@ -105,8 +111,8 @@ const cornerstone3DExtension = {
             return { cornerstone3D, cornerstone3DTools };
           },
           getEnabledElement,
-          Cornerstone3DViewportService,
           dicomLoaderService,
+          registerColormap,
         },
       },
       {

@@ -89,19 +89,18 @@ export default class DisplaySetService {
     return displaySet;
   }
 
-  setDisplaySetsMetadataUpdated(displaySetUIDs) {
-    displaySetUIDs.forEach(displaySetUID => {
-      const displaySet = this.getDisplaySetByUID(displaySetUID);
+  setDisplaySetMetadataInvalidated(displaySetInstanceUID) {
+    const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
 
-      if (!displaySet) {
-        return;
-      }
+    if (!displaySet) {
+      return;
+    }
 
-      displaySet.needsRerendering = true;
-    });
-
-    // boradcast event to update listeners with the new displaySets
-    this._broadcastEvent(EVENTS.DISPLAY_SETS_METADATA_UPDATED, displaySetUIDs);
+    // broadcast event to update listeners with the new displaySets
+    this._broadcastEvent(
+      EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      displaySetInstanceUID
+    );
   }
 
   deleteDisplaySet(displaySetInstanceUID) {
