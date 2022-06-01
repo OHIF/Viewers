@@ -85,9 +85,9 @@ export default class ToolGroupService {
     toolGroup.removeViewports(renderingEngineId, viewportId);
 
     const viewportIds = toolGroup.getViewportIds();
-    if (viewportIds.length === 0) {
-      ToolGroupManager.destroyToolGroup(toolGroup.id);
-    }
+    // if (viewportIds.length === 0) {
+    //   ToolGroupManager.destroyToolGroup(toolGroup.id);
+    // }
   }
 
   public addViewportToToolGroup(

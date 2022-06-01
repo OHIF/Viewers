@@ -268,12 +268,12 @@ class CornerstoneViewportService implements IViewportService {
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIdIndex } = viewportData;
+    const { imageIds, initialImageIndex } = viewportData;
 
-    let initialImageIdIndexToUse = initialImageIdIndex;
+    let initialImageIndexToUse = initialImageIndex;
 
-    if (!initialImageIdIndexToUse) {
-      initialImageIdIndexToUse =
+    if (!initialImageIndexToUse) {
+      initialImageIndexToUse =
         this._getInitialImageIndexForStackViewport(viewportInfo, imageIds) || 0;
     }
 
@@ -291,7 +291,7 @@ class CornerstoneViewportService implements IViewportService {
       properties.invert = voiInverted;
     }
 
-    viewport.setStack(imageIds, initialImageIdIndexToUse).then(() => {
+    viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
       csUtils.prefetchStack(imageIds);
     });

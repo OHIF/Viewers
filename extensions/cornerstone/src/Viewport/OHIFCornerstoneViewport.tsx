@@ -3,7 +3,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { useViewportGrid } from '@ohif/ui';
 import * as cs3DTools from '@cornerstonejs/tools';
-import { Enums, eventTarget } from '@cornerstonejs/core';
+import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
 import CornerstoneCacheService from '../services/ViewportService/CornerstoneCacheService';
@@ -53,10 +53,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
     displaySetOptions,
     servicesManager,
     onElementEnabled,
+    onElementDisabled,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
-    initialImageIdOrIndex,
+    initialImageIndex,
   } = props;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
@@ -163,6 +164,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
         Enums.Events.ELEMENT_ENABLED,
         elementEnabledHandler
       );
+
+      if (onElementDisabled) {
+        onElementDisabled();
+      }
     };
   }, []);
 
@@ -216,7 +221,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         displaySets,
         viewportOptions.viewportType,
         dataSource,
-        initialImageIdOrIndex
+        initialImageIndex
       );
 
       CornerstoneViewportService.setViewportDisplaySets(
@@ -264,7 +269,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
     };
-  }, [displaySets, elementRef, viewportIndex]);
+  }, [displaySets, elementRef, viewportIndex, viewportData]);
 
   return (
     <div className="viewport-wrapper">
@@ -393,7 +398,7 @@ function _jumpToMeasurement(
 
   viewportGridService.setActiveViewportIndex(viewportIndex);
 
-  if (targetElement !== null) {
+  if (getEnabledElement(targetElement)) {
     cs3DTools.utilities.jumpToSlice(targetElement, {
       imageIndex: imageIdIndex,
     });

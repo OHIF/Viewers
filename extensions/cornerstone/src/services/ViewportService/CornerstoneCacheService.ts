@@ -14,7 +14,7 @@ export type StackData = {
   imageIds: string[];
   frameRate?: number;
   isClip?: boolean;
-  initialImageIdIndex?: number | string | null;
+  initialImageIndex?: number | string | null;
   viewportType: Enums.ViewportType;
 };
 
@@ -57,7 +57,7 @@ class CornerstoneCacheService {
     displaySets: unknown[],
     viewportType: string,
     dataSource: unknown,
-    initialImageIdOrIndex?: number | string
+    initialImageIndex?: number
   ): Promise<StackData | VolumeData> {
     const cs3DViewportType = getCornerstoneViewportType(viewportType);
     let viewportData: StackData | VolumeData;
@@ -66,16 +66,12 @@ class CornerstoneCacheService {
       viewportData = await this._getStackViewportData(
         dataSource,
         displaySets,
-        initialImageIdOrIndex
+        initialImageIndex
       );
     }
 
     if (cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-      viewportData = await this._getVolumeViewportData(
-        dataSource,
-        displaySets,
-        initialImageIdOrIndex
-      );
+      viewportData = await this._getVolumeViewportData(dataSource, displaySets);
     }
 
     viewportData.viewportType = cs3DViewportType;
@@ -120,7 +116,7 @@ class CornerstoneCacheService {
   private _getStackViewportData(
     dataSource,
     displaySets,
-    initialImageIdOrIndex
+    initialImageIndex
   ): StackData {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
@@ -139,17 +135,12 @@ class CornerstoneCacheService {
     const stackData: StackData = {
       StudyInstanceUID,
       displaySetInstanceUID,
+      viewportType: Enums.ViewportType.STACK,
       imageIds: stackImageIds,
     };
 
-    if (initialImageIdOrIndex !== undefined) {
-      if (typeof initialImageIdOrIndex === 'number') {
-        stackData.initialImageIdIndex = initialImageIdOrIndex;
-      } else {
-        stackData.initialImageIdIndex = stackData.imageIds.indexOf(
-          initialImageIdOrIndex
-        );
-      }
+    if (typeof initialImageIndex === 'number') {
+      stackData.initialImageIndex = initialImageIndex;
     }
 
     return stackData;
@@ -210,6 +201,7 @@ class CornerstoneCacheService {
       StudyInstanceUID,
       displaySetInstanceUIDs,
       imageIds: volumeImageIdsArray,
+      viewportType: Enums.ViewportType.ORTHOGRAPHIC,
       volumes,
     };
   }

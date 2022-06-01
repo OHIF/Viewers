@@ -204,9 +204,6 @@ init: async ({
       const instance = displaySet.images.find(
         image => image.SOPInstanceUID === tool.SOPInstanceUID
       );
-
-      const { SOPInstanceUID, url } = instance;
-      displaySet.initialImageIdIndex = displaySet.images.indexOf(instance);
     });
 
     MeasurementService.addMeasurement(/**...**/);
