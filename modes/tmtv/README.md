@@ -1,5 +1,6 @@
 # Total Metabolic Tumor Volume
 
+# NOTE: THIS MODE IS STILL A WORK IN PROGRESS
 
 ## Introduction
 
@@ -77,4 +78,3 @@ Below you can see a video tutorial on how to use the TMTV workflow mode.
 
 
 https://user-images.githubusercontent.com/7490180/171065443-35369fba-e955-48ac-94da-d262e0fccb6b.mp4
-
