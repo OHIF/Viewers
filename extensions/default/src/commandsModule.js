@@ -2,9 +2,17 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
     MeasurementService,
     HangingProtocolService,
+    UINotificationService,
   } = servicesManager.services;
 
   const actions = {
+    displayNotification: ({ text, title, type }) => {
+      UINotificationService.show({
+        title: title,
+        message: text,
+        type: type,
+      });
+    },
     clearMeasurements: () => {
       MeasurementService.clear();
     },
@@ -23,7 +31,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       storeContexts: [],
       options: {},
     },
-
+    displayNotification: {
+      commandFn: actions.displayNotification,
+      storeContexts: [],
+      options: {},
+    },
     nextStage: {
       commandFn: actions.nextStage,
       storeContexts: [],

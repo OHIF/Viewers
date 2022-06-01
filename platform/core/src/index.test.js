@@ -32,6 +32,7 @@ describe('Top level exports', () => {
       'MeasurementService',
       'ToolBarService',
       'ViewportGridService',
+      'SegmentationService',
       'HangingProtocolService',
       'UserAuthenticationService',
       'IWebApiDataSource',

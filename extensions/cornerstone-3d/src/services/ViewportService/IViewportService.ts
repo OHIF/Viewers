@@ -1,4 +1,10 @@
 import { Types } from '@cornerstonejs/core';
+import { StackData, VolumeData } from './Cornerstone3DCacheService';
+import {
+  DisplaySetOptions,
+  PublicViewportOptions,
+  ViewportOptions,
+} from './Viewport';
 
 /**
  * Handles cornerstone-3D viewport logic including enabling, disabling, and
@@ -25,7 +31,11 @@ export interface IViewportService {
    * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  enableElement(viewportIndex: number, elementRef: HTMLDivElement): void;
+  enableElement(
+    viewportIndex: number,
+    viewportOptions: ViewportOptions,
+    elementRef: HTMLDivElement
+  ): void;
   /**
    * It retrieves the renderingEngine if it does exist, or creates one otherwise
    * @returns {RenderingEngine} rendering engine
@@ -57,9 +67,8 @@ export interface IViewportService {
    */
   setViewportDisplaySets(
     viewportIndex: number,
-    displaySets: unknown[],
-    viewportOptions: unknown,
-    displaySetOptions: unknown[],
-    dataSource: unknown
+    viewportData: StackData | VolumeData,
+    publicViewportOptions: PublicViewportOptions,
+    publicDisplaySetOptions: DisplaySetOptions[]
   ): void;
 }

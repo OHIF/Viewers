@@ -206,7 +206,11 @@ export default function ModeRoute({
     // Add SOPClassHandlers to a new SOPClassManager.
     DisplaySetService.init(extensionManager, sopClassHandlers);
 
-    extensionManager.onModeEnter();
+    extensionManager.onModeEnter({
+      servicesManager,
+      extensionManager,
+      commandsManager,
+    });
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
     // Adding hanging protocols of extensions after onModeEnter since

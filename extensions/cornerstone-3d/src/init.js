@@ -2,22 +2,31 @@ import OHIF from '@ohif/core';
 import { ContextMenuMeasurements } from '@ohif/ui';
 
 import * as cornerstone3D from '@cornerstonejs/core';
+import * as cornerstone3DTools from '@cornerstonejs/tools';
 import {
   init as cs3DInit,
   eventTarget,
   EVENTS,
+  volumeLoader,
+  imageLoader,
   imageLoadPoolManager,
   Settings,
 } from '@cornerstonejs/core';
 import { Enums, utilities } from '@cornerstonejs/tools';
+import {
+  cornerstoneStreamingImageVolumeLoader,
+  sharedArrayBufferImageLoader,
+} from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
-import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
 import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
+import interleaveCenterLoader from './utils/interleaveCenterLoader';
+import interleaveTopToBottom from './utils/interleaveTopToBottom';
+import initSegmentationService from './initSegmentationService';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -25,6 +34,7 @@ let CONTEXT_MENU_OPEN = false;
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone3D;
+window.cornerstoneTools = cornerstone3DTools;
 /**
  *
  */
@@ -48,9 +58,34 @@ export default async function init({
     DisplaySetService,
     UIDialogService,
     CineService,
+    Cornerstone3DViewportService,
+    HangingProtocolService,
+    SegmentationService,
   } = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
+
+  volumeLoader.registerUnknownVolumeLoader(
+    cornerstoneStreamingImageVolumeLoader
+  );
+  volumeLoader.registerVolumeLoader(
+    'cornerstoneStreamingImageVolume',
+    cornerstoneStreamingImageVolumeLoader
+  );
+
+  HangingProtocolService.registerImageLoadStrategy(
+    'interleaveCenter',
+    interleaveCenterLoader
+  );
+  HangingProtocolService.registerImageLoadStrategy(
+    'interleaveTopToBottom',
+    interleaveTopToBottom
+  );
+
+  imageLoader.registerImageLoader(
+    'streaming-wadors',
+    sharedArrayBufferImageLoader
+  );
 
   cornerstone3D.metaData.addProvider(
     metadataProvider.get.bind(metadataProvider),
@@ -71,6 +106,8 @@ export default async function init({
     DisplaySetService,
     Cornerstone3DViewportService
   );
+
+  initSegmentationService(SegmentationService, Cornerstone3DViewportService);
 
   initCineService(CineService);
 
@@ -180,6 +217,24 @@ export default async function init({
     UIDialogService.dismiss({ id: 'context-menu' });
   };
 
+  // When a custom image load is performed, update the relevant viewports
+  HangingProtocolService.subscribe(
+    HangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
+    volumeInputArrayMap => {
+      for (const entry of volumeInputArrayMap.entries()) {
+        const [viewportId, volumeInputArray] = entry;
+        const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
+          viewportId
+        );
+
+        Cornerstone3DViewportService.setVolumesForViewport(
+          viewport,
+          volumeInputArray
+        );
+      }
+    }
+  );
+
   /*
    * Because click gives us the native "mouse up", buttons will always be `0`
    * Need to fallback to event.which;
@@ -206,12 +261,16 @@ export default async function init({
       cs3DToolsEvents.MOUSE_CLICK,
       contextMenuHandleClick
     );
+
+    // element.addEventListener(EVENTS.NEW_STACK_SET, () =>
+    //   utilities.stackPrefetch.enable(element)
+    // );
   }
 
   function elementDisabledHandler(evt) {
     const { viewportId, element } = evt.detail;
 
-    const viewportInfo = Cornerstone3DViewportService.getViewportInfoById(
+    const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
       viewportId
     );
     ToolGroupService.disable(viewportInfo);
@@ -220,6 +279,10 @@ export default async function init({
       cs3DToolsEvents.MOUSE_CLICK,
       contextMenuHandleClick
     );
+
+    // element.removeEventListener(EVENTS.NEW_STACK_SET, () =>
+    //   utilities.stackPrefetch.disable(element)
+    // );
   }
 
   eventTarget.addEventListener(

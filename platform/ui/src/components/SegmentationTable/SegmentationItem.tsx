@@ -70,7 +70,7 @@ const SegmentationItem = ({
           <span>{index}</span>
         )}
       </div>
-      <div className="relative flex flex-col w-full">
+      <div className="relative flex flex-col w-full p-1">
         <div className="flex items-center mb-1 ml-2">
           <div className="flex items-center flex-1 text-base text-primary-light">
             <div
@@ -89,7 +89,7 @@ const SegmentationItem = ({
                 )}
                 name="pencil"
                 style={{
-                  top: 5,
+                  top: 7,
                   right: 14,
                   transform: isActive || isHovering ? '' : 'translateX(100%)',
                 }}

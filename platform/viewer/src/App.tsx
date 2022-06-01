@@ -61,6 +61,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     servicesManager,
     commandsManager,
     hotkeysManager,
+    commandsManager,
     routerBasename,
   });
   const {

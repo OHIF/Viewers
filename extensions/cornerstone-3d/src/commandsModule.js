@@ -1,12 +1,12 @@
-import * as cornerstone3D from '@cornerstonejs/core';
-import * as cornerstone3DTools from '@cornerstonejs/tools';
-import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
+import * as cornerstone from '@cornerstonejs/core';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
 import { Enums } from '@cornerstonejs/tools';
 
 import { getEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
+import { setColormap } from './utils/colormap/transferFunctionHelpers';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -15,18 +15,66 @@ const commandsModule = ({ servicesManager }) => {
     CineService,
     ToolBarService,
     UIDialogService,
+    Cornerstone3DViewportService,
+    SegmentationService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
     const { element } = getEnabledElement(activeViewportIndex) || {};
-    const enabledElement = cornerstone3D.getEnabledElement(element);
+    const enabledElement = cornerstone.getEnabledElement(element);
     return enabledElement;
+  }
+
+  function _getToolGroup(toolGroupId) {
+    let toolGroupIdToUse = toolGroupId;
+
+    if (!toolGroupIdToUse) {
+      // Use the active viewport's tool group if no tool group id is provided
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { renderingEngineId, viewportId } = enabledElement;
+      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
+        viewportId,
+        renderingEngineId
+      );
+
+      if (!toolGroup) {
+        console.warn(
+          'No tool group found for viewportId:',
+          viewportId,
+          'and renderingEngineId:',
+          renderingEngineId
+        );
+        return;
+      }
+
+      toolGroupIdToUse = toolGroup.id;
+    }
+
+    const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
+    return toolGroup;
   }
 
   const actions = {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
+    },
+    setViewportActive: ({ viewportId }) => {
+      const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
+        viewportId
+      );
+      if (!viewportInfo) {
+        console.warn('No viewport found for viewportId:', viewportId);
+        return;
+      }
+
+      const viewportIndex = viewportInfo.getViewportIndex();
+      ViewportGridService.setActiveViewportIndex(viewportIndex);
     },
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(UIDialogService, data, callback);
@@ -61,7 +109,7 @@ const commandsModule = ({ servicesManager }) => {
       const lower = windowCenterNum - windowWidthNum / 2.0;
       const upper = windowCenterNum + windowWidthNum / 2.0;
 
-      if (viewport instanceof cornerstone3D.StackViewport) {
+      if (viewport instanceof cornerstone.StackViewport) {
         viewport.setProperties({
           voiRange: {
             upper,
@@ -72,35 +120,35 @@ const commandsModule = ({ servicesManager }) => {
         viewport.render();
       }
     },
-    setToolActive: ({ toolName, toolGroupId = null }) => {
-      let toolGroupIdToUse = toolGroupId;
-      if (!toolGroupIdToUse) {
-        // Use the active viewport's tool group if no tool group id is provided
-        const enabledElement = _getActiveViewportEnabledElement();
+    toggleCrosshairs({ toolGroupId, toggledState }) {
+      const toolName = 'Crosshairs';
+      // If it is Enabled
+      if (toggledState) {
+        actions.setToolActive({ toolName, toolGroupId });
+        return;
+      }
+      const toolGroup = _getToolGroup(toolGroupId);
 
-        if (!enabledElement) {
-          return;
-        }
-
-        const { renderingEngineId, viewportId } = enabledElement;
-        const toolGroup = cornerstone3DTools.ToolGroupManager.getToolGroupForViewport(
-          viewportId,
-          renderingEngineId
-        );
-
-        if (!toolGroup) {
-          console.warn(
-            'No tool group found for viewportId:',
-            viewportId,
-            'and renderingEngineId:',
-            renderingEngineId
-          );
-        }
-
-        toolGroupIdToUse = toolGroup.id;
+      if (!toolGroup) {
+        return;
       }
 
-      const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
+      toolGroup.setToolDisabled(toolName);
+
+      // Get the primary toolId from the ToolBarService and set it to active
+      // Since it was set to passive if not already active
+      const primaryActiveTool = ToolBarService.state.primaryToolId;
+      if (
+        toolGroup?.toolOptions[primaryActiveTool]?.mode ===
+        cornerstoneTools.Enums.ToolModes.Passive
+      ) {
+        toolGroup.setToolActive(primaryActiveTool, {
+          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        });
+      }
+    },
+    setToolActive: ({ toolName, toolGroupId = null }) => {
+      const toolGroup = _getToolGroup(toolGroupId);
 
       if (!toolGroup) {
         console.warn('No tool group found for toolGroupId:', toolGroupId);
@@ -113,8 +161,6 @@ const commandsModule = ({ servicesManager }) => {
         viewports: [],
       };
 
-      const toolGroupViewportIds = toolGroup.getViewportIds();
-
       // iterate over all viewports and set the tool active for the
       // viewports that belong to the toolGroup
       for (let index = 0; index < viewports.length; index++) {
@@ -124,7 +170,7 @@ const commandsModule = ({ servicesManager }) => {
           continue;
         }
 
-        const viewport = cornerstone3D.getEnabledElement(
+        const viewport = cornerstone.getEnabledElement(
           ohifEnabledElement.element
         );
 
@@ -158,6 +204,7 @@ const commandsModule = ({ servicesManager }) => {
           contentProps: {
             activeViewportIndex,
             onClose: UIModalService.hide,
+            Cornerstone3DViewportService,
           },
         });
       }
@@ -170,7 +217,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone3D.StackViewport) {
+      if (viewport instanceof cornerstone.StackViewport) {
         const { rotation: currentRotation } = viewport.getProperties();
         const newRotation = (currentRotation + rotation) % 360;
         viewport.setProperties({ rotation: newRotation });
@@ -186,7 +233,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone3D.StackViewport) {
+      if (viewport instanceof cornerstone.StackViewport) {
         const { flipHorizontal } = viewport.getCamera();
         viewport.setCamera({ flipHorizontal: !flipHorizontal });
         viewport.render();
@@ -201,7 +248,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone3D.StackViewport) {
+      if (viewport instanceof cornerstone.StackViewport) {
         const { flipVertical } = viewport.getCamera();
         viewport.setCamera({ flipVertical: !flipVertical });
         viewport.render();
@@ -222,7 +269,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone3D.StackViewport) {
+      if (viewport instanceof cornerstone.StackViewport) {
         const { invert } = viewport.getProperties();
         viewport.setProperties({ invert: !invert });
         viewport.render();
@@ -237,7 +284,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone3D.StackViewport) {
+      if (viewport instanceof cornerstone.StackViewport) {
         viewport.resetProperties();
         viewport.resetCamera();
         viewport.render();
@@ -252,7 +299,7 @@ const commandsModule = ({ servicesManager }) => {
       }
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone3D.StackViewport) {
+      if (viewport instanceof cornerstone.StackViewport) {
         if (direction) {
           const { parallelScale } = viewport.getCamera();
           viewport.setCamera({ parallelScale: parallelScale * scaleFactor });
@@ -271,13 +318,91 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       const { viewport } = enabledElement;
-
       const options = { delta: direction };
 
-      cornerstone3DTools.utilities.stackScrollTool.scrollThroughStack(
+      cornerstoneTools.utilities.stackScrollTool.scrollThroughStack(
         viewport,
         options
       );
+    },
+    async createSegmentationForDisplaySet({ displaySetInstanceUID }) {
+      const volumeId = displaySetInstanceUID;
+
+      const segmentationUID = cornerstone.utilities.uuidv4();
+      const segmentationId = `${volumeId}::${segmentationUID}`;
+
+      await cornerstone.volumeLoader.createAndCacheDerivedVolume(volumeId, {
+        volumeId: segmentationId,
+      });
+
+      // Add the segmentations to state
+      cornerstoneTools.segmentation.addSegmentations([
+        {
+          segmentationId,
+          representation: {
+            // The type of segmentation
+            type: cornerstoneTools.Enums.SegmentationRepresentations.Labelmap,
+            // The actual segmentation data, in the case of labelmap this is a
+            // reference to the source volume of the segmentation.
+            data: {
+              volumeId: segmentationId,
+            },
+          },
+        },
+      ]);
+
+      return segmentationId;
+    },
+    async addSegmentationRepresentationToToolGroup({
+      segmentationId,
+      toolGroupId,
+      representationType,
+    }) {
+      // // Add the segmentation representation to the toolgroup
+      await cornerstoneTools.segmentation.addSegmentationRepresentations(
+        toolGroupId,
+        [
+          {
+            segmentationId,
+            type: representationType,
+          },
+        ]
+      );
+    },
+    getLabelmapVolumes: ({ segmentations }) => {
+      if (!segmentations || !segmentations.length) {
+        segmentations = SegmentationService.getSegmentations();
+      }
+
+      const labelmapVolumes = segmentations.map(segmentation => {
+        return cornerstone.cache.getVolume(segmentation.id);
+      });
+
+      return labelmapVolumes;
+    },
+    setViewportColormap: ({
+      viewportIndex,
+      displaySetInstanceUID,
+      colormap,
+      immediate = false,
+    }) => {
+      const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+        viewportIndex
+      );
+
+      const actorEntries = viewport.getActors();
+
+      const actorEntry = actorEntries.find(actorEntry => {
+        return actorEntry.uid === displaySetInstanceUID;
+      });
+
+      const { actor: volumeActor } = actorEntry;
+
+      setColormap(volumeActor, colormap);
+
+      if (immediate) {
+        viewport.render();
+      }
     },
   };
 
@@ -289,6 +414,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     setToolActive: {
       commandFn: actions.setToolActive,
+      storeContexts: [],
+      options: {},
+    },
+    toggleCrosshairs: {
+      commandFn: actions.toggleCrosshairs,
       storeContexts: [],
       options: {},
     },
@@ -359,6 +489,32 @@ const commandsModule = ({ servicesManager }) => {
     },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,
+      storeContexts: [],
+      options: {},
+    },
+    setViewportActive: {
+      commandFn: actions.setViewportActive,
+      storeContexts: [],
+      options: {},
+    },
+    createSegmentationForDisplaySet: {
+      commandFn: actions.createSegmentationForDisplaySet,
+      storeContexts: [],
+      options: {},
+    },
+    addSegmentationRepresentationToToolGroup: {
+      commandFn: actions.addSegmentationRepresentationToToolGroup,
+      storeContexts: [],
+      options: {},
+    },
+
+    getLabelmapVolumes: {
+      commandFn: actions.getLabelmapVolumes,
+      storeContexts: [],
+      options: {},
+    },
+    setViewportColormap: {
+      commandFn: actions.setViewportColormap,
       storeContexts: [],
       options: {},
     },

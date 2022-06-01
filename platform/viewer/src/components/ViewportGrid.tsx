@@ -1,7 +1,4 @@
-/**
- * CSS Grid Reference: http://grid.malven.co/
- */
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
@@ -99,12 +96,12 @@ function ViewerViewportGrid(props) {
   useEffect(() => {
     const { unsubscribe } = HangingProtocolService.subscribe(
       HangingProtocolService.EVENTS.NEW_LAYOUT,
-      ({ layoutType, numRows, numCols, viewportOptions }) => {
+      ({ layoutType, numRows, numCols, layoutOptions }) => {
         viewportGridService.setLayout({
           numRows,
           numCols,
           layoutType,
-          viewportOptions,
+          layoutOptions,
         });
       }
     );
@@ -158,13 +155,6 @@ function ViewerViewportGrid(props) {
       unsubscribe();
     };
   }, [viewports]);
-
-  /**
-   * Loading indicator until numCols and numRows are gotten from the HangingProtocolService
-   */
-  if (!numRows || !numCols) {
-    return null;
-  }
 
   /**
   //Changing the Hanging protocol while viewing
@@ -232,6 +222,7 @@ function ViewerViewportGrid(props) {
   };
 
   */
+
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
     viewportGridService.setDisplaySetsForViewport({
       viewportIndex,
@@ -239,11 +230,10 @@ function ViewerViewportGrid(props) {
     });
   };
 
-  const getViewportPanes = () => {
+  const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
-    const numViewportPanes = numCols * numRows;
 
-    for (let i = 0; i < numViewportPanes; i++) {
+    for (let i = 0; i < viewports.length; i++) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
@@ -328,7 +318,14 @@ function ViewerViewportGrid(props) {
     }
 
     return viewportPanes;
-  };
+  }, [viewports, activeViewportIndex, viewportComponents, dataSource]);
+
+  /**
+   * Loading indicator until numCols and numRows are gotten from the HangingProtocolService
+   */
+  if (!numRows || !numCols) {
+    return null;
+  }
 
   return (
     <ViewportGrid numRows={numRows} numCols={numCols}>
