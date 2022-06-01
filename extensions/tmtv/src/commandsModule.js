@@ -634,7 +634,7 @@ const commandsModule = ({
         });
 
         viewports.push(
-          CornerstoneViewportService.getCornerstone3DViewport(viewportId)
+          CornerstoneViewportService.getCornerstoneViewport(viewportId)
         );
       });
 
@@ -735,7 +735,7 @@ const commandsModule = ({
   return {
     actions,
     definitions,
-    defaultContext: 'TMTV:CORNERSTONE3D',
+    defaultContext: 'TMTV:CORNERSTONE',
   };
 };
 

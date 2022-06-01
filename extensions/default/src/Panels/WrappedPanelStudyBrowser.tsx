@@ -61,8 +61,8 @@ function _createGetImageSrcFromImageIdFn(extensionManager) {
   );
 
   try {
-    const { cornerstone3D } = utilities.exports.getCornerstoneLibraries();
-    return getImageSrcFromImageId.bind(null, cornerstone3D);
+    const { cornerstone } = utilities.exports.getCornerstoneLibraries();
+    return getImageSrcFromImageId.bind(null, cornerstone);
   } catch (ex) {
     throw new Error('Required command not found');
   }

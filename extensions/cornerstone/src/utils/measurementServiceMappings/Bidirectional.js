@@ -136,7 +136,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
 
   // Add Type
   columns.push('AnnotationType');
-  values.push('Cornerstone3D:Bidirectional');
+  values.push('Cornerstone:Bidirectional');
 
   mappedAnnotations.forEach(annotation => {
     const { length, width } = annotation;

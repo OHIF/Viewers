@@ -1,4 +1,4 @@
-import * as cornerstone3D from '@cornerstonejs/core';
+import * as cornerstone from '@cornerstonejs/core';
 import { volumeLoader } from '@cornerstonejs/core';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
@@ -35,7 +35,7 @@ export default function initWADOImageLoader(
   UserAuthenticationService,
   appConfig
 ) {
-  cornerstoneWADOImageLoader.external.cornerstone = cornerstone3D;
+  cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
   cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
   registerVolumeLoader(

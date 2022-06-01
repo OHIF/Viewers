@@ -69,7 +69,7 @@ function _createWwwcPreset(preset, title, subtitle) {
         commandOptions: {
           windowLevel: windowLevelPresets[preset],
         },
-        context: 'CORNERSTONE3D',
+        context: 'CORNERSTONE',
       },
     ],
   };
@@ -83,7 +83,7 @@ function _createCommands(commandName, toolName, toolGroupIds) {
       toolName,
       toolGroupId,
     },
-    context: 'CORNERSTONE3D',
+    context: 'CORNERSTONE',
   }));
 }
 

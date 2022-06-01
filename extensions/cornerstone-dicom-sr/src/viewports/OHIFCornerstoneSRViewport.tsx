@@ -95,9 +95,9 @@ function OHIFCornerstoneSRViewport(props) {
   );
 
   /**
-   * OnElementEnabled callback which is called after the cornerstone3DExtension
+   * OnElementEnabled callback which is called after the cornerstoneExtension
    * has enabled the element. Note: we delegate all the image rendering to
-   * cornerstone3DExtension, so we don't need to do anything here regarding
+   * cornerstoneExtension, so we don't need to do anything here regarding
    * the image rendering, element enabling etc.
    */
   const onElementEnabled = evt => {
@@ -147,7 +147,7 @@ function OHIFCornerstoneSRViewport(props) {
             viewportIndex
           );
 
-          const csViewport = CornerstoneViewportService.getCornerstone3DViewport(
+          const csViewport = CornerstoneViewportService.getCornerstoneViewport(
             viewportInfo.getViewportId()
           );
 
@@ -166,7 +166,7 @@ function OHIFCornerstoneSRViewport(props) {
     [dataSource, srDisplaySet, activeImageDisplaySetData, viewportIndex]
   );
 
-  const getCornerstone3DViewport = useCallback(() => {
+  const getCornerstoneViewport = useCallback(() => {
     if (!activeImageDisplaySetData) {
       return null;
     }
@@ -373,7 +373,7 @@ function OHIFCornerstoneSRViewport(props) {
       />
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {getCornerstone3DViewport()}
+        {getCornerstoneViewport()}
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification

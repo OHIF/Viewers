@@ -1,6 +1,6 @@
 import React from 'react';
-import * as cornerstone3D from '@cornerstonejs/core';
-import * as cornerstone3DTools from '@cornerstonejs/tools';
+import * as cornerstone from '@cornerstonejs/core';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 import {
   Enums as cs3DEnums,
   CONSTANTS,
@@ -22,7 +22,7 @@ import { id } from './id';
 
 const Component = React.lazy(() => {
   return import(
-    /* webpackPrefetch: true */ './Viewport/OHIFCornerstone3DViewport'
+    /* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport'
   );
 });
 
@@ -37,7 +37,7 @@ const OHIFCornerstoneViewport = props => {
 /**
  *
  */
-const cornerstone3DExtension = {
+const cornerstoneExtension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
@@ -108,7 +108,7 @@ const cornerstone3DExtension = {
         name: 'common',
         exports: {
           getCornerstoneLibraries: () => {
-            return { cornerstone3D, cornerstone3DTools };
+            return { cornerstone, cornerstoneTools };
           },
           getEnabledElement,
           dicomLoaderService,
@@ -133,4 +133,4 @@ const cornerstone3DExtension = {
   },
 };
 
-export default cornerstone3DExtension;
+export default cornerstoneExtension;

@@ -1,5 +1,5 @@
 import OHIF from '@ohif/core';
-import * as cornerstone3DTools from '@cornerstonejs/tools';
+import { annotation } from '@cornerstonejs/tools';
 const { log } = OHIF;
 
 function getFilteredCornerstoneToolState(
@@ -67,7 +67,7 @@ function getFilteredCornerstoneToolState(
   const uidFilter = measurementData.map(md => md.uid);
   const uids = uidFilter.slice();
 
-  const annotationManager = cornerstone3DTools.annotation.state.getDefaultAnnotationManager();
+  const annotationManager = annotation.state.getDefaultAnnotationManager();
   const framesOfReference = annotationManager.getFramesOfReference();
 
   for (let i = 0; i < framesOfReference.length; i++) {

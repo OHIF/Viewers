@@ -8,7 +8,7 @@ import { Enums, eventTarget } from '@cornerstonejs/core';
 import { setEnabledElement } from '../state';
 import CornerstoneCacheService from '../services/ViewportService/CornerstoneCacheService';
 
-import './OHIFCornerstone3DViewport.css';
+import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 
 const STACK = 'stack';
@@ -54,7 +54,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     servicesManager,
     onElementEnabled,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
-    // of the imageData in the OHIFCornerstone3DViewport. This prop is used
+    // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
     initialImageIdOrIndex,
   } = props;
@@ -278,7 +278,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         targetRef={elementRef.current}
       />
       <div
-        className="cornerstone3D-viewport-element"
+        className="cornerstone-viewport-element"
         style={{ height: '100%', width: '100%' }}
         onContextMenu={e => e.preventDefault()}
         onMouseDown={e => e.preventDefault()}
@@ -416,7 +416,7 @@ OHIFCornerstoneViewport.propTypes = {
   servicesManager: PropTypes.object.isRequired,
   onElementEnabled: PropTypes.func,
   // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
-  // of the imageData in the OHIFCornerstone3DViewport. This prop is used
+  // of the imageData in the OHIFCornerstoneViewport. This prop is used
   // to set the initial state of the viewport's first image to render
   initialImageIdOrIndex: PropTypes.oneOfType([
     PropTypes.string,

@@ -204,7 +204,7 @@ class CornerstoneViewportService implements IViewportService {
     this._setDisplaySets(viewportId, viewportData, viewportInfo);
   }
 
-  public getCornerstone3DViewport(
+  public getCornerstoneViewport(
     viewportId: string
   ): Types.IStackViewport | Types.IVolumeViewport | null {
     const viewportInfo = this.getViewportInfo(viewportId);
@@ -222,7 +222,7 @@ class CornerstoneViewportService implements IViewportService {
     return viewport;
   }
 
-  public getCornerstone3DViewportByIndex(
+  public getCornerstoneViewportByIndex(
     viewportIndex: number
   ): Types.IStackViewport | Types.IVolumeViewport | null {
     const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
@@ -439,7 +439,7 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
 
     const viewportId = viewportInfo.getViewportId();
-    const viewport = this.getCornerstone3DViewport(viewportId);
+    const viewport = this.getCornerstoneViewport(viewportId);
 
     if (viewport instanceof VolumeViewport) {
       this._setVolumeViewport(viewport, viewportData, viewportInfo);
@@ -486,7 +486,7 @@ class CornerstoneViewportService implements IViewportService {
     viewportData: StackData | VolumeData,
     viewportInfo: ViewportInfo
   ): void {
-    const viewport = this.getCornerstone3DViewport(viewportId);
+    const viewport = this.getCornerstoneViewport(viewportId);
 
     if (viewport instanceof StackViewport) {
       this._setStackViewport(viewport, viewportData as StackData, viewportInfo);

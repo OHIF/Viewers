@@ -20,7 +20,7 @@ function CornerstoneImageScrollbar({
       );
 
       const viewportId = viewportInfo.getViewportId();
-      const viewport = CornerstoneViewportService.getCornerstone3DViewport(
+      const viewport = CornerstoneViewportService.getCornerstoneViewport(
         viewportId
       );
 
@@ -39,7 +39,7 @@ function CornerstoneImageScrollbar({
       return;
     }
 
-    const viewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
+    const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
       viewportIndex
     );
 

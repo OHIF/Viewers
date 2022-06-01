@@ -1,10 +1,19 @@
-import * as cornerstone from '@cornerstonejs/core';
-import * as cornerstoneTools from '@cornerstonejs/tools';
+import {
+  getEnabledElement,
+  StackViewport,
+  volumeLoader,
+  cache,
+  utilities as csUtils,
+} from '@cornerstonejs/core';
+import {
+  ToolGroupManager,
+  Enums,
+  segmentation,
+  utilities as csToolsUtils,
+} from '@cornerstonejs/tools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
-import { Enums } from '@cornerstonejs/tools';
-
-import { getEnabledElement } from './state';
+import { getEnabledElement as OHIFgetEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
 
@@ -21,8 +30,8 @@ const commandsModule = ({ servicesManager }) => {
 
   function _getActiveViewportEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
-    const { element } = getEnabledElement(activeViewportIndex) || {};
-    const enabledElement = cornerstone.getEnabledElement(element);
+    const { element } = OHIFgetEnabledElement(activeViewportIndex) || {};
+    const enabledElement = getEnabledElement(element);
     return enabledElement;
   }
 
@@ -38,7 +47,7 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       const { renderingEngineId, viewportId } = enabledElement;
-      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
+      const toolGroup = ToolGroupManager.getToolGroupForViewport(
         viewportId,
         renderingEngineId
       );
@@ -109,7 +118,7 @@ const commandsModule = ({ servicesManager }) => {
       const lower = windowCenterNum - windowWidthNum / 2.0;
       const upper = windowCenterNum + windowWidthNum / 2.0;
 
-      if (viewport instanceof cornerstone.StackViewport) {
+      if (viewport instanceof StackViewport) {
         viewport.setProperties({
           voiRange: {
             upper,
@@ -140,7 +149,7 @@ const commandsModule = ({ servicesManager }) => {
       const primaryActiveTool = ToolBarService.state.primaryToolId;
       if (
         toolGroup?.toolOptions[primaryActiveTool]?.mode ===
-        cornerstoneTools.Enums.ToolModes.Passive
+        Enums.ToolModes.Passive
       ) {
         toolGroup.setToolActive(primaryActiveTool, {
           bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
@@ -164,15 +173,13 @@ const commandsModule = ({ servicesManager }) => {
       // iterate over all viewports and set the tool active for the
       // viewports that belong to the toolGroup
       for (let index = 0; index < viewports.length; index++) {
-        const ohifEnabledElement = getEnabledElement(index);
+        const ohifEnabledElement = OHIFgetEnabledElement(index);
 
         if (!ohifEnabledElement) {
           continue;
         }
 
-        const viewport = cornerstone.getEnabledElement(
-          ohifEnabledElement.element
-        );
+        const viewport = getEnabledElement(ohifEnabledElement.element);
 
         if (!viewport) {
           continue;
@@ -217,7 +224,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone.StackViewport) {
+      if (viewport instanceof StackViewport) {
         const { rotation: currentRotation } = viewport.getProperties();
         const newRotation = (currentRotation + rotation) % 360;
         viewport.setProperties({ rotation: newRotation });
@@ -233,7 +240,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone.StackViewport) {
+      if (viewport instanceof StackViewport) {
         const { flipHorizontal } = viewport.getCamera();
         viewport.setCamera({ flipHorizontal: !flipHorizontal });
         viewport.render();
@@ -248,7 +255,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone.StackViewport) {
+      if (viewport instanceof StackViewport) {
         const { flipVertical } = viewport.getCamera();
         viewport.setCamera({ flipVertical: !flipVertical });
         viewport.render();
@@ -269,7 +276,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone.StackViewport) {
+      if (viewport instanceof StackViewport) {
         const { invert } = viewport.getProperties();
         viewport.setProperties({ invert: !invert });
         viewport.render();
@@ -284,7 +291,7 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone.StackViewport) {
+      if (viewport instanceof StackViewport) {
         viewport.resetProperties();
         viewport.resetCamera();
         viewport.render();
@@ -299,7 +306,7 @@ const commandsModule = ({ servicesManager }) => {
       }
       const { viewport } = enabledElement;
 
-      if (viewport instanceof cornerstone.StackViewport) {
+      if (viewport instanceof StackViewport) {
         if (direction) {
           const { parallelScale } = viewport.getCamera();
           viewport.setCamera({ parallelScale: parallelScale * scaleFactor });
@@ -320,28 +327,25 @@ const commandsModule = ({ servicesManager }) => {
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      cornerstoneTools.utilities.stackScrollTool.scrollThroughStack(
-        viewport,
-        options
-      );
+      csToolsUtils.stackScrollTool.scrollThroughStack(viewport, options);
     },
     async createSegmentationForDisplaySet({ displaySetInstanceUID }) {
       const volumeId = displaySetInstanceUID;
 
-      const segmentationUID = cornerstone.utilities.uuidv4();
+      const segmentationUID = csUtils.uuidv4();
       const segmentationId = `${volumeId}::${segmentationUID}`;
 
-      await cornerstone.volumeLoader.createAndCacheDerivedVolume(volumeId, {
+      await volumeLoader.createAndCacheDerivedVolume(volumeId, {
         volumeId: segmentationId,
       });
 
       // Add the segmentations to state
-      cornerstoneTools.segmentation.addSegmentations([
+      segmentation.addSegmentations([
         {
           segmentationId,
           representation: {
             // The type of segmentation
-            type: cornerstoneTools.Enums.SegmentationRepresentations.Labelmap,
+            type: Enums.SegmentationRepresentations.Labelmap,
             // The actual segmentation data, in the case of labelmap this is a
             // reference to the source volume of the segmentation.
             data: {
@@ -359,15 +363,12 @@ const commandsModule = ({ servicesManager }) => {
       representationType,
     }) {
       // // Add the segmentation representation to the toolgroup
-      await cornerstoneTools.segmentation.addSegmentationRepresentations(
-        toolGroupId,
-        [
-          {
-            segmentationId,
-            type: representationType,
-          },
-        ]
-      );
+      await segmentation.addSegmentationRepresentations(toolGroupId, [
+        {
+          segmentationId,
+          type: representationType,
+        },
+      ]);
     },
     getLabelmapVolumes: ({ segmentations }) => {
       if (!segmentations || !segmentations.length) {
@@ -375,7 +376,7 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       const labelmapVolumes = segmentations.map(segmentation => {
-        return cornerstone.cache.getVolume(segmentation.id);
+        return cache.getVolume(segmentation.id);
       });
 
       return labelmapVolumes;
@@ -386,7 +387,7 @@ const commandsModule = ({ servicesManager }) => {
       colormap,
       immediate = false,
     }) => {
-      const viewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
+      const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
         viewportIndex
       );
 
@@ -523,7 +524,7 @@ const commandsModule = ({ servicesManager }) => {
   return {
     actions,
     definitions,
-    defaultContext: 'CORNERSTONE3D',
+    defaultContext: 'CORNERSTONE',
   };
 };
 

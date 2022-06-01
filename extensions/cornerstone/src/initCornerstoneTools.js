@@ -1,6 +1,4 @@
-import * as cornerstone3DTools from '@cornerstonejs/tools';
-
-const {
+import {
   PanTool,
   WindowLevelTool,
   StackScrollTool,
@@ -17,29 +15,31 @@ const {
   AngleTool,
   MagnifyTool,
   CrosshairsTool,
-  RectangleROIStartEndThresholdTool,
   SegmentationDisplayTool,
-} = cornerstone3DTools;
+  init,
+  addTool,
+  annotation,
+} from '@cornerstonejs/tools';
 
-export default function initCornerstone3DTools(configuration = {}) {
-  cornerstone3DTools.init(configuration);
-  cornerstone3DTools.addTool(PanTool);
-  cornerstone3DTools.addTool(WindowLevelTool);
-  cornerstone3DTools.addTool(StackScrollMouseWheelTool);
-  cornerstone3DTools.addTool(StackScrollTool);
-  cornerstone3DTools.addTool(ZoomTool);
-  cornerstone3DTools.addTool(VolumeRotateMouseWheelTool);
-  cornerstone3DTools.addTool(MIPJumpToClickTool);
-  cornerstone3DTools.addTool(LengthTool);
-  cornerstone3DTools.addTool(RectangleROITool);
-  cornerstone3DTools.addTool(EllipticalROITool);
-  cornerstone3DTools.addTool(BidirectionalTool);
-  cornerstone3DTools.addTool(ArrowAnnotateTool);
-  cornerstone3DTools.addTool(DragProbeTool);
-  cornerstone3DTools.addTool(AngleTool);
-  cornerstone3DTools.addTool(MagnifyTool);
-  cornerstone3DTools.addTool(CrosshairsTool);
-  cornerstone3DTools.addTool(SegmentationDisplayTool);
+export default function initCornerstoneTools(configuration = {}) {
+  init(configuration);
+  addTool(PanTool);
+  addTool(WindowLevelTool);
+  addTool(StackScrollMouseWheelTool);
+  addTool(StackScrollTool);
+  addTool(ZoomTool);
+  addTool(VolumeRotateMouseWheelTool);
+  addTool(MIPJumpToClickTool);
+  addTool(LengthTool);
+  addTool(RectangleROITool);
+  addTool(EllipticalROITool);
+  addTool(BidirectionalTool);
+  addTool(ArrowAnnotateTool);
+  addTool(DragProbeTool);
+  addTool(AngleTool);
+  addTool(MagnifyTool);
+  addTool(CrosshairsTool);
+  addTool(SegmentationDisplayTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -47,8 +47,8 @@ export default function initCornerstone3DTools(configuration = {}) {
     lineWidth: '1.5',
   };
 
-  const defaultStyles = cornerstone3DTools.annotation.config.style.getDefaultToolStyles();
-  cornerstone3DTools.annotation.config.style.setDefaultToolStyles({
+  const defaultStyles = annotation.config.style.getDefaultToolStyles();
+  annotation.config.style.setDefaultToolStyles({
     global: {
       ...defaultStyles.global,
       ...annotationStyle,

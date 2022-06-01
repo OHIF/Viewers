@@ -1,6 +1,6 @@
 const state = {
   // The `defaultContext` of an extension's commandsModule
-  DEFAULT_CONTEXT: 'CORNERSTONE3D',
+  DEFAULT_CONTEXT: 'CORNERSTONE',
   enabledElements: {},
 };
 

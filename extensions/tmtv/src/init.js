@@ -1,4 +1,7 @@
-import * as cornerstone3DTools from '@cornerstonejs/tools';
+import {
+  addTool,
+  RectangleROIStartEndThresholdTool,
+} from '@cornerstonejs/tools';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import colormaps from './utils/colormaps';
@@ -18,9 +21,7 @@ export default function init({ servicesManager, extensionManager }) {
     CornerstoneViewportService,
   } = servicesManager.services;
 
-  cornerstone3DTools.addTool(
-    cornerstone3DTools.RectangleROIStartEndThresholdTool
-  );
+  addTool(RectangleROIStartEndThresholdTool);
 
   const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
     MeasurementService,

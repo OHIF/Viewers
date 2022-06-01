@@ -1,12 +1,13 @@
 import OHIF from '@ohif/core';
 import { ContextMenuMeasurements } from '@ohif/ui';
 
-import * as cornerstone3D from '@cornerstonejs/core';
-import * as cornerstone3DTools from '@cornerstonejs/tools';
+import * as cornerstone from '@cornerstonejs/core';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 import {
   init as cs3DInit,
   eventTarget,
   EVENTS,
+  metaData,
   volumeLoader,
   imageLoader,
   imageLoadPoolManager,
@@ -33,8 +34,8 @@ const cs3DToolsEvents = Enums.Events;
 let CONTEXT_MENU_OPEN = false;
 
 // TODO: Cypress tests are currently grabbing this from the window?
-window.cornerstone = cornerstone3D;
-window.cornerstoneTools = cornerstone3DTools;
+window.cornerstone = cornerstone;
+window.cornerstoneTools = cornerstoneTools;
 /**
  *
  */
@@ -87,10 +88,7 @@ export default async function init({
     sharedArrayBufferImageLoader
   );
 
-  cornerstone3D.metaData.addProvider(
-    metadataProvider.get.bind(metadataProvider),
-    9999
-  );
+  metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
   imageLoadPoolManager.maxNumRequests = {
     interaction: 100,
@@ -223,7 +221,7 @@ export default async function init({
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = CornerstoneViewportService.getCornerstone3DViewport(
+        const viewport = CornerstoneViewportService.getCornerstoneViewport(
           viewportId
         );
 

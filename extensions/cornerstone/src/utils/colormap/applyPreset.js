@@ -9,7 +9,7 @@ function getPreset(name) {
 }
 
 // Todo: we should be able to register a new preset via the utilityModule
-// of the cornerstone3D extension
+// of the cornerstone extension
 export default function applyPreset(actor, presetName) {
   const preset = getPreset(presetName);
   // Create color transfer function

@@ -18,7 +18,7 @@ getUtilityModule({ servicesManager }) {
         name: 'common',
         exports: {
           getCornerstoneLibraries: () => {
-            return { cornerstone3D, cornerstone3DTools };
+            return { cornerstone, cornerstoneTools };
           },
           getEnabledElement,
           CornerstoneViewportService,
@@ -45,7 +45,7 @@ getUtilityModule({ servicesManager }) {
 ```
 
 Then a consuming extension can use `getModuleEntry` to access the methods
-Below, which is a code from `TrackedCornerstoneViewport` use the `getUtilityModule` method to get the internal `CornerstoneViewportService` which handles the `Cornerstone3D` viewport.
+Below, which is a code from `TrackedCornerstoneViewport` use the `getUtilityModule` method to get the internal `CornerstoneViewportService` which handles the `Cornerstone` viewport.
 
 ```js title="extensions/measurement-tracking/src/viewports/TrackedCornerstoneViewport.tsx"
 const utilityModule = extensionManager.getModuleEntry(

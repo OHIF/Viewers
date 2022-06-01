@@ -127,7 +127,7 @@ The simplest toolbarButtons definition has the following properties:
         "commandOptions": {
           "toolName": "Zoom"
         },
-        "context": "CORNERSTONE3D"
+        "context": "CORNERSTONE"
       }
     ]
   }
@@ -182,7 +182,7 @@ to create `MeasurementTools` nested button
           "commandOptions": {
             "toolName": "Length"
           },
-          "context": "CORNERSTONE3D"
+          "context": "CORNERSTONE"
         },
         {
           "commandName": "setToolActive",
@@ -190,7 +190,7 @@ to create `MeasurementTools` nested button
             "toolName": "SRLength",
             "toolGroupId": "SRToolGroup"
           },
-          "context": "CORNERSTONE3D"
+          "context": "CORNERSTONE"
         }
       ],
       "tooltip": "Length"
@@ -213,7 +213,7 @@ to create `MeasurementTools` nested button
             "commandOptions": {
               "toolName": "Bidirectional"
             },
-            "context": "CORNERSTONE3D"
+            "context": "CORNERSTONE"
           },
           {
             "commandName": "setToolActive",
@@ -221,7 +221,7 @@ to create `MeasurementTools` nested button
               "toolName": "SRBidirectional",
               "toolGroupId": "SRToolGroup"
             },
-            "context": "CORNERSTONE3D"
+            "context": "CORNERSTONE"
           }
         ],
         "tooltip": "Bidirectional Tool"
@@ -237,7 +237,7 @@ to create `MeasurementTools` nested button
             "commandOptions": {
               "toolName": "ArrowAnnotate"
             },
-            "context": "CORNERSTONE3D"
+            "context": "CORNERSTONE"
           },
           {
             "commandName": "setToolActive",
@@ -245,7 +245,7 @@ to create `MeasurementTools` nested button
               "toolName": "SRArrowAnnotate",
               "toolGroupId": "SRToolGroup"
             },
-            "context": "CORNERSTONE3D"
+            "context": "CORNERSTONE"
           }
         ],
         "tooltip": "Arrow Annotate"

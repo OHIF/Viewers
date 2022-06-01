@@ -117,9 +117,9 @@ function TrackedCornerstoneViewport(props) {
   }
 
   /**
-   * OnElementEnabled callback which is called after the cornerstone3DExtension
+   * OnElementEnabled callback which is called after the cornerstoneExtension
    * has enabled the element. Note: we delegate all the image rendering to
-   * cornerstone3DExtension, so we don't need to do anything here regarding
+   * cornerstoneExtension, so we don't need to do anything here regarding
    * the image rendering, element enabling etc.
    */
   const onElementEnabled = evt => {
@@ -146,7 +146,7 @@ function TrackedCornerstoneViewport(props) {
     );
   }
 
-  const getCornerstone3DViewport = () => {
+  const getCornerstoneViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
@@ -210,7 +210,7 @@ function TrackedCornerstoneViewport(props) {
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {getCornerstone3DViewport()}
+        {getCornerstoneViewport()}
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification

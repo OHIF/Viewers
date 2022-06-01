@@ -70,7 +70,7 @@ function modeFactory({ modeConfiguration }) {
                 toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.CT,
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -78,7 +78,7 @@ function modeFactory({ modeConfiguration }) {
                 toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.PT,
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -86,7 +86,7 @@ function modeFactory({ modeConfiguration }) {
                 toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.Fusion,
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
         });

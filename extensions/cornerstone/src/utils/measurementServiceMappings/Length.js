@@ -140,7 +140,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
 
   // Add Type
   columns.push('AnnotationType');
-  values.push('Cornerstone3D:Length');
+  values.push('Cornerstone:Length');
 
   mappedAnnotations.forEach(annotation => {
     const { length } = annotation;

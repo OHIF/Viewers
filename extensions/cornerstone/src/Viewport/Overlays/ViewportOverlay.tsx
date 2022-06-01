@@ -60,7 +60,7 @@ function CornerstoneViewportOverlay({
       const { previousCamera, camera } = eventDetail.detail;
 
       if (previousCamera.parallelScale !== camera.parallelScale) {
-        const viewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
+        const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
           viewportIndex
         );
 
@@ -228,7 +228,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
+  const cornerstoneViewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
     viewportIndex
   );
 

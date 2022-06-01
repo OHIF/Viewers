@@ -73,7 +73,7 @@ function modeFactory({ modeConfiguration }) {
               commandOptions: {
                 toolName: 'WindowLevel',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
         });

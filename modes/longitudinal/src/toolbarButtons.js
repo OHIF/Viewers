@@ -48,7 +48,7 @@ function _createWwwcPreset(preset, title, subtitle) {
         commandOptions: {
           ...windowLevelPresets[preset],
         },
-        context: 'CORNERSTONE3D',
+        context: 'CORNERSTONE',
       },
     ],
   };
@@ -73,7 +73,7 @@ const toolbarButtons = [
             commandOptions: {
               toolName: 'Length',
             },
-            context: 'CORNERSTONE3D',
+            context: 'CORNERSTONE',
           },
           {
             commandName: 'setToolActive',
@@ -81,8 +81,8 @@ const toolbarButtons = [
               toolName: 'SRLength',
               toolGroupId: 'SRToolGroup',
             },
-            // we can use the setToolActive command for this from Cornerstone3D commandsModule
-            context: 'CORNERSTONE3D',
+            // we can use the setToolActive command for this from Cornerstone commandsModule
+            context: 'CORNERSTONE',
           },
         ],
         'Length'
@@ -104,7 +104,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'Length',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -112,8 +112,8 @@ const toolbarButtons = [
                 toolName: 'SRLength',
                 toolGroupId: 'SRToolGroup',
               },
-              // we can use the setToolActive command for this from Cornerstone3D commandsModule
-              context: 'CORNERSTONE3D',
+              // we can use the setToolActive command for this from Cornerstone commandsModule
+              context: 'CORNERSTONE',
             },
           ],
           'Length Tool'
@@ -128,7 +128,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'Bidirectional',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -136,7 +136,7 @@ const toolbarButtons = [
                 toolName: 'SRBidirectional',
                 toolGroupId: 'SRToolGroup',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Bidirectional Tool'
@@ -151,7 +151,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'ArrowAnnotate',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -159,7 +159,7 @@ const toolbarButtons = [
                 toolName: 'SRArrowAnnotate',
                 toolGroupId: 'SRToolGroup',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Arrow Annotate'
@@ -174,7 +174,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'EllipticalROI',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -182,7 +182,7 @@ const toolbarButtons = [
                 toolName: 'SREllipticalROI',
                 toolGroupId: 'SRToolGroup',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Ellipse Tool'
@@ -204,7 +204,7 @@ const toolbarButtons = [
           commandOptions: {
             toolName: 'Zoom',
           },
-          context: 'CORNERSTONE3D',
+          context: 'CORNERSTONE',
         },
       ],
     },
@@ -225,7 +225,7 @@ const toolbarButtons = [
             commandOptions: {
               toolName: 'WindowLevel',
             },
-            context: 'CORNERSTONE3D',
+            context: 'CORNERSTONE',
           },
         ],
         'Window Level'
@@ -261,7 +261,7 @@ const toolbarButtons = [
           commandOptions: {
             toolName: 'Pan',
           },
-          context: 'CORNERSTONE3D',
+          context: 'CORNERSTONE',
         },
       ],
     },
@@ -277,7 +277,7 @@ const toolbarButtons = [
         {
           commandName: 'showDownloadViewportModal',
           commandOptions: {},
-          context: 'CORNERSTONE3D',
+          context: 'CORNERSTONE',
         },
       ],
     },
@@ -301,7 +301,7 @@ const toolbarButtons = [
           {
             commandName: 'resetViewport',
             commandOptions: {},
-            context: 'CORNERSTONE3D',
+            context: 'CORNERSTONE',
           },
         ],
         'Reset'
@@ -321,7 +321,7 @@ const toolbarButtons = [
             {
               commandName: 'resetViewport',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Reset'
@@ -334,7 +334,7 @@ const toolbarButtons = [
             {
               commandName: 'rotateViewportCW',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Rotate +90'
@@ -347,7 +347,7 @@ const toolbarButtons = [
             {
               commandName: 'flipViewportHorizontal',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Flip Horizontal'
@@ -362,7 +362,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'StackScroll',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Stack Scroll'
@@ -375,7 +375,7 @@ const toolbarButtons = [
             {
               commandName: 'invertViewport',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Invert Colors'
@@ -390,7 +390,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'DragProbe',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Probe'
@@ -402,7 +402,7 @@ const toolbarButtons = [
           [
             {
               commandName: 'toggleCine',
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Cine'
@@ -417,7 +417,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'Angle',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Angle'
@@ -432,7 +432,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'Magnify',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Magnify'
@@ -447,7 +447,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'RectangleROI',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Rectangle'

@@ -139,7 +139,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
 
   // Add Type
   columns.push('AnnotationType');
-  values.push('Cornerstone3D:EllipticalROI');
+  values.push('Cornerstone:EllipticalROI');
 
   mappedAnnotations.forEach(annotation => {
     const { mean, stdDev, max, area, unit } = annotation;

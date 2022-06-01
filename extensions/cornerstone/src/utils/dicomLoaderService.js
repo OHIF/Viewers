@@ -1,4 +1,4 @@
-import * as cornerstone from '@cornerstonejs/core';
+import { imageLoader } from '@cornerstonejs/core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import { DICOMWeb, errorHandler } from '@ohif/core';
@@ -47,7 +47,7 @@ const fetchIt = (url, headers = DICOMWeb.getAuthorizationHeader()) => {
 };
 
 const cornerstoneRetriever = imageId => {
-  return cornerstone.imageLoader.loadAndCacheImage(imageId).then(image => {
+  return imageLoader.loadAndCacheImage(imageId).then(image => {
     return image && image.data && image.data.byteArray.buffer;
   });
 };
@@ -149,6 +149,10 @@ class DicomLoaderService {
           }
           getDicomDataMethod = fetchIt.bind(this, imageId);
           break;
+        default:
+          throw new Error(
+            `Unsupported image type: ${loaderType} for imageId: ${imageId}`
+          );
       }
 
       return getDicomDataMethod();
