@@ -261,6 +261,10 @@ export default async function init({
       cs3DToolsEvents.MOUSE_CLICK,
       contextMenuHandleClick
     );
+
+    // element.addEventListener(EVENTS.NEW_STACK_SET, () =>
+    //   utilities.stackPrefetch.enable(element)
+    // );
   }
 
   function elementDisabledHandler(evt) {
@@ -275,6 +279,10 @@ export default async function init({
       cs3DToolsEvents.MOUSE_CLICK,
       contextMenuHandleClick
     );
+
+    // element.removeEventListener(EVENTS.NEW_STACK_SET, () =>
+    //   utilities.stackPrefetch.disable(element)
+    // );
   }
 
   eventTarget.addEventListener(
