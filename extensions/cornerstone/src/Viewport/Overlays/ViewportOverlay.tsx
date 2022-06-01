@@ -11,7 +11,7 @@ function CornerstoneViewportOverlay({
   viewportData,
   imageSliceData,
   viewportIndex,
-  Cornerstone3DViewportService,
+  CornerstoneViewportService,
   ToolBarService,
 }) {
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
@@ -60,7 +60,7 @@ function CornerstoneViewportOverlay({
       const { previousCamera, camera } = eventDetail.detail;
 
       if (previousCamera.parallelScale !== camera.parallelScale) {
-        const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+        const viewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
           viewportIndex
         );
 
@@ -155,7 +155,7 @@ function CornerstoneViewportOverlay({
         viewportData,
         imageIndex,
         viewportIndex,
-        Cornerstone3DViewportService
+        CornerstoneViewportService
       );
     }
 
@@ -216,7 +216,7 @@ function _getInstanceNumberFromVolume(
   viewportData,
   imageIndex,
   viewportIndex,
-  Cornerstone3DViewportService
+  CornerstoneViewportService
 ) {
   const volumes = viewportData.volumes;
 
@@ -228,7 +228,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+  const cornerstoneViewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
     viewportIndex
   );
 

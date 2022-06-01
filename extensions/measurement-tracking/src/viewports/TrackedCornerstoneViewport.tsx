@@ -28,7 +28,7 @@ function TrackedCornerstoneViewport(props) {
 
   const {
     MeasurementService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
   } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
@@ -44,7 +44,7 @@ function TrackedCornerstoneViewport(props) {
 
   const { trackedSeries } = trackedMeasurements.context;
 
-  const viewportId = Cornerstone3DViewportService.getViewportId(viewportIndex);
+  const viewportId = CornerstoneViewportService.getViewportId(viewportIndex);
 
   const {
     Modality,
@@ -72,7 +72,7 @@ function TrackedCornerstoneViewport(props) {
         },
       });
 
-      Cornerstone3DViewportService.getRenderingEngine().renderViewport(
+      CornerstoneViewportService.getRenderingEngine().renderViewport(
         viewportId
       );
 
@@ -85,9 +85,7 @@ function TrackedCornerstoneViewport(props) {
       },
     });
 
-    Cornerstone3DViewportService.getRenderingEngine().renderViewport(
-      viewportId
-    );
+    CornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
 
     return () => {
       annotation.config.style.setViewportToolStyles(viewportId, {});
@@ -150,7 +148,7 @@ function TrackedCornerstoneViewport(props) {
 
   const getCornerstone3DViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
+      '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
     return <Component {...props} onElementEnabled={onElementEnabled} />;

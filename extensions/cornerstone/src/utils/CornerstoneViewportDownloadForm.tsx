@@ -17,14 +17,14 @@ const TOOLGROUP_ID = 'cornerstone-viewport-download-form-toolgroup';
 const CornerstoneViewportDownloadForm = ({
   onClose,
   activeViewportIndex,
-  Cornerstone3DViewportService,
+  CornerstoneViewportService,
 }) => {
   const enabledElement = getEnabledElement(activeViewportIndex);
   const activeViewportElement = enabledElement?.element;
 
   const enableViewport = viewportElement => {
     if (viewportElement) {
-      const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+      const renderingEngine = CornerstoneViewportService.getRenderingEngine();
 
       const viewportInput = {
         viewportId: VIEWPORT_ID,
@@ -38,7 +38,7 @@ const CornerstoneViewportDownloadForm = ({
 
   const disableViewport = viewportElement => {
     if (viewportElement) {
-      const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+      const renderingEngine = CornerstoneViewportService.getRenderingEngine();
 
       return new Promise(resolve => {
         renderingEngine.disableElement(VIEWPORT_ID);
@@ -118,7 +118,7 @@ const CornerstoneViewportDownloadForm = ({
 
         const imageId = viewport.getCurrentImageId();
 
-        const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+        const renderingEngine = CornerstoneViewportService.getRenderingEngine();
         const downloadViewport = renderingEngine.getViewport(
           VIEWPORT_ID
         ) as cornerstone.StackViewport;

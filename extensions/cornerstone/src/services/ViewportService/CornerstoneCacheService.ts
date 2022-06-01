@@ -29,10 +29,10 @@ export type VolumeData = {
 const VOLUME_LOADER_SCHEME = 'streaming-wadors';
 
 const EVENTS = {
-  VIEWPORT_DATA_CHANGED: 'event::cornerstone-3d::viewportdatachanged',
+  VIEWPORT_DATA_CHANGED: 'event::cornerstone::viewportdatachanged',
 };
 
-class Cornerstone3DCacheService {
+class CornerstoneCacheService {
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
   listeners: { [key: string]: (...args: any[]) => void } = {};
@@ -231,5 +231,5 @@ class Cornerstone3DCacheService {
   }
 }
 
-const CacheService = new Cornerstone3DCacheService();
+const CacheService = new CornerstoneCacheService();
 export default CacheService;

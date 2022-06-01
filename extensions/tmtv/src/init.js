@@ -15,7 +15,7 @@ export default function init({ servicesManager, extensionManager }) {
   const {
     MeasurementService,
     DisplaySetService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
   } = servicesManager.services;
 
   cornerstone3DTools.addTool(
@@ -25,7 +25,7 @@ export default function init({ servicesManager, extensionManager }) {
   const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
-    Cornerstone3DViewportService
+    CornerstoneViewportService
   );
 
   const csTools3DVer1MeasurementSource = MeasurementService.getSource(
@@ -46,7 +46,7 @@ export default function init({ servicesManager, extensionManager }) {
 
 function initColormaps(extensionManager) {
   const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.common'
+    '@ohif/extension-cornerstone.utilityModule.common'
   );
 
   const { registerColormap } = utilityModule.exports;

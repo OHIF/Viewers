@@ -1,7 +1,7 @@
 {
-  "name": "@ohif/extension-cornerstone-3d",
+  "name": "@ohif/extension-cornerstone",
   "version": "3.0.0",
-  "description": "OHIF extension for Cornerstone3D",
+  "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",

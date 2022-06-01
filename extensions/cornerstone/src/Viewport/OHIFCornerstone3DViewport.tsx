@@ -6,7 +6,7 @@ import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
-import Cornerstone3DCacheService from '../services/ViewportService/Cornerstone3DCacheService';
+import CornerstoneCacheService from '../services/ViewportService/CornerstoneCacheService';
 
 import './OHIFCornerstone3DViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
@@ -71,7 +71,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     ToolBarService,
     ToolGroupService,
     SyncGroupService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
   } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
@@ -83,7 +83,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   // useCallback for onResize
   const onResize = useCallback(() => {
     if (elementRef.current) {
-      Cornerstone3DViewportService.resize();
+      CornerstoneViewportService.resize();
       setImageScrollBarHeight();
     }
   }, [elementRef]);
@@ -96,7 +96,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
 
       const { viewportId, element } = evt.detail;
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
+      const viewportInfo = CornerstoneViewportService.getViewportInfo(
         viewportId
       );
       const viewportIndex = viewportInfo.getViewportIndex();
@@ -128,7 +128,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   // disable the element upon unmounting
   useEffect(() => {
-    Cornerstone3DViewportService.enableElement(
+    CornerstoneViewportService.enableElement(
       viewportIndex,
       viewportOptions,
       elementRef.current
@@ -142,7 +142,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
         viewportIndex
       );
 
@@ -157,7 +157,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         syncGroups
       );
 
-      Cornerstone3DViewportService.disableElement(viewportIndex);
+      CornerstoneViewportService.disableElement(viewportIndex);
 
       eventTarget.removeEventListener(
         Enums.Events.ELEMENT_ENABLED,
@@ -183,14 +183,14 @@ const OHIFCornerstoneViewport = React.memo(props => {
             invalidatedDisplaySetInstanceUID
           )
         ) {
-          const newViewportData = await Cornerstone3DCacheService.invalidateViewportData(
+          const newViewportData = await CornerstoneCacheService.invalidateViewportData(
             viewportData,
             invalidatedDisplaySetInstanceUID,
             dataSource,
             DisplaySetService
           );
 
-          Cornerstone3DViewportService.updateViewport(
+          CornerstoneViewportService.updateViewport(
             viewportIndex,
             newViewportData
           );
@@ -211,7 +211,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
 
     const loadViewportData = async () => {
-      const viewportData = await Cornerstone3DCacheService.getViewportData(
+      const viewportData = await CornerstoneCacheService.getViewportData(
         viewportIndex,
         displaySets,
         viewportOptions.viewportType,
@@ -219,7 +219,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIdOrIndex
       );
 
-      Cornerstone3DViewportService.setViewportDisplaySets(
+      CornerstoneViewportService.setViewportDisplaySets(
         viewportIndex,
         viewportData,
         viewportOptions,
@@ -289,7 +289,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         ToolBarService={ToolBarService}
         element={elementRef.current}
         scrollbarHeight={scrollbarHeight}
-        Cornerstone3DViewportService={Cornerstone3DViewportService}
+        CornerstoneViewportService={CornerstoneViewportService}
       />
     </div>
   );

@@ -14,7 +14,7 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 const initMeasurementService = (
   MeasurementService,
   DisplaySetService,
-  Cornerstone3DViewportService
+  CornerstoneViewportService
 ) => {
   /* Initialization */
   const {
@@ -25,7 +25,7 @@ const initMeasurementService = (
   } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
-    Cornerstone3DViewportService
+    CornerstoneViewportService
   );
   const csTools3DVer1MeasurementSource = MeasurementService.createSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -71,16 +71,16 @@ const initMeasurementService = (
 const connectToolsToMeasurementService = (
   MeasurementService,
   DisplaySetService,
-  Cornerstone3DViewportService
+  CornerstoneViewportService
 ) => {
   const csTools3DVer1MeasurementSource = initMeasurementService(
     MeasurementService,
     DisplaySetService,
-    Cornerstone3DViewportService
+    CornerstoneViewportService
   );
   connectMeasurementServiceToTools(
     MeasurementService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
     csTools3DVer1MeasurementSource
   );
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
@@ -169,7 +169,7 @@ const connectToolsToMeasurementService = (
 
 const connectMeasurementServiceToTools = (
   MeasurementService,
-  Cornerstone3DViewportService,
+  CornerstoneViewportService,
   measurementSource
 ) => {
   const {
@@ -280,7 +280,7 @@ const connectMeasurementServiceToTools = (
         return;
       }
       removeAnnotation(removedMeasurementId);
-      const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+      const renderingEngine = CornerstoneViewportService.getRenderingEngine();
       // Note: We could do a better job by triggering the render on the
       // viewport itself, but the removeAnnotation does not include that info...
       renderingEngine.render();

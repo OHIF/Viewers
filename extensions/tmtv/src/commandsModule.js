@@ -24,11 +24,11 @@ const commandsModule = ({
     DisplaySetService,
     HangingProtocolService,
     ToolGroupService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
   } = servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.common'
+    '@ohif/extension-cornerstone.utilityModule.common'
   );
 
   const { getEnabledElement } = utilityModule.exports;
@@ -622,7 +622,7 @@ const commandsModule = ({
 
       let viewports = [];
       fusionViewportIds.forEach(viewportId => {
-        const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
+        const viewportInfo = CornerstoneViewportService.getViewportInfo(
           viewportId
         );
 
@@ -634,7 +634,7 @@ const commandsModule = ({
         });
 
         viewports.push(
-          Cornerstone3DViewportService.getCornerstone3DViewport(viewportId)
+          CornerstoneViewportService.getCornerstone3DViewport(viewportId)
         );
       });
 

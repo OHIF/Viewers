@@ -3,8 +3,7 @@ import { synchronizers, SynchronizerManager } from '@cornerstonejs/tools';
 import { pubSubServiceInterface } from '@ohif/core';
 
 const EVENTS = {
-  TOOL_GROUP_CREATED:
-    'event::cornerstone-3d::syncgroupservice:toolgroupcreated',
+  TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
 };
 
 export type SyncGroup = {

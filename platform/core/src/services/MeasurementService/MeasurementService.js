@@ -81,11 +81,11 @@ const VALUE_TYPES = {
 
 /**
  * MeasurementService class that supports source management and measurement management.
- * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone-3d, etc.)
+ * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
  * The flow, is that by creating a source and mappings (annotation <-> measurement), we
  * can convert back and forth between the two. MeasurementPanel in OHIF uses the measurement service
  * to manage the measurements, and any edit to the measurements will be reflected back at the
- * library level state (e.g. cornerstone-tools, cornerstone-3d, etc.) by converting the
+ * library level state (e.g. cornerstone-tools, cornerstone, etc.) by converting the
  * edited measurements back to the original annotations and then updating the annotations.
  *
  * Note and Todo: We should be able to support measurements that are composed of multiple

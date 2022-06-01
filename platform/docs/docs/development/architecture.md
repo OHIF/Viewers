@@ -26,9 +26,9 @@ you'll see the following:
 ├── extensions
 │   ├── _example              # Skeleton of example extension
 │   ├── default               # default functionalities
-│   ├── cornerstone-3d        # 2D images w/ Cornerstone.js
-│   ├── measurement-tracking  # measurement tracking
+│   ├── cornerstone           # 2D/3D images w/ Cornerstonejs
 │   ├── cornerstone-dicom-sr  # Structured reports
+│   ├── measurement-tracking  # measurement tracking
 │   └── dicom-pdf             # View DICOM wrapped PDFs in viewport
 │
 ├── modes

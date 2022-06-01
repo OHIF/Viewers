@@ -58,7 +58,7 @@ export default async function init({
     DisplaySetService,
     UIDialogService,
     CineService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
     HangingProtocolService,
     SegmentationService,
   } = servicesManager.services;
@@ -104,10 +104,10 @@ export default async function init({
   const measurementServiceSource = connectToolsToMeasurementService(
     MeasurementService,
     DisplaySetService,
-    Cornerstone3DViewportService
+    CornerstoneViewportService
   );
 
-  initSegmentationService(SegmentationService, Cornerstone3DViewportService);
+  initSegmentationService(SegmentationService, CornerstoneViewportService);
 
   initCineService(CineService);
 
@@ -223,11 +223,11 @@ export default async function init({
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
+        const viewport = CornerstoneViewportService.getCornerstone3DViewport(
           viewportId
         );
 
-        Cornerstone3DViewportService.setVolumesForViewport(
+        CornerstoneViewportService.setVolumesForViewport(
           viewport,
           volumeInputArray
         );
@@ -270,9 +270,7 @@ export default async function init({
   function elementDisabledHandler(evt) {
     const { viewportId, element } = evt.detail;
 
-    const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
-      viewportId
-    );
+    const viewportInfo = CornerstoneViewportService.getViewportInfo(viewportId);
     ToolGroupService.disable(viewportInfo);
 
     element.removeEventListener(

@@ -18,7 +18,7 @@ import ViewportInfo, {
   DisplaySetOptions,
   PublicViewportOptions,
 } from './Viewport';
-import { StackData, VolumeData } from './Cornerstone3DCacheService';
+import { StackData, VolumeData } from './CornerstoneCacheService';
 import {
   setColormap,
   setLowerUpperColorTransferFunction,
@@ -28,14 +28,14 @@ import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
   VIEWPORT_INFO_CREATED:
-    'event::cornerstone-3d::viewportservice:viewportinfocreated',
+    'event::cornerstone::viewportservice:viewportinfocreated',
 };
 
 /**
- * Handles cornerstone-3D viewport logic including enabling, disabling, and
+ * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
  */
-class Cornerstone3DViewportService implements IViewportService {
+class CornerstoneViewportService implements IViewportService {
   renderingEngine: Types.IRenderingEngine | null;
   viewportsInfo: Map<number, ViewportInfo>;
   viewportGridResizeObserver: ResizeObserver | null;
@@ -118,14 +118,14 @@ class Cornerstone3DViewportService implements IViewportService {
   }
 
   /**
-   * Removes the viewport from cornerstone-3D, and destroys the rendering engine
+   * Removes the viewport from cornerstone, and destroys the rendering engine
    */
   public destroy() {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
     this.renderingEngine.destroy();
     this.renderingEngine = null;
-    cache.purgeCache();
+    cache.purgeVolumeCache();
   }
 
   /**
@@ -572,9 +572,9 @@ class Cornerstone3DViewportService implements IViewportService {
 
 export default function ExtendedCornerstoneViewportService(serviceManager) {
   return {
-    name: 'Cornerstone3DViewportService',
+    name: 'CornerstoneViewportService',
     create: ({ configuration = {} }) => {
-      return new Cornerstone3DViewportService(serviceManager);
+      return new CornerstoneViewportService(serviceManager);
     },
   };
 }

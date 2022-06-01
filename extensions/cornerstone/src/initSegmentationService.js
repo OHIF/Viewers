@@ -5,26 +5,26 @@ import Labelmap from './utils/segmentationServiceMappings/Labelmap';
 
 function initSegmentationService(
   SegmentationService,
-  Cornerstone3DViewportService
+  CornerstoneViewportService
 ) {
   connectToolsToSegmentationService(
     SegmentationService,
-    Cornerstone3DViewportService
+    CornerstoneViewportService
   );
 
   connectSegmentationServiceToTools(
     SegmentationService,
-    Cornerstone3DViewportService
+    CornerstoneViewportService
   );
 }
 
 function connectToolsToSegmentationService(
   SegmentationService,
-  Cornerstone3DViewportService
+  CornerstoneViewportService
 ) {
   connectSegmentationServiceToTools(
     SegmentationService,
-    Cornerstone3DViewportService
+    CornerstoneViewportService
   );
   const segmentationUpdated = csToolsEnums.Events.SEGMENTATION_MODIFIED;
 
@@ -65,7 +65,7 @@ function connectToolsToSegmentationService(
 
 function connectSegmentationServiceToTools(
   SegmentationService,
-  Cornerstone3DViewportService
+  CornerstoneViewportService
 ) {
   const {
     SEGMENTATION_UPDATED,

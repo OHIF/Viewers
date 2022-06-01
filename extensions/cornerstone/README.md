@@ -1,1 +1,1 @@
-# Cornerstone-3D
+# Cornerstone

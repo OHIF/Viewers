@@ -70,7 +70,7 @@ function WrappedPanelStudyBrowserTracking({
  */
 function _createGetImageSrcFromImageIdFn(extensionManager) {
   const utilities = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.common'
+    '@ohif/extension-cornerstone.utilityModule.common'
   );
 
   try {

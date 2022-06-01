@@ -48,7 +48,7 @@ export default function initWADOImageLoader(
       // !! IMPORTANT !!
       // We should set this flag to false, since, by default cornerstone-wado-image-loader
       // will convert everything to integers (to be able to work with cornerstone-2d).
-      // Until the default is set to true (which is the case for cornerstone-3d),
+      // Until the default is set to true (which is the case for cornerstone3D),
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },

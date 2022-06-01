@@ -99,11 +99,11 @@ the top level [`extensions/`][ext-source] directory.
         <tr>
             <td>
                 <a href="">
-                    cornerstone-3d
+                    cornerstone
                 </a>
             </td>
             <td>
-                Provides 2d (and in future 3d) rendering functionalities
+                Provides 2d and 3d rendering functionalities
             </td>
             <td>ViewportModule, CommandsModule, UtilityModule</td>
         </tr>

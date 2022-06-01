@@ -4,7 +4,7 @@ function initDefaultToolGroup(
   commandsManager
 ) {
   const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.tools'
+    '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
   const { toolNames, Enums } = utilityModule.exports;
@@ -67,7 +67,7 @@ function initSRToolGroup(extensionManager, ToolGroupService, commandsManager) {
   );
 
   const CS3DUtilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.tools'
+    '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
   const { toolNames: SRToolNames } = SRUtilityModule.exports;

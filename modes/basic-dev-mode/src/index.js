@@ -16,7 +16,7 @@ const ohif = {
 };
 
 const cs3d = {
-  viewport: '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d',
+  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
 };
 
 const dicomsr = {
@@ -38,7 +38,7 @@ const dicompdf = {
 
 const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone-3d': '^3.0.0',
+  '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
@@ -55,7 +55,7 @@ function modeFactory({ modeConfiguration }) {
     onModeEnter: ({ servicesManager, extensionManager }) => {
       const { ToolBarService, ToolGroupService } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
-        '@ohif/extension-cornerstone-3d.utilityModule.tools'
+        '@ohif/extension-cornerstone.utilityModule.tools'
       );
 
       const { toolNames, Enums } = utilityModule.exports;

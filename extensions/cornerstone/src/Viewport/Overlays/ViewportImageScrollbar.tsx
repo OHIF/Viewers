@@ -11,16 +11,16 @@ function CornerstoneImageScrollbar({
   imageSliceData,
   setImageSliceData,
   scrollbarHeight,
-  Cornerstone3DViewportService,
+  CornerstoneViewportService,
 }) {
   const onImageScrollbarChange = useCallback(
     (imageIndex, viewportIndex) => {
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
         viewportIndex
       );
 
       const viewportId = viewportInfo.getViewportId();
-      const viewport = Cornerstone3DViewportService.getCornerstone3DViewport(
+      const viewport = CornerstoneViewportService.getCornerstone3DViewport(
         viewportId
       );
 
@@ -39,7 +39,7 @@ function CornerstoneImageScrollbar({
       return;
     }
 
-    const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+    const viewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
       viewportIndex
     );
 

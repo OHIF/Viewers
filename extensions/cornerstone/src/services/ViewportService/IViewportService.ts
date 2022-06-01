@@ -1,5 +1,5 @@
 import { Types } from '@cornerstonejs/core';
-import { StackData, VolumeData } from './Cornerstone3DCacheService';
+import { StackData, VolumeData } from './CornerstoneCacheService';
 import {
   DisplaySetOptions,
   PublicViewportOptions,
@@ -7,7 +7,7 @@ import {
 } from './Viewport';
 
 /**
- * Handles cornerstone-3D viewport logic including enabling, disabling, and
+ * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
  */
 export interface IViewportService {
@@ -48,7 +48,7 @@ export interface IViewportService {
    */
   resize(element: HTMLDivElement): void;
   /**
-   * Removes the viewport from cornerstone-3D, and destroys the rendering engine
+   * Removes the viewport from cornerstone, and destroys the rendering engine
    */
   destroy(): void;
   /**

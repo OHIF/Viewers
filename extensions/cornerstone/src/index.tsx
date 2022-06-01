@@ -14,7 +14,7 @@ import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement } from './state';
-import Cornerstone3DViewportService from './services/ViewportService/Cornerstone3DViewportService';
+import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
 import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
@@ -65,7 +65,7 @@ const cornerstone3DExtension = {
     appConfig,
   }) {
     servicesManager.registerService(
-      Cornerstone3DViewportService(servicesManager)
+      CornerstoneViewportService(servicesManager)
     );
     servicesManager.registerService(ToolGroupService(servicesManager));
     servicesManager.registerService(SyncGroupService(servicesManager));
@@ -90,7 +90,7 @@ const cornerstone3DExtension = {
 
     return [
       {
-        name: 'cornerstone-3d',
+        name: 'cornerstone',
         component: ExtendedOHIFCornerstoneViewport,
       },
     ];

@@ -4,7 +4,7 @@ import ViewportImageScrollbar from './ViewportImageScrollbar';
 import ViewportOverlay from './ViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
-import Cornerstone3DCacheService from '../../services/ViewportService/Cornerstone3DCacheService';
+import CornerstoneCacheService from '../../services/ViewportService/CornerstoneCacheService';
 
 function CornerstoneOverlays(props) {
   const {
@@ -12,7 +12,7 @@ function CornerstoneOverlays(props) {
     ToolBarService,
     element,
     scrollbarHeight,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
   } = props;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
@@ -21,8 +21,8 @@ function CornerstoneOverlays(props) {
   const [viewportData, setViewportData] = useState(null);
 
   useEffect(() => {
-    const { unsubscribe } = Cornerstone3DCacheService.subscribe(
-      Cornerstone3DCacheService.EVENTS.VIEWPORT_DATA_CHANGED,
+    const { unsubscribe } = CornerstoneCacheService.subscribe(
+      CornerstoneCacheService.EVENTS.VIEWPORT_DATA_CHANGED,
       props => {
         if (props.viewportIndex !== viewportIndex) {
           return;
@@ -42,7 +42,7 @@ function CornerstoneOverlays(props) {
   }
 
   if (viewportData) {
-    const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
 
@@ -60,14 +60,14 @@ function CornerstoneOverlays(props) {
         imageSliceData={imageSliceData}
         setImageSliceData={setImageSliceData}
         scrollbarHeight={scrollbarHeight}
-        Cornerstone3DViewportService={Cornerstone3DViewportService}
+        CornerstoneViewportService={CornerstoneViewportService}
       />
       <ViewportOverlay
         imageSliceData={imageSliceData}
         viewportData={viewportData}
         viewportIndex={viewportIndex}
         ToolBarService={ToolBarService}
-        Cornerstone3DViewportService={Cornerstone3DViewportService}
+        CornerstoneViewportService={CornerstoneViewportService}
         element={element}
       />
       <ViewportLoadingIndicator viewportData={viewportData} element={element} />

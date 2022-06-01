@@ -15,7 +15,7 @@ const commandsModule = ({ servicesManager }) => {
     CineService,
     ToolBarService,
     UIDialogService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
     SegmentationService,
   } = servicesManager.services;
 
@@ -65,7 +65,7 @@ const commandsModule = ({ servicesManager }) => {
       return _getActiveViewportEnabledElement();
     },
     setViewportActive: ({ viewportId }) => {
-      const viewportInfo = Cornerstone3DViewportService.getViewportInfo(
+      const viewportInfo = CornerstoneViewportService.getViewportInfo(
         viewportId
       );
       if (!viewportInfo) {
@@ -103,7 +103,7 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       // get actor from the viewport
-      const renderingEngine = Cornerstone3DViewportService.getRenderingEngine();
+      const renderingEngine = CornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
       const lower = windowCenterNum - windowWidthNum / 2.0;
@@ -204,7 +204,7 @@ const commandsModule = ({ servicesManager }) => {
           contentProps: {
             activeViewportIndex,
             onClose: UIModalService.hide,
-            Cornerstone3DViewportService,
+            CornerstoneViewportService,
           },
         });
       }
@@ -386,7 +386,7 @@ const commandsModule = ({ servicesManager }) => {
       colormap,
       immediate = false,
     }) => {
-      const viewport = Cornerstone3DViewportService.getCornerstone3DViewportByIndex(
+      const viewport = CornerstoneViewportService.getCornerstone3DViewportByIndex(
         viewportIndex
       );
 
