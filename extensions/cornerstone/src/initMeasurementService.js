@@ -268,6 +268,7 @@ const connectMeasurementServiceToTools = (
           text: data.annotation.data.text,
           handles: { ...data.annotation.data.handles },
           cachedStats: { ...data.annotation.data.cachedStats },
+          label: data.annotation.data.label,
         },
       });
     }

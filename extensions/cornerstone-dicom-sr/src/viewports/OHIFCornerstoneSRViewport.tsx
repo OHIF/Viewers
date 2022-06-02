@@ -182,6 +182,10 @@ function OHIFCornerstoneSRViewport(props) {
       return null;
     }
 
+    const initialImageIndex = activeImageDisplaySetData.images.findIndex(
+      image => image.imageId === measurement.imageId
+    );
+
     return (
       <Component
         {...props}
@@ -192,7 +196,7 @@ function OHIFCornerstoneSRViewport(props) {
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
         }}
         onElementEnabled={onElementEnabled}
-        initialImageIdOrIndex={measurement.imageId}
+        initialImageIndex={initialImageIndex}
       ></Component>
     );
   }, [activeImageDisplaySetData, viewportIndex, measurementSelected]);
