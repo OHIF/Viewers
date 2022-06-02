@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
+import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 
 function ViewportLoadingIndicator({ viewportData, element }) {
   const [loading, setLoading] = useState(false);
@@ -9,39 +10,37 @@ function ViewportLoadingIndicator({ viewportData, element }) {
   const loadIndicatorRef = useRef(null);
   const imageIdToBeLoaded = useRef(null);
 
-  useEffect(() => {
-    if (!element) {
-      return;
-    }
-
-    const setLoadingState = evt => {
-      clearTimeout(loadIndicatorRef.current);
+  const setLoadingStateScroll = useCallback(
+    evt => {
       imageIdToBeLoaded.current = evt.detail.imageId;
 
-      loadIndicatorRef.current = setTimeout(() => {
-        if (imageIdToBeLoaded.current === evt.detail.imageId) {
-          setLoading(true);
-        }
-      }, 50);
-    };
-
-    const setFinishLoadingState = evt => {
-      clearTimeout(loadIndicatorRef.current);
-
-      setLoading(false);
-      imageIdToBeLoaded.current = null;
-    };
-
-    const setErrorState = evt => {
-      clearTimeout(loadIndicatorRef.current);
-
-      if (imageIdToBeLoaded.current === evt.detail.imageId) {
-        setError(evt.detail.error);
-        imageIdToBeLoaded.current = null;
+      if (loading) {
+        return;
       }
-    };
 
-    element.addEventListener(Enums.Events.PRE_STACK_NEW_IMAGE, setLoadingState);
+      setLoading(true);
+    },
+    [loading]
+  );
+
+  const setFinishLoadingState = evt => {
+    setLoading(false);
+  };
+
+  const setErrorState = evt => {
+    clearTimeout(loadIndicatorRef.current);
+
+    if (imageIdToBeLoaded.current === evt.detail.imageId) {
+      setError(evt.detail.error);
+      imageIdToBeLoaded.current = null;
+    }
+  };
+
+  useEffect(() => {
+    element.addEventListener(
+      csToolsEnums.Events.STACK_SCROLL,
+      setLoadingStateScroll
+    );
     element.addEventListener(Enums.Events.IMAGE_LOAD_ERROR, setErrorState);
     element.addEventListener(
       Enums.Events.STACK_NEW_IMAGE,
@@ -50,8 +49,8 @@ function ViewportLoadingIndicator({ viewportData, element }) {
 
     return () => {
       element.removeEventListener(
-        Enums.Events.PRE_STACK_NEW_IMAGE,
-        setLoadingState
+        csToolsEnums.Events.STACK_SCROLL,
+        setLoadingStateScroll
       );
 
       element.removeEventListener(
@@ -81,13 +80,13 @@ function ViewportLoadingIndicator({ viewportData, element }) {
 
   if (loading) {
     return (
-      <>
-        <div className="bg-black opacity-50 absolute h-full w-full top-0 left-0">
-          <div className="flex transparent items-center justify-center w-full h-full">
-            <p className="text-primary-light text-xl font-light">Loading...</p>
-          </div>
+      // IMPORTANT: we need to use the pointer-events-none class to prevent the loading indicator from
+      // interacting with the mouse, since scrolling should propagate to the viewport underneath
+      <div className="pointer-events-none bg-black opacity-50 absolute h-full w-full top-0 left-0">
+        <div className="flex transparent items-center justify-center w-full h-full">
+          <p className="text-primary-light text-xl font-light">Loading...</p>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -97,6 +96,7 @@ function ViewportLoadingIndicator({ viewportData, element }) {
 ViewportLoadingIndicator.propTypes = {
   percentComplete: PropTypes.number,
   error: PropTypes.object,
+  element: PropTypes.object,
 };
 
 ViewportLoadingIndicator.defaultProps = {

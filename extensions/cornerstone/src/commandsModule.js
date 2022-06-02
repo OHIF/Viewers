@@ -327,7 +327,7 @@ const commandsModule = ({ servicesManager }) => {
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      csToolsUtils.stackScrollTool.scrollThroughStack(viewport, options);
+      csToolsUtils.scroll(viewport, options);
     },
     async createSegmentationForDisplaySet({ displaySetInstanceUID }) {
       const volumeId = displaySetInstanceUID;

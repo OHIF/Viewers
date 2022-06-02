@@ -52,7 +52,7 @@ function CornerstoneOverlays(props) {
   }
 
   return (
-    <>
+    <div>
       <ViewportImageScrollbar
         viewportIndex={viewportIndex}
         viewportData={viewportData}
@@ -77,7 +77,7 @@ function CornerstoneOverlays(props) {
         viewportData={viewportData}
         viewportIndex={viewportIndex}
       />
-    </>
+    </div>
   );
 }
 

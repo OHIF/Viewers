@@ -1,7 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Enums, Types, utilities } from '@cornerstonejs/core';
-import { utilities as csToolsUtils } from '@cornerstonejs/tools';
+import {
+  utilities as csToolsUtils,
+  Enums as csToolsEnums,
+} from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
 
 function CornerstoneImageScrollbar({
@@ -13,8 +16,12 @@ function CornerstoneImageScrollbar({
   scrollbarHeight,
   CornerstoneViewportService,
 }) {
-  const onImageScrollbarChange = useCallback(
-    (imageIndex, viewportIndex) => {
+  const slideTimeout = useRef(null);
+
+  const onImageScrollbarChange = (imageIndex, viewportIndex) => {
+    clearTimeout(slideTimeout.current);
+
+    slideTimeout.current = setTimeout(() => {
       const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
         viewportIndex
       );
@@ -30,9 +37,8 @@ function CornerstoneImageScrollbar({
           imageIndex: imageIndex,
         });
       });
-    },
-    [viewportIndex, viewportData, imageSliceData]
-  );
+    }, 40);
+  };
 
   useEffect(() => {
     if (!viewportData) {
@@ -78,40 +84,34 @@ function CornerstoneImageScrollbar({
   }, [viewportIndex, viewportData]);
 
   useEffect(() => {
-    if (
-      !viewportData ||
-      viewportData.viewportType !== Enums.ViewportType.STACK
-    ) {
+    if (viewportData?.viewportType !== Enums.ViewportType.STACK) {
       return;
     }
 
     const updateStackIndex = event => {
-      const { imageId } = event.detail;
+      const { newImageIdIndex } = event.detail;
       // find the index of imageId in the imageIds
-      const index = viewportData?.imageIds?.indexOf(imageId);
-      if (index !== -1) {
-        setImageSliceData({
-          imageIndex: index,
-          numberOfSlices: viewportData.imageIds.length,
-        });
-      }
+      setImageSliceData({
+        imageIndex: newImageIdIndex,
+        numberOfSlices: viewportData.imageIds.length,
+      });
     };
 
-    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateStackIndex);
+    element.addEventListener(
+      csToolsEnums.Events.STACK_SCROLL,
+      updateStackIndex
+    );
 
     return () => {
       element.removeEventListener(
-        Enums.Events.STACK_NEW_IMAGE,
+        csToolsEnums.Events.STACK_SCROLL,
         updateStackIndex
       );
     };
   }, [viewportData, element]);
 
   useEffect(() => {
-    if (
-      !viewportData ||
-      viewportData.viewportType !== Enums.ViewportType.ORTHOGRAPHIC
-    ) {
+    if (viewportData?.viewportType !== Enums.ViewportType.ORTHOGRAPHIC) {
       return;
     }
 
