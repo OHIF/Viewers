@@ -25,7 +25,6 @@ local jsStepCommon = {
   image: 'node:14',
 };
 
-
 local slackDeployMessage = {
   name: 'slack',
   image: 'plugins/slack',
@@ -48,8 +47,23 @@ local slackDeployMessage = {
   },
 };
 
+local mainPipeline = pipelineCommon {
+  name: 'main',
+  trigger: {
+    event: [
+      'push',
+    ],
+  },
+  steps: [
+    restoreCache,
+  ],
+};
+
 
 local deployProduction = {
+  depends_on: [
+    'main',
+  ],
   trigger: {
     branch: [
       'feat/ci-cd',
@@ -88,5 +102,6 @@ local deployProduction = {
 
 
 [
+  mainPipeline,
   deployProduction,
 ]
