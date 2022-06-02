@@ -3,10 +3,6 @@ local pipelineCommon = {
   type: 'docker',
 };
 
-local jsStepCommon = {
-  image: 'node:14',
-};
-
 local cacheCommon = {
   image: 'danihodovic/drone-cache',
   settings: {
@@ -23,6 +19,12 @@ local restoreCache = cacheCommon {
     restore: true,
   },
 };
+
+
+local jsStepCommon = {
+  image: 'node:14',
+};
+
 
 local slackDeployMessage = {
   name: 'slack',
