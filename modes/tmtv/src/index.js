@@ -14,7 +14,7 @@ const ohif = {
 };
 
 const cs3d = {
-  viewport: '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d',
+  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
 };
 
 const tmtv = {
@@ -26,7 +26,7 @@ const tmtv = {
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone-3d': '^3.0.0',
+  '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-tmtv': '^3.0.0',
 };
 
@@ -50,7 +50,7 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
-        '@ohif/extension-cornerstone-3d.utilityModule.tools'
+        '@ohif/extension-cornerstone.utilityModule.tools'
       );
 
       const { toolNames, Enums } = utilityModule.exports;
@@ -70,7 +70,7 @@ function modeFactory({ modeConfiguration }) {
                 toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.CT,
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -78,7 +78,7 @@ function modeFactory({ modeConfiguration }) {
                 toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.PT,
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
             {
               commandName: 'setToolActive',
@@ -86,7 +86,7 @@ function modeFactory({ modeConfiguration }) {
                 toolName: toolNames.WindowLevel,
                 toolGroupId: toolGroupIds.Fusion,
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
         });

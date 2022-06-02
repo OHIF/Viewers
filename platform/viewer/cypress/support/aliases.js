@@ -17,13 +17,13 @@ export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="MoreTools-split-button-primary"]').as('moreBtnPrimary');
   cy.get('[data-cy="MoreTools-split-button-secondary"]').as('moreBtnSecondary');
   cy.get('[data-cy="Layout"]').as('layoutBtn');
-  cy.get('.cornerstone3D-viewport-element').as('viewport');
+  cy.get('.cornerstone-viewport-element').as('viewport');
 }
 
 //Creating aliases for Common page elements
 export function initCommonElementsAliases() {
   cy.get('[data-cy="trackedMeasurements-btn"]').as('measurementsBtn');
-  cy.get('.cornerstone3D-viewport-element').as('viewport');
+  cy.get('.cornerstone-viewport-element').as('viewport');
   cy.get('[data-cy="seriesList-btn"]').as('seriesBtn');
 
   // TODO: Panels are not in DOM when closed, move this somewhere else

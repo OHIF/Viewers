@@ -3,7 +3,7 @@ import RectangleROIStartEndThreshold from './RectangleROIStartEndThreshold';
 const measurementServiceMappingsFactory = (
   MeasurementService,
   DisplaySetService,
-  Cornerstone3DViewportService
+  CornerstoneViewportService
 ) => {
   return {
     RectangleROIStartEndThreshold: {
@@ -12,7 +12,7 @@ const measurementServiceMappingsFactory = (
         RectangleROIStartEndThreshold.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
-          Cornerstone3DViewportService
+          CornerstoneViewportService
         ),
       matchingCriteria: [
         {

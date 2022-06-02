@@ -1,4 +1,4 @@
-import * as cornerstone3D from '@cornerstonejs/core';
+import { getEnabledElement } from '@cornerstonejs/core';
 
 const state = {
   TrackingUniqueIdentifier: null,
@@ -18,7 +18,7 @@ function setTrackingUniqueIdentifiersForElement(
   trackingUniqueIdentifiers,
   activeIndex = 0
 ) {
-  const enabledElement = cornerstone3D.getEnabledElement(element);
+  const enabledElement = getEnabledElement(element);
   const { viewport } = enabledElement;
 
   state.trackingIdentifiersByViewportId[viewport.id] = {
@@ -31,7 +31,7 @@ function setActiveTrackingUniqueIdentifierForElement(
   element,
   TrackingUniqueIdentifier
 ) {
-  const enabledElement = cornerstone3D.getEnabledElement(element);
+  const enabledElement = getEnabledElement(element);
   const { viewport } = enabledElement;
 
   const trackingIdentifiersForElement =
@@ -47,7 +47,7 @@ function setActiveTrackingUniqueIdentifierForElement(
 }
 
 function getTrackingUniqueIdentifiersForElement(element) {
-  const enabledElement = cornerstone3D.getEnabledElement(element);
+  const enabledElement = getEnabledElement(element);
   const { viewport } = enabledElement;
 
   if (state.trackingIdentifiersByViewportId[viewport.id]) {

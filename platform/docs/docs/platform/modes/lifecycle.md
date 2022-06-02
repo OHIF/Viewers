@@ -26,7 +26,7 @@ buttons to the toolbar.
 
 In OHIF Version 3.1, there is a new service `ToolGroupService` that is used to
 define and manage tools for the group of viewports. This is a new concept
-borrowed from the Cornerstone3D ToolGroup, and you can read more
+borrowed from the Cornerstone ToolGroup, and you can read more
 [here](https://www.cornerstonejs.org/docs/concepts/cornerstone-tools/toolgroups/)
 
 :::

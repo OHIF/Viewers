@@ -39,7 +39,7 @@
     "hammerjs": "^2.0.8",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
-    "@ohif/extension-cornerstone-3d": "^3.0.0",
+    "@ohif/extension-cornerstone": "^3.0.0",
     "@ohif/extension-measurement-tracking": "^3.0.0"
   },
   "dependencies": {

@@ -190,7 +190,7 @@ you'll see the following:
 ├── extensions               #
 │   ├── _example             # Skeleton of example extension
 │   ├── default              #
-│   ├── cornerstone-3d       # image rendering and tools w/ Cornerstone3D
+│   ├── cornerstone       # image rendering and tools w/ Cornerstone
 │   ├── cornerstone- dicom-sr #
 │   └── measurement-tracking #
 │

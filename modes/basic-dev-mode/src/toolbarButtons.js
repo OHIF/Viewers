@@ -48,7 +48,7 @@ function _createWwwcPreset(preset, title, subtitle) {
         commandOptions: {
           ...windowLevelPresets[preset],
         },
-        context: 'CORNERSTONE3D',
+        context: 'CORNERSTONE',
       },
     ],
   };
@@ -73,7 +73,7 @@ const toolbarButtons = [
             commandOptions: {
               toolName: 'Length',
             },
-            context: 'CORNERSTONE3D',
+            context: 'CORNERSTONE',
           },
         ],
         'Length'
@@ -95,7 +95,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'Length',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Length Tool'
@@ -110,7 +110,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'Bidirectional',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Bidirectional Tool'
@@ -125,7 +125,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'EllipticalROI',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Ellipse Tool'
@@ -147,7 +147,7 @@ const toolbarButtons = [
           commandOptions: {
             toolName: 'Zoom',
           },
-          context: 'CORNERSTONE3D',
+          context: 'CORNERSTONE',
         },
       ],
     },
@@ -168,7 +168,7 @@ const toolbarButtons = [
             commandOptions: {
               toolName: 'WindowLevel',
             },
-            context: 'CORNERSTONE3D',
+            context: 'CORNERSTONE',
           },
         ],
         'Window Level'
@@ -204,7 +204,7 @@ const toolbarButtons = [
           commandOptions: {
             toolName: 'Pan',
           },
-          context: 'CORNERSTONE3D',
+          context: 'CORNERSTONE',
         },
       ],
     },
@@ -220,7 +220,7 @@ const toolbarButtons = [
         {
           commandName: 'showDownloadViewportModal',
           commandOptions: {},
-          context: 'CORNERSTONE3D',
+          context: 'CORNERSTONE',
         },
       ],
     },
@@ -244,7 +244,7 @@ const toolbarButtons = [
           {
             commandName: 'resetViewport',
             commandOptions: {},
-            context: 'CORNERSTONE3D',
+            context: 'CORNERSTONE',
           },
         ],
         'Reset'
@@ -264,7 +264,7 @@ const toolbarButtons = [
             {
               commandName: 'resetViewport',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Reset'
@@ -277,7 +277,7 @@ const toolbarButtons = [
             {
               commandName: 'rotateViewportCW',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Rotate +90'
@@ -290,7 +290,7 @@ const toolbarButtons = [
             {
               commandName: 'flipViewportHorizontal',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Flip Horizontal'
@@ -305,7 +305,7 @@ const toolbarButtons = [
               commandOptions: {
                 toolName: 'StackScroll',
               },
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Stack Scroll'
@@ -318,7 +318,7 @@ const toolbarButtons = [
             {
               commandName: 'invertViewport',
               commandOptions: {},
-              context: 'CORNERSTONE3D',
+              context: 'CORNERSTONE',
             },
           ],
           'Invert Colors'

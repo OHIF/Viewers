@@ -29,7 +29,7 @@ function OHIFCornerstoneSRViewport(props) {
 
   const {
     DisplaySetService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
   } = servicesManager.services;
 
   // SR viewport will always have a single display set
@@ -95,9 +95,9 @@ function OHIFCornerstoneSRViewport(props) {
   );
 
   /**
-   * OnElementEnabled callback which is called after the cornerstone3DExtension
+   * OnElementEnabled callback which is called after the cornerstoneExtension
    * has enabled the element. Note: we delegate all the image rendering to
-   * cornerstone3DExtension, so we don't need to do anything here regarding
+   * cornerstoneExtension, so we don't need to do anything here regarding
    * the image rendering, element enabling etc.
    */
   const onElementEnabled = evt => {
@@ -143,11 +143,11 @@ function OHIFCornerstoneSRViewport(props) {
           // imageIdIndex will handle it by updating the viewport, but if they
           // are the same we just need to use MeasurementService to jump to the
           // new measurement
-          const viewportInfo = Cornerstone3DViewportService.getViewportInfoByIndex(
+          const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
             viewportIndex
           );
 
-          const csViewport = Cornerstone3DViewportService.getCornerstone3DViewport(
+          const csViewport = CornerstoneViewportService.getCornerstoneViewport(
             viewportInfo.getViewportId()
           );
 
@@ -166,13 +166,13 @@ function OHIFCornerstoneSRViewport(props) {
     [dataSource, srDisplaySet, activeImageDisplaySetData, viewportIndex]
   );
 
-  const getCornerstone3DViewport = useCallback(() => {
+  const getCornerstoneViewport = useCallback(() => {
     if (!activeImageDisplaySetData) {
       return null;
     }
 
     const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
+      '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
     const { measurements } = srDisplaySet;
@@ -181,6 +181,10 @@ function OHIFCornerstoneSRViewport(props) {
     if (!measurement) {
       return null;
     }
+
+    const initialImageIndex = activeImageDisplaySetData.images.findIndex(
+      image => image.imageId === measurement.imageId
+    );
 
     return (
       <Component
@@ -192,7 +196,7 @@ function OHIFCornerstoneSRViewport(props) {
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
         }}
         onElementEnabled={onElementEnabled}
-        initialImageIdOrIndex={measurement.imageId}
+        initialImageIndex={initialImageIndex}
       ></Component>
     );
   }, [activeImageDisplaySetData, viewportIndex, measurementSelected]);
@@ -373,7 +377,7 @@ function OHIFCornerstoneSRViewport(props) {
       />
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {getCornerstone3DViewport()}
+        {getCornerstoneViewport()}
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification

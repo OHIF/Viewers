@@ -48,7 +48,7 @@
   "dependencies": {
     "@babel/runtime": "7.16.3",
     "@ohif/core": "^3.0.0",
-    "@ohif/extension-cornerstone-3d": "^3.0.0",
+    "@ohif/extension-cornerstone": "^3.0.0",
     "@ohif/extension-default": "^3.0.0",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
     "@ohif/extension-dicom-pdf": "^3.0.1",

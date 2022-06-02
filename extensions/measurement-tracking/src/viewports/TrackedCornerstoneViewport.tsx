@@ -28,7 +28,7 @@ function TrackedCornerstoneViewport(props) {
 
   const {
     MeasurementService,
-    Cornerstone3DViewportService,
+    CornerstoneViewportService,
   } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
@@ -44,7 +44,7 @@ function TrackedCornerstoneViewport(props) {
 
   const { trackedSeries } = trackedMeasurements.context;
 
-  const viewportId = Cornerstone3DViewportService.getViewportId(viewportIndex);
+  const viewportId = CornerstoneViewportService.getViewportId(viewportIndex);
 
   const {
     Modality,
@@ -72,7 +72,7 @@ function TrackedCornerstoneViewport(props) {
         },
       });
 
-      Cornerstone3DViewportService.getRenderingEngine().renderViewport(
+      CornerstoneViewportService.getRenderingEngine().renderViewport(
         viewportId
       );
 
@@ -85,9 +85,7 @@ function TrackedCornerstoneViewport(props) {
       },
     });
 
-    Cornerstone3DViewportService.getRenderingEngine().renderViewport(
-      viewportId
-    );
+    CornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
 
     return () => {
       annotation.config.style.setViewportToolStyles(viewportId, {});
@@ -119,9 +117,9 @@ function TrackedCornerstoneViewport(props) {
   }
 
   /**
-   * OnElementEnabled callback which is called after the cornerstone3DExtension
+   * OnElementEnabled callback which is called after the cornerstoneExtension
    * has enabled the element. Note: we delegate all the image rendering to
-   * cornerstone3DExtension, so we don't need to do anything here regarding
+   * cornerstoneExtension, so we don't need to do anything here regarding
    * the image rendering, element enabling etc.
    */
   const onElementEnabled = evt => {
@@ -148,9 +146,9 @@ function TrackedCornerstoneViewport(props) {
     );
   }
 
-  const getCornerstone3DViewport = () => {
+  const getCornerstoneViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone-3d.viewportModule.cornerstone-3d'
+      '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
     return <Component {...props} onElementEnabled={onElementEnabled} />;
@@ -212,7 +210,7 @@ function TrackedCornerstoneViewport(props) {
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {getCornerstone3DViewport()}
+        {getCornerstoneViewport()}
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification

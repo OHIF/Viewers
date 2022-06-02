@@ -483,7 +483,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     const cornerstoneFreeTextFindingSite = FindingSites.find(
       FindingSite =>
         CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
-          Finding.ConceptCodeSequence.CodingSchemeDesignator
+          FindingSite.ConceptCodeSequence.CodingSchemeDesignator
         ) &&
         FindingSite.ConceptCodeSequence.CodeValue ===
           CodeNameCodeSequenceValues.CornerstoneFreeText

@@ -70,12 +70,12 @@ function WrappedPanelStudyBrowserTracking({
  */
 function _createGetImageSrcFromImageIdFn(extensionManager) {
   const utilities = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-3d.utilityModule.common'
+    '@ohif/extension-cornerstone.utilityModule.common'
   );
 
   try {
-    const { cornerstone3D } = utilities.exports.getCornerstoneLibraries();
-    return getImageSrcFromImageId.bind(null, cornerstone3D);
+    const { cornerstone } = utilities.exports.getCornerstoneLibraries();
+    return getImageSrcFromImageId.bind(null, cornerstone);
   } catch (ex) {
     throw new Error('Required command not found');
   }

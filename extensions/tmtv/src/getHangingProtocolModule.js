@@ -563,7 +563,7 @@ const ptCT = {
             customViewportOptions: {
               // We use viewportDisplay to filter the viewports which are displayed
               // in mip and we set the scrollbar according to their rotation index
-              // in the cornerstone3D extension.
+              // in the cornerstone extension.
               hideOverlays: true,
             },
           },

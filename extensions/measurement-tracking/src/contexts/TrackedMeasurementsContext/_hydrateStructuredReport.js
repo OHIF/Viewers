@@ -1,4 +1,4 @@
-import * as cornerstone3D from '@cornerstonejs/core';
+import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
 import { adapters } from 'dcmjs';
@@ -64,8 +64,8 @@ export default function _hydrateStructuredReport(
     // that measurements were added to the display set are the same order as
     // the measurementGroups in the instance.
     sopInstanceUIDToImageId,
-    cornerstone3D.utilities.imageToWorldCoords,
-    cornerstone3D.metaData
+    utilities.imageToWorldCoords,
+    metaData
   );
 
   // Filter what is found by DICOM SR to measurements we support.
@@ -101,7 +101,7 @@ export default function _hydrateStructuredReport(
 
   for (let i = 0; i < imageIds.length; i++) {
     const imageId = imageIds[i];
-    const { SeriesInstanceUID, StudyInstanceUID } = cornerstone3D.metaData.get(
+    const { SeriesInstanceUID, StudyInstanceUID } = metaData.get(
       'instance',
       imageId
     );
@@ -129,7 +129,7 @@ export default function _hydrateStructuredReport(
 
       toolData.uid = guid();
 
-      const instance = cornerstone3D.metaData.get('instance', imageId);
+      const instance = metaData.get('instance', imageId);
       const {
         FrameOfReferenceUID,
         // SOPInstanceUID,

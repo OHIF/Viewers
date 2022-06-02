@@ -1,6 +1,6 @@
 import { vec3 } from 'gl-matrix';
 import { Types, annotation } from '@cornerstonejs/tools';
-import * as cornerstone3D from '@cornerstonejs/core';
+import { metaData, utilities, Types as csTypes } from '@cornerstonejs/core';
 import toolNames from '../tools/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
 
@@ -41,10 +41,7 @@ export default function addMeasurement(
   });
 
   // Use the metadata provider to grab its imagePlaneModule metadata
-  const imagePlaneModule = cornerstone3D.metaData.get(
-    'imagePlaneModule',
-    imageId
-  );
+  const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
   const annotationManager = annotation.state.getDefaultAnnotationManager();
 
@@ -89,7 +86,7 @@ function _getRenderableData(
 ) {
   const [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
 
-  let renderableData: cornerstone3D.Types.Point3[];
+  let renderableData: csTypes.Point3[];
 
   switch (GraphicType) {
     case SCOORD_TYPES.POINT:
@@ -98,7 +95,7 @@ function _getRenderableData(
       renderableData = [];
 
       for (let i = 0; i < GraphicData.length; i += 2) {
-        const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
+        const worldPos = utilities.imageToWorldCoords(imageId, [
           GraphicData[i],
           GraphicData[i + 1],
         ]);
@@ -110,7 +107,7 @@ function _getRenderableData(
     case SCOORD_TYPES.CIRCLE: {
       const pointsWorld = [];
       for (let i = 0; i < GraphicData.length; i += 2) {
-        const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
+        const worldPos = utilities.imageToWorldCoords(imageId, [
           GraphicData[i],
           GraphicData[i + 1],
         ]);
@@ -126,10 +123,7 @@ function _getRenderableData(
 
       const radius = vec3.distance(center, onPerimeter);
 
-      const imagePlaneModule = cornerstone3D.metaData.get(
-        'imagePlaneModule',
-        imageId
-      );
+      const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
       if (!imagePlaneModule) {
         throw new Error('No imagePlaneModule found');
@@ -139,8 +133,8 @@ function _getRenderableData(
         columnCosines,
         rowCosines,
       }: {
-        columnCosines: cornerstone3D.Types.Point3;
-        rowCosines: cornerstone3D.Types.Point3;
+        columnCosines: csTypes.Point3;
+        rowCosines: csTypes.Point3;
       } = imagePlaneModule;
 
       // we need to get major/minor axis (which are both the same size major = minor)
@@ -160,10 +154,10 @@ function _getRenderableData(
       vec3.scaleAndAdd(secondAxisEnd, center, rowCosines, -radius);
 
       renderableData = [
-        firstAxisStart as cornerstone3D.Types.Point3,
-        firstAxisEnd as cornerstone3D.Types.Point3,
-        secondAxisStart as cornerstone3D.Types.Point3,
-        secondAxisEnd as cornerstone3D.Types.Point3,
+        firstAxisStart as csTypes.Point3,
+        firstAxisEnd as csTypes.Point3,
+        secondAxisStart as csTypes.Point3,
+        secondAxisEnd as csTypes.Point3,
       ];
 
       break;
@@ -174,9 +168,9 @@ function _getRenderableData(
       // ellipse so we need to identify if the majorAxis is horizontal or vertical
       // and then choose the correct points to use for the ellipse.
 
-      const pointsWorld: cornerstone3D.Types.Point3[] = [];
+      const pointsWorld: csTypes.Point3[] = [];
       for (let i = 0; i < GraphicData.length; i += 2) {
-        const worldPos = cornerstone3D.utilities.imageToWorldCoords(imageId, [
+        const worldPos = utilities.imageToWorldCoords(imageId, [
           GraphicData[i],
           GraphicData[i + 1],
         ]);
@@ -199,10 +193,7 @@ function _getRenderableData(
       vec3.sub(minorAxisVec, minorAxisEnd, minorAxisStart);
       vec3.normalize(minorAxisVec, minorAxisVec);
 
-      const imagePlaneModule = cornerstone3D.metaData.get(
-        'imagePlaneModule',
-        imageId
-      );
+      const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
       if (!imagePlaneModule) {
         throw new Error('imageId does not have imagePlaneModule metadata');
@@ -210,7 +201,7 @@ function _getRenderableData(
 
       const {
         columnCosines,
-      }: { columnCosines: cornerstone3D.Types.Point3 } = imagePlaneModule;
+      }: { columnCosines: csTypes.Point3 } = imagePlaneModule;
 
       // find which axis is parallel to the columnCosines
       const columnCosinesVec = vec3.fromValues(...columnCosines);

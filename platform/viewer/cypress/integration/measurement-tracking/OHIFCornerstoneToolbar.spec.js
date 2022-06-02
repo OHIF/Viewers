@@ -60,7 +60,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
   //   // IMPORTANT: Cypress sends out a mouseEvent which doesn't have the buttons
   //   // property. This is a workaround to simulate a mouseEvent with the buttons property
-  //   // which is consumed by cornerstone3D
+  //   // which is consumed by cornerstone
   //   cy.get('@viewport')
   //     .trigger('mousedown', 'center', { buttons: 1 })
   //     .trigger('mousemove', 'top', {

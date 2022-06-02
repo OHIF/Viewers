@@ -1,7 +1,7 @@
 {
   "extensions": [
     {
-      "packageName": "@ohif/extension-cornerstone-3d",
+      "packageName": "@ohif/extension-cornerstone",
       "version": "3.0.0"
     },
     {
@@ -32,10 +32,6 @@
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
-      "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/mode-tmtv",
       "version": "3.0.0"
     }
   ]

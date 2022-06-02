@@ -143,10 +143,27 @@ function ViewerViewportGrid(props) {
           }
         }
 
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          referencedDisplaySetInstanceUID
+        );
+
+        let imageIndex;
+        // jump straight to the initial image index if we can
+        if (displaySet.images && measurement.SOPInstanceUID) {
+          imageIndex = displaySet.images.findIndex(
+            image => image.SOPInstanceUID === measurement.SOPInstanceUID
+          );
+        }
+
         // If not in any of the viewports, hang it inside the active viewport
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex,
           displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
+          viewportOptions: {
+            initialImageOptions: {
+              index: imageIndex,
+            },
+          },
         });
       }
     );

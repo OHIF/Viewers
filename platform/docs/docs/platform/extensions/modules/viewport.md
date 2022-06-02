@@ -40,8 +40,8 @@ const getViewportModule = () => {
 
 ## Example Viewport Component
 
-A simplified version of the tracked `OHIFCornerstone3DViewport` is shown below, which
-creates a cornerstone3D viewport:
+A simplified version of the tracked `OHIFCornerstoneViewport` is shown below, which
+creates a cornerstone viewport:
 
 :::note Tip
 
@@ -76,7 +76,7 @@ function TrackedCornerstoneViewport({
       />
       /** Div For displaying image */
       <div
-        className="cornerstone3D-viewport-element"
+        className="cornerstone-viewport-element"
         style={{ height: '100%', width: '100%' }}
         onContextMenu={e => e.preventDefault()}
         onMouseDown={e => e.preventDefault()}

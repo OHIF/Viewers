@@ -11,7 +11,7 @@ export default class RTSSReport {
    * Convert handles to RTSSReport report object containing the dcmjs dicom dataset.
    *
    * Note: The tool data needs to be formatted in a specific way, and currently
-   * it is limited to the RectangleROIStartEndTool in the Cornerstone3D.
+   * it is limited to the RectangleROIStartEndTool in the Cornerstone.
    *
    * @param annotations Array of Cornerstone tool annotation data
    * @param metadataProvider Metadata provider
