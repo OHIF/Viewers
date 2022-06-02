@@ -56,7 +56,7 @@ local deployProduction = pipelineCommon {
         'cd dist',
         'VERSION=$(npm view @newlantern/viewer version)',
         'echo "{" >> package.json',
-        'echo "  \"name\": \"$NAME\"," >> package.json',
+        'echo "  \\\"name\\\": \\\"$NAME\\\"," >> package.json',
         'echo "  \"version\": \"$VERSION\"," >> package.json',
         'echo "  \"main\": \"$ENTRY\"," >> package.json',
         'echo "  \"repository\": \"$REPO\"," >> package.json',
