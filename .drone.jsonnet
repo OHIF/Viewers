@@ -49,7 +49,7 @@ local slackDeployMessage = {
 };
 
 
-local deployProduction = deployCommon {
+local deployProduction = {
   trigger: {
     branch: [
       'feat/ci-cd',
@@ -88,6 +88,5 @@ local deployProduction = deployCommon {
 
 
 [
-  mainPipeline,
   deployProduction,
 ]
