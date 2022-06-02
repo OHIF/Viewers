@@ -59,11 +59,7 @@ local mainPipeline = pipelineCommon {
   ],
 };
 
-
-local deployProduction = {
-  depends_on: [
-    'main',
-  ],
+local deployProduction = pipelineCommon {
   trigger: {
     branch: [
       'feat/ci-cd',
