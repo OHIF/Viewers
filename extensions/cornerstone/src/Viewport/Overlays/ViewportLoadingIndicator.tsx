@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
-import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 
 function ViewportLoadingIndicator({ viewportData, element }) {
   const [loading, setLoading] = useState(false);

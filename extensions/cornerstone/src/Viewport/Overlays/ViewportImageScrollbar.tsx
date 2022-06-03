@@ -11,8 +11,10 @@ function CornerstoneImageScrollbar({
   imageSliceData,
   setImageSliceData,
   scrollbarHeight,
-  CornerstoneViewportService,
+  servicesManager,
 }) {
+  const { CineService, CornerstoneViewportService } = servicesManager.services;
+
   const onImageScrollbarChange = (imageIndex, viewportIndex) => {
     const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
@@ -22,6 +24,10 @@ function CornerstoneImageScrollbar({
     const viewport = CornerstoneViewportService.getCornerstoneViewport(
       viewportId
     );
+
+    // on image scrollbar change, stop the CINE if it is playing
+    CineService.stopClip(element);
+    CineService.setCine({ id: viewportIndex, isPlaying: false });
 
     csToolsUtils.jumpToSlice(viewport.element, {
       imageIndex,
@@ -43,15 +49,10 @@ function CornerstoneImageScrollbar({
     }
 
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      const imageId = viewport.getCurrentImageId();
-      const index = viewportData?.imageIds?.indexOf(imageId);
-
-      if (index === -1) {
-        return;
-      }
+      const imageIndex = viewport.getCurrentImageIdIndex();
 
       setImageSliceData({
-        imageIndex: index,
+        imageIndex: imageIndex,
         numberOfSlices: viewportData.imageIds.length,
       });
 

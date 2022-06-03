@@ -294,7 +294,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         ToolBarService={ToolBarService}
         element={elementRef.current}
         scrollbarHeight={scrollbarHeight}
-        CornerstoneViewportService={CornerstoneViewportService}
+        servicesManager={servicesManager}
       />
     </div>
   );

@@ -7,13 +7,8 @@ import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import CornerstoneCacheService from '../../services/ViewportService/CornerstoneCacheService';
 
 function CornerstoneOverlays(props) {
-  const {
-    viewportIndex,
-    ToolBarService,
-    element,
-    scrollbarHeight,
-    CornerstoneViewportService,
-  } = props;
+  const { viewportIndex, element, scrollbarHeight, servicesManager } = props;
+  const { CornerstoneViewportService } = servicesManager.services;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
     numberOfSlices: 0,
@@ -60,14 +55,13 @@ function CornerstoneOverlays(props) {
         imageSliceData={imageSliceData}
         setImageSliceData={setImageSliceData}
         scrollbarHeight={scrollbarHeight}
-        CornerstoneViewportService={CornerstoneViewportService}
+        servicesManager={servicesManager}
       />
       <ViewportOverlay
         imageSliceData={imageSliceData}
         viewportData={viewportData}
         viewportIndex={viewportIndex}
-        ToolBarService={ToolBarService}
-        CornerstoneViewportService={CornerstoneViewportService}
+        servicesManager={servicesManager}
         element={element}
       />
       <ViewportLoadingIndicator viewportData={viewportData} element={element} />

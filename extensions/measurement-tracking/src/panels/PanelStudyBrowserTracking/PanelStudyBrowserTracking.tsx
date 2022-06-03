@@ -53,8 +53,8 @@ function PanelStudyBrowserTracking({
     });
   };
 
-  const activeDisplaySetInstanceUID =
-    viewports[activeViewportIndex]?.displaySetInstanceUID;
+  const activeViewportDisplaySetInstanceUIDs =
+    viewports[activeViewportIndex]?.displaySetInstanceUIDs;
 
   const isSingleViewport = numCols === 1 && numRows === 1;
 
@@ -335,7 +335,7 @@ function PanelStudyBrowserTracking({
       }}
       onClickThumbnail={() => {}}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-      activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
+      activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
     />
   );
 }
