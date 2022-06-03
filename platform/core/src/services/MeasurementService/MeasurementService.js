@@ -65,6 +65,7 @@ const VALUE_TYPES = {
   POINT: 'value_type::point',
   BIDIRECTIONAL: 'value_type::shortAxisLongAxis', // TODO -> Discuss with Danny. => just using SCOORD values isn't enough here.
   ELLIPSE: 'value_type::ellipse',
+  RECTANGLE: 'value_type::rectangle',
   MULTIPOINT: 'value_type::multipoint',
   CIRCLE: 'value_type::circle',
   FREEHAND: 'value_type::freehand',
@@ -405,7 +406,7 @@ class MeasurementService {
   }
 
   /**
-   * Adds or update persisted measurements.
+   * Adds or update measurements.
    *
    * @param {MeasurementSource} source The measurement source instance
    * @param {string} definition The source definition
@@ -441,6 +442,15 @@ class MeasurementService {
 
       /* Assign measurement source instance */
       measurement.source = source;
+
+      const { instance } = sourceMeasurement;
+      if (instance) {
+        measurement.SOPInstanceUID = instance.SOPInstanceUID;
+        measurement.FrameOfReferenceUID = instance.FrameOfReferenceUID;
+        measurement.referenceSeriesUID = instance.SeriesInstanceUID;
+        measurement.referenceStudyUID = instance.StudyInstanceUID;
+        measurement.displaySetInstanceUID = instance.displaySetInstanceUID;
+      }
     } catch (error) {
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for definition ${definition}:`,

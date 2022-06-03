@@ -1,12 +1,16 @@
 import csTools from 'cornerstone-tools';
+import NLCrosshairsTool from '../tools/NLCrosshairs';
+import NLFreehandRoiTool from '../tools/NLFreehandRoi';
 
 const toolsGroupedByType = {
   touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
+  series: [NLCrosshairsTool],
   annotations: [
     csTools.ArrowAnnotateTool,
     csTools.BidirectionalTool,
     csTools.LengthTool,
     csTools.AngleTool,
+    NLFreehandRoiTool,
     csTools.EllipticalRoiTool,
     csTools.DragProbeTool,
     csTools.RectangleRoiTool,

@@ -71,11 +71,9 @@ function PanelStudyBrowserTracking({
             referenceStudyUID: StudyInstanceUID,
           } = measurement;
 
-          sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
-          sendTrackedMeasurementsEvent('TRACK_SERIES', {
-            viewportIndex: activeViewportIndex,
+          sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
             StudyInstanceUID,
-            SeriesInstanceUID,
+            SeriesInstanceUIDs: [SeriesInstanceUID],
           });
         }).unsubscribe
       );

@@ -50,6 +50,7 @@ const ArrowAnnotate = {
       text: measurementData.text,
       type: getValueTypeFromToolType(tool),
       points: getPointsFromHandles(measurementData.handles),
+      handles: measurementData.handles,
     };
   },
 };

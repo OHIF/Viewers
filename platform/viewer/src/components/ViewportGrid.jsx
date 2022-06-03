@@ -7,10 +7,10 @@ import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
-const getQueryParam = (key) => {
+const getQueryParam = key => {
   const urlParams = new URLSearchParams(window.location.search);
   return Number(urlParams.get(key)) || 0;
-}
+};
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
@@ -41,15 +41,16 @@ function ViewerViewportGrid(props) {
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
       const seriesNumberParam = getQueryParam('series_number');
 
-      if(!isParamViewLoaded && seriesNumberParam) {
+      if (!isParamViewLoaded && seriesNumberParam) {
         const initialDisplaySet = displaySets.find(ds => {
           return ds.SeriesNumber === seriesNumberParam;
         });
 
-        initialDisplaySet && viewportGridService.setDisplaysetForViewport({
-          viewportIndex: 0,
-          displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
-        });
+        initialDisplaySet &&
+          viewportGridService.setDisplaysetForViewport({
+            viewportIndex: 0,
+            displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
+          });
 
         initialDisplaySet && setIsParamViewLoaded(true);
       } else {

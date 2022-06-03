@@ -1,8 +1,10 @@
 import OHIF from '@ohif/core';
 import { ContextMenuMeasurements } from '@ohif/ui';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import cs from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
+import debounce from 'lodash.debounce';
 import getTools, { toolsGroupedByType } from './utils/getTools.js';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import initReferenceLines from './initReferenceLines';
@@ -12,6 +14,41 @@ import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
 import callInputDialog from './callInputDialog.js';
+
+const { nlApi, guid } = utils;
+
+const _transformMeasurement = (newMeasurement, source) => {
+  const { referenceStudyUID, referenceSeriesUID } = newMeasurement;
+  const study = DicomMetadataStore.getStudy(referenceStudyUID);
+  const series = study.series.find(s => s.uid === referenceSeriesUID);
+  return {
+    study_id: series.study_id,
+    series_id: series.id,
+    uid: guid(),
+    frame_of_reference_uid: newMeasurement.FrameOfReferenceUID ?? null,
+    sop_instance_uid: newMeasurement.SOPInstanceUID ?? null,
+    reference_series_uid: referenceSeriesUID ?? null,
+    reference_study_uid: referenceStudyUID ?? null,
+    source: {
+      name: source.name,
+      version: source.version,
+    },
+    points: newMeasurement.points,
+    handles: newMeasurement.handles,
+    text: newMeasurement.text ?? null,
+    description: newMeasurement.description ?? null,
+    unit: newMeasurement.unit ?? null,
+    type: newMeasurement.type,
+    label: newMeasurement.label ?? null,
+    shortest_diameter: newMeasurement.shortestDiameter ?? undefined,
+    longest_diameter: newMeasurement.longestDiameter ?? undefined,
+    area: newMeasurement.area ?? undefined,
+    angle: newMeasurement.angle ?? undefined,
+    mean: newMeasurement.mean ?? undefined,
+    std_dev: newMeasurement.stdDev ?? undefined,
+    length: newMeasurement.length ?? undefined,
+  };
+};
 
 // TODO -> Global "context menu open state", or lots of expensive searches on drag?
 
@@ -73,13 +110,15 @@ export default function init({
     DisplaySetService,
     ToolBarService,
     UserAuthenticationService,
+    UINotificationService,
   } = servicesManager.services;
   const tools = getTools();
 
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
     MeasurementService,
-    DisplaySetService
+    DisplaySetService,
+    UINotificationService
   );
 
   initReferenceLines({ servicesManager, commandsManager });
@@ -132,6 +171,12 @@ export default function init({
           // Sync'd w/ Measurement Service
           if (measurementData.id) {
             measurementServiceSource.remove(measurementData.id);
+            nlApi.delete(`/api/measurement/${measurementData.id}`).catch(err =>
+              UINotificationService.show({
+                message: 'Failed to delete the measurement',
+                type: 'error',
+              })
+            );
           }
           // Only in cstools
           else {
@@ -187,11 +232,21 @@ export default function init({
                 label,
               });
 
-              MeasurementService.update(
-                updatedMeasurement.id,
-                updatedMeasurement,
-                true
-              );
+              nlApi
+                .patch(`/api/measurement/${updatedMeasurement.id}/`, { label })
+                .then(() =>
+                  MeasurementService.update(
+                    updatedMeasurement.id,
+                    updatedMeasurement,
+                    true
+                  )
+                )
+                .catch(err =>
+                  UINotificationService.show({
+                    message: 'Failed to store the measurement label',
+                    type: 'error',
+                  })
+                );
             },
             false
           );
@@ -395,7 +450,8 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
 
 const _connectToolsToMeasurementService = (
   MeasurementService,
-  DisplaySetService
+  DisplaySetService,
+  UINotificationService
 ) => {
   const csToolsVer4MeasurementSource = _initMeasurementService(
     MeasurementService,
@@ -406,12 +462,14 @@ const _connectToolsToMeasurementService = (
     csToolsVer4MeasurementSource
   );
   const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
+  const sourceMappings =
+    MeasurementService.mappings[csToolsVer4MeasurementSource.id];
   const elementEnabledEvt = cs.EVENTS.ELEMENT_ENABLED;
 
   /* Measurement Service Events */
   cs.events.addEventListener(elementEnabledEvt, evt => {
     // TODO: Debounced update of measurements that are modified
-    function addMeasurement(csToolsEvent) {
+    const addMeasurement = debounce(function(csToolsEvent) {
       console.log('CSTOOLS::addOrUpdate', csToolsEvent, csToolsEvent.detail);
 
       try {
@@ -419,17 +477,34 @@ const _connectToolsToMeasurementService = (
         const { toolName, toolType, measurementData } = evtDetail;
         const csToolName = toolName || measurementData.toolType || toolType;
 
-        const measurementId = addOrUpdate(csToolName, evtDetail);
-
-        if (measurementId) {
-          measurementData.id = measurementId;
-        }
+        const { toMeasurementSchema } = sourceMappings.find(
+          mapping => mapping.definition === csToolName
+        );
+        const measurement = toMeasurementSchema(evtDetail);
+        nlApi
+          .post(
+            '/api/measurement/',
+            _transformMeasurement(measurement, csToolsVer4MeasurementSource)
+          )
+          .then(({ data }) => {
+            const { id } = data;
+            const measurementId = addOrUpdate(csToolName, { ...evtDetail, id });
+            if (measurementId) {
+              measurementData.id = measurementId;
+            }
+          })
+          .catch(err =>
+            UINotificationService.show({
+              message: 'Failed to store the measurement',
+              type: 'error',
+            })
+          );
       } catch (error) {
         console.warn('Failed to add measurement:', error);
       }
-    }
+    }, 250);
 
-    function updateMeasurement(csToolsEvent) {
+    const updateMeasurement = debounce(function(csToolsEvent) {
       try {
         if (!csToolsEvent.detail.measurementData.id) {
           return;
@@ -440,11 +515,27 @@ const _connectToolsToMeasurementService = (
         const csToolName = toolName || measurementData.toolType || toolType;
 
         evtDetail.id = csToolsEvent.detail.measurementData.id;
-        addOrUpdate(csToolName, evtDetail);
+
+        const { toMeasurementSchema } = sourceMappings.find(
+          mapping => mapping.definition === csToolName
+        );
+        const measurement = toMeasurementSchema(evtDetail);
+        nlApi
+          .put(
+            `/api/measurement/${evtDetail.id}/`,
+            _transformMeasurement(measurement, csToolsVer4MeasurementSource)
+          )
+          .then(({ data }) => addOrUpdate(csToolName, evtDetail))
+          .catch(err =>
+            UINotificationService.show({
+              message: 'Failed to update the measurement',
+              type: 'error',
+            })
+          );
       } catch (error) {
         console.warn('Failed to update measurement:', error);
       }
-    }
+    }, 250);
 
     /**
      * When csTools fires a removed event, remove the same measurement
@@ -457,6 +548,13 @@ const _connectToolsToMeasurementService = (
       try {
         if (csToolsEvent.detail.measurementData.id) {
           remove(csToolsEvent.detail.measurementData.id);
+          const id = csToolsEvent.detail.measurementData.id;
+          nlApi.delete(`/api/measurement/${id}`).catch(err =>
+            UINotificationService.show({
+              message: 'Failed to delete the measurement',
+              type: 'error',
+            })
+          );
         }
       } catch (error) {
         console.warn('Failed to remove measurement:', error);
@@ -485,6 +583,7 @@ const _connectToolsToMeasurementService = (
           // This event was fired by cornerstone telling the measurement service to sync. Already in sync.
           return;
         }
+
         const cornerstoneMeasurement = getCornerstoneMeasurementById(id);
 
         if (cornerstoneMeasurement) {

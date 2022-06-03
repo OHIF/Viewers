@@ -15,7 +15,7 @@ import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
 import RESPONSES from '../../_shared/PROMPT_RESPONSES';
 import downloadCSVReport from '../../_shared/downloadCSVReport';
 
-const { formatDate } = utils;
+const { nlApi, formatDate } = utils;
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -36,6 +36,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const {
     MeasurementService,
     UIDialogService,
+    UINotificationService,
     DisplaySetService,
   } = servicesManager.services;
   const [
@@ -167,14 +168,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
-          MeasurementService.update(
-            id,
-            {
-              ...measurement,
-              ...value,
-            },
-            true
-          );
+          nlApi
+            .patch(`/api/measurement/${id}/`, { ...value })
+            .then(() =>
+              MeasurementService.update(
+                id,
+                {
+                  ...measurement,
+                  ...value,
+                },
+                true
+              )
+            )
+            .catch(err =>
+              UINotificationService.show({
+                message: 'Failed to update the measurement label',
+                type: 'error',
+              })
+            );
         }
       }
       UIDialogService.dismiss({ id: 'enter-annotation' });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
+import csTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from '@ohif/core';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
@@ -10,14 +10,15 @@ import ViewportOverlay from './ViewportOverlay';
 
 import { useCine, useViewportGrid } from '@ohif/ui';
 
-const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
+const scrollToIndex = csTools.importInternal('util/scrollToIndex');
 
-const { StackManager } = OHIF.utils;
+const { StackManager, nlApi } = OHIF.utils;
+const { DicomMetadataStore } = OHIF;
 
-const getQueryParam = (key) => {
+const getQueryParam = key => {
   const urlParams = new URLSearchParams(window.location.search);
   return Number(urlParams.get(key)) || 0;
-}
+};
 
 function OHIFCornerstoneViewport({
   children,
@@ -96,8 +97,15 @@ function OHIFCornerstoneViewport({
         const instanceNumberParam = getQueryParam('instance_number');
         const seriesNumberParam = getQueryParam('series_number');
 
-        if(!isParamViewLoaded && instanceNumberParam && displaySet.SeriesNumber === seriesNumberParam) {
-          data.stack.initialImageIdIndex = (instanceNumberParam > displaySet.numImageFrames ? displaySet.numImageFrames : instanceNumberParam) - 1;
+        if (
+          !isParamViewLoaded &&
+          instanceNumberParam &&
+          displaySet.SeriesNumber === seriesNumberParam
+        ) {
+          data.stack.initialImageIdIndex =
+            (instanceNumberParam > displaySet.numImageFrames
+              ? displaySet.numImageFrames
+              : instanceNumberParam) - 1;
           setIsParamViewLoaded(true);
         }
 
@@ -129,6 +137,86 @@ function OHIFCornerstoneViewport({
     if (element) {
       onNewImage(element, () => {
         stageChangedRef.current = false;
+
+        const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+        nlApi
+          .get(`/api/measurement/?study_id=${study.series[0].study_id}`)
+          .then(({ data }) => {
+            const { VALUE_TYPES } = MeasurementService;
+            const VALUE_TYPE_TO_TOOL_TYPE = {
+              [VALUE_TYPES.POLYLINE]: 'Length',
+              [VALUE_TYPES.ELLIPSE]: 'EllipticalRoi',
+              [VALUE_TYPES.BIDIRECTIONAL]: 'Bidirectional',
+              [VALUE_TYPES.POINT]: 'ArrowAnnotate',
+              [VALUE_TYPES.FREEHAND]: 'NLFreehandRoi',
+              [VALUE_TYPES.RECTANGLE]: 'RectangleRoi',
+              [VALUE_TYPES.ANGLE]: 'Angle',
+            };
+            const { results: _measurements } = data;
+            if (_measurements.length > 0) {
+              const { name, version } = _measurements[0].source;
+              const source = MeasurementService.getSource(name, version);
+              if (source) {
+                const { addOrUpdate } = source;
+                _measurements
+                  .sort((x, y) => new Date(x.created) - new Date(y.created))
+                  .forEach(m => {
+                    const toolType = VALUE_TYPE_TO_TOOL_TYPE[m.type];
+                    const measurementData = _toMeasurementData(m, toolType);
+                    const instance = {
+                      StudyInstanceUID: m.reference_study_uid,
+                      SeriesInstanceUID: m.reference_series_uid,
+                      SOPInstanceUID: m.sop_instance_uid,
+                    };
+                    const _displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+                      instance.SOPInstanceUID,
+                      instance.SeriesInstanceUID
+                    );
+                    if (m.reference_series_uid === SeriesInstanceUID) {
+                      const imageId = dataSource.getImageIdsForInstance({
+                        instance,
+                      });
+                      const { globalImageIdSpecificToolStateManager } = csTools;
+                      const {
+                        toolState,
+                      } = globalImageIdSpecificToolStateManager;
+                      if (
+                        toolState[imageId] &&
+                        toolState[imageId][toolType] &&
+                        toolState[imageId][toolType].data.find(
+                          x => x.id === m.id
+                        )
+                      ) {
+                        return;
+                      }
+                      globalImageIdSpecificToolStateManager.addImageIdToolState(
+                        imageId,
+                        toolType,
+                        {
+                          ...measurementData,
+                          id: m.id,
+                        }
+                      );
+                    }
+                    addOrUpdate(toolType, {
+                      element,
+                      toolName: toolType,
+                      toolType,
+                      measurementData,
+                      id: m.id,
+                      instance: {
+                        ...instance,
+                        FrameOfReferenceUID: m.frame_of_reference_uid,
+                        displaySetInstanceUID:
+                          _displaySet.displaySetInstanceUID,
+                      },
+                    });
+                  });
+                cornerstone.updateImage(element);
+              }
+            }
+          });
       });
     }
 
@@ -255,6 +343,58 @@ async function _getViewportData(dataSource, displaySet) {
 
   return viewportData;
 }
+
+const _toMeasurementData = (measurement, toolType) => {
+  if (toolType === 'RectangleRoi' || toolType === 'EllipticalRoi') {
+    return {
+      handles: measurement.handles,
+      cachedStats: {
+        area: measurement.area,
+        mean: measurement.mean,
+        stdDev: measurement.std_dev,
+      },
+      unit: measurement.unit,
+      label: measurement.label || measurement.text,
+    };
+  } else if (toolType === 'Angle') {
+    return {
+      handles: measurement.handles,
+      rAngle: measurement.angle,
+      text: measurement.label || measurement.text,
+    };
+  } else if (toolType === 'NLFreehandRoi') {
+    return {
+      handles: measurement.handles.handles,
+      polyBoundingBox: measurement.handles.polyBoundingBox,
+      meanStdDev: {
+        mean: measurement.mean,
+        stdDev: measurement.std_dev,
+      },
+      area: measurement.area,
+      unit: measurement.unit,
+      label: measurement.label || measurement.text,
+    };
+  } else if (toolType === 'Bidirectional') {
+    return {
+      handles: measurement.handles,
+      longestDiameter: measurement.longest_diameter,
+      shortestDiameter: measurement.shortest_diameter,
+      label: measurement.label || measurement.text,
+    };
+  } else if (toolType === 'ArrowAnnotate') {
+    return {
+      handles: measurement.handles,
+      text: measurement.text || measurement.label,
+    };
+  } else if (toolType === 'Length') {
+    return {
+      handles: measurement.handles,
+      length: measurement.length,
+      unit: measurement.unit,
+      label: measurement.label || measurement.text,
+    };
+  }
+};
 
 function _subscribeToJumpToMeasurementEvents(
   MeasurementService,

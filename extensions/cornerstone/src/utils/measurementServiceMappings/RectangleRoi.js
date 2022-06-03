@@ -93,6 +93,7 @@ const RectangleRoi = {
       stdDevSUV,
       type: getValueTypeFromToolType(tool),
       points,
+      handles: measurementData.handles,
     };
   },
 };

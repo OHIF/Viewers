@@ -35,6 +35,13 @@ const Bidirectional = {
 
     const { handles } = measurementData;
 
+    const points = [];
+    const { start, end, perpendicularStart, perpendicularEnd } = handles;
+    points.push({ x: start.x, y: start.y });
+    points.push({ x: end.x, y: end.y });
+    points.push({ x: perpendicularStart.x, y: perpendicularStart.y });
+    points.push({ x: perpendicularEnd.x, y: perpendicularEnd.y });
+
     const longAxis = [handles.start, handles.end];
     const shortAxis = [handles.perpendicularStart, handles.perpendicularEnd];
 
@@ -51,7 +58,8 @@ const Bidirectional = {
       shortestDiameter: measurementData.shortestDiameter,
       longestDiameter: measurementData.longestDiameter,
       type: getValueTypeFromToolType(tool),
-      points: { longAxis, shortAxis },
+      points,
+      handles: measurementData.handles,
     };
   },
 };

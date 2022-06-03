@@ -121,14 +121,14 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.FREEHAND
-        }
+          valueType: MeasurementService.VALUE_TYPES.FREEHAND,
+        },
       ],
     },
     RectangleRoi: {
       toAnnotation: RectangleRoi.toAnnotation,
       toMeasurement: csToolsAnnotation =>
-      RectangleRoi.toMeasurement(
+        RectangleRoi.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
           _getValueTypeFromToolType
@@ -142,7 +142,7 @@ const measurementServiceMappingsFactory = (
     Angle: {
       toAnnotation: Angle.toAnnotation,
       toMeasurement: csToolsAnnotation =>
-      Angle.toMeasurement(
+        Angle.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
           _getValueTypeFromToolType

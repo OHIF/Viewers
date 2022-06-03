@@ -35,7 +35,10 @@ const Angle = {
     );
 
     const points = [];
-    points.push(measurementData.handles);
+    const { start, middle, end } = measurementData.handles;
+    points.push({ x: start.x, y: start.y });
+    points.push({ x: middle.x, y: middle.y });
+    points.push({ x: end.x, y: end.y });
 
     return {
       id: measurementData.id,
@@ -48,7 +51,8 @@ const Angle = {
       description: measurementData.description,
       angle: measurementData.rAngle,
       type: getValueTypeFromToolType(tool),
-      points: getPointsFromHandles(measurementData.handles),
+      points,
+      handles: measurementData.handles,
     };
   },
 };
