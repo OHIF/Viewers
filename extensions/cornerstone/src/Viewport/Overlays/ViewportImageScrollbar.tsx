@@ -1,10 +1,7 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Enums, Types, utilities } from '@cornerstonejs/core';
-import {
-  utilities as csToolsUtils,
-  Enums as csToolsEnums,
-} from '@cornerstonejs/tools';
+import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
 
 function CornerstoneImageScrollbar({
@@ -16,28 +13,20 @@ function CornerstoneImageScrollbar({
   scrollbarHeight,
   CornerstoneViewportService,
 }) {
-  const slideTimeout = useRef(null);
-
   const onImageScrollbarChange = (imageIndex, viewportIndex) => {
-    clearTimeout(slideTimeout.current);
+    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+      viewportIndex
+    );
 
-    slideTimeout.current = setTimeout(() => {
-      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
+    const viewportId = viewportInfo.getViewportId();
+    const viewport = CornerstoneViewportService.getCornerstoneViewport(
+      viewportId
+    );
 
-      const viewportId = viewportInfo.getViewportId();
-      const viewport = CornerstoneViewportService.getCornerstoneViewport(
-        viewportId
-      );
-
-      csToolsUtils.jumpToSlice(viewport.element, { imageIndex }).then(() => {
-        setImageSliceData({
-          ...imageSliceData,
-          imageIndex: imageIndex,
-        });
-      });
-    }, 40);
+    csToolsUtils.jumpToSlice(viewport.element, {
+      imageIndex,
+      debounceLoading: true,
+    });
   };
 
   useEffect(() => {
@@ -97,16 +86,10 @@ function CornerstoneImageScrollbar({
       });
     };
 
-    element.addEventListener(
-      csToolsEnums.Events.STACK_SCROLL,
-      updateStackIndex
-    );
+    element.addEventListener(Enums.Events.STACK_SCROLL, updateStackIndex);
 
     return () => {
-      element.removeEventListener(
-        csToolsEnums.Events.STACK_SCROLL,
-        updateStackIndex
-      );
+      element.removeEventListener(Enums.Events.STACK_SCROLL, updateStackIndex);
     };
   }, [viewportData, element]);
 

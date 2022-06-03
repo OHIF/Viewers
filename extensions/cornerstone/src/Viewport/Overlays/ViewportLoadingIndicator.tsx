@@ -37,10 +37,7 @@ function ViewportLoadingIndicator({ viewportData, element }) {
   };
 
   useEffect(() => {
-    element.addEventListener(
-      csToolsEnums.Events.STACK_SCROLL,
-      setLoadingStateScroll
-    );
+    element.addEventListener(Enums.Events.STACK_SCROLL, setLoadingStateScroll);
     element.addEventListener(Enums.Events.IMAGE_LOAD_ERROR, setErrorState);
     element.addEventListener(
       Enums.Events.STACK_NEW_IMAGE,
@@ -49,7 +46,7 @@ function ViewportLoadingIndicator({ viewportData, element }) {
 
     return () => {
       element.removeEventListener(
-        csToolsEnums.Events.STACK_SCROLL,
+        Enums.Events.STACK_SCROLL,
         setLoadingStateScroll
       );
 
