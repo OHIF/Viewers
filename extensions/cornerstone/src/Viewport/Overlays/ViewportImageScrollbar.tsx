@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Enums, Types, utilities } from '@cornerstonejs/core';
 import { utilities as csToolsUtils } from '@cornerstonejs/tools';
@@ -11,28 +11,29 @@ function CornerstoneImageScrollbar({
   imageSliceData,
   setImageSliceData,
   scrollbarHeight,
-  CornerstoneViewportService,
+  servicesManager,
 }) {
-  const onImageScrollbarChange = useCallback(
-    (imageIndex, viewportIndex) => {
-      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
+  const { CineService, CornerstoneViewportService } = servicesManager.services;
 
-      const viewportId = viewportInfo.getViewportId();
-      const viewport = CornerstoneViewportService.getCornerstoneViewport(
-        viewportId
-      );
+  const onImageScrollbarChange = (imageIndex, viewportIndex) => {
+    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+      viewportIndex
+    );
 
-      csToolsUtils.jumpToSlice(viewport.element, { imageIndex }).then(() => {
-        setImageSliceData({
-          ...imageSliceData,
-          imageIndex: imageIndex,
-        });
-      });
-    },
-    [viewportIndex, viewportData, imageSliceData]
-  );
+    const viewportId = viewportInfo.getViewportId();
+    const viewport = CornerstoneViewportService.getCornerstoneViewport(
+      viewportId
+    );
+
+    // on image scrollbar change, stop the CINE if it is playing
+    CineService.stopClip(element);
+    CineService.setCine({ id: viewportIndex, isPlaying: false });
+
+    csToolsUtils.jumpToSlice(viewport.element, {
+      imageIndex,
+      debounceLoading: true,
+    });
+  };
 
   useEffect(() => {
     if (!viewportData) {
@@ -48,15 +49,10 @@ function CornerstoneImageScrollbar({
     }
 
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      const imageId = viewport.getCurrentImageId();
-      const index = viewportData?.imageIds?.indexOf(imageId);
-
-      if (index === -1) {
-        return;
-      }
+      const imageIndex = viewport.getCurrentImageIdIndex();
 
       setImageSliceData({
-        imageIndex: index,
+        imageIndex: imageIndex,
         numberOfSlices: viewportData.imageIds.length,
       });
 
@@ -78,40 +74,34 @@ function CornerstoneImageScrollbar({
   }, [viewportIndex, viewportData]);
 
   useEffect(() => {
-    if (
-      !viewportData ||
-      viewportData.viewportType !== Enums.ViewportType.STACK
-    ) {
+    if (viewportData?.viewportType !== Enums.ViewportType.STACK) {
       return;
     }
 
     const updateStackIndex = event => {
-      const { imageId } = event.detail;
+      const { newImageIdIndex } = event.detail;
       // find the index of imageId in the imageIds
-      const index = viewportData?.imageIds?.indexOf(imageId);
-      if (index !== -1) {
-        setImageSliceData({
-          imageIndex: index,
-          numberOfSlices: viewportData.imageIds.length,
-        });
-      }
+      setImageSliceData({
+        imageIndex: newImageIdIndex,
+        numberOfSlices: viewportData.imageIds.length,
+      });
     };
 
-    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, updateStackIndex);
+    element.addEventListener(
+      Enums.Events.STACK_VIEWPORT_SCROLL,
+      updateStackIndex
+    );
 
     return () => {
       element.removeEventListener(
-        Enums.Events.STACK_NEW_IMAGE,
+        Enums.Events.STACK_VIEWPORT_SCROLL,
         updateStackIndex
       );
     };
   }, [viewportData, element]);
 
   useEffect(() => {
-    if (
-      !viewportData ||
-      viewportData.viewportType !== Enums.ViewportType.ORTHOGRAPHIC
-    ) {
+    if (viewportData?.viewportType !== Enums.ViewportType.ORTHOGRAPHIC) {
       return;
     }
 

@@ -91,9 +91,9 @@ export default async function init({
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
   imageLoadPoolManager.maxNumRequests = {
-    interaction: 100,
-    thumbnail: 75,
-    prefetch: 20,
+    interaction: appConfig?.maxNumRequests?.interaction || 100,
+    thumbnail: appConfig?.maxNumRequests?.thumbnail || 75,
+    prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
   initWADOImageLoader(UserAuthenticationService, appConfig);
@@ -260,9 +260,10 @@ export default async function init({
       contextMenuHandleClick
     );
 
-    // element.addEventListener(EVENTS.NEW_STACK_SET, () =>
-    //   utilities.stackPrefetch.enable(element)
-    // );
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
+      const { element } = evt.detail;
+      utilities.stackPrefetch.enable(element);
+    });
   }
 
   function elementDisabledHandler(evt) {
@@ -276,9 +277,10 @@ export default async function init({
       contextMenuHandleClick
     );
 
-    // element.removeEventListener(EVENTS.NEW_STACK_SET, () =>
-    //   utilities.stackPrefetch.disable(element)
-    // );
+    eventTarget.removeEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
+      const { element } = evt.detail;
+      utilities.stackPrefetch.disable(element);
+    });
   }
 
   eventTarget.addEventListener(

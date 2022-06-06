@@ -11,9 +11,12 @@ function CornerstoneViewportOverlay({
   viewportData,
   imageSliceData,
   viewportIndex,
-  CornerstoneViewportService,
-  ToolBarService,
+  servicesManager,
 }) {
+  const {
+    CornerstoneViewportService,
+    ToolBarService,
+  } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);

@@ -293,7 +293,6 @@ class CornerstoneViewportService implements IViewportService {
 
     viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
-      csUtils.prefetchStack(imageIds);
     });
   }
 
