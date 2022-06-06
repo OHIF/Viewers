@@ -87,10 +87,16 @@ function CornerstoneImageScrollbar({
       });
     };
 
-    element.addEventListener(Enums.Events.STACK_SCROLL, updateStackIndex);
+    element.addEventListener(
+      Enums.Events.STACK_VIEWPORT_SCROLL,
+      updateStackIndex
+    );
 
     return () => {
-      element.removeEventListener(Enums.Events.STACK_SCROLL, updateStackIndex);
+      element.removeEventListener(
+        Enums.Events.STACK_VIEWPORT_SCROLL,
+        updateStackIndex
+      );
     };
   }, [viewportData, element]);
 

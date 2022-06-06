@@ -5,6 +5,11 @@ window.config = {
   modes: [],
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
+  maxNumRequests: {
+    interaction: 100,
+    thumbnail: 75,
+    prefetch: 10,
+  },
   // filterQueryParam: false,
   dataSources: [
     {
