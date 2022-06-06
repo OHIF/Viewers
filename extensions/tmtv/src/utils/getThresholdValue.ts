@@ -7,8 +7,8 @@ function getThresholdValues(
 ): { lower: number; upper: number } {
   if (config.strategy === 'range') {
     return {
-      lower: config.minValue,
-      upper: config.maxValue,
+      lower: Number(config.lower),
+      upper: Number(config.upper),
     };
   }
 

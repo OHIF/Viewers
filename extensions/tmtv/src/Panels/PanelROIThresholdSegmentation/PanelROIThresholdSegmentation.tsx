@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationTable, Button, Icon } from '@ohif/ui';
+import classnames from 'classnames';
+
 import { useTranslation } from 'react-i18next';
 import segmentationEditHandler from './segmentationEditHandler';
 import ExportReports from './ExportReports';
@@ -194,14 +196,18 @@ export default function PanelRoiThresholdSegmentation({
             color="primary"
             onClick={() => {
               setLabelmapLoading(true);
-              runCommand('createNewLabelmapFromPT').then(segmentationId => {
-                setLabelmapLoading(false);
-                setSelectedSegmentationId(segmentationId);
+              setTimeout(() => {
+                runCommand('createNewLabelmapFromPT').then(segmentationId => {
+                  setLabelmapLoading(false);
+                  setSelectedSegmentationId(segmentationId);
+                });
               });
             }}
-            className="text-xs text-white border-b border-transparent "
+            className={classnames(
+              'text-xs text-white border-b border-transparent'
+            )}
           >
-            New Label
+            {labelmapLoading ? 'loading ...' : 'New Label'}
           </Button>
           <Button
             color="primary"
@@ -228,9 +234,6 @@ export default function PanelRoiThresholdSegmentation({
             runCommand={runCommand}
           />
         )}
-        {labelmapLoading ? (
-          <div className="text-white">Loading Segmentation Panel ... </div>
-        ) : null}
         {/* show segmentation table */}
         <div className="mt-4">
           {segmentations?.length ? (

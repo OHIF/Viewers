@@ -255,7 +255,7 @@ const commandsModule = ({
         return;
       }
 
-      const { lower, higher } = getThresholdValues(
+      const { lower, upper } = getThresholdValues(
         annotationUIDs,
         referencedVolume,
         config
@@ -263,7 +263,7 @@ const commandsModule = ({
 
       const configToUse = {
         lower,
-        higher,
+        upper,
         overwrite: true,
       };
 
