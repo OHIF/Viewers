@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
 
@@ -9,20 +9,17 @@ function ViewportLoadingIndicator({ viewportData, element }) {
   const loadIndicatorRef = useRef(null);
   const imageIdToBeLoaded = useRef(null);
 
-  const setLoadingStateScroll = useCallback(
-    evt => {
-      imageIdToBeLoaded.current = evt.detail.imageId;
+  const setLoadingState = evt => {
+    clearTimeout(loadIndicatorRef.current);
 
-      if (loading) {
-        return;
-      }
-
+    loadIndicatorRef.current = setTimeout(() => {
       setLoading(true);
-    },
-    [loading]
-  );
+    }, 50);
+  };
 
   const setFinishLoadingState = evt => {
+    clearTimeout(loadIndicatorRef.current);
+
     setLoading(false);
   };
 
@@ -38,7 +35,7 @@ function ViewportLoadingIndicator({ viewportData, element }) {
   useEffect(() => {
     element.addEventListener(
       Enums.Events.STACK_VIEWPORT_SCROLL,
-      setLoadingStateScroll
+      setLoadingState
     );
     element.addEventListener(Enums.Events.IMAGE_LOAD_ERROR, setErrorState);
     element.addEventListener(
@@ -49,7 +46,7 @@ function ViewportLoadingIndicator({ viewportData, element }) {
     return () => {
       element.removeEventListener(
         Enums.Events.STACK_VIEWPORT_SCROLL,
-        setLoadingStateScroll
+        setLoadingState
       );
 
       element.removeEventListener(
