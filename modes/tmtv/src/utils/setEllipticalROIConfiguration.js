@@ -18,6 +18,10 @@ export default function setEllipticalROIConfiguration(
     SeriesInstanceUID
   );
 
+  if (!displaySets || displaySets.length === 0) {
+    return;
+  }
+
   const toolConfig = ToolGroupService.getToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.EllipticalROI

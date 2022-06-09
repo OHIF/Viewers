@@ -62,7 +62,10 @@ function CornerstoneViewportOverlay({
     const updateScale = eventDetail => {
       const { previousCamera, camera } = eventDetail.detail;
 
-      if (previousCamera.parallelScale !== camera.parallelScale) {
+      if (
+        previousCamera.parallelScale !== camera.parallelScale ||
+        previousCamera.scale !== camera.scale
+      ) {
         const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
           viewportIndex
         );
@@ -77,10 +80,15 @@ function CornerstoneViewportOverlay({
           return;
         }
 
-        const { dimensions, spacing } = imageData;
+        if (camera.scale) {
+          setScale(camera.scale);
+          return;
+        }
 
-        // Todo: handle for the volume viewports with directions
-        const scale = (dimensions[0] * spacing[0]) / camera.parallelScale;
+        const { spacing } = imageData;
+        // convert parallel scale to scale
+        const scale =
+          (element.clientHeight * spacing[1] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };

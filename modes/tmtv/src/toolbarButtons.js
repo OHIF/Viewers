@@ -262,7 +262,7 @@ const toolbarButtons = [
     type: 'ohif.radioGroup',
     props: {
       type: 'tool',
-      icon: 'pencil',
+      icon: 'create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: [
         ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
