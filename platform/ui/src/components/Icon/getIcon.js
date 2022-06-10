@@ -60,7 +60,8 @@ import toolProbe from './../../assets/icons/tool-probe.svg';
 import toolAngle from './../../assets/icons/tool-angle.svg';
 import toolReset from './../../assets/icons/tool-reset.svg';
 import toolRectangle from './../../assets/icons/tool-rectangle.svg';
-import createThreshold from './../../assets/icons/create-threshold.svg';
+import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
+import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 
 /** Old OHIF */
@@ -128,7 +129,8 @@ const ICONS = {
   'tool-angle': toolAngle,
   'tool-reset': toolReset,
   'tool-rectangle': toolRectangle,
-  'create-threshold': createThreshold,
+  'tool-fusion-color': toolFusionColor,
+  'tool-create-threshold': toolCreateThreshold,
   'edit-patient': editPatient,
 
   /** Old OHIF */

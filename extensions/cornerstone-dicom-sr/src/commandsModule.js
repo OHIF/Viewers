@@ -25,6 +25,7 @@ const _generateReport = (
     measurementData,
     additionalFindingTypes
   );
+
   const report = MeasurementReport.generateReport(
     filteredToolState,
     metaData,

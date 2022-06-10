@@ -41,7 +41,7 @@ function getPanelModule({
     },
     {
       name: 'ROIThresholdSeg',
-      iconName: 'create-threshold',
+      iconName: 'tool-create-threshold',
       iconLabel: 'Threshold Seg',
       label: 'Threshold-Seg',
       component: wrappedROIThresholdSeg,

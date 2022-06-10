@@ -209,7 +209,7 @@ function ViewerLayout({
           <ErrorBoundary context="Left Panel">
             <SidePanel
               side="left"
-              // defaultComponentOpen={leftPanelComponents[0].name}
+              defaultComponentOpen={leftPanelComponents[0].name}
               childComponents={leftPanelComponents}
             />
           </ErrorBoundary>
@@ -230,7 +230,7 @@ function ViewerLayout({
           <ErrorBoundary context="Right Panel">
             <SidePanel
               side="right"
-              // defaultComponentOpen={rightPanelComponents[0].name}
+              defaultComponentOpen={rightPanelComponents[0].name}
               childComponents={rightPanelComponents}
             />
           </ErrorBoundary>
