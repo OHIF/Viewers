@@ -97,6 +97,8 @@ export default class DICOMSRDisplayTool extends BaseTool {
         const renderableDataForGraphicType = renderableData[GraphicType];
 
         switch (GraphicType) {
+          case SCOORD_TYPES.TEXT:
+            break;
           case SCOORD_TYPES.POINT:
             this.renderPoint(renderableDataForGraphicType, eventData, options);
             break;
@@ -167,20 +169,22 @@ export default class DICOMSRDisplayTool extends BaseTool {
         return data.handles.textBox.anchorPoints;
       }
 
-      draw(context, context => {
-        drawLinkedTextBox(
-          context,
-          element,
-          data.handles.textBox,
-          text,
-          data.handles,
-          textBoxAnchorPoints,
-          color,
-          lineWidth,
-          0,
-          true
-        );
-      });
+      if (data.handles.textBox.anchorPoints.length !== 0) {
+        draw(context, context => {
+          drawLinkedTextBox(
+            context,
+            element,
+            data.handles.textBox,
+            text,
+            data.handles,
+            textBoxAnchorPoints,
+            color,
+            lineWidth,
+            0,
+            true
+          );
+        });
+      }
     }
 
     // TOOD -> text boxes may overlap with other annotations at the moment.
@@ -230,7 +234,6 @@ export default class DICOMSRDisplayTool extends BaseTool {
     const { element, image } = eventData;
     const { rows, columns } = image;
     const context = getNewContext(eventData.canvasContext.canvas);
-
     const { color, lineWidth } = options;
 
     // Find a suitable length for the image size.
@@ -332,6 +335,8 @@ function _getTextBoxAnchorPointsForRenderableData(renderableData, eventData) {
     const renderableDataForGraphicType = renderableData[GraphicType];
 
     switch (GraphicType) {
+      case SCOORD_TYPES.TEXT:
+        break;
       case SCOORD_TYPES.POINT:
         renderableDataForGraphicType.forEach(points => {
           anchorPoints = [...anchorPoints, ...points];
@@ -405,7 +410,7 @@ function _getBoundingBoxFromAnchorPoints(anchorPoints) {
       minX = x;
     }
 
-    if (y > maxX) {
+    if (y > maxY) {
       maxY = y;
     } else if (y < minY) {
       minY = y;

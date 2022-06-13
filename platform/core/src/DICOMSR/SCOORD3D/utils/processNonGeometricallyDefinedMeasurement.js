@@ -1,31 +1,40 @@
 import getLabelFromMeasuredValueSequence from './getLabelFromMeasuredValueSequence';
 import getCoordsFromSCOORDOrSCOORD3D from './getCoordsFromSCOORDOrSCOORD3D';
 import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from '../enums';
+import SCOORD_TYPES from '../constants/scoordTypes';
 
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
-const processNonGeometricallyDefinedMeasurement = mergedContentSequence => {
-  const NUMContentItems = mergedContentSequence.filter(
+const processNonGeometricallyDefinedMeasurement = contentSequence => {
+  const NUMContentItems = contentSequence.filter(
     group => group.ValueType === 'NUM'
   );
 
-  const UIDREFContentItem = mergedContentSequence.find(
+  const CODEContentItems = contentSequence.filter(
+    group => group.ValueType === 'CODE'
+  );
+
+  const UIDREFContentItem = contentSequence.find(
     group => group.ValueType === 'UIDREF'
   );
 
-  const TrackingIdentifierContentItem = mergedContentSequence.find(
+  const IMAGEContentItem = contentSequence.find(
+    group => group.ValueType === 'IMAGE'
+  );
+
+  const TrackingIdentifierContentItem = contentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
-  const Finding = mergedContentSequence.find(
+  const Finding = contentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.Finding
   );
 
-  const FindingSites = mergedContentSequence.filter(
+  const FindingSites = contentSequence.filter(
     item =>
       item.ConceptNameCodeSequence.CodingSchemeDesignator ===
         CodingSchemeDesignators.SRT &&
@@ -110,6 +119,37 @@ const processNonGeometricallyDefinedMeasurement = mergedContentSequence => {
       );
     }
   });
+
+  if (NUMContentItems.length === 0 && IMAGEContentItem) {
+    CODEContentItems.forEach(item => {
+      const { ConceptCodeSequence, ConceptNameCodeSequence } = item;
+
+      if (!ConceptCodeSequence || !ConceptNameCodeSequence) {
+        console.warn(`Graphic missing, skipping annotation.`);
+
+        return;
+      }
+
+      const GraphicData = [0, 0];
+      const GraphicType = SCOORD_TYPES.TEXT;
+      const { ValueType } = item;
+      const ReferencedSOPSequence = IMAGEContentItem.ReferencedSOPSequence;
+      const coord = {
+        ValueType,
+        GraphicType,
+        GraphicData,
+        ReferencedSOPSequence,
+      };
+      measurement.coords.push(coord);
+      measurement.labels.push({
+        label: ConceptNameCodeSequence.CodeMeaning,
+        labelCodingSchemeDesignator:
+          ConceptNameCodeSequence.CodingSchemeDesignator,
+        value: ConceptCodeSequence.CodeMeaning,
+        valueCodingSchemeDesignator: ConceptCodeSequence.CodingSchemeDesignator,
+      });
+    });
+  }
 
   return measurement;
 };

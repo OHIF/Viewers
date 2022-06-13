@@ -1,5 +1,6 @@
 import { PureComponent } from 'react';
 import React from 'react';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import './OHIFCornerstoneViewportOverlay.css';
@@ -9,12 +10,32 @@ import {
   formatDICOMDate,
   formatDICOMTime,
   formatPN,
-  getCompression
+  getCompression,
 } from '../utils/formatStudy';
 import classNames from 'classnames';
 import { Icon } from '@ohif/ui/src/elements/Icon';
 import { Tooltip } from '@ohif/ui/src/components/tooltip';
 import { OverlayTrigger } from '@ohif/ui/src/components/overlayTrigger';
+
+const Button = styled.button`
+  background-color: #3f51b5;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 10px;
+  outline: 0;
+  text-transform: lowercase;
+  margin: 5px 5px;
+  cursor: pointer;
+  box-shadow: 0px 2px 2px lightgray;
+  transition: ease background-color 250ms;
+  &:hover {
+    background-color: #283593;
+  }
+  &:disabled {
+    cursor: default;
+    opacity: 0.9;
+  }
+`;
 
 class OHIFCornerstoneViewportOverlay extends PureComponent {
   static propTypes = {
@@ -30,11 +51,19 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     imageId: PropTypes.string.isRequired,
     imageIndex: PropTypes.number.isRequired,
     stackSize: PropTypes.number.isRequired,
-    inconsistencyWarnings: PropTypes.array.isRequired
+    inconsistencyWarnings: PropTypes.array.isRequired,
+    SRLabels: PropTypes.array,
   };
 
   render() {
-    const { imageId, scale, windowWidth, windowCenter, inconsistencyWarnings } = this.props;
+    const {
+      imageId,
+      scale,
+      windowWidth,
+      windowCenter,
+      inconsistencyWarnings,
+      SRLabels,
+    } = this.props;
 
     if (!imageId) {
       return null;
@@ -72,8 +101,11 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
 
     const { imageIndex, stackSize } = this.props;
 
-    const inconsistencyWarningsOn = inconsistencyWarnings && inconsistencyWarnings.length !== 0 ? true : false;
-    const getWarningContent = (warningList) => {
+    const inconsistencyWarningsOn =
+      inconsistencyWarnings && inconsistencyWarnings.length !== 0
+        ? true
+        : false;
+    const getWarningContent = warningList => {
       if (Array.isArray(warningList)) {
         const listedWarnings = warningList.map((warn, index) => {
           return <li key={index}>{warn}</li>;
@@ -86,33 +118,86 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     };
 
     const getWarningInfo = (seriesNumber, inconsistencyWarnings) => {
-      return(
+      return (
         <React.Fragment>
-        {inconsistencyWarnings.length != 0 ? (
-          <OverlayTrigger
-            key={seriesNumber}
-            placement="left"
-            overlay={
-              <Tooltip
-                placement="left"
-                className="in tooltip-warning"
-                id="tooltip-left"
-              >
-                <div className="warningTitle">Series Inconsistencies</div>
-                <div className="warningContent">{getWarningContent(inconsistencyWarnings)}</div>
-              </Tooltip>
-            }
-          >
-            <div className={classNames('warning')}>
-              <span className="warning-icon">
-                <Icon name="exclamation-triangle" />
-              </span>
-            </div>
-          </OverlayTrigger>
-        ) : (
-          <React.Fragment></React.Fragment>
+          {inconsistencyWarnings.length != 0 ? (
+            <OverlayTrigger
+              key={seriesNumber}
+              placement="left"
+              overlay={
+                <Tooltip
+                  placement="left"
+                  className="in tooltip-warning"
+                  id="tooltip-left"
+                >
+                  <div className="warningTitle">Series Inconsistencies</div>
+                  <div className="warningContent">
+                    {getWarningContent(inconsistencyWarnings)}
+                  </div>
+                </Tooltip>
+              }
+            >
+              <div className={classNames('warning')}>
+                <span className="warning-icon">
+                  <Icon name="exclamation-triangle" />
+                </span>
+              </div>
+            </OverlayTrigger>
+          ) : (
+            <React.Fragment></React.Fragment>
           )}
-      </React.Fragment>
+        </React.Fragment>
+      );
+    };
+
+    const SRLabelsOn = SRLabels && SRLabels.length !== 0 ? true : false;
+
+    const getSRLabelsContent = SRLabels => {
+      if (Array.isArray(SRLabels)) {
+        const listedSRLabels = SRLabels.map((SRLabel, index) => {
+          return (
+            <OverlayTrigger
+              key={index}
+              placement="top"
+              overlay={
+                <Tooltip
+                  placement="top"
+                  className="in tooltip-warning"
+                  id="tooltip-top"
+                >
+                  <div className="warningTitle"> Designators </div>
+                  <div className="warningContent">
+                    {SRLabel.labels.labelCodingSchemeDesignator +
+                      ' : ' +
+                      SRLabel.labels.valueCodingSchemeDesignator}
+                  </div>
+                </Tooltip>
+              }
+            >
+              <div style={{ display: 'inline-block' }}>
+                <Button disabled={true} key={index}>
+                  {SRLabel.labels.label + ' : ' + SRLabel.labels.value}
+                </Button>
+              </div>
+            </OverlayTrigger>
+          );
+        });
+
+        return <ol>{listedSRLabels}</ol>;
+      } else {
+        return <React.Fragment></React.Fragment>;
+      }
+    };
+
+    const getSRLabelsInfo = SRLabels => {
+      return (
+        <React.Fragment>
+          {SRLabels.length != 0 ? (
+            getSRLabelsContent(SRLabels)
+          ) : (
+            <React.Fragment></React.Fragment>
+          )}
+        </React.Fragment>
       );
     };
 
@@ -134,7 +219,14 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
           <div className="compressionIndicator">{compression}</div>
         </div>
         <div className="bottom-left2 warning">
-          <div>{inconsistencyWarningsOn ? getWarningInfo(seriesNumber, inconsistencyWarnings) : ''}</div>
+          <div>
+            {inconsistencyWarningsOn
+              ? getWarningInfo(seriesNumber, inconsistencyWarnings)
+              : ''}
+          </div>
+        </div>
+        <div className="bottom-left3 warning">
+          <div>{SRLabelsOn ? getSRLabelsInfo(SRLabels) : ''}</div>
         </div>
         <div className="bottom-left overlay-element">
           <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
