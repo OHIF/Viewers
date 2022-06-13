@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useAccessToken, useStudyInstanceUIDs } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
+
+const { nlApi } = utils;
 
 async function defaultRouteInit({
   servicesManager,
@@ -38,12 +40,79 @@ async function defaultRouteInit({
 
   const { unsubscribe: studyLoadedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.STUDY_LOADED,
-    study => {
+    async study => {
       study.series.sort((a, b) => {
         const firstInstance = a.instances[0] || {};
         const secondInstance = b.instances[0] || {};
         return firstInstance.SeriesNumber - secondInstance.SeriesNumber;
       });
+      const { StudyInstanceUID } = study;
+      const studyResult = await dataSource.query.studies.search({
+        studyInstanceUid: StudyInstanceUID,
+      });
+      const { Modality, StudyDescription } = studyResult[0];
+      const {
+        data: { results },
+      } = await nlApi.get('/api/hanging-protocol/');
+
+      const hangingProtocols = results
+        .filter(
+          item => item.modality.length === 0 || item.modality.includes(Modality)
+        )
+        .filter(
+          item =>
+            item.study_description.length === 0 ||
+            StudyDescription.toLowerCase().includes(
+              item.study_description[0].toLowerCase()
+            )
+        )
+        .map(item => ({
+          id: item.id,
+          locked: true,
+          hasUpdatedPriorsInformation: false,
+          name: item.name,
+          createdDate: item.created,
+          modifiedDate: item.modified,
+          availableTo: {},
+          editableBy: {},
+          protocolMatchingRules: [
+            {
+              id: 'wauZK2QNEfDPwcAQo',
+              weight: 1,
+              attribute: 'StudyInstanceUID',
+              constraint: {
+                equals: {
+                  value: StudyInstanceUID,
+                },
+              },
+              required: true,
+            },
+          ],
+          stages: [
+            {
+              id: `${item.id}-stage`,
+              name: item.name,
+              viewportStructure: {
+                type: 'grid',
+                properties: {
+                  rows: item.grid_matrix[0],
+                  columns: item.grid_matrix[1],
+                },
+              },
+              viewports: [
+                {
+                  viewportSettings: [],
+                  imageMatchingRules: [],
+                  seriesMatchingRules: [],
+                  studyMatchingRules: [],
+                },
+              ],
+              createdDate: item.created,
+            },
+          ],
+          numberOfPriorsReferenced: -1,
+        }));
+      HangingProtocolService.addProtocols(hangingProtocols);
       HangingProtocolService.run(study);
     }
   );

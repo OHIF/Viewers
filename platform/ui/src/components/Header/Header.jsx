@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { NavBar, Svg, Icon, IconButton, Tooltip } from '../';
+import { NavBar, Svg, Icon, IconButton, Tooltip, Dropdown } from '../';
 
 function Header({
   children,
@@ -45,6 +45,16 @@ function Header({
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
+          <Dropdown
+            id="dropdown-1"
+            showDropdownIcon
+            list={[
+              { id: 1, title: 'Item 1', onClick: () => console.log('xxx') },
+              { id: 2, title: 'Item 2', onClick: () => console.log('yyy') },
+            ]}
+          >
+            <span>dropdown</span>
+          </Dropdown>
           <Tooltip
             content={
               <div className="text-center max-w-40">
