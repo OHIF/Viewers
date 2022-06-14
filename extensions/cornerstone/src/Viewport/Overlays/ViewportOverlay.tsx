@@ -88,7 +88,7 @@ function CornerstoneViewportOverlay({
         const { spacing } = imageData;
         // convert parallel scale to scale
         const scale =
-          (element.clientHeight * spacing[1] * 0.5) / camera.parallelScale;
+          (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };
