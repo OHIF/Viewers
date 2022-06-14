@@ -3,10 +3,7 @@ import getSequenceAsArray from './getSequenceAsArray';
 import getMergedContentSequencesByTrackingUniqueIdentifiers from './getMergedContentSequencesByTrackingUniqueIdentifiers';
 import processMeasurement from './processMeasurement';
 
-const getMeasurements = (
-  ImagingMeasurementReportContentSequence,
-  displaySet
-) => {
+const getMeasurements = ImagingMeasurementReportContentSequence => {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
@@ -21,25 +18,19 @@ const getMeasurements = (
       CodeNameCodeSequenceValues.MeasurementGroup
   );
 
-  const mergedContentSequencesByTrackingUniqueIdentifiers = getMergedContentSequencesByTrackingUniqueIdentifiers(
+  /* const mergedContentSequencesByTrackingUniqueIdentifiers = getMergedContentSequencesByTrackingUniqueIdentifiers(
     MeasurementGroups
-  );
+  );*/
 
   let measurements = [];
 
-  Object.keys(mergedContentSequencesByTrackingUniqueIdentifiers).forEach(
-    trackingUniqueIdentifier => {
-      const mergedContentSequence =
-        mergedContentSequencesByTrackingUniqueIdentifiers[
-          trackingUniqueIdentifier
-        ];
-
-      const measurement = processMeasurement(mergedContentSequence, displaySet);
-      if (measurement) {
-        measurements.push(measurement);
-      }
+  MeasurementGroups.forEach(MeasurementGroup => {
+    const contentSequence = MeasurementGroup.ContentSequence;
+    const measurement = processMeasurement(contentSequence);
+    if (measurement) {
+      measurements.push(measurement);
     }
-  );
+  });
 
   return measurements;
 };
