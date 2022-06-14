@@ -34,14 +34,14 @@ function getPanelModule({
   return [
     {
       name: 'petSUV',
-      iconName: 'circled-checkmark',
+      iconName: 'edit-patient',
       iconLabel: 'PET SUV',
       label: 'PET-SUV',
       component: wrappedPanelPetSuv,
     },
     {
       name: 'ROIThresholdSeg',
-      iconName: 'circled-checkmark',
+      iconName: 'tool-create-threshold',
       iconLabel: 'Threshold Seg',
       label: 'Threshold-Seg',
       component: wrappedROIThresholdSeg,

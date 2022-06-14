@@ -262,7 +262,7 @@ const toolbarButtons = [
     type: 'ohif.radioGroup',
     props: {
       type: 'tool',
-      icon: 'pencil',
+      icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: [
         ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
@@ -293,7 +293,7 @@ const toolbarButtons = [
       groupId: 'fusionPTColormap',
       primary: _createToolButton(
         'fusionPTColormap',
-        'tool-window-level',
+        'tool-fusion-color',
         'Fusion PT Colormap',
         [],
         'Fusion PT Colormap'
