@@ -22,7 +22,7 @@
   "scripts": {
     "dev": "echo \"No dev script yet\" && exit 0",
     "dev:ui": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "test:unit": "jest --watchAll",

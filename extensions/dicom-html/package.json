@@ -20,9 +20,9 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env  webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:dicom-html": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "start": "yarn run dev"
