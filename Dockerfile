@@ -26,15 +26,15 @@ FROM node:16.15.0-slim as json-copier
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
-COPY ["package.json", "yarn.lock", "./"]
+COPY ["package.json", "yarn.lock", "preinstall.js", "./"]
 COPY extensions /usr/src/app/extensions
 COPY modes /usr/src/app/modes
 COPY platform /usr/src/app/platform
 
 # Find and remove non-package.json files
-RUN find extensions \! \( -name \package.json -o -name \yarn.lock \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-RUN find modes \! \( -name \package.json -o -name \yarn.lock \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-RUN find platform \! \( -name \package.json -o -name \yarn.lock \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
+RUN find extensions \! \( -name \package.json -o -name \yarn.lock -o -name \preinstall.js \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
+RUN find modes \! \( -name \package.json -o -name \yarn.lock -o -name \preinstall.js \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
+RUN find platform \! \( -name \package.json -o -name \yarn.lock -o -name \preinstall.js \) -mindepth 2 -maxdepth 2 -print | xargs rm -rf
 
 # Copy Files
 FROM node:16.15.0-slim as builder
