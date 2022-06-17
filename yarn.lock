@@ -4954,6 +4954,16 @@ cornerstone-wado-image-loader@^4.1.0:
     dicom-parser "^1.8.9"
     pako "^2.0.4"
 
+"cornerstone-wado-image-loader@https://github.com/cornerstonejs/cornerstoneWADOImageLoader.git#master":
+  version "0.0.0-semantically-released"
+  resolved "https://github.com/cornerstonejs/cornerstoneWADOImageLoader.git#deb178077f0484dc761a9d59047af9e23a95b103"
+  dependencies:
+    "@cornerstonejs/codec-charls" "^0.1.1"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
+    "@cornerstonejs/codec-openjpeg" "^0.1.0"
+    dicom-parser "^1.8.9"
+    pako "^2.0.4"
+
 cors@^2.8.4:
   version "2.8.5"
   resolved "https://registry.yarnpkg.com/cors/-/cors-2.8.5.tgz#eac11da51592dd86b9f06f6e7ac293b3df875d29"
