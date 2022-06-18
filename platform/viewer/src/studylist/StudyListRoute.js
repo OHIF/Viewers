@@ -15,6 +15,7 @@ import * as RoutesUtil from '../routes/routesUtil';
 import moment from 'moment';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
+import ImportIdcModal from '../importIdc/ImportIdcModal.js';
 import filesToStudies from '../lib/filesToStudies.js';
 
 // Contexts
@@ -52,6 +53,7 @@ function StudyListRoute(props) {
     isSearchingForStudies: false,
     error: null,
   });
+  const [showImportIdcModal, setShowImportIdcModal] = useState(false);
   const [activeModalId, setActiveModalId] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [pageNumber, setPageNumber] = useState(0);
@@ -78,31 +80,30 @@ function StudyListRoute(props) {
     setActiveModalId('DicomStorePicker');
   }
 
+  const fetchStudies = async () => {
+    try {
+      setSearchStatus({ error: null, isSearchingForStudies: true });
+
+      const response = await getStudyList(
+        server,
+        debouncedFilters,
+        debouncedSort,
+        rowsPerPage,
+        pageNumber,
+        displaySize
+      );
+      setStudies(response);
+      setSearchStatus({ error: null, isSearchingForStudies: false });
+    } catch (error) {
+      console.warn(error);
+      setSearchStatus({ error: true, isFetching: false });
+    }
+  };
+
   // Called when relevant state/props are updated
   // Watches filters and sort, debounced
   useEffect(
     () => {
-      const fetchStudies = async () => {
-        try {
-          setSearchStatus({ error: null, isSearchingForStudies: true });
-
-          const response = await getStudyList(
-            server,
-            debouncedFilters,
-            debouncedSort,
-            rowsPerPage,
-            pageNumber,
-            displaySize
-          );
-
-          setStudies(response);
-          setSearchStatus({ error: null, isSearchingForStudies: false });
-        } catch (error) {
-          console.warn(error);
-          setSearchStatus({ error: true, isFetching: false });
-        }
-      };
-
       if (server) {
         fetchStudies();
       }
@@ -160,7 +161,7 @@ function StudyListRoute(props) {
     healthCareApiButtons = (
       <div
         className="form-inline btn-group pull-right"
-        style={{ padding: '20px' }}
+        style={{ marginLeft: '20px' }}
       >
         <button
           className="btn btn-primary"
@@ -200,6 +201,16 @@ function StudyListRoute(props) {
     });
   }
 
+  const handleImportIdcModalClose = async () => {
+    setShowImportIdcModal(false);
+  };
+
+  const handleImportSuccessful = async UIModalService => {
+    await fetchStudies();
+    UIModalService.hide();
+    setShowImportIdcModal(false);
+  };
+
   return (
     <>
       {studyListFunctionsEnabled ? (
@@ -209,6 +220,13 @@ function StudyListRoute(props) {
         />
       ) : null}
       {healthCareApiWindows}
+
+      <ImportIdcModal
+        isOpen={showImportIdcModal}
+        onClose={handleImportIdcModalClose}
+        onSuccess={handleImportSuccessful}
+      />
+
       <WhiteLabelingContext.Consumer>
         {whiteLabeling => (
           <UserManagerContext.Consumer>
@@ -233,6 +251,15 @@ function StudyListRoute(props) {
           </h1>
         </div>
         <div className="actions">
+          <div className="form-inline btn-group pull-right">
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowImportIdcModal(true)}
+            >
+              {t(' Manage Collections')}
+            </button>
+          </div>
+
           {studyListFunctionsEnabled && healthCareApiButtons}
           {studyListFunctionsEnabled && (
             <PageToolbar

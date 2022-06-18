@@ -1,0 +1,255 @@
+$import-list-padding = 8%;
+$import-list-toolbar-height = 75px;
+$body-cell-height = 40px;
+$body-cell-top-bottom-padding = 16px;
+
+$tablePaddingMediumScreen = 5px
+$tablePaddingBigScreen = 3%
+$tablePaddingLargeScreen = 5%
+
+.footer
+  display: flex
+  flex-direction: row
+  justify-content: space-between
+  padding: 20px 20px 0 20px
+  margin: 0 -20px
+  border-top: 3px solid var(--primary-background-color)
+
+  div
+    button:last-child
+      margin-left: 10px
+
+
+
+.steps-breakdown
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 28px;
+  text-align: left;
+  margin: 30px auto;
+
+
+.loading-icon-spin
+  animation: spin 2s linear infinite;
+
+
+.loading-icon
+  font-size: 30px;
+  margin: 20px 0;
+
+
+@keyframes spin
+  100% {
+    transform: rotate(360deg);
+  }
+
+.confirm-dialog
+  position: absolute;
+  left: 40%;
+  width:430px;
+  margin-left: -100px;
+  margin-top: -25px;
+  padding: 20px 20px 0 20px
+  transition: all 300ms linear;
+  background-color: var(--primary-background-color);
+
+
+
+
+// TODO: move this to a common mixin files
+placeholder-color(c)
+  &::-webkit-input-placeholder
+    color: c
+  &:-moz-placeholder
+    color: c
+  &::-moz-placeholder
+    color: c
+  &:-ms-input-placeholder
+    color: c
+
+.import-list-header
+  .addNewStudy
+    margin: 0 10px
+
+    label
+      font-weight: 400
+      cursor: pointer
+      display: inline-block;
+      max-width: 100%;
+      margin-bottom: 5px;
+
+    input
+      width: 0.1px;
+      height: 0.1px
+      opacity: 0
+      overflow: hidden
+      position: absolute
+      z-index: -1
+
+    color: var(--text-secondary-color)
+
+    &:hover
+      color: var(--hover-color)
+
+    &:active
+      color: var(--active-color)
+
+.import-list-header
+  display: flex;
+
+
+  .header
+    font-size: 22px
+    font-weight: 300
+    color: var(--table-text-secondary-color)
+    line-height: $import-list-toolbar-height
+
+  .actions
+    display: flex;
+
+  .import-count
+    color: var(--large-numbers-color)
+    font-size: 40px
+    font-weight: 100
+    line-height: $import-list-toolbar-height
+
+
+
+/*
+ * Dark gray background with blue border
+ * Spans width of page to create a distinct area for table filters
+ */
+
+.import-list-container
+  width: 100%
+
+
+
+table.table
+  width: 100%;
+  margin-bottom: 20px;
+  border-spacing: 0;
+  border-collapse: collapse;
+  color: var(--table-text-primary-color)
+  font-weight: 300
+
+  > tbody tr
+    padding: 5px
+    background-color: black
+
+  > tbody td
+    padding: $body-cell-top-bottom-padding 8px;
+    height: $body-cell-height
+    word-wrap: break-word;
+
+  /* Striped Variant */
+  &.table--striped > tbody tr:nth-child(even)
+    background-color: var(--ui-gray-darker)
+
+  /* Hover Variant */
+  &.table--hoverable > tbody tr
+    &:hover, &:active, &.active
+      background-color: var(--table-hover-color)
+    &.no-hover
+      &:hover, &:active, &.active
+        background-color: var(--ui-gray-darker)
+
+  .empty-value
+    color: var(--ui-gray-light)
+
+.import-list-container > table.table > tr
+  height: 20px
+
+.import-list-container > table.table > thead
+  ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+  ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+  ::-webkit-datetime-edit-day-field:not([aria-valuenow])
+    color: transparent
+
+.import-list-container > table.table > thead > tr > th
+  padding: 0;
+  border-bottom: 1px solid var(--ui-border-color-active);
+  width: 100%;
+  text-align: left;
+  border-top: 0;
+
+.import-list-container > table.table > thead > tr > th.StudyDate
+  min-width: 230px
+.import-list-container > table.table .modalities
+  font-weight: 500;
+  min-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+.import-list-container
+  .filters
+    label
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      width: 100%;
+      min-width: 95px;
+      margin: 0 auto;
+      color: var(--table-text-primary-color);
+      font-weight: 400;
+      padding: 20px 8px;
+      user-select: none;
+      font-size: 15px;
+
+      &:hover
+        color: var(--active-color);
+
+      &.active, &:active
+        color: var(--active-color);
+    i
+      margin: 0 5px;
+
+  input
+    height: 40px
+    margin: 0 5px 20px 5px
+    padding: 0 20px
+    cursor: pointer
+    border: none
+    background-color: var(--input-background-color)
+    color: var(--input-placeholder-color)
+    font-size: 10pt
+    font-weight: normal
+    border-radius: 4px
+    width: calc(100% - 10px); /* Just use padding? */
+    transition(all 0.15s ease)
+    placeholder-color(var(--input-placeholder-color))
+
+    &:active, &:hover
+      background-color: var(--input-background-color)
+
+  .loading-text
+    color: #91b9cd;
+    text-align: center;
+    font-size: 30px
+
+  .notFound
+    color: var(--table-text-secondary-color)
+    font-size: 30px
+    font-weight: 200
+    text-align: center
+
+@media only screen and (max-width: 768px)
+  .import-list-header
+    padding: 0 16px;
+
+  .import-list-container
+    padding: 0;
+
+  .import-list-container > table.table > thead > tr > th
+    padding: 0 13px;
+
+  .import-list-container > table.table > tbody > tr > td
+    padding: 8px;
+
+  .import-list-container .filters label
+    padding: 8px;
+
+@media only screen and (max-width: 500px)
+  .hide-xs
+    display: none;
