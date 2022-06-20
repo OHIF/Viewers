@@ -3,6 +3,17 @@ describe('OHIF Cornerstone Hotkeys', () => {
     cy.checkStudyRouteInViewer(
       '1.2.840.113619.2.5.1762583153.215519.978957063.78'
     );
+
+    cy.window()
+      .its('cornerstone')
+      .then(cornerstone => {
+        // For debugging issues where tests pass locally but fail on CI
+        // - Sometimes Cypress orb seems to use CPU rendering pathway
+        cy.log(
+          `Cornerstone using CPU Rendering?: ${cornerstone.getShouldUseCPURendering()}`
+        );
+      });
+
     cy.expectMinimumThumbnails(3);
   });
 
@@ -33,12 +44,12 @@ describe('OHIF Cornerstone Hotkeys', () => {
   });
 
   it('checks if hotkeys "V" and "H" can flip the image', () => {
-    // Hotkey V
-    cy.get('body').type('V');
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
     // Hotkey H
     cy.get('body').type('H');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+    // Hotkey V
+    cy.get('body').type('V');
     cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
     cy.get('@viewportInfoMidTop').should('contains.text', 'P');
   });

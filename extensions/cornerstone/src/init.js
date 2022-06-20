@@ -46,6 +46,10 @@ export default async function init({
   appConfig,
 }) {
   await cs3DInit();
+
+  // For debugging e2e tests that are failing on CI
+  //cornerstone.setUseCPURendering(true);
+
   initCornerstoneTools();
 
   // Don't use cursors in viewports

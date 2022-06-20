@@ -93,19 +93,22 @@ function ViewportOrientationMarkers({
 
   useEffect(() => {
     const cameraModifiedListener = (
-      evt: Types.EventTypes.CameraModifiedEventDetail
+      evt: Types.EventTypes.CameraModifiedEvent
     ) => {
+
       const { rotation, previousCamera, camera } = evt.detail;
 
       if (rotation !== undefined) {
         setRotation(rotation);
       }
 
-      if (previousCamera.flipHorizontal !== camera.flipHorizontal) {
+      if (camera.flipHorizontal !== undefined &&
+          previousCamera.flipHorizontal !== camera.flipHorizontal) {
         setFlipHorizontal(camera.flipHorizontal);
       }
 
-      if (previousCamera.flipVertical !== camera.flipVertical) {
+      if (camera.flipVertical !== undefined &&
+          previousCamera.flipVertical !== camera.flipVertical) {
         setFlipVertical(camera.flipVertical);
       }
     };

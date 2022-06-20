@@ -42,13 +42,13 @@ const bindings = [
     isEditable: true,
   },
   {
-    commandName: 'flipViewportVertical',
+    commandName: 'flipViewportHorizontal',
     label: 'Flip Horizontally',
     keys: ['h'],
     isEditable: true,
   },
   {
-    commandName: 'flipViewportHorizontal',
+    commandName: 'flipViewportVertical',
     label: 'Flip Vertically',
     keys: ['v'],
     isEditable: true,
