@@ -121,6 +121,12 @@ export const setServers = servers => ({
   servers,
 });
 
+// set collection action
+export const setCollections = collections => ({
+  type: 'SET_COLLECTION_DATA',
+  collections,
+});
+
 const actions = {
   /**
    * VIEWPORT
@@ -142,6 +148,9 @@ const actions = {
   setMeasurements,
   setStudyData,
   setServers,
+
+  // set collection action
+  setCollections,
 };
 
 export default actions;
