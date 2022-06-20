@@ -4,70 +4,73 @@ import { utils } from '@ohif/core';
 const { studyMetadataManager } = utils;
 
 const _getDisplaySet = ({ StudyInstanceUID, displaySetInstanceUID }) => {
-  const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+  const studies = studyMetadataManager.all();
+  const studyMetadata = studies.find(
+    study =>
+      study.getStudyInstanceUID() === StudyInstanceUID &&
+      study.displaySets.some(
+        ds => ds.displaySetInstanceUID === displaySetInstanceUID
+      )
+  );
   const displaySet = studyMetadata.findDisplaySet(
     displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
   );
   return displaySet;
 };
 
+const _getPatientName = patientName => {
+  if (patientName) {
+    if (patientName.hasOwnProperty('Alphabetic')) {
+      return patientName.Alphabetic;
+    } else {
+      return patientName;
+    }
+  } else {
+    return '';
+  }
+};
+
 export default function getSeriesInfoForImageId(viewportData) {
   const displaySet = _getDisplaySet(viewportData);
 
-  const {
-    StudyInstanceUID: studyInstanceUid,
-    SeriesInstanceUID: seriesInstanceUid,
-    images,
-    SeriesDate,
-    SeriesTime,
-    SeriesNumber,
-  } = displaySet;
+  const { images } = displaySet;
 
   const firstImage = images[0];
   const firstImageId = firstImage.getImageId();
 
-  const generalSeriesModule = cornerstone.metaData.get(
-    'generalSeriesModule',
-    firstImageId
-  );
+  const instance = cornerstone.metaData.get('instance', firstImageId);
 
-  const sopCommonModule = cornerstone.metaData.get(
-    'sopCommonModule',
-    firstImageId
-  );
-
-  const sopClassUid = sopCommonModule.sopClassUID;
-  const modality = generalSeriesModule.modality;
-  // const seriesDate = `${generalSeriesModule.seriesDate.year}${generalSeriesModule.seriesDate.month}${generalSeriesModule.seriesDate.day}`;
-  // const seriesTime = `${generalSeriesModule.seriesTime.hours}${generalSeriesModule.seriesTime.minutes}${generalSeriesModule.seriesTime.seconds}`;
-  //.${generalSeriesModule.seriesTime.fractionalSeconds}`;
+  const SoftwareVersions = Array.isArray(instance.SoftwareVersions)
+    ? instance.SoftwareVersions.join('\\')
+    : instance.SoftwareVersions;
 
   const seriesInfo = {
-    studyInstanceUid,
-    seriesInstanceUid,
-    SeriesNumber,
-    modality,
-    startDate: SeriesDate,//seriesDate,
-    startTime: SeriesTime,//seriesTime,
-    sopClassUid,
+    studyInstanceUid: instance.StudyInstanceUID,
+    seriesInstanceUid: instance.SeriesInstanceUID,
+    seriesNumber: instance.SeriesNumber,
+    modality: instance.Modality,
+    startDate: instance.SeriesDate,
+    startTime: instance.SeriesTime,
+    sopClassUid: instance.SOPClassUID,
     // TODO: Need to supply this metadata
     person: {
-      name: '',
-      id: '',
-      birthDate: '',
-      sex: '',
-      ethnicGroup: '',
+      name: _getPatientName(instance.PatientName),
+      id: instance.PatientID || '',
+      birthDate: instance.PatientBirthDate || '',
+      sex: instance.PatientSex || '',
+      ethnicGroup: instance.EthnicGroup || '',
     },
     equipment: {
-      manufacturerName: '',
-      manufacturerModelName: '',
-      softwareVersion: '',
+      manufacturerName: instance.Manufacturer || '',
+      manufacturerModelName: instance.ManufacturerModelName || '',
+      softwareVersion: SoftwareVersions || '',
     },
   };
 
   let sopInstanceUids = [];
 
   for (let i = 0; i < images.length; i++) {
+    // ToDo: imageIds provided instead of instanceUIDs. Is sopInstanceUids used at all?
     sopInstanceUids.push(images[i].getImageId());
   }
 

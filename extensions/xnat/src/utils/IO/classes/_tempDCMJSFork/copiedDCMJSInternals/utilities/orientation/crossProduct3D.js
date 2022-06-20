@@ -1,5 +1,5 @@
 /**
- * crossProduct3D - Returns the cross product of a and b.
+ * CrossProduct3D - Returns the cross product of a and b.
  *
  * @param  {Number[3]} a Vector a.
  * @param  {Number[3]} b Vector b.

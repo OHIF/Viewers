@@ -1,24 +1,40 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import stackSynchronizer from '../../utils/StackSynchronizer/StackSynchronizer';
+import { stackSynchronizer } from '../../utils/synchronizers';
 
 import './XNATViewportOverlay.css';
 
-
 class XNATSync extends React.PureComponent {
+  static propTypes = {
+    viewportIndex: PropTypes.number.isRequired,
+  };
+
   constructor(props) {
     super(props);
 
+    const enabledElement = cornerstone.getEnabledElements()[
+      props.viewportIndex
+    ];
+    const isSyncEnabled = stackSynchronizer.isSyncEnabled(
+      enabledElement.element
+    );
+
     this.state = {
-      isChecked: false,
+      isChecked: isSyncEnabled,
     };
 
     this.onToggleClick = this.onToggleClick.bind(this);
   }
 
-  onToggleClick({ target }) {
-    let viewportIndex = window.store.getState().viewports.activeViewportIndex;
-    const element = cornerstone.getEnabledElements()[viewportIndex].element;
+  onToggleClick(evt) {
+    const target = evt.target;
+    if (evt.nativeEvent && evt.nativeEvent.stopImmediatePropagation) {
+      evt.nativeEvent.stopImmediatePropagation();
+    }
+
+    const element = cornerstone.getEnabledElements()[this.props.viewportIndex]
+      .element;
     if (target.checked) {
       stackSynchronizer.add(element);
     } else {
@@ -37,7 +53,7 @@ class XNATSync extends React.PureComponent {
         <input
           className="syncCheckbox"
           type="checkbox"
-          name="smooth"
+          name="sync"
           checked={isChecked}
           onChange={this.onToggleClick}
         />

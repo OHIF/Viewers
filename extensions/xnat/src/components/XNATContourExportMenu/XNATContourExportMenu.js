@@ -4,16 +4,15 @@ import AIMWriter from '../../utils/IO/classes/AIMWriter';
 import AIMExporter from '../../utils/IO/classes/AIMExporter.js';
 import RoiExtractor from '../../utils/IO/classes/RoiExtractor.js';
 import generateDateTimeAndLabel from '../../utils/IO/helpers/generateDateAndTimeLabel';
-import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import getSeriesInfoForImageId from '../../utils/IO/helpers/getSeriesInfoForImageId';
 import lockStructureSet from '../../utils/lockStructureSet';
 import { Icon } from '@ohif/ui';
 import ColoredCircle from '../common/ColoredCircle';
 import showNotification from '../common/showNotification';
+import { clearCachedExperimentRoiCollections } from '../../utils/IO/queryXnatRois';
 
 import '../XNATRoiPanel.styl';
-import { getEnabledElement } from '../../../../cornerstone/src/state';
 
 const modules = cornerstoneTools.store.modules;
 
@@ -80,15 +79,11 @@ export default class XNATContourExportMenu extends React.Component {
     const { SeriesInstanceUID, viewportData } = this.props;
     const roiCollectionName = this._roiCollectionName;
 
-    console.log({ state: this.state, props: this.props });
-
-    // // Check the name isn't empty, and isn't just whitespace.
-    // if (
-    //   roiCollectionName.replace(/ /g, '').length === 0 ||
-    //   roiCollectionName === '_'
-    // ) {
-    //   return;
-    // }
+    // Check the name isn't empty, and isn't just whitespace.
+    if (roiCollectionName.replace(/ /g, '').length === 0
+      || roiCollectionName === '_') {
+      return;
+    }
 
     const exportMask = [];
 
@@ -101,8 +96,6 @@ export default class XNATContourExportMenu extends React.Component {
       }
     }
 
-    // console.log({ exportMask, state: this.state });
-
     if (!atLeastOneRoiContourSelected) {
       return;
     }
@@ -113,67 +106,42 @@ export default class XNATContourExportMenu extends React.Component {
     const roiContours = roiExtractor.extractROIContours(exportMask);
     const seriesInfo = getSeriesInfoForImageId(viewportData);
 
-    const xnat_label = `${label}_S${seriesInfo.SeriesNumber}`;
+    const xnat_label = `${label}_S${seriesInfo.seriesNumber}`;
 
-    const view_ports = cornerstone.getEnabledElements();
-    const viewports = view_ports[0];
+    const aw = new AIMWriter(roiCollectionName, xnat_label, dateTime);
+    aw.writeImageAnnotationCollection(roiContours, seriesInfo);
 
-    // setting active viewport reference to element variable
-    const element = getEnabledElement(view_ports.indexOf(viewports));
+    // Attempt export to XNAT. Lock ROIs for editing if the export is successful.
+    const aimExporter = new AIMExporter(aw);
 
-    // get current image
-    const image = cornerstone.getImage(element);
+    await aimExporter
+      .exportToXNAT()
+      .then(success => {
+        console.log('PUT successful.');
 
-    const newImage = { height: image.height, width: image.width };
+        //lockExportedROIs(
+        lockStructureSet(
+          exportMask,
+          seriesInfo.seriesInstanceUid,
+          roiCollectionName,
+          xnat_label
+        );
 
-    const contourExport = {
-      image: newImage,
-      study_uid: seriesInfo.studyInstanceUid,
-      series_uid: seriesInfo.seriesInstanceUid,
-      contour: roiContours,
-    };
+        clearCachedExperimentRoiCollections(aimExporter.experimentID);
+        showNotification('Contour collection exported successfully', 'success');
 
-    console.log({ contourExport });
+        this.props.onExportComplete();
+      })
+      .catch(error => {
+        console.log(error);
+        // TODO -> Work on backup mechanism, disabled for now.
+        //localBackup.saveBackUpForActiveSeries();
 
-    showNotification('Contour collection exported successfully', 'success');
+        const message = error.message || 'Unknown error';
+        showNotification(message, 'error', 'Error exporting mask collection');
 
-    this.props.onExportComplete();
-
-    // return;
-
-    // const aw = new AIMWriter(roiCollectionName, xnat_label, dateTime);
-    // aw.writeImageAnnotationCollection(roiContours, seriesInfo);
-
-    // // Attempt export to XNAT. Lock ROIs for editing if the export is successful.
-    // const aimExporter = new AIMExporter(aw);
-
-    // await aimExporter
-    //   .exportToXNAT()
-    //   .then(success => {
-    //     console.log('PUT successful.');
-
-    //     //lockExportedROIs(
-    //     lockStructureSet(
-    //       exportMask,
-    //       seriesInfo.seriesInstanceUid,
-    //       roiCollectionName,
-    //       xnat_label
-    //     );
-
-    //     showNotification('Contour collection exported successfully', 'success');
-
-    //     this.props.onExportComplete();
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     // TODO -> Work on backup mechanism, disabled for now.
-    //     //localBackup.saveBackUpForActiveSeries();
-
-    //     const message = error.message || 'Unknown error';
-    //     showNotification(message, 'error', 'Error exporting mask collection');
-
-    //     this.props.onExportCancel();
-    //   });
+        this.props.onExportCancel();
+      });
   }
 
   /**
@@ -373,7 +341,7 @@ export default class XNATContourExportMenu extends React.Component {
 
         {!exporting && (
           <div className="roiCollectionFooter">
-            {/* <label style={{ marginRight: 5 }}>Name</label>
+            <label style={{ marginRight: 5 }}>Name</label>
             <input
               type="text"
               defaultValue={defaultName}
@@ -382,13 +350,10 @@ export default class XNATContourExportMenu extends React.Component {
               tabIndex="-1"
               autoComplete="off"
               style={{ flex: 1 }}
-            /> */}
-            <button
-              onClick={this.onExportButtonClick}
-              style={{ marginLeft: 10 }}
-            >
+            />
+            <button onClick={this.onExportButtonClick} style={{ marginLeft: 10 }}>
               <Icon name="xnat-export" />
-              Export
+              Export selected
             </button>
           </div>
         )}

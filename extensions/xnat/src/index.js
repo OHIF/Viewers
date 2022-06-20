@@ -2,7 +2,6 @@ import init from './init.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
 import panelModule from './panelModule.js';
-import stackSynchronizer from './utils/StackSynchronizer/StackSynchronizer';
 import { version } from '../package.json';
 
 export default {
@@ -27,8 +26,8 @@ export default {
   getCommandsModule({ servicesManager }) {
     return commandsModule;
   },
-  getPanelModule({ servicesManager, commandsManager }) {
-    return panelModule(servicesManager, commandsManager);
+  getPanelModule({ commandsManager, api, servicesManager }) {
+    return panelModule(commandsManager, api, servicesManager);
   },
 };
 
@@ -36,7 +35,7 @@ export { isLoggedIn, xnatAuthenticate } from './utils/xnatDev';
 
 export { userManagement } from './utils/userManagement.js';
 
-export { XNATICONS } from './elements';
+export { XNATICONS, sliderUtils, ReactSlider } from './elements';
 
 export { ICRHelpContent } from './components/HelpContent/ICRHelpContent';
 
@@ -50,4 +49,9 @@ export {
 
 export { ICRAboutContent } from './components/AboutContent/ICRAboutContent';
 
-export { stackSynchronizer };
+export {
+  stackSynchronizer,
+  updateImageSynchronizer,
+} from './utils/synchronizers';
+
+export { referenceLines } from './utils/CSReferenceLines/referenceLines';

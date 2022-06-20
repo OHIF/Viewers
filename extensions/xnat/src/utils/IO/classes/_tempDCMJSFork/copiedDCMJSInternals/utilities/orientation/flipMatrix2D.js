@@ -8,10 +8,10 @@ const flipMatrix2D = {
 export { flipMatrix2D };
 
 /**
- * flipMatrix2D.h - Flips a 2D matrix in the horizontal direction.
+ * FlipMatrix2D.h - Flips a 2D matrix in the horizontal direction.
  *
  * @param  {Ndarry} matrix The matrix to flip.
- * @return {Ndarry}   The flipped matrix.
+ * @returns {Ndarry}   The flipped matrix.
  */
 function h(matrix) {
   const [rows, cols] = matrix.shape;
@@ -28,10 +28,10 @@ function h(matrix) {
 }
 
 /**
- * flipMatrix2D.h - Flips a 2D matrix in the vertical direction.
+ * FlipMatrix2D.h - Flips a 2D matrix in the vertical direction.
  *
  * @param  {Ndarry} matrix The matrix to flip.
- * @return {Ndarry}   The flipped matrix.
+ * @returns {Ndarry}   The flipped matrix.
  */
 function v(matrix) {
   const [rows, cols] = matrix.shape;

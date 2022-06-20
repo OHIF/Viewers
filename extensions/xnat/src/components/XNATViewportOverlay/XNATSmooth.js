@@ -1,39 +1,76 @@
 import React from 'react';
 import cornerstone from 'cornerstone-core';
 import PropTypes from 'prop-types';
-import { commandsManager } from '@ohif/viewer/src/App';
 
 import './XNATViewportOverlay.css';
 
 class XNATSmooth extends React.PureComponent {
   static propTypes = {
-    viewportIndex: PropTypes.number,
+    viewportIndex: PropTypes.number.isRequired,
   };
 
   constructor(props) {
     super(props);
 
+    const enabledElement = cornerstone.getEnabledElements()[
+      props.viewportIndex
+    ];
+
     this.state = {
-      smooth: true,
+      pixelReplication: enabledElement.viewport.pixelReplication,
     };
 
+    this.unmounted = false;
+
     this.onToggleClick = this.onToggleClick.bind(this);
+    this.getPixelReplication = this.getPixelReplication.bind(this);
   }
 
-  onToggleClick({ target }) {
-    const { smooth } = this.state;
+  getPixelReplication() {
+    if (!this.unmounted) {
+      const enabledElement = cornerstone.getEnabledElements()[
+        this.props.viewportIndex
+      ];
+
+      if (
+        this.state.pixelReplication !== enabledElement.viewport.pixelReplication
+      ) {
+        this.setState({
+          pixelReplication: enabledElement.viewport.pixelReplication,
+        });
+      }
+    }
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.getPixelReplication();
+    }, 800);
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true;
+  }
+
+  onToggleClick(evt) {
+    if (evt.nativeEvent && evt.nativeEvent.stopImmediatePropagation) {
+      evt.nativeEvent.stopImmediatePropagation();
+    }
+    // evt.stopPropagation();
+    const { pixelReplication } = this.state;
 
     // let viewportIndex = window.store.getState().viewports.activeViewportIndex;
-    const dom = commandsManager.runCommand('getActiveViewportEnabledElement');
-    const enabledElement = cornerstone.getEnabledElement(dom);
-    enabledElement.viewport.pixelReplication = smooth;
+    const enabledElement = cornerstone.getEnabledElements()[
+      this.props.viewportIndex
+    ];
+    enabledElement.viewport.pixelReplication = !pixelReplication;
     cornerstone.updateImage(enabledElement.element);
 
-    this.setState({ smooth: !smooth });
+    this.setState({ pixelReplication: !pixelReplication });
   }
 
   render() {
-    const { smooth } = this.state;
+    const { pixelReplication } = this.state;
 
     return (
       <div>
@@ -43,7 +80,7 @@ class XNATSmooth extends React.PureComponent {
           type="checkbox"
           name="smooth"
           tabIndex="-1"
-          checked={smooth}
+          checked={!pixelReplication}
           onChange={this.onToggleClick}
         />
       </div>

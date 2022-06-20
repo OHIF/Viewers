@@ -14,7 +14,7 @@ import {
   XNATFreehandScissorsTool,
   XNATCircleScissorsTool,
   XNATRectangleScissorsTool,
-  XNATCorrectionScissorsTool,
+  XNATCorrectionScissorsTool
 } from './peppermint-tools';
 import { handleContourContextMenu } from './components/XNATContextMenu';
 
@@ -51,8 +51,8 @@ const getDefaultConfiguration = () => {
         range: [-29, 150],
       },
       {
-        name: 'bone',
-        range: [150, 2000],
+        name: "bone",
+        range: [150, 2000]
       },
       {
         name: 'custom',
@@ -71,11 +71,7 @@ const getDefaultConfiguration = () => {
  * @param {object} configuration
  * @param {Object|Array} configuration.csToolsConfig
  */
-export default function init({
-  servicesManager,
-  commandsManager,
-  configuration = {},
-}) {
+export default function init({ servicesManager, commandsManager, configuration = {} }) {
   // Initiate cornerstoneNIFTIImageLoader
   initNIFTILoader();
 
@@ -124,13 +120,9 @@ export default function init({
   tools.forEach(addTool);
 
   // subscribe to context menu handler
-  commandsManager.runCommand(
-    'subscribeToContextMenuHandler',
-    {
-      tools: [PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_TOOL],
-      contextMenuCallback: handleContourContextMenu,
-      dialogIds: ['context-menu'],
-    },
-    'ACTIVE_VIEWPORT::CORNERSTONE'
-  );
+  commandsManager.runCommand('subscribeToContextMenuHandler', {
+    tools: [PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_TOOL],
+    contextMenuCallback: handleContourContextMenu,
+    dialogIds: ['context-menu',],
+  }, 'ACTIVE_VIEWPORT::CORNERSTONE');
 }

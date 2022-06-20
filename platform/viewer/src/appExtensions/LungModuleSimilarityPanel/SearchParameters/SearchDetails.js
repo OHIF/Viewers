@@ -344,7 +344,7 @@ const SearchDetails = props => {
   };
 
   const sendParams = async data => {
-    setLoadingState('searching');
+    setLoadingState('searching', {data});
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
     const email = user.profile.email;
@@ -353,6 +353,8 @@ const SearchDetails = props => {
     const image = cornerstone.getImage(element);
     // extract instance uid from the derived image data
     const instance_uid = image.imageId.split('/')[18];
+    setLoadingState('searching', { instance_uid });
+
     console.log({ instance_uid });
 
     const body = {

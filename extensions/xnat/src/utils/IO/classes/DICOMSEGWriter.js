@@ -2,6 +2,7 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import dcmjs from 'dcmjs';
 import getElementFromFirstImageId from '../../getElementFromFirstImageId';
+import { Segmentation_4X_fork } from './_tempDCMJSFork/';
 
 const segmentationModule = cornerstoneTools.getModule('segmentation');
 const globalToolStateManager =
@@ -23,11 +24,9 @@ export default class DICOMSEGWriter {
    * @returns {Promise} A promise that resolves to a Blob containing the DICOM SEG.
    */
   async write(name, element) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const stackToolState = cornerstoneTools.getToolState(element, 'stack');
       const imageIds = stackToolState.data[0].imageIds;
-
-      console.log({ stackToolState });
 
       let imagePromises = [];
 
@@ -36,9 +35,6 @@ export default class DICOMSEGWriter {
       }
 
       const { labelmaps3D } = segmentationModule.getters.labelmaps3D(element);
-
-      console.log({ labelmaps3D, imagePromises });
-
       // Temporary workaround to fix DICOM SEG mask orientation
       // ToDo: check for a reliable fix when upgrading ICR/cornerstone-tools
       // const maxSliceIndex = imageIds.length - 1;
@@ -50,8 +46,6 @@ export default class DICOMSEGWriter {
       // labelmaps3D[0].labelmaps2D = reversedLabelmaps2D;
       //
 
-      console.log({ series: this._seriesInfo });
-
       Promise.all(imagePromises)
         .then(images => {
           const { date, time } = this._generateDateTime();
@@ -60,28 +54,28 @@ export default class DICOMSEGWriter {
             includeSliceSpacing: true,
             rleEncode: false, // Not yet currently supported by the XNAT ROI plugin
             SeriesDescription: name,
-            // Manufacturer: this._seriesInfo.equipment.manufacturerName,
-            // ManufacturerModelName: this._seriesInfo.equipment
-            //   .manufacturerModelName,
-            // SoftwareVersions: this._seriesInfo.equipment.softwareVersion,
+            Manufacturer: this._seriesInfo.equipment.manufacturerName,
+            ManufacturerModelName: this._seriesInfo.equipment
+              .manufacturerModelName,
+            SoftwareVersions: this._seriesInfo.equipment.softwareVersion,
             SeriesDate: date,
             SeriesTime: time,
             ContentDate: date,
             ContentTime: time,
           };
 
-          const segBlob = dcmjs.adapters.Cornerstone.Segmentation.generateSegmentation(
+          // const segBlob = dcmjs.adapters.Cornerstone.Segmentation.generateSegmentation(
+          const segBlob = Segmentation_4X_fork.generateSegmentation(
             images,
             labelmaps3D,
             options
           );
 
-          console.log({ segBlob });
-
           resolve(segBlob);
         })
         .catch(err => {
-          console.log({ err });
+          // console.log(err);
+          reject(err);
         })
         .finally(() => {
           // labelmaps3D[0].labelmaps2D = orgLabelmaps2D;
@@ -111,8 +105,6 @@ export default class DICOMSEGWriter {
         dateTime[`${element}`] = '0' + dateTime[`${element}`];
       }
     });
-
-    console.log({ dateTime });
 
     return {
       date: dateTime.year + dateTime.month + dateTime.date,

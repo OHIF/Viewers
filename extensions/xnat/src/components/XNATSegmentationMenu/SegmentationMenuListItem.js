@@ -64,8 +64,6 @@ export default class SegmentationMenuListItem extends React.Component {
     let { visible } = this.state;
     const { segmentIndex, labelmap3D } = this.props;
 
-    console.log({ ShowHideClick: this.props });
-
     visible = !visible;
     labelmap3D.segmentsHidden[segmentIndex] = !visible;
 
@@ -118,16 +116,15 @@ export default class SegmentationMenuListItem extends React.Component {
             type="radio"
             checked={checked}
             onChange={() => {
-              // onSegmentChange(segmentIndex);
-              'Good';
+              onSegmentChange(segmentIndex);
             }}
           />
         </td>
-        <td>
+        <td className="left-aligned-cell">
           <a
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer'}}
             onClick={() => {
-              // onEditClick(segmentIndex, metadata);
+              onEditClick(segmentIndex, metadata);
             }}
           >
             <span style={{ color: 'var(--text-primary-color)' }}>
@@ -145,9 +142,9 @@ export default class SegmentationMenuListItem extends React.Component {
         <td className="centered-cell">
           <a
             style={{ cursor: 'pointer', color: 'white' }}
-            // onClick={() =>
-            //   midSlice !== undefined ? onClick(segmentIndex, midSlice) : null
-            // }
+            onClick={() =>
+              midSlice !== undefined ? onClick(segmentIndex, midSlice) : null
+            }
           >
             {slices.length ? `${slices.length}` : '0'}
           </a>

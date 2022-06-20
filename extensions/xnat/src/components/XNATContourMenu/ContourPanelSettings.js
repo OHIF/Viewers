@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import csTools from 'cornerstone-tools';
 import { Icon, Range } from '@ohif/ui';
-import refreshViewport from '../../utils/refreshViewport';
+import refreshViewports from '../../utils/refreshViewports';
 import SettingsSection from '../common/SettingsSection';
 
 import '../common/XNATSettings.styl';
@@ -56,7 +56,7 @@ export default class ContourPanelSettings extends React.Component {
 
     this.setState({ displayStats: modules.freehand3D.state.displayStats });
 
-    refreshViewport();
+    refreshViewports();
   }
 
   /**
@@ -113,7 +113,7 @@ export default class ContourPanelSettings extends React.Component {
             <p>Toggles the display of ROI Contour statistics on the screen.</p>
           </div>
         </SettingsSection>
-        <SettingsSection title="Segment Outline">
+        <SettingsSection title="Contour Outline">
           <div className="range">
             <label htmlFor="range">Opacity</label>
             <Range

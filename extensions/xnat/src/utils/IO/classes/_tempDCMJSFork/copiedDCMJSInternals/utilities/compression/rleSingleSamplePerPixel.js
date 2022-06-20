@@ -10,7 +10,7 @@ function encode(buffer, numberOfFrames, rows, cols) {
   const frameLength = rows * cols;
 
   const header = createHeader();
-  let encodedFrames = [];
+  const encodedFrames = [];
 
   for (let frame = 0; frame < numberOfFrames; frame++) {
     const frameOffset = frameLength * frame;
@@ -101,7 +101,7 @@ function createHeader() {
 }
 
 function getLiteralRunLength(uint8Row, i) {
-  for (var l = 0; l < uint8Row.length - i; l++) {
+  for (let l = 0; l < uint8Row.length - i; l++) {
     if (
       uint8Row[i + l] === uint8Row[i + l + 1] &&
       uint8Row[i + l + 1] === uint8Row[i + l + 2]
@@ -113,11 +113,13 @@ function getLiteralRunLength(uint8Row, i) {
       return l;
     }
   }
+
   return uint8Row.length - i;
 }
 
 function getReplicateRunLength(uint8Row, i) {
   const first = uint8Row[i];
+
   for (let l = 1; l < uint8Row.length - i; l++) {
     if (uint8Row[i + l] !== first) {
       return l;

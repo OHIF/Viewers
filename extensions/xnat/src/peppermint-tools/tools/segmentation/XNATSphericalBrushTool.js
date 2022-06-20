@@ -17,8 +17,6 @@ export default class XNATSphericalBrushTool extends SphericalBrushTool {
   preMouseDownCallback(evt) {
     const { detail } = evt;
 
-    console.log({ detail, event: evt });
-
     preMouseDownCallback(detail.element);
 
     const { event } = detail;

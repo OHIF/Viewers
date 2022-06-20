@@ -8,7 +8,7 @@ import AIAAToolkit from './AIAAToolkit';
 import showNotification from '../common/showNotification';
 import { showStatusModal, updateStatusModal } from '../common/statusModal.js';
 import { AIAA_TOOL_TYPES, AIAA_MODEL_TYPES } from '../../aiaa-tools';
-import refreshViewport from '../../utils/refreshViewport.js';
+import refreshViewports from '../../utils/refreshViewports.js';
 import { removeEmptyLabelmaps2D } from '../../peppermint-tools';
 import isValidUrl from '../../utils/isValidUrl.js';
 import sessionMap from '../../utils/sessionMap';
@@ -249,7 +249,7 @@ export default class AIAAMenu extends React.Component {
     });
     enabledElement.image.imageId = currentImageId;
 
-    refreshViewport();
+    refreshViewports();
   }
 
   onGetModels = async () => {
@@ -290,7 +290,7 @@ export default class AIAAMenu extends React.Component {
   }
 
   onToolUpdate = async () => {
-    refreshViewport();
+    refreshViewports();
   }
 
   onRunModel = async (segmentPoints = {}) => {
@@ -459,7 +459,7 @@ export default class AIAAMenu extends React.Component {
 
     removeEmptyLabelmaps2D(labelmap3D);
 
-    refreshViewport();
+    refreshViewports();
   }
 
   render() {

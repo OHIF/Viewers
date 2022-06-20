@@ -1,5 +1,5 @@
 import { PEPPERMINT_TOOL_NAMES } from './peppermint-tools';
-import { AIAA_TOOL_NAMES } from './aiaa-tools';
+import { AIAA_TOOL_NAMES } from  './aiaa-tools';
 
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
@@ -8,33 +8,29 @@ const TOOLBAR_BUTTON_TYPES = {
 };
 
 const definitions = [
-  {
-    id: 'freehandRoiTools',
-    label: 'Contour',
-    icon: 'xnat-contour',
-    buttons: [
-      {
-        id: 'FreehandRoi',
-        label: 'Draw',
-        icon: 'xnat-contour-freehand',
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: {
-          toolName: PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_TOOL,
-        },
-      },
-      {
-        id: 'FreehandRoiSculptor',
-        label: 'Sculpt',
-        icon: 'xnat-contour-freehand-sculpt',
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: {
-          toolName: PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_SCULPTOR_TOOL,
-        },
-      },
-    ],
-  },
+  // {
+  //   id: 'freehandRoiTools',
+  //   label: 'Contour',
+  //   icon: 'xnat-contour',
+  //   buttons: [
+  //     {
+  //       id: 'FreehandRoi',
+  //       label: 'Draw',
+  //       icon: 'xnat-contour-freehand',
+  //       type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+  //       commandName: 'setToolActive',
+  //       commandOptions: { toolName: PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_TOOL },
+  //     },
+  //     {
+  //       id: 'FreehandRoiSculptor',
+  //       label: 'Sculpt',
+  //       icon: 'xnat-contour-freehand-sculpt',
+  //       type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+  //       commandName: 'setToolActive',
+  //       commandOptions: { toolName: PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_SCULPTOR_TOOL },
+  //     },
+  //   ],
+  // },
   {
     id: 'brushTools',
     label: 'Mask',
@@ -68,15 +64,15 @@ const definitions = [
           toolName: PEPPERMINT_TOOL_NAMES.BRUSH_3D_AUTO_GATED_TOOL,
         },
       },
-      // {
-      //   id: 'NVIDIAClaraAIAA',
-      //   label: 'NVIDIA AIAA',
-      //   icon: 'dot-circle',
-      //   type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-      //   commandName: 'setToolActive',
-      //   commandOptions: { toolName: AIAA_TOOL_NAMES.AIAA_PROB_TOOL },
-      //   experimentalFeature: true,
-      // },
+      {
+        id: 'NVIDIAClaraAIAA',
+        label: 'NVIDIA AIAA',
+        icon: 'dot-circle',
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: AIAA_TOOL_NAMES.AIAA_PROB_TOOL },
+        experimentalFeature: true,
+      },
       {
         id: 'CircleScissors',
         label: 'Circle',
@@ -140,14 +136,14 @@ const definitions = [
         label: 'Undo',
         icon: 'xnat-undo',
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
-        commandName: 'xnatBrushUndo',
+        commandName: 'undo',
       },
       {
         id: 'BrushRedo',
         label: 'Redo',
         icon: 'xnat-redo',
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
-        commandName: 'xnatBrushRedo',
+        commandName: 'redo',
       },
     ],
   },

@@ -9,9 +9,12 @@ function volumeArrayToFileArray(volumeArray) {
 
   volumeArray.forEach(item => {
     fileArray.push(
-      new File([item.data], item.name, {
-        lastModifiedDate: new Date(),
-      })
+      new File(
+        [item.data],
+        item.name,
+        {
+          lastModifiedDate: new Date(),
+        })
     );
   });
 
@@ -28,7 +31,11 @@ async function createNiftiVolume(imageIds) {
   await readImageDICOMFileSeries(fileArray)
     .then(async readRes => {
       readRes.webWorkerPool.terminateWorkers();
-      await writeArrayBuffer(null, true, readRes.image, 'image.nii.gz')
+      await writeArrayBuffer(
+        null,
+        true,
+        readRes.image,
+        'image.nii.gz')
         .then(writeRes => {
           writeRes.webWorker.terminate();
           niftiBuffer = writeRes.arrayBuffer;

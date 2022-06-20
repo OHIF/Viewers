@@ -11,7 +11,7 @@ import onIOCancel from './common/helpers/onIOCancel.js';
 import getSeriesInstanceUidFromViewport from '../utils/getSeriesInstanceUidFromViewport';
 import XNATContourExportMenu from './XNATContourExportMenu/XNATContourExportMenu';
 import XNATContourImportMenu from './XNATContourImportMenu/XNATContourImportMenu';
-import refreshViewport from '../utils/refreshViewport';
+import refreshViewports from '../utils/refreshViewports';
 
 import { Icon } from '@ohif/ui';
 
@@ -68,9 +68,7 @@ export default class XNATContourPanel extends React.Component {
     this.onContourClick = this.onContourClick.bind(this);
 
     this.onRoiCollectionNameChange = this.onRoiCollectionNameChange.bind(this);
-    this.configurationChangeHandler = this.configurationChangeHandler.bind(
-      this
-    );
+    this.configurationChangeHandler = this.configurationChangeHandler.bind(this);
 
     this.addEventListeners();
 
@@ -85,8 +83,6 @@ export default class XNATContourPanel extends React.Component {
 
     if (SeriesInstanceUID) {
       const roiContourList = this.getRoiContourList(SeriesInstanceUID);
-
-      // console.log({ roiContourList });
 
       workingCollection = roiContourList.workingCollection;
       lockedCollections = roiContourList.lockedCollections;
@@ -141,6 +137,10 @@ export default class XNATContourPanel extends React.Component {
         this.cornerstoneEventListenerHandler
       );
     });
+    document.addEventListener(
+      'finishedcontourimportusingmodalevent',
+      this.cornerstoneEventListenerHandler
+    );
   }
 
   cornerstoneEventListenerHandler() {
@@ -162,13 +162,17 @@ export default class XNATContourPanel extends React.Component {
         this.cornerstoneEventListenerHandler
       );
     });
+    document.removeEventListener(
+      'finishedcontourimportusingmodalevent',
+      this.cornerstoneEventListenerHandler
+    );
   }
 
   configurationChangeHandler = newConfiguration => {
     const module = modules.freehand3D;
     module.configuration.lineWidth = newConfiguration.lineWidth;
     module.configuration.opacity = newConfiguration.opacity;
-    refreshViewport();
+    refreshViewports();
   };
 
   /**
@@ -282,7 +286,7 @@ export default class XNATContourPanel extends React.Component {
     const activeROIContourIndex = freehand3DStore.setters.ROIContourAndSetIndexActive(
       SeriesInstanceUID,
       'DEFAULT',
-      'Contour ROI'
+      'Unnamed contour ROI'
     );
 
     const workingCollection = this.constructor._workingCollection(
@@ -321,11 +325,11 @@ export default class XNATContourPanel extends React.Component {
       roiContourUid //workingCollection[activeROIContourIndex].metadata.uid
     );
     this.refreshRoiContourList(SeriesInstanceUID);
-    refreshViewport();
+    refreshViewports();
   }
 
   onContourClick(roiContourUid) {
-    const { activeIndex, onContourItemClick } = this.props;
+    const { activeIndex, onContourItemClick, viewports } = this.props;
     const { SeriesInstanceUID } = this.state;
 
     const enabledElements = cornerstone.getEnabledElements();
@@ -345,16 +349,14 @@ export default class XNATContourPanel extends React.Component {
 
     const frameIndex = imageIds.indexOf(imageId);
     const SOPInstanceUID = cornerstone.metaData.get('SOPInstanceUID', imageId);
-    const StudyInstanceUID = cornerstone.metaData.get(
-      'StudyInstanceUID',
-      imageId
-    );
+    const StudyInstanceUID = cornerstone.metaData.get('StudyInstanceUID', imageId);
 
     onContourItemClick({
       StudyInstanceUID,
       SOPInstanceUID,
       frameIndex,
       activeViewportIndex: activeIndex,
+      displaySetInstanceUID: viewports[activeIndex].displaySetInstanceUID,
     });
   }
 
@@ -530,8 +532,6 @@ export default class XNATContourPanel extends React.Component {
     const { viewports, activeIndex } = this.props;
     const freehand3DStore = modules.freehand3D;
 
-    console.log({ freehand3DStore });
-
     // // default structurset
     // const defaultStructureSet = freehand3DStore.getters.structureSet(
     //   SeriesInstanceUID
@@ -596,7 +596,7 @@ export default class XNATContourPanel extends React.Component {
         <div className="xnatPanel">
           <div className="panelHeader">
             <div className="title-with-icon">
-              <h3>Contour-Based ROIs</h3>
+              <h3>Contour-based ROIs</h3>
               <Icon
                 className="settings-icon"
                 name="cog"

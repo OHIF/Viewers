@@ -4,7 +4,7 @@ import XNATContourPanel from './components/XNATContourPanel.js';
 import XNATSegmentationPanel from './components/XNATSegmentationPanel.js';
 import XNATSegmentationColorSelectModal from './components/XNATSegmentationColorSelectModal/XNATSegmentationColorSelectModal';
 
-const PanelModule = (servicesManager, commandsManager) => {
+const PanelModule = (commandsManager, api, servicesManager) => {
   const { UIModalService } = servicesManager.services;
 
   const showColorSelectModal = (
@@ -62,11 +62,23 @@ const PanelModule = (servicesManager, commandsManager) => {
   return {
     menuOptions: [
       {
-        icon: 'xnat-contour',
-        label: 'Contours',
-        from: 'right',
-        target: 'xnat-contour-panel',
+        icon: 'th-large',
+        label: 'Scans',
+        from: 'left',
+        target: 'studies',
       },
+      {
+        icon: 'list',
+        label: 'XNAT Nav',
+        from: 'left',
+        target: 'xnat-navigation-panel',
+      },
+      // {
+      //   icon: 'xnat-contour',
+      //   label: 'Contours',
+      //   from: 'right',
+      //   target: 'xnat-contour-panel',
+      // },
       {
         icon: 'xnat-mask',
         label: 'Masks',
@@ -88,10 +100,8 @@ const PanelModule = (servicesManager, commandsManager) => {
         component: ExtendedXNATSegmentationPanel,
       },
     ],
-    defaultContext: ['VIEWER'],
+    defaultContext: ['ACTIVE_VIEWPORT::CORNERSTONE'],
   };
 };
-
-// console.log(PanelModule());
 
 export default PanelModule;
