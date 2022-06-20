@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
 import { NavBar, Svg, Icon, IconButton, Tooltip, Dropdown } from '../';
 
 function Header({
@@ -10,8 +9,12 @@ function Header({
   onClickClipboardButton,
   isSticky,
   WhiteLabeling,
+  servicesManager,
 }) {
   const { t } = useTranslation('Header');
+  const { HangingProtocolService } = servicesManager.services;
+  const protocols = HangingProtocolService.getProtocols();
+  const { protocol } = HangingProtocolService;
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
@@ -45,16 +48,23 @@ function Header({
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          <Dropdown
-            id="dropdown-1"
-            showDropdownIcon
-            list={[
-              { id: 1, title: 'Item 1', onClick: () => console.log('xxx') },
-              { id: 2, title: 'Item 2', onClick: () => console.log('yyy') },
-            ]}
-          >
-            <span>dropdown</span>
-          </Dropdown>
+          {protocol && (
+            <Dropdown
+              id="hp-dropdown"
+              showDropdownIcon
+              list={protocols.map(hp => ({
+                id: hp.id,
+                title: hp.name,
+                onClick: () =>
+                  HangingProtocolService.run(
+                    HangingProtocolService.studies[0],
+                    hp
+                  ),
+              }))}
+            >
+              <span>{protocol.name}</span>
+            </Dropdown>
+          )}
           <Tooltip
             content={
               <div className="text-center max-w-40">

@@ -203,11 +203,11 @@ class HangingProtocolService {
       return;
     }
 
-    const { ViewportGridService } = this._servicesManager.services;
-    const { numCols: prevNumCols, numRows: prevNumRows } = ViewportGridService.getState();
-    if (prevNumCols && prevNumRows) {
-      return;
-    }
+    // const { ViewportGridService } = this._servicesManager.services;
+    // const { numCols: prevNumCols, numRows: prevNumRows } = ViewportGridService.getState();
+    // if (prevNumCols && prevNumRows) {
+    //   return;
+    // }
 
     const { columns: numCols, rows: numRows } = layoutProps;
     this._broadcastChange(this.EVENTS.NEW_LAYOUT, {

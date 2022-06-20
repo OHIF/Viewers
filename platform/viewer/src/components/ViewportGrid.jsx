@@ -34,80 +34,81 @@ function ViewerViewportGrid(props) {
 
   const updateDisplaysetForViewports = useCallback(
     displaySets => {
+      console.log('update displayset for viewports');
       const [
         matchDetails,
         hpAlreadyApplied,
       ] = HangingProtocolService.getState();
+      // const seriesNumberParam = getQueryParam('series_number');
+
+      // if (!isParamViewLoaded && seriesNumberParam) {
+      //   const initialDisplaySet = displaySets.find(ds => {
+      //     return ds.SeriesNumber === seriesNumberParam;
+      //   });
+
+      //   initialDisplaySet &&
+      //     viewportGridService.setDisplaysetForViewport({
+      //       viewportIndex: 0,
+      //       displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
+      //     });
+
+      //   initialDisplaySet && setIsParamViewLoaded(true);
+      // } else {
+      if (!matchDetails.length) return;
+
+      // Match each viewport individually
+
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
-      const seriesNumberParam = getQueryParam('series_number');
+      for (let i = 0; i < numViewports; i++) {
+        if (hpAlreadyApplied[i] === true) {
+          continue;
+        }
 
-      if (!isParamViewLoaded && seriesNumberParam) {
-        const initialDisplaySet = displaySets.find(ds => {
-          return ds.SeriesNumber === seriesNumberParam;
-        });
+        // if current viewport doesn't have a match
+        if (matchDetails[i] === undefined) {
+          displaySets = displaySets
+            .filter(displaySet => displaySet.Modality !== 'SR')
+            .sort((x, y) => x.SeriesNumber - y.SeriesNumber);
 
-        initialDisplaySet &&
-          viewportGridService.setDisplaysetForViewport({
-            viewportIndex: 0,
-            displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
-          });
+          if (!displaySets.length) return;
 
-        initialDisplaySet && setIsParamViewLoaded(true);
-      } else {
-        if (!matchDetails.length) return;
-
-        // Match each viewport individually
-        for (let i = 0; i < numViewports; i++) {
-          if (hpAlreadyApplied[i] === true) {
-            continue;
-          }
-
-          // if current viewport doesn't have a match
-          if (matchDetails[i] === undefined) return;
-
-          const { SeriesInstanceUID } = matchDetails[i];
-          const matchingDisplaySet = displaySets.find(ds => {
-            return ds.SeriesInstanceUID === SeriesInstanceUID;
-          });
-
-          if (!matchingDisplaySet) {
-            continue;
-          }
+          const uids = displaySets.map(ds => ds.displaySetInstanceUID);
+          const uidIndex = (i - matchDetails.length) % uids.length;
 
           viewportGridService.setDisplaysetForViewport({
             viewportIndex: i,
-            displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+            displaySetInstanceUID: uids[uidIndex],
           });
-
           HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+          return;
         }
+
+        const { SeriesInstanceUID } = matchDetails[i];
+        const matchingDisplaySet = displaySets.find(ds => {
+          return ds.SeriesInstanceUID === SeriesInstanceUID;
+        });
+
+        if (!matchingDisplaySet) {
+          continue;
+        }
+
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: i,
+          displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+        });
+
+        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
       }
+      if (hpAlreadyApplied.length > numViewports) {
+        HangingProtocolService.hpAlreadyApplied = hpAlreadyApplied.slice(
+          0,
+          numViewports
+        );
+      }
+      // }
     },
     [viewportGrid, numRows, numCols]
   );
-
-  useEffect(() => {
-    let displaySets = DisplaySetService.getActiveDisplaySets();
-    displaySets = displaySets.filter(
-      displaySet => displaySet.Modality !== 'SR'
-    );
-
-    if (!displaySets.length) return;
-
-    let uidIndex = 0;
-    const uids = displaySets.map(ds => ds.displaySetInstanceUID);
-
-    viewportGrid.viewports.forEach((viewport, i) => {
-      if (!viewport.displaySetInstanceUID) {
-        viewportGridService.setDisplaysetForViewport({
-          viewportIndex: i,
-          displaySetInstanceUID: uids[uidIndex],
-        });
-        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
-        uidIndex = (uidIndex + 1) % uids.length;
-      }
-    });
-  }, [numRows, numCols]);
 
   // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
@@ -122,6 +123,12 @@ function ViewerViewportGrid(props) {
     return () => {
       unsubscribe();
     };
+  }, [viewportGrid]);
+
+  // Changing the Hanging protocol while viewing
+  useEffect(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    updateDisplaysetForViewports(displaySets);
   }, [viewportGrid]);
 
   // Layout change based on hanging protocols

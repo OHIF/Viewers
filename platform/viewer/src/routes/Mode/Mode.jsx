@@ -50,34 +50,108 @@ async function defaultRouteInit({
       const studyResult = await dataSource.query.studies.search({
         studyInstanceUid: StudyInstanceUID,
       });
-      const { Modality, StudyDescription } = studyResult[0];
+      const {
+        Modality,
+        StudyDescription,
+        body_parts_examined,
+      } = studyResult[0];
       const {
         data: { results },
       } = await nlApi.get('/api/hanging-protocol/');
 
+      const viewportSettings = criteria => {
+        const settingItem = options => ({
+          options,
+          commandName: '',
+          type: 'viewport',
+        });
+        const settings = [];
+        // if (criteria.viewport_flip === 'HORIZONTAL') {
+        //   settings.push(settingItem({ hflip: true }));
+        // }
+        // if (criteria.viewport_flip === 'VERTICAL') {
+        //   settings.push(settingItem({ vflip: true }));
+        // }
+        // settings.push(settingItem({ scale: criteria.viewport_scaling / 100 }));
+        // settings.push(settingItem({ rotation: criteria.rotation_angle }));
+        settings.push(settingItem({ invert: true }));
+        return settings;
+      };
+
+      const seriesMatchingRules = criteria => {
+        const matchingRules = [];
+        if (criteria.series_description.length > 0) {
+          matchingRules.push({
+            id: `${criteria.id}-SD`,
+            weight: 1,
+            attribute: 'SeriesDescription',
+            constraint: {
+              contains: {
+                value: criteria.series_description[0],
+              },
+            },
+            required: false,
+          });
+        }
+        if (criteria.image_orientation_plane) {
+          matchingRules.push({
+            id: `${criteria.id}-SD`,
+            weight: 1,
+            attribute: 'image_orientation_plane',
+            constraint: {
+              equals: {
+                value: criteria.image_orientation_plane,
+              },
+            },
+            required: false,
+          });
+        }
+        return matchingRules;
+      };
+
+      const viewports = hp => {
+        return hp.hanging_protocol_criterias.map(criteria => ({
+          viewportSettings: [],
+          imageMatchingRules: [],
+          seriesMatchingRules: seriesMatchingRules(criteria),
+          studyMatchingRules: [],
+        }));
+      };
+
       const hangingProtocols = results
         .filter(
-          item => item.modality.length === 0 || item.modality.includes(Modality)
+          hp => hp.modality.length === 0 || hp.modality.includes(Modality)
         )
-        .filter(
-          item =>
-            item.study_description.length === 0 ||
-            StudyDescription.toLowerCase().includes(
-              item.study_description[0].toLowerCase()
-            )
-        )
-        .map(item => ({
-          id: item.id,
+        .filter(hp => {
+          if (hp.study_description.length === 0) return true;
+          for (const sd of hp.study_description) {
+            if (StudyDescription.toLowerCase().includes(sd.toLowerCase())) {
+              return true;
+            }
+          }
+          return false;
+        })
+        .filter(hp => {
+          if (hp.body_part_examined.length === 0) return true;
+          for (const bp of hp.body_part_examined) {
+            if (body_parts_examined.includes(bp)) {
+              return true;
+            }
+          }
+          return false;
+        })
+        .map(hp => ({
+          id: hp.id,
           locked: true,
           hasUpdatedPriorsInformation: false,
-          name: item.name,
-          createdDate: item.created,
-          modifiedDate: item.modified,
+          name: hp.name,
+          createdDate: hp.created,
+          modifiedDate: hp.modified,
           availableTo: {},
           editableBy: {},
           protocolMatchingRules: [
             {
-              id: 'wauZK2QNEfDPwcAQo',
+              id: `${hp.id}-pmr-study-uid`,
               weight: 1,
               attribute: 'StudyInstanceUID',
               constraint: {
@@ -90,24 +164,17 @@ async function defaultRouteInit({
           ],
           stages: [
             {
-              id: `${item.id}-stage`,
-              name: item.name,
+              id: `${hp.id}-stage`,
+              name: `${hp.name}-stage`,
               viewportStructure: {
                 type: 'grid',
                 properties: {
-                  rows: item.grid_matrix[0],
-                  columns: item.grid_matrix[1],
+                  rows: hp.grid_matrix[0],
+                  columns: hp.grid_matrix[1],
                 },
               },
-              viewports: [
-                {
-                  viewportSettings: [],
-                  imageMatchingRules: [],
-                  seriesMatchingRules: [],
-                  studyMatchingRules: [],
-                },
-              ],
-              createdDate: item.created,
+              viewports: viewports(hp),
+              createdDate: hp.created,
             },
           ],
           numberOfPriorsReferenced: -1,

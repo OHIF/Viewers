@@ -3504,10 +3504,10 @@
     outvariant "^1.2.0"
     strict-event-emitter "^0.2.0"
 
-"@newlantern/viewer@^4.4.3":
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.3.tgz#a752a11e5ef5ce1b2dea4418e8d04a53391d654f"
-  integrity sha512-jlGn1y5ROGPHwmFuW2+xDK5SMfjysIwFLJ9ZapEqsLg01MuFYKdocG/BO+KhHohQMlEOTVl2RwYgW9l5i2/ktA==
+"@newlantern/viewer@^4.4.5":
+  version "4.4.5"
+  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.5.tgz#b60d004ba7678a31ab42adf8cbbed26826e3dd92"
+  integrity sha512-vX8uyfCMMVv2ybqhY3PsQwef34ywFcnsRTO+qL1i1U08og7ErnDgkauPoPDA27OucHW+D3MCxfcNvH68aJVESw==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -4163,11 +4163,6 @@
     "@svgr/plugin-jsx" "^5.5.0"
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
-
-"@sweetalert2/theme-material-ui@^5.0.11":
-  version "5.0.11"
-  resolved "https://registry.yarnpkg.com/@sweetalert2/theme-material-ui/-/theme-material-ui-5.0.11.tgz#3b3e85608b7259f72ac78949ede33fbaa78fca96"
-  integrity sha512-gVIwW2dDrQXz5pTYpm9fafIYuWv/K26q8/VsT1oSrJxLd5GKq9mrIbKENBcewiQGaCLC2t9uIZSX4HO1dRMHgg==
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
@@ -20527,10 +20522,10 @@ sass-loader@^10.0.5:
     schema-utils "^3.0.0"
     semver "^7.3.2"
 
-sass@1.51.0:
-  version "1.51.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.51.0.tgz#25ea36cf819581fe1fe8329e8c3a4eaaf70d2845"
-  integrity sha512-haGdpTgywJTvHC2b91GSq+clTKGbtkkZmVAb82jZQN/wTy6qs8DdFm2lhEQbEwrY0QDRgSQ3xDurqM977C3noA==
+sass@^1.51.0:
+  version "1.52.3"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.52.3.tgz#b7cc7ffea2341ccc9a0c4fd372bf1b3f9be1b6cb"
+  integrity sha512-LNNPJ9lafx+j1ArtA7GyEJm9eawXN8KlA1+5dF6IZyoONg1Tyo/g+muOsENWJH/2Q1FHbbV4UwliU0cXMa/VIA==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"
@@ -21876,10 +21871,10 @@ svgo@^2.7.0:
     picocolors "^1.0.0"
     stable "^0.1.8"
 
-sweetalert2@11.4.14:
-  version "11.4.14"
-  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.4.14.tgz#b7c7efbf6672aa56696ba68d7ac141798b961525"
-  integrity sha512-Dh4XqfUSpCwhRsGM5zZFbtBRHujjcaf98DjVKXEs0ER4E/Zao0OtDHZRRQqvT9xxY7RA8WsiZ6FHJbyW+BBbDw==
+sweetalert2@^11.4.14:
+  version "11.4.17"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.4.17.tgz#d51a67d034c97b8a9854ce0c161ee21fdd681c4a"
+  integrity sha512-z0iQW5fDdvtoDNle3iHTKunsuNWgPaMifVu0GPtdguR0uVPrvg9gg9bnSQeJ4tx3C7FwJOEnRshxrs6fFItRvw==
 
 symbol-observable@^1.1.0:
   version "1.2.0"

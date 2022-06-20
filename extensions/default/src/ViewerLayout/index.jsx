@@ -216,6 +216,7 @@ function ViewerLayout({
         onClickSettingButton={onClickSettingButton}
         onClickClipboardButton={onClickClipboardButton}
         WhiteLabeling={appConfig.whiteLabeling}
+        servicesManager={servicesManager}
       >
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
