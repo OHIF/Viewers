@@ -220,14 +220,19 @@ function TableRow(props) {
         <div>{Modalities}</div>
       </td>
       <td>
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => handleClick(StudyUID)}
-        >
-          {t('import-idc')}
-        </button>
-        {/* <div>{BodyPart}</div> */}
-        <div style={{ color: '#60656f' }}>{TotalSeries}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div>
+            <div>{BodyPart}</div>
+            <div style={{ color: '#60656f' }}>{TotalSeries}</div>
+          </div>
+
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => handleClick(StudyUID)}
+          >
+            {t('import-idc')}
+          </button>
+        </div>
       </td>
     </tr>
   );
@@ -260,15 +265,9 @@ function TableRow(props) {
   );
 
   const smallRowTemplate = (
-    <tr
-      onClick={() => handleClick(StudyUID)}
-      className={classNames({ active: isHighlighted })}
-    >
+    <tr className={classNames({ active: isHighlighted })}>
       <td style={{ position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {/* NAME AND ID */}
-
-          {/* DESCRIPTION */}
           <div
             className="hide-xs"
             style={{
@@ -277,10 +276,9 @@ function TableRow(props) {
               paddingLeft: '35px',
             }}
           >
-            {BodyPart}
+            {PatientID}
           </div>
 
-          {/* MODALITY & DATE */}
           <div
             style={{
               display: 'flex',
@@ -299,7 +297,19 @@ function TableRow(props) {
             >
               {Modalities || `(${t('Empty')})`}
             </div>
-            <div>{TotalSeries}</div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+              <div>{BodyPart}</div>
+              <div style={{ color: '#60656f' }}>{TotalSeries}</div>
+            </div>
+
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => handleClick(StudyUID)}
+            >
+              {t('import-idc')}
+            </button>
           </div>
         </div>
       </td>

@@ -226,9 +226,10 @@ function TableRow(props) {
         <div style={{ color: '#60656f' }}>{Location}</div>
       </td>
       <td>
-        <div>{SupportingData}</div>
+        <div>{Species}</div>
         <div style={{ color: '#60656f' }}>{SubjectCount}</div>
       </td>
+      {/* DATE */}
     </tr>
   );
 
@@ -257,7 +258,6 @@ function TableRow(props) {
     >
       <td style={{ position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {/* NAME AND ID */}
           <div
             className={classNames({ 'empty-value': !CancerType })}
             style={{ width: '150px', minWidth: '150px' }}
@@ -268,7 +268,6 @@ function TableRow(props) {
             <div style={{ color: '#60656f' }}>{CancerType}</div>
           </div>
 
-          {/* DESCRIPTION */}
           <div
             className="hide-xs"
             style={{
@@ -280,7 +279,6 @@ function TableRow(props) {
             {Description}
           </div>
 
-          {/* MODALITY & DATE */}
           <div
             style={{
               display: 'flex',
