@@ -2,7 +2,7 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 let initialized = false;
 
-const MAX_CONCURRENCY = 6;
+const MAX_CONCURRENCY = 8;
 
 export default function initWebWorkers() {
   const config = {

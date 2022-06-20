@@ -17,6 +17,8 @@ import { commandsManager, extensionManager } from './../App.js';
 import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import { withAppContext } from '../context/AppContext';
+import OHIFLogo from '../components/OHIFLogo/OHIFLogo.js';
+
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -213,7 +215,8 @@ class ToolbarRow extends Component {
     return (
       <>
         <div className="ToolbarRow">
-          <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
+          {OHIFLogo()}
+          <div className="pull-left m-t-1 p-y-1" style={{ padding: '5px' }}>
             <RoundedButtonGroup
               options={this.buttonGroups.left}
               value={this.props.selectedLeftSidePanel || ''}

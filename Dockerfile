@@ -21,46 +21,46 @@
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
-FROM node:15.13.0-slim as builder
+FROM node:16.5.0-buster-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
 # Copy Files
-COPY .docker /usr/src/app/.docker
-COPY .webpack /usr/src/app/.webpack
-COPY extensions /usr/src/app/extensions
-COPY platform /usr/src/app/platform
-COPY .browserslistrc /usr/src/app/.browserslistrc
-COPY aliases.config.js /usr/src/app/aliases.config.js
-COPY babel.config.js /usr/src/app/babel.config.js
-COPY lerna.json /usr/src/app/lerna.json
-COPY package.json /usr/src/app/package.json
-COPY postcss.config.js /usr/src/app/postcss.config.js
-COPY yarn.lock /usr/src/app/yarn.lock
-
-RUN apt-get update && apt-get install -y python make g++
+COPY . /usr/src/app/
+#COPY .webpack /usr/src/app/.webpack
+#COPY extensions /usr/src/app/extensions
+#COPY platform /usr/src/app/platform
+#COPY .browserslistrc /usr/src/app/.browserslistrc
+#COPY aliases.config.js /usr/src/app/aliases.config.js
+#COPY babel.config.js /usr/src/app/babel.config.js
+#COPY lerna.json /usr/src/app/lerna.json
+#COPY package.json /usr/src/app/package.json
+#COPY postcss.config.js /usr/src/app/postcss.config.js
+#COPY yarn.lock /usr/src/app/yarn.lock
+RUN make; exit 0
+RUN apt-get update && apt-get install -y python make build-essential libssl-dev g++ wget nano telnet iputils-ping net-tools
 # Run the install before copying the rest of the files
 RUN yarn config set workspaces-experimental true
-RUN yarn install
+RUN npm config set legacy-peer-deps true
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
 # ENV GENERATE_SOURCEMAP=false
 # ENV REACT_APP_CONFIG=config/default.js
 
-RUN yarn run build
+RUN rm -rf node_modules
+RUN yarn cache clean
+RUN yarn upgrade; exit 0
+RUN yarn install; exit 0
+RUN npm run build; exit 0
+
+#RUN npm start --production; exit 0
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginx:1.15.5-alpine
-RUN apk add --no-cache bash
-RUN rm -rf /etc/nginx/conf.d
-COPY .docker/Viewer-v2.x /etc/nginx/conf.d
-COPY .docker/Viewer-v2.x/entrypoint.sh /usr/src/
-RUN chmod 777 /usr/src/entrypoint.sh
-COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
-EXPOSE 80
-EXPOSE 443
-ENTRYPOINT ["/usr/src/entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+
+EXPOSE 3000:3000
+
+ENTRYPOINT ["bash"]
+CMD [ "entrypoint.sh"]

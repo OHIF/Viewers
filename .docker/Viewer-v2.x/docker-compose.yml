@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   viewers:
-    image: node:16-alpine
+    image: viewer
     hostname: viewers
     working_dir: /home/node/app
     environment:
@@ -10,6 +10,6 @@ services:
     volumes:
       - ./../../:/home/node/app
     ports:
-      - '3000:3000' # web
+      - '3000:80' # web
     command: npm start --production
     restart: unless-stopped

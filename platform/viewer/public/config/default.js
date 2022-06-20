@@ -2,23 +2,23 @@ window.config = {
   // default: '/'
   routerBasename: '/',
   extensions: [],
-  showStudyList: true,
+  showStudyList: false,
   filterQueryParam: false,
   disableServersCache: false,
   servers: {
     dicomWeb: [
       {
         name: 'Orthanc',
-        wadoUriRoot: 'http://127.0.0.1:8080/wado',
-        qidoRoot: 'http://127.0.0.1:8080/dicom-web',
-        wadoRoot: 'http://127.0.0.1:8080/dicom-web',
+        wadoUriRoot: `{PROTOCOL}://{ACCOUNT_NAME}.pacs.radiologia.net.co:{PORT_DICOMWEB}/wado`,
+        qidoRoot: `{PROTOCOL}://{ACCOUNT_NAME}.pacs.radiologia.net.co:{PORT_DICOMWEB}/dicom-web`,
+        wadoRoot: `{PROTOCOL}://{ACCOUNT_NAME}.pacs.radiologia.net.co:{PORT_DICOMWEB}/dicom-web`,
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
 	      requestOptions: {
         // undefined to use JWT + Bearer auth
           auth: (_options) => {
-            return `${PRODUCTION_PWD_AUTH}`
+            return "Basic YWRtaW5AZWR4LmNvbS5jbzpEMWMwbW4xbmo0JDRkbTFuJA=="
           }
         },
       },
@@ -74,6 +74,8 @@ window.config = {
     },
     // ~ Cornerstone Tools
     { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
+    { commandName: 'setWindowLevelTool', label: 'W/L', keys: ['w'] },
+    { commandName: 'setStackScrollTool', label: 'Scroll', keys: ['s'] },
     // ~ Window level presets
     {
       commandName: 'windowLevelPreset1',
