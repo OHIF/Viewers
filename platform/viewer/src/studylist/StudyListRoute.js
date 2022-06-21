@@ -207,7 +207,7 @@ function StudyListRoute(props) {
 
   const handleImportSuccessful = async UIModalService => {
     await fetchStudies();
-    UIModalService.hide();
+    if (UIModalService) UIModalService.hide();
     setShowImportIdcModal(false);
   };
 
@@ -256,7 +256,7 @@ function StudyListRoute(props) {
               className="btn btn-primary"
               onClick={() => setShowImportIdcModal(true)}
             >
-              {t(' Manage Collections')}
+              {t('Import IDC')}
             </button>
           </div>
 

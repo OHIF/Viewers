@@ -123,7 +123,7 @@ function ImportIdcModal({ isOpen = false, onClose, onSuccess, t }) {
     };
 
     UIModalService.show({
-      title: t('Tcia-Collections'),
+      title: t('Import-Idc'),
       content: ImportIdc,
       contentProps: {
         handleOnSuccess,
