@@ -4,8 +4,13 @@ import { Icon } from '../../../ui/src/elements/Icon';
 
 function LoadingText({ t: translate }) {
   return (
-    <div className="loading-text">
-      {translate('Loading')}... <Icon name="circle-notch" animation="pulse" />
+    <div className="loading-text ">
+      {translate('Loading')}...{' '}
+      <Icon
+        name="circle-notch"
+        className="loading-icon-spin"
+        animation="pulse"
+      />
     </div>
   );
 }
