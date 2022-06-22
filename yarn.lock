@@ -3504,10 +3504,10 @@
     outvariant "^1.2.0"
     strict-event-emitter "^0.2.0"
 
-"@newlantern/viewer@^4.4.3":
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.3.tgz#a752a11e5ef5ce1b2dea4418e8d04a53391d654f"
-  integrity sha512-jlGn1y5ROGPHwmFuW2+xDK5SMfjysIwFLJ9ZapEqsLg01MuFYKdocG/BO+KhHohQMlEOTVl2RwYgW9l5i2/ktA==
+"@newlantern/viewer@^4.4.5":
+  version "4.4.6"
+  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.6.tgz#9a30c9880a5082a36bd9cc4971e18f379d77f4b5"
+  integrity sha512-v3Le6Db4Ruk58wKlebFjF7P5/qcRQ0m7BGhiywlTl6yUXRlxUBV7iTeIfMgsj39fopmV+kV7pQ98EEd6L7S8QA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -4163,11 +4163,6 @@
     "@svgr/plugin-jsx" "^5.5.0"
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
-
-"@sweetalert2/theme-material-ui@^5.0.11":
-  version "5.0.11"
-  resolved "https://registry.yarnpkg.com/@sweetalert2/theme-material-ui/-/theme-material-ui-5.0.11.tgz#3b3e85608b7259f72ac78949ede33fbaa78fca96"
-  integrity sha512-gVIwW2dDrQXz5pTYpm9fafIYuWv/K26q8/VsT1oSrJxLd5GKq9mrIbKENBcewiQGaCLC2t9uIZSX4HO1dRMHgg==
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
@@ -7909,15 +7904,15 @@ cornerstone-core@2.3.0:
   resolved "https://registry.yarnpkg.com/cornerstone-core/-/cornerstone-core-2.3.0.tgz#b16430b0dc3883c795fbbd5f64d0f6357f91c889"
   integrity sha512-1LiCfRIlQvR1j8OhF7/3pvvQvvnTYZUywEkuoEo5K5mMrlKdrQMS75uW1uXb/nXShQDJyyjtTCQSVGgv2yHA+w==
 
+cornerstone-math@0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.10.tgz#a3f99db64d73c5adee61ae0d570128eca1682d07"
+  integrity sha512-23XSAyP7t70ANvhFyqwvva+zFd1bQ2d5GL7tg9qKE932WmImjA2Y9tiy5n0iTtnf51W/78Png8Lia2o4dCdJaQ==
+
 cornerstone-math@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.7.tgz#7c55536f02e7221b05fc49a4c780bb82c234ce39"
   integrity sha512-svsDSoqLNFM9niCV2AtV2DNmRkYztT1v80lVdbA5hkgdGdpWg5/h2On794zbqBK+aI3hNOHufERDsI4wdXGknA==
-
-cornerstone-math@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.9.tgz#7ce5509e8b9f465b01f7c548470725e7569859fc"
-  integrity sha512-NxdooV73asEQgav1S+0e+a4K+W3CXJdLXyFkVN24qqCtmIpzZzwtw3F9KWPCekzSAJmbhtQ3HicOQj3d4vRtuw==
 
 cornerstone-tools@5.1.2:
   version "5.1.2"
@@ -20527,10 +20522,10 @@ sass-loader@^10.0.5:
     schema-utils "^3.0.0"
     semver "^7.3.2"
 
-sass@1.51.0:
-  version "1.51.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.51.0.tgz#25ea36cf819581fe1fe8329e8c3a4eaaf70d2845"
-  integrity sha512-haGdpTgywJTvHC2b91GSq+clTKGbtkkZmVAb82jZQN/wTy6qs8DdFm2lhEQbEwrY0QDRgSQ3xDurqM977C3noA==
+sass@^1.51.0:
+  version "1.52.3"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.52.3.tgz#b7cc7ffea2341ccc9a0c4fd372bf1b3f9be1b6cb"
+  integrity sha512-LNNPJ9lafx+j1ArtA7GyEJm9eawXN8KlA1+5dF6IZyoONg1Tyo/g+muOsENWJH/2Q1FHbbV4UwliU0cXMa/VIA==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"
@@ -21876,10 +21871,10 @@ svgo@^2.7.0:
     picocolors "^1.0.0"
     stable "^0.1.8"
 
-sweetalert2@11.4.14:
-  version "11.4.14"
-  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.4.14.tgz#b7c7efbf6672aa56696ba68d7ac141798b961525"
-  integrity sha512-Dh4XqfUSpCwhRsGM5zZFbtBRHujjcaf98DjVKXEs0ER4E/Zao0OtDHZRRQqvT9xxY7RA8WsiZ6FHJbyW+BBbDw==
+sweetalert2@^11.4.14:
+  version "11.4.18"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.4.18.tgz#fd8f57adacffad472ff0e28d6fc029ad521d14b2"
+  integrity sha512-BZPTQI54NYdjIVe2tmsS5JVU7E623P3Sv4ce3BO8V6PdeIdGPGmQm43ojr1cnpGJ1xYhbdwsHIH+t5tICvZ6ZA==
 
 symbol-observable@^1.1.0:
   version "1.2.0"
