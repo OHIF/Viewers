@@ -20,9 +20,19 @@ const mapStateToProps = state => {
   const { cine } = viewportSpecificData[activeViewportIndex] || {};
   const dom = commandsManager.runCommand('getActiveViewportEnabledElement');
 
+  let fr = viewportSpecificData[activeViewportIndex].frameRate;
+  let playnow = false;
+
+  if (fr) {
+    fr = 1000/fr;
+    playnow = true;
+  } else {
+    fr = 24;
+  }
+
   const cineData = cine || {
     isPlaying: false,
-    cineFrameRate: 24,
+    cineFrameRate: fr,
   };
 
   // New props we're creating?
