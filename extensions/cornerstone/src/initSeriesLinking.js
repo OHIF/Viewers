@@ -86,7 +86,11 @@ const initSeriesLinking = ({ servicesManager, commandsManager }) => {
         let angleInRadians = sourceNormal.angleTo(targetNormal);
         angleInRadians = Math.abs(angleInRadians);
 
-        if (angleInRadians !== 0) {
+        /*
+        TODO: Replace this check with approximatelyEquals after
+        cornerstone-math PR merged
+        */
+        if (angleInRadians > 0.0001) {
           return;
         }
 
