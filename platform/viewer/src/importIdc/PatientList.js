@@ -163,7 +163,7 @@ function PatientList(props) {
                 handleSelectItem(selectedPatientStudyUID)
               }
               PatientID={patient.PatientID || ''}
-              StudyUID={patient.Modalities}
+              StudyUID={patient.StudyUID}
               Modalities={patient.Modalities}
               BodyPart={patient.BodyPart || ''}
               TotalSeries={patient.TotalSeries || ''}
