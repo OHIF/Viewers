@@ -78,6 +78,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       const StudyInstanceUID = trackedStudy;
       const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
       const instanceMeta = studyMeta.series[0].instances[0];
+      if (!instanceMeta) return;
       const { StudyDate, StudyDescription } = instanceMeta;
 
       const modalities = new Set();

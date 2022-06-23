@@ -169,10 +169,6 @@ function OHIFCornerstoneViewport({
                       SeriesInstanceUID: m.reference_series_uid,
                       SOPInstanceUID: m.sop_instance_uid,
                     };
-                    const _displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-                      instance.SOPInstanceUID,
-                      instance.SeriesInstanceUID
-                    );
                     if (m.reference_series_uid === SeriesInstanceUID) {
                       const imageId = dataSource.getImageIdsForInstance({
                         instance,
@@ -199,19 +195,25 @@ function OHIFCornerstoneViewport({
                         }
                       );
                     }
-                    addOrUpdate(toolType, {
-                      element,
-                      toolName: toolType,
-                      toolType,
-                      measurementData,
-                      id: m.id,
-                      instance: {
-                        ...instance,
-                        FrameOfReferenceUID: m.frame_of_reference_uid,
-                        displaySetInstanceUID:
-                          _displaySet.displaySetInstanceUID,
-                      },
-                    });
+                    const _displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+                      instance.SOPInstanceUID,
+                      instance.SeriesInstanceUID
+                    );
+                    if (_displaySet) {
+                      addOrUpdate(toolType, {
+                        element,
+                        toolName: toolType,
+                        toolType,
+                        measurementData,
+                        id: m.id,
+                        instance: {
+                          ...instance,
+                          FrameOfReferenceUID: m.frame_of_reference_uid,
+                          displaySetInstanceUID:
+                            _displaySet.displaySetInstanceUID,
+                        },
+                      });
+                    }
                   });
                 cornerstone.updateImage(element);
               }

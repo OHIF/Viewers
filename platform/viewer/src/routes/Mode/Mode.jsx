@@ -14,10 +14,7 @@ async function defaultRouteInit({
   studyInstanceUIDs,
   dataSource,
 }) {
-  const {
-    DisplaySetService,
-    HangingProtocolService,
-  } = servicesManager.services;
+  const { DisplaySetService } = servicesManager.services;
 
   const unsubscriptions = [];
   // TODO: This should be baked into core, not manual?
@@ -32,7 +29,15 @@ async function defaultRouteInit({
         SeriesInstanceUID
       );
 
-      DisplaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+      const existingDisplaySets = DisplaySetService.getDisplaySetsForSeries(
+        SeriesInstanceUID
+      );
+      if (existingDisplaySets.length === 0) {
+        DisplaySetService.makeDisplaySets(
+          seriesMetadata.instances,
+          madeInClient
+        );
+      }
     }
   );
 
@@ -46,141 +51,12 @@ async function defaultRouteInit({
         const secondInstance = b.instances[0] || {};
         return firstInstance.SeriesNumber - secondInstance.SeriesNumber;
       });
-      const { StudyInstanceUID } = study;
-      const studyResult = await dataSource.query.studies.search({
-        studyInstanceUid: StudyInstanceUID,
+
+      await setupHangingProtocols({
+        servicesManager,
+        dataSource,
+        study,
       });
-      const {
-        Modality,
-        StudyDescription,
-        body_parts_examined,
-      } = studyResult[0];
-      const {
-        data: { results },
-      } = await nlApi.get('/api/hanging-protocol/');
-
-      const viewportSettings = criteria => {
-        const settingItem = options => ({
-          options,
-          commandName: '',
-          type: 'viewport',
-        });
-        const settings = [];
-        // if (criteria.viewport_flip === 'HORIZONTAL') {
-        //   settings.push(settingItem({ hflip: true }));
-        // }
-        // if (criteria.viewport_flip === 'VERTICAL') {
-        //   settings.push(settingItem({ vflip: true }));
-        // }
-        // settings.push(settingItem({ scale: criteria.viewport_scaling / 100 }));
-        // settings.push(settingItem({ rotation: criteria.rotation_angle }));
-        settings.push(settingItem({ invert: true }));
-        return settings;
-      };
-
-      const seriesMatchingRules = criteria => {
-        const matchingRules = [];
-        if (criteria.series_description.length > 0) {
-          matchingRules.push({
-            id: `${criteria.id}-SD`,
-            weight: 1,
-            attribute: 'SeriesDescription',
-            constraint: {
-              contains: {
-                value: criteria.series_description[0],
-              },
-            },
-            required: false,
-          });
-        }
-        if (criteria.image_orientation_plane) {
-          matchingRules.push({
-            id: `${criteria.id}-SD`,
-            weight: 1,
-            attribute: 'image_orientation_plane',
-            constraint: {
-              equals: {
-                value: criteria.image_orientation_plane,
-              },
-            },
-            required: false,
-          });
-        }
-        return matchingRules;
-      };
-
-      const viewports = hp => {
-        return hp.hanging_protocol_criterias.map(criteria => ({
-          viewportSettings: [],
-          imageMatchingRules: [],
-          seriesMatchingRules: seriesMatchingRules(criteria),
-          studyMatchingRules: [],
-        }));
-      };
-
-      const hangingProtocols = results
-        .filter(
-          hp => hp.modality.length === 0 || hp.modality.includes(Modality)
-        )
-        .filter(hp => {
-          if (hp.study_description.length === 0) return true;
-          for (const sd of hp.study_description) {
-            if (StudyDescription.toLowerCase().includes(sd.toLowerCase())) {
-              return true;
-            }
-          }
-          return false;
-        })
-        .filter(hp => {
-          if (hp.body_part_examined.length === 0) return true;
-          for (const bp of hp.body_part_examined) {
-            if (body_parts_examined.includes(bp)) {
-              return true;
-            }
-          }
-          return false;
-        })
-        .map(hp => ({
-          id: hp.id,
-          locked: true,
-          hasUpdatedPriorsInformation: false,
-          name: hp.name,
-          createdDate: hp.created,
-          modifiedDate: hp.modified,
-          availableTo: {},
-          editableBy: {},
-          protocolMatchingRules: [
-            {
-              id: `${hp.id}-pmr-study-uid`,
-              weight: 1,
-              attribute: 'StudyInstanceUID',
-              constraint: {
-                equals: {
-                  value: StudyInstanceUID,
-                },
-              },
-              required: true,
-            },
-          ],
-          stages: [
-            {
-              id: `${hp.id}-stage`,
-              name: `${hp.name}-stage`,
-              viewportStructure: {
-                type: 'grid',
-                properties: {
-                  rows: hp.grid_matrix[0],
-                  columns: hp.grid_matrix[1],
-                },
-              },
-              viewports: viewports(hp),
-              createdDate: hp.created,
-            },
-          ],
-          numberOfPriorsReferenced: -1,
-        }));
-      HangingProtocolService.addProtocols(hangingProtocols);
-      HangingProtocolService.run(study);
     }
   );
   unsubscriptions.push(studyLoadedUnsubscribe);
@@ -190,6 +66,190 @@ async function defaultRouteInit({
   });
 
   return unsubscriptions;
+}
+
+async function setupHangingProtocols({ servicesManager, dataSource, study }) {
+  const { HangingProtocolService } = servicesManager.services;
+  const { StudyInstanceUID } = study;
+
+  const studyResponse = await nlApi.get('/api/studies/', {
+    params: { uid: StudyInstanceUID },
+  });
+  const studyMetadata = studyResponse.data.results[0];
+  const patientResponse = await nlApi.get('/api/patients/', {
+    params: { id: studyResponse.data.results[0].patient_id },
+  });
+  const patientMetadata = patientResponse.data.results[0];
+  const studiesForPatientResponse = await nlApi.get('/api/studies/', {
+    params: { mrn: studyMetadata.mrn },
+  });
+  const rawStudyMetadatas = studiesForPatientResponse.data.results;
+  const { Modality, StudyDescription, body_parts_examined } = studyMetadata;
+
+  const hpStudies = [];
+  for (const rawMetadata of rawStudyMetadatas) {
+    if (rawMetadata.StudyInstanceUID !== StudyInstanceUID) {
+      const seriesResponse = await nlApi.get('/api/series/', {
+        params: { study_id: rawMetadata.id },
+      });
+      const seriesSummaryMetadata = seriesResponse.data.results;
+      hpStudies.push({
+        ...patientMetadata,
+        ...rawMetadata,
+        series: seriesSummaryMetadata,
+      });
+    }
+  }
+
+  const currentIndex = rawStudyMetadatas.findIndex(
+    study => study.StudyInstanceUID === StudyInstanceUID
+  );
+
+  const { data } = await nlApi.get('/api/hanging-protocol/');
+
+  const viewportSettings = criteria => {
+    const settings = [];
+    // const settingItem = options => ({
+    //   options,
+    //   commandName: '',
+    //   type: 'viewport',
+    // });
+    // if (criteria.viewport_flip === 'HORIZONTAL') {
+    //   settings.push(settingItem({ hflip: true }));
+    // }
+    // if (criteria.viewport_flip === 'VERTICAL') {
+    //   settings.push(settingItem({ vflip: true }));
+    // }
+    // settings.push(settingItem({ scale: criteria.viewport_scaling / 100 }));
+    // settings.push(settingItem({ rotation: criteria.rotation_angle }));
+    // settings.push(settingItem({ invert: true }));
+    return settings;
+  };
+
+  const seriesMatchingRules = criteria => {
+    const matchingRules = [];
+    if (criteria.series_description.length > 0) {
+      matchingRules.push({
+        id: `${criteria.id}-SD`,
+        weight: 1,
+        attribute: 'SeriesDescription',
+        constraint: {
+          contains: {
+            value: criteria.series_description[0],
+          },
+        },
+        required: false,
+      });
+    }
+    if (criteria.image_orientation_plane) {
+      matchingRules.push({
+        id: `${criteria.id}-SD`,
+        weight: 1,
+        attribute: 'image_orientation_plane',
+        constraint: {
+          equals: {
+            value: criteria.image_orientation_plane,
+          },
+        },
+        required: false,
+      });
+    }
+    return matchingRules;
+  };
+
+  const studyMatchingRules = criteria => {
+    const { prior_study, id, hanging_protocol } = criteria;
+    let studyInstanceUID = StudyInstanceUID;
+    if (prior_study !== null && currentIndex - prior_study >= 0) {
+      studyInstanceUID =
+        rawStudyMetadatas[currentIndex - prior_study].StudyInstanceUID;
+    }
+    return [
+      {
+        id: `${hanging_protocol}-${id}-study-uid`,
+        weight: 1,
+        attribute: 'StudyInstanceUID',
+        constraint: {
+          equals: {
+            value: studyInstanceUID,
+          },
+        },
+      },
+    ];
+  };
+
+  const viewports = hp => {
+    return hp.hanging_protocol_criterias.map(criteria => ({
+      viewportSettings: viewportSettings(criteria),
+      imageMatchingRules: [],
+      seriesMatchingRules: seriesMatchingRules(criteria),
+      studyMatchingRules: studyMatchingRules(criteria),
+    }));
+  };
+
+  const hangingProtocols = data.results
+    .filter(hp => hp.modality.length === 0 || hp.modality.includes(Modality))
+    .filter(hp => {
+      if (hp.study_description.length === 0) return true;
+      for (const sd of hp.study_description) {
+        if (StudyDescription.toLowerCase().includes(sd.toLowerCase())) {
+          return true;
+        }
+      }
+      return false;
+    })
+    .filter(hp => {
+      if (hp.body_part_examined.length === 0) return true;
+      for (const bp of hp.body_part_examined) {
+        if (body_parts_examined.includes(bp)) {
+          return true;
+        }
+      }
+      return false;
+    })
+    .map(hp => ({
+      id: hp.id,
+      locked: true,
+      hasUpdatedPriorsInformation: false,
+      name: hp.name,
+      createdDate: hp.created,
+      modifiedDate: hp.modified,
+      availableTo: {},
+      editableBy: {},
+      protocolMatchingRules: [
+        {
+          id: `${hp.id}-study-uid`,
+          weight: 1,
+          attribute: 'StudyInstanceUID',
+          constraint: {
+            equals: {
+              value: StudyInstanceUID,
+            },
+          },
+          required: true,
+        },
+      ],
+      stages: [
+        {
+          id: `${hp.id}-stage`,
+          name: `${hp.name}-stage`,
+          viewportStructure: {
+            type: 'grid',
+            properties: {
+              rows: hp.grid_matrix[0],
+              columns: hp.grid_matrix[1],
+            },
+          },
+          viewports: viewports(hp),
+          createdDate: hp.created,
+        },
+      ],
+      numberOfPriorsReferenced: -1,
+    }));
+
+  HangingProtocolService.studies = hpStudies;
+  HangingProtocolService.addProtocols(hangingProtocols);
+  HangingProtocolService.run(study);
 }
 
 export default function ModeRoute({
@@ -355,7 +415,7 @@ export default function ModeRoute({
 
     const setupRouteInit = async () => {
       if (route.init) {
-        return await route.init({
+        await route.init({
           servicesManager,
           extensionManager,
           hotkeysManager,
@@ -364,7 +424,7 @@ export default function ModeRoute({
         });
       }
 
-      return await defaultRouteInit({
+      await defaultRouteInit({
         servicesManager,
         extensionManager,
         hotkeysManager,

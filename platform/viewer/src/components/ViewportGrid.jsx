@@ -4,8 +4,11 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
+
+const { nlApi } = utils;
 
 const getQueryParam = key => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -33,8 +36,7 @@ function ViewerViewportGrid(props) {
   } = servicesManager.services;
 
   const updateDisplaysetForViewports = useCallback(
-    displaySets => {
-      console.log('update displayset for viewports');
+    async displaySets => {
       const [
         matchDetails,
         hpAlreadyApplied,
@@ -83,12 +85,31 @@ function ViewerViewportGrid(props) {
           return;
         }
 
-        const { SeriesInstanceUID } = matchDetails[i];
+        const { StudyInstanceUID, SeriesInstanceUID } = matchDetails[i];
         const matchingDisplaySet = displaySets.find(ds => {
           return ds.SeriesInstanceUID === SeriesInstanceUID;
         });
 
         if (!matchingDisplaySet) {
+          const study = HangingProtocolService.studies.find(
+            s => s.StudyInstanceUID === StudyInstanceUID
+          );
+          const series = study.series.find(
+            aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID
+          );
+          const instancesResponse = await nlApi.get('/api/instances/', {
+            params: {
+              series_id: series.id,
+            },
+          });
+          const instances = instancesResponse.data.results.map(instance => ({
+            ...instance,
+            ...series,
+            ...study,
+            ...instance.overlay_data,
+          }));
+          DicomMetadataStore.addSeriesMetadata(study.series);
+          DicomMetadataStore.addInstances(instances);
           continue;
         }
 

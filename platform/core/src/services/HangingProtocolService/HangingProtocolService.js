@@ -229,6 +229,7 @@ class HangingProtocolService {
       const currentViewportData = {
         viewportIndex,
         SeriesInstanceUID: currentMatch && currentMatch.SeriesInstanceUID,
+        StudyInstanceUID: currentMatch && currentMatch.StudyInstanceUID,
       };
 
       // Viewport Settings
