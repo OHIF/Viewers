@@ -18,7 +18,7 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
     const { ContentSequence } = firstInstance;
 
     srDisplaySet.referencedImages = getReferencedImagesList(ContentSequence);
-    srDisplaySet.measurements = getMeasurements(ContentSequence, srDisplaySet);
+    srDisplaySet.measurements = getMeasurements(ContentSequence);
     const mappings = MeasurementService.getSourceMappings(
       'CornerstoneTools',
       '4'
@@ -127,6 +127,7 @@ const checkIfCanAddMeasurementsToDisplaySet = (
 
   const imageIds = images.map(i => i.getImageId());
   const SOPInstanceUIDs = images.map(i => i.SOPInstanceUID);
+  imageDisplaySet.SRLabels = [];
   measurements.forEach(measurement => {
     const { coords } = measurement;
 
@@ -140,6 +141,21 @@ const checkIfCanAddMeasurementsToDisplaySet = (
         if (imageIndex > -1) {
           const imageId = imageIds[imageIndex];
           const imageMetadata = images[imageIndex].getData().metadata;
+
+          const coords = measurement.coords;
+          for (let i = 0; i < coords.length; i++) {
+            const coord = coords[i];
+            if (coord.GraphicType !== 'TEXT') {
+              continue;
+            }
+
+            imageDisplaySet.SRLabels.push({
+              ReferencedSOPInstanceUID:
+                coord.ReferencedSOPSequence.ReferencedSOPInstanceUID,
+              labels: measurement.labels[i],
+            });
+          }
+
           addMeasurement(
             measurement,
             imageId,

@@ -1,16 +1,16 @@
 import processTID1410Measurement from './processTID1410Measurement';
 import processNonGeometricallyDefinedMeasurement from './processNonGeometricallyDefinedMeasurement';
 
-const processMeasurement = (mergedContentSequence, displaySet) => {
+const processMeasurement = contentSequence => {
   if (
-    mergedContentSequence.some(
+    contentSequence.some(
       group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
     )
   ) {
-    return processTID1410Measurement(mergedContentSequence, displaySet);
+    return processTID1410Measurement(contentSequence);
   }
 
-  return processNonGeometricallyDefinedMeasurement(mergedContentSequence);
+  return processNonGeometricallyDefinedMeasurement(contentSequence);
 };
 
 export default processMeasurement;

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "2.12.10",
+  "version": "2.12.11",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -44,7 +44,8 @@
     "react-dom": "^16.8.6",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "styled-components": "^5.3.5"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
