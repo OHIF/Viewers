@@ -132,7 +132,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
               containerClassName="mr-2"
-              value={metadata.PatientSex}
+              value={metadata.PatientSex || ''}
               onChange={e => {
                 handleMetadataChange({
                   PatientSex: e.target.value,
@@ -145,7 +145,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
               containerClassName="mr-2"
-              value={metadata.PatientWeight}
+              value={metadata.PatientWeight || ''}
               onChange={e => {
                 handleMetadataChange({
                   PatientWeight: e.target.value,
@@ -160,7 +160,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               containerClassName="mr-2"
               value={
                 metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideTotalDose
+                  .RadionuclideTotalDose || ''
               }
               onChange={e => {
                 handleMetadataChange({
@@ -178,7 +178,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               containerClassName="mr-2"
               value={
                 metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideHalfLife
+                  .RadionuclideHalfLife || ''
               }
               onChange={e => {
                 handleMetadataChange({
@@ -196,7 +196,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               containerClassName="mr-2"
               value={
                 metadata.RadiopharmaceuticalInformationSequence
-                  .RadiopharmaceuticalStartTime
+                  .RadiopharmaceuticalStartTime || ''
               }
               onChange={e => {
                 handleMetadataChange({
@@ -212,7 +212,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
               containerClassName="mr-2"
-              value={metadata.SeriesTime}
+              value={metadata.SeriesTime || ''}
               onChange={() => {}}
             />
           </div>

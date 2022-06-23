@@ -90,77 +90,31 @@ const commandsModule = ({
       const imageIds = dataSource.getImageIdsForDisplaySet(ptDisplaySet);
 
       const firstImageId = imageIds[0];
-      const SeriesTime = metadataProvider.get('SeriesTime', firstImageId);
-      const metadata = {};
-
-      if (SeriesTime) {
-        metadata.SeriesTime = SeriesTime;
-      }
-
-      // get metadata from the first image
-      const seriesModule = metadataProvider.get(
-        'generalSeriesModule',
-        firstImageId
-      );
-
-      if (seriesModule && seriesModule.modality !== 'PT') {
+      const instance = metadataProvider.get('instance', firstImageId);
+      if (instance.Modality !== 'PT') {
         return;
       }
 
-      // get metadata from the first image
-      const demographic = metadataProvider.get(
-        'patientDemographicModule',
-        firstImageId
-      );
-
-      if (demographic) {
-        // naturalized dcmjs version
-        metadata.PatientSex = demographic.patientSex;
-      }
-
-      // patientStudyModule
-      const studyModule = metadataProvider.get(
-        'patientStudyModule',
-        firstImageId
-      );
-
-      if (studyModule) {
-        // naturalized dcmjs version
-        metadata.PatientWeight = studyModule.patientWeight;
-      }
-
-      // total dose
-      const petSequenceModule = metadataProvider.get(
-        'petIsotopeModule',
-        firstImageId
-      );
-      const { radiopharmaceuticalInfo } = petSequenceModule;
-
-      const {
-        radionuclideHalfLife,
-        radionuclideTotalDose,
-        radiopharmaceuticalStartTime,
-      } = radiopharmaceuticalInfo;
-
-      const {
-        hours,
-        minutes,
-        seconds,
-        fractionalSeconds,
-      } = radiopharmaceuticalStartTime;
-
-      // pad number with leading zero if less than 10
-      const hoursString = hours < 10 ? `0${hours}` : hours;
-      const minutesString = minutes < 10 ? `0${minutes}` : minutes;
-      const secondsString = seconds < 10 ? `0${seconds}` : seconds;
-
-      if (radiopharmaceuticalInfo) {
-        metadata.RadiopharmaceuticalInformationSequence = {
-          RadionuclideTotalDose: radionuclideTotalDose,
-          RadionuclideHalfLife: radionuclideHalfLife,
-          RadiopharmaceuticalStartTime: `${hoursString}${minutesString}${secondsString}.${fractionalSeconds}`,
-        };
-      }
+      const metadata = {
+        SeriesTime: instance.SeriesTime,
+        Modality: instance.Modality,
+        PatientSex: instance.PatientSex,
+        PatientWeight: instance.PatientWeight,
+        RadiopharmaceuticalInformationSequence: {
+          RadionuclideTotalDose:
+            instance.RadiopharmaceuticalInformationSequence[0]
+              .RadionuclideTotalDose,
+          RadionuclideHalfLife:
+            instance.RadiopharmaceuticalInformationSequence[0]
+              .RadionuclideHalfLife,
+          RadiopharmaceuticalStartTime:
+            instance.RadiopharmaceuticalInformationSequence[0]
+              .RadiopharmaceuticalStartTime,
+          RadiopharmaceuticalStartDateTime:
+            instance.RadiopharmaceuticalInformationSequence[0]
+              .RadiopharmaceuticalStartDateTime,
+        },
+      };
 
       return metadata;
     },

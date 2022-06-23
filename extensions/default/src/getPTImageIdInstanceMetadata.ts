@@ -16,28 +16,25 @@ export default function getPTImageIdInstanceMetadata(
     throw new Error('dicom metadata are required');
   }
 
-  const petSequenceModule = metadataProvider.get('petIsotopeModule', imageId);
-
-  if (!petSequenceModule) {
-    throw new Error('petSequenceModule metadata is required');
-  }
-
-  const radiopharmaceuticalInfo = petSequenceModule.radiopharmaceuticalInfo;
-
   if (
     dicomMetaData.SeriesDate === undefined ||
     dicomMetaData.SeriesTime === undefined ||
     dicomMetaData.PatientWeight === undefined ||
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
-    radiopharmaceuticalInfo.radionuclideTotalDose === undefined ||
-    radiopharmaceuticalInfo.radionuclideHalfLife === undefined ||
+    !dicomMetaData.RadiopharmaceuticalInformationSequence ||
+    !dicomMetaData.RadiopharmaceuticalInformationSequence.length ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+      .RadionuclideHalfLife === undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+      .RadionuclideTotalDose === undefined ||
     dicomMetaData.DecayCorrection === undefined ||
     dicomMetaData.AcquisitionDate === undefined ||
     dicomMetaData.AcquisitionTime === undefined ||
-    (radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime === undefined &&
-      dicomMetaData.SeriesDate === undefined &&
-      radiopharmaceuticalInfo.radiopharmaceuticalStartTime === undefined)
+    (dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+      .RadiopharmaceuticalStartDateTime === undefined &&
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+        .RadiopharmaceuticalStartTime === undefined)
   ) {
     throw new Error('required metadata are missing');
   }
@@ -45,8 +42,18 @@ export default function getPTImageIdInstanceMetadata(
   const instanceMetadata: InstanceMetadata = {
     CorrectedImage: dicomMetaData.CorrectedImage,
     Units: dicomMetaData.Units,
-    RadionuclideHalfLife: radiopharmaceuticalInfo.radionuclideHalfLife,
-    RadionuclideTotalDose: radiopharmaceuticalInfo.radionuclideTotalDose,
+    RadionuclideHalfLife:
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+        .RadionuclideHalfLife,
+    RadionuclideTotalDose:
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+        .RadionuclideTotalDose,
+    RadiopharmaceuticalStartDateTime:
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+        .RadiopharmaceuticalStartDateTime,
+    RadiopharmaceuticalStartTime:
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
+        .RadiopharmaceuticalStartTime,
     DecayCorrection: dicomMetaData.DecayCorrection,
     PatientWeight: dicomMetaData.PatientWeight,
     SeriesDate: dicomMetaData.SeriesDate,
@@ -54,46 +61,6 @@ export default function getPTImageIdInstanceMetadata(
     AcquisitionDate: dicomMetaData.AcquisitionDate,
     AcquisitionTime: dicomMetaData.AcquisitionTime,
   };
-
-  if (
-    radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime &&
-    radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime !== undefined &&
-    typeof radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime === 'string'
-  ) {
-    instanceMetadata.RadiopharmaceuticalStartDateTime =
-      radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime;
-  }
-
-  if (
-    radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime &&
-    radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime !== undefined &&
-    typeof radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime !== 'string'
-  ) {
-    const dateString = convertInterfaceDateToString(
-      radiopharmaceuticalInfo.radiopharmaceuticalStartDateTime
-    );
-    instanceMetadata.RadiopharmaceuticalStartDateTime = dateString;
-  }
-
-  if (
-    radiopharmaceuticalInfo.radiopharmaceuticalStartTime &&
-    radiopharmaceuticalInfo.radiopharmaceuticalStartTime !== undefined &&
-    typeof radiopharmaceuticalInfo.radiopharmaceuticalStartTime === 'string'
-  ) {
-    instanceMetadata.RadiopharmaceuticalStartTime =
-      radiopharmaceuticalInfo.radiopharmaceuticalStartTime;
-  }
-
-  if (
-    radiopharmaceuticalInfo.radiopharmaceuticalStartTime &&
-    radiopharmaceuticalInfo.radiopharmaceuticalStartTime !== undefined &&
-    typeof radiopharmaceuticalInfo.radiopharmaceuticalStartTime !== 'string'
-  ) {
-    const timeString = convertInterfaceTimeToString(
-      radiopharmaceuticalInfo.radiopharmaceuticalStartTime
-    );
-    instanceMetadata.RadiopharmaceuticalStartTime = timeString;
-  }
 
   if (
     dicomMetaData['70531000'] ||

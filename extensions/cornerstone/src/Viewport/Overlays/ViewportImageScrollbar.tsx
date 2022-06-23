@@ -134,7 +134,7 @@ function CornerstoneImageScrollbar({
 }
 
 CornerstoneImageScrollbar.propTypes = {
-  viewportData: PropTypes.object.isRequired,
+  viewportData: PropTypes.object,
   viewportIndex: PropTypes.number.isRequired,
   element: PropTypes.instanceOf(Element),
   scrollbarHeight: PropTypes.string,

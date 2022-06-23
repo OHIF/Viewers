@@ -408,7 +408,7 @@ class MetadataProvider {
     //   SOPInstanceUID,
     // })
     // somewhere else
-    if (imageId.includes('wadors:')) {
+    if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
 

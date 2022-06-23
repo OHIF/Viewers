@@ -50,6 +50,9 @@ export default async function init({
   // For debugging e2e tests that are failing on CI
   //cornerstone.setUseCPURendering(true);
 
+  // For debugging large datasets
+  //cornerstone.cache.setMaxCacheSize(3000000000);
+
   initCornerstoneTools();
 
   // Don't use cursors in viewports
