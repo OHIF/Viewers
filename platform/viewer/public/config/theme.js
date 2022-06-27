@@ -1,10 +1,15 @@
+// This configuration is designed to be themeable, using the config-point
+// definitions and the @Radical/config-mode definition.
+// To add support for this configuration, use:
+// yarn cli add-mode @Radical/config-mode
+// Then, you can define themes that will enhance your OHIF viewer.
+
 window.config = {
   routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
   modes: [],
   showStudyList: true,
-  maxNumberOfWebWorkers: 3,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -84,12 +89,12 @@ window.config = {
     { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
     { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
     {
-      commandName: 'flipViewportHorizontal',
+      commandName: 'flipViewportVertical',
       label: 'Flip Horizontally',
       keys: ['h'],
     },
     {
-      commandName: 'flipViewportVertical',
+      commandName: 'flipViewportHorizontal',
       label: 'Flip Vertically',
       keys: ['v'],
     },

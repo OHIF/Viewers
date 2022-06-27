@@ -13,6 +13,8 @@ function constructLines(input, categoryName) {
     addToWindowLines: [],
   };
 
+  if (!input) return lines;
+
   input.forEach(entry => {
     const packageName = entry.packageName;
 
@@ -22,7 +24,7 @@ function constructLines(input, categoryName) {
       `import ${defaultImportName} from '${packageName}';\n`
     );
     lines.addToWindowLines.push(
-      `window.${categoryName}.push(${defaultImportName});\n`
+      `${categoryName}.push(${defaultImportName});\n`
     );
 
     pluginCount++;
@@ -42,7 +44,11 @@ function getFormattedImportBlock(importLines) {
 }
 
 function getFormattedWindowBlock(addToWindowLines) {
-  let content = `window.extensions = [];\nwindow.modes = [];\n\n`;
+  let content = "const extensions = [];\n" +
+    "const modes = [];\n" +
+    "const modesFactory = [];\n" +
+    "window.extensions = extensions;\n" +
+    "window.modes = modes;\n\n";
 
   addToWindowLines.forEach(addToWindowLine => {
     content += addToWindowLine;
@@ -51,20 +57,48 @@ function getFormattedWindowBlock(addToWindowLines) {
   return content;
 }
 
-function writePluginImportsFile(SRC_DIR) {
+function getRuntimeLoadModesExtensions() {
+  return "\n\n// Add a dynamic runtime loader\n" +
+    "export default async () => {\n" +
+    " for(const modeFactory of modesFactory) {\n" +
+    "  const newModes = await modeFactory(modes,extensions);\n" +
+    "  newModes.forEach(newMode => modes.push(newMode));\n" +
+    "}\n}\n";
+}
+
+const createCopyPluginFromExtensions = (SRC_DIR, DIST_DIR, plugins) => {
+
+  return plugins.map(plugin => {
+    const from = `${SRC_DIR}/../node_modules/${plugin.packageName}/public/`;
+    const exists = fs.existsSync(from);
+    return exists ? {
+      from,
+      to: DIST_DIR,
+      toType: 'dir',
+    } : undefined;
+  }
+  ).filter(x => !!x);
+}
+
+function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   let pluginImportsJsContent = autogenerationDisclaimer;
 
   const extensionLines = constructLines(pluginConfig.extensions, 'extensions');
   const modeLines = constructLines(pluginConfig.modes, 'modes');
+  const modesFactoryLines = constructLines(pluginConfig.modesFactory, 'modesFactory');
 
   pluginImportsJsContent += getFormattedImportBlock([
     ...extensionLines.importLines,
     ...modeLines.importLines,
+    ...modesFactoryLines.importLines,
   ]);
   pluginImportsJsContent += getFormattedWindowBlock([
     ...extensionLines.addToWindowLines,
     ...modeLines.addToWindowLines,
+    ...modesFactoryLines.addToWindowLines,
   ]);
+
+  pluginImportsJsContent += getRuntimeLoadModesExtensions();
 
   fs.writeFileSync(
     `${SRC_DIR}/pluginImports.js`,
@@ -77,6 +111,18 @@ function writePluginImportsFile(SRC_DIR) {
       }
     }
   );
+
+  const copyPluginFromExtensions = createCopyPluginFromExtensions(
+    SRC_DIR, DIST_DIR,
+    [
+      ...pluginConfig.modesFactory,
+      ...pluginConfig.modes,
+      ...pluginConfig.extensions,
+      ...pluginConfig.umd,
+    ]
+  )
+
+  return copyPluginFromExtensions;
 }
 
 module.exports = writePluginImportsFile;

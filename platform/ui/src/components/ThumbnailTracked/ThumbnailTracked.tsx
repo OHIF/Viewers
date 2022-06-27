@@ -137,7 +137,7 @@ ThumbnailTracked.propTypes = {
   imageSrc: PropTypes.string,
   imageAltText: PropTypes.string,
   description: PropTypes.string.isRequired,
-  seriesNumber: PropTypes.string.isRequired,
+  seriesNumber: PropTypes.any.isRequired,
   numInstances: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,

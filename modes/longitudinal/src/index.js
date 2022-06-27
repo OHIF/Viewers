@@ -44,7 +44,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-video': '^3.0.1',
 };
 
-function modeFactory({ modeConfiguration }) {
+function modeFactory() {
   return {
     // TODO: We're using this as a route segment
     // We should not be.
@@ -123,7 +123,7 @@ function modeFactory({ modeConfiguration }) {
       const modalities_list = modalities.split('\\');
 
       // Slide Microscopy modality not supported by basic mode yet
-      return !modalities_list.includes('SM');
+      return !!modalities_list.filter(modality => modality != 'SM' && modality !== 'ECG').length;
     },
     routes: [
       {
@@ -131,7 +131,7 @@ function modeFactory({ modeConfiguration }) {
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-        layoutTemplate: ({ location, servicesManager }) => {
+        layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {

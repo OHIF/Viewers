@@ -39,6 +39,13 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
     if (attributeValue === undefined) {
       if (attribute === 'NumberOfStudyRelatedSeries') {
         attributeValue = metadataInstance.series?.length;
+      } else if (attribute === 'ModalitiesInStudy') {
+        attributeValue = (metadataInstance.series || []).reduce((prev, curr) => {
+          const { Modality } = curr;
+          if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
+          return prev;
+        },
+          []);
       }
       // Add other computable values such as modalities in study
     }

@@ -13,8 +13,9 @@ validate.validators.doesNotEqual = function (value, options, key) {
 };
 
 validate.validators.contains = function (value, options, key) {
-  if (options && value.indexOf && value.indexOf(options.value) === -1) {
-    return key + 'must contain ' + options.value;
+  const testValue = options && options.value || options;
+  if (testValue && value.indexOf && value.indexOf(testValue) === -1) {
+    return key + 'must contain ' + testValue;
   }
 };
 
@@ -35,5 +36,15 @@ validate.validators.endsWith = function (value, options, key) {
     return key + 'must end with ' + options.value;
   }
 };
+
+validate.validators.greaterThan = function (value, options, key) {
+  if (options && value <= options.value) {
+
+    return key + 'with value ' + value + ' must be greater than ' + options.value;
+  }
+
+};
+
+validate.validators.notNull = (value) => ((value === null || value === undefined) ? "Value is null" : undefined);
 
 export default validate;

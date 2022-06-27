@@ -25,13 +25,33 @@
       "version": "3.0.1"
     },
     {
+      "packageName": "@radical/ecg-dicom",
+      "version": "3.0.1"
+    },
+    {
       "packageName": "@ohif/extension-tmtv",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@radical/microscopy-dicom",
       "version": "3.0.0"
     }
   ],
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
+      "version": "3.0.0"
+    }
+  ],
+  "modesFactory": [
+    {
+      "packageName": "@radical/config-mode",
+      "version": "3.0.0"
+    }
+  ],
+  "umd": [
+    {
+      "packageName": "@radical/mpr-extension",
       "version": "3.0.0"
     }
   ]
