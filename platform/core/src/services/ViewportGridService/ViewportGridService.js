@@ -32,10 +32,15 @@ function _setActiveViewportIndex(index) {
   return serviceImplementation._setActiveViewportIndex(index);
 }
 
-function _setDisplaysetForViewport({ viewportIndex, displaySetInstanceUID }) {
+function _setDisplaysetForViewport({
+  viewportIndex,
+  displaySetInstanceUID,
+  initialViewport,
+}) {
   return serviceImplementation._setDisplaysetForViewport({
     viewportIndex,
     displaySetInstanceUID,
+    initialViewport,
   });
 }
 

@@ -85,7 +85,12 @@ function ViewerViewportGrid(props) {
           return;
         }
 
-        const { StudyInstanceUID, SeriesInstanceUID } = matchDetails[i];
+        const {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          initialViewport,
+        } = matchDetails[i];
+
         const matchingDisplaySet = displaySets.find(ds => {
           return ds.SeriesInstanceUID === SeriesInstanceUID;
         });
@@ -116,6 +121,7 @@ function ViewerViewportGrid(props) {
         viewportGridService.setDisplaysetForViewport({
           viewportIndex: i,
           displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+          initialViewport,
         });
 
         HangingProtocolService.setHangingProtocolAppliedForViewport(i);
@@ -256,10 +262,12 @@ function ViewerViewportGrid(props) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
-      const { displaySetInstanceUID } = paneMetadata;
+      const { displaySetInstanceUID, initialViewport } = paneMetadata;
 
       const displaySet =
         DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
+
+      displaySet.initialViewport = initialViewport;
 
       const ViewportComponent = _getViewportComponent(
         displaySet.SOPClassHandlerId,

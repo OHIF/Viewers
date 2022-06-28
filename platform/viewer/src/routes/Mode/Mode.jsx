@@ -109,20 +109,15 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
 
   const viewportSettings = criteria => {
     const settings = [];
-    // const settingItem = options => ({
-    //   options,
-    //   commandName: '',
-    //   type: 'viewport',
-    // });
-    // if (criteria.viewport_flip === 'HORIZONTAL') {
-    //   settings.push(settingItem({ hflip: true }));
-    // }
-    // if (criteria.viewport_flip === 'VERTICAL') {
-    //   settings.push(settingItem({ vflip: true }));
-    // }
-    // settings.push(settingItem({ scale: criteria.viewport_scaling / 100 }));
-    // settings.push(settingItem({ rotation: criteria.rotation_angle }));
-    // settings.push(settingItem({ invert: true }));
+    const viewportSetting = options => ({ options, type: 'viewport' });
+    if (criteria.viewport_flip === 'HORIZONTAL') {
+      settings.push(viewportSetting({ hflip: true }));
+    }
+    if (criteria.viewport_flip === 'VERTICAL') {
+      settings.push(viewportSetting({ vflip: true }));
+    }
+    settings.push(viewportSetting({ scale: criteria.viewport_scaling / 100 }));
+    settings.push(viewportSetting({ rotation: criteria.rotation_angle }));
     return settings;
   };
 

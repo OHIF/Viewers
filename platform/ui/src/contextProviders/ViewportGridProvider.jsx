@@ -31,10 +31,14 @@ export function ViewportGridProvider({ children, service }) {
         return { ...state, ...{ activeViewportIndex: action.payload } };
       }
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
-        const { viewportIndex, displaySetInstanceUID } = action.payload;
+        const {
+          viewportIndex,
+          displaySetInstanceUID,
+          initialViewport,
+        } = action.payload;
         const viewports = state.viewports.slice();
 
-        viewports[viewportIndex] = { displaySetInstanceUID };
+        viewports[viewportIndex] = { displaySetInstanceUID, initialViewport };
 
         return { ...state, ...{ viewports }, cachedLayout: null };
       }
@@ -100,12 +104,13 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const setDisplaysetForViewport = useCallback(
-    ({ viewportIndex, displaySetInstanceUID }) =>
+    ({ viewportIndex, displaySetInstanceUID, initialViewport }) =>
       dispatch({
         type: 'SET_DISPLAYSET_FOR_VIEWPORT',
         payload: {
           viewportIndex,
           displaySetInstanceUID,
+          initialViewport,
         },
       }),
     [dispatch]

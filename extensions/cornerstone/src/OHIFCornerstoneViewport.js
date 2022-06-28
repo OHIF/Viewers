@@ -10,6 +10,8 @@ import ViewportOverlay from './ViewportOverlay';
 
 import { useCine, useViewportGrid } from '@ohif/ui';
 
+import { useStudyInstanceUIDs } from '@state';
+
 const scrollToIndex = csTools.importInternal('util/scrollToIndex');
 
 const { StackManager, nlApi } = OHIF.utils;
@@ -38,15 +40,25 @@ function OHIFCornerstoneViewport({
   } = servicesManager.services;
   const [viewportData, setViewportData] = useState(null);
   const [{ cines }, cineService] = useCine();
-  const [{ viewports }, viewportGridService] = useViewportGrid();
+  const [viewportGridService] = useViewportGrid();
   const [isParamViewLoaded, setIsParamViewLoaded] = useState(false);
   const isMounted = useRef(false);
   const stageChangedRef = useRef(false);
+  const [studyInstanceUIDs] = useStudyInstanceUIDs();
 
   const onNewImage = (element, callback) => {
-    const handler = () => {
+    const handler = evt => {
       element.removeEventListener(cornerstone.EVENTS.IMAGE_RENDERED, handler);
       callback(element, ToolBarService);
+
+      const { viewport } = evt.detail;
+      const { initialViewport } = displaySet;
+      if (initialViewport) {
+        for (const key in initialViewport) {
+          viewport[key] = initialViewport[key];
+        }
+      }
+      cornerstone.setViewport(element, viewport);
     };
     element.addEventListener(cornerstone.EVENTS.IMAGE_RENDERED, handler);
   };
@@ -140,6 +152,9 @@ function OHIFCornerstoneViewport({
 
         const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
         const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+
+        if (!studyInstanceUIDs.includes(StudyInstanceUID)) return;
+
         nlApi
           .get(`/api/measurement/?study_id=${study.series[0].study_id}`)
           .then(({ data }) => {
