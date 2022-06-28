@@ -131,7 +131,7 @@ const checkIfCanAddMeasurementsToDisplaySet = (
   measurements.forEach(measurement => {
     const { coords } = measurement;
 
-    coords.forEach(coord => {
+    coords.forEach((coord, index) => {
       if (coord.ReferencedSOPSequence !== undefined) {
         const imageIndex = SOPInstanceUIDs.findIndex(
           SOPInstanceUID =>
@@ -142,17 +142,11 @@ const checkIfCanAddMeasurementsToDisplaySet = (
           const imageId = imageIds[imageIndex];
           const imageMetadata = images[imageIndex].getData().metadata;
 
-          const coords = measurement.coords;
-          for (let i = 0; i < coords.length; i++) {
-            const coord = coords[i];
-            if (coord.GraphicType !== 'TEXT') {
-              continue;
-            }
-
+          if (coord.GraphicType === 'TEXT') {
             imageDisplaySet.SRLabels.push({
               ReferencedSOPInstanceUID:
                 coord.ReferencedSOPSequence.ReferencedSOPInstanceUID,
-              labels: measurement.labels[i],
+              labels: measurement.labels[index],
             });
           }
 
