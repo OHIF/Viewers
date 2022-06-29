@@ -6,7 +6,8 @@ export const dicomSRDisplayTool = {
   options: {
     measurementTable: {
       displayFunction: data => {
-        return `(SR) ${data.lesionNamingNumber ||
+        return `(SR) ${data.TrackingIdentifier ||
+          data.lesionNamingNumber ||
           data.measurementNumber ||
           data.text ||
           ''}`;
