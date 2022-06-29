@@ -661,10 +661,9 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       let altImageText;
 
       if (displaySet.Modality && displaySet.Modality === 'SEG') {
-        // TODO: We want to replace this with a thumbnail showing
-        // the segmentation map on the image, but this is easier
-        // and better than what we have right now.
         altImageText = 'SEG';
+      } else if (displaySet.Modality && displaySet.Modality === 'SR') {
+        altImageText = 'SR';
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
         imageId = displaySet.images[imageIndex].getImageId();

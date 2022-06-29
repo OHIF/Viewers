@@ -76,13 +76,13 @@ const additionalFindings = [
 
 const currentCollections = [
   {
-    selectorAction: () => { },
+    selectorAction: () => {},
     maxMeasurements: 3,
     groupName: 'Measurements',
     measurements: measurements,
   },
   {
-    selectorAction: () => { },
+    selectorAction: () => {},
     groupName: 'Additional Findings',
     measurements: additionalFindings,
   },
@@ -90,13 +90,13 @@ const currentCollections = [
 
 const comparisonColletions = [
   {
-    selectorAction: () => { },
+    selectorAction: () => {},
     maxMeasurements: 3,
     groupName: 'Measurements',
     measurements: measurements,
   },
   {
-    selectorAction: () => { },
+    selectorAction: () => {},
     groupName: 'Additional Findings',
     measurements: additionalFindings,
   },
@@ -128,7 +128,7 @@ const comparisonTimepoints = [
   {
     key: 'Comparison',
     date: '15-Jun-18',
-  }
+  },
 ];
 
 const MeasurementComparisonTable = () => {
@@ -138,8 +138,8 @@ const MeasurementComparisonTable = () => {
         timepoints={comparisonTimepoints}
         overallWarnings={overallWarnings}
         measurementCollection={comparisonCollections}
-        onRelabelClick={() => { }}
-        onEditDescriptionClick={() => { }}
+        onRelabelClick={() => {}}
+        onEditDescriptionClick={() => {}}
       />
       <div className="generate-report">
         <button className="btn btn-primary">Generate Report</button>
