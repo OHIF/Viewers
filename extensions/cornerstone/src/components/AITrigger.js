@@ -60,22 +60,24 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
   // adding event listener for when user starts to get new dimensions
   element.addEventListener(EVENTS.MEASUREMENT_ADDED, () => {
     const toolState =
-      cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+      cornerstoneTools
+        .globalImageIdSpecificToolStateManager
+        .toolState;
 
-    if (Object.keys(toolState).length > 0) {
-      if (count === 1) {
-        return;
-      } else {
-        UINotificationService.show({
-          title: 'Overwrite Alert',
-          message:
-            'Taking new dimensions would remove previously selected ones',
-          type: 'warning',
-          duration: 7000,
-        });
-        count++;
-      }
-    }
+    // if (Object.keys(toolState).length > 0) {
+    //   if (count === 1) {
+    //     return;
+    //   } else {
+    //     UINotificationService.show({
+    //       title: 'Overwrite Alert',
+    //       message:
+    //         'Taking new dimensions would remove previously selected ones',
+    //       type: 'warning',
+    //       duration: 7000,
+    //     });
+    //     count++;
+    //   }
+    // }
   });
 };
 

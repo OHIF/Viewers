@@ -2,13 +2,20 @@ import { commandsManager } from '@ohif/viewer/src/App';
 import csTools from 'cornerstone-tools';
 import { PEPPERMINT_TOOL_NAMES } from '../peppermint-tools';
 import KEY_COMMANDS from './keyCommands';
-import refreshViewport from './refreshViewport';
+import refreshViewports from './refreshViewports';
+
+const triggerEvent = csTools.importInternal('util/triggerEvent');
 
 export default function onKeyDownEvent(keyCommand) {
-  if (keyCommand === KEY_COMMANDS.FREEHANDROI_CANCEL_DRAWING
-    || keyCommand === KEY_COMMANDS.FREEHANDROI_COMPLETE_DRAWING) {
+  if (
+    keyCommand === KEY_COMMANDS.FREEHANDROI_CANCEL_DRAWING ||
+    keyCommand === KEY_COMMANDS.FREEHANDROI_COMPLETE_DRAWING
+  ) {
     const element = commandsManager.runCommand('getActiveViewportEnabledElement');
-    const tool = csTools.getToolForElement(element, PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_TOOL);
+    const tool = csTools.getToolForElement(
+      element,
+      PEPPERMINT_TOOL_NAMES.FREEHAND_ROI_3D_TOOL
+    );
     if (tool.mode === 'active') {
       if (keyCommand === KEY_COMMANDS.FREEHANDROI_CANCEL_DRAWING) {
         tool.cancelDrawing(element);
@@ -16,8 +23,10 @@ export default function onKeyDownEvent(keyCommand) {
         tool.completeDrawing(element);
       }
     }
-  } else if (keyCommand === KEY_COMMANDS.BRUSHTOOL_INCREASE_SIZE
-    || keyCommand === KEY_COMMANDS.BRUSHTOOL_DECREASE_SIZE) {
+  } else if (
+    keyCommand === KEY_COMMANDS.BRUSHTOOL_INCREASE_SIZE ||
+    keyCommand === KEY_COMMANDS.BRUSHTOOL_DECREASE_SIZE
+  ) {
     const module = csTools.getModule('segmentation');
     const { configuration } = csTools.getModule('segmentation');
     let radius = configuration.radius;
@@ -28,6 +37,8 @@ export default function onKeyDownEvent(keyCommand) {
     }
     module.setters.radius(radius);
 
-    refreshViewport();
+    triggerEvent(document, 'brushtoolsizechange', {});
+
+    refreshViewports();
   }
 };

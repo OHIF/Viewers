@@ -1,14 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import RoiImporter from '../../utils/IO/classes/RoiImporter';
 import fetchJSON from '../../utils/IO/fetchJSON.js';
-import fetchXML from '../../utils/IO/fetchXML.js';
-import fetchArrayBuffer from '../../utils/IO/fetchArrayBuffer.js';
 import cornerstoneTools from 'cornerstone-tools';
 import sessionMap from '../../utils/sessionMap';
 import getReferencedScan from '../../utils/getReferencedScan';
 import { Icon } from '@ohif/ui';
 import { Loader } from '../../elements';
+import importContourRoiCollections from '../../utils/IO/importContourRoiCollections';
 
 import '../XNATRoiPanel.styl';
 
@@ -82,9 +80,6 @@ export default class XNATContourImportMenu extends React.Component {
       this
     );
     this._updateImportingText = this._updateImportingText.bind(this);
-    this._incrementNumCollectionsParsed = this._incrementNumCollectionsParsed.bind(
-      this
-    );
 
     this.updateProgress = this.updateProgress.bind(this);
     this.onReferencedSeriesChange = this.onReferencedSeriesChange.bind(this);
@@ -187,21 +182,18 @@ export default class XNATContourImportMenu extends React.Component {
           collection.referencedSeriesNumber == scanSelected)
     );
 
-    this._numCollectionsParsed = 0;
-    this._numCollectionsToParse = collectionsToParse.length;
-
-    if (this._numCollectionsToParse === 0) {
+    if (collectionsToParse.length === 0) {
       return;
     }
 
-    this._updateImportingText('');
+    // this._updateImportingText('');
     this.setState({ importing: true });
 
-    for (let i = 0; i < collectionsToParse.length; i++) {
-      if (collectionsToParse[i].selected) {
-        await this._importRoiCollection(collectionsToParse[i]);
-      }
-    }
+    await importContourRoiCollections(collectionsToParse, {
+      updateImportingText: this._updateImportingText,
+      onImportComplete: this.props.onImportComplete,
+      updateProgress: this.updateProgress,
+    });
   }
 
   /**
@@ -342,121 +334,8 @@ export default class XNATContourImportMenu extends React.Component {
    * @param  {string} roiCollectionLabel The lable of the ROI Collection.
    * @returns {null}
    */
-  _updateImportingText(roiCollectionLabel) {
-    this.setState({
-      // progressText: `${roiCollectionLabel} ${this._numCollectionsParsed}/${this._numCollectionsToParse}`,
-      progressText: [
-        `Collection: ${this._numCollectionsParsed + 1}/${
-          this._numCollectionsToParse
-        }`,
-        `${roiCollectionLabel}`,
-      ],
-    });
-  }
-
-  /**
-   * async _importRoiCollection - Fetch and import the ROI collection from XNAT.
-   *
-   * @param  {Object} roiCollectionInfo The collection info for the ROI Collection.
-   * @returns {null}
-   */
-  async _importRoiCollection(roiCollectionInfo) {
-    const roiList = await fetchJSON(roiCollectionInfo.getFilesUri).promise;
-    const result = roiList.ResultSet.Result;
-
-    // Reduce count if no associated file is found (nothing to import, badly deleted roiCollection).
-    if (result.length === 0) {
-      this._incrementNumCollectionsParsed(roiCollectionInfo.name);
-
-      return;
-    }
-
-    // Retrieve each ROI from the list that has the same collectionType as the collection.
-    // In an ideal world this should always be 1, and any other resources -- if any -- are differently formated representations of the same data, but things happen.
-    for (let i = 0; i < result.length; i++) {
-      const fileType = result[i].collection;
-      if (fileType === roiCollectionInfo.collectionType) {
-        await this._getAndImportFile(result[i].URI, roiCollectionInfo);
-      }
-    }
-  }
-
-  /**
-   * async _getAndImportFile - Imports the file from the REST url and loads it into
-   *                     cornerstoneTools toolData.
-   *
-   * @param  {string} uri             The REST URI of the file.
-   * @param  {Object} collectionInfo  An object describing the roiCollection to
-   *                                  import.
-   * @returns {null}
-   */
-  async _getAndImportFile(uri, roiCollectionInfo) {
-    const roiImporter = new RoiImporter(
-      roiCollectionInfo.referencedSeriesInstanceUid,
-      this.updateProgress
-    );
-
-    // The URIs fetched have an additional /, so remove it.
-    uri = uri.slice(1);
-
-    console.log('_getAndImportFile URI:');
-    console.log(uri);
-
-    switch (roiCollectionInfo.collectionType) {
-      case 'AIM':
-        this._updateImportingText(roiCollectionInfo.name);
-        const aimFile = await fetchXML(uri, this.updateProgress).promise;
-
-        if (!aimFile) {
-          break;
-        }
-
-        await roiImporter.importAIMfile(
-          aimFile,
-          roiCollectionInfo.name,
-          roiCollectionInfo.label
-        );
-        break;
-      case 'RTSTRUCT':
-        this._updateImportingText(roiCollectionInfo.name);
-        const rtStructFile = await fetchArrayBuffer(uri, this.updateProgress)
-          .promise;
-        if (!rtStructFile) {
-          break;
-        }
-
-        await roiImporter.importRTStruct(
-          rtStructFile,
-          roiCollectionInfo.name,
-          roiCollectionInfo.label
-        );
-        break;
-      default:
-        console.error(
-          `RoiImportListDialog._getAndImportFile not configured for filetype: ${fileType}.`
-        );
-    }
-
-    this._incrementNumCollectionsParsed(roiCollectionInfo.name);
-  }
-
-  /**
-   * _incrementNumCollectionsParsed - Increases the number of collections
-   * parsed, and closes the progress dialog if the collections have all been
-   * imported.
-   *
-   * @returns {null}
-   */
-  _incrementNumCollectionsParsed(roiCollectionName) {
-    this._updateImportingText(roiCollectionName);
-
-    this._numCollectionsParsed++;
-
-    if (this._numCollectionsParsed === this._numCollectionsToParse) {
-      this.props.onImportComplete();
-    } else {
-      this.updateProgress('');
-    }
+  _updateImportingText(progressText) {
+    this.setState({ progressText });
   }
 
   /**
@@ -656,7 +535,9 @@ export default class XNATContourImportMenu extends React.Component {
                           value={roiCollection.selected}
                         />
                       </td>
-                      <td>{roiCollection.name}</td>
+                      <td className="left-aligned-cell">
+                        {roiCollection.name}
+                      </td>
                       <td>{`${roiCollection.date} ${roiCollection.time}`}</td>
                       <td className="centered-cell">
                         {`${roiCollection.referencedSeriesNumber}`}

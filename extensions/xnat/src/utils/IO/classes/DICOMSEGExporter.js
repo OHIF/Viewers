@@ -18,6 +18,10 @@ export default class DICOMSEGExporter {
     this._label = label;
   }
 
+  get experimentID() {
+    return this._experimentID;
+  }
+
   /**
    * exportToXNAT - Exports the DICOMSEG to XNAT.
    *

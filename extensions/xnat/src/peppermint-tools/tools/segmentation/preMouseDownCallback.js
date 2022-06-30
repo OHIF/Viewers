@@ -11,14 +11,8 @@ export default function preMouseDownCallback(element) {
     activeLabelmapIndex,
   } = segmentationModule.getters.labelmap2D(element);
 
-  console.log({
-    SphericaMouseDown: segmentationModule.getters.labelmap2D(element),
-  });
-
   let segmentIndex = labelmap3D.activeSegmentIndex;
   let metadata = labelmap3D.metadata[segmentIndex];
-
-  console.log({ metadata, segmentIndex });
 
   if (!metadata) {
     metadata = generateSegmentationMetadata('Unnamed Segment');

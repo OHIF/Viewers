@@ -1,0 +1,143 @@
+.ImageFusionDialogContainer
+  display: flex
+  flex-direction: row
+  justify-content: center
+  align-items: center
+  background: var(--ui-gray-darkest)
+  color: var(--text-secondary-color)
+  //filter: drop-shadow(0 0 3px var(--ui-gray-darkest))
+  border: none
+  border-radius: 8px
+  width: inherit
+  overflow: hidden
+
+  .ImageFusionDialog
+    display: flex
+    flex-direction: column
+    padding: 1em
+
+    .pwgWidget
+      //margin: 0 0 10px 0
+      display: flex
+      flex-direction: row
+      align-items: center
+      //border: 2px solid var(--default-color)
+
+    .row
+      margin: 15px 0
+      display: flex
+      flex-direction: row
+      //justify-content: center
+      align-items: center
+      //height: 20px
+
+      &:first-of-type
+        margin-top: 0
+      &:last-of-type
+        margin-bottom: 0
+
+      .group
+        display: flex
+        flex-direction: row
+        align-items: center
+        margin-left: 10px
+
+        &:first-of-type
+          margin-left: 0
+
+        svg
+          margin-right: 5px
+          user-select: none
+          pointer-events: none
+
+          &.visibility
+            margin-right: 0
+            pointer-events: auto
+            cursor: pointer
+
+  .verticalLine
+    margin: 0 5px
+    &:after
+      content: ''
+      border-right: 2px solid var(--ui-border-color)
+
+  h5
+    font-size: 15px
+    font-weight: 500
+    text-align: center
+    margin: 0 0 15px 0
+    color: var(--active-color)
+    display: inline
+
+  .closeButton
+    cursor: pointer
+    margin: -8px 0 0 0
+    padding: 0
+    background-color: transparent
+    border: none
+    color: var(--text-secondary-color)
+    font-size: 20px
+    font-weight: lighter
+
+    &:hover, &:active, &.active
+      background-color: transparent
+
+  select
+    background-color: transparent
+    border: none
+    padding: 0 0 0 0
+    color: white
+    outline: none
+    //width: 100%
+    max-width: 150px
+
+    option, optgroup
+      background-color: var(--ui-gray)
+      color: white
+    optgroup
+      color: var(--text-secondary-color)
+
+  button
+    border: 0
+    border-radius: 4px
+    margin: 0 5px
+    padding: 0 12px
+    font-weight: normal
+    background-color: var(--active-color)
+    color: var(--text-primary-color)
+
+    &:active, &.active, &:hover
+      background-color: var(--text-secondary-color)
+
+    &.jump
+      animation: 1.5s jump ease infinite alternate
+
+.isLoading
+  pointer-events: none
+  opacity: 0.5
+
+.dialogHandle
+  display: flex
+  justify-content: center
+  align-items: center
+  height: 48px
+  width: 38px
+  opacity: 0.5
+  color: var(--ui-gray-darkest)
+  background: var(--active-color)
+
+  svg
+    user-select: none
+    pointer-events: none
+
+//////////////////////////
+@keyframes jump
+  0%
+    //transform: scale(1)
+    box-shadow: 0 1px 2px rgba(0,0,0,.15)
+    background-color: var(--ui-state-error-text)
+
+  100%
+    //transform: scale(1.02)
+    box-shadow: 0 4px 20px rgba(0,0,0,.1)
+    background-color: var(--ui-state-error-border)

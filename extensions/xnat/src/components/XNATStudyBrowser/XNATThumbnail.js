@@ -5,6 +5,11 @@ import { ImageThumbnail } from '@ohif/ui';
 import classNames from 'classnames';
 import { Icon, Tooltip, OverlayTrigger } from '@ohif/ui';
 import cornerstone from 'cornerstone-core';
+import showModal from '../common/showModal';
+import RoiImportModal, {
+  getVolumeImportedContourCollectionLabels,
+} from '../XNATRoiImportModal/RoiImportModal';
+import showNotification from '../common/showNotification';
 
 import './XNATThumbnail.styl';
 
@@ -37,7 +42,10 @@ function ThumbnailFooter({
     let unmounted = false;
     if (hasRois) {
       hasRois.then(response => {
-        const SeriesInstanceUID = cornerstone.metaData.get('SeriesInstanceUID', imageId);
+        const SeriesInstanceUID = cornerstone.metaData.get(
+          'SeriesInstanceUID',
+          imageId
+        );
         if (response[SeriesInstanceUID]) {
           setXnatRois(response[SeriesInstanceUID]);
         }
@@ -115,26 +123,73 @@ function ThumbnailFooter({
     return (
       <div className="series-information">
         {hasRts && (
-          <div className="item item-series">
+          <a
+            className="item item-series"
+            onClick={evt => {
+              evt.stopPropagation();
+              const importedContourLabels = getVolumeImportedContourCollectionLabels();
+              const rtsRois = RTS.filter(
+                roi => !importedContourLabels.includes(roi.label)
+              );
+              if (rtsRois.length < 1) {
+                showNotification(
+                  'Available contour ROI collections have been already imported.',
+                  'info',
+                  'Contours Import'
+                );
+                return;
+              }
+              showModal(
+                RoiImportModal,
+                {
+                  rois: [...rtsRois],
+                  type: 'contour',
+                  seriesInfo: {
+                    SeriesNumber,
+                    SeriesDescription,
+                  },
+                },
+                `Import Mask Collections`
+              );
+            }}
+          >
             <Icon
               name="xnat-contour"
               width="14"
               height="14"
               className="icon roi"
             />
-            <div className="value roi">{RTS.length}</div>
-          </div>
+            <span className="value roi">{RTS.length}</span>
+          </a>
         )}
         {hasSeg && (
-          <div className="item item-series" style={{ marginLeft: RTS ? 5 : 0 }}>
+          <a
+            className="item item-series"
+            style={{ marginLeft: hasRts ? 5 : 0 }}
+            onClick={evt => {
+              evt.stopPropagation();
+              showModal(
+                RoiImportModal,
+                {
+                  rois: [...SEG],
+                  type: 'mask',
+                  seriesInfo: {
+                    SeriesNumber,
+                    SeriesDescription,
+                  },
+                },
+                `Import Mask Collections`
+              );
+            }}
+          >
             <Icon
               name="xnat-mask"
               width="14"
               height="14"
               className="icon roi"
             />
-            <div className="value roi">{SEG.length}</div>
-          </div>
+            <span className="value roi">{SEG.length}</span>
+          </a>
         )}
       </div>
     );

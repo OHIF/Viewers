@@ -1,9 +1,8 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import dcmjs from 'dcmjs';
+// import dcmjs from 'dcmjs';
 import { Segmentation_4X_fork } from './_tempDCMJSFork/';
 import { utils } from '@ohif/core';
-import Segmentation from './_tempDCMJSFork/Segmentation_4X_fork';
 import colorMaps from '../../../constants/colorMaps';
 import { generateUID } from '../../../peppermint-tools';
 

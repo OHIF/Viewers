@@ -1,7 +1,7 @@
 import crossProduct3D from './crossProduct3D.js';
 
 /**
- * rotateVectorAroundUnitVector - Rotates vector v around unit vector k using
+ * RotateVectorAroundUnitVector - Rotates vector v around unit vector k using
  *                                Rodrigues' rotation formula.
  *
  * @param  {Number[3]} v     The vector to rotate.
@@ -20,6 +20,8 @@ export default function(v, k, theta) {
   for (let i = 0; i <= 2; i++) {
     vRot[i] =
       v[i] * cosTheta + kxv[i] * sinTheta + k[i] * kdotv * oneMinusCosTheta;
+
+    vRot[i] *= -1;
   }
 
   return vRot;

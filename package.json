@@ -43,7 +43,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "core-js": "^3.2.1"
+    "core-js": "^3.2.1",
+    "mathjs": "^10.6.3",
+    "pako": "^2.0.4",
+    "react-zlib-js": "^1.0.5",
+    "styled-components": "^5.3.5"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
@@ -80,6 +84,7 @@
     "extract-css-chunks-webpack-plugin": "^4.5.4",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^3.0.0",
+    "itk": "13.2.1",
     "jest": "^24.8.0",
     "jest-canvas-mock": "^2.1.0",
     "jest-junit": "^6.4.0",
@@ -109,8 +114,7 @@
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.2.1",
     "workbox-webpack-plugin": "^5.0.0-beta.1",
-    "worker-loader": "^2.0.0",
-    "itk": "13.2.1"
+    "worker-loader": "^2.0.0"
   },
   "husky": {
     "hooks": {

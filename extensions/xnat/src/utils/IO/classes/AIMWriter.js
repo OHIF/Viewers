@@ -89,11 +89,14 @@ export default class AIMWriter extends XMLWriter {
    * @returns {null}
    */
   _addUser() {
-    const username = window.top.username;
+    const userInfo = window.ohif.userInfo || {
+      loginName: '',
+      name: '',
+    };
 
     this.startElement('user');
-    this._addProperty('name', 'value', username);
-    this._addProperty('loginName', 'value', username);
+    this._addProperty('name', 'value', userInfo.name);
+    this._addProperty('loginName', 'value', userInfo.loginName);
     this._addProperty('roleInTrial');
     this.endElement();
   }

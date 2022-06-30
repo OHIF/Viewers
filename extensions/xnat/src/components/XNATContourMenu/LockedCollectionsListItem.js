@@ -172,7 +172,7 @@ export default class LockedCollectionsListItem extends React.Component {
                     <td className="centered-cell">
                       <a
                         style={{ cursor: 'pointer', color: 'white' }}
-                        // onClick={() => contourRoi.metadata.polygonCount ? onClick(contourRoi.metadata.uid) : null}
+                        onClick={() => contourRoi.metadata.polygonCount ? onClick(contourRoi.metadata.uid) : null}
                       >
                         {contourRoi.metadata.polygonCount}
                       </a>

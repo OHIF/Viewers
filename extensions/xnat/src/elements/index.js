@@ -20,8 +20,15 @@ import xnatHelp from './icons/xnat-help.svg';
 import xnatBrushEraser from './icons/xnat-mask-brush-eraser.svg';
 import xnatUndo from './icons/xnat-undo.svg';
 import xnatRedo from './icons/xnat-redo.svg';
+import xnatImageComposition from './icons/xnat-image-composition.svg';
+import xnatColormap from './icons/xnat-colormap.svg';
+import xnatOpacity from './icons/xnat-opacity.svg';
+import xnatContrastRange from './icons/xnat-contrast-range.svg';
+import xnatRefresh from './icons/xnat-refresh.svg';
 
 import Loader from './Loader/Loader';
+
+import { sliderUtils, ReactSlider } from './rangeSliders';
 
 const XNATICONS = {
   'xnat-ohif-logo': xnatOhifLogo,
@@ -45,6 +52,11 @@ const XNATICONS = {
   'xnat-brush-eraser': xnatBrushEraser,
   'xnat-undo': xnatUndo,
   'xnat-redo': xnatRedo,
+  'xnat-image-composition': xnatImageComposition,
+  'xnat-colormap': xnatColormap,
+  'xnat-opacity': xnatOpacity,
+  'xnat-contrast-range': xnatContrastRange,
+  'xnat-refresh': xnatRefresh,
 };
 
-export { XNATICONS, Loader };
+export { XNATICONS, Loader, sliderUtils, ReactSlider };

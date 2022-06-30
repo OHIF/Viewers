@@ -164,7 +164,7 @@ export default class FreehandRoi3DTool extends FreehandRoiTool {
       freehand3DStore.setters.ROIContourAndSetIndexActive(
         seriesInstanceUid,
         'DEFAULT',
-        'Contour ROI'
+        'Unnamed contour ROI'
       );
     }
   }
@@ -416,10 +416,7 @@ export default class FreehandRoi3DTool extends FreehandRoiTool {
             fillColor = toolColors.getFillColor();
           }
         } else {
-          const colorOpacity = this._addOpacityToColor(
-            ROIContour.color,
-            opacity
-          );
+          const colorOpacity = this._addOpacityToColor(ROIContour.color, opacity);
           color = colorOpacity;
           fillColor = colorOpacity;
         }
@@ -444,7 +441,7 @@ export default class FreehandRoi3DTool extends FreehandRoiTool {
               lines,
               {
                 color,
-                lineWidth,
+                lineWidth
               }
             );
           }

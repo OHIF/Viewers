@@ -111,14 +111,14 @@ export default class WorkingCollectionListItem extends React.Component {
 
     const { visible } = this.state;
     const showHideIcon = visible ? (
-      <Icon name="eye" />
+      <Icon name="eye" width="13px" height="13px" />
     ) : (
-      <Icon name="eye-closed" />
+      <Icon name="eye-closed" width="13px" height="13px" />
     );
 
     return (
       <tr>
-        <td style={{ backgroundColor: roiContourColor }}>
+        <td className="centered-cell" style={{ backgroundColor: roiContourColor }}>
           <input
             type="radio"
             checked={checked}
@@ -129,7 +129,7 @@ export default class WorkingCollectionListItem extends React.Component {
         <td className="left-aligned-cell">
           <a
             style={{ cursor: 'pointer', color: 'var(--text-primary-color)' }}
-            // onClick={this.onEditClick}
+            onClick={this.onEditClick}
           >
             {name}
           </a>
@@ -137,17 +137,17 @@ export default class WorkingCollectionListItem extends React.Component {
         <td className="centered-cell">
           <a
             style={{ cursor: 'pointer', color: 'white' }}
-            // onClick={() => (polygonCount ? onClick(metadata.uid) : null)}
+            onClick={() => (polygonCount ? onClick(metadata.uid) : null)}
           >
             {polygonCount}
           </a>
         </td>
-        <td className="centered-cell">
+        <td className="">
           <button className="small" onClick={() => onRoiRemove(metadata.uid)}>
-            <Icon name="trash" style={{ width: 13 }} />
+            <Icon name="trash" width="13px" height="13px" />
           </button>
         </td>
-        <td className="centered-cell">
+        <td className="">
           <button className="small" onClick={this.onShowHideClick}>
             {showHideIcon}
           </button>

@@ -18,14 +18,11 @@ import { utils } from '@ohif/core';
 import { Icon } from '@ohif/ui';
 import MaskRoiPropertyModal from './XNATSegmentationMenu/MaskRoiPropertyModal.js';
 import showModal from './common/showModal.js';
+import refreshViewports from '../utils/refreshViewports';
 
 import './XNATRoiPanel.styl';
 
-const refreshViewports = () => {
-  cornerstoneTools.store.state.enabledElements.forEach(element => {
-    cornerstone.updateImage(element);
-  });
-};
+const UNSUPPORTED_EXPORT_MODALITIES = ['MG'];
 
 const { studyMetadataManager } = utils;
 const segmentationModule = cornerstoneTools.getModule('segmentation');
@@ -34,7 +31,14 @@ const { getToolState } = cornerstoneTools;
 
 const _getFirstImageId = ({ StudyInstanceUID, displaySetInstanceUID }) => {
   try {
-    const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+    const studies = studyMetadataManager.all();
+    const studyMetadata = studies.find(
+      study =>
+        study.getStudyInstanceUID() === StudyInstanceUID &&
+        study.displaySets.some(
+          ds => ds.displaySetInstanceUID === displaySetInstanceUID
+        )
+    );
     const displaySet = studyMetadata.findDisplaySet(
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
     );
@@ -43,20 +47,6 @@ const _getFirstImageId = ({ StudyInstanceUID, displaySetInstanceUID }) => {
     console.error('Failed to retrieve firstImageId');
     return null;
   }
-};
-
-const updateSegmentationConfiguration = (configuration, newConfiguration) => {
-  configuration.renderFill = newConfiguration.renderFill;
-  configuration.renderOutline = newConfiguration.renderOutline;
-  configuration.shouldRenderInactiveLabelmaps =
-    newConfiguration.shouldRenderInactiveLabelmaps;
-  configuration.fillAlpha = newConfiguration.fillAlpha;
-  configuration.outlineAlpha = newConfiguration.outlineAlpha;
-  configuration.outlineWidth = newConfiguration.outlineWidth;
-  configuration.fillAlphaInactive = newConfiguration.fillAlphaInactive;
-  configuration.outlineAlphaInactive = newConfiguration.outlineAlphaInactive;
-  configuration.radius = newConfiguration.radius;
-  refreshViewports();
 };
 
 /**
@@ -145,6 +135,10 @@ export default class XNATSegmentationPanel extends React.Component {
         this.cornerstoneEventListenerHandler
       );
     });
+    document.addEventListener(
+      'finishedmaskimportusingmodalevent',
+      this.cornerstoneEventListenerHandler
+    );
   }
 
   removeEventListeners() {
@@ -154,6 +148,10 @@ export default class XNATSegmentationPanel extends React.Component {
         this.cornerstoneEventListenerHandler
       );
     });
+    document.removeEventListener(
+      'finishedmaskimportusingmodalevent',
+      this.cornerstoneEventListenerHandler
+    );
   }
 
   cornerstoneEventListenerHandler() {
@@ -358,7 +356,7 @@ export default class XNATSegmentationPanel extends React.Component {
    * @param segmentIndex
    */
   onMaskClick(segmentIndex, frameIndex) {
-    const { activeIndex, onSegmentItemClick } = this.props;
+    const { activeIndex, onSegmentItemClick, viewports } = this.props;
 
     const enabledElements = cornerstone.getEnabledElements();
     const element = enabledElements[activeIndex].element;
@@ -372,16 +370,14 @@ export default class XNATSegmentationPanel extends React.Component {
     const imageIds = toolState.data[0].imageIds;
     const imageId = imageIds[frameIndex];
     const SOPInstanceUID = cornerstone.metaData.get('SOPInstanceUID', imageId);
-    const StudyInstanceUID = cornerstone.metaData.get(
-      'StudyInstanceUID',
-      imageId
-    );
+    const StudyInstanceUID = cornerstone.metaData.get('StudyInstanceUID', imageId);
 
     onSegmentItemClick({
       StudyInstanceUID,
       SOPInstanceUID,
       frameIndex,
       activeViewportIndex: activeIndex,
+      displaySetInstanceUID: viewports[activeIndex].displaySetInstanceUID,
     });
   }
 
@@ -508,6 +504,7 @@ export default class XNATSegmentationPanel extends React.Component {
     } = this.state;
 
     const { viewports, activeIndex, showColorSelectModal } = this.props;
+    const { Modality } = viewports[activeIndex];
 
     let component;
     let isFractional = false;
@@ -516,10 +513,15 @@ export default class XNATSegmentationPanel extends React.Component {
       isFractional = labelmap3D.isFractional;
     }
 
-    // Note: For now disable export and adding of segments if the labelmap is fractional.
-    const ExportCallbackOrComponent = isFractional
-      ? null
-      : XNATSegmentationExportMenu;
+    let exportDisabledMessage;
+    if (isFractional) {
+      // Note: For now disable export and adding of segments if the labelmap is fractional.
+      exportDisabledMessage =
+        'Exporting fractional segmentation is not supported yet';
+    } else if (UNSUPPORTED_EXPORT_MODALITIES.includes(Modality)) {
+      exportDisabledMessage =
+        'Segmentation export is not supported for this modality';
+    }
 
     const addSegmentButton = isFractional ? null : (
       <button style={{ fontSize: 12 }} onClick={() => this.onNewSegment()}>
@@ -528,14 +530,9 @@ export default class XNATSegmentationPanel extends React.Component {
     );
 
     if (showSegmentationSettings) {
-      const { configuration } = cornerstoneTools.getModule('segmentation');
       component = (
         <XNATSegmentationSettings
-          configuration={configuration}
           onBack={() => this.setState({ showSegmentationSettings: false })}
-          onChange={newConfiguration =>
-            updateSegmentationConfiguration(configuration, newConfiguration)
-          }
         />
       );
     } else if (importing) {
@@ -563,7 +560,7 @@ export default class XNATSegmentationPanel extends React.Component {
         <div className="xnatPanel">
           <div className="panelHeader">
             <div className="title-with-icon">
-              <h3>Mask-Based ROIs</h3>
+              <h3>Mask-based ROIs</h3>
               <Icon
                 className="settings-icon"
                 name="cog"
@@ -576,15 +573,18 @@ export default class XNATSegmentationPanel extends React.Component {
             </div>
             <MenuIOButtons
               ImportCallbackOrComponent={XNATSegmentationImportMenu}
-              ExportCallbackOrComponent={ExportCallbackOrComponent}
+              ExportCallbackOrComponent={XNATSegmentationExportMenu}
               onImportButtonClick={() => this.setState({ importing: true })}
               onExportButtonClick={() => this.setState({ exporting: true })}
+              exportDisabledMessage={exportDisabledMessage}
             />
           </div>
           <div className="roiCollectionBody">
             <div className="workingCollectionHeader">
               <h4> {importMetadata.name} </h4>
-              {/* <div>{addSegmentButton}</div> */}
+              <div>
+                {addSegmentButton}
+              </div>
             </div>
             {/*<SegmentationMenuListHeader importMetadata={importMetadata} />*/}
             <div className="collectionSection">

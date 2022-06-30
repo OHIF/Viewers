@@ -2,7 +2,7 @@ import csTools from 'cornerstone-tools';
 import { commandsManager, servicesManager } from '@ohif/viewer/src/App';
 import XNATContextMenu from './XNATContextMenu';
 import { Polygon, generateUID, PEPPERMINT_TOOL_NAMES } from '../../peppermint-tools'
-import refreshViewport from '../../utils/refreshViewport';
+import refreshViewports from '../../utils/refreshViewports';
 
 const modules = csTools.store.modules;
 const globalToolStateManager = csTools.globalImageIdSpecificToolStateManager;
@@ -119,7 +119,7 @@ function handleContourContextMenu(event, callbackData) {
           roiContour.uid, //copiedData.ROIContourUid
         );
 
-        refreshViewport();
+        refreshViewports();
       },
       onEmpty: () => {
         console.log('Empty contour clipboard...');

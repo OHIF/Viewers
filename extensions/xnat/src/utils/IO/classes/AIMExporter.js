@@ -18,6 +18,10 @@ export default class AIMExporter {
     this._label = aimWriter.label;
   }
 
+  get experimentID() {
+    return this._experimentID;
+  }
+
   /**
    * exportToXNAT - Exports the AIMExporter's AIM file to XNAT.
    *

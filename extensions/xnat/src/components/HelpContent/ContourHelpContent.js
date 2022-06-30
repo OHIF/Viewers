@@ -124,7 +124,7 @@ const ContourHelpContent = () => {
         <h5>Shortcuts</h5>
         <ul>
           <li>
-            Pressing 'c' key whilst drawing will cancel the contour you are
+            Pressing 'esc' key whilst drawing will cancel the contour you are
             drawing.
           </li>
           <li> Pressing 'enter' key whilst drawing will quickly close the contour.</li>

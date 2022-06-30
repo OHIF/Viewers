@@ -223,4 +223,12 @@ const sessionMap = {
   },
 };
 
+// For debugging purposes
+if (process.env.NODE_ENV === 'development') {
+  window.xnatSessionMap = {
+    sessionMap,
+    _internal: _map,
+  };
+}
+
 export default sessionMap;

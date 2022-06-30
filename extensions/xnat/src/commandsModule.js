@@ -5,6 +5,7 @@ import cornerstone from 'cornerstone-core';
 import onKeyDownEvent from './utils/onKeyDownEvent';
 import KEY_COMMANDS from './utils/keyCommands';
 import queryAiaaSettings from './utils/IO/queryAiaaSettings';
+import { referenceLines } from './utils/CSReferenceLines/referenceLines';
 
 const refreshCornerstoneViewports = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
@@ -14,7 +15,7 @@ const refreshCornerstoneViewports = () => {
   });
 };
 
-const getEnabledElement = activeIndex => {
+const getEnabledElement = (activeIndex) => {
   const enabledElements = cornerstone.getEnabledElements();
   return enabledElements[activeIndex].element;
 };
@@ -38,9 +39,7 @@ const actions = {
     }
 
     let imageIdIndices = [];
-    const { undo, redo, labelmaps2D } = segmentationModule.getters.labelmap3D(
-      enabledElement
-    );
+    const { undo, redo, labelmaps2D } = segmentationModule.getters.labelmap3D(enabledElement);
     if (operation === 'undo' && undo.length) {
       undo[undo.length - 1].forEach(item =>
         imageIdIndices.push(item.imageIdIndex)
@@ -71,24 +70,23 @@ const definitions = {
     },
     storeContexts: [],
     options: { url: null },
+    context: 'VIEWER',
   },
   xnatSetView: {
     commandFn: ({ view }) => {
       sessionMap.setView(view);
-
-      // console.log(sessionMap);
     },
     storeContexts: [],
     options: { view: null },
+    context: 'VIEWER',
   },
   xnatSetSession: {
     commandFn: ({ json, sessionVariables }) => {
       sessionMap.setSession(json, sessionVariables);
-
-      // console.log(sessionMap);
     },
     storeContexts: [],
     options: { json: null, sessionVariables: null },
+    context: 'VIEWER',
   },
   xnatGetExperimentID: {
     commandFn: ({ SeriesInstanceUID }) => {
@@ -96,11 +94,19 @@ const definitions = {
     },
     storeContexts: [],
     options: { SeriesInstanceUID: null },
+    context: 'VIEWER',
   },
   xnatCheckAndSetPermissions: {
     commandFn: checkAndSetPermissions,
     storeContexts: [],
     options: { projectId: null, parentProjectId: null },
+    context: 'VIEWER',
+  },
+  xnatCheckAndSetAiaaSettings: {
+    commandFn: queryAiaaSettings,
+    storeContexts: [],
+    options: { projectId: null },
+    context: 'VIEWER',
   },
   xnatRemoveToolState: {
     commandFn: ({ element, toolType, tool }) => {
@@ -121,9 +127,8 @@ const definitions = {
     storeContexts: [],
     options: { element: null, toolType: null, tool: null },
   },
-  xnatCancelROIDrawing: {
+  cancelTask: {
     commandFn: ({ evt }) => {
-      // const syntheticEventData = getKeyPressData(evt);
       onKeyDownEvent(KEY_COMMANDS.FREEHANDROI_CANCEL_DRAWING);
     },
     storeContexts: [],
@@ -150,17 +155,12 @@ const definitions = {
     storeContexts: [],
     options: { evt: null },
   },
-  xnatCheckAndSetAiaaSettings: {
-    commandFn: queryAiaaSettings,
-    storeContexts: [],
-    options: { projectId: null },
-  },
-  xnatBrushUndo: {
+  undo: {
     commandFn: actions.brushUndoRedo,
     storeContexts: ['viewports'],
     options: { operation: 'undo' },
   },
-  xnatBrushRedo: {
+  redo: {
     commandFn: actions.brushUndoRedo,
     storeContexts: ['viewports'],
     options: { operation: 'redo' },
@@ -170,5 +170,5 @@ const definitions = {
 export default {
   actions,
   definitions,
-  defaultContext: 'VIEWER',
+  defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE::XNAT',
 };

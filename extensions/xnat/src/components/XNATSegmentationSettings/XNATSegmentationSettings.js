@@ -1,58 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import csTools from 'cornerstone-tools';
 import { Range } from '@ohif/ui';
+import refreshViewports from '../../utils/refreshViewports';
 
 import './XNATSegmentationSettings.css';
 
+const segmentationModule = csTools.getModule('segmentation');
+const { configuration } = segmentationModule;
+
 const XNATSegmentationSettings = ({
-  configuration,
   onBack,
-  onChange,
-  disabledFields = [],
 }) => {
-  const [state, setState] = useState({
-    renderFill: configuration.renderFill,
-    renderOutline: configuration.renderOutline,
-    shouldRenderInactiveLabelmaps: configuration.shouldRenderInactiveLabelmaps,
-    fillAlpha: configuration.fillAlpha,
-    outlineAlpha: configuration.outlineAlpha,
-    outlineWidth: configuration.outlineWidth,
-    fillAlphaInactive: configuration.fillAlphaInactive,
-    outlineAlphaInactive: configuration.outlineAlphaInactive,
-    radius: configuration.radius,
-  });
+  const [state, setState] = useState({ ...configuration });
 
   useEffect(() => {
-    onChange(state);
+    const callback = () => setState({ ...configuration });
+    document.addEventListener('brushtoolsizechange', callback);
+
+    return () => {
+      document.removeEventListener('brushtoolsizechange', callback);
+    };
+  }, []);
+
+  useEffect(() => {
+    refreshViewports();
   }, [state]);
 
   const check = field => {
-    setState(state => ({ ...state, [field]: !state[field] }));
+    configuration[field] = !configuration[field];
+    setState({ ...configuration });
   };
 
   const save = (field, value) => {
-    setState(state => ({ ...state, [field]: value }));
+    if (field === 'radius') {
+      segmentationModule.setters.radius(value);
+    } else {
+      configuration[field] = value;
+    }
+    setState({ ...configuration });
   };
 
-  const toFloat = value => (parseFloat(value) / 100).toFixed(2);
+  const toFloat = value => parseFloat(value) / 100;
 
   const SegmentFill = (
     <div
       className="settings-group"
-      style={{ marginBottom: state.renderFill ? 15 : 0 }}
+      style={{ marginBottom: configuration.renderFill ? 15 : 0 }}
     >
       <CustomCheck
         label="Segment Fill"
-        checked={state.renderFill}
+        checked={configuration.renderFill}
         onChange={() => check('renderFill')}
       />
-      {state.renderFill && (
+      {configuration.renderFill && (
         <CustomRange
           label="Opacity"
           step={1}
           min={0}
           max={100}
-          value={state.fillAlpha * 100}
+          value={Number((configuration.fillAlpha * 100).toFixed(0))}
           onChange={event => save('fillAlpha', toFloat(event.target.value))}
           showPercentage
         />
@@ -63,51 +70,44 @@ const XNATSegmentationSettings = ({
   const SegmentOutline = (
     <div
       className="settings-group"
-      style={{ marginBottom: state.renderOutline ? 15 : 0 }}
+      style={{ marginBottom: configuration.renderOutline ? 15 : 0 }}
     >
       <CustomCheck
         label="Segment Outline"
-        checked={state.renderOutline}
+        checked={configuration.renderOutline}
         onChange={() => check('renderOutline')}
       />
-      {state.renderOutline && (
+      {configuration.renderOutline && (
         <>
-          {!disabledFields.includes('outlineAlpha') && (
-            <CustomRange
-              value={state.outlineAlpha * 100}
-              label="Opacity"
-              showPercentage
-              step={1}
-              min={0}
-              max={100}
-              onChange={event =>
-                save('outlineAlpha', toFloat(event.target.value))
-              }
-            />
-          )}
-          {!disabledFields.includes('outlineWidth') && (
-            <CustomRange
-              value={state.outlineWidth}
-              label="Width"
-              showValue
-              step={1}
-              min={0}
-              max={5}
-              onChange={event =>
-                save('outlineWidth', parseInt(event.target.value))
-              }
-            />
-          )}
+          <CustomRange
+            value={Number((configuration.outlineAlpha * 100).toFixed(0))}
+            label="Opacity"
+            showPercentage
+            step={1}
+            min={0}
+            max={100}
+            onChange={event =>
+              save('outlineAlpha', toFloat(event.target.value))
+            }
+          />
+          <CustomRange
+            value={configuration.outlineWidth}
+            label="Width"
+            showValue
+            step={1}
+            min={0}
+            max={5}
+            onChange={event =>
+              save('outlineWidth', parseInt(event.target.value))
+            }
+          />
         </>
       )}
     </div>
   );
 
   const BrushSize = (
-    <div
-      className="settings-group"
-      style={{ marginBottom: 15 }}
-    >
+    <div className="settings-group" style={{ marginBottom: 15 }}>
       <div className="custom-check">
         <label>Brush Size</label>
       </div>
@@ -116,7 +116,7 @@ const XNATSegmentationSettings = ({
         step={1}
         min={configuration.minRadius}
         max={configuration.maxRadius}
-        value={state.radius}
+        value={configuration.radius}
         onChange={event => save('radius', parseInt(event.target.value))}
         showValue
       />
@@ -143,7 +143,7 @@ const CustomCheck = ({ label, checked, onChange }) => {
     <div className="custom-check">
       <label>
         <span>{label}</span>
-        <input type="checkbox" checked={checked} onChange={onChange} />
+        <input type="checkbox"  className="mousetrap" checked={checked} onChange={onChange} />
       </label>
     </div>
   );
@@ -166,20 +166,7 @@ const CustomRange = props => {
 };
 
 XNATSegmentationSettings.propTypes = {
-  configuration: PropTypes.shape({
-    renderFill: PropTypes.bool.isRequired,
-    renderOutline: PropTypes.bool.isRequired,
-    shouldRenderInactiveLabelmaps: PropTypes.bool.isRequired,
-    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-      .isRequired /* TODO: why fillAlpha is string? */,
-    outlineAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-      .isRequired /* TODO: why fillAlpha is string? */,
-    outlineWidth: PropTypes.number.isRequired,
-    fillAlphaInactive: PropTypes.number.isRequired,
-    outlineAlphaInactive: PropTypes.number.isRequired,
-  }).isRequired,
   onBack: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
 };
 
 export default XNATSegmentationSettings;

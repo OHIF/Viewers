@@ -1,4 +1,4 @@
-import cornerstone from 'cornerstone-core';
+import cornerstone from '@ohif/core/src/cornerstone';
 
 export default function generateFractionalSegmentation(
   dcmjs,
@@ -22,6 +22,7 @@ export default function generateFractionalSegmentation(
 
     const dicomData = DicomMessage.readFile(buffer);
     const dataset = DicomMetaDictionary.naturalizeDataset(dicomData.dict);
+
     dataset._meta = DicomMetaDictionary.namifyDataset(dicomData.meta);
 
     // Set fractional and copy pixeldata in as fractional.
@@ -32,7 +33,7 @@ export default function generateFractionalSegmentation(
     dataset.SegmentationFractionalType = 'PROBABILITY';
     dataset.MaximumFractionalValue = '255';
     dataset._meta.TransferSyntaxUID.Value[0] = '1.2.840.10008.1.2.1';
-    //dataset._vrMap.PixelData = "OW";
+    // Dataset._vrMap.PixelData = "OW";
 
     const newBuffer = new ArrayBuffer(width * height * 2); // 2 Segmentation frames.
     const newBufferUInt8View = new Uint8Array(newBuffer);

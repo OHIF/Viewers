@@ -54,12 +54,15 @@
   button.small
     border: 0
     background-color: transparent
+    padding: 2px
+    margin: 0
 
     svg
-      color: var(--text-primary-color)
+      color: var(--text-secondary-color)
       background-color: transparent
       width: 16px
       height: 16px
+      margin: 0
       fill: var(--text-secondary-color)
 
   .settings-icon
@@ -202,44 +205,6 @@
         &:hover
           color: var(--hover-color)
 
-  .collectionTable
-    border-collapse: collapse
-    border: 2px solid var(--ui-gray-light)
-    width: 100%
-    //display: block
-    white-space: nowrap
-    overflow-x: auto
-    //table-layout: fixed
-
-  .collectionTable tr:nth-child(even)
-    background-color: #333333
-
-  .subRow
-    background-color: #333333
-    border: 2px solid var(--ui-gray-light)
-
-  .collectionTable tr th
-    background-color: var(--ui-gray-dark)
-    border: 1px dotted
-    padding: 2px
-    word-wrap: break-word
-
-  .collectionTable tr td
-    border: 1px dotted
-    padding: 2px
-    word-wrap: break-word
-    white-space: -o-pre-wrap
-    white-space: pre-wrap
-    white-space: -moz-pre-wrap
-    white-space: -pre-wrap
-
-  .centered-cell
-    text-align: center
-  .left-aligned-cell
-    text-align: left
-  .right-aligned-cell
-    text-align: right
-
   .roiEdit
     display: flex
     width: 100%
@@ -256,11 +221,6 @@
     background-color: #bbb
     border-radius: 50%
     display: inline-block
-
-  .checkboxInCell
-    margin: 0 auto
-    float: left
-    width: 100%
 
   .roiPanelFooter
     display: -webkit-flex
@@ -337,5 +297,57 @@
       &:not(:last-of-type)
         margin-bottom: 15px
 
+.collectionTable
+  border-collapse: collapse
+  border: 2px solid var(--ui-gray-light)
+  width: 100%
+  //display: block
+  white-space: nowrap
+  overflow-x: auto
+  font-size: 12px
+  //table-layout: fixed
 
+  th
+    background-color: var(--ui-gray-dark)
+    //border: 1px dotted
+    padding: 4px
 
+  tr
+    //border-bottom: 1px dotted
+    word-wrap: break-word
+    white-space: -o-pre-wrap
+    white-space: pre-wrap
+    white-space: -moz-pre-wrap
+    white-space: -pre-wrap
+    height: 32px
+
+    td
+      //border-left: 1px dotted
+      //padding: 2px
+      text-align: center
+
+  tr:nth-child(even)
+    background-color: #333333
+
+.checkboxInCell
+  margin: 0 auto
+  float: left
+  width: 12px
+
+.centered-cell
+  text-align: center
+  padding: 2px 5px !important
+.left-aligned-cell
+  text-align: left !important
+  padding: 2px 5px
+.right-aligned-cell
+  text-align: right  !important
+
+.warningMessage
+  display: inline-block
+  color: var(--ui-yellow)
+  font-size: 13px
+  margin: 5px 0
+//.subRow
+//  background-color: #333333
+//  border: 2px solid var(--ui-gray-light)

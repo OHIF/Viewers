@@ -1,0 +1,36 @@
+.importModalContainer
+  display: flex
+  display: -webkit-flex
+  display: -ms-flexbox
+  flex-direction: column
+  justify-content: space-between
+  max-height: 450px
+  width: 450px
+
+  .seriesTitle
+    color: var(--active-color)
+    font-weight: bold
+    padding-bottom: 10px
+
+  .importCollectionContainer
+    //height: 90% //calc(90% - 180px)
+    overflow-y: auto
+    overflow-x: hidden
+    scrollbar-color: var(--text-secondary-color --ui-gray-darkest)
+    word-wrap: break-word
+
+    &::-webkit-scrollbar
+      background: var(--ui-gray-darkest)
+      width: 10px
+
+    &::-webkit-scrollbar-thumb
+      background: var(--text-secondary-color)
+      border-radius: 10px
+      border-right: 2px solid
+      border-right-color: var(--ui-gray-darkest)
+
+  .importProgress
+    margin-bottom: 10px
+    h4
+      margin: 0
+      font-weight: normal

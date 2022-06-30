@@ -106,7 +106,7 @@ export default class WorkingRoiCollectionList extends React.Component {
         <div className="collectionSection">
           <div className="header">
             <h5 style={{ flex: 1, marginRight: 5, marginLeft: 2 }}>
-              {/* <input
+              <input
                 name="roiContourName"
                 className="roiEdit"
                 onChange={onRoiCollectionNameChange}
@@ -115,12 +115,12 @@ export default class WorkingRoiCollectionList extends React.Component {
                 defaultValue={defaultStructureSetName}
                 placeholder="Unnamed ROI collection"
                 tabIndex="1"
-              /> */}
+              />
             </h5>
             <div className="icons">
-              {/* <button onClick={onNewRoiButtonClick}>
+              <button onClick={onNewRoiButtonClick}>
                 <Icon name="xnat-tree-plus" /> Contour ROI
-              </button> */}
+              </button>
               <Icon
                 name={collectionVisible ? "eye" : "eye-closed"}
                 className="icon"
@@ -155,8 +155,8 @@ export default class WorkingRoiCollectionList extends React.Component {
                     <th width="10%" className="centered-cell">
                       <abbr title="Number of contours">N</abbr>
                     </th>
-                    <th width="10%" className="centered-cell" />
-                    <th width="10%" className="centered-cell" />
+                    <th width="10%" className="" />
+                    <th width="10%" className="" />
                   </tr>
                 </thead>
                 <tbody>

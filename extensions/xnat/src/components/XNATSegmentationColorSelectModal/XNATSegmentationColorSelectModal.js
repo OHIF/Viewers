@@ -2,16 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { ChromePicker } from 'react-color';
 import XNATColorMapSelect from './XNATColorMapSelect';
 import XNATColorMapSelectItem from './XNATColorMapSelectItem';
-import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import './XNATSegmentationColorSelectModal.css';
 import colorMaps from '../../constants/colorMaps';
-
-const refreshViewports = () => {
-  cornerstoneTools.store.state.enabledElements.forEach(element =>
-    cornerstone.updateImage(element)
-  );
-};
+import refreshViewports from '../../utils/refreshViewports';
 
 function ColorPicker({ defaultColor = '#fff', onChangeComplete }) {
   const [currentColor, setCurrentColor] = useState(defaultColor);
