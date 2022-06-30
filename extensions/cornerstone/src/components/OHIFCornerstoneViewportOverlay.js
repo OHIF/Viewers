@@ -45,7 +45,7 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     imageId: PropTypes.string.isRequired,
     imageIndex: PropTypes.number.isRequired,
     stackSize: PropTypes.number.isRequired,
-    inconsistencyWarnings: PropTypes.array.isRequired,
+    inconsistencyWarnings: PropTypes.array,
     SRLabels: PropTypes.array,
   };
 
