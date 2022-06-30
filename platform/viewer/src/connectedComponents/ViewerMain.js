@@ -173,7 +173,7 @@ class ViewerMain extends Component {
           );
           document.dispatchEvent(selectionFired);
         });
-      } else {
+      } else if (Modality !== 'SR') {
         displaySet = displaySet.getSourceDisplaySet(this.props.studies);
       }
 
