@@ -139,6 +139,10 @@ const checkIfCanAddMeasurementsToDisplaySet = (
             coord.ReferencedSOPSequence.ReferencedSOPInstanceUID
         );
         if (imageIndex > -1) {
+          if (!srDisplaySet.referencedDisplaySets.includes(imageDisplaySet)) {
+            srDisplaySet.referencedDisplaySets.push(imageDisplaySet);
+          }
+
           const imageId = imageIds[imageIndex];
           const imageMetadata = images[imageIndex].getData().metadata;
 
