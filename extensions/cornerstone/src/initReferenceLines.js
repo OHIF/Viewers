@@ -3,10 +3,12 @@ import csTools from 'cornerstone-tools';
 import { getEnabledElement } from './state';
 import waitForTheImageToBeRendered from './utils/waitForTheImageToBeRendered';
 
+import { planeIntersection } from './planeIntersection';
+
 const draw = csTools.importInternal('drawing/draw');
 const drawLine = csTools.importInternal('drawing/drawLine');
 const convertToVector3 = csTools.importInternal('util/convertToVector3');
-const planeIntersection = csTools.importInternal('util/planePlaneIntersection');
+// const planeIntersection = csTools.importInternal('util/planePlaneIntersection');
 const projectPatientPointToImagePlane = csTools.importInternal(
   'util/projectPatientPointToImagePlane'
 );
