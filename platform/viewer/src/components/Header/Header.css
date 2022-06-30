@@ -1,6 +1,6 @@
 /* Viewer Route */
 .entry-header {
-  padding: 10px 15px;
+  padding: 2px 15px;
   height: var(--top-bar-height);
 }
 
@@ -53,9 +53,9 @@
 
 .header-logo-image {
   fill: transparent;
-  height: 100%;
-  margin: 0 8px 0 0;
-  width: 30px;
+  height: 70px;
+  margin: 10px 8px 0 0;
+  width: 110px;
   float: left;
 }
 
@@ -85,12 +85,12 @@
 .header-menu {
   color: var(--text-primary-color);
   float: right;
-  padding: 4px 0;
+  padding: 0px 0;
   font-size: 13px;
   font-weight: 400;
-  line-height: 18px;
+  line-height: 5px;
   text-decoration: none;
-  margin-right: 10px;
+  margin-right: 0px;
 }
 
 .entry-header.header-big .header-menu {

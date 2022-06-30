@@ -1,5 +1,5 @@
 .header-brand {
-  height: 30px;
+  height: 100px;
   text-decoration: none;
   text-decoration-color: none;
   display: flex;
@@ -21,9 +21,9 @@
 }
 
 .header-logo-image {
-  height: 30px;
-  width: 30px;
-  font-size: 30px;
+  height: 100px;
+  width: 100px;
+  font-size: 60px;
 }
 
 @media only screen and (max-width: 768px) {

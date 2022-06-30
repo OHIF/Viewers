@@ -409,6 +409,16 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: ['viewports'],
       options: {},
     },
+    setWindowLevelTool: {
+      commandFn: actions.setToolActive,
+      storeContexts: [],
+      options: { toolName: 'Wwwc' },
+    },
+    setStackScrollTool: {
+      commandFn: actions.setToolActive,
+      storeContexts: [],
+      options: { toolName: 'StackScroll' },
+    },
   };
 
   return {

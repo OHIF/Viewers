@@ -28,15 +28,6 @@ function Header(props) {
   useEffect(() => {
     const optionsValue = [
       {
-        title: t('About'),
-        icon: { name: 'info' },
-        onClick: () =>
-          show({
-            content: AboutContent,
-            title: t('OHIF Viewer - About'),
-          }),
-      },
-      {
         title: t('Preferences'),
         icon: {
           name: 'user',
@@ -62,7 +53,6 @@ function Header(props) {
 
   return (
     <>
-      <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
       <div
         className={classNames('entry-header', { 'header-big': useLargeLogo })}
       >
@@ -76,23 +66,11 @@ function Header(props) {
             </Link>
           )}
 
-          {children}
 
-          {hasLink && (
-            <Link
-              className="header-btn header-studyListLinkSection"
-              to={{
-                pathname: linkPath,
-                state: { studyLink: location.pathname },
-              }}
-            >
-              {t(linkText)}
-            </Link>
-          )}
+
         </div>
 
         <div className="header-menu">
-          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
           <Dropdown title={t('Options')} list={options} align="right" />
         </div>
       </div>

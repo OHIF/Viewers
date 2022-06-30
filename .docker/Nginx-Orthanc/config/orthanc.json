@@ -30,9 +30,10 @@
   "RemoteAccessAllowed": true,
   "SslEnabled": false,
   "SslCertificate": "certificate.pem",
-  "AuthenticationEnabled": false,
+  "AuthenticationEnabled": true,
   "RegisteredUsers": {
-    "test": "test"
+    "test": "test",
+    "admin":"${PRODUCTION_PWD}"
   },
   "DicomModalities": {},
   "DicomModalitiesInDatabase": false,
@@ -47,7 +48,7 @@
   "HttpVerbose": true,
 
   "HttpTimeout": 10,
-  "HttpsVerifyPeers": true,
+	  "HttpsVerifyPeers": true,
   "HttpsCACertificates": "",
   "UserMetadata": {},
   "UserContentType": {},

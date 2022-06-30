@@ -74,7 +74,7 @@ const stowSRFromMeasurements = async (measurements, serverUrl) => {
 
   const config = {
     url: serverUrl,
-    headers: DICOMWeb.getAuthorizationHeader(),
+    headers: DICOMWeb.getAuthorizationHeader(appConfig.servers.dicomWeb[0]),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
     requestHooks: [getXHRRetryRequestHook()],
   };

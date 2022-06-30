@@ -135,7 +135,9 @@ module.exports = (env, argv) => {
       open: true,
       port: 3000,
       host: '0.0.0.0',
-      public: 'http://localhost:' + 3000,
+      public: 'https://demo.viewer.radiologia.net:' + 3000,
+      compress: true,
+      disableHostCheck: true,
       historyApiFallback: {
         disableDotRule: true,
       },

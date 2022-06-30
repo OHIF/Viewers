@@ -2,7 +2,7 @@ window.config = {
   // default: '/'
   routerBasename: '/',
   extensions: [],
-  showStudyList: true,
+  showStudyList: false,
   filterQueryParam: false,
   disableServersCache: false,
   studyPrefetcher: {
@@ -17,15 +17,19 @@ window.config = {
   servers: {
     dicomWeb: [
       {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
+        name: 'Orthanc',
+        wadoUriRoot: `{PROTOCOL}://{ACCOUNT_NAME}.pacs.radiologia.net.co:{PORT_DICOMWEB}/wado`,
+        qidoRoot: `{PROTOCOL}://{ACCOUNT_NAME}.pacs.radiologia.net.co:{PORT_DICOMWEB}/dicom-web`,
+        wadoRoot: `{PROTOCOL}://{ACCOUNT_NAME}.pacs.radiologia.net.co:{PORT_DICOMWEB}/dicom-web`,
+        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
+	      requestOptions: {
+        // undefined to use JWT + Bearer auth
+          auth: (_options) => {
+            return "Basic YWRtaW5AZWR4LmNvbS5jbzpEMWMwbW4xbmo0JDRkbTFuJA=="
+          }
+        },
       },
     ],
   },
@@ -79,6 +83,8 @@ window.config = {
     },
     // ~ Cornerstone Tools
     { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
+    { commandName: 'setWindowLevelTool', label: 'W/L', keys: ['w'] },
+    { commandName: 'setStackScrollTool', label: 'Scroll', keys: ['s'] },
     // ~ Window level presets
     {
       commandName: 'windowLevelPreset1',

@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+  viewers:
+    image: viewer
+    hostname: viewers
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./../../:/home/node/app
+    ports:
+      - '3000:80' # web
+    command: npm start --production
+    restart: unless-stopped
