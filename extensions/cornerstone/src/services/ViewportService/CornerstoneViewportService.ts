@@ -267,8 +267,10 @@ class CornerstoneViewportService implements IViewportService {
     viewportInfo: ViewportInfo
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
-
+    const viewportOptions = viewportInfo.getViewportOptions();
+    const { customViewportOptions } = viewportOptions;
     const { imageIds, initialImageIndex } = viewportData;
+    const { HangingProtocolService } = this;
 
     let initialImageIndexToUse = initialImageIndex;
 
@@ -293,6 +295,7 @@ class CornerstoneViewportService implements IViewportService {
 
     viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
+      HangingProtocolService.applyCustomViewportSettings(viewportOptions, viewport);
     });
   }
 

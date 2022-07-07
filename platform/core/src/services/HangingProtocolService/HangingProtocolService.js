@@ -150,14 +150,38 @@ class HangingProtocolService {
 
   /**
    * Adds a custom setting that can be chosen in the HangingProtocol UI and applied to a Viewport
-   *
-   * @param settingId The ID used to refer to the setting (e.g. 'displayCADMarkers')
-   * @param settingName The name of the setting to be displayed (e.g. 'Display CAD Markers')
-   * @param options
+   * It is possible to add more than one setting to a given id, in which case all are called.
+   * @param id The ID used to refer to the setting (e.g. 'displayCADMarkers')
+   * @param name The name of the setting to be displayed (e.g. 'Display CAD Markers')
    * @param callback A function to be run after a viewport is rendered with a series
+   * @param options
    */
-  addCustomViewportSetting(...params) {
-    this.customViewportSettings.push(...params);
+  addCustomViewportSetting(id, name, callback, options) {
+    this.customViewportSettings.push({ id, name, callback, options });
+  }
+
+  /** Runs the specified custom viewport setting, on the provided viewport */
+  applyCustomViewportSettings(viewportOptions, viewport, ...args) {
+    const { customViewportOptions } = viewportOptions;
+    if (!customViewportOptions) return;
+    Object.keys(customViewportOptions).forEach(key => {
+      this.applySingleCustomViewportSetting(
+        key,
+        customViewportOptions[key],
+        viewport,
+        ...args
+      );
+    })
+  }
+
+  applySingleCustomViewportSetting(id, value, viewport, ...args) {
+    let callCount = 0;
+    for (const setting of this.customViewportSettings) {
+      if (setting.id !== id) continue;
+      setting.callback(id, value, viewport, ...args);
+      callCount += 1;
+    }
+    if (callCount === 0) console.warn("No custom setting found for", id);
   }
 
   /**

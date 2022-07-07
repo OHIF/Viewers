@@ -240,6 +240,11 @@ There are two events that get publish in `HangingProtocolService`:
   protocol definitions. `addCustomViewportSetting` is another way to set these
   settings which is exposed by API
 
+- `hps.applyCustomViewportSettings(viewportOptions, viewport,...args)` will run
+  the callback registered with addCustomViewportSetting for all custom settings
+  whose name matches the id of the custom viewport, with the arguments (id, value, viewport, ...args)
+
+
 
 Default initialization of the modes handles running the `HangingProtocolService`
 

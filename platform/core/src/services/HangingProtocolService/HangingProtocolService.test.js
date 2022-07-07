@@ -68,6 +68,9 @@ const testProtocol = {
             viewportType: 'volume',
             orientation: 'axial',
             toolGroupId: 'ctToolGroup',
+            customViewportOptions: {
+              initialScale: 2.5,
+            },
             initialImageOptions: {
               // index: 5,
               preset: 'first', // 'first', 'last', 'middle'
@@ -124,9 +127,11 @@ const studyMatchDisplaySets = [displaySet3, displaySet2, displaySet1];
 describe("HangingProtocolService", () => {
   const commandsManager = {};
   const hps = new HangingProtocolServiceClass(commandsManager);
+  let initialScaling;
 
   beforeAll(() => {
     hps.addProtocols([testProtocol]);
+    hps.addCustomViewportSetting('initialScale', 'Set initial scaling', (id, value) => (initialScaling = value));
   })
 
   it('has one protocol', () => {
@@ -138,11 +143,8 @@ describe("HangingProtocolService", () => {
       hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets })
       const state = hps.getState();
       const [matchDetails, alreadyApplied] = state;
-      console.log("matchDetails=", matchDetails)
-      console.log('alreadyApplied=', alreadyApplied)
       expect(alreadyApplied).toMatchObject([false]);
       expect(matchDetails.length).toBe(1);
-      console.log("displaySet match", matchDetails[0].displaySetsInfo);
       expect(matchDetails[0]).toMatchObject(
         {
           viewportOptions: {
@@ -160,6 +162,17 @@ describe("HangingProtocolService", () => {
           }]
         }
       )
+    })
+  })
+  describe('applyCustomViewportSettings', () => {
+    it('Calls custom apply method', () => {
+      hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets })
+      const state = hps.getState();
+      const [matchDetails, alreadyApplied] = state;
+      const { viewportOptions } = matchDetails[0]
+      initialScaling = undefined;
+      hps.applyCustomViewportSettings(viewportOptions, {});
+      expect(initialScaling).toBe(2.5);
     })
   })
 });
