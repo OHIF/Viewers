@@ -16,6 +16,8 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
     failed: [],
   };
 
+  const readValues = {};
+
   let requiredFailed = false;
   let score = 0;
 
@@ -24,8 +26,11 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
 
     // Do not use the custom attribute from the metadataInstance since it is subject to change
     if (customAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
-      const customAttribute = customAttributeRetrievalCallbacks[attribute];
-      metadataInstance[attribute] = customAttribute.callback(metadataInstance);
+      const customAttributeCallback = customAttributeRetrievalCallbacks[attribute];
+      readValues[attribute] = customAttributeCallback(metadataInstance);
+    } else {
+      readValues[attribute] = metadataInstance[attribute] ??
+        ((metadataInstance.images || metadataInstance.others || [])[0] || {})[attribute];
     }
 
     // Format the constraint as required by Validate.js
@@ -35,20 +40,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
 
     // Create a single attribute object to be validated, since metadataInstance is an
     // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-    let attributeValue = metadataInstance[attribute];
-    if (attributeValue === undefined) {
-      if (attribute === 'NumberOfStudyRelatedSeries') {
-        attributeValue = metadataInstance.series?.length;
-      } else if (attribute === 'ModalitiesInStudy') {
-        attributeValue = (metadataInstance.series || []).reduce((prev, curr) => {
-          const { Modality } = curr;
-          if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
-          return prev;
-        },
-          []);
-      }
-      // Add other computable values such as modalities in study
-    }
+    let attributeValue = readValues[attribute];
     const attributeMap = {
       [attribute]: attributeValue,
     };
@@ -66,6 +58,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
 
       // Add the rule's weight to the total score
       score += parseInt(rule.weight, 10);
+      // console.log("passed readValues", attribute, readValues);
 
       // Log that this rule passed in the matching details object
       details.passed.push({
@@ -78,6 +71,9 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
       // mark that a required Rule has failed
       if (rule.required) {
         requiredFailed = true;
+        // console.log("Failed required readValues", attribute, readValues, rule, errorMessages)
+      } else {
+        // console.log("Failed not required readValues", readValues);
       }
 
       // Log that this rule failed in the matching details object

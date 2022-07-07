@@ -38,20 +38,41 @@ async function defaultRouteInit({
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.SERIES_ADDED,
-    ({ StudyInstanceUID, madeInClient }) => {
-      const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-      if (!madeInClient) {
-        HangingProtocolService.run(studyMetadata);
-      }
+  const { unsubscribe: seriesAddedUnsubscribe } = DisplaySetService.subscribe(
+    DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+    displaySets => {
+      if (!displaySets || !displaySets.length) return;
+      // The assumption is that the display set at position 0 is the first
+      // study being displayed, and is thus the "active" study.
+      const studyMap = {};
+      const studies = displaySets.
+        reduce((prev, curr) => {
+          const { StudyInstanceUID } = curr;
+          if (!studyMap[StudyInstanceUID]) {
+            const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+            studyMap[StudyInstanceUID] = study;
+            prev.push(study);
+          }
+          return prev;
+        }, []);
+      const studyMetaData = studies[0];
+      HangingProtocolService.run({ studies, studyMetaData, displaySets });
     }
   );
   unsubscriptions.push(seriesAddedUnsubscribe);
 
+  // No point trying to fire partial retrieves, as it causes havoc
+  // when some series are not displayable, and causes the wrong series
+  // to be fetched.
+  DisplaySetService.holdChangeEvents();
+  const allRetrieves = [];
   studyInstanceUIDs.forEach(StudyInstanceUID => {
-    dataSource.retrieve.series.metadata({ StudyInstanceUID });
+    const item = dataSource.retrieve.series.metadata({ StudyInstanceUID });
+    allRetrieves.push(item);
   });
+  Promise.all(allRetrieves).then(() => {
+    DisplaySetService.fireHoldChangeEvents();
+  })
 
   return unsubscriptions;
 }

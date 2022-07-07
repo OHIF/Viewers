@@ -42,6 +42,7 @@ function ViewerViewportGrid(props) {
           continue;
         }
 
+        // console.log("matchDetails", i, matchDetails[i]);
         // if current viewport doesn't have a match
         if (matchDetails[i] === undefined) return;
 
@@ -49,11 +50,15 @@ function ViewerViewportGrid(props) {
 
         const displaySetUIDsToHang = [];
         const displaySetUIDsToHangOptions = [];
-        displaySetsInfo.forEach(({ SeriesInstanceUID, displaySetOptions }) => {
-          const matchingDisplaySet = availableDisplaySets.find(ds => {
-            return ds.SeriesInstanceUID === SeriesInstanceUID;
-          });
+        displaySetsInfo.forEach(({ SeriesInstanceUID, displaySetInstanceUID, displaySetOptions }) => {
+          const matchingDisplaySet =
+            availableDisplaySets.find(ds => ds.displaySetInstanceUID == displaySetInstanceUID) ||
+            availableDisplaySets.find(ds => ds.SeriesInstanceUID === SeriesInstanceUID);
 
+          // console.log("Displaying", matchingDisplaySet.displaySetInstanceUID);
+          if (matchingDisplaySet.displaySetInstanceUID !== displaySetInstanceUID) {
+            console.log("******** NOT displaying the specified display set", displaySetInstanceUID, matchingDisplaySet);
+          }
           if (!matchingDisplaySet) {
             return;
           }

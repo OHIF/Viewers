@@ -39,7 +39,7 @@
   ],
   "modes": [
     {
-      "packageName": "@ohif/mode-longitudinal",
+      "packageName": "@ohif/mode-tmtv",
       "version": "3.0.0"
     }
   ],
@@ -51,7 +51,7 @@
   ],
   "umd": [
     {
-      "packageName": "@radical/mpr-extension",
+      "packageName": "@radical/hp-extension",
       "version": "3.0.0"
     }
   ]
