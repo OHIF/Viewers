@@ -54,6 +54,14 @@ const initUserManager = (oidc, routerBasename) => {
   return getUserManagerForOpenIdConnectClient(openIdConnectConfiguration);
 }
 
+function LogoutComponent(props) {
+  const { userManager } = props;
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  userManager.signoutRedirect({ post_logout_redirect_uri: query.get("redirect_uri") });
+  return null;
+}
+
 function LoginComponent(userManager) {
   const queryParams = new URLSearchParams(location.search);
   const iss = queryParams.get('iss');
@@ -96,10 +104,10 @@ function LoginComponent(userManager) {
 }
 
 function OpenIdConnectRoutes({
-                         oidc,
-                         routerBasename,
-                         UserAuthenticationService
-                        }) {
+  oidc,
+  routerBasename,
+  UserAuthenticationService
+}) {
   const userManager = initUserManager(oidc, routerBasename);
 
   const getAuthorizationHeader = () => {
@@ -178,11 +186,15 @@ function OpenIdConnectRoutes({
             pathname,
             search
           })
-        }}/>}
+        }} />}
       />
       <Route
         path="/login"
-        element={<LoginComponent userManager={userManager} oidcAuthority={oidcAuthority}/>}
+        element={<LoginComponent userManager={userManager} oidcAuthority={oidcAuthority} />}
+      />
+      <Route
+        path="/logout"
+        element={<LogoutComponent userManager={userManager} />}
       />
     </Routes>
   );
