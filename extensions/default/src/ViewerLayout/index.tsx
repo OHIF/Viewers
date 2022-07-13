@@ -151,11 +151,7 @@ function ViewerLayout({
       title: t('Header:Logout'),
       icon: 'power-off',
       onClick: async () => {
-        //await userManager.signoutRedirect({ post_logout_redirect_uri: window.location.href });
-        //await logout(appConfig.oidc[0].logout);
         navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
-        //await logout(userManager, appConfig);
-        // window.location.replace(`${appConfig.oidc[0].logout}?redirect_uri=${window.location.href}`);
       }
     });
   }
