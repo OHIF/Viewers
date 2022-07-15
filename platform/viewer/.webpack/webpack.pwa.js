@@ -25,7 +25,7 @@ const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
 const writePluginImportFile = require('./writePluginImportsFile.js');
 
-writePluginImportFile(SRC_DIR);
+const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
@@ -35,6 +35,8 @@ const setHeaders = (res, path) => {
   }
   if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
+  } else if (path.indexOf('/frames') !== -1) {
+    res.setHeader('Content-Type', 'multipart/related')
   } else {
     res.setHeader('Content-Type', 'application/json')
   }
@@ -77,6 +79,7 @@ module.exports = (env, argv) => {
       // Copy "Public" Folder to Dist
       new CopyWebpackPlugin({
         patterns: [
+          ...copyPluginFromExtensions,
           {
             from: PUBLIC_DIR,
             to: DIST_DIR,
@@ -108,13 +111,14 @@ module.exports = (env, argv) => {
           PUBLIC_URL: PUBLIC_URL,
         },
       }),
-      // No longer maintained; but good for generating icons + manifest
-      // new FaviconsWebpackPlugin( path.join(PUBLIC_DIR, 'assets', 'icons-512.png')),
+      // Generate a service worker for fast local loads
       new InjectManifest({
         swDest: 'sw.js',
         swSrc: path.join(SRC_DIR, 'service-worker.js'),
         // Increase the limit to 4mb:
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // Need to exclude the theme as it is updated independently
+        exclude: [/theme/],
       }),
       new CopyPlugin({
         patterns: [
@@ -140,16 +144,6 @@ module.exports = (env, argv) => {
         overlay: { errors: true, warnings: false },
       },
       'static': [
-        {
-          directory: path.join(require('os').homedir(), 'dicomweb'),
-          staticOptions: {
-            extensions: ['gz', 'br'],
-            index: "index.json.gz",
-            redirect: true,
-            setHeaders,
-          },
-          publicPath: '/dicomweb',
-        },
         {
           directory: '../../testdata',
           staticOptions: {

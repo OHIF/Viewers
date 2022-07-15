@@ -34,5 +34,9 @@
       "packageName": "@ohif/mode-longitudinal",
       "version": "3.0.0"
     }
+  ],
+  "modesFactory": [
+  ],
+  "umd": [
   ]
 }
