@@ -16,7 +16,9 @@ export type ViewportOptions = {
   viewportId: string;
   orientation?: Types.Orientation;
   background?: Types.Point3;
-  initialView?: string;
+  initialRange?: Types.Point2;
+  initialCenter?: Types.Point2;
+  canvasCenter?: Types.Point2;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportOptions?: Record<string, unknown>;
@@ -28,7 +30,9 @@ export type PublicViewportOptions = {
   viewportId?: string;
   orientation?: string;
   background?: Types.Point3;
-  initialView?: string;
+  initialRange?: Types.Point2;
+  initialCenter?: Types.Point2;
+  canvasCenter?: Types.Point2;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportOptions?: Record<string, unknown>;

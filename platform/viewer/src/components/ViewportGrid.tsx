@@ -42,7 +42,7 @@ function ViewerViewportGrid(props) {
           continue;
         }
 
-        // console.log("matchDetails", i, matchDetails[i]);
+        // console.log("Applying HP matchDetails", i, matchDetails[i]);
         // if current viewport doesn't have a match
         if (matchDetails[i] === undefined) return;
 
@@ -57,7 +57,7 @@ function ViewerViewportGrid(props) {
 
           // console.log("Displaying", matchingDisplaySet.displaySetInstanceUID);
           if (matchingDisplaySet.displaySetInstanceUID !== displaySetInstanceUID) {
-            console.log("******** NOT displaying the specified display set", displaySetInstanceUID, matchingDisplaySet);
+            console.warn("NOT displaying the specified display set", displaySetInstanceUID, matchingDisplaySet);
           }
           if (!matchingDisplaySet) {
             return;

@@ -1,5 +1,5 @@
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
-import sortBy from '../../utils/sortBy.js';
+import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
 
 const EVENTS = {
@@ -44,15 +44,25 @@ class HangingProtocolService {
     this.studies = [];
     this.customViewportSettings = [];
     this.customAttributeRetrievalCallbacks = {
-      NumberOfStudyRelatedSeries: (metadata) => metadata.NumberOfStudyRelatedSeries ?? metadata.series?.length,
-      NumberOfSeriesRelatedInstances: (metadata) => metadata.numImageFrames,
-      ModalitiesInStudy: (metadata) => metadata.ModalitiesInStudy ??
-        (metadata.series || []).reduce((prev, curr) => {
-          const { Modality } = curr;
-          if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
-          return prev;
-        },
-          []),
+      NumberOfStudyRelatedSeries: {
+        name: "The number of series in the study",
+        // TODO - make this number of display sets instead, if available
+        callback: (metadata) => metadata.NumberOfStudyRelatedSeries ?? metadata.series?.length,
+      },
+      NumberOfSeriesRelatedInstances: {
+        name: "The number of instances in the display set",
+        callback: (metadata) => metadata.numImageFrames,
+      },
+      ModalitiesInStudy: {
+        name: "Gets the array of the modalities for the series",
+        callback: (metadata) => metadata.ModalitiesInStudy ??
+          (metadata.series || []).reduce((prev, curr) => {
+            const { Modality } = curr;
+            if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
+            return prev;
+          },
+            [])
+      },
     };
     this.listeners = {};
     this.registeredImageLoadStrategies = {};
@@ -124,7 +134,7 @@ class HangingProtocolService {
     return (
       this.activeImageLoadStrategyName !== null &&
       this.registeredImageLoadStrategies[
-        this.activeImageLoadStrategyName
+      this.activeImageLoadStrategyName
       ] instanceof Function
     );
   }
@@ -191,11 +201,14 @@ class HangingProtocolService {
    * @param attributeId The ID used to refer to the attribute (e.g. 'timepointType')
    * @param attributeName The name of the attribute to be displayed (e.g. 'Timepoint Type')
    * @param callback The function used to calculate the attribute value from the other attributes at its level (e.g. study/series/image)
-   */
-  addCustomAttribute(attributeId, attributeName, callback) {
+   * @param options to add to the "this" object for the custom attribute retriever
+  */
+  addCustomAttribute(attributeId, attributeName, callback, options) {
     this.customAttributeRetrievalCallbacks[attributeId] = {
+      ...options,
+      id: attributeId,
       name: attributeName,
-      callback: callback,
+      callback,
     };
   }
 
@@ -436,7 +449,7 @@ class HangingProtocolService {
     let highestStudyMatchingScore = 0;
     let highestSeriesMatchingScore = 0;
 
-    // console.log("************ Start of match rules");
+    // console.log("******* Start of match rules", seriesMatchingRules);
     this.studies.forEach(study => {
       const studyMatchDetails = this.ProtocolEngine.findMatch(
         study,
@@ -457,7 +470,6 @@ class HangingProtocolService {
       this.displaySets.forEach(displaySet => {
         const { StudyInstanceUID, SeriesInstanceUID, displaySetInstanceUID } = displaySet;
         if (StudyInstanceUID !== study.StudyInstanceUID) return;
-        // console.log("Matching display set", displaySet);
         const seriesMatchDetails = this.ProtocolEngine.findMatch(
           displaySet,
           seriesMatchingRules
@@ -468,10 +480,11 @@ class HangingProtocolService {
           seriesMatchDetails.requiredFailed === true ||
           (!findAll && seriesMatchDetails.score < highestSeriesMatchingScore)
         ) {
-          // console.log("Skipping display set", displaySet);
+          // console.log("Display set not matches", displaySet, seriesMatchingRules);
           return;
         }
 
+        // console.log("Found displaySet for rules", displaySet);
         highestSeriesMatchingScore = Math.max(seriesMatchDetails.score, highestSeriesMatchingScore);
 
         const matchDetails = {

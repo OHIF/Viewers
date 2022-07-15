@@ -39,6 +39,8 @@ class CornerstoneViewportService implements IViewportService {
   renderingEngine: Types.IRenderingEngine | null;
   viewportsInfo: Map<number, ViewportInfo>;
   viewportGridResizeObserver: ResizeObserver | null;
+  // TODO - get the right type here.
+  hangingProtocolService: object;
 
   /**
    * Service-specific
@@ -59,7 +61,7 @@ class CornerstoneViewportService implements IViewportService {
     this.listeners = {};
     this.EVENTS = EVENTS;
     const { HangingProtocolService } = servicesManager.services;
-    this.HangingProtocolService = HangingProtocolService;
+    this.hangingProtocolService = HangingProtocolService;
     Object.assign(this, pubSubServiceInterface);
     //
   }
@@ -166,6 +168,17 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
+    const priorViewportOptions = viewportInfo.getViewportOptions();
+    const viewport = renderingEngine.getViewport(viewportInfo.getViewportId());
+    if (viewport) {
+      priorViewportOptions.customViewportOptions = {
+        ...priorViewportOptions.customViewportOptions,
+        zoomPan: {
+          pan: viewport.getPan(),
+          zoom: viewport.getZoom(),
+        },
+      };
+    }
     const {
       viewportOptions,
       displaySetOptions,
@@ -175,7 +188,7 @@ class CornerstoneViewportService implements IViewportService {
       viewportInfo
     );
 
-    viewportInfo.setViewportOptions(viewportOptions);
+    viewportInfo.setViewportOptions({ ...priorViewportOptions, ...viewportOptions });
     viewportInfo.setDisplaySetOptions(displaySetOptions);
 
     this._broadcastEvent(EVENTS.VIEWPORT_INFO_CREATED, viewportInfo);
@@ -185,6 +198,7 @@ class CornerstoneViewportService implements IViewportService {
     const type = viewportInfo.getViewportType();
     const background = viewportInfo.getBackground();
     const orientation = viewportInfo.getOrientation();
+    const { initialRange, initialCenter, canvasCenter } = viewportInfo.getViewportOptions();
 
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
@@ -193,6 +207,9 @@ class CornerstoneViewportService implements IViewportService {
       defaultOptions: {
         background,
         orientation,
+        initialRange,
+        initialCenter,
+        canvasCenter,
       },
     };
 
@@ -268,9 +285,8 @@ class CornerstoneViewportService implements IViewportService {
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
     const viewportOptions = viewportInfo.getViewportOptions();
-    const { customViewportOptions } = viewportOptions;
     const { imageIds, initialImageIndex } = viewportData;
-    const { HangingProtocolService } = this;
+    const { hangingProtocolService } = this;
 
     let initialImageIndexToUse = initialImageIndex;
 
@@ -294,8 +310,8 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
+      hangingProtocolService.applyCustomViewportSettings(viewportOptions, viewport, properties);
       viewport.setProperties(properties);
-      HangingProtocolService.applyCustomViewportSettings(viewportOptions, viewport);
     });
   }
 
@@ -357,7 +373,7 @@ class CornerstoneViewportService implements IViewportService {
     // (This call may or may not create sub-requests for series metadata)
     const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
-    const { HangingProtocolService } = this;
+    const { hangingProtocolService } = this;
 
     for (let i = 0; i < viewportData.imageIds.length; i++) {
       const imageIds = viewportData.imageIds[i];
@@ -389,11 +405,11 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     if (
-      HangingProtocolService.hasCustomImageLoadStrategy() &&
-      !HangingProtocolService.customImageLoadPerformed
+      hangingProtocolService.hasCustomImageLoadStrategy() &&
+      !hangingProtocolService.customImageLoadPerformed
     ) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      return HangingProtocolService.runImageLoadStrategy({
+      return hangingProtocolService.runImageLoadStrategy({
         viewportId: viewport.id,
         volumeInputArray,
       });

@@ -26,13 +26,13 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
 
     // Do not use the custom attribute from the metadataInstance since it is subject to change
     if (customAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
-      const customAttributeCallback = customAttributeRetrievalCallbacks[attribute];
-      readValues[attribute] = customAttributeCallback(metadataInstance);
+      readValues[attribute] = customAttributeRetrievalCallbacks[attribute].callback(metadataInstance);
     } else {
       readValues[attribute] = metadataInstance[attribute] ??
         ((metadataInstance.images || metadataInstance.others || [])[0] || {})[attribute];
     }
 
+    // console.log("Test", attribute, readValues[attribute], JSON.stringify(rule.constraint));
     // Format the constraint as required by Validate.js
     const testConstraint = {
       [attribute]: rule.constraint,
