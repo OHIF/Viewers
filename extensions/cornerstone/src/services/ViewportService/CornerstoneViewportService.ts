@@ -168,17 +168,6 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const priorViewportOptions = viewportInfo.getViewportOptions();
-    const viewport = renderingEngine.getViewport(viewportInfo.getViewportId());
-    if (viewport) {
-      priorViewportOptions.customViewportOptions = {
-        ...priorViewportOptions.customViewportOptions,
-        zoomPan: {
-          pan: viewport.getPan(),
-          zoom: viewport.getZoom(),
-        },
-      };
-    }
     const {
       viewportOptions,
       displaySetOptions,
@@ -188,7 +177,7 @@ class CornerstoneViewportService implements IViewportService {
       viewportInfo
     );
 
-    viewportInfo.setViewportOptions({ ...priorViewportOptions, ...viewportOptions });
+    viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
 
     this._broadcastEvent(EVENTS.VIEWPORT_INFO_CREATED, viewportInfo);
@@ -565,6 +554,11 @@ class CornerstoneViewportService implements IViewportService {
     viewportOptions: ViewportOptions;
     displaySetOptions: DisplaySetOptions[];
   } {
+
+    const renderingEngine = this.getRenderingEngine();
+    const viewport = renderingEngine.getViewport(viewportInfo.getViewportId());
+    const priorViewportOptions = viewportInfo.getViewportOptions();
+
     const viewportIndex = viewportInfo.getViewportIndex();
 
     // Creating a temporary viewportInfo to handle defaults
@@ -573,6 +567,7 @@ class CornerstoneViewportService implements IViewportService {
       viewportInfo.getViewportId()
     );
 
+    this.hangingProtocolService.applyCustomViewportStore(publicViewportOptions, priorViewportOptions, viewport);
     // To handle setting the default values if missing for the viewportOptions and
     // displaySetOptions
     newViewportInfo.setPublicViewportOptions(publicViewportOptions);

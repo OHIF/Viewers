@@ -10,6 +10,57 @@ const EVENTS = {
 };
 
 class HangingProtocolService {
+  studies: object[];
+  protocols: object[];
+  protocol: object;
+  stage: object;
+  _commandsManager: object;
+  ProtocolEngine: object;
+  matchDetails: object[];
+  hpAlreadyApplied: boolean[] = [];
+  customViewportSettings = [];
+  displaySets = [];
+  customAttributeRetrievalCallbacks = {
+    NumberOfStudyRelatedSeries: {
+      name: "The number of series in the study",
+      // TODO - make this number of display sets instead, if available
+      callback: (metadata) => metadata.NumberOfStudyRelatedSeries ?? metadata.series?.length,
+    },
+    NumberOfSeriesRelatedInstances: {
+      name: "The number of instances in the display set",
+      callback: (metadata) => metadata.numImageFrames,
+    },
+    ModalitiesInStudy: {
+      name: "Gets the array of the modalities for the series",
+      callback: (metadata) => metadata.ModalitiesInStudy ??
+        (metadata.series || []).reduce((prev, curr) => {
+          const { Modality } = curr;
+          if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
+          return prev;
+        },
+          [])
+    },
+  };
+  listeners = {};
+  registeredImageLoadStrategies = {};
+  activeImageLoadStrategyName = null;
+  customImageLoadPerformed = false;
+
+  /**
+     * displaySetMatchDetails = <displaySetId, match>
+     * DisplaySetId is the id defined in the hangingProtocol
+     * match is an object that contains information about
+     *
+     * {
+     *   SeriesInstanceUID,
+     *   StudyInstanceUID,
+     *   matchDetails,
+     *   matchingScore,
+     *   sortingInfo
+     * }
+     */
+  displaySetMatchDetails = new Map();
+
   constructor(commandsManager) {
     this._commandsManager = commandsManager;
     this.protocols = [];
@@ -26,48 +77,7 @@ class HangingProtocolService {
      * }
      */
     this.matchDetails = [];
-    /**
-     * displaySetMatchDetails = <displaySetId, match>
-     * DisplaySetId is the id defined in the hangingProtocol
-     * match is an object that contains information about
-     *
-     * {
-     *   SeriesInstanceUID,
-     *   StudyInstanceUID,
-     *   matchDetails,
-     *   matchingScore,
-     *   sortingInfo
-     * }
-     */
-    this.displaySetMatchDetails = new Map();
-    this.hpAlreadyApplied = [];
     this.studies = [];
-    this.customViewportSettings = [];
-    this.customAttributeRetrievalCallbacks = {
-      NumberOfStudyRelatedSeries: {
-        name: "The number of series in the study",
-        // TODO - make this number of display sets instead, if available
-        callback: (metadata) => metadata.NumberOfStudyRelatedSeries ?? metadata.series?.length,
-      },
-      NumberOfSeriesRelatedInstances: {
-        name: "The number of instances in the display set",
-        callback: (metadata) => metadata.numImageFrames,
-      },
-      ModalitiesInStudy: {
-        name: "Gets the array of the modalities for the series",
-        callback: (metadata) => metadata.ModalitiesInStudy ??
-          (metadata.series || []).reduce((prev, curr) => {
-            const { Modality } = curr;
-            if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
-            return prev;
-          },
-            [])
-      },
-    };
-    this.listeners = {};
-    this.registeredImageLoadStrategies = {};
-    this.activeImageLoadStrategyName = null;
-    this.customImageLoadPerformed = false;
     Object.defineProperty(this, 'EVENTS', {
       value: EVENTS,
       writable: false,
@@ -77,7 +87,7 @@ class HangingProtocolService {
     Object.assign(this, pubSubServiceInterface);
   }
 
-  reset() {
+  public reset() {
     this.studies = [];
     this.protocols = [];
     this.hpAlreadyApplied = [];
@@ -85,19 +95,19 @@ class HangingProtocolService {
     // this.ProtocolEngine.reset()
   }
 
-  getDisplaySetsMatchDetails() {
+  public getDisplaySetsMatchDetails() {
     return this.displaySetMatchDetails;
   }
 
-  getState() {
+  public getState() {
     return [this.matchDetails, this.hpAlreadyApplied];
   }
 
-  getProtocols() {
+  public getProtocols() {
     return this.protocols;
   }
 
-  addProtocols(protocols) {
+  public addProtocols(protocols) {
     protocols.forEach(protocol => {
       if (this.protocols.indexOf(protocol) === -1) {
         this.protocols.push(this._validateProtocol(protocol));
@@ -105,7 +115,7 @@ class HangingProtocolService {
     });
   }
 
-  run({ studies, displaySets }, protocol) {
+  public run({ studies, displaySets }, protocol) {
     this.studies = [...studies];
     this.displaySets = displaySets;
     this.activeStudy = studies[0];
@@ -117,7 +127,11 @@ class HangingProtocolService {
 
     // if there is no pre-defined protocol
     if (!protocol || protocol.id === undefined) {
-      const matchedProtocol = this.ProtocolEngine.run({ studies: this.studies, studyMetaData: studies[0], displaySets });
+      const matchedProtocol = this.ProtocolEngine.run({
+        studies: this.studies,
+        studyMetaData: studies[0],
+        displaySets,
+      });
       this._setProtocol(matchedProtocol);
       return;
     }
@@ -130,7 +144,7 @@ class HangingProtocolService {
    * and its callback has been added to the HangingProtocolService
    * @returns {boolean} true
    */
-  hasCustomImageLoadStrategy() {
+  public hasCustomImageLoadStrategy() {
     return (
       this.activeImageLoadStrategyName !== null &&
       this.registeredImageLoadStrategies[
@@ -139,7 +153,7 @@ class HangingProtocolService {
     );
   }
 
-  getCustomImageLoadPerformed() {
+  public getCustomImageLoadPerformed() {
     return this.customImageLoadPerformed;
   }
 
@@ -148,13 +162,13 @@ class HangingProtocolService {
    * @param {string} name strategy name
    * @param {Function} callback image loader callback
    */
-  registerImageLoadStrategy(name, callback) {
+  public registerImageLoadStrategy(name, callback) {
     if (callback instanceof Function && name) {
       this.registeredImageLoadStrategies[name] = callback;
     }
   }
 
-  setHangingProtocolAppliedForViewport(i) {
+  public setHangingProtocolAppliedForViewport(i) {
     this.hpAlreadyApplied[i] = true;
   }
 
@@ -165,13 +179,23 @@ class HangingProtocolService {
    * @param name The name of the setting to be displayed (e.g. 'Display CAD Markers')
    * @param callback A function to be run after a viewport is rendered with a series
    * @param options
+   * @param options.store is a function to be called when displaying a new display set, to record any existing values
    */
-  addCustomViewportSetting(id, name, callback, options) {
-    this.customViewportSettings.push({ id, name, callback, options });
+  public addCustomViewportSetting(id, name, callback, store, options) {
+    this.customViewportSettings.push({ id, name, store, callback, options });
+  }
+
+  /** Do the inverse store operation to store information between views. */
+  public applyCustomViewportStore(viewportOptions, priorViewportOptions, ...args) {
+    if (!priorViewportOptions) return;
+    for (const setting of this.customViewportSettings) {
+      if (!setting.store) continue;
+      setting.store(viewportOptions, priorViewportOptions, ...args);
+    }
   }
 
   /** Runs the specified custom viewport setting, on the provided viewport */
-  applyCustomViewportSettings(viewportOptions, viewport, ...args) {
+  public applyCustomViewportSettings(viewportOptions, viewport, ...args) {
     const { customViewportOptions } = viewportOptions;
     if (!customViewportOptions) return;
     Object.keys(customViewportOptions).forEach(key => {
@@ -184,10 +208,11 @@ class HangingProtocolService {
     })
   }
 
-  applySingleCustomViewportSetting(id, value, viewport, ...args) {
+  public applySingleCustomViewportSetting(id, value, viewport, ...args) {
     let callCount = 0;
     for (const setting of this.customViewportSettings) {
-      if (setting.id !== id) continue;
+      // Can have pure storage settings as well.
+      if (setting.id !== id || !setting.callback) continue;
       setting.callback(id, value, viewport, ...args);
       callCount += 1;
     }
@@ -203,7 +228,7 @@ class HangingProtocolService {
    * @param callback The function used to calculate the attribute value from the other attributes at its level (e.g. study/series/image)
    * @param options to add to the "this" object for the custom attribute retriever
   */
-  addCustomAttribute(attributeId, attributeName, callback, options) {
+  public addCustomAttribute(attributeId, attributeName, callback, options) {
     this.customAttributeRetrievalCallbacks[attributeId] = {
       ...options,
       id: attributeId,
@@ -215,7 +240,7 @@ class HangingProtocolService {
   /**
    * Switches to the next protocol stage in the display set sequence
    */
-  nextProtocolStage() {
+  public nextProtocolStage() {
     console.log('ProtocolEngine::nextProtocolStage');
 
     if (!this._setCurrentProtocolStage(1)) {
@@ -226,7 +251,7 @@ class HangingProtocolService {
   /**
    * Switches to the previous protocol stage in the display set sequence
    */
-  previousProtocolStage() {
+  public previousProtocolStage() {
     console.log('ProtocolEngine::previousProtocolStage');
 
     if (!this._setCurrentProtocolStage(-1)) {
@@ -437,7 +462,6 @@ class HangingProtocolService {
 
   // Match images given a list of Studies and a Viewport's image matching reqs
   _matchImages(displaySetRules) {
-    console.log('ProtocolEngine::matchImages');
 
     // TODO: matching is applied on study and series level, instance
     // level matching needs to be added in future
@@ -449,18 +473,17 @@ class HangingProtocolService {
     let highestStudyMatchingScore = 0;
     let highestSeriesMatchingScore = 0;
 
-    // console.log("******* Start of match rules", seriesMatchingRules);
+    console.log('ProtocolEngine::matchImages', studyMatchingRules, seriesMatchingRules);
     this.studies.forEach(study => {
+      // TODO - only pass in display sets matching the top level study being tested
       const studyMatchDetails = this.ProtocolEngine.findMatch(
         study,
-        studyMatchingRules
+        studyMatchingRules,
+        { studies: this.studies, displaySets: this.displaySets }
       );
 
       // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
-      if (
-        studyMatchDetails.requiredFailed === true ||
-        studyMatchDetails.score < highestStudyMatchingScore
-      ) {
+      if (studyMatchDetails.requiredFailed === true) {
         return;
       }
 
@@ -472,7 +495,8 @@ class HangingProtocolService {
         if (StudyInstanceUID !== study.StudyInstanceUID) return;
         const seriesMatchDetails = this.ProtocolEngine.findMatch(
           displaySet,
-          seriesMatchingRules
+          seriesMatchingRules,
+          { studies: this.studies, instance: displaySet.images?.[0] }
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed

@@ -4,9 +4,12 @@ import validate from './lib/validator';
  * Match a Metadata instance against rules using Validate.js for validation.
  * @param  {InstanceMetadata} metadataInstance Metadata instance object
  * @param  {Array} rules Array of MatchingRules instances (StudyMatchingRule|SeriesMatchingRule|ImageMatchingRule) for the match
+ * @param {object} extraMatchData is an object containing additional information
+ * @param {object[]} extraMatchData.studies is a list of all the studies
+ * @param {object[]} extraMatchData.displaySets is a list of the display sets
  * @return {Object}      Matching Object with score and details (which rule passed or failed)
  */
-const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
+const match = (metadataInstance, rules, customAttributeRetrievalCallbacks, extraMatchData) => {
   const options = {
     format: 'grouped',
   };
@@ -22,17 +25,18 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
   let score = 0;
 
   rules.forEach(rule => {
-    const attribute = rule.attribute;
+    const { attribute, source } = rule;
+    const metadataSource = source ? extraMatchData[source] : metadataInstance;
 
     // Do not use the custom attribute from the metadataInstance since it is subject to change
     if (customAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
-      readValues[attribute] = customAttributeRetrievalCallbacks[attribute].callback(metadataInstance);
+      readValues[attribute] = customAttributeRetrievalCallbacks[attribute].callback(metadataSource, extraMatchData);
     } else {
-      readValues[attribute] = metadataInstance[attribute] ??
+      readValues[attribute] = metadataSource[attribute] ??
         ((metadataInstance.images || metadataInstance.others || [])[0] || {})[attribute];
     }
 
-    // console.log("Test", attribute, readValues[attribute], JSON.stringify(rule.constraint));
+    console.log("Test", attribute, readValues[attribute], JSON.stringify(rule.constraint));
     // Format the constraint as required by Validate.js
     const testConstraint = {
       [attribute]: rule.constraint,
@@ -57,7 +61,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
       // If no errorMessages were returned, then validation passed.
 
       // Add the rule's weight to the total score
-      score += parseInt(rule.weight, 10);
+      score += parseInt(rule.weight || 1, 10);
       // console.log("passed readValues", attribute, readValues);
 
       // Log that this rule passed in the matching details object

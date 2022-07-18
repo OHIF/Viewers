@@ -5,12 +5,23 @@ describe("validator", () => {
     str: "string",
     num: 3,
     nullValue: null,
+    list: ["abc", "def"],
   }
 
   const options = {
     format: 'grouped',
   };
 
+  describe("contains", () => {
+    it("returns match any list contains", () => {
+      expect(validate(attributeMap, { list: { contains: 'a' } }, [options])).toBeUndefined();
+      expect(validate(attributeMap, { str: { contains: 'i' } }, [options])).toBeUndefined();
+      expect(validate(attributeMap, { str: { contains: ['i'] } }, [options])).toBeUndefined();
+      expect(validate(attributeMap, { list: { contains: ['a'] } }, [options])).toBeUndefined();
+      expect(validate(attributeMap, { list: { contains: ['z', 'd'] } }, [options])).toBeUndefined();
+      expect(validate(attributeMap, { list: { contains: ['z'] } }, [options])).not.toBeUndefined();
+    })
+  })
 
   describe("equals", () => {
     it("returned undefined on equals", () => {

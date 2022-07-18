@@ -58,8 +58,8 @@ export default class ProtocolEngine {
     this._clearMatchedProtocols();
 
     // TODO: handle more than one study - this.studies has the list of studies
-    const study = this.study;
-    const matched = this.findMatchByStudy(study);
+    const matched = this.findMatchByStudy(this.study,
+      { studies: this.studies, displaySets: this.displaySets });
 
     // For each matched protocol, check if it is already in MatchedProtocols
     matched.forEach(matchedDetail => {
@@ -80,11 +80,12 @@ export default class ProtocolEngine {
     });
   }
 
-  findMatch(metaData, rules) {
+  findMatch(metaData, rules, extraMatchData) {
     return HPMatcher.match(
       metaData,
       rules,
-      this.customAttributeRetrievalCallbacks
+      this.customAttributeRetrievalCallbacks,
+      extraMatchData,
     );
   }
 
@@ -92,11 +93,12 @@ export default class ProtocolEngine {
    * Finds the best protocols from Protocol Store, matching each protocol matching rules
    * with the given study. The best protocol are ordered by score and returned in an array
    * @param  {Object} study StudyMetadata instance object
+   * @param {object} extraMatchData to match on.
    * @return {Array}       Array of match objects or an empty array if no match was found
    *                       Each match object has the score of the matching and the matched
    *                       protocol
    */
-  findMatchByStudy(study) {
+  findMatchByStudy(study, extraMatchData) {
     const matched = [];
 
     this.protocols.forEach(protocol => {
@@ -113,7 +115,7 @@ export default class ProtocolEngine {
       }
 
       // Run the matcher and get matching details
-      const matchedDetails = this.findMatch(study, rules);
+      const matchedDetails = this.findMatch(study, rules, extraMatchData);
       const score = matchedDetails.score;
 
       // The protocol matched some rule, add it to the matched list
