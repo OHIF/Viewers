@@ -13,7 +13,7 @@ class HangingProtocolService {
   studies: object[];
   protocols: object[];
   protocol: object;
-  stage: object;
+  stage: number;
   _commandsManager: object;
   ProtocolEngine: object;
   matchDetails: object[];
@@ -362,6 +362,9 @@ class HangingProtocolService {
     return this.protocol.stages[this.stage];
   }
 
+  /**
+   * Updates the viewports with the selected protocol stage.
+   */
   _updateViewports() {
     // Make sure we have an active protocol with a non-empty array of display sets
     if (!this._getNumProtocolStages()) {
@@ -500,11 +503,8 @@ class HangingProtocolService {
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
-        if (
-          seriesMatchDetails.requiredFailed === true ||
-          (!findAll && seriesMatchDetails.score < highestSeriesMatchingScore)
-        ) {
-          // console.log("Display set not matches", displaySet, seriesMatchingRules);
+        if (seriesMatchDetails.requiredFailed === true) {
+          // console.log("Display set required failed", displaySet, seriesMatchingRules);
           return;
         }
 
