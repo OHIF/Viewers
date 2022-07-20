@@ -344,6 +344,8 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
 
   return {
     id: measurement.id,
+    author: measurement.author,
+    createdAt: measurement.createdAt,
     label: measurement.label || '(empty)',
     measurementType: measurement.type,
     displayText: displayText || [],
@@ -397,24 +399,20 @@ function _getDisplayText(
     }
     case types.ELLIPSE:
     case types.RECTANGLE: {
-      const { area } = measurement;
-      const roundedArea = _round(area, 2);
+      const { mean } = measurement;
+      const roundedMean = _round(mean, 2);
 
-      return [
-        `${roundedArea} ${unit}<sup>2</sup> (S:${seriesNumber}, I:${instanceNumber})`,
-      ];
+      return [`${roundedMean} HU (S:${seriesNumber}, I:${instanceNumber})`];
     }
     case types.POINT: {
       const { text } = measurement; // Will display in "short description"
       return [`(S:${seriesNumber}, I:${instanceNumber})`];
     }
     case types.FREEHAND: {
-      const { area } = measurement;
-      const roundedArea = _round(area, 2);
+      const { mean } = measurement;
+      const roundedMean = _round(mean, 2);
 
-      return [
-        `${roundedArea} ${unit}<sup>2</sup> (S:${seriesNumber}, I:${instanceNumber})`,
-      ];
+      return [`${roundedMean} HU (S:${seriesNumber}, I:${instanceNumber})`];
     }
     case types.ANGLE: {
       const { angle } = measurement; // Will display in "short description"

@@ -5,6 +5,7 @@ const publicAPI = {
   getState: _getState,
   setIsReferenceLinesEnabled: _setIsReferenceLinesEnabled,
   setIsSeriesLinkingEnabled: _setIsSeriesLinkingEnabled,
+  setIsOverlayEnabled: _setIsOverlayEnabled,
   setServiceImplementation,
 };
 
@@ -14,6 +15,8 @@ const serviceImplementation = {
     console.warn('setIsReferenceLinesEnabled() NOT IMPLEMENTED'),
   _setIsSeriesLinkingEnabled: () =>
     console.warn('setIsSeriesLinkingEnabled() NOT IMPLEMENTED'),
+  _setIsOverlayEnabled: () =>
+    console.warn('setIsOverlayEnabled() NOT IMPLEMENTED'),
 };
 
 function _getState() {
@@ -21,17 +24,26 @@ function _getState() {
 }
 
 function _setIsReferenceLinesEnabled(isReferneceLinesEnabled) {
-  return serviceImplementation._setIsReferenceLinesEnabled(isReferneceLinesEnabled);
+  return serviceImplementation._setIsReferenceLinesEnabled(
+    isReferneceLinesEnabled
+  );
 }
 
 function _setIsSeriesLinkingEnabled(isSeriesLinkingEnabled) {
-  return serviceImplementation._setIsSeriesLinkingEnabled(isSeriesLinkingEnabled);
+  return serviceImplementation._setIsSeriesLinkingEnabled(
+    isSeriesLinkingEnabled
+  );
+}
+
+function _setIsOverlayEnabled(isOverlayEnabled) {
+  return serviceImplementation._setIsOverlayEnabled(isOverlayEnabled);
 }
 
 function setServiceImplementation({
   getState: getStateImplementation,
   setIsReferenceLinesEnabled: setIsReferenceLinesEnabledImplementation,
   setIsSeriesLinkingEnabled: setIsSeriesLinkingEnabledImplementation,
+  setIsOverlayEnabled: setIsOverlayEnabledImplementation,
 }) {
   if (getStateImplementation) {
     serviceImplementation._getState = getStateImplementation;
@@ -41,6 +53,9 @@ function setServiceImplementation({
   }
   if (setIsSeriesLinkingEnabledImplementation) {
     serviceImplementation._setIsSeriesLinkingEnabled = setIsSeriesLinkingEnabledImplementation;
+  }
+  if (setIsOverlayEnabledImplementation) {
+    serviceImplementation._setIsOverlayEnabled = setIsOverlayEnabledImplementation;
   }
 }
 

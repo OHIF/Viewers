@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 const DEFAULT_STATE = {
   isReferenceLinesEnabled: false,
   isSeriesLinkingEnabled: false,
+  isOverlayEnabled: false,
 };
 
 export const ViewerToolsetContext = createContext(DEFAULT_STATE);
@@ -23,25 +24,42 @@ export default function ViewerToolsetProvider({ children, service }) {
       case 'SET_IS_SERIES_LINKING_ENABLED': {
         return { ...state, ...{ isSeriesLinkingEnabled: action.payload } };
       }
+      case 'SET_IS_OVERLAY_ENABLED': {
+        return { ...state, ...{ isOverlayEnabled: action.payload } };
+      }
       default:
         return action.payload;
     }
   };
 
-  const [state, dispatch] = useReducer(
-    reducer,
-    DEFAULT_STATE
-  );
+  const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
 
   const getState = useCallback(() => state, [state]);
 
   const setIsReferenceLinesEnabled = useCallback(
-    isReferenceLinesEnabled => dispatch({ type: 'SET_IS_REFERENCE_LINES_ENABLED', payload: isReferenceLinesEnabled }),
+    isReferenceLinesEnabled =>
+      dispatch({
+        type: 'SET_IS_REFERENCE_LINES_ENABLED',
+        payload: isReferenceLinesEnabled,
+      }),
     [dispatch]
   );
 
   const setIsSeriesLinkingEnabled = useCallback(
-    isSeriesLinkingEnabled => dispatch({ type: 'SET_IS_SERIES_LINKING_ENABLED', payload: isSeriesLinkingEnabled }),
+    isSeriesLinkingEnabled =>
+      dispatch({
+        type: 'SET_IS_SERIES_LINKING_ENABLED',
+        payload: isSeriesLinkingEnabled,
+      }),
+    [dispatch]
+  );
+
+  const setIsOverlayEnabled = useCallback(
+    isOverlayEnabled =>
+      dispatch({
+        type: 'SET_IS_OVERLAY_ENABLED',
+        payload: isOverlayEnabled,
+      }),
     [dispatch]
   );
 
@@ -52,19 +70,26 @@ export default function ViewerToolsetProvider({ children, service }) {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ getState, setIsReferenceLinesEnabled, setIsSeriesLinkingEnabled });
+      service.setServiceImplementation({
+        getState,
+        setIsReferenceLinesEnabled,
+        setIsSeriesLinkingEnabled,
+        setIsOverlayEnabled,
+      });
     }
   }, [
     getState,
     service,
     setIsReferenceLinesEnabled,
     setIsSeriesLinkingEnabled,
+    setIsOverlayEnabled,
   ]);
 
   const api = {
     getState,
     setIsReferenceLinesEnabled,
     setIsSeriesLinkingEnabled,
+    setIsOverlayEnabled,
   };
 
   return (

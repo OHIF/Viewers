@@ -240,6 +240,16 @@ export default [
       commandName: 'toggleSeriesLinking',
     },
   },
+  {
+    id: 'Overlay',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'tool-overlay',
+      label: 'Overlay',
+      commandName: 'toggleOverlay',
+    },
+  },
   // More...
   {
     id: 'MoreTools',

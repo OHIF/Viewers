@@ -1,0 +1,14 @@
+<svg width="89" height="80" viewBox="0 0 89 80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="5" fill="currentColor"/>
+  <rect y="10" width="25" height="5" fill="currentColor"/>
+  <rect y="20" width="10" height="5" fill="currentColor"/>
+  <rect width="40" height="5" transform="matrix(1 0 0 -1 0 80)" fill="currentColor"/>
+  <rect width="25" height="5" transform="matrix(1 0 0 -1 0 70)" fill="currentColor"/>
+  <rect width="10" height="5" transform="matrix(1 0 0 -1 0 60)" fill="currentColor"/>
+  <rect width="40" height="5" transform="matrix(-1 0 0 1 89 0)" fill="currentColor"/>
+  <rect width="25" height="5" transform="matrix(-1 0 0 1 89 10)" fill="currentColor"/>
+  <rect width="10" height="5" transform="matrix(-1 0 0 1 89 20)" fill="currentColor"/>
+  <rect x="89" y="80" width="40" height="5" transform="rotate(180 89 80)" fill="currentColor"/>
+  <rect x="89" y="70" width="25" height="5" transform="rotate(180 89 70)" fill="currentColor"/>
+  <rect x="89" y="60" width="10" height="5" transform="rotate(180 89 60)" fill="currentColor"/>
+</svg>

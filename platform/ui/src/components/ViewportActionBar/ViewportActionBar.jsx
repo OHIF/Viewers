@@ -44,6 +44,7 @@ const ViewportActionBar = ({
     studyInstanceUid,
     studyDate,
     currentSeries,
+    seriesTime,
     seriesDescription,
     patientInformation,
   } = studyData;
@@ -54,6 +55,7 @@ const ViewportActionBar = ({
     patientName,
     patientSex,
     patientAge,
+    patientDateOfBirth,
     MRN,
     thickness,
     spacing,
@@ -268,8 +270,10 @@ const ViewportActionBar = ({
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
             <span className={`text-base ${textColor}`}>{studyDate}</span>
-            <span className="pl-2 ml-2 text-base border-l border-primary-light text-primary-light">
-              S: {currentSeries}
+            <span
+              className={`pl-2 ml-2 text-base border-l border-primary-light text-primary-light`}
+            >
+              {seriesTime.split('.')[0]}
             </span>
           </div>
           <div className="flex">
@@ -280,7 +284,10 @@ const ViewportActionBar = ({
                 Can clean up by setting percentage widths + calc on parent
                 containers
              */}
-            <p className="text-base truncate max-w-40 text-primary-light">
+            <span className="text-base text-primary-light">
+              S: {currentSeries}
+            </span>
+            <p className="pl-2 ml-2 text-base truncate max-w-40 border-l border-primary-light text-primary-light">
               {seriesDescription}
             </p>
           </div>
@@ -318,6 +325,7 @@ const ViewportActionBar = ({
           patientName={patientName}
           patientSex={patientSex}
           patientAge={patientAge}
+          patientDateOfBirth={patientDateOfBirth}
           MRN={MRN}
           thickness={thickness}
           spacing={spacing}
@@ -343,12 +351,14 @@ ViewportActionBar.propTypes = {
     isRehydratable: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
     currentSeries: PropTypes.number.isRequired,
+    seriesTime: PropTypes.string.isRequired,
     seriesDescription: PropTypes.string.isRequired,
     modality: PropTypes.string.isRequired,
     patientInformation: PropTypes.shape({
       patientName: PropTypes.string.isRequired,
       patientSex: PropTypes.string.isRequired,
       patientAge: PropTypes.string.isRequired,
+      patientDateOfBirth: PropTypes.string.isRequired,
       MRN: PropTypes.string.isRequired,
       thickness: PropTypes.string.isRequired,
       spacing: PropTypes.string.isRequired,
@@ -369,6 +379,7 @@ function PatientInfo({
   patientName,
   patientSex,
   patientAge,
+  patientDateOfBirth,
   MRN,
   thickness,
   spacing,
@@ -430,6 +441,17 @@ function PatientInfo({
                     </span>
                     <span className={classnames(classes.infoText)} title={MRN}>
                       {MRN}
+                    </span>
+                  </div>
+                  <div className={classnames(classes.row)}>
+                    <span className={classnames(classes.infoHeader)}>
+                      {t('Birth Date')}
+                    </span>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={patientDateOfBirth}
+                    >
+                      {patientDateOfBirth}
                     </span>
                   </div>
                 </div>
