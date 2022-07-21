@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import program from 'commander';
+import { Command } from 'commander';
 import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs';
@@ -51,7 +51,7 @@ function _createPackage(packageType) {
   let pathAnswers;
 
   const askPathQuestions = () => {
-    inquirer.prompt(pathQuestions).then((answers) => {
+    inquirer.prompt(pathQuestions).then(answers => {
       pathAnswers = answers;
       if (pathAnswers.confirm) {
         askRepoQuestions(answers.baseDir, answers.name);
@@ -62,7 +62,7 @@ function _createPackage(packageType) {
   };
 
   const askRepoQuestions = () => {
-    inquirer.prompt(repoQuestions).then((repoAnswers) => {
+    inquirer.prompt(repoQuestions).then(repoAnswers => {
       const answers = {
         ...pathAnswers,
         ...repoAnswers,
@@ -80,12 +80,19 @@ function _createPackage(packageType) {
   askPathQuestions();
 }
 
+// for now ohif-cli is ran through yarn only.
+// see ohif-cli.md section # OHIF Command Line Interface for reference.
+const program = new Command('yarn run cli');
 // Todo: inject with webpack
-program.version('2.0.7').description('OHIF CLI');
+program
+  .version('2.0.7')
+  .description('OHIF CLI')
+  .configureHelp({ sortOptions: true, sortSubcommands: true })
+  .showHelpAfterError('(add --help for additional information)');
 
 program
   .command('create-extension')
-  .description('Create a new template extension')
+  .description('Create a new template Extension')
   .action(() => {
     _createPackage('extension');
   });
@@ -99,7 +106,7 @@ program
 
 program
   .command('add-extension <packageName> [version]')
-  .description('Adds an ohif extension')
+  .description('Adds an OHIF Extension')
   .action((packageName, version) => {
     // change directory to viewer
     process.chdir(viewerDirectory);
@@ -108,8 +115,8 @@ program
 
 program
   .command('remove-extension <packageName>')
-  .description('removes an ohif extension')
-  .action((packageName) => {
+  .description('Removes an OHIF Extension')
+  .action(packageName => {
     // change directory to viewer
     process.chdir(viewerDirectory);
     removeExtension(packageName);
@@ -117,7 +124,7 @@ program
 
 program
   .command('add-mode <packageName> [version]')
-  .description('Removes an ohif mode')
+  .description('Add an OHIF Mode')
   .action((packageName, version) => {
     // change directory to viewer
     process.chdir(viewerDirectory);
@@ -126,8 +133,8 @@ program
 
 program
   .command('remove-mode <packageName>')
-  .description('Removes an ohif mode')
-  .action((packageName) => {
+  .description('Removes an OHIF Mode')
+  .action(packageName => {
     // change directory to viewer
     process.chdir(viewerDirectory);
     removeMode(packageName);
@@ -136,13 +143,13 @@ program
 program
   .command('link-extension <packageDir>')
   .description(
-    'Links a local OHIF extension to the Viewer to be used for development'
+    'Links a local OHIF Extension to the Viewer to be used for development'
   )
-  .action((packageDir) => {
+  .action(packageDir => {
     if (!fs.existsSync(packageDir)) {
       console.log(
         chalk.red(
-          'The extension directory does not exist, please provide a valid directory'
+          'The Extension directory does not exist, please provide a valid directory'
         )
       );
       process.exit(1);
@@ -152,12 +159,12 @@ program
 
 program
   .command('unlink-extension <extensionName>')
-  .description('Unlinks a local OHIF extension from the Viewer')
-  .action((extensionName) => {
+  .description('Unlinks a local OHIF Extension from the Viewer')
+  .action(extensionName => {
     unlinkExtension(extensionName, { viewerDirectory });
     console.log(
       chalk.green(
-        `Successfully unlinked extension ${extensionName} from the Viewer, don't forget to run yarn install --force`
+        `Successfully unlinked Extension ${extensionName} from the Viewer, don't forget to run yarn install --force`
       )
     );
   });
@@ -165,13 +172,13 @@ program
 program
   .command('link-mode <packageDir>')
   .description(
-    'Links a local OHIF mode to the Viewer to be used for development'
+    'Links a local OHIF Mode to the Viewer to be used for development'
   )
-  .action((packageDir) => {
+  .action(packageDir => {
     if (!fs.existsSync(packageDir)) {
       console.log(
         chalk.red(
-          'The mode directory does not exist, please provide a valid directory'
+          'The Mode directory does not exist, please provide a valid directory'
         )
       );
       process.exit(1);
@@ -181,12 +188,12 @@ program
 
 program
   .command('unlink-mode <modeName>')
-  .description('Unlinks a local OHIF mode from the Viewer')
-  .action((modeName) => {
+  .description('Unlinks a local OHIF Mode from the Viewer')
+  .action(modeName => {
     unlinkMode(modeName, { viewerDirectory });
     console.log(
       chalk.green(
-        `Successfully unlinked mode ${modeName} from the Viewer, don't forget to run yarn install --force`
+        `Successfully unlinked Mode ${modeName} from the Viewer, don't forget to run yarn install --force`
       )
     );
   });
@@ -203,7 +210,7 @@ program
   .command('search')
   .option('-v, --verbose', 'Verbose output')
   .description('Search NPM for the list of Modes and Extensions')
-  .action((options) => {
+  .action(options => {
     searchPlugins(options);
   });
 
