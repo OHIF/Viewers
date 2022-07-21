@@ -31,10 +31,6 @@
     {
       "packageName": "@ohif/extension-tmtv",
       "version": "3.0.0"
-    },
-    {
-      "packageName": "@radical/microscopy-dicom",
-      "version": "3.0.0"
     }
   ],
   "modes": [
@@ -50,6 +46,14 @@
     }
   ],
   "umd": [
+    {
+      "packageName": "@radical/microscopy-dicom",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@radical/site-finding",
+      "version": "3.0.0"
+    },
     {
       "packageName": "@radical/hp-extension",
       "version": "3.0.0"
