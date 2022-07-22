@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
 import { NavBar, Svg, Icon, IconButton, Tooltip } from '../';
 
 function Header({
@@ -11,8 +9,6 @@ function Header({
   isSticky,
   WhiteLabeling,
 }) {
-  const { t } = useTranslation('Header');
-
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
 

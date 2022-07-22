@@ -147,6 +147,10 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       const { isSeriesLinkingEnabled } = ViewerToolsetService.getState();
       ViewerToolsetService.setIsSeriesLinkingEnabled(!isSeriesLinkingEnabled);
     },
+    toggleOverlay: () => {
+      const { isOverlayEnabled } = ViewerToolsetService.getState();
+      ViewerToolsetService.setIsOverlayEnabled(!isOverlayEnabled);
+    },
     activateCrosshairs: () => {
       commandsManager.runCommand('toggleSynchronizer', { toggledState: true });
       cornerstoneTools.setToolActive('NLCrosshairs', {
@@ -437,6 +441,11 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     toggleSeriesLinking: {
       commandFn: actions.toggleSeriesLinking,
+      storeContexts: [],
+      options: {},
+    },
+    toggleOverlay: {
+      commandFn: actions.toggleOverlay,
       storeContexts: [],
       options: {},
     },
