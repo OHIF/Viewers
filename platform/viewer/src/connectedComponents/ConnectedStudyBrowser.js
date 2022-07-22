@@ -48,7 +48,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             );
             document.dispatchEvent(selectionFired);
           });
-        } else {
+        } else if (Modality !== 'SR') {
           displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
         }
 

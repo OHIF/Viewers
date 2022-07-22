@@ -237,7 +237,7 @@ class OHIFCornerstoneViewport extends Component {
       }
     };
 
-    const warningsOverlay = props => {
+    const overlay = props => {
       const displaySet = this.props.viewportData.displaySet;
       let filteredSRLabels;
       if (displaySet.SRLabels && displaySet.SRLabels.length !== 0) {
@@ -264,7 +264,7 @@ class OHIFCornerstoneViewport extends Component {
           imageIdIndex={currentImageIdIndex}
           onNewImageDebounced={newImageHandler}
           onNewImageDebounceTime={300}
-          viewportOverlayComponent={warningsOverlay}
+          viewportOverlayComponent={overlay}
           stackPrefetch={this.props.stackPrefetch}
           isStackPrefetchEnabled={this.props.isStackPrefetchEnabled}
           // ~~ Connected (From REDUX)

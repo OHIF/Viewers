@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "2.16.19",
+  "version": "2.16.22",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",

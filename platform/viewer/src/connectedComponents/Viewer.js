@@ -262,7 +262,11 @@ class Viewer extends Component {
       const { currentTimepointId } = this;
 
       this.timepointApi.retrieveTimepoints({ PatientID });
-      this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
+      this.measurementApi
+        .retrieveMeasurements(PatientID, [currentTimepointId])
+        .then(() => {
+          this._updateThumbnails();
+        });
     }
   }
 
@@ -608,9 +612,30 @@ const _isDisplaySetActive = function(
   if (
     displaySet.Modality !== 'SEG' &&
     displaySet.Modality !== 'RTSTRUCT' &&
-    displaySet.Modality !== 'RTDOSE'
+    displaySet.Modality !== 'RTDOSE' &&
+    displaySet.Modality !== 'SR'
   ) {
     active = activeDisplaySetInstanceUID === displaySetInstanceUID;
+  } else if (displaySet.Modality === 'SR') {
+    active = activeDisplaySetInstanceUID === displaySetInstanceUID;
+
+    if (!active && displaySet.getSourceDisplaySet) {
+      const referencedDisplaySet = displaySet.getSourceDisplaySet(
+        studies,
+        false
+      );
+      if (referencedDisplaySet && referencedDisplaySet.length !== 0) {
+        for (let i = 0; i < referencedDisplaySet.length; i++) {
+          if (
+            referencedDisplaySet[i].displaySetInstanceUID ===
+            activeDisplaySetInstanceUID
+          ) {
+            active = true;
+            break;
+          }
+        }
+      }
+    }
   } else if (displaySet.getSourceDisplaySet) {
     if (displaySet.Modality === 'SEG') {
       const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
@@ -661,10 +686,9 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
       let altImageText;
 
       if (displaySet.Modality && displaySet.Modality === 'SEG') {
-        // TODO: We want to replace this with a thumbnail showing
-        // the segmentation map on the image, but this is easier
-        // and better than what we have right now.
         altImageText = 'SEG';
+      } else if (displaySet.Modality && displaySet.Modality === 'SR') {
+        altImageText = 'SR';
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
         imageId = displaySet.images[imageIndex].getImageId();
