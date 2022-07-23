@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-lesion-tracker",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "OHIF extension for Lesion Tracker",
   "author": "OHIF",
   "license": "MIT",

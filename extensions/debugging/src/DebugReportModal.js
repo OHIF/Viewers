@@ -89,10 +89,10 @@ const DubugReportModal = ({
 
     Object.keys(viewportSpecificData).forEach(viewportIndex => {
       const displaySet = viewportSpecificData[viewportIndex];
-      const [
-        referencedDisplaySetsRef,
-        referencedDisplaySetsCount,
-      ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'SEG');
+      const [referencedDisplaySetsRef] = _getReferencedSeriesInstanceUIDsString(
+        displaySet,
+        'SEG'
+      );
 
       const [row, column] = _viewportIndexToViewportPosition(
         viewportIndex,
@@ -106,10 +106,27 @@ const DubugReportModal = ({
 
     Object.keys(viewportSpecificData).forEach(viewportIndex => {
       const displaySet = viewportSpecificData[viewportIndex];
-      const [
-        referencedDisplaySetsRef,
-        referencedDisplaySetsCount,
-      ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'RTSTRUCT');
+      const [referencedDisplaySetsRef] = _getReferencedSeriesInstanceUIDsString(
+        displaySet,
+        'RTSTRUCT'
+      );
+
+      const [row, column] = _viewportIndexToViewportPosition(
+        viewportIndex,
+        numColumns
+      );
+
+      body += `[${row},${column}]\t${referencedDisplaySetsRef}\n`;
+    });
+
+    body += '== ReferencedSRSeriesInstanceUIDs ==\n';
+
+    Object.keys(viewportSpecificData).forEach(viewportIndex => {
+      const displaySet = viewportSpecificData[viewportIndex];
+      const [referencedDisplaySetsRef] = _getReferencedSeriesInstanceUIDsString(
+        displaySet,
+        'SR'
+      );
 
       const [row, column] = _viewportIndexToViewportPosition(
         viewportIndex,
@@ -261,11 +278,15 @@ const getLayout = viewports => {
       <tr>
         <th>ReferencedSEGSeriesInstanceUIDs</th>
       </tr>
-      {getReferencedSEGSeriesInstanceUIDsPerRow(viewports)}
+      {getReferencedSeriesInstanceUIDsPerRow(viewports, 'SEG')}
       <tr>
         <th>ReferencedRTSTRUCTSeriesInstanceUIDs</th>
       </tr>
-      {getReferencedRTSTRUCTSeriesInstanceUIDsPerRow(viewports)}
+      {getReferencedSeriesInstanceUIDsPerRow(viewports, 'RTSTRUCT')}
+      <tr>
+        <th>ReferencedSRSeriesInstanceUIDs</th>
+      </tr>
+      {getReferencedSeriesInstanceUIDsPerRow(viewports, 'SR')}
     </React.Fragment>
   );
 };
@@ -351,7 +372,7 @@ const _getReferencedSeriesInstanceUIDsString = (displaySet, Modality) => {
   return [referencedDisplaySetsRef, referencedDisplaySetsCount];
 };
 
-const getReferencedSEGSeriesInstanceUIDsPerRow = viewports => {
+const getReferencedSeriesInstanceUIDsPerRow = (viewports, Modality) => {
   const { viewportSpecificData, numColumns } = viewports;
 
   // NOTE viewportSpecificData is actually an object with numerical keys.
@@ -360,43 +381,7 @@ const getReferencedSEGSeriesInstanceUIDsPerRow = viewports => {
     const [
       referencedDisplaySetsRef,
       referencedDisplaySetsCount,
-    ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'SEG');
-
-    const [row, column] = _viewportIndexToViewportPosition(
-      viewportIndex,
-      numColumns
-    );
-
-    if (referencedDisplaySetsCount > 1) {
-      return (
-        <tr>
-          <td>{`[${row},${column}]`}</td>
-          <td className="debug-overflowText-border">
-            {referencedDisplaySetsRef}
-          </td>
-        </tr>
-      );
-    } else {
-      return (
-        <tr>
-          <td>{`[${row},${column}]`}</td>
-          <td className="debug-overflowText">{referencedDisplaySetsRef}</td>
-        </tr>
-      );
-    }
-  });
-};
-
-const getReferencedRTSTRUCTSeriesInstanceUIDsPerRow = viewports => {
-  const { viewportSpecificData, numColumns } = viewports;
-
-  // NOTE viewportSpecificData is actually an object with numerical keys.
-  return Object.keys(viewportSpecificData).map(viewportIndex => {
-    const displaySet = viewportSpecificData[viewportIndex];
-    const [
-      referencedDisplaySetsRef,
-      referencedDisplaySetsCount,
-    ] = _getReferencedSeriesInstanceUIDsString(displaySet, 'RTSTRUCT');
+    ] = _getReferencedSeriesInstanceUIDsString(displaySet, Modality);
 
     const [row, column] = _viewportIndexToViewportPosition(
       viewportIndex,

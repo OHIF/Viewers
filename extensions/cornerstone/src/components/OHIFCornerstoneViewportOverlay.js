@@ -18,19 +18,13 @@ import { Tooltip } from '@ohif/ui/src/components/tooltip';
 import { OverlayTrigger } from '@ohif/ui/src/components/overlayTrigger';
 
 const Button = styled.button`
-  background-color: #3f51b5;
   color: white;
-  padding: 5px 15px;
+  padding: 2px 7px;
   border-radius: 10px;
   outline: 0;
-  text-transform: lowercase;
-  margin: 5px 5px;
+  text-transform: none;
+  margin: 2px 2px;
   cursor: pointer;
-  box-shadow: 0px 2px 2px lightgray;
-  transition: ease background-color 250ms;
-  &:hover {
-    background-color: #283593;
-  }
   &:disabled {
     cursor: default;
     opacity: 0.9;
@@ -51,7 +45,7 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     imageId: PropTypes.string.isRequired,
     imageIndex: PropTypes.number.isRequired,
     stackSize: PropTypes.number.isRequired,
-    inconsistencyWarnings: PropTypes.array.isRequired,
+    inconsistencyWarnings: PropTypes.array,
     SRLabels: PropTypes.array,
   };
 
@@ -152,34 +146,48 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
 
     const SRLabelsOn = SRLabels && SRLabels.length !== 0 ? true : false;
 
+    /**/
+
     const getSRLabelsContent = SRLabels => {
       if (Array.isArray(SRLabels)) {
         const listedSRLabels = SRLabels.map((SRLabel, index) => {
+          const color = SRLabel.labels.color;
           return (
-            <OverlayTrigger
-              key={index}
-              placement="top"
-              overlay={
-                <Tooltip
-                  placement="top"
-                  className="in tooltip-warning"
-                  id="tooltip-top"
-                >
-                  <div className="warningTitle"> Designators </div>
-                  <div className="warningContent">
-                    {SRLabel.labels.labelCodingSchemeDesignator +
-                      ' : ' +
-                      SRLabel.labels.valueCodingSchemeDesignator}
-                  </div>
-                </Tooltip>
-              }
-            >
-              <div style={{ display: 'inline-block' }}>
-                <Button disabled={true} key={index}>
-                  {SRLabel.labels.label + ' : ' + SRLabel.labels.value}
-                </Button>
-              </div>
-            </OverlayTrigger>
+            SRLabel.labels.visible && (
+              <OverlayTrigger
+                key={index}
+                placement="top"
+                overlay={
+                  <Tooltip
+                    placement="top"
+                    className="in tooltip-warning"
+                    id="tooltip-top"
+                  >
+                    <div className="warningTitle">
+                      {' '}
+                      Coding scheme designators{' '}
+                    </div>
+                    <div className="warningContent">
+                      {SRLabel.labels.labelCodingSchemeDesignator +
+                        ' : ' +
+                        SRLabel.labels.valueCodingSchemeDesignator}
+                    </div>
+                  </Tooltip>
+                }
+              >
+                <div style={{ display: 'inline-block' }}>
+                  <Button
+                    style={{
+                      backgroundColor: color,
+                    }}
+                    disabled={true}
+                    key={index}
+                  >
+                    {SRLabel.labels.label + ' : ' + SRLabel.labels.value}
+                  </Button>
+                </div>
+              </OverlayTrigger>
+            )
           );
         });
 

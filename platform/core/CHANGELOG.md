@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.22](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.21...@ohif/core@2.16.22) (2022-06-30)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.21](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.20...@ohif/core@2.16.21) (2022-06-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.20](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.19...@ohif/core@2.16.20) (2022-06-28)
+
+
+### Bug Fixes
+
+* Re IDC2797, fix double parsing of SR qualitative annotations ([#2830](https://github.com/OHIF/Viewers/issues/2830)) ([9f813e0](https://github.com/OHIF/Viewers/commit/9f813e0ea08f0aada8efab9ef6228ad90dd1758d))
+
+
+
+
+
 ## [2.16.19](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.18...@ohif/core@2.16.19) (2022-06-14)
 
 **Note:** Version bump only for package @ohif/core

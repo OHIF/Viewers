@@ -26,8 +26,10 @@ export default function addMeasurement(
 
   const measurementData = {
     TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
+    TrackingIdentifier: measurement.TrackingIdentifier,
     renderableData: {},
     labels: measurement.labels,
+    isSRText: measurement.isSRText,
   };
 
   measurement.coords.forEach(coord => {
