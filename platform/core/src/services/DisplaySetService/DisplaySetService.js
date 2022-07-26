@@ -184,7 +184,7 @@ export default class DisplaySetService {
     if (displaySetsAdded && displaySetsAdded.length) {
       if (this._holdChangeEvents) {
         this._holdChangeEvents.push(...displaySetsAdded);
-      } else {
+      } else if (!madeInClient) {
         this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
       }
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {

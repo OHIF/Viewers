@@ -42,30 +42,25 @@ function ViewerViewportGrid(props) {
           continue;
         }
 
-        // console.log("Applying HP matchDetails", i, matchDetails[i]);
         // if current viewport doesn't have a match
-        if (matchDetails[i] === undefined) return;
+        if (matchDetails[i] === undefined) {
+          return;
+        }
 
         const { displaySetsInfo, viewportOptions } = matchDetails[i];
 
         const displaySetUIDsToHang = [];
         const displaySetUIDsToHangOptions = [];
-        displaySetsInfo.forEach(({ SeriesInstanceUID, displaySetInstanceUID, displaySetOptions }) => {
-          const matchingDisplaySet =
-            availableDisplaySets.find(ds => ds.displaySetInstanceUID == displaySetInstanceUID) ||
-            availableDisplaySets.find(ds => ds.SeriesInstanceUID === SeriesInstanceUID);
+        displaySetsInfo.forEach(
+          ({ displaySetInstanceUID, displaySetOptions }) => {
+            if (!displaySetInstanceUID) {
+              return;
+            }
 
-          // console.log("Displaying", matchingDisplaySet.displaySetInstanceUID);
-          if (matchingDisplaySet.displaySetInstanceUID !== displaySetInstanceUID) {
-            console.warn("NOT displaying the specified display set", displaySetInstanceUID, matchingDisplaySet);
+            displaySetUIDsToHang.push(displaySetInstanceUID);
+            displaySetUIDsToHangOptions.push(displaySetOptions);
           }
-          if (!matchingDisplaySet) {
-            return;
-          }
-
-          displaySetUIDsToHang.push(matchingDisplaySet.displaySetInstanceUID);
-          displaySetUIDsToHangOptions.push(displaySetOptions);
-        });
+        );
 
         if (!displaySetUIDsToHang.length) {
           continue;
@@ -374,9 +369,10 @@ function _getViewportComponent(displaySets, viewportComponents) {
   const SOPClassHandlerId = displaySets[0].SOPClassHandlerId;
 
   for (let i = 0; i < viewportComponents.length; i++) {
-    if (!viewportComponents[i]) throw new Error("viewport components not defined");
+    if (!viewportComponents[i])
+      throw new Error('viewport components not defined');
     if (!viewportComponents[i].displaySetsToDisplay) {
-      throw new Error("displaySetsToDisplay is null");
+      throw new Error('displaySetsToDisplay is null');
     }
     if (
       viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)
