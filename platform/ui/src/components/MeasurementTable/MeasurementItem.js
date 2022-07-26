@@ -96,6 +96,7 @@ const MeasurementItem = ({
           <div
             className="flex items-center justify-center bg-center bg-cover bg-no-repeat rounded-full w-8 h-8"
             style={{
+              color: '#2a2a39',
               backgroundColor: getPredefinedColor(author.id),
               ...(profile_picture
                 ? { backgroundImage: `url(${profile_picture})` }
