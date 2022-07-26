@@ -94,7 +94,7 @@ const MeasurementItem = ({
           position="left"
         >
           <div
-            className="flex align-items justify-center bg-center bg-cover bg-no-repeat rounded-full w-8 h-8"
+            className="flex items-center justify-center bg-center bg-cover bg-no-repeat rounded-full w-8 h-8"
             style={{
               backgroundColor: getPredefinedColor(author.id),
               ...(profile_picture
@@ -102,7 +102,7 @@ const MeasurementItem = ({
                 : {}),
             }}
           >
-            {getNameInitials(author.name)}
+            {profile_picture ? '' : getNameInitials(author.name)}
           </div>
         </Tooltip>
       </div>
