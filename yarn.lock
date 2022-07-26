@@ -3504,10 +3504,10 @@
     outvariant "^1.2.0"
     strict-event-emitter "^0.2.0"
 
-"@newlantern/viewer@^4.4.8":
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.8.tgz#d2335ad745d69b14d911d7d31e03f566483caec9"
-  integrity sha512-GeLInzgShT5n/pZz/6VPqtr/P2rMHhjyQNdcDDKmR3JU0gAH/40nkspB9IW52ogjP1IU5/raWSh5zeviZ5wf2Q==
+"@newlantern/viewer@^4.4.9":
+  version "4.4.9"
+  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.9.tgz#5e8e8df3ba84ad0edcbf56af8e3e9c8fb22aefb1"
+  integrity sha512-PCfRS5ZYd7/5rlkTO4AB2iFlAv8mBYJGBz9u1k3xG8dJ0JlH7tjhbVpm0xg/q7dm1pOKbgymfPVWshu2/y4HjA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
