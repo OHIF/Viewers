@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { getPredefinedColor } from '@pubnub/react-chat-components';
+import {
+  getNameInitials,
+  getPredefinedColor,
+} from '@pubnub/react-chat-components';
 import { Icon, Tooltip } from '../';
 
 const MeasurementItem = ({
@@ -93,14 +96,13 @@ const MeasurementItem = ({
           <div
             className="flex align-items justify-center bg-center bg-cover bg-no-repeat rounded-full w-8 h-8"
             style={{
-              background: `${
-                profile_picture
-                  ? `url(${profile_picture})`
-                  : getPredefinedColor(author.id)
-              }`,
+              backgroundColor: getPredefinedColor(author.id),
+              ...(profile_picture
+                ? { backgroundImage: `url(${profile_picture})` }
+                : {}),
             }}
           >
-            {author.name}
+            {getNameInitials(author.name)}
           </div>
         </Tooltip>
       </div>
