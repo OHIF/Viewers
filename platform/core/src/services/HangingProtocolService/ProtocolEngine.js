@@ -12,13 +12,12 @@ export default class ProtocolEngine {
 
   /** Evaluate the hanging protocol matches on the given:
    * @param props.studies is a list of studies to compare against (for priors evaluation)
-   * @param props.study is the current metadata for the study to display.
-   *     This object may be modified at the top level ONLY
+   * @param props.activeStudy is the current metadata for the study to display.
    * @param props.displaySets are the list of display sets which can be modified.
    */
-  run({ studies, displaySets }) {
+  run({ studies, displaySets, activeStudy }) {
     this.studies = studies;
-    this.study = studies[0];
+    this.study = activeStudy || studies[0];
     this.displaySets = displaySets;
     return this.getBestProtocolMatch();
   }

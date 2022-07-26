@@ -42,9 +42,9 @@ async function defaultRouteInit({
     DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
     displaySets => {
       if (!displaySets || !displaySets.length) return;
-      // The assumption is that the display set at position 0 is the first
-      // study being displayed, and is thus the "active" study.
       const studyMap = {};
+      // Prior studies don't quite work properly yet, but the studies list
+      // is at least being generated and passed in.
       const studies = displaySets.
         reduce((prev, curr) => {
           const { StudyInstanceUID } = curr;
@@ -55,15 +55,18 @@ async function defaultRouteInit({
           }
           return prev;
         }, []);
-      const studyMetaData = studies[0];
-      HangingProtocolService.run({ studies, studyMetaData, displaySets });
+      // The assumption is that the display set at position 0 is the first
+      // study being displayed, and is thus the "active" study.
+      const activeStudy = studies[0];
+      HangingProtocolService.run({ studies, activeStudy, displaySets });
     }
   );
   unsubscriptions.push(seriesAddedUnsubscribe);
 
-  // No point trying to fire partial retrieves, as it causes havoc
-  // when some series are not displayable, and causes the wrong series
-  // to be fetched.
+  // The hanging protocol matching service is fairly expensive to run multiple
+  // times, and doesn't allow partial matches to be made (it will simply fail
+  // to display anything if a required match failes), so hold off the matches
+  // here until the entire study is ready.
   DisplaySetService.holdChangeEvents();
   const allRetrieves = [];
   studyInstanceUIDs.forEach(StudyInstanceUID => {

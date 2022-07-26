@@ -131,7 +131,7 @@ describe("HangingProtocolService", () => {
 
   beforeAll(() => {
     hps.addProtocols([testProtocol]);
-    hps.addCustomViewportSetting('initialScale', 'Set initial scaling', (id, value) => (initialScaling = value));
+    hps.addCustomViewportOptions('initialScale', 'Set initial scaling', (id, value) => (initialScaling = value));
   })
 
   it('has one protocol', () => {
@@ -171,7 +171,7 @@ describe("HangingProtocolService", () => {
       const [matchDetails, alreadyApplied] = state;
       const { viewportOptions } = matchDetails[0]
       initialScaling = undefined;
-      hps.applyCustomViewportSettings(viewportOptions, {});
+      hps.applyCustomViewportOptions(viewportOptions, {});
       expect(initialScaling).toBe(2.5);
     })
   })

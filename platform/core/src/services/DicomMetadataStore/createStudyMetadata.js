@@ -4,6 +4,7 @@ function createStudyMetadata(StudyInstanceUID) {
   return {
     StudyInstanceUID,
     StudyDescription: '',
+    ModalitiesInStudy: [],
     isLoaded: false,
     series: [],
     /**
@@ -13,7 +14,9 @@ function createStudyMetadata(StudyInstanceUID) {
      */
     addInstanceToSeries: function(instance) {
       const { SeriesInstanceUID } = instance;
-      if (!this.StudyDescription) this.StudyDescription = instance.StudyDescription;
+      if (!this.StudyDescription) {
+        this.StudyDescription = instance.StudyDescription;
+      }
       const existingSeries = this.series.find(
         s => s.SeriesInstanceUID === SeriesInstanceUID
       );
@@ -23,6 +26,10 @@ function createStudyMetadata(StudyInstanceUID) {
       } else {
         const series = createSeriesMetadata([instance]);
         this.series.push(series);
+        const { Modality } = series;
+        if (this.ModalitiesInStudy.indexof(Modality) === -1) {
+          this.ModalitiesInStudy.push(Modality);
+        }
       }
     },
     /**

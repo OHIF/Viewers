@@ -20,6 +20,7 @@ class HangingProtocolService {
   hpAlreadyApplied: boolean[] = [];
   customViewportSettings = [];
   displaySets = [];
+  activeStudy: object;
   customAttributeRetrievalCallbacks = {
     NumberOfStudyRelatedSeries: {
       name: "The number of series in the study",
@@ -115,10 +116,24 @@ class HangingProtocolService {
     });
   }
 
-  public run({ studies, displaySets }, protocol) {
+  /**
+   * Run the hanging protocol decisions tree on the active study,
+   * studies list and display sets, firing a hanging protocol event when
+   * complete to indicate the hanging protocol is ready.
+   *
+   * @param params is the dataset to run the hanging protocol on.
+   * @param params.activeStudy is the "primary" study to hang  This may or may
+   *        not be displayed by the actual viewports.
+   * @param params.studies is the list of studies to hang
+   * @param params.displaySets is the list of display sets associated with
+   *        the studies to display in viewports.
+   * @param protocol is a specific protocol to apply.
+   * @returns
+   */
+  public run({ studies, displaySets, activeStudy }, protocol) {
     this.studies = [...studies];
     this.displaySets = displaySets;
-    this.activeStudy = studies[0];
+    this.activeStudy = activeStudy || studies[0];
 
     this.ProtocolEngine = new ProtocolEngine(
       this.protocols,
@@ -129,7 +144,7 @@ class HangingProtocolService {
     if (!protocol || protocol.id === undefined) {
       const matchedProtocol = this.ProtocolEngine.run({
         studies: this.studies,
-        studyMetaData: studies[0],
+        activeStudy,
         displaySets,
       });
       this._setProtocol(matchedProtocol);
@@ -181,11 +196,16 @@ class HangingProtocolService {
    * @param options
    * @param options.store is a function to be called when displaying a new display set, to record any existing values
    */
-  public addCustomViewportSetting(id, name, callback, store, options) {
+  public addCustomViewportOptions(id, name, callback, store, options) {
     this.customViewportSettings.push({ id, name, store, callback, options });
   }
 
-  /** Do the inverse store operation to store information between views. */
+  /** Do the inverse store operation to store information between views.
+   * @params viewportOptions is the new viewport options to apply.
+   *     This object will be modified by the call.
+   * @params priorViewportOptions is the previous set of options, if any
+   * @params ...args is any other args passed by the caller.
+   */
   public applyCustomViewportStore(viewportOptions, priorViewportOptions, ...args) {
     if (!priorViewportOptions) return;
     for (const setting of this.customViewportSettings) {
@@ -194,8 +214,11 @@ class HangingProtocolService {
     }
   }
 
-  /** Runs the specified custom viewport setting, on the provided viewport */
-  public applyCustomViewportSettings(viewportOptions, viewport, ...args) {
+  /** Applies the viewport options.
+   * This will iterate through the custom viewport options and call
+   * the callbacks for each one which matches.
+   */
+  public applyCustomViewportOptions(viewportOptions, viewport, ...args) {
     const { customViewportOptions } = viewportOptions;
     if (!customViewportOptions) return;
     Object.keys(customViewportOptions).forEach(key => {
