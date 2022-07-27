@@ -5,14 +5,14 @@ import { RELATIONSHIP_TYPE, CodeNameCodeSequenceValues } from '../enums';
 /**
  * TID 1410 Planar ROI Measurements and Qualitative Evaluations.
  *
- * @param {*} mergedContentSequence
+ * @param {*} contentSequence
  * @returns
  */
-const processTID1410Measurement = (mergedContentSequence, displaySet) => {
+const processTID1410Measurement = contentSequence => {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
 
-  const graphicItem = mergedContentSequence.find(
+  const graphicItem = contentSequence.find(
     group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
   );
 
@@ -23,24 +23,24 @@ const processTID1410Measurement = (mergedContentSequence, displaySet) => {
     return;
   }
 
-  const UIDREFContentItem = mergedContentSequence.find(
+  const UIDREFContentItem = contentSequence.find(
     group => group.ValueType === 'UIDREF'
   );
 
-  const TrackingIdentifierContentItem = mergedContentSequence.find(
+  const TrackingIdentifierContentItem = contentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
-  const NUMContentItems = mergedContentSequence.filter(
+  const NUMContentItems = contentSequence.filter(
     group => group.ValueType === 'NUM'
   );
 
   const measurement = {
     loaded: false,
     labels: [],
-    coords: [getCoordsFromSCOORDOrSCOORD3D(graphicItem, displaySet)],
+    coords: [getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };

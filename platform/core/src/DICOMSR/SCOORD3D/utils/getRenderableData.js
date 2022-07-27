@@ -57,6 +57,10 @@ const getRenderableData = (
 
   // https://dicom.innolitics.com/ciods/procedure-log/sr-document-content/00700023
   switch (GraphicType) {
+    case SCOORD_TYPES.TEXT:
+      renderableData = [{ x: GraphicData[0], y: GraphicData[1] }];
+
+      break;
     case SCOORD_TYPES.POINT:
       renderableData = [];
 

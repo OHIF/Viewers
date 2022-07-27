@@ -1,4 +1,4 @@
-import { MODULE_TYPES, utils } from '@ohif/core';
+import { MODULE_TYPES, utils, metadata } from '@ohif/core';
 
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
@@ -10,7 +10,7 @@ const SOP_CLASS_UIDS = {
   MAMMOGRAPHY_CAD_SR: '1.2.840.10008.5.1.4.1.1.88.50',
   CHEST_CAD_SR: '1.2.840.10008.5.1.4.1.1.88.65',
   X_RAY_RADIATION_DOSE_SR: '1.2.840.10008.5.1.4.1.1.88.67',
-  ACQUISITION_CONTEXT_SR_STORAGE: '1.2.840.10008.5.1.4.1.1.88.71'
+  ACQUISITION_CONTEXT_SR_STORAGE: '1.2.840.10008.5.1.4.1.1.88.71',
 };
 
 const sopClassUIDs = Object.values(SOP_CLASS_UIDS);
@@ -32,7 +32,7 @@ const OHIFDicomHtmlSopClassHandler = {
       SeriesTime,
     } = metadata;
 
-    return {
+    const srDisplaySet = {
       plugin: 'html',
       Modality: 'SR',
       displaySetInstanceUID: utils.guid(),
@@ -49,7 +49,15 @@ const OHIFDicomHtmlSopClassHandler = {
       authorizationHeaders,
       sopClassUids: sopClassUIDs,
       images: series._instances,
+      isDerived: true,
+      referencedDisplaySets: [],
     };
+
+    srDisplaySet.getSourceDisplaySet = function() {
+      return srDisplaySet.referencedDisplaySets;
+    };
+
+    return srDisplaySet;
   },
 };
 
