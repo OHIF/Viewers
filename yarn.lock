@@ -1314,29 +1314,38 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-0.1.1.tgz#5bd1c52a33a425299299e970312731fa0cc2711b"
   integrity sha512-HOMMOLV6xy8O/agNGGvrl0a8DwShpBvWxAzEzv2pqq12d3r5z/3MyIgNA3Oj/8bIBVvvVXxh9RX7rMDRHJdowg==
 
-"@cornerstonejs/core@^0.13.7":
-  version "0.13.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.13.7.tgz#e6752459f063f475b82789d8a3b73516560d17f5"
-  integrity sha512-Mt4NyACOl2Dootb0NtNji/z+wAtHqwkrnUS6HR+4guFZ+yjzq1uCQu/I5iWnxXuEhboqo9pSAKwRLwKpK6pTSw==
+"@cornerstonejs/core@^0.13.10":
+  version "0.13.10"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.13.10.tgz#d2aa3a9ba4951b6b6937a310548a5fe517a29d49"
+  integrity sha512-y5nCz4nvgg86Er3NovKK/1DikK1F+zye2gsYnMFE3YJVYcCeCcgFj/rdQxj2IYZc0E/gpyjyaKDMh0zAmuoPoQ==
   dependencies:
     detect-gpu "^4.0.7"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.4.7":
-  version "0.4.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.4.7.tgz#f7a95ce3d40a315de77a10a890be6180bce6e4ae"
-  integrity sha512-2bAmaCugXmMAWWnjnXJLU4+CYf3AlHj8prSh+1KFk5/Gvv2ilMnzVZRvzv/re86rWb6lWD5B3UM9I7Q7GfElcQ==
+"@cornerstonejs/core@^0.13.11":
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.13.11.tgz#94a17a769e4fe7b5edcc69754bbf73135393931f"
+  integrity sha512-jNZmqFAVc9bpaor36pXNma06DqP+2NOj2EiZfO3fngR+t7vPOOhNz9axy8rFSXGIKZEOxGKLnnW8cL56lhSJ8A==
   dependencies:
-    "@cornerstonejs/core" "^0.13.7"
-    cornerstone-wado-image-loader "^4.1.2"
-
-"@cornerstonejs/tools@^0.20.9":
-  version "0.20.9"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.20.9.tgz#8c9780c1f6fbb2fb247c4e0b75bf4f1a9535227c"
-  integrity sha512-JyRFw8qX8Cp1qjgn85V6EPsx8iTU/txJxCcPd2DWJXC3uscMX+cDf8vv3zld35yXx6Sj2h4ybc1T0gkkMR9v2Q==
-  dependencies:
-    "@cornerstonejs/core" "^0.13.7"
+    detect-gpu "^4.0.7"
     lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/streaming-image-volume-loader@^0.4.10":
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.4.10.tgz#7f9ac1a0575c13af059f6cb18a578f1ee89d3cde"
+  integrity sha512-mcu/GaFDSz3xHWm5kfeLB8rr4UssJhkXgjH9bnRkJ0/qq+t64rRegZJafQz5XpAyoVOXyW7mb3oJuOh3J0HTZQ==
+  dependencies:
+    "@cornerstonejs/core" "^0.13.10"
+    cornerstone-wado-image-loader "^4.1.5"
+
+"@cornerstonejs/tools@^0.20.15":
+  version "0.20.15"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.20.15.tgz#493bd2d136e061b88cc2c66b63ef02cba791e55b"
+  integrity sha512-+NaNluG4xKIOXP4VOpU3LeibFncRoiWmQkAUKq0OuPpU+W0HR5krThlZ0OM6RQduOHChRMXOfvcnAtEu2AbzIQ==
+  dependencies:
+    "@cornerstonejs/core" "^0.13.11"
+    lodash.clonedeep "4.5.0"
+    lodash.get "^4.4.2"
 
 "@csstools/postcss-cascade-layers@^1.0.2":
   version "1.0.2"
@@ -8271,10 +8280,21 @@ cornerstone-math@^0.1.9:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.9.tgz#7ce5509e8b9f465b01f7c548470725e7569859fc"
   integrity sha512-NxdooV73asEQgav1S+0e+a4K+W3CXJdLXyFkVN24qqCtmIpzZzwtw3F9KWPCekzSAJmbhtQ3HicOQj3d4vRtuw==
 
-cornerstone-wado-image-loader@^4.1.2:
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.1.3.tgz#6053606ca6dd588d341f1117bb205822000192d1"
-  integrity sha512-1JOI1IFrpDNK96Z7Qmi50fmIlx81Ur67WfjmD371jtsbygIeh+K7p3pvate722IcLUwJZ3dbBEDY/voaD+HUXQ==
+cornerstone-wado-image-loader@^4.1.5:
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.1.5.tgz#1e120564e887bf85b03d4a7f90c6aaea5fd5acf2"
+  integrity sha512-N+CqivL+KNnVzftUqhwtKa7ULvdO96Bo3sTd4dBu05b57FSKoyAjFQ40md/UzbwzC3hEdVy94rh1TVMPRdMN4w==
+  dependencies:
+    "@cornerstonejs/codec-charls" "^0.1.1"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
+    "@cornerstonejs/codec-openjpeg" "^0.1.0"
+    dicom-parser "^1.8.9"
+    pako "^2.0.4"
+
+cornerstone-wado-image-loader@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.2.0.tgz#c2fd715d20c69310c6d9434d6673aa1ccab1f77a"
+  integrity sha512-J7FQcJlBaLHcbc8qj9sHW5w039w3s+i2kU8wK2Yghn1rnLcOay8N8pr+aEYua3XT04iD9GOj5NyikSiplITZWQ==
   dependencies:
     "@cornerstonejs/codec-charls" "^0.1.1"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
