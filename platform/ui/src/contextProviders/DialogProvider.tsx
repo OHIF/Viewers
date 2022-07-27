@@ -53,17 +53,6 @@ const DialogProvider = ({ children, service }) => {
   };
 
   /**
-   * Sets the implementation of a dialog service that can be used by extensions.
-   *
-   * @returns void
-   */
-  useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({ create, dismiss, dismissAll });
-    }
-  }, [create, dismiss, service]);
-
-  /**
    * UI Dialog
    *
    * @typedef {Object} DialogProps
@@ -79,8 +68,6 @@ const DialogProvider = ({ children, service }) => {
    * @property {Function} onStop Called when dragging stops.
    * @property {Function} onDrag Called while dragging.
    */
-
-  useEffect(() => _bringToFront(lastDialogId), [_bringToFront, lastDialogId]);
 
   /**
    * Creates a new dialog and return its id.
@@ -145,6 +132,19 @@ const DialogProvider = ({ children, service }) => {
         : dialogs;
     });
   }, []);
+
+  /**
+   * Sets the implementation of a dialog service that can be used by extensions.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (service) {
+      service.setServiceImplementation({ create, dismiss, dismissAll });
+    }
+  }, [create, dismiss, service]);
+
+  useEffect(() => _bringToFront(lastDialogId), [_bringToFront, lastDialogId]);
 
   const renderDialogs = () =>
     dialogs.map(dialog => {

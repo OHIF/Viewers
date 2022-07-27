@@ -50,13 +50,6 @@ There are two events that get publish in `HangingProtocolService`:
 
 - `addCustomAttribute`: adding a custom attribute for matching. (see below)
 
-- `addCustomViewportSetting`: adding a custom setting to a viewport (initial
-  `voi`). Below, we explain in detail how to add custom viewport settings via
-  protocol definitions. `addCustomViewportSetting` is another way to set these
-  settings which is exposed by API
-
--
-
 Default initialization of the modes handles running the `HangingProtocolService`
 
 ## Custom Attribute
