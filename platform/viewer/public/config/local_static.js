@@ -4,6 +4,7 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
+  maxNumberOfWebWorkers: 3,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -12,9 +13,9 @@ window.config = {
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
-        wadoUriRoot: '/dicomweb',
-        qidoRoot: '/dicomweb',
-        wadoRoot: '/dicomweb',
+        wadoUriRoot: 'http://localhost:5000/dicomweb',
+        qidoRoot: 'http://localhost:5000/dicomweb',
+        wadoRoot: 'http://localhost:5000/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
@@ -83,12 +84,12 @@ window.config = {
     { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
     { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
     {
-      commandName: 'flipViewportVertical',
+      commandName: 'flipViewportHorizontal',
       label: 'Flip Horizontally',
       keys: ['h'],
     },
     {
-      commandName: 'flipViewportHorizontal',
+      commandName: 'flipViewportVertical',
       label: 'Flip Vertically',
       keys: ['v'],
     },

@@ -1,6 +1,7 @@
 import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
+import initToolGroups from './initToolGroups.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -17,8 +18,9 @@ const tracked = {
 };
 
 const dicomsr = {
-  sopClassHandler: '@ohif/extension-dicom-sr.sopClassHandlerModule.dicom-sr',
-  viewport: '@ohif/extension-dicom-sr.viewportModule.dicom-sr',
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
@@ -37,7 +39,7 @@ const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
-  '@ohif/extension-dicom-sr': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
 };
@@ -52,20 +54,41 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager }) => {
-      // Note: If tool's aren't initialized, this doesn't have viewport/tools
-      // to "set active". This is mostly for the toolbar UI state?
-      // Could update tool manager to be always persistent, and to set state
-      // on load?
-      const { ToolBarService } = servicesManager.services;
-      const interaction = {
-        groupId: 'primary',
-        itemId: 'Wwwc',
-        interactionType: 'tool',
-        commandOptions: undefined,
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      const { ToolBarService, ToolGroupService } = servicesManager.services;
+
+      // Init Default and SR ToolGroups
+      initToolGroups(extensionManager, ToolGroupService, commandsManager);
+
+      let unsubscribe;
+
+      const activateTool = () => {
+        ToolBarService.recordInteraction({
+          groupId: 'WindowLevel',
+          itemId: 'WindowLevel',
+          interactionType: 'tool',
+          commands: [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+        });
+
+        // We don't need to reset the active tool whenever a viewport is getting
+        // added to the toolGroup.
+        unsubscribe();
       };
 
-      ToolBarService.recordInteraction(interaction);
+      // Since we only have one viewport for the basic cs3d mode and it has
+      // only one hanging protocol, we can just use the first viewport
+      ({ unsubscribe } = ToolGroupService.subscribe(
+        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+        activateTool
+      ));
 
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
@@ -79,7 +102,19 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
     },
-    onModeExit: () => {},
+    onModeExit: ({ servicesManager }) => {
+      const {
+        ToolGroupService,
+        SyncGroupService,
+        MeasurementService,
+        ToolBarService,
+      } = servicesManager.services;
+
+      ToolBarService.reset();
+      MeasurementService.clearMeasurements();
+      ToolGroupService.destroy();
+      SyncGroupService.destroy();
+    },
     validationTags: {
       study: [],
       series: [],

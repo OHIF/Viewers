@@ -99,17 +99,28 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions = (extensions, dataSources = []) => {
-    extensions.forEach(extension => {
+  registerExtensions = async (extensions, dataSources = []) => {
+    // Todo: we ideally should be able to run registrations in parallel
+    // but currently since some extensions need to be registered before
+    // others, we need to run them sequentially. We need a postInit hook
+    // to avoid this sequential async registration
+    for (const extension of extensions) {
       const hasConfiguration = Array.isArray(extension);
-
-      if (hasConfiguration) {
-        const [ohifExtension, configuration] = extension;
-        this.registerExtension(ohifExtension, configuration, dataSources);
-      } else {
-        this.registerExtension(extension, {}, dataSources);
+      try {
+        if (hasConfiguration) {
+          const [ohifExtension, configuration] = extension;
+          await this.registerExtension(
+            ohifExtension,
+            configuration,
+            dataSources
+          );
+        } else {
+          await this.registerExtension(extension, {}, dataSources);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    });
+    }
   };
 
   /**
@@ -118,7 +129,11 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {Object} configuration
    */
-  registerExtension = (extension, configuration = {}, dataSources = []) => {
+  registerExtension = async (
+    extension,
+    configuration = {},
+    dataSources = []
+  ) => {
     if (!extension) {
       throw new Error('Attempting to register a null/undefined extension.');
     }
@@ -140,10 +155,11 @@ export default class ExtensionManager {
 
     // preRegistrationHook
     if (extension.preRegistration) {
-      extension.preRegistration({
+      await extension.preRegistration({
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
         hotkeysManager: this._hotkeysManager,
+        extensionManager: this,
         appConfig: this._appConfig,
         configuration,
       });
@@ -186,6 +202,7 @@ export default class ExtensionManager {
           case MODULE_TYPES.SOP_CLASS_HANDLER:
           case MODULE_TYPES.CONTEXT:
           case MODULE_TYPES.LAYOUT_TEMPLATE:
+          case MODULE_TYPES.UTILITY:
           case MODULE_TYPES.HANGING_PROTOCOL:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
@@ -295,14 +312,6 @@ export default class ExtensionManager {
     extensionModule.forEach(element => {
       this.modulesMap[
         `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
-      ] = element;
-    });
-  }
-
-  _initHangingProtocolModule(extensionModule, extensionId) {
-    extensionModule.forEach(element => {
-      this.modulesMap[
-        `${extensionId}.${MODULE_TYPES.HANGING_PROTOCOL}.${element.name}`
       ] = element;
     });
   }

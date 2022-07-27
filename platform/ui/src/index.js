@@ -96,6 +96,8 @@ export {
   ViewportGrid,
   ViewportPane,
   WindowLevelMenuItem,
+  ImageScrollbar,
+  ViewportOverlay,
 } from './components';
 
 /** These are mostly used in the docs */

@@ -1,57 +1,142 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
-import getPointsFromHandles from './utils/getPointsFromHandles';
-import getHandlesFromPoints from './utils/getHandlesFromPoints';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
-const ArrowAnnotate = {
-  toAnnotation: (measurement, definition) => {},
+const Length = {
+  toAnnotation: measurement => {},
+
+  /**
+   * Maps cornerstone annotation event data to measurement service format.
+   *
+   * @param {Object} cornerstone Cornerstone event data
+   * @return {Measurement} Measurement instance
+   */
   toMeasurement: (
-    csToolsAnnotation,
+    csToolsEventDetail,
     DisplaySetService,
+    CornerstoneViewportService,
     getValueTypeFromToolType
   ) => {
-    const { element, measurementData } = csToolsAnnotation;
-    const tool =
-      csToolsAnnotation.toolType ||
-      csToolsAnnotation.toolName ||
-      measurementData.toolType;
+    const { annotation, viewportId } = csToolsEventDetail;
+    const { metadata, data, annotationUID } = annotation;
 
-    const validToolType = toolName => SUPPORTED_TOOLS.includes(toolName);
+    if (!metadata || !data) {
+      console.warn('Length tool: Missing metadata or data');
+      return null;
+    }
 
-    if (!validToolType(tool)) {
+    const { toolName, referencedImageId, FrameOfReferenceUID } = metadata;
+    const validToolType = SUPPORTED_TOOLS.includes(toolName);
+
+    if (!validToolType) {
       throw new Error('Tool not supported');
     }
 
     const {
       SOPInstanceUID,
-      FrameOfReferenceUID,
       SeriesInstanceUID,
       StudyInstanceUID,
-    } = getSOPInstanceAttributes(element);
-
-    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-      SOPInstanceUID,
-      SeriesInstanceUID
+    } = getSOPInstanceAttributes(
+      referencedImageId,
+      CornerstoneViewportService,
+      viewportId
     );
 
-    const points = [];
-    points.push(measurementData.handles);
+    let displaySet;
+
+    if (SOPInstanceUID) {
+      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+        SOPInstanceUID,
+        SeriesInstanceUID
+      );
+    } else {
+      displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+    }
+
+    const { points } = data.handles;
+
+    const mappedAnnotations = getMappedAnnotations(
+      annotation,
+      DisplaySetService
+    );
+
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
 
     return {
-      id: measurementData.id,
+      uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
+      points,
+      metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: measurementData.text,
-      description: measurementData.description,
-      unit: measurementData.unit,
-      text: measurementData.text,
-      type: getValueTypeFromToolType(tool),
-      points: getPointsFromHandles(measurementData.handles),
+      label: data.text,
+      text: data.text,
+      displayText: displayText,
+      data: data.cachedStats,
+      type: getValueTypeFromToolType(toolName),
+      getReport: () => {
+        throw new Error('Not implemented');
+      },
     };
   },
 };
 
-export default ArrowAnnotate;
+function getMappedAnnotations(annotation, DisplaySetService) {
+  const { metadata, data } = annotation;
+  const { text } = data;
+  const { referencedImageId } = metadata;
+
+  const annotations = [];
+
+  const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
+    referencedImageId
+  );
+
+  const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+    SOPInstanceUID,
+    SeriesInstanceUID
+  );
+
+  const { SeriesNumber } = displaySet;
+
+  annotations.push({
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    SeriesNumber,
+    text,
+  });
+
+  return annotations;
+}
+
+function getDisplayText(mappedAnnotations, displaySet) {
+  if (!mappedAnnotations) {
+    return '';
+  }
+
+  const displayText = [];
+
+  // Area is the same for all series
+  const { SeriesNumber, SOPInstanceUID } = mappedAnnotations[0];
+
+  const instance = displaySet.images.find(
+    image => image.SOPInstanceUID === SOPInstanceUID
+  );
+
+  let InstanceNumber;
+  if (instance) {
+    InstanceNumber = instance.InstanceNumber;
+  }
+
+  displayText.push(
+    InstanceNumber
+      ? `(S: ${SeriesNumber} I: ${InstanceNumber})`
+      : `(S: ${SeriesNumber})`
+  );
+
+  return displayText;
+}
+
+export default Length;

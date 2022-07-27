@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
-  "module": "src/index.js",
+  "module": "src/index.tsx",
   "publishConfig": {
     "access": "public"
   },
@@ -32,13 +32,13 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "classnames": "^2.2.6",
-    "cornerstone-core": "^2.6.0",
-    "cornerstone-tools": "6.0.2",
-    "dcmjs": "0.16.1",
+    "@cornerstonejs/core": "^0.13.11",
+    "@cornerstonejs/tools": "^0.20.15",
+    "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
+    "dcmjs": "^0.24.5",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-cornerstone-viewport": "^4.1.2",
     "webpack": "^5.50.0",
     "webpack-merge": "^5.7.3",
     "@ohif/ui": "^2.0.0"

@@ -12,6 +12,7 @@ import {
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,
+  SegmentationService,
   CineService,
   UserAuthenticationService,
   errorHandler,
@@ -22,7 +23,7 @@ import {
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
-function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
+async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
       ? appConfigOrFunc({ servicesManager })
@@ -31,12 +32,6 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const commandsManagerConfig = {
     getAppState: () => {},
-    /** Used by commands to determine active context */
-    getActiveContexts: () => [
-      'VIEWER',
-      'DEFAULT',
-      'ACTIVE_VIEWPORT::CORNERSTONE',
-    ],
   };
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -59,6 +54,7 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     ToolBarService,
     ViewportGridService,
     HangingProtocolService,
+    SegmentationService,
     CineService,
     UserAuthenticationService,
   ]);
@@ -73,7 +69,7 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  extensionManager.registerExtensions(
+  await extensionManager.registerExtensions(
     [...defaultExtensions, ...appConfig.extensions],
     appConfig.dataSources
   );

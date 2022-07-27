@@ -21,7 +21,6 @@ describe('Top level exports', () => {
       'object',
       'log',
       'DICOMWeb',
-      'DICOMSR',
       'OHIF',
       //
       'CineService',
@@ -33,6 +32,7 @@ describe('Top level exports', () => {
       'MeasurementService',
       'ToolBarService',
       'ViewportGridService',
+      'SegmentationService',
       'HangingProtocolService',
       'UserAuthenticationService',
       'IWebApiDataSource',

@@ -18,16 +18,8 @@ import log from '../log.js';
  * to extend this class, please check it's source before adding new methods.
  */
 export class CommandsManager {
-  constructor({ getActiveContexts } = {}) {
+  constructor({} = {}) {
     this.contexts = {};
-
-    if (!getActiveContexts) {
-      throw new Error(
-        'CommandsManager was instantiated without getActiveContexts()'
-      );
-    }
-
-    this._getActiveContexts = getActiveContexts;
   }
 
   /**
@@ -122,12 +114,8 @@ export class CommandsManager {
         contexts.push(context);
       }
     } else {
-      const activeContexts = this._getActiveContexts();
-      activeContexts.forEach(activeContext => {
-        const context = this.getContext(activeContext);
-        if (context) {
-          contexts.push(context);
-        }
+      Object.keys(this.contexts).forEach(contextName => {
+        contexts.push(this.getContext(contextName));
       });
     }
 

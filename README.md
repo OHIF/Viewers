@@ -190,13 +190,14 @@ you'll see the following:
 ├── extensions               #
 │   ├── _example             # Skeleton of example extension
 │   ├── default              #
-│   ├── cornerstone          # 2D images w/ Cornerstone.js
-│   ├── dicom-sr             #
+│   ├── cornerstone       # image rendering and tools w/ Cornerstone
+│   ├── cornerstone- dicom-sr #
 │   └── measurement-tracking #
 │
 ├── modes                    #
 │   ├── _example             # Skeleton of example mode
-│   └── longitudinal         #
+│   ├── basic-dev-mode       # Basic development mode
+│   └── longitudinal         # Longitudinal mode (measurement tracking)
 │
 ├── platform                 #
 │   ├── core                 # Business Logic

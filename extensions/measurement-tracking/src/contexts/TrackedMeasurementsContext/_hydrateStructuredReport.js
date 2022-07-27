@@ -1,12 +1,15 @@
-import cornerstoneTools from 'cornerstone-tools';
+import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
-import getCornerstoneToolStateToMeasurementSchema from './getCornerstoneToolStateToMeasurementSchema';
 import { adapters } from 'dcmjs';
 
 const { guid } = OHIF.utils;
-const globalImageIdSpecificToolStateManager =
-  cornerstoneTools.globalImageIdSpecificToolStateManager;
+const { MeasurementReport, CORNERSTONE_3D_TAG } = adapters.Cornerstone3D;
+
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
+
+const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 /**
  *
@@ -24,8 +27,8 @@ export default function _hydrateStructuredReport(
 
   // TODO -> We should define a strict versioning somewhere.
   const mappings = MeasurementService.getSourceMappings(
-    'CornerstoneTools',
-    '4'
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   if (!mappings || !mappings.length) {
@@ -40,29 +43,38 @@ export default function _hydrateStructuredReport(
     displaySet.SOPInstanceUID
   );
 
-  const { MeasurementReport } = adapters.Cornerstone;
-
   const sopInstanceUIDToImageId = {};
+  let imageIdsForToolState = [];
 
   displaySet.measurements.forEach(measurement => {
     const { ReferencedSOPInstanceUID, imageId } = measurement;
+    imageIdsForToolState.push(imageId);
     if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
       sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
     }
   });
 
+  const datasetToUse = _mapLegacyDataSet(instance);
+
   // Use dcmjs to generate toolState.
-  const storedMeasurementByToolType = MeasurementReport.generateToolState(
-    instance
+  const storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
+    datasetToUse,
+    // NOTE: we need to pass in the imageIds to dcmjs since the we use them
+    // for the imageToWorld transformation. The following assumes that the order
+    // that measurements were added to the display set are the same order as
+    // the measurementGroups in the instance.
+    sopInstanceUIDToImageId,
+    utilities.imageToWorldCoords,
+    metaData
   );
 
   // Filter what is found by DICOM SR to measurements we support.
-  const mappingDefinitions = mappings.map(m => m.definition);
+  const mappingDefinitions = mappings.map(m => m.annotationType);
   const hydratableMeasurementsInSR = {};
 
-  Object.keys(storedMeasurementByToolType).forEach(key => {
+  Object.keys(storedMeasurementByAnnotationType).forEach(key => {
     if (mappingDefinitions.includes(key)) {
-      hydratableMeasurementsInSR[key] = storedMeasurementByToolType[key];
+      hydratableMeasurementsInSR[key] = storedMeasurementByAnnotationType[key];
     }
   });
 
@@ -70,12 +82,13 @@ export default function _hydrateStructuredReport(
   const imageIds = [];
 
   // TODO: notification if no hydratable?
-  Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
-    const toolDataForToolType = hydratableMeasurementsInSR[toolType];
+  Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
+    const toolDataForAnnotationType =
+      hydratableMeasurementsInSR[annotationType];
 
-    toolDataForToolType.forEach(data => {
+    toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
-      const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
+      const imageId = sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
       if (!imageIds.includes(imageId)) {
         imageIds.push(imageId);
@@ -88,7 +101,7 @@ export default function _hydrateStructuredReport(
 
   for (let i = 0; i < imageIds.length; i++) {
     const imageId = imageIds[i];
-    const { SeriesInstanceUID, StudyInstanceUID } = cornerstone.metaData.get(
+    const { SeriesInstanceUID, StudyInstanceUID } = metaData.get(
       'instance',
       imageId
     );
@@ -106,43 +119,49 @@ export default function _hydrateStructuredReport(
     }
   }
 
-  Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
-    const toolDataForToolType = hydratableMeasurementsInSR[toolType];
+  Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
+    const toolDataForAnnotationType =
+      hydratableMeasurementsInSR[annotationType];
 
-    toolDataForToolType.forEach(data => {
+    toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
-      const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
+      const imageId = sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
-      data.id = guid();
+      toolData.uid = guid();
 
-      const instance = cornerstone.metaData.get('instance', imageId);
+      const instance = metaData.get('instance', imageId);
       const {
-        SOPInstanceUID,
         FrameOfReferenceUID,
-        SeriesInstanceUID,
-        StudyInstanceUID,
+        // SOPInstanceUID,
+        // SeriesInstanceUID,
+        // StudyInstanceUID,
       } = instance;
 
-      // Let the measurement service know we added to toolState
-      const toMeasurementSchema = getCornerstoneToolStateToMeasurementSchema(
-        toolType,
-        MeasurementService,
-        DisplaySetService,
-        SOPInstanceUID,
-        FrameOfReferenceUID,
-        SeriesInstanceUID,
-        StudyInstanceUID
+      const annotation = {
+        annotationUID: toolData.annotation.annotationUID,
+        data: toolData.annotation.data,
+        metadata: {
+          toolName: annotationType,
+          referencedImageId: imageId,
+          FrameOfReferenceUID,
+        },
+      };
+
+      const source = MeasurementService.getSource(
+        CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+        CORNERSTONE_3D_TOOLS_SOURCE_VERSION
       );
+      annotation.data.label = getLabelFromDCMJSImportedToolData(toolData);
 
-      const source = MeasurementService.getSource('CornerstoneTools', '4');
-
-      data.label = getLabelFromDCMJSImportedToolData(data);
+      const matchingMapping = mappings.find(
+        m => m.annotationType === annotationType
+      );
 
       MeasurementService.addRawMeasurement(
         source,
-        toolType,
-        data,
-        toMeasurementSchema,
+        annotationType,
+        { annotation },
+        matchingMapping.toMeasurementSchema,
         dataSource
       );
 
@@ -159,3 +178,66 @@ export default function _hydrateStructuredReport(
     SeriesInstanceUIDs,
   };
 }
+
+function _mapLegacyDataSet(dataset) {
+  const REPORT = 'Imaging Measurements';
+  const GROUP = 'Measurement Group';
+  const TRACKING_IDENTIFIER = 'Tracking Identifier';
+
+  // Identify the Imaging Measurements
+  const imagingMeasurementContent = toArray(dataset.ContentSequence).find(
+    codeMeaningEquals(REPORT)
+  );
+
+  // Retrieve the Measurements themselves
+  const measurementGroups = toArray(
+    imagingMeasurementContent.ContentSequence
+  ).filter(codeMeaningEquals(GROUP));
+
+  // For each of the supported measurement types, compute the measurement data
+  const measurementData = {};
+
+  const cornerstoneToolClasses =
+    MeasurementReport.CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
+
+  const registeredToolClasses = [];
+
+  Object.keys(cornerstoneToolClasses).forEach(key => {
+    registeredToolClasses.push(cornerstoneToolClasses[key]);
+    measurementData[key] = [];
+  });
+
+  measurementGroups.forEach((measurementGroup, index) => {
+    const measurementGroupContentSequence = toArray(
+      measurementGroup.ContentSequence
+    );
+
+    const TrackingIdentifierGroup = measurementGroupContentSequence.find(
+      contentItem =>
+        contentItem.ConceptNameCodeSequence.CodeMeaning === TRACKING_IDENTIFIER
+    );
+
+    const TrackingIdentifier = TrackingIdentifierGroup.TextValue;
+
+    let [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
+    if (supportedLegacyCornerstoneTags.includes(cornerstoneTag)) {
+      cornerstoneTag = CORNERSTONE_3D_TAG;
+    }
+
+    const mappedTrackingIdentifier = `${cornerstoneTag}:${toolName}`;
+
+    TrackingIdentifierGroup.TextValue = mappedTrackingIdentifier;
+  });
+
+  return dataset;
+}
+
+const toArray = function(x) {
+  return Array.isArray(x) ? x : [x];
+};
+
+const codeMeaningEquals = codeMeaningName => {
+  return contentItem => {
+    return contentItem.ConceptNameCodeSequence.CodeMeaning === codeMeaningName;
+  };
+};

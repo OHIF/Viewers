@@ -1,41 +1,6 @@
 import { HPMatcher } from './HPMatcher.js';
 import { sortByScore } from './lib/sortByScore';
 
-const deafultProtocol = {
-  id: 'defaultProtocol',
-  locked: true,
-  hasUpdatedPriorsInformation: false,
-  name: 'Default',
-  createdDate: '2021-02-23T19:22:08.894Z',
-  modifiedDate: '2021-02-23T19:22:08.894Z',
-  availableTo: {},
-  editableBy: {},
-  protocolMatchingRules: [],
-  stages: [
-    {
-      id: 'nwzau7jDkEkL8djfr',
-      name: 'oneByOne',
-      viewportStructure: {
-        type: 'grid',
-        properties: {
-          rows: 1,
-          columns: 1,
-        },
-      },
-      viewports: [
-        {
-          viewportSettings: [],
-          imageMatchingRules: [],
-          seriesMatchingRules: [],
-          studyMatchingRules: [],
-        },
-      ],
-      createdDate: '2021-02-23T19:22:08.894Z',
-    },
-  ],
-  numberOfPriorsReferenced: -1,
-};
-
 export default class ProtocolEngine {
   constructor(protocols, customAttributeRetrievalCallbacks) {
     this.protocols = protocols;
@@ -117,7 +82,7 @@ export default class ProtocolEngine {
 
   /**
    * Finds the best protocols from Protocol Store, matching each protocol matching rules
-   * with the given study. The best protocol are orded by score and returned in an array
+   * with the given study. The best protocol are ordered by score and returned in an array
    * @param  {Object} study StudyMetadata instance object
    * @return {Array}       Array of match objects or an empty array if no match was found
    *                       Each match object has the score of the matching and the matched
@@ -131,7 +96,10 @@ export default class ProtocolEngine {
       // We clone it so that we don't accidentally add the
       // numberOfPriorsReferenced rule to the Protocol itself.
       let rules = protocol.protocolMatchingRules.slice();
-      if (!rules) {
+      if (!rules || !rules.length) {
+        console.warn(
+          'ProtocolEngine::findMatchByStudy no matching rules - specify protocolMatchingRules'
+        );
         return;
       }
 
@@ -153,7 +121,7 @@ export default class ProtocolEngine {
       return [
         {
           score: 1,
-          protocol: deafultProtocol,
+          protocol: this.protocols.find(protocol => protocol.id === 'default'),
         },
       ];
     }

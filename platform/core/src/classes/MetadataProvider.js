@@ -1,8 +1,10 @@
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
+import { imageIdToURI } from '../utils';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
+import toNumber from '../utils/toNumber';
 
 class MetadataProvider {
   constructor() {
@@ -13,7 +15,17 @@ class MetadataProvider {
       writable: false,
       value: new Map(),
     });
-    Object.defineProperty(this, 'imageIdToUIDs', {
+    Object.defineProperty(this, 'imageURIToUIDs', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: new Map(),
+    });
+    // Can be used to store custom metadata for a specific type.
+    // For instance, the scaling metadata for PET can be stored here
+    // as type "scalingModule"
+    //
+    Object.defineProperty(this, 'customMetadata', {
       configurable: false,
       enumerable: false,
       writable: false,
@@ -21,13 +33,21 @@ class MetadataProvider {
     });
   }
 
-
   addImageIdToUIDs(imageId, uids) {
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
+    const imageURI = imageIdToURI(imageId);
+    this.imageURIToUIDs.set(imageURI, uids);
+  }
 
-    this.imageIdToUIDs.set(imageId, uids);
+  addCustomMetadata(imageId, type, metadata) {
+    const imageURI = imageIdToURI(imageId);
+    if (!this.customMetadata.has(type)) {
+      this.customMetadata.set(type, {});
+    }
+
+    this.customMetadata.get(type)[imageURI] = metadata;
   }
 
   _getInstance(imageId) {
@@ -51,6 +71,15 @@ class MetadataProvider {
 
     if (query === INSTANCE) {
       return instance;
+    }
+
+    // check inside custom metadata
+    if (this.customMetadata.has(query)) {
+      const customMetadata = this.customMetadata.get(query);
+      const imageURI = imageIdToURI(imageId);
+      if (customMetadata[imageURI]) {
+        return customMetadata[imageURI];
+      }
     }
 
     return this.getTagFromInstance(query, instance, options);
@@ -106,7 +135,7 @@ class MetadataProvider {
         metadata = {
           modality: instance.Modality,
           seriesInstanceUID: instance.SeriesInstanceUID,
-          seriesNumber: validNumber(instance.SeriesNumber),
+          seriesNumber: toNumber(instance.SeriesNumber),
           studyInstanceUID: instance.StudyInstanceUID,
           seriesDate,
           seriesTime,
@@ -114,9 +143,14 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_STUDY_MODULE:
         metadata = {
-          patientAge: validNumber(instance.PatientAge),
-          patientSize: validNumber(instance.PatientSize),
-          patientWeight: validNumber(instance.PatientWeight),
+          patientAge: toNumber(instance.PatientAge),
+          patientSize: toNumber(instance.PatientSize),
+          patientWeight: toNumber(instance.PatientWeight),
+        };
+        break;
+      case WADO_IMAGE_LOADER_TAGS.PATIENT_DEMOGRAPHIC_MODULE:
+        metadata = {
+          patientSex: instance.PatientSex,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PLANE_MODULE:
@@ -145,50 +179,56 @@ class MetadataProvider {
 
         metadata = {
           frameOfReferenceUID: instance.FrameOfReferenceUID,
-          rows: validNumber(instance.Rows),
-          columns: validNumber(instance.Columns),
-          imageOrientationPatient: validNumber(ImageOrientationPatient),
-          rowCosines: validNumber(rowCosines),
-          columnCosines: validNumber(columnCosines),
-          imagePositionPatient: validNumber(instance.ImagePositionPatient),
-          sliceThickness: validNumber(instance.SliceThickness),
-          sliceLocation: validNumber(instance.SliceLocation),
-          pixelSpacing: validNumber(PixelSpacing),
-          rowPixelSpacing: validNumber(rowPixelSpacing),
-          columnPixelSpacing: validNumber(columnPixelSpacing),
+          rows: toNumber(instance.Rows),
+          columns: toNumber(instance.Columns),
+          imageOrientationPatient: toNumber(ImageOrientationPatient),
+          rowCosines: toNumber(rowCosines),
+          columnCosines: toNumber(columnCosines),
+          imagePositionPatient: toNumber(instance.ImagePositionPatient),
+          sliceThickness: toNumber(instance.SliceThickness),
+          sliceLocation: toNumber(instance.SliceLocation),
+          pixelSpacing: toNumber(PixelSpacing),
+          rowPixelSpacing: toNumber(rowPixelSpacing),
+          columnPixelSpacing: toNumber(columnPixelSpacing),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
         metadata = {
-          samplesPerPixel: validNumber(instance.SamplesPerPixel),
+          samplesPerPixel: toNumber(instance.SamplesPerPixel),
           photometricInterpretation: instance.PhotometricInterpretation,
-          rows: validNumber(instance.Rows),
-          columns: validNumber(instance.Columns),
-          bitsAllocated: validNumber(instance.BitsAllocated),
-          bitsStored: validNumber(instance.BitsStored),
-          highBit: validNumber(instance.HighBit),
-          pixelRepresentation: validNumber(instance.PixelRepresentation),
-          planarConfiguration: validNumber(instance.PlanarConfiguration),
-          pixelAspectRatio: validNumber(instance.PixelAspectRatio),
-          smallestPixelValue: validNumber(instance.SmallestPixelValue),
-          largestPixelValue: validNumber(instance.LargestPixelValue),
-          redPaletteColorLookupTableDescriptor: validNumber(
+          rows: toNumber(instance.Rows),
+          columns: toNumber(instance.Columns),
+          bitsAllocated: toNumber(instance.BitsAllocated),
+          bitsStored: toNumber(instance.BitsStored),
+          highBit: toNumber(instance.HighBit),
+          pixelRepresentation: toNumber(instance.PixelRepresentation),
+          planarConfiguration: toNumber(instance.PlanarConfiguration),
+          pixelAspectRatio: toNumber(instance.PixelAspectRatio),
+          smallestPixelValue: toNumber(instance.SmallestPixelValue),
+          largestPixelValue: toNumber(instance.LargestPixelValue),
+          redPaletteColorLookupTableDescriptor: toNumber(
             instance.RedPaletteColorLookupTableDescriptor
           ),
-          greenPaletteColorLookupTableDescriptor: validNumber(
+          greenPaletteColorLookupTableDescriptor: toNumber(
             instance.GreenPaletteColorLookupTableDescriptor
           ),
-          bluePaletteColorLookupTableDescriptor: validNumber(
+          bluePaletteColorLookupTableDescriptor: toNumber(
             instance.BluePaletteColorLookupTableDescriptor
           ),
           redPaletteColorLookupTableData: fetchPaletteColorLookupTableData(
-            instance, "RedPaletteColorLookupTableData", "RedPaletteColorLookupTableDescriptor"
+            instance,
+            'RedPaletteColorLookupTableData',
+            'RedPaletteColorLookupTableDescriptor'
           ),
           greenPaletteColorLookupTableData: fetchPaletteColorLookupTableData(
-            instance, "GreenPaletteColorLookupTableData", "GreenPaletteColorLookupTableDescriptor"
+            instance,
+            'GreenPaletteColorLookupTableData',
+            'GreenPaletteColorLookupTableDescriptor'
           ),
           bluePaletteColorLookupTableData: fetchPaletteColorLookupTableData(
-            instance, "BluePaletteColorLookupTableData", "BluePaletteColorLookupTableDescriptor"
+            instance,
+            'BluePaletteColorLookupTableData',
+            'BluePaletteColorLookupTableDescriptor'
           ),
         };
 
@@ -206,8 +246,8 @@ class MetadataProvider {
           : [WindowWidth];
 
         metadata = {
-          windowCenter: validNumber(windowCenter),
-          windowWidth: validNumber(windowWidth),
+          windowCenter: toNumber(windowCenter),
+          windowWidth: toNumber(windowWidth),
         };
 
         break;
@@ -218,8 +258,8 @@ class MetadataProvider {
         }
 
         metadata = {
-          rescaleIntercept: validNumber(instance.RescaleIntercept),
-          rescaleSlope: validNumber(instance.RescaleSlope),
+          rescaleIntercept: toNumber(instance.RescaleIntercept),
+          rescaleSlope: toNumber(instance.RescaleSlope),
           rescaleType: instance.RescaleType,
         };
         break;
@@ -331,7 +371,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUid: instance.SOPInstanceUID,
-          instanceNumber: validNumber(instance.InstanceNumber),
+          instanceNumber: toNumber(instance.InstanceNumber),
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
           lossyImageCompressionMethod: instance.LossyImageCompressionMethod,
@@ -361,7 +401,14 @@ class MetadataProvider {
   }
 
   _getUIDsFromImageID(imageId) {
-    if (imageId.includes('wadors:')) {
+    // TODO: adding csiv here is not really correct. Probably need to use
+    // metadataProvider.addImageIdToUIDs(imageId, {
+    //   StudyInstanceUID,
+    //   SeriesInstanceUID,
+    //   SOPInstanceUID,
+    // })
+    // somewhere else
+    if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
 
@@ -381,25 +428,21 @@ class MetadataProvider {
     }
 
     // Maybe its a non-standard imageId
-    return this.imageIdToUIDs.get(imageId);
+    // check if the imageId starts with http:// or https:// using regex
+    // Todo: handle non http imageIds
+    let imageURI;
+    const urlRegex = /^(http|https):\/\//;
+    if (urlRegex.test(imageId)) {
+      imageURI = imageId;
+    } else {
+      imageURI = imageIdToURI(imageId);
+    }
+
+    return this.imageURIToUIDs.get(imageURI);
   }
 }
 
 const metadataProvider = new MetadataProvider();
-
-/**
- * Returns the values as an array of javascript numbers
- *
- * @param element - The javascript object for the specified element in the metadata
- * @returns {*}
- */
-const validNumber = val => {
-  if (Array.isArray(val)) {
-    return val.map(v => (v !== undefined ? Number(v) : v));
-  } else {
-    return val !== undefined ? Number(val) : val;
-  }
-};
 
 export default metadataProvider;
 
@@ -414,6 +457,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
+  PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
   // react-cornerstone-viewport specifc
   PATIENT_MODULE: 'patientModule',

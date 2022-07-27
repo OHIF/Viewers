@@ -15,7 +15,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
  * Measurement schema
  *
  * @typedef {Object} Measurement
- * @property {number} id -
+ * @property {number} uid -
  * @property {string} SOPInstanceUID -
  * @property {string} FrameOfReferenceUID -
  * @property {string} referenceSeriesUID -
@@ -30,24 +30,31 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 
 /* Measurement schema keys for object validation. */
 const MEASUREMENT_SCHEMA_KEYS = [
-  'id',
+  'uid',
+  'data',
+  'getReport',
+  'displayText',
   'SOPInstanceUID',
   'FrameOfReferenceUID',
   'referenceStudyUID',
   'referenceSeriesUID',
+  'displaySetInstanceUID',
   'label',
   'description',
   'type',
   'unit',
+  'points',
+  'source',
+  'toolName',
+  'metadata',
+  // Todo: we shouldn't need to have all these here.
   'area', // TODO: Add concept names instead (descriptor)
   'mean',
   'stdDev',
   'length',
   'shortestDiameter',
   'longestDiameter',
-  'text', // NOTE: There is nothing like this in SR.
-  'points',
-  'source',
+  'cachedStats',
 ];
 
 const EVENTS = {
@@ -65,10 +72,25 @@ const VALUE_TYPES = {
   POINT: 'value_type::point',
   BIDIRECTIONAL: 'value_type::shortAxisLongAxis', // TODO -> Discuss with Danny. => just using SCOORD values isn't enough here.
   ELLIPSE: 'value_type::ellipse',
+  RECTANGLE: 'value_type::rectangle',
   MULTIPOINT: 'value_type::multipoint',
   CIRCLE: 'value_type::circle',
+  ROI_THRESHOLD: 'value_type::roiThreshold',
+  ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
+/**
+ * MeasurementService class that supports source management and measurement management.
+ * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
+ * The flow, is that by creating a source and mappings (annotation <-> measurement), we
+ * can convert back and forth between the two. MeasurementPanel in OHIF uses the measurement service
+ * to manage the measurements, and any edit to the measurements will be reflected back at the
+ * library level state (e.g. cornerstone-tools, cornerstone, etc.) by converting the
+ * edited measurements back to the original annotations and then updating the annotations.
+ *
+ * Note and Todo: We should be able to support measurements that are composed of multiple
+ * annotations, but that is not the case at the moment.
+ */
 class MeasurementService {
   constructor() {
     this.sources = {};
@@ -93,6 +115,45 @@ class MeasurementService {
   }
 
   /**
+   * Adds the given schema to the measurement service schema list.
+   * This method should be used to add custom tool schema to the measurement service.
+   * @param {Array} schema schema for validation
+   */
+  addMeasurementSchemaKeys(schema) {
+    if (!Array.isArray(schema)) {
+      schema = [schema];
+    }
+
+    MEASUREMENT_SCHEMA_KEYS.push(...schema);
+  }
+
+  /**
+   * Adds the given valueType to the measurement service valueType object.
+   * This method should be used to add custom valueType to the measurement service.
+   * @param {*} valueType
+   * @returns
+   */
+  addValueType(valueType) {
+    if (VALUE_TYPES[valueType]) {
+      return;
+    }
+
+    // check if valuetype is valid , and if values are strings
+    if (!valueType || typeof valueType !== 'object') {
+      console.warn(
+        `MeasurementService: addValueType: invalid valueType: ${valueType}`
+      );
+      return;
+    }
+
+    Object.keys(valueType).forEach(key => {
+      if (!VALUE_TYPES[key]) {
+        VALUE_TYPES[key] = valueType[key];
+      }
+    });
+  }
+
+  /**
    * Get all measurements.
    *
    * @return {Measurement[]} Array of measurements
@@ -106,17 +167,17 @@ class MeasurementService {
   }
 
   /**
-   * Get specific measurement by its id.
+   * Get specific measurement by its uid.
    *
-   * @param {string} id Id of the measurement
+   * @param {string} uid measurement uid
    * @return {Measurement} Measurement instance
    */
-  getMeasurement(id) {
+  getMeasurement(measurementUID) {
     let measurement = null;
-    const measurements = this.measurements[id];
+    const measurements = this.measurements[measurementUID];
 
     if (measurements && Object.keys(measurements).length > 0) {
-      measurement = this.measurements[id];
+      measurement = this.measurements[measurementUID];
     }
 
     return measurement;
@@ -138,69 +199,71 @@ class MeasurementService {
       throw new Error('Source version not provided.');
     }
 
-    const id = guid();
+    // Go over all the keys inside the sources and check if the source
+    // name and version matches with the existing sources.
+    const sourceKeys = Object.keys(this.sources);
+
+    for (let i = 0; i < sourceKeys.length; i++) {
+      const source = this.sources[sourceKeys[i]];
+      if (source.name === name && source.version === version) {
+        return source;
+      }
+    }
+
+    const uid = guid();
     const source = {
-      id,
+      uid,
       name,
       version,
     };
-    source.addOrUpdate = (definition, measurement) => {
-      return this.addOrUpdate(source, definition, measurement);
+
+    source.annotationToMeasurement = (annotationType, annotation) => {
+      return this.annotationToMeasurement(source, annotationType, annotation);
     };
-    source.remove = id => {
-      return this.remove(id, source);
+
+    source.remove = (measurementUID, eventDetails) => {
+      return this.remove(measurementUID, source, eventDetails);
     };
-    source.getAnnotation = (definition, measurementId) => {
-      return this.getAnnotation(source, definition, measurementId);
+
+    source.getAnnotation = (annotationType, measurementId) => {
+      return this.getAnnotation(source, annotationType, measurementId);
     };
 
     log.info(`New '${name}@${version}' source added.`);
-    this.sources[id] = source;
+    this.sources[uid] = source;
 
     return source;
   }
 
   getSource(name, version) {
     const { sources } = this;
-    const id = this._getSourceId(name, version);
+    const uid = this._getSourceUID(name, version);
 
-    return sources[id];
+    return sources[uid];
   }
 
   getSourceMappings(name, version) {
     const { mappings } = this;
-    const id = this._getSourceId(name, version);
+    const uid = this._getSourceUID(name, version);
 
-    return mappings[id];
-  }
-
-  _getSourceId(name, version) {
-    const { sources } = this;
-
-    const sourceId = Object.keys(sources).find(sourceId => {
-      const source = sources[sourceId];
-
-      return source.name === name && source.version === version;
-    });
-
-    return sourceId;
+    return mappings[uid];
   }
 
   /**
    * Add a new measurement matching criteria along with mapping functions.
    *
    * @param {MeasurementSource} source Measurement source instance
-   * @param {string} definition Definition of the measurement (Annotation Type)
+   * @param {string} annotationType annotation type to match which can be e.g., Length, Bidirectional, etc.
    * @param {MatchingCriteria} matchingCriteria The matching criteria
-   * @param {Function} toSourceSchema Mapping function to source schema
+   * @param {Function} toAnnotationSchema Mapping function to annotation schema
    * @param {Function} toMeasurementSchema Mapping function to measurement schema
    * @return void
    */
   addMapping(
     source,
-    definition,
+    annotationType,
     matchingCriteria,
-    toSourceSchema,
+    toAnnotationSchema,
     toMeasurementSchema
   ) {
     if (!this._isValidSource(source)) {
@@ -211,11 +274,11 @@ class MeasurementService {
       throw new Error('Matching criteria not provided.');
     }
 
-    if (!definition) {
-      throw new Error('Definition not provided.');
+    if (!annotationType) {
+      throw new Error('annotationType not provided.');
     }
 
-    if (!toSourceSchema) {
+    if (!toAnnotationSchema) {
       throw new Error('Mapping function to source schema not provided.');
     }
 
@@ -225,19 +288,19 @@ class MeasurementService {
 
     const mapping = {
       matchingCriteria,
-      definition,
-      toSourceSchema,
+      annotationType,
+      toAnnotationSchema,
       toMeasurementSchema,
     };
 
-    if (Array.isArray(this.mappings[source.id])) {
-      this.mappings[source.id].push(mapping);
+    if (Array.isArray(this.mappings[source.uid])) {
+      this.mappings[source.uid].push(mapping);
     } else {
-      this.mappings[source.id] = [mapping];
+      this.mappings[source.uid] = [mapping];
     }
 
     log.info(
-      `New measurement mapping added to source '${this._getSourceInfo(
+      `New measurement mapping added to source '${this._getSourceToString(
         source
       )}'.`
     );
@@ -247,81 +310,82 @@ class MeasurementService {
    * Get annotation for specific source.
    *
    * @param {MeasurementSource} source Measurement source instance
-   * @param {string} definition The source definition
-   * @param {string} measurementId The measurement service measurement id
+   * @param {string} annotationType The source annotationType
+   * @param {string} measurementUID The measurement service measurement uid
    * @return {Object} Source measurement schema
    */
-  getAnnotation(source, definition, measurementId) {
+  getAnnotation(source, annotationType, measurementUID) {
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
       return;
     }
 
-    if (!definition) {
-      log.warn('No source definition provided. Exiting early.');
+    if (!annotationType) {
+      log.warn('No source annotationType provided. Exiting early.');
       return;
     }
 
+    const measurement = this.getMeasurement(measurementUID);
     const mapping = this._getMappingByMeasurementSource(
-      measurementId,
-      definition
+      measurement,
+      annotationType
     );
-    const measurement = this.getMeasurement(measurementId);
-    if (mapping) return mapping.toSourceSchema(measurement, definition);
+
+    if (mapping) {
+      return mapping.toAnnotationSchema(measurement, annotationType);
+    }
 
     const matchingMapping = this._getMatchingMapping(
       source,
-      definition,
+      annotationType,
       measurement
     );
 
     if (matchingMapping) {
       log.info('Matching mapping found:', matchingMapping);
-      const { toSourceSchema, definition } = matchingMapping;
-      return toSourceSchema(measurement, definition);
+      const { toAnnotationSchema, annotationType } = matchingMapping;
+      return toAnnotationSchema(measurement, annotationType);
     }
   }
 
-  update(id, measurement, notYetUpdatedAtSource = false) {
-    if (this.measurements[id]) {
-      const updatedMeasurement = {
-        ...measurement,
-        modifiedTimestamp: Math.floor(Date.now() / 1000),
-      };
-
-      log.info(
-        `Updating internal measurement representation...`,
-        updatedMeasurement
-      );
-
-      this.measurements[id] = updatedMeasurement;
-
-      this._broadcastEvent(
-        // Add an internal flag to say the measurement has not yet been updated at source.
-        this.EVENTS.MEASUREMENT_UPDATED,
-        {
-          source: measurement.source,
-          measurement: updatedMeasurement,
-          notYetUpdatedAtSource,
-        }
-      );
-
-      return updatedMeasurement.id;
+  update(measurementUID, measurement, notYetUpdatedAtSource = false) {
+    if (!this.measurements[measurementUID]) {
+      return;
     }
+
+    const updatedMeasurement = {
+      ...measurement,
+      modifiedTimestamp: Math.floor(Date.now() / 1000),
+    };
+
+    log.info(
+      `Updating internal measurement representation...`,
+      updatedMeasurement
+    );
+
+    this.measurements[measurementUID] = updatedMeasurement;
+
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement: updatedMeasurement,
+      notYetUpdatedAtSource,
+    });
+
+    return updatedMeasurement.uid;
   }
 
   /**
    * Add a raw measurement into a source so that it may be
    * Converted to/from annotation in the same way. E.g. import serialized data
-   * Of the same form as the measurement source.
+   * of the same form as the measurement source.
    * @param {MeasurementSource} source The measurement source instance.
-   * @param {string} definition The source definition you want to add the measurement to.
+   * @param {string} annotationType The source annotationType you want to add the measurement to.
    * @param {object} data The data you wish to add to the source.
-   * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source definition.
+   * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source annotationType.
    */
   addRawMeasurement(
     source,
-    definition,
+    annotationType,
     data,
     toMeasurementSchema,
     dataSource = {}
@@ -331,10 +395,10 @@ class MeasurementService {
       return;
     }
 
-    const sourceInfo = this._getSourceInfo(source);
+    const sourceInfo = this._getSourceToString(source);
 
-    if (!definition) {
-      log.warn('No source definition provided. Exiting early.');
+    if (!annotationType) {
+      log.warn('No source annotationType provided. Exiting early.');
       return;
     }
 
@@ -347,13 +411,11 @@ class MeasurementService {
 
     let measurement = {};
     try {
-      /* Convert measurement */
       measurement = toMeasurementSchema(data);
-      /* Assign measurement source instance */
       measurement.source = source;
     } catch (error) {
       log.warn(
-        `Failed to map '${sourceInfo}' measurement for definition ${definition}:`,
+        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
         error.message
       );
       return;
@@ -366,31 +428,27 @@ class MeasurementService {
       return;
     }
 
-    let internalId = data.id;
-    if (!internalId) {
-      internalId = guid();
-      log.warn(`Measurement ID not found. Generating UID: ${internalId}`);
+    let internalUID = data.id;
+    if (!internalUID) {
+      internalUID = guid();
+      log.warn(`Measurement ID not found. Generating UID: ${internalUID}`);
     }
 
     const newMeasurement = {
       ...measurement,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
-      id: internalId,
+      uid: internalUID,
     };
 
-    if (this.measurements[internalId]) {
-      log.info(
-        `Measurement already defined. Updating measurement.`,
-        newMeasurement
-      );
-      this.measurements[internalId] = newMeasurement;
+    if (this.measurements[internalUID]) {
+      this.measurements[internalUID] = newMeasurement;
       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
         measurement: newMeasurement,
       });
     } else {
       log.info(`Measurement added.`, newMeasurement);
-      this.measurements[internalId] = newMeasurement;
+      this.measurements[internalUID] = newMeasurement;
       this._broadcastEvent(this.EVENTS.RAW_MEASUREMENT_ADDED, {
         source,
         measurement: newMeasurement,
@@ -406,20 +464,20 @@ class MeasurementService {
    * Adds or update persisted measurements.
    *
    * @param {MeasurementSource} source The measurement source instance
-   * @param {string} definition The source definition
-   * @param {Measurement} measurement The source measurement
-   * @return {string} A measurement id
+   * @param {string} annotationType The source annotationType
+   * @param {EventDetail} sourceAnnotationDetail for the annotation event
+   * @return {string} A measurement uid
    */
-  addOrUpdate(source, definition, sourceMeasurement) {
+  annotationToMeasurement(source, annotationType, sourceAnnotationDetail) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
 
-    if (!definition) {
-      throw new Error('No source definition provided.');
+    if (!annotationType) {
+      throw new Error('No source annotationType provided.');
     }
 
-    const sourceInfo = this._getSourceInfo(source);
+    const sourceInfo = this._getSourceToString(source);
 
     if (!this._sourceHasMappings(source)) {
       throw new Error(
@@ -429,19 +487,17 @@ class MeasurementService {
 
     let measurement = {};
     try {
-      const sourceMappings = this.mappings[source.id];
+      const sourceMappings = this.mappings[source.uid];
       const { toMeasurementSchema } = sourceMappings.find(
-        mapping => mapping.definition === definition
+        mapping => mapping.annotationType === annotationType
       );
 
       /* Convert measurement */
-      measurement = toMeasurementSchema(sourceMeasurement);
-
-      /* Assign measurement source instance */
+      measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
       throw new Error(
-        `Failed to map '${sourceInfo}' measurement for definition ${definition}:`,
+        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
         error.message
       );
     }
@@ -452,24 +508,23 @@ class MeasurementService {
       );
     }
 
-    let internalId = sourceMeasurement.id;
-    if (!internalId) {
-      internalId = guid();
-      log.info(`Measurement ID not found. Generating UID: ${internalId}`);
+    // Todo: we are using uid on the eventDetail, it should be uid of annotation
+    let internalUID = sourceAnnotationDetail.uid;
+    if (!internalUID) {
+      internalUID = guid();
+      log.info(
+        `Annotation does not have UID, Generating UID for the created Measurement: ${internalUID}`
+      );
     }
 
     const newMeasurement = {
       ...measurement,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
-      id: internalId,
+      uid: internalUID,
     };
 
-    if (this.measurements[internalId]) {
-      log.info(
-        `Measurement already defined. Updating measurement.`,
-        newMeasurement
-      );
-      this.measurements[internalId] = newMeasurement;
+    if (this.measurements[internalUID]) {
+      this.measurements[internalUID] = newMeasurement;
       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
         measurement: newMeasurement,
@@ -477,51 +532,52 @@ class MeasurementService {
       });
     } else {
       log.info('Measurement added.', newMeasurement);
-      this.measurements[internalId] = newMeasurement;
+      this.measurements[internalUID] = newMeasurement;
       this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
         source,
         measurement: newMeasurement,
       });
     }
 
-    return newMeasurement.id;
+    return newMeasurement.uid;
   }
 
   /**
    * Removes a measurement and broadcasts the removed event.
    *
-   * @param {string} id The measurement id
+   * @param {string} measurementUID The measurement uid
    * @param {MeasurementSource} source The measurement source instance
-   * @return {string} The removed measurement id
    */
-  remove(id, source) {
-    if (!id || !this.measurements[id]) {
-      log.warn(`No id provided, or unable to find measurement by id.`);
+  remove(measurementUID, source, eventDetails) {
+    if (!measurementUID || !this.measurements[measurementUID]) {
+      log.warn(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
 
-    delete this.measurements[id];
+    delete this.measurements[measurementUID];
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
-      measurement: id, // This is weird :shrug:
+      measurement: measurementUID,
+      ...eventDetails,
     });
   }
 
   clearMeasurements() {
+    // Make a copy of the measurements
+    const measurements = { ...this.measurements };
     this.measurements = {};
     this._jumpToMeasurementCache = {};
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED);
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
-  jumpToMeasurement(viewportIndex, id) {
-    const measurement = this.measurements[id];
+  jumpToMeasurement(viewportIndex, measurementUID) {
+    const measurement = this.measurements[measurementUID];
 
     if (!measurement) {
-      log.warn(`No id provided, or unable to find measurement by id.`);
+      log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
-
-    this._addJumpToMeasurement(viewportIndex, id);
+    this._addJumpToMeasurement(viewportIndex, measurementUID);
 
     const eventName = this.EVENTS.JUMP_TO_MEASUREMENT;
 
@@ -535,10 +591,6 @@ class MeasurementService {
     }
   }
 
-  _addJumpToMeasurement(viewportIndex, id) {
-    this._jumpToMeasurementCache[viewportIndex] = id;
-  }
-
   getJumpToMeasurement(viewportIndex) {
     return this._jumpToMeasurementCache[viewportIndex];
   }
@@ -547,36 +599,43 @@ class MeasurementService {
     delete this._jumpToMeasurementCache[viewportIndex];
   }
 
-  _getMappingByMeasurementSource(measurementId, definition) {
-    const measurement = this.getMeasurement(measurementId);
-    if (this._isValidSource(measurement.source)) {
-      return this.mappings[measurement.source.id].find(
-        m => m.definition === definition
-      );
-    }
+  _getSourceUID(name, version) {
+    const { sources } = this;
+
+    const sourceUID = Object.keys(sources).find(sourceUID => {
+      const source = sources[sourceUID];
+
+      return source.name === name && source.version === version;
+    });
+
+    return sourceUID;
   }
 
-  /**
-   * Clear all measurements and broadcasts cleared event.
-   */
-  clear() {
-    this.measurements = {};
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED);
+  _addJumpToMeasurement(viewportIndex, measurementUID) {
+    this._jumpToMeasurementCache[viewportIndex] = measurementUID;
+  }
+
+  _getMappingByMeasurementSource(measurement, annotationType) {
+    if (this._isValidSource(measurement.source)) {
+      return this.mappings[measurement.source.uid].find(
+        m => m.annotationType === annotationType
+      );
+    }
   }
 
   /**
    * Get measurement mapping function if matching criteria.
    *
    * @param {MeasurementSource} source Measurement source instance
-   * @param {string} definition The source definition
+   * @param {string} annotationType The source annotationType
    * @param {Measurement} measurement The measurement service measurement
    * @return {Object} The mapping based on matched criteria
    */
-  _getMatchingMapping(source, definition, measurement) {
-    const sourceMappings = this.mappings[source.id];
+  _getMatchingMapping(source, annotationType, measurement) {
+    const sourceMappings = this.mappings[source.uid];
 
     const sourceMappingsByDefinition = sourceMappings.filter(
-      mapping => mapping.definition === definition
+      mapping => mapping.annotationType === annotationType
     );
 
     /* Criteria Matching */
@@ -594,7 +653,7 @@ class MeasurementService {
    * @param {MeasurementSource} source Measurement source
    * @return {string} Source information
    */
-  _getSourceInfo(source) {
+  _getSourceToString(source) {
     return `${source.name}@${source.version}`;
   }
 
@@ -605,7 +664,7 @@ class MeasurementService {
    * @return {boolean} Measurement source validation
    */
   _isValidSource(source) {
-    return source && this.sources[source.id];
+    return source && this.sources[source.uid];
   }
 
   /**
@@ -616,7 +675,8 @@ class MeasurementService {
    */
   _sourceHasMappings(source) {
     return (
-      Array.isArray(this.mappings[source.id]) && this.mappings[source.id].length
+      Array.isArray(this.mappings[source.uid]) &&
+      this.mappings[source.uid].length
     );
   }
 

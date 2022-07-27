@@ -1,47 +1,79 @@
-import Hammer from 'hammerjs';
-import cornerstone from 'cornerstone-core';
-import cornerstoneMath from 'cornerstone-math';
-import cornerstoneTools from 'cornerstone-tools';
-import OHIF from '@ohif/core';
+import {
+  PanTool,
+  WindowLevelTool,
+  StackScrollTool,
+  StackScrollMouseWheelTool,
+  ZoomTool,
+  VolumeRotateMouseWheelTool,
+  MIPJumpToClickTool,
+  LengthTool,
+  RectangleROITool,
+  EllipticalROITool,
+  BidirectionalTool,
+  ArrowAnnotateTool,
+  DragProbeTool,
+  AngleTool,
+  MagnifyTool,
+  CrosshairsTool,
+  SegmentationDisplayTool,
+  init,
+  addTool,
+  annotation,
+} from '@cornerstonejs/tools';
 
-const { log } = OHIF;
+export default function initCornerstoneTools(configuration = {}) {
+  init(configuration);
+  addTool(PanTool);
+  addTool(WindowLevelTool);
+  addTool(StackScrollMouseWheelTool);
+  addTool(StackScrollTool);
+  addTool(ZoomTool);
+  addTool(VolumeRotateMouseWheelTool);
+  addTool(MIPJumpToClickTool);
+  addTool(LengthTool);
+  addTool(RectangleROITool);
+  addTool(EllipticalROITool);
+  addTool(BidirectionalTool);
+  addTool(ArrowAnnotateTool);
+  addTool(DragProbeTool);
+  addTool(AngleTool);
+  addTool(MagnifyTool);
+  addTool(CrosshairsTool);
+  addTool(SegmentationDisplayTool);
 
-export default function(configuration = {}) {
-  // TODO: Cypress tests are currently grabbing this from the window?
-  window.cornerstone = cornerstone;
+  // Modify annotation tools to use dashed lines on SR
+  const annotationStyle = {
+    textBoxFontSize: '15px',
+    lineWidth: '1.5',
+  };
 
-  // For debugging
-  window.cornerstoneTools = cornerstoneTools;
-
-  cornerstoneTools.external.cornerstone = cornerstone;
-  cornerstoneTools.external.Hammer = Hammer;
-  cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
-  cornerstoneTools.init(configuration);
-
-  cornerstoneTools.loadHandlerManager.setErrorLoadingHandler(
-    (element, imageId, error) => {
-      log.error(imageId);
-      throw error;
-    }
-  );
-
-  // Set the tool font and font size
-  // context.font = "[style] [variant] [weight] [size]/[line height] [font family]";
-  const fontFamily =
-    'Roboto, OpenSans, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif';
-  cornerstoneTools.textStyle.setFont(`16px ${fontFamily}`);
-
-  // Tool styles/colors
-  cornerstoneTools.toolStyle.setToolWidth(2);
-  cornerstoneTools.toolColors.setToolColor('rgb(255, 255, 0)');
-  cornerstoneTools.toolColors.setActiveColor('rgb(0, 255, 0)');
-
-  cornerstoneTools.store.state.touchProximity = 40;
-
-  // Configure stack prefetch
-  cornerstoneTools.stackPrefetch.setConfiguration({
-    maxImagesToPrefetch: Infinity,
-    preserveExistingPool: false,
-    maxSimultaneousRequests: 20,
+  const defaultStyles = annotation.config.style.getDefaultToolStyles();
+  annotation.config.style.setDefaultToolStyles({
+    global: {
+      ...defaultStyles.global,
+      ...annotationStyle,
+    },
   });
 }
+
+const toolNames = {
+  Pan: PanTool.toolName,
+  ArrowAnnotate: ArrowAnnotateTool.toolName,
+  WindowLevel: WindowLevelTool.toolName,
+  StackScroll: StackScrollTool.toolName,
+  StackScrollMouseWheel: StackScrollMouseWheelTool.toolName,
+  Zoom: ZoomTool.toolName,
+  VolumeRotateMouseWheel: VolumeRotateMouseWheelTool.toolName,
+  MipJumpToClick: MIPJumpToClickTool.toolName,
+  Length: LengthTool.toolName,
+  DragProbe: DragProbeTool.toolName,
+  RectangleROI: RectangleROITool.toolName,
+  EllipticalROI: EllipticalROITool.toolName,
+  Bidirectional: BidirectionalTool.toolName,
+  Angle: AngleTool.toolName,
+  Magnify: MagnifyTool.toolName,
+  Crosshairs: CrosshairsTool.toolName,
+  SegmentationDisplay: SegmentationDisplayTool.toolName,
+};
+
+export { toolNames };

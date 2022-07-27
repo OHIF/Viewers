@@ -1,4 +1,4 @@
-//import RetrieveMetadataLoaderSync from './retrieveMetadataLoaderSync';
+import RetrieveMetadataLoaderSync from './retrieveMetadataLoaderSync';
 import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
 
 /**
@@ -19,12 +19,10 @@ async function RetrieveMetadata(
   sortCriteria,
   sortFunction
 ) {
-  // const RetrieveMetadataLoader =
-  //   enableStudyLazyLoad !== false
-  //     ? RetrieveMetadataLoaderAsync
-  //     : RetrieveMetadataLoaderSync;
-
-  const RetrieveMetadataLoader = RetrieveMetadataLoaderAsync;
+  const RetrieveMetadataLoader =
+    enableStudyLazyLoad !== false
+      ? RetrieveMetadataLoaderAsync
+      : RetrieveMetadataLoaderSync;
 
   const retrieveMetadataLoader = new RetrieveMetadataLoader(
     dicomWebClient,
@@ -33,12 +31,9 @@ async function RetrieveMetadata(
     sortCriteria,
     sortFunction
   );
-  const { preLoadData, promises } = await retrieveMetadataLoader.execLoad();
+  const data = await retrieveMetadataLoader.execLoad();
 
-  return {
-    seriesSummaryMetadata: preLoadData,
-    seriesPromises: promises,
-  };
+  return data;
 }
 
 export default RetrieveMetadata;

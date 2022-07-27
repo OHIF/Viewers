@@ -7,8 +7,8 @@ module.exports = {
     content: [
       './docs/**/*.jsx',
       './docs/**/*.mdx',
-      './node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
-      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
+      './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
+      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
     ],
   },
   theme: {

@@ -22,6 +22,15 @@ For instance, in `longitudinal` mode we are using this hook to initialize the
 `ToolBarService` and set the window level/width tool to be active and add
 buttons to the toolbar.
 
+:::note Tip
+
+In OHIF Version 3.1, there is a new service `ToolGroupService` that is used to
+define and manage tools for the group of viewports. This is a new concept
+borrowed from the Cornerstone ToolGroup, and you can read more
+[here](https://www.cornerstonejs.org/docs/concepts/cornerstone-tools/toolgroups/)
+
+:::
+
 ```js
 function modeFactory() {
   return {
@@ -29,16 +38,10 @@ function modeFactory() {
     version: '',
     displayName: '',
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { ToolBarService } = servicesManager.services;
+      const { ToolBarService, ToolGroupService } = servicesManager.services;
 
-      const interaction = {
-        groupId: 'primary',
-        itemId: 'Wwwc',
-        interactionType: 'tool',
-        commandOptions: undefined,
-      };
-
-      ToolBarService.recordInteraction(interaction);
+      // Init Default and SR ToolGroups
+      initToolGroups(extensionManager, ToolGroupService);
 
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
@@ -65,7 +68,7 @@ This hook is called when the viewer navigate away from the route in the url.
 This is the place for cleaning up data, and services by unsubscribing to the
 events.
 
-For instance, it can be used to reset the `ToolbarService` which reset the
+For instance, it can be used to reset the `ToolBarService` which reset the
 toggled buttons.
 
 ```js

@@ -14,10 +14,7 @@ add support for:
 
 - 2D Medical Image Viewing (cornerstone ext.)
 - Structured Reports as SR (DICOM SR ext.)
-- Structured Reports as HTML (DICOM html ext.)
 - Encapsulated PDFs as PDFs (DICOM pdf ext.)
-- Whole Slide Microscopy Viewing (whole slide ext.)
-- etc.
 
 The general pattern is that a mode can define which `Viewport` to use for which
 specific `SOPClassHandlerUID`, so if you want to fork just a single Viewport
@@ -43,44 +40,53 @@ const getViewportModule = () => {
 
 ## Example Viewport Component
 
-A simplified version of the tracked CornerstoneViewport is shown below, which
-creates a cornerstone viewport and action bar on top of it.
+A simplified version of the tracked `OHIFCornerstoneViewport` is shown below, which
+creates a cornerstone viewport:
+
+:::note Tip
+
+Not in OHIF version 3.1 we use `displaySets` in the props which is new compared to
+the previous version (3.0) which uses `displaySet`. This is due to the fact that
+we are moving to a new data model that can render fused images in a single viewport.
+
+:::
 
 ```jsx
 function TrackedCornerstoneViewport({
   children,
   dataSource,
-  displaySet,
+  displaySets,
   viewportIndex,
   servicesManager,
   extensionManager,
   commandsManager,
 }) {
-  const renderViewport = () => {
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
-    );
-    return (
-      <Component
-        onElementEnabled={onElementEnabled}
-        element={element}
-        {...props}
-      ></Component>
-    );
-  };
 
   return (
-    <>
-      <ViewportActionBar onDoubleClick onSeriesChange />
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {renderViewport()}
-      </div>
-    </>
+    <div className="viewport-wrapper">
+      /** Resize Detector */
+      <ReactResizeDetector
+        handleWidth
+        handleHeight
+        skipOnMount={true} // Todo: make these configurable
+        refreshMode={'debounce'}
+        refreshRate={100}
+        onResize={onResize}
+        targetRef={elementRef.current}
+      />
+      /** Div For displaying image */
+      <div
+        className="cornerstone-viewport-element"
+        style={{ height: '100%', width: '100%' }}
+        onContextMenu={e => e.preventDefault()}
+        onMouseDown={e => e.preventDefault()}
+        ref={elementRef}
+      ></div>
+    </div>
   );
 }
 ```
 
-![viewportModule](../../../assets/img/viewportModule.png)
 
 ### `@ohif/viewer`
 

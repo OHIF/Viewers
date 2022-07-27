@@ -3,7 +3,6 @@ import { ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes/';
 
 import DICOMWeb from './DICOMWeb';
-import DICOMSR from './DICOMSR';
 import errorHandler from './errorHandler.js';
 import log from './log.js';
 import object from './object.js';
@@ -27,6 +26,7 @@ import {
   HangingProtocolService,
   pubSubServiceInterface,
   UserAuthenticationService,
+  SegmentationService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -54,7 +54,6 @@ const OHIF = {
   object,
   log,
   DICOMWeb,
-  DICOMSR,
   viewer: {},
   //
   CineService,
@@ -68,6 +67,7 @@ const OHIF = {
   ViewportGridService,
   HangingProtocolService,
   UserAuthenticationService,
+  SegmentationService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
@@ -91,7 +91,6 @@ export {
   object,
   log,
   DICOMWeb,
-  DICOMSR,
   //
   CineService,
   UIDialogService,
@@ -104,6 +103,7 @@ export {
   ViewportGridService,
   HangingProtocolService,
   UserAuthenticationService,
+  SegmentationService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,

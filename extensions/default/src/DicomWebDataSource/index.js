@@ -1,5 +1,13 @@
 import { api } from 'dicomweb-client';
 import {
+  DicomMetadataStore,
+  IWebApiDataSource,
+  utils,
+  errorHandler,
+  classes,
+} from '@ohif/core';
+
+import {
   mapParams,
   search as qidoSearch,
   seriesInStudy,
@@ -7,12 +15,6 @@ import {
   processSeriesResults,
 } from './qido.js';
 import dcm4cheeReject from './dcm4cheeReject';
-import {
-  DicomMetadataStore,
-  IWebApiDataSource,
-  utils,
-  errorHandler,
-} from '@ohif/core';
 
 import getImageId from './utils/getImageId';
 import dcmjs from 'dcmjs';
@@ -30,6 +32,8 @@ const ImplementationClassUID =
   '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
+
+const metadataProvider = classes.MetadataProvider;
 
 /**
  *
@@ -94,7 +98,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
+        search: async function(origParams) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -119,7 +123,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
+        search: async function(studyInstanceUid) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -163,13 +167,13 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
-      directURL: (params) => {
+      directURL: params => {
         const {
           instance,
-          tag = "PixelData",
-          defaultPath = "/pixeldata",
-          defaultType = "video/mp4",
-          singlepart: fetchPart = "video",
+          tag = 'PixelData',
+          defaultPath = '/pixeldata',
+          defaultType = 'video/mp4',
+          singlepart: fetchPart = 'video',
         } = params;
         const value = instance[tag];
         if (!value) return undefined;
@@ -180,10 +184,15 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
           value.DirectRetrieveURL = URL.createObjectURL(blob);
           return value.DirectRetrieveURL;
         }
-        if (!singlepart || singlepart !== true && singlepart.indexOf(fetchPart) === -1) {
+        if (
+          !singlepart ||
+          (singlepart !== true && singlepart.indexOf(fetchPart) === -1)
+        ) {
           if (value.retrieveBulkData) {
             return value.retrieveBulkData().then(arr => {
-              value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
+              value.DirectRetrieveURL = URL.createObjectURL(
+                new Blob([arr], { type: defaultType })
+              );
               return value.DirectRetrieveURL;
             });
           }
@@ -191,7 +200,11 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
           return undefined;
         }
 
-        const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+        const {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          SOPInstanceUID,
+        } = instance;
         const BulkDataURI =
           (value && value.BulkDataURI) ||
           `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
@@ -234,94 +247,27 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
             );
           }
 
-          // Get Series
-          const {
-            seriesSummaryMetadata,
-            seriesPromises,
-          } = await retrieveStudyMetadata(
-            wadoDicomWebClient,
-            StudyInstanceUID,
-            enableStudyLazyLoad,
-            filters,
-            sortCriteria,
-            sortFunction
-          );
-
-          /**
-           * naturalizes the dataset, and adds a retrieve bulkdata method
-           * to any values containing BulkDataURI.
-           * @param {*} instance
-           * @returns naturalized dataset, with retrieveBulkData methods
-           */
-          const addRetrieveBulkData = instance => {
-            const naturalized = naturalizeDataset(instance);
-            Object.keys(naturalized).forEach(key => {
-              const value = naturalized[key];
-              // The value.Value will be set with the bulkdata read value
-              // in which case it isn't necessary to re-read this.
-              if (value && value.BulkDataURI && !value.Value) {
-                // Provide a method to fetch bulkdata
-                value.retrieveBulkData = () => {
-                  const options = {
-                    // The bulkdata fetches work with either multipart or
-                    // singlepart, so set multipart to false to let the server
-                    // decide which type to respond with.
-                    multipart: false,
-                    BulkDataURI: value.BulkDataURI,
-                    // The study instance UID is required if the bulkdata uri
-                    // is relative - that isn't disallowed by DICOMweb, but
-                    // isn't well specified in the standard, but is needed in
-                    // any implementation that stores static copies of the metadata
-                    StudyInstanceUID: naturalized.StudyInstanceUID,
-                  };
-                  return qidoDicomWebClient
-                    .retrieveBulkData(options)
-                    .then(val => {
-                      const ret = (val && val[0]) || undefined;
-                      value.Value = ret;
-                      return ret;
-                    });
-                };
-              }
-            });
-            return naturalized;
-          };
-
-          // Async load series, store as retrieved
-          function storeInstances(instances) {
-            const naturalizedInstances = instances.map(addRetrieveBulkData);
-
-            DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);
-          }
-
-          function setSuccessFlag() {
-            const study = DicomMetadataStore.getStudy(
+          if (enableStudyLazyLoad) {
+            return implementation._retrieveSeriesMetadataAsync(
               StudyInstanceUID,
+              filters,
+              sortCriteria,
+              sortFunction,
               madeInClient
             );
-            study.isLoaded = true;
           }
 
-          // Google Cloud Healthcare doesn't return StudyInstanceUID, so we need to add
-          // it manually here
-          seriesSummaryMetadata.forEach(aSeries => {
-            aSeries.StudyInstanceUID = StudyInstanceUID;
-          });
-
-          DicomMetadataStore.addSeriesMetadata(
-            seriesSummaryMetadata,
+          return implementation._retrieveSeriesMetadataSync(
+            StudyInstanceUID,
+            filters,
+            sortCriteria,
+            sortFunction,
             madeInClient
           );
-
-          const numberOfSeries = seriesPromises.length;
-          seriesPromises.forEach(async (seriesPromise, index) => {
-            const instances = await seriesPromise;
-            storeInstances(instances);
-            if (index === numberOfSeries - 1) setSuccessFlag();
-          });
         },
       },
     },
+
     store: {
       dicom: async dataset => {
         const headers = UserAuthenticationService.getAuthorizationHeader();
@@ -352,6 +298,187 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
         await wadoDicomWebClient.storeInstances(options);
       },
+    },
+    _retrieveSeriesMetadataSync: async (
+      StudyInstanceUID,
+      filters,
+      sortCriteria,
+      sortFunction,
+      madeInClient
+    ) => {
+      const enableStudyLazyLoad = false;
+
+      // data is all SOPInstanceUIDs
+      const data = await retrieveStudyMetadata(
+        wadoDicomWebClient,
+        StudyInstanceUID,
+        enableStudyLazyLoad,
+        filters,
+        sortCriteria,
+        sortFunction
+      );
+
+      // first naturalize the data
+      const naturalizedInstancesMetadata = data.map(naturalizeDataset);
+
+      const seriesSummaryMetadata = {};
+      const instancesPerSeries = {};
+
+      naturalizedInstancesMetadata.forEach(instance => {
+        if (!seriesSummaryMetadata[instance.SeriesInstanceUID]) {
+          seriesSummaryMetadata[instance.SeriesInstanceUID] = {
+            StudyInstanceUID: instance.StudyInstanceUID,
+            StudyDescription: instance.StudyDescription,
+            SeriesInstanceUID: instance.SeriesInstanceUID,
+            SeriesDescription: instance.SeriesDescription,
+            SeriesNumber: instance.SeriesNumber,
+            SeriesTime: instance.SeriesTime,
+            SOPClassUID: instance.SOPClassUID,
+            ProtocolName: instance.ProtocolName,
+            Modality: instance.Modality,
+          };
+        }
+
+        if (!instancesPerSeries[instance.SeriesInstanceUID]) {
+          instancesPerSeries[instance.SeriesInstanceUID] = [];
+        }
+
+        const imageId = implementation.getImageIdsForInstance({
+          instance,
+        });
+
+        instance.imageId = imageId;
+
+        metadataProvider.addImageIdToUIDs(imageId, {
+          StudyInstanceUID,
+          SeriesInstanceUID: instance.SeriesInstanceUID,
+          SOPInstanceUID: instance.SOPInstanceUID,
+        });
+
+        instancesPerSeries[instance.SeriesInstanceUID].push(instance);
+      });
+
+      // grab all the series metadata
+      const seriesMetadata = Object.values(seriesSummaryMetadata);
+      DicomMetadataStore.addSeriesMetadata(seriesMetadata, madeInClient);
+
+      Object.keys(instancesPerSeries).forEach(seriesInstanceUID =>
+        DicomMetadataStore.addInstances(
+          instancesPerSeries[seriesInstanceUID],
+          madeInClient
+        )
+      );
+    },
+
+    _retrieveSeriesMetadataAsync: async (
+      StudyInstanceUID,
+      filters,
+      sortCriteria,
+      sortFunction,
+      madeInClient = false
+    ) => {
+      const enableStudyLazyLoad = true;
+      // Get Series
+      const {
+        preLoadData: seriesSummaryMetadata,
+        promises: seriesPromises,
+      } = await retrieveStudyMetadata(
+        wadoDicomWebClient,
+        StudyInstanceUID,
+        enableStudyLazyLoad,
+        filters,
+        sortCriteria,
+        sortFunction
+      );
+
+      /**
+       * naturalizes the dataset, and adds a retrieve bulkdata method
+       * to any values containing BulkDataURI.
+       * @param {*} instance
+       * @returns naturalized dataset, with retrieveBulkData methods
+       */
+      const addRetrieveBulkData = instance => {
+        const naturalized = naturalizeDataset(instance);
+        Object.keys(naturalized).forEach(key => {
+          const value = naturalized[key];
+          // The value.Value will be set with the bulkdata read value
+          // in which case it isn't necessary to re-read this.
+          if (value && value.BulkDataURI && !value.Value) {
+            // Provide a method to fetch bulkdata
+            value.retrieveBulkData = () => {
+              const options = {
+                // The bulkdata fetches work with either multipart or
+                // singlepart, so set multipart to false to let the server
+                // decide which type to respond with.
+                multipart: false,
+                BulkDataURI: value.BulkDataURI,
+                // The study instance UID is required if the bulkdata uri
+                // is relative - that isn't disallowed by DICOMweb, but
+                // isn't well specified in the standard, but is needed in
+                // any implementation that stores static copies of the metadata
+                StudyInstanceUID: naturalized.StudyInstanceUID,
+              };
+              return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+                const ret = (val && val[0]) || undefined;
+                value.Value = ret;
+                return ret;
+              });
+            };
+          }
+        });
+        return naturalized;
+      };
+
+      // Async load series, store as retrieved
+      function storeInstances(instances) {
+        const naturalizedInstances = instances.map(addRetrieveBulkData);
+
+        // Adding instanceMetadata to OHIF MetadataProvider
+        naturalizedInstances.forEach((instance, index) => {
+          const imageId = implementation.getImageIdsForInstance({
+            instance,
+          });
+
+          // Adding imageId to each instance
+          // Todo: This is not the best way I can think of to let external
+          // metadata handlers know about the imageId that is stored in the store
+          instance.imageId = imageId;
+
+          // Adding UIDs to metadataProvider
+          // Note: storing imageURI in metadataProvider since stack viewports
+          // will use the same imageURI
+          metadataProvider.addImageIdToUIDs(imageId, {
+            StudyInstanceUID,
+            SeriesInstanceUID: instance.SeriesInstanceUID,
+            SOPInstanceUID: instance.SOPInstanceUID,
+          });
+        });
+
+        DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);
+      }
+
+      function setSuccessFlag() {
+        const study = DicomMetadataStore.getStudy(
+          StudyInstanceUID,
+          madeInClient
+        );
+        study.isLoaded = true;
+      }
+
+      // Google Cloud Healthcare doesn't return StudyInstanceUID, so we need to add
+      // it manually here
+      seriesSummaryMetadata.forEach(aSeries => {
+        aSeries.StudyInstanceUID = StudyInstanceUID;
+      });
+
+      DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
+
+      const numberOfSeries = seriesPromises.length;
+      seriesPromises.forEach(async (seriesPromise, index) => {
+        const instances = await seriesPromise;
+        storeInstances(instances);
+        if (index === numberOfSeries - 1) setSuccessFlag();
+      });
     },
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet(displaySet) {

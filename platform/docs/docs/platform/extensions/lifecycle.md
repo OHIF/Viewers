@@ -16,8 +16,8 @@ Extensions can implement specific lifecycle methods.
 ## preRegistration
 
 If an extension defines the `preRegistration` lifecycle hook, it is called
-before any modules are registered in the `ExtensionManager`. This hook can be
-used to:
+before any modules are registered in the `ExtensionManager`. This hook is an
+`async` function that can be used to perform:
 
 - initialize 3rd party libraries
 - register event listeners
@@ -61,7 +61,7 @@ export default {
    * @param {CommandsManager} params.commandsManager
    * @returns void
    */
-  preRegistration({ servicesManager, commandsManager, configuration }) {
+  async preRegistration({ servicesManager, commandsManager, configuration }) {
     console.log('Wiring up important stuff.');
 
     window.importantStuff = () => {
@@ -90,7 +90,7 @@ _Example `onModeEnter` hook implementation_
 
 ```js
 export default {
-  id: '@ohif/extension-dicom-sr',
+  id: '@ohif/extension-cornerstone-dicom-sr',
 
   onModeEnter({ servicesManager }) {
     const { DisplaySetService } = servicesManager.services;
