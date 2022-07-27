@@ -31,7 +31,35 @@
   ],
   "modes": [
     {
-      "packageName": "@ohif/mode-longitudinal",
+      "packageName": "@ohif/mode-tmtv",
+      "version": "3.0.0"
+    }
+  ],
+  "modesFactory": [
+    {
+      "packageName": "@radical/config-mode",
+      "version": "3.0.0"
+    }
+  ],
+  "umd": [
+    {
+      "packageName": "config-point",
+      "version": "0.4.9"
+    },
+    {
+      "packageName": "@radical/ecg-dicom",
+      "version": "3.0.1"
+    },
+    {
+      "packageName": "@radical/microscopy-dicom",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@radical/site-finding",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@radical/hp-extension",
       "version": "3.0.0"
     }
   ],

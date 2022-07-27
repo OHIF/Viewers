@@ -29,7 +29,7 @@ You can find the skeleton of the hanging protocols here:
 
 ```js
 const defaultProtocol = {
-  id: 'defaultProtocol',
+  id: 'test',
   locked: true,
   hasUpdatedPriorsInformation: false,
   name: 'Default',
@@ -37,31 +37,91 @@ const defaultProtocol = {
   modifiedDate: '2021-02-23T19:22:08.894Z',
   availableTo: {},
   editableBy: {},
-  protocolMatchingRules: [],
+  toolGroupIds: [
+    'ctToolGroup',
+    'ptToolGroup',
+  ],
+  imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  protocolMatchingRules: [
+    {
+      id: 'wauZK2QNEfDPwcAQo',
+      weight: 1,
+      attribute: 'StudyDescription',
+      constraint: {
+        contains: {
+          value: 'PETCT',
+        },
+      },
+      required: false,
+    },
+  ],
   stages: [
     {
-      id: 'nwzau7jDkEkL8djfr',
-      name: 'oneByOne',
+      id: 'hYbmMy3b7pz7GLiaT',
+      name: 'default',
       viewportStructure: {
-        type: 'grid',
+        layoutType: 'grid',
         properties: {
           rows: 1,
           columns: 1,
         },
       },
-      viewports: [
+      displaySets: [
         {
-          viewportSettings: [],
-          imageMatchingRules: [],
-          seriesMatchingRules: [],
+          id: 'displaySet',
+          seriesMatchingRules: [
+            {
+              id: 'GPEYqFLv2dwzCM322',
+              weight: 1,
+              attribute: 'Modality',
+              constraint: {
+                equals: 'CT',
+              },
+              required: true,
+            },
+            {
+              id: 'vSjk7NCYjtdS3XZAw',
+              weight: 1,
+              attribute: 'numImageFrames',
+              constraint: {
+                greaterThan: 10,
+              },
+            },
+          ],
           studyMatchingRules: [],
         },
       ],
-      createdDate: '2021-02-23T19:22:08.894Z',
+      viewports: [
+        {
+          viewportOptions: {
+            viewportId: 'ctAXIAL',
+            viewportType: 'volume',
+            orientation: 'axial',
+            toolGroupId: 'ctToolGroup',
+            initialImageOptions: {
+              // index: 5,
+              preset: 'first', // 'first', 'last', 'middle'
+            },
+            syncGroups: [
+              {
+                type: 'cameraPosition',
+                id: 'axialSync',
+                source: true,
+                target: true,
+              },
+            ],
+          },
+          displaySets: [
+            {
+              id: 'displaySet',
+            },
+          ],
+        },
+      ],
     },
   ],
   numberOfPriorsReferenced: -1,
-};
+}
 ```
 
 Let's discuss each property in depth.
@@ -74,7 +134,7 @@ Let's discuss each property in depth.
   - `weight`: weight for the matching rule. Eventually, all the registered
     protocols get sorted based on the weights, and the winning protocol gets
     applied to the viewer.
-  - `attriubte`: tag that needs to be matched against. This can be either
+  - `attribute`: tag that needs to be matched against. This can be either
     Study-level metadata or a custom attribute.
     [Learn more about custom attribute matching](#custom-attribute)
 
@@ -85,92 +145,65 @@ Let's discuss each property in depth.
 
     ```js
     {
-      id: 'wauZK2QNEfDPwcAQo',
       weight: 1,
       attribute: 'StudyInstanceUID',
       constraint: {
-        equals: {
-          value: '1.3.6.1.4.1.25403.345050719074.3824.20170125112931.11',
-        },
+        equals: '1.3.6.1.4.1.25403.345050719074.3824.20170125112931.11',
       },
       required: true,
     }
     ```
 
+
 - `stages`: Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules.
   Therefore, the `stages` property is array of objects, each object being one stage.
 
+  - `displaySets`: Defines the matching rules for which display sets to use.
   - `viewportStructure`: Defines the layout of the viewer. You can define the
-    number of `rows` and `columns`. There should be `rows * columns` number of
-    viewport configuration in the `viewports` property. Note that order of
-    viewports are rows first then columns.
+    number of `rows` and `columns`.
+  - `viewports` defines the actual viewports to display.  There should be `rows * columns` number of
+    these `viewports` property, ordered rows first, then columns.
 
-  - `viewportSettings`: custom settings to be applied to the viewport. This can
-    be a `voi` being applied to the viewer or a tool to get enabled. We will
-    discuss viewport-specific settings [below](#viewport-settings)
-
-  - `imageMatchingRules (comming soon)`: setting the image slice for the
-    viewport.
-
-  - `seriesMatchingRules`: the most important rule that matches series in the
-    viewport. For instance, the following stage configuration will create a
-    one-by-two layout and put the series whose description contains `t2` on the
-    left, and a series with description that contains `adc` on the right. (order
-    of viewports are rows, first then columns)
 
     ```js
     stages: [
       {
         id: 'hYbmMy3b7pz7GLiaT',
-        name: 'oneByThree',
+        name: 'oneByTwo',
         viewportStructure: {
           type: 'grid',
           properties: {
             rows: 1,
-            columns: 2,
+            columns: 3,
           },
         },
         viewports: [
           // viewport 1
-          {
-            viewportSettings: [],
-            imageMatchingRules: [],
-            seriesMatchingRules: [
+        {
+          viewportOptions: {
+            viewportId: 'ctAXIAL',
+            viewportType: 'volume',
+            orientation: 'axial',
+            toolGroupId: 'ctToolGroup',
+            initialImageOptions: {
+              // index: 5,
+              preset: 'first', // 'first', 'last', 'middle'
+            },
+            syncGroups: [
               {
-                id: 'vSjk7NCYjtdS3XZAw',
-                weight: 1,
-                attribute: 'SeriesDescription',
-                constraint: {
-                  contains: {
-                    value: 't2',
-                  },
-                },
-                required: false,
+                type: 'cameraPosition',
+                id: 'axialSync',
+                source: true,
+                target: true,
               },
             ],
-            studyMatchingRules: [],
           },
-          // viewport 2
-          {
-            viewportSettings: [],
-            imageMatchingRules: [],
-            seriesMatchingRules: [
-              {
-                id: 'vSjk7NCYjtdS3XZAw',
-                weight: 1,
-                attribute: 'SeriesDescription',
-                constraint: {
-                  contains: {
-                    value: 'ADC',
-                  },
-                },
-                required: true,
-              },
-            ],
-            studyMatchingRules: [],
-          },
-        ],
-      },
+          displaySets: [
+            {
+              id: 'displaySet',
+            },
+          ],
+        },
     ];
     ```
 
@@ -194,8 +227,9 @@ There are two events that get publish in `HangingProtocolService`:
 - `addProtocols`: adds provided protocols to the list of registered protocols
   for matching
 
-- `run(studyMetaData, protocol)`: runs the HPService with the provided
-  studyMetaData and optional protocol. If protocol is not given, HP Matching
+- `run({ studies, displaySets }, protocol)`: runs the HPService with the provided
+  list of studies, display sets and optional protocol.
+  If protocol is not given, HP Matching
   engine will search all the registered protocols for the best matching one
   based on the constraints.
 
@@ -206,7 +240,11 @@ There are two events that get publish in `HangingProtocolService`:
   protocol definitions. `addCustomViewportSetting` is another way to set these
   settings which is exposed by API
 
--
+- `hps.applyCustomViewportSettings(viewportOptions, viewport,...args)` will run
+  the callback registered with addCustomViewportSetting for all custom settings
+  whose name matches the id of the custom viewport, with the arguments (id, value, viewport, ...args)
+
+
 
 Default initialization of the modes handles running the `HangingProtocolService`
 
@@ -278,7 +316,7 @@ function modeFactory() {
               metaData => getFirstMeasurementSeriesInstanceUID(metaData)
             );
 
-            HangingProtocolService.run(studyMetadata);
+            HangingProtocolService.run(studyMetadata, DisplaySetService.getActiveDisplaySets());
           };
 
           DicomMetadataStore.subscribe(

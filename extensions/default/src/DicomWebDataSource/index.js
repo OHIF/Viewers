@@ -81,6 +81,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     ? new StaticWadoClient(qidoConfig)
     : new api.DICOMwebClient(qidoConfig);
   const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
+  wadoDicomWebClient.wadoURL = wadoRoot;
 
   const implementation = {
     initialize: ({ params, query }) => {
@@ -228,6 +229,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         }
         throw new Error('BulkDataURI in unknown format:' + BulkDataURI);
       },
+      dicomWebClient: wadoDicomWebClient,
       series: {
         metadata: async ({
           StudyInstanceUID,
@@ -391,16 +393,20 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         sortFunction
       );
 
-      /**
-       * naturalizes the dataset, and adds a retrieve bulkdata method
-       * to any values containing BulkDataURI.
-       * @param {*} instance
-       * @returns naturalized dataset, with retrieveBulkData methods
+      /** Adds the retrieve method to an already naturalized dataset,
+       * in a recursive fashion (to all elements)
        */
-      const addRetrieveBulkData = instance => {
-        const naturalized = naturalizeDataset(instance);
-        Object.keys(naturalized).forEach(key => {
-          const value = naturalized[key];
+      const addRetrieveRecursive = (root, ds) => {
+        Object.keys(ds).forEach(key => {
+          const value = ds[key];
+          if (value && Array.isArray(value)) {
+            for (const item of value) {
+              if ((typeof item) === "object") {
+                addRetrieveRecursive(root, item);
+              }
+            }
+            return;
+          }
           // The value.Value will be set with the bulkdata read value
           // in which case it isn't necessary to re-read this.
           if (value && value.BulkDataURI && !value.Value) {
@@ -416,7 +422,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
                 // is relative - that isn't disallowed by DICOMweb, but
                 // isn't well specified in the standard, but is needed in
                 // any implementation that stores static copies of the metadata
-                StudyInstanceUID: naturalized.StudyInstanceUID,
+                StudyInstanceUID: root.StudyInstanceUID,
               };
               return qidoDicomWebClient.retrieveBulkData(options).then(val => {
                 const ret = (val && val[0]) || undefined;
@@ -426,6 +432,19 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
             };
           }
         });
+      };
+
+      /**
+       * naturalizes the dataset, and adds a retrieve bulkdata method
+       * to any values containing BulkDataURI.
+       * @param {*} instance
+       * @returns naturalized dataset, with retrieveBulkData methods
+       */
+      const addRetrieveBulkData = instance => {
+        const naturalized = naturalizeDataset(instance);
+
+        addRetrieveRecursive(naturalized, naturalized);
+
         return naturalized;
       };
 
@@ -473,12 +492,12 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
-      const numberOfSeries = seriesPromises.length;
-      seriesPromises.forEach(async (seriesPromise, index) => {
-        const instances = await seriesPromise;
-        storeInstances(instances);
-        if (index === numberOfSeries - 1) setSuccessFlag();
-      });
+      const seriesDeliveredPromises = seriesPromises.map(
+        promise => promise.then(instances => {
+          storeInstances(instances);
+        }));
+      await Promise.all(seriesDeliveredPromises);
+      setSuccessFlag();
     },
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet(displaySet) {

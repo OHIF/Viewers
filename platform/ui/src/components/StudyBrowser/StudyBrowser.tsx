@@ -140,7 +140,7 @@ StudyBrowser.propTypes = {
               imageSrc: PropTypes.string,
               imageAltText: PropTypes.string,
               seriesDate: PropTypes.string,
-              seriesNumber: PropTypes.string,
+              seriesNumber: PropTypes.any,
               numInstances: PropTypes.number,
               description: PropTypes.string,
               componentType: PropTypes.oneOf([

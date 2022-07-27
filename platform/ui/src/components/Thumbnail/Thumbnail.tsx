@@ -98,7 +98,7 @@ Thumbnail.propTypes = {
   }),
   imageAltText: PropTypes.string,
   description: PropTypes.string.isRequired,
-  seriesNumber: PropTypes.string.isRequired,
+  seriesNumber: PropTypes.any.isRequired,
   numInstances: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
