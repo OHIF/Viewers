@@ -3,7 +3,7 @@ import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups, { toolGroupIds } from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
-import setEllipticalROIConfiguration from './utils/setEllipticalROIConfiguration.js';
+import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -58,7 +58,7 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(toolNames, Enums, ToolGroupService, commandsManager);
 
-      const activateWindowLevel = () => {
+      const setWindowLevelActive = () => {
         ToolBarService.recordInteraction({
           groupId: 'WindowLevel',
           itemId: 'WindowLevel',
@@ -97,7 +97,6 @@ function modeFactory({ modeConfiguration }) {
       const { unsubscribe } = ToolGroupService.subscribe(
         ToolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
-          activateWindowLevel();
           // For fusion toolGroup we need to add the volumeIds for the crosshairs
           // since in the fusion viewport we don't want both PT and CT to render MIP
           // when slabThickness is modified
@@ -110,12 +109,14 @@ function modeFactory({ modeConfiguration }) {
             DisplaySetService
           );
 
-          setEllipticalROIConfiguration(
+          setFusionActiveVolume(
             matches,
             toolNames,
             ToolGroupService,
             DisplaySetService
           );
+
+          setWindowLevelActive();
         }
       );
 

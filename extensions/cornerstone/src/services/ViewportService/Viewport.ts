@@ -19,7 +19,7 @@ export type ViewportOptions = {
   initialView?: string;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
-  customViewportOptions?: Record<string, unknown>;
+  customViewportProps?: Record<string, unknown>;
 };
 
 export type PublicViewportOptions = {
@@ -31,7 +31,7 @@ export type PublicViewportOptions = {
   initialView?: string;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
-  customViewportOptions?: Record<string, unknown>;
+  customViewportProps?: Record<string, unknown>;
 };
 
 export type PublicDisplaySetOptions = {

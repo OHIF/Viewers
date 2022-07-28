@@ -23,7 +23,6 @@ export default function getPTImageIdInstanceMetadata(
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
     !dicomMetaData.RadiopharmaceuticalInformationSequence ||
-    !dicomMetaData.RadiopharmaceuticalInformationSequence.length ||
     dicomMetaData.RadiopharmaceuticalInformationSequence[0]
       .RadionuclideHalfLife === undefined ||
     dicomMetaData.RadiopharmaceuticalInformationSequence[0]

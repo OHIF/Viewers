@@ -33,10 +33,12 @@
     {
       "packageName": "@ohif/mode-longitudinal",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/mode-tmtv",
+      "version": "3.0.0"
     }
   ],
-  "modesFactory": [
-  ],
-  "umd": [
-  ]
+  "modesFactory": [],
+  "umd": []
 }
