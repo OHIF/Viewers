@@ -1,7 +1,7 @@
 {
   "name": "@ohif/viewer",
   "version": "5.0.0",
-  "productVersion": "3.2.0",
+  "productVersion": "3.1.0",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
