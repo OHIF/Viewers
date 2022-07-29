@@ -1,0 +1,42 @@
+{
+  "name": "@ohif/extension-dicom-ecg",
+  "version": "1.0.2",
+  "description": "OHIF extension for Dicom ECG",
+  "author": "Arturo Rodrigo",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev:dicom-pdf": "yarn run dev",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^0.50.0",
+    "dicom-parser": "^1.8.13",
+    "cornerstone-core": "^2.6.1",
+    "c3": "^0.7.20",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5"
+  },
+  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+}
