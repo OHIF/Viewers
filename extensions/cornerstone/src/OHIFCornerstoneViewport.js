@@ -8,7 +8,7 @@ import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import setCornerstoneMeasurementActive from './_shared/setCornerstoneMeasurementActive';
 import ViewportOverlay from './ViewportOverlay';
 
-import { useCine, useViewportGrid } from '@ohif/ui';
+import { useCine, useViewportGrid, useViewerToolset } from '@ohif/ui';
 
 import { useStudyInstanceUIDs } from '@state';
 
@@ -40,7 +40,8 @@ function OHIFCornerstoneViewport({
   } = servicesManager.services;
   const [viewportData, setViewportData] = useState(null);
   const [{ cines }, cineService] = useCine();
-  const [viewportGridService] = useViewportGrid();
+  const [{ viewports }, viewportGridService] = useViewportGrid();
+  const [{ isOverlayEnabled }] = useViewerToolset();
   const [isParamViewLoaded, setIsParamViewLoaded] = useState(false);
   const isMounted = useRef(false);
   const stageChangedRef = useRef(false);
@@ -157,7 +158,8 @@ function OHIFCornerstoneViewport({
 
         nlApi
           .get(`/api/measurement/?study_id=${study.series[0].study_id}`)
-          .then(({ data }) => {
+          .then(res => {
+            const _measurements = res.data.results;
             const { VALUE_TYPES } = MeasurementService;
             const VALUE_TYPE_TO_TOOL_TYPE = {
               [VALUE_TYPES.POLYLINE]: 'Length',
@@ -168,7 +170,6 @@ function OHIFCornerstoneViewport({
               [VALUE_TYPES.RECTANGLE]: 'RectangleRoi',
               [VALUE_TYPES.ANGLE]: 'Angle',
             };
-            const { results: _measurements } = data;
             if (_measurements.length > 0) {
               const { name, version } = _measurements[0].source;
               const source = MeasurementService.getSource(name, version);
@@ -177,6 +178,7 @@ function OHIFCornerstoneViewport({
                 _measurements
                   .sort((x, y) => new Date(x.created) - new Date(y.created))
                   .forEach(m => {
+                    const author = m.user;
                     const toolType = VALUE_TYPE_TO_TOOL_TYPE[m.type];
                     const measurementData = _toMeasurementData(m, toolType);
                     const instance = {
@@ -227,6 +229,8 @@ function OHIFCornerstoneViewport({
                           displaySetInstanceUID:
                             _displaySet.displaySetInstanceUID,
                         },
+                        author,
+                        createdAt: m.created,
                       });
                     }
                   });
@@ -310,14 +314,16 @@ function OHIFCornerstoneViewport({
         frameRate={frameRate}
         isOverlayVisible={true}
         loadingIndicatorComponent={ViewportLoadingIndicator}
-        viewportOverlayComponent={props => {
-          return (
+        viewportOverlayComponent={props =>
+          isOverlayEnabled ? (
             <ViewportOverlay
               {...props}
               activeTools={ToolBarService.getActiveTools()}
             />
-          );
-        }}
+          ) : (
+            <></>
+          )
+        }
       />
       {childrenWithProps}
     </div>

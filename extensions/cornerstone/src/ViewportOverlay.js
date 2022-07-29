@@ -3,6 +3,16 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import classnames from 'classnames';
 
+const OverlayRow = ({ title, value }) => (
+  <div className="flex flex-row">
+    <span className="mr-1">
+      {title}
+      {value ? ':' : ''}
+    </span>
+    {value && <span className="ml-1 font-light">{value}</span>}
+  </div>
+);
+
 const ViewportOverlay = ({
   imageId,
   scale,
@@ -26,20 +36,40 @@ const ViewportOverlay = ({
   }
 
   // TODO: this component should be presentational only. Right now it has a weird dependency on Cornerstone
-  const generalImageModule =
-    cornerstone.metaData.get('generalImageModule', imageId) || {};
-  const { instanceNumber } = generalImageModule;
+  const instance = cornerstone.metaData.get('instance', imageId) || {};
+  const {
+    InstitutionName,
+    AccessionNumber,
+    StudyDescription,
+    InstanceNumber,
+    SliceLocation,
+    SliceThickness,
+  } = instance;
 
   return (
     <div className="text-primary-light">
       <div
         data-cy={'viewport-overlay-top-left'}
         className={classnames(overlay, topLeft)}
+      ></div>
+      <div
+        data-cy={'viewport-overlay-top-right'}
+        className={classnames(overlay, topRight)}
       >
-        {isZoomActive && (
+        <OverlayRow title={InstitutionName} />
+        <OverlayRow title={StudyDescription} />
+        <OverlayRow title={AccessionNumber} />
+      </div>
+      <div
+        data-cy={'viewport-overlay-bottom-right'}
+        className={classnames(overlay, bottomRight)}
+      >
+        {stackSize > 1 && (
           <div className="flex flex-row">
-            <span className="mr-1">Zoom:</span>
-            <span className="font-light">{scale.toFixed(2)}x</span>
+            <span className="mr-1">I:</span>
+            <span className="font-light">
+              {`${InstanceNumber} (${imageIndex}/${stackSize})`}
+            </span>
           </div>
         )}
         {isWwwcActive && (
@@ -52,24 +82,25 @@ const ViewportOverlay = ({
             <span className="ml-1 font-light">{windowCenter.toFixed(0)}</span>
           </div>
         )}
-      </div>
-      <div
-        data-cy={'viewport-overlay-top-right'}
-        className={classnames(overlay, topRight)}
-      >
-        {stackSize > 1 && (
+        {SliceThickness && (
+          <OverlayRow
+            title="Thickness"
+            value={`${SliceThickness.toFixed(2)}mm`}
+          />
+        )}
+        {SliceLocation && (
+          <OverlayRow
+            title="Location"
+            value={`${SliceLocation.toFixed(2)}mm`}
+          />
+        )}
+        {isZoomActive && (
           <div className="flex flex-row">
-            <span className="mr-1">I:</span>
-            <span className="font-light">
-              {`${instanceNumber} (${imageIndex}/${stackSize})`}
-            </span>
+            <span className="mr-1">Zoom:</span>
+            <span className="font-light">{scale.toFixed(2)}x</span>
           </div>
         )}
       </div>
-      <div
-        data-cy={'viewport-overlay-bottom-right'}
-        className={classnames(overlay, bottomRight)}
-      ></div>
       <div
         data-cy={'viewport-overlay-bottom-left'}
         className={classnames(overlay, bottomLeft)}

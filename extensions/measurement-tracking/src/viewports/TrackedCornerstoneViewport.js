@@ -172,6 +172,7 @@ function TrackedCornerstoneViewport(props) {
   const {
     Modality,
     SeriesDate,
+    SeriesTime,
     SeriesDescription,
     SeriesInstanceUID,
     SeriesNumber,
@@ -183,6 +184,7 @@ function TrackedCornerstoneViewport(props) {
     PatientName,
     PatientSex,
     PatientAge,
+    date_of_birth,
     SliceThickness,
     SpacingBetweenSlices,
     ManufacturerModelName,
@@ -260,6 +262,7 @@ function TrackedCornerstoneViewport(props) {
           studyInstanceUid,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
+          seriesTime: SeriesTime,
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
@@ -267,6 +270,7 @@ function TrackedCornerstoneViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
+            patientDateOfBirth: date_of_birth || '',
             thickness: SliceThickness
               ? `${parseFloat(SliceThickness).toFixed(2)}mm`
               : '',

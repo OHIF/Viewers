@@ -6,6 +6,7 @@
 export {
   useCine,
   CineProvider,
+  useViewerToolset,
   ViewerToolsetProvider,
   DialogProvider,
   useDialog,

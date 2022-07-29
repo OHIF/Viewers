@@ -467,149 +467,157 @@ const _connectToolsToMeasurementService = (
   const elementEnabledEvt = cs.EVENTS.ELEMENT_ENABLED;
 
   /* Measurement Service Events */
-  cs.events.addEventListener(elementEnabledEvt, evt => {
-    // TODO: Debounced update of measurements that are modified
-    const addMeasurement = debounce(function(csToolsEvent) {
-      console.log('CSTOOLS::addOrUpdate', csToolsEvent, csToolsEvent.detail);
+  nlApi.get('/api/users/me').then(({ data: author }) =>
+    cs.events.addEventListener(elementEnabledEvt, evt => {
+      // TODO: Debounced update of measurements that are modified
+      const addMeasurement = debounce(function(csToolsEvent) {
+        console.log('CSTOOLS::addOrUpdate', csToolsEvent, csToolsEvent.detail);
 
-      try {
-        const evtDetail = csToolsEvent.detail;
-        const { toolName, toolType, measurementData } = evtDetail;
-        const csToolName = toolName || measurementData.toolType || toolType;
+        try {
+          const evtDetail = csToolsEvent.detail;
+          const { toolName, toolType, measurementData } = evtDetail;
+          const csToolName = toolName || measurementData.toolType || toolType;
 
-        const { toMeasurementSchema } = sourceMappings.find(
-          mapping => mapping.definition === csToolName
-        );
-        const measurement = toMeasurementSchema(evtDetail);
-        nlApi
-          .post(
-            '/api/measurement/',
-            _transformMeasurement(measurement, csToolsVer4MeasurementSource)
-          )
-          .then(({ data }) => {
-            const { id } = data;
-            const measurementId = addOrUpdate(csToolName, { ...evtDetail, id });
-            if (measurementId) {
-              measurementData.id = measurementId;
-            }
-          })
-          .catch(err =>
-            UINotificationService.show({
-              message: 'Failed to store the measurement',
-              type: 'error',
-            })
+          const { toMeasurementSchema } = sourceMappings.find(
+            mapping => mapping.definition === csToolName
           );
-      } catch (error) {
-        console.warn('Failed to add measurement:', error);
-      }
-    }, 250);
-
-    const updateMeasurement = debounce(function(csToolsEvent) {
-      try {
-        if (!csToolsEvent.detail.measurementData.id) {
-          return;
-        }
-
-        const evtDetail = csToolsEvent.detail;
-        const { toolName, toolType, measurementData } = evtDetail;
-        const csToolName = toolName || measurementData.toolType || toolType;
-
-        evtDetail.id = csToolsEvent.detail.measurementData.id;
-
-        const { toMeasurementSchema } = sourceMappings.find(
-          mapping => mapping.definition === csToolName
-        );
-        const measurement = toMeasurementSchema(evtDetail);
-        nlApi
-          .put(
-            `/api/measurement/${evtDetail.id}/`,
-            _transformMeasurement(measurement, csToolsVer4MeasurementSource)
-          )
-          .then(({ data }) => addOrUpdate(csToolName, evtDetail))
-          .catch(err =>
-            UINotificationService.show({
-              message: 'Failed to update the measurement',
-              type: 'error',
+          const measurement = toMeasurementSchema(evtDetail);
+          nlApi
+            .post(
+              '/api/measurement/',
+              _transformMeasurement(measurement, csToolsVer4MeasurementSource)
+            )
+            .then(({ data }) => {
+              const { id } = data;
+              const measurementId = addOrUpdate(csToolName, {
+                ...evtDetail,
+                id,
+                author,
+                createdAt: new Date().toString(),
+              });
+              if (measurementId) {
+                measurementData.id = measurementId;
+              }
             })
-          );
-      } catch (error) {
-        console.warn('Failed to update measurement:', error);
-      }
-    }, 250);
-
-    /**
-     * When csTools fires a removed event, remove the same measurement
-     * from the measurement service
-     *
-     * @param {*} csToolsEvent
-     */
-    function removeMeasurement(csToolsEvent) {
-      console.log('~~ removeEvt', csToolsEvent);
-      try {
-        if (csToolsEvent.detail.measurementData.id) {
-          remove(csToolsEvent.detail.measurementData.id);
-          const id = csToolsEvent.detail.measurementData.id;
-          nlApi.delete(`/api/measurement/${id}`).catch(err =>
-            UINotificationService.show({
-              message: 'Failed to delete the measurement',
-              type: 'error',
-            })
-          );
+            .catch(err =>
+              UINotificationService.show({
+                message: 'Failed to store the measurement',
+                type: 'error',
+              })
+            );
+        } catch (error) {
+          console.warn('Failed to add measurement:', error);
         }
-      } catch (error) {
-        console.warn('Failed to remove measurement:', error);
-      }
-    }
+      }, 250);
 
-    const {
-      MEASUREMENTS_CLEARED,
-      MEASUREMENT_UPDATED,
-    } = MeasurementService.EVENTS;
+      const updateMeasurement = debounce(function(csToolsEvent) {
+        try {
+          if (!csToolsEvent.detail.measurementData.id) {
+            return;
+          }
+          const evtDetail = csToolsEvent.detail;
+          const { toolName, toolType, measurementData } = evtDetail;
+          const csToolName = toolName || measurementData.toolType || toolType;
 
-    MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
-      globalImageIdSpecificToolStateManager.restoreToolState({});
-      _refreshViewports();
-    });
+          evtDetail.id = csToolsEvent.detail.measurementData.id;
 
-    MeasurementService.subscribe(
-      MEASUREMENT_UPDATED,
-      ({ source, measurement, notYetUpdatedAtSource }) => {
-        const { id, label } = measurement;
-
-        if (
-          source.name == 'CornerstoneTools' &&
-          notYetUpdatedAtSource === false
-        ) {
-          // This event was fired by cornerstone telling the measurement service to sync. Already in sync.
-          return;
+          const { toMeasurementSchema } = sourceMappings.find(
+            mapping => mapping.definition === csToolName
+          );
+          const measurement = toMeasurementSchema(evtDetail);
+          nlApi
+            .put(
+              `/api/measurement/${evtDetail.id}/`,
+              _transformMeasurement(measurement, csToolsVer4MeasurementSource)
+            )
+            .then(({ data }) =>
+              addOrUpdate(csToolName, { ...evtDetail, author })
+            )
+            .catch(err =>
+              UINotificationService.show({
+                message: 'Failed to update the measurement',
+                type: 'error',
+              })
+            );
+        } catch (error) {
+          console.warn('Failed to update measurement:', error);
         }
+      }, 250);
 
-        const cornerstoneMeasurement = getCornerstoneMeasurementById(id);
+      /**
+       * When csTools fires a removed event, remove the same measurement
+       * from the measurement service
+       *
+       * @param {*} csToolsEvent
+       */
+      function removeMeasurement(csToolsEvent) {
+        console.log('~~ removeEvt', csToolsEvent);
+        try {
+          if (csToolsEvent.detail.measurementData.id) {
+            remove(csToolsEvent.detail.measurementData.id);
+            const id = csToolsEvent.detail.measurementData.id;
+            nlApi.delete(`/api/measurement/${id}`).catch(err =>
+              UINotificationService.show({
+                message: 'Failed to delete the measurement',
+                type: 'error',
+              })
+            );
+          }
+        } catch (error) {
+          console.warn('Failed to remove measurement:', error);
+        }
+      }
 
-        if (cornerstoneMeasurement) {
-          cornerstoneMeasurement.label = label;
-          if (cornerstoneMeasurement.hasOwnProperty('text')) {
-            // Deal with the weird case of ArrowAnnotate.
-            cornerstoneMeasurement.text = label;
+      const {
+        MEASUREMENTS_CLEARED,
+        MEASUREMENT_UPDATED,
+      } = MeasurementService.EVENTS;
+
+      MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+        globalImageIdSpecificToolStateManager.restoreToolState({});
+        _refreshViewports();
+      });
+
+      MeasurementService.subscribe(
+        MEASUREMENT_UPDATED,
+        ({ source, measurement, notYetUpdatedAtSource }) => {
+          const { id, label } = measurement;
+
+          if (
+            source.name == 'CornerstoneTools' &&
+            notYetUpdatedAtSource === false
+          ) {
+            // This event was fired by cornerstone telling the measurement service to sync. Already in sync.
+            return;
           }
 
-          _refreshViewports();
+          const cornerstoneMeasurement = getCornerstoneMeasurementById(id);
+
+          if (cornerstoneMeasurement) {
+            cornerstoneMeasurement.label = label;
+            if (cornerstoneMeasurement.hasOwnProperty('text')) {
+              // Deal with the weird case of ArrowAnnotate.
+              cornerstoneMeasurement.text = label;
+            }
+
+            _refreshViewports();
+          }
         }
-      }
-    );
+      );
 
-    // on display sets added, check if there are any measurements in measurement service that need to be
-    // put into cornerstone tools tooldata
+      // on display sets added, check if there are any measurements in measurement service that need to be
+      // put into cornerstone tools tooldata
 
-    const enabledElement = evt.detail.element;
-    const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
-    const updatedEvt = csTools.EVENTS.MEASUREMENT_MODIFIED;
-    const removedEvt = csTools.EVENTS.MEASUREMENT_REMOVED;
+      const enabledElement = evt.detail.element;
+      const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
+      const updatedEvt = csTools.EVENTS.MEASUREMENT_MODIFIED;
+      const removedEvt = csTools.EVENTS.MEASUREMENT_REMOVED;
 
-    enabledElement.addEventListener(completedEvt, addMeasurement);
-    enabledElement.addEventListener(updatedEvt, updateMeasurement);
-    enabledElement.addEventListener(removedEvt, removeMeasurement);
-  });
+      enabledElement.addEventListener(completedEvt, addMeasurement);
+      enabledElement.addEventListener(updatedEvt, updateMeasurement);
+      enabledElement.addEventListener(removedEvt, removeMeasurement);
+    })
+  );
 
   return csToolsVer4MeasurementSource;
 };

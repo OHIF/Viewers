@@ -63,6 +63,7 @@ import toolCrosshairs from './../../assets/icons/tool-crosshairs.svg';
 import toolSeriesLinking from './../../assets/icons/tool-series-linking.svg';
 import toolRotate from './../../assets/icons/tool-rotate.svg';
 import toolFreehand from './../../assets/icons/tool-freehand.svg';
+import toolOverlay from './../../assets/icons/tool-overlay.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -132,6 +133,7 @@ const ICONS = {
   'tool-series-linking': toolSeriesLinking,
   'tool-rotate': toolRotate,
   'tool-freehand': toolFreehand,
+  'tool-overlay': toolOverlay,
 
   /** Old OHIF */
   'old-trash': oldTrash,

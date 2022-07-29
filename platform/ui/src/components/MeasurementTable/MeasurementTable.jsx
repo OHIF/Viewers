@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import MeasurementItem from './MeasurementItem';
 
 const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
-  const { t } = useTranslation("MeasurementTable")
+  const { t } = useTranslation('MeasurementTable');
 
   return (
     <div>
@@ -22,6 +22,8 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
               key={measurementItem.id}
               id={measurementItem.id}
               index={index + 1}
+              author={measurementItem.author}
+              createdAt={measurementItem.createdAt}
               label={measurementItem.label}
               isActive={measurementItem.isActive}
               displayText={measurementItem.displayText}

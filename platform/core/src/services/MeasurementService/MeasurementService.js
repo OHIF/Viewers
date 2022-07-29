@@ -481,6 +481,8 @@ class MeasurementService {
         `Measurement already defined. Updating measurement.`,
         newMeasurement
       );
+      newMeasurement.author = this.measurements[internalId].author;
+      newMeasurement.createdAt = this.measurements[internalId].createdAt;
       this.measurements[internalId] = newMeasurement;
       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
@@ -488,6 +490,8 @@ class MeasurementService {
         notYetUpdatedAtSource: false,
       });
     } else {
+      newMeasurement.author = sourceMeasurement.author;
+      newMeasurement.createdAt = sourceMeasurement.createdAt;
       log.info('Measurement added.', newMeasurement);
       this.measurements[internalId] = newMeasurement;
       this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
