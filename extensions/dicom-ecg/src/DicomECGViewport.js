@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import c3 from 'c3';
 import TypedArrayProp from './TypedArrayProp';
 import './DicomECGViewport.css';
-import SyncImagenes from '../../../platform/viewer/src/misProgramas/syncImagenes';
 
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
@@ -77,10 +76,7 @@ class DicomECGViewport extends Component {
 
   //Render view:
   render() {
-    //Ocultamos el check:
-    SyncImagenes.OcultarCheckSync(this.props.viewportIndex);
     let id = 'myWaveform' + this.props.viewportIndex;
-    //Reanderizo el elemento principal:
     return (
       <div className="waveform">
         <div id={id} />
