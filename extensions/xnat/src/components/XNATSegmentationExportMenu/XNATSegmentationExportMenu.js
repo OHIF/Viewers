@@ -1,6 +1,4 @@
 import React from 'react';
-import DICOMSEGWriter from '../../utils/IO/classes/DICOMSEGWriter';
-import DICOMSEGExporter from '../../utils/IO/classes/DICOMSEGExporter.js';
 import cornerstoneTools from 'cornerstone-tools';
 import getSeriesInfoForImageId from '../../utils/IO/helpers/getSeriesInfoForImageId';
 import generateDateTimeAndLabel from '../../utils/IO/helpers/generateDateAndTimeLabel';
@@ -8,8 +6,6 @@ import SegmentationExportListItem from './SegmentationExportListItem.js';
 import getElementForFirstImageId from '../../utils/getElementFromFirstImageId';
 import { Icon } from '@ohif/ui';
 import { removeEmptyLabelmaps2D } from '../../peppermint-tools';
-import showNotification from '../common/showNotification';
-import { clearCachedExperimentRoiCollections } from '../../utils/IO/queryXnatRois';
 import { connect } from 'react-redux';
 import Zlib from 'react-zlib-js';
 
@@ -20,38 +16,24 @@ import {
   getSegArray,
   getSplitSegArray,
 } from '../../../../../platform/viewer/src/appExtensions/LungModuleSimilarityPanel/utils';
-// import zlib from 'react-zlib-js';
 
 const segmentationModule = cornerstoneTools.getModule('segmentation');
 
 class XNATSegmentationExportMenu extends React.Component {
   constructor(props = {}) {
-                            super(props);
+    super(props);
 
-                            console.log({ props });
+    console.log({ props });
 
-                            const {
-                              dateTime,
-                              label,
-                            } = generateDateTimeAndLabel('SEG');
+    const { dateTime, label } = generateDateTimeAndLabel('SEG');
 
-                            this.state = {
-                              segList: [],
-                              label,
-                              dateTime,
-                              exporting: false,
-                            };
-
-                            this.onCloseButtonClick = this.onCloseButtonClick.bind(
-                              this
-                            );
-                            this.onTextInputChange = this.onTextInputChange.bind(
-                              this
-                            );
-                            this.handleExportSegmentations = this.handleExportSegmentations.bind(
-                              this
-                            );
-                          }
+    this.state = {
+      segList: [],
+      label,
+      dateTime,
+      exporting: false,
+    };
+  }
 
   componentDidMount() {
     console.log({ props: this.props });
@@ -88,7 +70,6 @@ class XNATSegmentationExportMenu extends React.Component {
 
     for (let i = 0; i < metadata.length; i++) {
       if (metadata[i]) {
-        // Check if the segment has labelmap data
         const hasData = labelmap3D.labelmaps2D.some(labelmap2D => {
           return labelmap2D.segmentsOnLabelmap.includes(i);
         });
@@ -114,170 +95,6 @@ class XNATSegmentationExportMenu extends React.Component {
     this.handleExportSegmentations(segList);
   }
 
-  /**
-   * onTextInputChange - Updates the roiCollectionName on text input.
-   *
-   * @param  {Object} evt The event.
-   * @returns {null}
-   */
-  onTextInputChange(evt) {
-    this._roiCollectionName = evt.target.value;
-  }
-
-  /**
-   * async handleExportSegmentations - Exports the current mask to XNAT.
-   *
-   * @returns {null}
-   */
-  // async handleExportSegmentations() {
-  //   const { label } = this.state;
-  //   const { firstImageId, viewportData } = this.props;
-  //   const roiCollectionName = this._roiCollectionName;
-
-  //   // Check the name isn't empty, and isn't just whitespace.
-  //   if (roiCollectionName.replace(/ /g, '').length === 0) {
-  //     return;
-  //   }
-
-  //   this.setState({ exporting: true });
-
-  //   const seriesInfo = getSeriesInfoForImageId(viewportData);
-  //   const element = getElementForFirstImageId(firstImageId);
-
-  //   const xnat_label = `${label}_S${seriesInfo.seriesNumber}`;
-
-  //   // DICOM-SEG
-  //   const dicomSegWriter = new DICOMSEGWriter(seriesInfo);
-  //   const DICOMSegPromise = dicomSegWriter.write(roiCollectionName, element);
-
-  //   console.log({ label, firstImageId, viewportData, xnat_label, DICOMSegPromise });
-  //   DICOMSegPromise.then(segBlob => {
-  //     const dicomSegExporter = new DICOMSEGExporter(
-  //       segBlob,
-  //       seriesInfo.seriesInstanceUid,
-  //       xnat_label,
-  //       roiCollectionName
-  //       );
-
-  //     dicomSegExporter
-  //       .exportToXNAT()
-  //       .then(success => {
-  //         console.log('PUT successful.');
-  //         // Store that we've 'imported' a collection for this series.
-  //         // (For all intents and purposes exporting it ends with an imported state,
-  //         // i.e. not a fresh Mask collection.)
-
-  //         segmentationModule.setters.importMetadata(firstImageId, {
-  //           label: xnat_label,
-  //           name: roiCollectionName,
-  //           type: 'SEG',
-  //           modified: false,
-  //         });
-
-  //         clearCachedExperimentRoiCollections(dicomSegExporter.experimentID);
-  //         showNotification('Mask collection exported successfully', 'success');
-
-  //         this.props.onExportComplete();
-  //       })
-  //       .catch(error => {
-  //         console.log({error});
-  //         // TODO -> Work on backup mechanism, disabled for now.
-  //         //localBackup.saveBackUpForActiveSeries();
-
-  //         const message = error.message || 'Unknown error';
-  //         showNotification(message, 'error', 'Error exporting mask collection');
-
-  //         this.props.onExportCancel();
-  //       });
-  //   }).catch(error => {
-  //     const message = error.message || 'Unknown error';
-  //     showNotification(message, 'error', 'Error exporting mask collection');
-
-  //     this.props.onExportCancel();
-  //   });
-  // }
-
-  createSeg() {
-    const element = document.getElementsByClassName('viewport-element')[0];
-    console.log({ element });
-    const globalToolStateManager =
-      cornerstoneTools.globalImageIdSpecificToolStateManager;
-    const toolState = globalToolStateManager.saveToolState();
-
-    const stackToolState = cornerstoneTools.getToolState(element, 'stack');
-    //  const imageIds = stackToolState.data[0].imageIds;
-    // imageIds.push(
-    //   'dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.12.dcm'
-    // );
-    const imageIds = [
-      'dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.11.dcm',
-      'dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.12.dcm',
-    ];
-    console.log({ toolState, stackToolState, imageIds });
-
-    let imagePromises = [];
-    for (let i = 0; i < imageIds.length; i++) {
-      imagePromises.push(cornerstone.loadImage(imageIds[i]));
-    }
-
-    console.log({ imagePromises });
-
-    const segments = [];
-
-    const { getters } = cornerstoneTools.getModule('segmentation');
-    const { labelmaps3D } = getters.labelmaps3D(element);
-
-    console.log({ segments, labelmaps3D });
-
-    if (!labelmaps3D) {
-      return;
-    }
-
-    for (
-      let labelmapIndex = 0;
-      labelmapIndex < labelmaps3D.length;
-      labelmapIndex++
-    ) {
-      const labelmap3D = labelmaps3D[labelmapIndex];
-      const labelmaps2D = labelmap3D.labelmaps2D;
-
-      for (let i = 0; i < labelmaps2D.length; i++) {
-        if (!labelmaps2D[i]) {
-          continue;
-        }
-
-        const segmentsOnLabelmap = labelmaps2D[i].segmentsOnLabelmap;
-
-        segmentsOnLabelmap.forEach(segmentIndex => {
-          if (segmentIndex !== 0 && !labelmap3D.metadata[segmentIndex]) {
-            labelmap3D.metadata[segmentIndex] = generateMockMetadata(
-              segmentIndex
-            );
-          }
-        });
-      }
-    }
-
-    Promise.all(imagePromises)
-      .then(async images => {
-        console.log({ images });
-        const segBlob = dcmjs.adapters.Cornerstone.Segmentation.generateSegmentation(
-          images,
-          labelmaps3D
-        );
-        console.log({ segBlob });
-
-        //Create a URL for the binary.
-        // await localStorage.setItem(
-        //   'segBlob',
-        //   JSON.stringify({ blob: segBlob })
-        // );
-        var objectUrl = URL.createObjectURL(segBlob);
-        window.open(objectUrl);
-      })
-      .catch(err => console.log(err));
-  }
-
   handleSegmentationCompression(seg) {
     return new Promise((res, rej) => {
       Zlib.gzip(JSON.stringify(seg), (err, result) => {
@@ -301,11 +118,6 @@ class XNATSegmentationExportMenu extends React.Component {
         ? JSON.parse(fetchedSegmentationsList)
         : {};
 
-    // segmentationsList[this._roiCollectionName] = {
-    //   segmentation: b.segmentation,
-    //   shape: b.shape,
-    // };
-
     segmentationsList[b.label] = {
       segmentation: b.segmentation,
       label: b.label,
@@ -319,50 +131,34 @@ class XNATSegmentationExportMenu extends React.Component {
   saveSegmentation({ segmentation, shape, label }) {
     return new Promise(async (res, rej) => {
       try {
-            console.log('saving', this.props);
-            const series_uid = this.props.viewport.viewportSpecificData[0]
-              .SeriesInstanceUID;
-            // const study_uid = this.props.viewport.viewportSpecificData[0]
-            //   .StudyInstanceUID;
-            const email = this.props.user.profile.email;
+        console.log('saving', this.props);
+        const series_uid = this.props.viewport.viewportSpecificData[0]
+          .SeriesInstanceUID;
+        const email = this.props.user.profile.email;
 
-            console.log({ segmentation });
-            // const compressed = await compressSeg(segmentation);
-            // console.log({ compressed });
+        console.log({ segmentation });
 
-            // get current image
-            // const image = cornerstone.getImage(element);
-            // extract instance uid from the derived image data
-            // const instance_uid = image.imageId.split('/')[18];
-            // console.log({ instance_uid, study_uid, series_uid });
+        const body = {
+          series_uid: series_uid,
+          email,
+          segmentation,
+          shape,
+          label,
+        };
 
-            const body = {
-              // study_uid: study_uid,
-              series_uid: series_uid,
-              email, //'bimpongamoako@gmail.com', //'nick.fragakis@thetatech.ai',
-              // instance_uid,
-              segmentation,
-              shape,
-              label,
-            };
+        console.log({ payload: body, str: JSON.stringify(body) });
 
-            console.log({ payload: body, str: JSON.stringify(body) });
-
-            // this.updateAndSaveLocalSegmentations(body);
-            // res(body);
-            // return;
-
-            await client
-              .put(`/segmentations`, body)
-              .then(async response => {
-                console.log({ response });
-                this.updateAndSaveLocalSegmentations(body);
-                res({ response });
-              })
-              .catch(error => {
-                console.log(error);
-              });
-          } catch (error) {
+        await client
+          .put(`/segmentations`, body)
+          .then(async response => {
+            console.log({ response });
+            this.updateAndSaveLocalSegmentations(body);
+            res({ response });
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      } catch (error) {
         console.log({ error });
       }
     });
@@ -379,8 +175,6 @@ class XNATSegmentationExportMenu extends React.Component {
                                              const {
                                                rows,
                                                columns,
-                                               sliceThickness,
-                                               sliceLocation,
                                              } = imagePlaneModule;
                                              const numSlices = this.props
                                                .viewport.viewportSpecificData[
@@ -441,11 +235,6 @@ class XNATSegmentationExportMenu extends React.Component {
                                                          compressedSeg,
                                                        });
 
-                                                       // segmentations.item.segmentLabel = {
-                                                       //   segmentation: compressedSeg,
-                                                       //   shape
-                                                       // };
-
                                                        const response = await this.saveSegmentation(
                                                          {
                                                            segmentation: compressedSeg,
@@ -475,88 +264,25 @@ class XNATSegmentationExportMenu extends React.Component {
                                                resList.push(response);
                                              }
 
-                                             // this.saveSegmentation({
-                                             //   element,
-                                             //   segmentation: segArray,
-                                             //   label: metaData.SegmentLabel,
-                                             //   shape: {
-                                             //     rows: rows,
-                                             //     cols: columns,
-                                             //     slices: numSlices,
-                                             //   },
-                                             // });
-
                                              console.warn({ resList });
                                              res({
                                                ['exportation complete']: resList,
                                              });
                                            });
-
-    console.log({
-      segmentationModule,
-    });
-    console.log({ labelmap2D });
-    // const metaData = segmentationModule.getters.metaData(
-    //   element,
-    //   labelmap2D.activeLabelmapIndex,
-    //   labelmap2D.segmentIndex
-    // );
-    const metaData =
-      labelmap2D.labelmap3D.metadata[labelmap2D.activeLabelmapIndex + 1];
-    const stringified = JSON.stringify(labelmap2D.labelmap2D.pixelData);
-    const parsed = JSON.parse(stringified);
-    const arr = Object.keys(parsed).map(key => {
-      return parsed[key];
-    });
-
-    console.log({
-      metaData,
-      labelmap2D,
-      parsed,
-      stringified,
-      arr,
-    });
-
-    this.saveSegmentation({
-      element,
-      segmentation: segArray,
-      label: metaData.SegmentLabel,
-      shape: {
-        rows: rows,
-        cols: columns,
-        slices: numSlices,
-      },
-    });
-
-    // localStorage.setItem(
-    //   'segmentationExports',
-    //   JSON.stringify({
-    //     pixelData: labelmap2D.labelmap2D.pixelData,
-    //   })
-    // );
   }
 
   async handleExportSegmentations(segList) {
-    // this.createSeg();
-    // return;
     const { label } = this.state;
     const { firstImageId, viewportData } = this.props;
-    const roiCollectionName = this._roiCollectionName;
-
-    // console.log({ MaskExportClickState: this.state });
-    // console.log({ MaskExportClickProps: this.props });
-
-    // // Check the name isn't empty, and isn't just whitespace.
-    // if (roiCollectionName.replace(/ /g, '').length === 0) {
-    //   return;
-    // }
 
     this.setState({ exporting: true });
 
     const seriesInfo = getSeriesInfoForImageId(viewportData);
     const element = getElementForFirstImageId(firstImageId);
 
-    console.log({ segmentationModule });
+    console.log({
+      segmentationModule,
+    });
 
     const {
       labelmap3D,
@@ -586,94 +312,22 @@ class XNATSegmentationExportMenu extends React.Component {
 
     console.warn({ response });
 
-    this.setState({ exporting: false });
+    this.setState({
+      exporting: false,
+    });
     this.props.onExportCancel();
 
     return;
-
-    const xnat_label = `${label}_S${seriesInfo.SeriesNumber}`;
-
-    // console.log({ pixelData: this.props.labelmap3D.labelmaps2D[0].pixelData });
-
-    // console.log({ seriesInfo, ExportProps: this.props, State: this.state });
-
-    // get current image
-    const image = cornerstone.getImage(element);
-    // console.log({ image });
-
-    // const toolState = cornerstoneTools.getElementToolStateManager(element);
-
-    const toolState = cornerstoneTools.getToolState(element, 'stack');
-    console.log({ image, toolState });
-
-    const segments = this.props.labelmap3D.labelmaps2D;
-
-    const newImage = {
-      height: image.height,
-      width: image.width,
-      number_of_slices: toolState.data[0].imageIds.length,
-    };
-
-    const revampSengmentations = segments.filter((segment, index) => {
-      if (segment === null) {
-        return;
-      } else {
-        segment.sliceNumber = index;
-        return segment;
-      }
-    });
-
-    const maskExport = {
-      image: newImage,
-      study_uid: seriesInfo.studyInstanceUid,
-      series_uid: seriesInfo.seriesInstanceUid,
-      labelSegments: revampSengmentations,
-    };
-
-    console.log({ maskExport });
-
-    showNotification('Mask collection exported successfully', 'success');
-
-    this.props.onExportComplete();
   }
 
-  /**
-   * onCloseButtonClick - Closes the dialog.
-   *
-   * @returns {null}
-   */
   onCloseButtonClick() {
     this.props.onExportCancel();
   }
-
-  /**
-   * componentWillUnmount - If any promises are active, cancel them to avoid
-   * memory leakage by referencing `this`.
-   *
-   * @returns {null}
-   */
-  // componentWillUnmount() {
-  //   const cancelablePromises = this._cancelablePromises;
-
-  //   for (let i = 0; i < cancelablePromises.length; i++) {
-  //     if (typeof cancelablePromises[i].cancel === 'function') {
-  //       cancelablePromises[i].cancel();
-  //     }
-  //   }
-  // }
-
-  /**
-   * componentDidMount - On mount, fetch a list of available projects from XNAT.
-   *
-   * @returns {null}
-   */
 
   render() {
     const { label, segList, exporting, importMetadata } = this.state;
 
     let segExportListBody;
-
-    let defaultName = '';
 
     if (segList && segList.length === 1) {
       defaultName = segList[0].metadata.SegmentLabel;
@@ -743,20 +397,6 @@ class XNATSegmentationExportMenu extends React.Component {
 
         {!exporting && !emptySegList && (
           <div className="roiCollectionFooter">
-            {/* {segList.length === 1 && (
-              <div>
-                <label style={{ marginRight: 5 }}>Name</label>
-                <input
-                  name="segBuilderTextInput"
-                  onChange={this.onTextInputChange}
-                  type="text"
-                  defaultValue={defaultName}
-                  tabIndex="-1"
-                  autoComplete="off"
-                  style={{ flex: 1 }}
-                />
-              </div>
-            )} */}
             <button
               onClick={this.handleExportSegmentations}
               style={{ marginLeft: 10 }}

@@ -1,21 +1,8 @@
 import axios from 'axios';
 import Pako from 'pako';
-import {
-  add,
-  index,
-  matrix,
-  max,
-  range,
-  reshape,
-  resize,
-  size,
-  squeeze,
-  subset,
-} from 'mathjs';
+import { reshape } from 'mathjs';
 import Zlib from 'react-zlib-js';
 import { flatten } from 'mathjs';
-
-const math = require('mathjs');
 
 export const client = axios.create({
   baseURL: 'https://radcadapi.thetatech.ai',
@@ -41,9 +28,6 @@ export const uncompress = ({ segmentation, shape }) => {
   });
   const binData = new Uint8Array(splitCompressData);
   const data = Pako.inflate(binData);
-  // const decoded = U8.decode(data);
-  // const dc = new TextDecoder().decode(data);
-  // console.log({ data, decoded, dc });
   const dataArr = Array.from(data);
   const reconstructed = reconstructSegs({
     arr: dataArr,
@@ -51,15 +35,13 @@ export const uncompress = ({ segmentation, shape }) => {
   });
   console.log({
     dataArr,
-    // dc,
-    // buffer: data.buffer,
     reconstructed,
   });
-  return reconstructed; //data.buffer;
+  return reconstructed;
 };
 
 export const compressSeg = data => {
-  console.log('compressSeg');
+  console.log('compressSeg', { data });
   return new Promise((res, rej) => {
     var array = new Uint8Array(data);
     console.log({ array });
@@ -71,7 +53,6 @@ export const compressSeg = data => {
       }
 
       const compStr = await buffer.toString('base64');
-      // const compStr = new Buffer(buffer).toString('base64');
       console.log({ compStr, buffer });
 
       res(compStr);
@@ -80,7 +61,7 @@ export const compressSeg = data => {
 };
 
 export const getSegArray = ({ segmentations, numSlices, rows, columns }) => {
-  console.log({
+  console.log('getSegArray', {
     segmentations,
     numSlices,
     rows,
@@ -140,7 +121,11 @@ export const getUpdatedSegments = ({
   segmentIndex,
   currPixelData,
 }) => {
-  console.log({ segmentIndex, segmentation, currPixelData });
+  console.log('getUpdatedSegments', {
+    segmentIndex,
+    segmentation,
+    currPixelData,
+  });
   const segmentsOnLabelmap = Array(segmentIndex + 1)
     .fill(0)
     .map((_, index) => {
@@ -162,66 +147,4 @@ export const getUpdatedSegments = ({
       segmentsOnLabelmap,
     };
   });
-};
-
-export const compressedToMatrix = (compressed_data, shape) => {
-  const inflated = inflate(compressed_data);
-  const matrix = math.matrix(Array.from(inflated));
-  return reshape(matrix, [shape.rows, shape.cols, shape.slices]);
-};
-
-export const inflate = compressed_data => {
-  const decoded = atob(compressed_data);
-  const splitCompressData = decoded.split('').map(function(e) {
-    return e.charCodeAt(0);
-  });
-  const binData = new Uint8Array(splitCompressData);
-  const inflated = Pako.inflate(binData);
-  return inflated;
-};
-
-export const flattenData = (which_slice, seg_matrix, h, w) => {
-  const rows = size(seg_matrix)._data[0];
-  const cols = size(seg_matrix)._data[1];
-
-  const slice_data = squeeze(
-    subset(seg_matrix, index(range(0, rows), range(0, cols), which_slice))
-  );
-
-  const resized_data = resize(slice_data, [h, w], 0);
-  const flattened_data = squeeze(reshape(resized_data, [h * w, 1]));
-  return flattened_data;
-};
-
-export const renderSegmentation = (
-  element,
-  which_slice,
-  seg_matrix,
-  stack_slice,
-  h,
-  w,
-  getters
-) => {
-  const flattened_data = flattenData(which_slice, seg_matrix, h, w);
-
-  if (max(flattened_data) == 0) {
-    return;
-  }
-
-  // Create a labelmap if it doesn't exist
-  getters.labelmap2D(element);
-
-  const labelmap2d = getters.labelmap2DByImageIdIndex(
-    getters.labelmap3D(element, 0),
-    stack_slice,
-    h,
-    w
-  );
-
-  const summed_data = add(
-    flattened_data,
-    matrix(Array.from(labelmap2d.pixelData))
-  );
-
-  labelmap2d.pixelData.set(summed_data._data);
 };
