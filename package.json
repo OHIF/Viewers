@@ -67,6 +67,7 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
+    "@radical/ohif-extensions-and-modes": "https://github.com/RadicalImaging/OHIFExtensionsAndModes.git#fix/proj-config",
     "@babel/core": "^7.17.8",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.17.3",

@@ -37,7 +37,7 @@
   ],
   "modesFactory": [
     {
-      "packageName": "@radical/config-mode",
+      "packageName": "@radical/ohif-extensions-and-modes/modes/config-mode",
       "version": "3.0.0"
     }
   ],
@@ -47,24 +47,20 @@
       "version": "0.4.9"
     },
     {
-      "packageName": "@radical/ecg-dicom",
+      "packageName": "@radical/ohif-extensions-and-modes/extensions/ecg-dicom",
       "version": "3.0.1"
     },
     {
-      "packageName": "@radical/microscopy-dicom",
+      "packageName": "@radical/ohif-extensions-and-modes/extensions/microscopy-dicom",
       "version": "3.0.0"
     },
     {
-      "packageName": "@radical/site-finding",
+      "packageName": "@radical/ohif-extensions-and-modes/extensions/site-finding",
       "version": "3.0.0"
     },
     {
-      "packageName": "@radical/hp-extension",
+      "packageName": "@radical/ohif-extensions-and-modes/extensions/hp-extension",
       "version": "3.0.0"
     }
-  ],
-  "modesFactory": [
-  ],
-  "umd": [
   ]
 }
