@@ -36,22 +36,22 @@ const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
     return;
   }
   const imageIds = instances.map(instance => instance.imageId);
-  const InstanceMetadataArray = [];
+  const instanceMetadataArray = [];
   imageIds.forEach(imageId => {
     const instanceMetadata = getPTImageIdInstanceMetadata(imageId);
     if (instanceMetadata) {
-      InstanceMetadataArray.push(instanceMetadata);
+      instanceMetadataArray.push(instanceMetadata);
     }
   });
 
-  if (!InstanceMetadataArray.length) {
+  if (!instanceMetadataArray.length) {
     return;
   }
 
   // try except block to prevent errors when the metadata is not correct
   let suvScalingFactors;
   try {
-    suvScalingFactors = calculateSUVScalingFactors(InstanceMetadataArray);
+    suvScalingFactors = calculateSUVScalingFactors(instanceMetadataArray);
   } catch (error) {
     console.log(error);
   }
@@ -60,7 +60,7 @@ const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
     return;
   }
 
-  InstanceMetadataArray.forEach((instanceMetadata, index) => {
+  instanceMetadataArray.forEach((instanceMetadata, index) => {
     metadataProvider.addCustomMetadata(
       imageIds[index],
       'scalingModule',
