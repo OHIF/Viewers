@@ -259,17 +259,21 @@ export default class XNATSegmentationPanel extends React.Component {
   }
 
   onNewSegment(label = 'Unnamed Segment') {
+    console.log('add new mask');
     let { labelmap3D, firstImageId } = this.state;
 
     const newMetadata = generateSegmentationMetadata(label);
 
     if (labelmap3D) {
+      console.log('has label map');
       const { metadata } = labelmap3D;
       let segmentAdded = false;
 
       // Start from 1, as label 0 is an empty segment.
       for (let i = 1; i < metadata.length; i++) {
         if (!metadata[i]) {
+      console.log('no metadata');
+
           metadata[i] = newMetadata;
           segmentAdded = true;
           labelmap3D.activeSegmentIndex = i;
@@ -278,10 +282,13 @@ export default class XNATSegmentationPanel extends React.Component {
       }
 
       if (!segmentAdded) {
+      console.log('segment not added', );
+
         metadata.push(newMetadata);
         labelmap3D.activeSegmentIndex = metadata.length - 1;
       }
     } else {
+      console.log('no label map');
       const element = getElementFromFirstImageId(firstImageId);
 
       const labelmapData = segmentationModule.getters.labelmap2D(element);
