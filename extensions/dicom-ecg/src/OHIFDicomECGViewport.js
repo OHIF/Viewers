@@ -18,7 +18,8 @@ class OHIFDicomECGViewport extends Component {
 
   state = {
     byteArray: null,
-    error: false,
+    error: null,
+    pathname: window.location.pathname,
   };
 
   static id = 'DicomECGViewport';
@@ -31,12 +32,72 @@ class OHIFDicomECGViewport extends Component {
     console.log('DicomECGViewport destroy()');
   }
 
-  //Load byteArray:
-  componentDidMount() {
-    const { displaySet, studies } = this.props.viewportData;
+  //On udapte element:
+  componentDidUpdate(prevProps) {
+    const { displaySet } = this.props.viewportData;
+    const prevDisplaySet = prevProps.viewportData.displaySet;
 
-    //Load local:
-    DicomLoaderService.findDicomDataPromise(displaySet, studies).then(
+    if (
+      displaySet.displaySetInstanceUID !==
+        prevDisplaySet.displaySetInstanceUID ||
+      displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID
+    ) {
+      this.setState({
+        byteArray: null,
+      });
+      //Change data:
+      if (this.state.pathname == '/local') {
+        this.loadLocalByteArray();
+      } else {
+        this.loadServerByteArray();
+      }
+    }
+  }
+
+  componentDidMount() {
+    //Load byteArray:
+    if (this.state.pathname != '/local') {
+      this.loadServerByteArray();
+    } else {
+      this.loadLocalByteArray();
+    }
+  }
+
+  //Load from server request:
+  loadServerByteArray() {
+    const { displaySet } = this.props.viewportData;
+    var oReq = new XMLHttpRequest();
+    oReq.open('get', displaySet.wadoUri, true);
+    oReq.responseType = 'arraybuffer';
+    oReq.onreadystatechange = () => {
+      if (oReq.readyState === 4) {
+        if (oReq.status == 200) {
+          const byteArrayReq = new Uint8Array(oReq.response);
+          this.setState({
+            byteArray: byteArrayReq,
+          });
+        } else {
+          this.setState({
+            error: true,
+          });
+        }
+      }
+    };
+    oReq.send();
+  }
+
+  //Local data:
+  loadLocalByteArray() {
+    const { displaySet, studies } = this.props.viewportData;
+    //Get index of selected:
+    let index = 0;
+    for (let i = 0; i < studies.length; i++) {
+      if (studies[i].StudyInstanceUID == displaySet.StudyInstanceUID) {
+        index = i;
+      }
+    }
+    let studySelected = [studies[index]];
+    DicomLoaderService.findDicomDataPromise(displaySet, studySelected).then(
       data => {
         const byteArray = new Uint8Array(data);
         this.setState({
@@ -44,26 +105,10 @@ class OHIFDicomECGViewport extends Component {
         });
       },
       error => {
-        //Load from server request:
-        var oReq = new XMLHttpRequest();
-        oReq.open('get', this.props.viewportData.displaySet.wadoUri, true);
-        oReq.responseType = 'arraybuffer';
-        oReq.onreadystatechange = () => {
-          if (oReq.readyState === 4) {
-            if (oReq.status == 200) {
-              const byteArrayReq = new Uint8Array(oReq.response);
-              this.setState({
-                byteArray: byteArrayReq,
-              });
-            } else {
-              this.setState({
-                error: true,
-              });
-              throw new Error(error);
-            }
-          }
-        };
-        oReq.send();
+        this.setState({
+          error,
+        });
+        throw new Error(error);
       }
     );
   }
@@ -82,7 +127,7 @@ class OHIFDicomECGViewport extends Component {
     //Cargo la vista:
     return (
       <OHIFComponentPlugin {...pluginProps}>
-        {this.state.byteArray && (
+        {byteArray && (
           <DicomECGViewport
             byteArray={byteArray}
             viewportData={viewportData}

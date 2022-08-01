@@ -10,7 +10,7 @@ const SOP_CLASS_UIDS = {
   Sop12LeadECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.1', //YES
   GeneralECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.2', //YES
   AmbulatoryECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.3', //NO
-  HemodynamicWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.2.1', //NO
+  HemodynamicWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.2.1', //YES
 };
 
 class DicomECGViewport extends Component {
@@ -107,24 +107,16 @@ class DicomECGViewport extends Component {
     var sopClassUID = dataSet.string('x00080016');
     switch (sopClassUID) {
       case SOP_CLASS_UIDS.HemodynamicWaveformStorage: //Hemodynamic Waveform Storage
-        DicomECGViewport.nocompatible(index);
+        DicomECGViewport.GenerateECGWaveform(dataSet, sopClassUID, index);
         break;
       case SOP_CLASS_UIDS.AmbulatoryECGWaveformStorage: //Ambulatory
         DicomECGViewport.nocompatible(index);
         break;
       case SOP_CLASS_UIDS.GeneralECGWaveformStorage: //General ECG Waveform Storage
-        DicomECGViewport.Sop12LeadGeneralECGWaveform(
-          dataSet,
-          sopClassUID,
-          index
-        );
+        DicomECGViewport.GenerateECGWaveform(dataSet, sopClassUID, index);
         break;
       case SOP_CLASS_UIDS.Sop12LeadECGWaveformStorage: //12-lead ECG Waveform Storage
-        DicomECGViewport.Sop12LeadGeneralECGWaveform(
-          dataSet,
-          sopClassUID,
-          index
-        );
+        DicomECGViewport.GenerateECGWaveform(dataSet, sopClassUID, index);
         break;
       default:
         console.log('Unsupported SOP Class UID: ' + sopClassUID);
@@ -252,8 +244,8 @@ class DicomECGViewport extends Component {
     return code;
   }
 
-  //Load Sop12Lead and General ECGWaveform:
-  static Sop12LeadGeneralECGWaveform(dataSet, sopClassUID, index) {
+  //Load Sop12Lead, General ECGWaveform and Hemodinamic:
+  static GenerateECGWaveform(dataSet, sopClassUID, index) {
     console.log('SOP Class UID: ' + sopClassUID);
     //Structure: Waveform - Multiplex - channel - sample
     var waveform = {};

@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/ArturRod/dicom-ecg) (2022-06-27)
+
+**Note:** It is now allowed in local files to change and update ECG elements if
+you have more than one.
+
 ## [1.0.2](https://github.com/ArturRod/dicom-ecg) (2022-06-27)
 
 **Note:** Bug fix, now arraybytes can be loaded without a get request, this
