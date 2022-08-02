@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-ecg",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "OHIF extension for Dicom ECG",
   "author": "Arturo Rodrigo",
   "license": "MIT",

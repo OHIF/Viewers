@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.4](https://github.com/ArturRod/dicom-ecg) (2022-06-27)
+
+**Note:** Code optimization and separation of methods for the organization and
+generation of the ECG drawing. The structure is prepared to display user data
+and view for tools.
+
 ## [1.0.3](https://github.com/ArturRod/dicom-ecg) (2022-06-27)
 
 **Note:** It is now allowed in local files to change and update ECG elements if
