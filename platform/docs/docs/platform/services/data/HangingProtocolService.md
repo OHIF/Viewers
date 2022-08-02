@@ -57,11 +57,6 @@ In some situations, you might want to match based on a custom attribute and not 
 if you have assigned a `timepointId` to each study, and you want to match based on it.
 Good news is that, in `OHIF-v3` you can define you custom attribute and use it for matching.
 
-In some situations, you might want to match based on a custom attribute and not
-the DICOM tags. For instance, if you have assigned a `timepointId` to each study
-and you want to match based on it. Good news is that, in `OHIF-v3` you can
-define you custom attribute and use it for matching.
-
 There are various ways that you can let `HangingProtocolService` know of you
 custom attribute. We will show how to add it inside the mode configuration.
 
