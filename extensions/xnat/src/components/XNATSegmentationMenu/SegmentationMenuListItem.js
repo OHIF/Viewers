@@ -61,6 +61,10 @@ export default class SegmentationMenuListItem extends React.Component {
   }
 
   onShowHideClick() {
+    console.log('show hide', {
+      segmentationModule,
+      props: this.props,
+    });
     let { visible } = this.state;
     const { segmentIndex, labelmap3D } = this.props;
 
@@ -68,6 +72,9 @@ export default class SegmentationMenuListItem extends React.Component {
     labelmap3D.segmentsHidden[segmentIndex] = !visible;
 
     cornerstoneTools.store.state.enabledElements.forEach(element => {
+      console.log({
+        l2d: segmentationModule.getters.labelmap2D(element),
+      });
       cornerstone.updateImage(element);
     });
 
