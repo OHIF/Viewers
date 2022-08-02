@@ -79,10 +79,46 @@ class DicomECGViewport extends Component {
   //Render view:
   render() {
     let id = 'myWaveform' + this.props.viewportIndex;
+
+    //Patient data:
+    let name = this.props.viewportData.studies[0].PatientName;
+    let sex = this.props.viewportData.studies[0].PatientSex;
+    let date = this.props.viewportData.studies[0].StudyDate;
+    let patientID = this.props.viewportData.studies[0].PatientID;
+    let desciption = this.props.viewportData.studies[0].StudyDescription;
+    let birth = this.props.viewportData.studies[0].PatientBirthDate;
+
     return (
       <React.Fragment>
         <div className="waveform">
-          <div className="wavedata"></div>
+          <div className="wavedata">
+            <div className="divTableBody">
+              <div className="divTableRow">
+                <div className="divTableCell">
+                  NAME: <i>{name}</i>
+                </div>
+                <div className="divTableCell">
+                  SEX: <i>{sex}</i>
+                </div>
+                <div className="divTableCell">
+                  DATE: <i>{date}</i>
+                </div>
+              </div>
+              <div className="divTableRow">
+                <div className="divTableCell">
+                  PATIENT ID: <i>{patientID}</i>
+                </div>
+                <div className="divTableCell">
+                  DESCRIPTION: <i>{desciption}</i>
+                </div>
+              </div>
+              <div className="divTableRow">
+                <div className="divTableCell">
+                  BIRTH: <i>{birth}</i>
+                </div>
+              </div>
+            </div>
+          </div>
           <div id={id} />
         </div>
         <div className="wavemenu" />
