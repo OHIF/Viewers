@@ -1,16 +1,13 @@
+import { DicomMetadataStore } from '@ohif/core';
+
 function requestDisplaySetCreationForStudy(
   dataSource,
   DisplaySetService,
   StudyInstanceUID,
-  madeInClient,
+  madeInClient
 ) {
-  if (
-    DisplaySetService.activeDisplaySets.some(
-      displaySet => displaySet.StudyInstanceUID === StudyInstanceUID
-    )
-  ) {
-    return;
-  }
+  const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
+  if (studyMetadata.isLoaded) return;
 
   dataSource.retrieveSeriesMetadata({ StudyInstanceUID, madeInClient });
 }

@@ -10,6 +10,8 @@ import ViewportOverlay from './ViewportOverlay';
 
 import { useCine, useViewportGrid, useViewerToolset } from '@ohif/ui';
 
+import { useStudyInstanceUIDs } from '@state';
+
 const scrollToIndex = csTools.importInternal('util/scrollToIndex');
 
 const { StackManager, nlApi } = OHIF.utils;
@@ -43,11 +45,21 @@ function OHIFCornerstoneViewport({
   const [isParamViewLoaded, setIsParamViewLoaded] = useState(false);
   const isMounted = useRef(false);
   const stageChangedRef = useRef(false);
+  const [studyInstanceUIDs] = useStudyInstanceUIDs();
 
   const onNewImage = (element, callback) => {
-    const handler = () => {
+    const handler = evt => {
       element.removeEventListener(cornerstone.EVENTS.IMAGE_RENDERED, handler);
       callback(element, ToolBarService);
+
+      const { viewport } = evt.detail;
+      const { initialViewport } = displaySet;
+      if (initialViewport) {
+        for (const key in initialViewport) {
+          viewport[key] = initialViewport[key];
+        }
+      }
+      cornerstone.setViewport(element, viewport);
     };
     element.addEventListener(cornerstone.EVENTS.IMAGE_RENDERED, handler);
   };
@@ -142,6 +154,8 @@ function OHIFCornerstoneViewport({
         const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
         const study = DicomMetadataStore.getStudy(StudyInstanceUID);
 
+        if (!studyInstanceUIDs.includes(StudyInstanceUID)) return;
+
         nlApi
           .get(`/api/measurement/?study_id=${study.series[0].study_id}`)
           .then(res => {
@@ -172,10 +186,6 @@ function OHIFCornerstoneViewport({
                       SeriesInstanceUID: m.reference_series_uid,
                       SOPInstanceUID: m.sop_instance_uid,
                     };
-                    const _displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-                      instance.SOPInstanceUID,
-                      instance.SeriesInstanceUID
-                    );
                     if (m.reference_series_uid === SeriesInstanceUID) {
                       const imageId = dataSource.getImageIdsForInstance({
                         instance,
@@ -202,21 +212,27 @@ function OHIFCornerstoneViewport({
                         }
                       );
                     }
-                    addOrUpdate(toolType, {
-                      element,
-                      toolName: toolType,
-                      toolType,
-                      measurementData,
-                      id: m.id,
-                      instance: {
-                        ...instance,
-                        FrameOfReferenceUID: m.frame_of_reference_uid,
-                        displaySetInstanceUID:
-                          _displaySet.displaySetInstanceUID,
-                      },
-                      author,
-                      createdAt: m.created,
-                    });
+                    const _displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+                      instance.SOPInstanceUID,
+                      instance.SeriesInstanceUID
+                    );
+                    if (_displaySet) {
+                      addOrUpdate(toolType, {
+                        element,
+                        toolName: toolType,
+                        toolType,
+                        measurementData,
+                        id: m.id,
+                        instance: {
+                          ...instance,
+                          FrameOfReferenceUID: m.frame_of_reference_uid,
+                          displaySetInstanceUID:
+                            _displaySet.displaySetInstanceUID,
+                        },
+                        author,
+                        createdAt: m.created,
+                      });
+                    }
                   });
                 cornerstone.updateImage(element);
               }

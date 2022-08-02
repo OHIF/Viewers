@@ -69,6 +69,7 @@ const Dropdown = ({ id, children, showDropdownIcon, list }) => {
             'scale-100': open,
           }
         )}
+        style={{ width: 'max-content' }}
         data-cy={`${id}-dropdown`}
       >
         {list.map((item, idx) => (

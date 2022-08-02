@@ -1,6 +1,5 @@
 import validate from './lib/validator';
 
-
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
  * @param  {InstanceMetadata} metadataInstance Metadata instance object

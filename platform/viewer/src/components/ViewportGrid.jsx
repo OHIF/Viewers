@@ -4,8 +4,11 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
+
+const { nlApi } = utils;
 
 const getQueryParam = key => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -33,81 +36,106 @@ function ViewerViewportGrid(props) {
   } = servicesManager.services;
 
   const updateDisplaysetForViewports = useCallback(
-    displaySets => {
+    async displaySets => {
       const [
         matchDetails,
         hpAlreadyApplied,
       ] = HangingProtocolService.getState();
+      // const seriesNumberParam = getQueryParam('series_number');
+
+      // if (!isParamViewLoaded && seriesNumberParam) {
+      //   const initialDisplaySet = displaySets.find(ds => {
+      //     return ds.SeriesNumber === seriesNumberParam;
+      //   });
+
+      //   initialDisplaySet &&
+      //     viewportGridService.setDisplaysetForViewport({
+      //       viewportIndex: 0,
+      //       displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
+      //     });
+
+      //   initialDisplaySet && setIsParamViewLoaded(true);
+      // } else {
+      if (!matchDetails.length) return;
+
+      // Match each viewport individually
+
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
-      const seriesNumberParam = getQueryParam('series_number');
+      for (let i = 0; i < numViewports; i++) {
+        if (hpAlreadyApplied[i] === true) {
+          continue;
+        }
 
-      if (!isParamViewLoaded && seriesNumberParam) {
-        const initialDisplaySet = displaySets.find(ds => {
-          return ds.SeriesNumber === seriesNumberParam;
-        });
+        // if current viewport doesn't have a match
+        if (matchDetails[i] === undefined) {
+          displaySets = displaySets
+            .filter(displaySet => displaySet.Modality !== 'SR')
+            .sort((x, y) => x.SeriesNumber - y.SeriesNumber);
 
-        initialDisplaySet &&
-          viewportGridService.setDisplaysetForViewport({
-            viewportIndex: 0,
-            displaySetInstanceUID: initialDisplaySet.displaySetInstanceUID,
-          });
+          if (!displaySets.length) return;
 
-        initialDisplaySet && setIsParamViewLoaded(true);
-      } else {
-        if (!matchDetails.length) return;
-
-        // Match each viewport individually
-        for (let i = 0; i < numViewports; i++) {
-          if (hpAlreadyApplied[i] === true) {
-            continue;
-          }
-
-          // if current viewport doesn't have a match
-          if (matchDetails[i] === undefined) return;
-
-          const { SeriesInstanceUID } = matchDetails[i];
-          const matchingDisplaySet = displaySets.find(ds => {
-            return ds.SeriesInstanceUID === SeriesInstanceUID;
-          });
-
-          if (!matchingDisplaySet) {
-            continue;
-          }
+          const uids = displaySets.map(ds => ds.displaySetInstanceUID);
+          const uidIndex = (i - matchDetails.length) % uids.length;
 
           viewportGridService.setDisplaysetForViewport({
             viewportIndex: i,
-            displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+            displaySetInstanceUID: uids[uidIndex],
           });
-
           HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+          return;
         }
+
+        const {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          initialViewport,
+        } = matchDetails[i];
+
+        const matchingDisplaySet = displaySets.find(ds => {
+          return ds.SeriesInstanceUID === SeriesInstanceUID;
+        });
+
+        if (!matchingDisplaySet) {
+          const study = HangingProtocolService.studies.find(
+            s => s.StudyInstanceUID === StudyInstanceUID
+          );
+          const series = study.series.find(
+            aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID
+          );
+          const instancesResponse = await nlApi.get('/api/instances/', {
+            params: {
+              series_id: series.id,
+            },
+          });
+          const instances = instancesResponse.data.results.map(instance => ({
+            ...instance,
+            ...series,
+            ...study,
+            ...instance.overlay_data,
+          }));
+          DicomMetadataStore.addSeriesMetadata(study.series);
+          DicomMetadataStore.addInstances(instances);
+          continue;
+        }
+
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: i,
+          displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
+          initialViewport,
+        });
+
+        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
       }
+      if (hpAlreadyApplied.length > numViewports) {
+        HangingProtocolService.hpAlreadyApplied = hpAlreadyApplied.slice(
+          0,
+          numViewports
+        );
+      }
+      // }
     },
     [viewportGrid, numRows, numCols]
   );
-
-  useEffect(() => {
-    let displaySets = DisplaySetService.getActiveDisplaySets();
-    displaySets = displaySets.filter(
-      displaySet => displaySet.Modality !== 'SR'
-    );
-
-    if (!displaySets.length) return;
-
-    let uidIndex = 0;
-    const uids = displaySets.map(ds => ds.displaySetInstanceUID);
-
-    viewportGrid.viewports.forEach((viewport, i) => {
-      if (!viewport.displaySetInstanceUID) {
-        viewportGridService.setDisplaysetForViewport({
-          viewportIndex: i,
-          displaySetInstanceUID: uids[uidIndex],
-        });
-        HangingProtocolService.setHangingProtocolAppliedForViewport(i);
-        uidIndex = (uidIndex + 1) % uids.length;
-      }
-    });
-  }, [numRows, numCols]);
 
   // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
@@ -122,6 +150,12 @@ function ViewerViewportGrid(props) {
     return () => {
       unsubscribe();
     };
+  }, [viewportGrid]);
+
+  // Changing the Hanging protocol while viewing
+  useEffect(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    updateDisplaysetForViewports(displaySets);
   }, [viewportGrid]);
 
   // Layout change based on hanging protocols
@@ -228,10 +262,12 @@ function ViewerViewportGrid(props) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
-      const { displaySetInstanceUID } = paneMetadata;
+      const { displaySetInstanceUID, initialViewport } = paneMetadata;
 
       const displaySet =
         DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
+
+      displaySet.initialViewport = initialViewport;
 
       const ViewportComponent = _getViewportComponent(
         displaySet.SOPClassHandlerId,

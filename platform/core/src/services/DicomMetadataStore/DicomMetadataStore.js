@@ -1,4 +1,4 @@
-import dcmjs from 'dcmjs'
+import dcmjs from 'dcmjs';
 
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import createStudyMetadata from './createStudyMetadata';
@@ -27,7 +27,7 @@ const _model = {
 };
 
 function _getStudyInstanceUIDs() {
-  return _model.studies.map(aStudy => aStudy.StudyInstanceUID)
+  return _model.studies.map(aStudy => aStudy.StudyInstanceUID);
 }
 
 function _getStudy(StudyInstanceUID) {
@@ -80,7 +80,9 @@ const BaseImplementation = {
 
     // If Arraybuffer, parse to DICOMJSON before naturalizing.
     if (dicomJSONDatasetOrP10ArrayBuffer instanceof ArrayBuffer) {
-      const dicomData = dcmjs.data.DicomMessage.readFile(dicomJSONDatasetOrP10ArrayBuffer);
+      const dicomData = dcmjs.data.DicomMessage.readFile(
+        dicomJSONDatasetOrP10ArrayBuffer
+      );
 
       dicomJSONDataset = dicomData.dict;
     } else {
@@ -190,7 +192,6 @@ const DicomMetadataStore = Object.assign(
   BaseImplementation,
   pubSubServiceInterface
 );
-
 
 export { DicomMetadataStore };
 export default DicomMetadataStore;

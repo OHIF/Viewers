@@ -1,7 +1,7 @@
 import { HPMatcher } from './HPMatcher.js';
 import { sortByScore } from './lib/sortByScore';
 
-const deafultProtocol = {
+const defaultProtocol = {
   id: 'defaultProtocol',
   locked: true,
   hasUpdatedPriorsInformation: false,
@@ -153,7 +153,7 @@ export default class ProtocolEngine {
       return [
         {
           score: 1,
-          protocol: deafultProtocol,
+          protocol: defaultProtocol,
         },
       ];
     }
