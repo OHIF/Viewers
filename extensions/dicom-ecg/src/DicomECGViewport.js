@@ -1,18 +1,7 @@
 import React, { Component, createRef } from 'react';
-import dicomParser from 'dicom-parser';
 import PropTypes from 'prop-types';
 import TypedArrayProp from './TypedArrayProp';
-import './DicomECGViewport.css';
-import ReadECGData from './utils/ReadECGData';
-import DrawGraphs from './utils/DrawGraphs';
-
-// TODO: Should probably use dcmjs for this
-const SOP_CLASS_UIDS = {
-  Sop12LeadECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.1', //YES
-  GeneralECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.2', //YES
-  AmbulatoryECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.3', //NO
-  HemodynamicWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.2.1', //YES
-};
+import { DicomECGViewer } from 'ecg-dicom-web-viewer';
 
 class DicomECGViewport extends Component {
   constructor(props) {
@@ -24,9 +13,9 @@ class DicomECGViewport extends Component {
       scale: 1,
     };
 
+    this.divView;
     this.canvas = createRef();
     this.textLayer = createRef();
-    this.readECGData = new ReadECGData();
   }
 
   static propTypes = {
@@ -76,88 +65,43 @@ class DicomECGViewport extends Component {
     }
   }
 
-  //Render view:
   render() {
-    let id = 'myWaveform' + this.props.viewportIndex;
-
-    //Patient data:
-    let name = this.props.viewportData.studies[0].PatientName;
-    let sex = this.props.viewportData.studies[0].PatientSex;
-    let date = this.props.viewportData.studies[0].StudyDate;
-    let patientID = this.props.viewportData.studies[0].PatientID;
-    let desciption = this.props.viewportData.studies[0].StudyDescription;
-    let birth = this.props.viewportData.studies[0].PatientBirthDate;
-
-    return (
-      <React.Fragment>
-        <div className="waveform">
-          <div className="wavedata">
-            <div className="divTableBody">
-              <div className="divTableRow">
-                <div className="divTableCell">
-                  NAME: <i>{name}</i>
-                </div>
-                <div className="divTableCell">
-                  SEX: <i>{sex}</i>
-                </div>
-                <div className="divTableCell">
-                  DATE: <i>{date}</i>
-                </div>
-              </div>
-              <div className="divTableRow">
-                <div className="divTableCell">
-                  PATIENT ID: <i>{patientID}</i>
-                </div>
-                <div className="divTableCell">
-                  DESCRIPTION: <i>{desciption}</i>
-                </div>
-              </div>
-              <div className="divTableRow">
-                <div className="divTableCell">
-                  BIRTH: <i>{birth}</i>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id={id} />
-        </div>
-        <div className="wavemenu" />
-      </React.Fragment>
-    );
+    const style = {
+      height: '100%',
+      background: 'white',
+    };
+    this.divView = 'viewECG' + this.props.viewportIndex;
+    return <div id={this.divView} style={style}></div>;
   }
 
   /**
    * Load data:
    */
   loadInstance() {
-    //Load dataSet:
-    let dataSet = dicomParser.parseDicom(this.props.byteArray);
-    let sopClassUID = dataSet.string('x00080016');
-    //Read data from dataSet:
-    let dataMg = this.readECGData.readData(dataSet);
-    //Crate instance drawGrahps:
-    let drawGraphs;
-    //make the image based on whether it is color or not
-    switch (sopClassUID) {
-      case SOP_CLASS_UIDS.HemodynamicWaveformStorage: //Hemodynamic Waveform Storage
-        drawGraphs = new DrawGraphs(dataMg, this.props.viewportIndex);
-        drawGraphs.draw();
-        break;
-      case SOP_CLASS_UIDS.AmbulatoryECGWaveformStorage: //Ambulatory
-        drawGraphs.noCompatible();
-        break;
-      case SOP_CLASS_UIDS.GeneralECGWaveformStorage: //General ECG Waveform Storage
-        drawGraphs = new DrawGraphs(dataMg, this.props.viewportIndex);
-        drawGraphs.draw();
-        break;
-      case SOP_CLASS_UIDS.Sop12LeadECGWaveformStorage: //12-lead ECG Waveform Storage
-        drawGraphs = new DrawGraphs(dataMg, this.props.viewportIndex);
-        drawGraphs.draw();
-        break;
-      default:
-        drawGraphs.noCompatible();
-        console.log('Unsupported SOP Class UID: ' + sopClassUID);
-    }
+    //User data display:
+    let name = this.props.viewportData.studies[0].PatientName;
+    let sex = this.props.viewportData.studies[0].PatientSex;
+    let date = this.props.viewportData.studies[0].StudyDate;
+    let patientID = this.props.viewportData.studies[0].PatientID;
+    let desciption = this.props.viewportData.studies[0].StudyDescription;
+    let birth = this.props.viewportData.studies[0].PatientBirthDate;
+    let userData = {
+      NAME: name,
+      SEX: sex,
+      DATE: date,
+      PATIENT_ID: patientID,
+      DESCRIPTION: desciption,
+      BIRTH: birth,
+    };
+
+    //Load view:
+    let viewer = new DicomECGViewer(
+      this.props.byteArray,
+      this.divView,
+      userData,
+      this.props.viewportIndex
+    );
+    viewer.createView();
   }
 }
 

@@ -72,9 +72,8 @@ class OHIFDicomECGViewport extends Component {
     oReq.onreadystatechange = () => {
       if (oReq.readyState === 4) {
         if (oReq.status == 200) {
-          const byteArrayReq = new Uint8Array(oReq.response);
           this.setState({
-            byteArray: byteArrayReq,
+            byteArray: oReq.response,
           });
         } else {
           this.setState({
@@ -99,9 +98,8 @@ class OHIFDicomECGViewport extends Component {
     let studySelected = [studies[index]];
     DicomLoaderService.findDicomDataPromise(displaySet, studySelected).then(
       data => {
-        const byteArray = new Uint8Array(data);
         this.setState({
-          byteArray: byteArray,
+          byteArray: data,
         });
       },
       error => {

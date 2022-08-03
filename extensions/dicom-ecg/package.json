@@ -36,6 +36,7 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@babel/runtime": "^7.5.5"
+    "@babel/runtime": "^7.5.5",
+    "ecg-dicom-web-viewer": "^1.0.4"
   }
 }
