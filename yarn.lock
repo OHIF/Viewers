@@ -6175,7 +6175,7 @@ dicom-microscopy-viewer@^0.6.1:
     dicomweb-client "^0.5.2"
     ol "^5.3.0"
 
-dicom-parser@^1.8.11, dicom-parser@^1.8.9:
+dicom-parser@^1.8.11, dicom-parser@^1.8.13, dicom-parser@^1.8.9:
   version "1.8.13"
   resolved "https://registry.npmjs.org/dicom-parser/-/dicom-parser-1.8.13.tgz"
   integrity sha512-8M53FPHS4zM3zvu5fdIWdatqrjpiG2+2M6RJ0IxwqLF4gvCYRsqUIusxYaOiNU0sWaptUpnXeZiXunP0LOIcQw==
@@ -6425,14 +6425,14 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
-ecg-dicom-web-viewer@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/ecg-dicom-web-viewer/-/ecg-dicom-web-viewer-1.0.4.tgz#ad47aea427598cab74d300694f6a27967c1d0185"
-  integrity sha512-cvzShH2skMbrhDV9XfzMgOTc+hr5GAfHOv2CsMJcKMZ8t64UxXLdlZHm9nHWrW84T7/PenuyP7/k0yE8L3ww3w==
+ecg-dicom-web-viewer@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/ecg-dicom-web-viewer/-/ecg-dicom-web-viewer-1.0.5.tgz#e08e872cfc9d59d311aeaa1dcd608ebb128f5a67"
+  integrity sha512-x8puUQlKAaBomRxG3tZaw6OItLc/tTW6YNYU9bFANPxqwovaGgQopY25AtZe7k5TmyLWVmTeIrFEkEYXL9o7Gw==
   dependencies:
     babel-loader "^8.2.5"
     c3 "^0.7.20"
-    dicom-parser "^1.8.11"
+    dicom-parser "^1.8.13"
 
 ee-first@1.1.1:
   version "1.1.1"

@@ -75,16 +75,42 @@ class DicomECGViewport extends Component {
   }
 
   /**
+   * Trasform yyyymmdd to dd/mm/yyyy.
+   * @param {*} date yyyymmdd.
+   * @returns dd/mm/yyyy string.
+   */
+  trasformDate(date) {
+    try {
+      const year = date.substring(0, 4);
+      const month = date.substring(4, 6);
+      const day = date.substring(6, 8);
+      return day + '/' + month + '/' + year;
+    } catch (ex) {
+      return '01/01/1900';
+    }
+  }
+
+  /**
    * Load data:
    */
   loadInstance() {
+    const { displaySet } = this.props.viewportData;
+    let index = this.props.viewportData.studies
+      .map(function(e) {
+        return e.StudyInstanceUID;
+      })
+      .indexOf(displaySet.StudyInstanceUID);
     //User data display:
-    let name = this.props.viewportData.studies[0].PatientName;
-    let sex = this.props.viewportData.studies[0].PatientSex;
-    let date = this.props.viewportData.studies[0].StudyDate;
-    let patientID = this.props.viewportData.studies[0].PatientID;
-    let desciption = this.props.viewportData.studies[0].StudyDescription;
-    let birth = this.props.viewportData.studies[0].PatientBirthDate;
+    let name = this.props.viewportData.studies[index].PatientName;
+    let sex = this.props.viewportData.studies[index].PatientSex;
+    let date = this.trasformDate(
+      this.props.viewportData.studies[index].StudyDate
+    );
+    let patientID = this.props.viewportData.studies[index].PatientID;
+    let desciption = this.props.viewportData.studies[index].StudyDescription;
+    let birth = this.trasformDate(
+      this.props.viewportData.studies[index].PatientBirthDate
+    );
     let userData = {
       NAME: name,
       SEX: sex,
