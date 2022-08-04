@@ -6,10 +6,6 @@
 module.exports = {
   verbose: true,
   roots: ['<rootDir>/src'],
-  transform: {
-    '^.+\\.js$': 'babel-jest',
-    '^.+\\.jsx$': 'babel-jest',
-  },
   testMatch: ['<rootDir>/src/**/*.test.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],

@@ -9,11 +9,15 @@ import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
-async function defaultRouteInit({
-  servicesManager,
-  studyInstanceUIDs,
-  dataSource,
-}) {
+/**
+ * Initialize the route.
+ *
+ * @param props.servicesManager to read services from
+ * @param props.studyInstanceUIDs for a list of studies to read
+ * @param props.dataSource to read the data from
+ * @returns array of subscriptions to cancel
+ */
+function defaultRouteInit({ servicesManager, studyInstanceUIDs, dataSource }) {
   const {
     DisplaySetService,
     HangingProtocolService,
@@ -38,19 +42,45 @@ async function defaultRouteInit({
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.SERIES_ADDED,
-    ({ StudyInstanceUID, madeInClient }) => {
-      const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-      if (!madeInClient) {
-        HangingProtocolService.run(studyMetadata);
-      }
+  const { unsubscribe: seriesAddedUnsubscribe } = DisplaySetService.subscribe(
+    DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+    displaySets => {
+      if (!displaySets || !displaySets.length) return;
+      const studyMap = {};
+      // Prior studies don't quite work properly yet, but the studies list
+      // is at least being generated and passed in.
+      const studies = displaySets.reduce((prev, curr) => {
+        const { StudyInstanceUID } = curr;
+        if (!studyMap[StudyInstanceUID]) {
+          const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+          studyMap[StudyInstanceUID] = study;
+          prev.push(study);
+        }
+        return prev;
+      }, []);
+      // The assumption is that the display set at position 0 is the first
+      // study being displayed, and is thus the "active" study.
+      const activeStudy = studies[0];
+      HangingProtocolService.run({ studies, activeStudy, displaySets });
+      // Don't fire off any more hanging protocol service initiates since
+      // it may well re-layout the study.
+      seriesAddedUnsubscribe();
     }
   );
+  // Add the unsubscription to the list in case the cancel happens before the
+  // service is done.
   unsubscriptions.push(seriesAddedUnsubscribe);
 
-  studyInstanceUIDs.forEach(StudyInstanceUID => {
-    dataSource.retrieve.series.metadata({ StudyInstanceUID });
+  // The hanging protocol matching service is fairly expensive to run multiple
+  // times, and doesn't allow partial matches to be made (it will simply fail
+  // to display anything if a required match failes), so hold off the matches
+  // here until the entire study is ready.
+  DisplaySetService.holdChangeEvents();
+  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
+    dataSource.retrieve.series.metadata({ StudyInstanceUID })
+  );
+  Promise.allSettled(allRetrieves).then(() => {
+    DisplaySetService.fireHoldChangeEvents();
   });
 
   return unsubscriptions;
@@ -236,7 +266,7 @@ export default function ModeRoute({
         });
       }
 
-      return await defaultRouteInit({
+      return defaultRouteInit({
         servicesManager,
         studyInstanceUIDs,
         dataSource,
