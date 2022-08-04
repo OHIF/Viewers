@@ -473,12 +473,12 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
-      const numberOfSeries = seriesPromises.length;
-      seriesPromises.forEach(async (seriesPromise, index) => {
-        const instances = await seriesPromise;
-        storeInstances(instances);
-        if (index === numberOfSeries - 1) setSuccessFlag();
-      });
+      const seriesDeliveredPromises = seriesPromises.map(
+        promise => promise.then(instances => {
+          storeInstances(instances);
+        }));
+      await Promise.all(seriesDeliveredPromises);
+      setSuccessFlag();
     },
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet(displaySet) {

@@ -4,10 +4,18 @@ import validate from './lib/validator';
  * Match a Metadata instance against rules using Validate.js for validation.
  * @param  {InstanceMetadata} metadataInstance Metadata instance object
  * @param  {Array} rules Array of MatchingRules instances (StudyMatchingRule|SeriesMatchingRule|ImageMatchingRule) for the match
+ * @param {object} options is an object containing additional information
+ * @param {object[]} options.studies is a list of all the studies
+ * @param {object[]} options.displaySets is a list of the display sets
  * @return {Object}      Matching Object with score and details (which rule passed or failed)
  */
-const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
-  const options = {
+const match = (
+  metadataInstance,
+  rules,
+  customAttributeRetrievalCallbacks,
+  options
+) => {
+  const validateOptions = {
     format: 'grouped',
   };
 
@@ -16,18 +24,32 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
     failed: [],
   };
 
+  const readValues = {};
+
   let requiredFailed = false;
   let score = 0;
 
   rules.forEach(rule => {
-    const attribute = rule.attribute;
-
+    const { attribute } = rule;
     // Do not use the custom attribute from the metadataInstance since it is subject to change
     if (customAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
-      const customAttribute = customAttributeRetrievalCallbacks[attribute];
-      metadataInstance[attribute] = customAttribute.callback(metadataInstance);
+      readValues[attribute] = customAttributeRetrievalCallbacks[
+        attribute
+      ].callback(metadataInstance, options);
+    } else {
+      readValues[attribute] =
+        metadataInstance[attribute] ??
+        ((metadataInstance.images || metadataInstance.others || [])[0] || {})[
+        attribute
+        ];
     }
 
+    console.log(
+      'Test',
+      attribute,
+      readValues[attribute],
+      JSON.stringify(rule.constraint)
+    );
     // Format the constraint as required by Validate.js
     const testConstraint = {
       [attribute]: rule.constraint,
@@ -35,13 +57,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
 
     // Create a single attribute object to be validated, since metadataInstance is an
     // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-    let attributeValue = metadataInstance[attribute];
-    if (attributeValue === undefined) {
-      if (attribute === 'NumberOfStudyRelatedSeries') {
-        attributeValue = metadataInstance.series?.length;
-      }
-      // Add other computable values such as modalities in study
-    }
+    let attributeValue = readValues[attribute];
     const attributeMap = {
       [attribute]: attributeValue,
     };
@@ -49,7 +65,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
     // Use Validate.js to evaluate the constraints on the specified metadataInstance
     let errorMessages;
     try {
-      errorMessages = validate(attributeMap, testConstraint, [options]);
+      errorMessages = validate(attributeMap, testConstraint, [validateOptions]);
     } catch (e) {
       errorMessages = ['Something went wrong during validation.', e];
     }
@@ -58,8 +74,7 @@ const match = (metadataInstance, rules, customAttributeRetrievalCallbacks) => {
       // If no errorMessages were returned, then validation passed.
 
       // Add the rule's weight to the total score
-      score += parseInt(rule.weight, 10);
-
+      score += parseInt(rule.weight || 1, 10);
       // Log that this rule passed in the matching details object
       details.passed.push({
         rule,
