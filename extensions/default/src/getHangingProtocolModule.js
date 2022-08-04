@@ -23,7 +23,9 @@ const defaultProtocol = {
       displaySets: [
         {
           id: 'displaySet',
+          // Unused currently
           imageMatchingRules: [],
+          // Matches displaysets, NOT series
           seriesMatchingRules: [],
           studyMatchingRules: [],
         },

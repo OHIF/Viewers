@@ -33,6 +33,7 @@ export default class DisplaySetService {
     this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
+    this._holdChangeEvents = null;
 
     Object.assign(this, pubSubServiceInterface);
   }
@@ -41,6 +42,7 @@ export default class DisplaySetService {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];
+    this._holdChangeEvents = null;
   }
 
   _addDisplaySetsToCache(displaySets) {
@@ -180,7 +182,11 @@ export default class DisplaySetService {
     // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
     // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent unnecessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
-      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+      if (this._holdChangeEvents) {
+        this._holdChangeEvents.push(...displaySetsAdded);
+      } else if (!madeInClient) {
+        this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+      }
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
         displaySetsAdded,
         options,
@@ -189,6 +195,17 @@ export default class DisplaySetService {
       return displaySetsAdded;
     }
   };
+
+  holdChangeEvents() {
+    if (!this._holdChangeEvents) this._holdChangeEvents = [];
+  }
+
+  fireHoldChangeEvents() {
+    if (!this._holdChangeEvents) return;
+    const heldDisplaySets = this._holdChangeEvents;
+    this._holdChangeEvents = null;
+    this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+  }
 
   makeDisplaySetForInstances(instancesSrc, settings) {
     let instances = instancesSrc;

@@ -43,24 +43,24 @@ function ViewerViewportGrid(props) {
         }
 
         // if current viewport doesn't have a match
-        if (matchDetails[i] === undefined) return;
+        if (matchDetails[i] === undefined) {
+          return;
+        }
 
         const { displaySetsInfo, viewportOptions } = matchDetails[i];
 
         const displaySetUIDsToHang = [];
         const displaySetUIDsToHangOptions = [];
-        displaySetsInfo.forEach(({ SeriesInstanceUID, displaySetOptions }) => {
-          const matchingDisplaySet = availableDisplaySets.find(ds => {
-            return ds.SeriesInstanceUID === SeriesInstanceUID;
-          });
+        displaySetsInfo.forEach(
+          ({ displaySetInstanceUID, displaySetOptions }) => {
+            if (!displaySetInstanceUID) {
+              return;
+            }
 
-          if (!matchingDisplaySet) {
-            return;
+            displaySetUIDsToHang.push(displaySetInstanceUID);
+            displaySetUIDsToHangOptions.push(displaySetOptions);
           }
-
-          displaySetUIDsToHang.push(matchingDisplaySet.displaySetInstanceUID);
-          displaySetUIDsToHangOptions.push(displaySetOptions);
-        });
+        );
 
         if (!displaySetUIDsToHang.length) {
           continue;
@@ -369,6 +369,11 @@ function _getViewportComponent(displaySets, viewportComponents) {
   const SOPClassHandlerId = displaySets[0].SOPClassHandlerId;
 
   for (let i = 0; i < viewportComponents.length; i++) {
+    if (!viewportComponents[i])
+      throw new Error('viewport components not defined');
+    if (!viewportComponents[i].displaySetsToDisplay) {
+      throw new Error('displaySetsToDisplay is null');
+    }
     if (
       viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)
     ) {
@@ -376,6 +381,7 @@ function _getViewportComponent(displaySets, viewportComponents) {
       return component;
     }
   }
+  throw new Error(`No display set handler for ${SOPClassHandlerId}`);
 }
 
 export default ViewerViewportGrid;
