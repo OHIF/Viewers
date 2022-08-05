@@ -5,7 +5,7 @@ const defaultProtocol = {
   id: 'defaultProtocol',
   locked: true,
   hasUpdatedPriorsInformation: false,
-  name: 'Default',
+  name: 'None',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2021-02-23T19:22:08.894Z',
   availableTo: {},
