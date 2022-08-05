@@ -174,7 +174,18 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
   };
 
   const viewports = hp => {
-    return hp.hanging_protocol_criterias.map(criteria => ({
+    const { hanging_protocol_criterias } = hp;
+    if (hanging_protocol_criterias.length === 0) {
+      return [
+        {
+          viewportSettings: [],
+          imageMatchingRules: [],
+          seriesMatchingRules: [],
+          studyMatchingRules: [],
+        },
+      ];
+    }
+    return hanging_protocol_criterias.map(criteria => ({
       viewportSettings: viewportSettings(criteria),
       imageMatchingRules: [],
       seriesMatchingRules: seriesMatchingRules(criteria),
@@ -231,8 +242,8 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
           viewportStructure: {
             type: 'grid',
             properties: {
-              rows: hp.grid_matrix[0],
-              columns: hp.grid_matrix[1],
+              rows: hp.grid_matrix[0] || 1,
+              columns: hp.grid_matrix[1] || 1,
             },
           },
           viewports: viewports(hp),
