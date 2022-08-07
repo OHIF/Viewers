@@ -270,11 +270,13 @@ const ViewportActionBar = ({
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
             <span className={`text-base ${textColor}`}>{studyDate}</span>
-            <span
-              className={`pl-2 ml-2 text-base border-l border-primary-light text-primary-light`}
-            >
-              {seriesTime.split('.')[0]}
-            </span>
+            {seriesTime && (
+              <span
+                className={`pl-2 ml-2 text-base border-l border-primary-light text-primary-light`}
+              >
+                {seriesTime.split('.')[0]}
+              </span>
+            )}
           </div>
           <div className="flex">
             {/* TODO:
@@ -351,7 +353,7 @@ ViewportActionBar.propTypes = {
     isRehydratable: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
     currentSeries: PropTypes.number.isRequired,
-    seriesTime: PropTypes.string.isRequired,
+    seriesTime: PropTypes.string,
     seriesDescription: PropTypes.string.isRequired,
     modality: PropTypes.string.isRequired,
     patientInformation: PropTypes.shape({
