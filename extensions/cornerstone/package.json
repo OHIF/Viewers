@@ -29,7 +29,7 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "@ohif/ui": "^2.0.0",
-    "cornerstone-wado-image-loader": "^4.2.0",
+    "cornerstone-wado-image-loader": "^4.2.1",
     "dcmjs": "^0.24.5",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
@@ -43,9 +43,9 @@
   },
   "dependencies": {
     "@babel/runtime": "7.17.9",
-    "@cornerstonejs/core": "^0.13.11",
-    "@cornerstonejs/streaming-image-volume-loader": "^0.4.10",
-    "@cornerstonejs/tools": "^0.20.15",
+    "@cornerstonejs/core": "^0.14.3",
+    "@cornerstonejs/streaming-image-volume-loader": "^0.4.15",
+    "@cornerstonejs/tools": "^0.21.3",
     "@kitware/vtk.js": "^24.18.7",
     "dom-to-image": "^2.6.0",
     "lodash.debounce": "4.0.8",

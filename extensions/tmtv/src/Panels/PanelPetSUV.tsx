@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button } from '@ohif/ui';
-import { classes, DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
 const DEFAULT_MEATADATA = {
@@ -24,7 +24,11 @@ const DEFAULT_MEATADATA = {
  */
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const { DisplaySetService } = servicesManager.services;
+  const {
+    DisplaySetService,
+    ToolGroupService,
+    ToolBarService,
+  } = servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -108,6 +112,26 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     if (!ptDisplaySet) {
       throw new Error('No ptDisplaySet found');
     }
+
+    const toolGroupIds = ToolGroupService.getToolGroupIds();
+
+    // Todo: we don't have a proper way to perform a toggle command and update the
+    // state for the toolbar, so here, we manually toggle the toolbar
+
+    // Todo: Crosshairs have bugs for the camera reset currently, so we need to
+    // force turn it off before we update the metadata
+    toolGroupIds.forEach(toolGroupId => {
+      commandsManager.runCommand('toggleCrosshairs', {
+        toolGroupId,
+        toggledState: false,
+      });
+    });
+
+    ToolBarService.state.toggles['Crosshairs'] = false;
+    ToolBarService._broadcastEvent(
+      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED
+    );
+
     // metadata should be dcmjs naturalized
     DicomMetadataStore.updateMetadataForSeries(
       ptDisplaySet.StudyInstanceUID,

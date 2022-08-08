@@ -1,7 +1,5 @@
 # Total Metabolic Tumor Volume
 
-# NOTE: THIS MODE IS STILL A WORK IN PROGRESS
-
 ## Introduction
 
 Total Metabolic Tumor Volume (TMTV) workflow mode enables quantitatively measurement of a tumor volume in a patient's body.

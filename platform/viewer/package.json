@@ -62,7 +62,7 @@
     "config-point": "^0.4.8",
     "core-js": "^3.16.1",
     "cornerstone-math": "^0.1.9",
-    "cornerstone-wado-image-loader": "^4.2.0",
+    "cornerstone-wado-image-loader": "^4.2.1",
     "dcmjs": "^0.24.5",
     "detect-gpu": "^4.0.16",
     "dicom-parser": "^1.8.9",

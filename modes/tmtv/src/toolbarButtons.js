@@ -309,7 +309,7 @@ const toolbarButtons = [
       items: [
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),
-        _createColormap('Ret Hot', 'red_hot'),
+        _createColormap('Red Hot', 'red_hot'),
         _createColormap('Perfusion', 'perfusion'),
         _createColormap('Rainbow', 'rainbow_2'),
         _createColormap('SUV', 'suv'),
