@@ -18,7 +18,7 @@ executors:
   # Custom executor to override Cypress config
   deploy-to-prod-executor:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.14
         environment:
           CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
   chrome-and-pacs:
@@ -28,7 +28,7 @@ executors:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:14.18-browsers
+    - image: cimg/node:16.14-browsers
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
