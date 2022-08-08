@@ -60,6 +60,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     initialImageIndex,
   } = props;
 
+  console.log('onElementDisabled=', onElementDisabled);
+
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [viewportData, setViewportData] = useState(null);
   const [_, viewportGridService] = useViewportGrid();

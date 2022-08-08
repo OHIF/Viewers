@@ -1,12 +1,17 @@
-import { HPMatcher } from './HPMatcher.js';
+import StudyMetadata from '../DicomMetadataStore/StudyMetadata';
+import { HPMatcher } from './HPMatcher';
 import { sortByScore } from './lib/sortByScore';
+import MatchDetails from './MatchDetails';
 
 export default class ProtocolEngine {
+  protocols: unknown[];
+  study: StudyMetadata;
+  matchedProtocols = new Map();
+  matchedProtocolScores = {};
+
   constructor(protocols, customAttributeRetrievalCallbacks) {
     this.protocols = protocols;
     this.customAttributeRetrievalCallbacks = customAttributeRetrievalCallbacks;
-    this.matchedProtocols = new Map();
-    this.matchedProtocolScores = {};
     this.study = undefined;
   }
 
@@ -81,7 +86,7 @@ export default class ProtocolEngine {
     });
   }
 
-  findMatch(metaData, rules, options) {
+  findMatch(metaData, rules, options): MatchDetails {
     return HPMatcher.match(
       metaData,
       rules,
@@ -106,7 +111,7 @@ export default class ProtocolEngine {
       // Clone the protocol's protocolMatchingRules array
       // We clone it so that we don't accidentally add the
       // numberOfPriorsReferenced rule to the Protocol itself.
-      let rules = protocol.protocolMatchingRules.slice();
+      const rules = protocol.protocolMatchingRules.slice();
       if (!rules || !rules.length) {
         console.warn(
           'ProtocolEngine::findMatchByStudy no matching rules - specify protocolMatchingRules',

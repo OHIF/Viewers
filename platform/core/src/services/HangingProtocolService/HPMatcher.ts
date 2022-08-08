@@ -1,4 +1,5 @@
 import validate from './lib/validator';
+import MatchDetails from './MatchDetails';
 
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
@@ -14,7 +15,7 @@ const match = (
   rules,
   customAttributeRetrievalCallbacks,
   options
-) => {
+): MatchDetails => {
   const validateOptions = {
     format: 'grouped',
   };
@@ -37,11 +38,13 @@ const match = (
         attribute
       ].callback(metadataInstance, options);
     } else {
+      const instance =
+        metadataInstance.instance ||
+        metadataInstance.images?.[0] ||
+        metadataInstance.others?.[0];
+
       readValues[attribute] =
-        metadataInstance[attribute] ??
-        ((metadataInstance.images || metadataInstance.others || [])[0] || {})[
-        attribute
-        ];
+        metadataInstance[attribute] ?? instance?.[attribute];
     }
 
     console.log(
@@ -57,7 +60,7 @@ const match = (
 
     // Create a single attribute object to be validated, since metadataInstance is an
     // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-    let attributeValue = readValues[attribute];
+    const attributeValue = readValues[attribute];
     const attributeMap = {
       [attribute]: attributeValue,
     };
@@ -65,7 +68,7 @@ const match = (
     // Use Validate.js to evaluate the constraints on the specified metadataInstance
     let errorMessages;
     try {
-      errorMessages = validate(attributeMap, testConstraint, [validateOptions]);
+      errorMessages = validate(attributeMap, testConstraint, validateOptions);
     } catch (e) {
       errorMessages = ['Something went wrong during validation.', e];
     }

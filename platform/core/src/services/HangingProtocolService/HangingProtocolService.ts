@@ -3,6 +3,7 @@ import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
 import StudyMetadata from '../DicomMetadataStore/StudyMetadata';
 import DisplaySet from '../DisplaySetService/DisplaySet';
+import MatchDetails from './MatchDetails';
 
 const EVENTS = {
   STAGE_CHANGE: 'event::hanging_protocol_stage_change',
@@ -13,17 +14,18 @@ const EVENTS = {
 
 class HangingProtocolService {
   studies: StudyMetadata[];
-  protocols: object[];
-  protocol: object;
+  protocols: Record<string, unknown>[];
+  protocol: Record<string, unknown>;
   stage: number;
-  _commandsManager: object;
+  _commandsManager: Record<string, unknown>;
   protocolEngine: ProtocolEngine;
-  matchDetails: object[];
+  matchDetails: MatchDetails[];
   hpAlreadyApplied: boolean[] = [];
   customViewportSettings = [];
   displaySets: DisplaySet[] = [];
-  activeStudy: object;
+  activeStudy: StudyMetadata;
   debugLogging: false;
+  EVENTS: Record<string, unknown>;
 
   customAttributeRetrievalCallbacks = {
     NumberOfStudyRelatedSeries: {
@@ -41,7 +43,7 @@ class HangingProtocolService {
         metadata.ModalitiesInStudy ??
         (metadata.series || []).reduce((prev, curr) => {
           const { Modality } = curr;
-          if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
+          if (Modality && prev.indexOf(Modality) === -1) prev.push(Modality);
           return prev;
         }, []),
     },
@@ -546,7 +548,7 @@ class HangingProtocolService {
           sortingInfo: {
             score: totalMatchScore,
             study: study.StudyInstanceUID,
-            series: parseInt(displaySet.SeriesNumber),
+            series: Number(displaySet.SeriesNumber),
           },
         };
 
