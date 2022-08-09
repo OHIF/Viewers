@@ -37,6 +37,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "ecg-dicom-web-viewer": "^1.0.5"
+    "ecg-dicom-web-viewer": "^1.0.6"
   }
 }
