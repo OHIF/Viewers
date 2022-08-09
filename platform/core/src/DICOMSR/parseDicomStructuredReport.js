@@ -1,5 +1,6 @@
 import dcmjs from 'dcmjs';
 import classes from '../classes';
+import parseSCOORD3D from './SCOORD3D/parseSCOORD3D';
 
 import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
 
@@ -12,11 +13,19 @@ const { LogManager } = classes;
  *
  * @param {ArrayBuffer} part10SRArrayBuffer
  * @param {Array} displaySets
+ * @param {object} external
  * @returns
  */
-const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
-  // Get the dicom data as an Object
+const parseDicomStructuredReport = (
+  part10SRArrayBuffer,
+  displaySets,
+  external
+) => {
+  if (external && external.servicesManager) {
+    parseSCOORD3D({ servicesManager: external.servicesManager, displaySets });
+  }
 
+  // Get the dicom data as an Object
   const dicomData = dcmjs.data.DicomMessage.readFile(part10SRArrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict

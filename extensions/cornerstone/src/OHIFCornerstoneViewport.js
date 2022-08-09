@@ -5,6 +5,7 @@ import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
+import checkForSRAnnotations from './tools/checkForSRAnnotations';
 
 const { StackManager } = OHIF.utils;
 
@@ -187,6 +188,8 @@ class OHIFCornerstoneViewport extends Component {
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
+      const { viewportIndex } = this.props;
+      checkForSRAnnotations({ displaySet, viewportIndex });
       this.setStateFromProps();
     }
   }
@@ -234,11 +237,21 @@ class OHIFCornerstoneViewport extends Component {
       }
     };
 
-    const warningsOverlay = props => {
+    const overlay = props => {
+      const displaySet = this.props.viewportData.displaySet;
+      let filteredSRLabels;
+      if (displaySet.SRLabels && displaySet.SRLabels.length !== 0) {
+        filteredSRLabels = displaySet.SRLabels.filter(
+          SRLabel =>
+            SRLabel.ReferencedSOPInstanceUID === displaySet.SOPInstanceUID
+        );
+      }
+
       return (
         <OHIFCornerstoneViewportOverlay
           {...props}
           inconsistencyWarnings={inconsistencyWarnings}
+          SRLabels={filteredSRLabels}
         />
       );
     };
@@ -251,7 +264,7 @@ class OHIFCornerstoneViewport extends Component {
           imageIdIndex={currentImageIdIndex}
           onNewImageDebounced={newImageHandler}
           onNewImageDebounceTime={300}
-          viewportOverlayComponent={warningsOverlay}
+          viewportOverlayComponent={overlay}
           stackPrefetch={this.props.stackPrefetch}
           isStackPrefetchEnabled={this.props.isStackPrefetchEnabled}
           // ~~ Connected (From REDUX)

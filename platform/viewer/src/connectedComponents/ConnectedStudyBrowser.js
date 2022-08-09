@@ -48,7 +48,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             );
             document.dispatchEvent(selectionFired);
           });
-        } else {
+        } else if (Modality !== 'SR') {
           displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
         }
 
@@ -79,7 +79,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         });
       }
 
-      if (displaySet.isModalitySupported === false) {
+      if (displaySet.isSOPClassUIDSupported === false) {
         const error = new Error('Modality not supported');
         const message = 'Modality not supported';
         LoggerService.error({ error, message });

@@ -3,6 +3,159 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.22](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.21...@ohif/core@2.16.22) (2022-06-30)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.21](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.20...@ohif/core@2.16.21) (2022-06-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.20](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.19...@ohif/core@2.16.20) (2022-06-28)
+
+
+### Bug Fixes
+
+* Re IDC2797, fix double parsing of SR qualitative annotations ([#2830](https://github.com/OHIF/Viewers/issues/2830)) ([9f813e0](https://github.com/OHIF/Viewers/commit/9f813e0ea08f0aada8efab9ef6228ad90dd1758d))
+
+
+
+
+
+## [2.16.19](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.18...@ohif/core@2.16.19) (2022-06-14)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.18](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.17...@ohif/core@2.16.18) (2022-04-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.17](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.16...@ohif/core@2.16.17) (2022-04-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.16](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.15...@ohif/core@2.16.16) (2022-04-05)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.15](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.14...@ohif/core@2.16.15) (2022-03-25)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.14](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.13...@ohif/core@2.16.14) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.13](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.12...@ohif/core@2.16.13) (2022-03-14)
+
+
+### Bug Fixes
+
+* Update fetchPaletteColorLookupTableData: LUT Entries shall be 0 if the table entries value is 2^16 ([#2395](https://github.com/OHIF/Viewers/issues/2395)) ([0ba796c](https://github.com/OHIF/Viewers/commit/0ba796c73c5254f1bc5ac72c58fd06abf19d7102))
+
+
+
+
+
+## [2.16.12](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.11...@ohif/core@2.16.12) (2022-02-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.11](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.10...@ohif/core@2.16.11) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.10](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.9...@ohif/core@2.16.10) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.9](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.8...@ohif/core@2.16.9) (2022-02-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.7...@ohif/core@2.16.8) (2022-01-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.6...@ohif/core@2.16.7) (2022-01-20)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.6](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.5...@ohif/core@2.16.6) (2022-01-13)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.4...@ohif/core@2.16.5) (2021-12-23)
+
+
+### Bug Fixes
+
+* DICOMFileLoadingListener typo in method name ([#2647](https://github.com/OHIF/Viewers/issues/2647)) ([761d54f](https://github.com/OHIF/Viewers/commit/761d54fbbfb376c20ee15794ef7bb7111f64a06f))
+
+
+
+
+
 ## [2.16.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.3...@ohif/core@2.16.4) (2021-12-23)
 
 

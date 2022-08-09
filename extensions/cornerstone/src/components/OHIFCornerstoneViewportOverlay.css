@@ -33,6 +33,10 @@
   bottom: 140px;
   left: 20px;
 }
+.OHIFCornerstoneViewportOverlay .bottom-left3 {
+  bottom: 110px;
+  left: -20px;
+}
 .OHIFCornerstoneViewportOverlay .bottom-right {
   bottom: 20px;
   right: 20px;
