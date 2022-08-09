@@ -181,7 +181,7 @@ jobs:
 
   DEPLOY_TO_DEV:
     docker:
-      - image: circleci/node:14.17.0
+      - image: circleci/node:16.14.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
@@ -196,7 +196,7 @@ jobs:
 
   DEPLOY_TO_STAGING:
     docker:
-      - image: circleci/node:14.17.0
+      - image: circleci/node:16.14.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
@@ -211,7 +211,7 @@ jobs:
 
   DEPLOY_TO_PRODUCTION:
     docker:
-      - image: circleci/node:14.17.0
+      - image: circleci/node:16.14.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
