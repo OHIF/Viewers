@@ -164,7 +164,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Patient Weight')}
+              label={t('Patient Weight (KG)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
@@ -177,7 +177,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Total Dose')}
+              label={t('Total Dose (Mbq)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
@@ -195,7 +195,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Half Life')}
+              label={t('Half Life (Seconds)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
@@ -213,7 +213,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Injection Time')}
+              label={t('Injection Time (Seconds)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
@@ -231,7 +231,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Acquisition Time')}
+              label={t('Acquisition Time (Seconds)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
