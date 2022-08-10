@@ -150,12 +150,18 @@ export default class ProtocolEngine {
 
     // If no matches were found, select the default protocol
     if (!matched.length) {
-      return [
-        {
-          score: 1,
-          protocol: defaultProtocol,
+      const protocol = { ...defaultProtocol };
+      protocol.stages[0].viewports[0].studyMatchingRules.push({
+        id: 'default-study-uid',
+        weight: 1,
+        attribute: 'StudyInstanceUID',
+        constraint: {
+          equals: {
+            value: study.StudyInstanceUID,
+          },
         },
-      ];
+      });
+      return [{ score: 1, protocol }];
     }
 
     // Sort the matched list by score
