@@ -123,7 +123,7 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
     if (criteria.viewport_flip === 'VERTICAL') {
       settings.push(viewportSetting({ vflip: true }));
     }
-    settings.push(viewportSetting({ scale: criteria.viewport_scaling / 100 }));
+    // settings.push(viewportSetting({ scale: criteria.viewport_scaling / 100 }));
     settings.push(viewportSetting({ rotation: criteria.rotation_angle }));
     return settings;
   };
@@ -188,7 +188,18 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
           viewportSettings: [],
           imageMatchingRules: [],
           seriesMatchingRules: [],
-          studyMatchingRules: [],
+          studyMatchingRules: [
+            {
+              id: 'default-study-uid',
+              weight: 1,
+              attribute: 'StudyInstanceUID',
+              constraint: {
+                equals: {
+                  value: StudyInstanceUID,
+                },
+              },
+            },
+          ],
         },
       ];
     }

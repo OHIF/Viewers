@@ -7,7 +7,7 @@ function requestDisplaySetCreationForStudy(
   madeInClient
 ) {
   const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-  if (studyMetadata.isLoaded) return;
+  if (studyMetadata && studyMetadata.isLoaded) return;
 
   dataSource.retrieveSeriesMetadata({ StudyInstanceUID, madeInClient });
 }
