@@ -259,6 +259,11 @@ export default async function init({
   //   }
   // };
 
+  const newStackCallback = evt => {
+    const { element } = evt.detail;
+    utilities.stackPrefetch.enable(element);
+  };
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
 
@@ -267,10 +272,10 @@ export default async function init({
       contextMenuHandleClick
     );
 
-    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
-      const { element } = evt.detail;
-      utilities.stackPrefetch.enable(element);
-    });
+    eventTarget.addEventListener(
+      EVENTS.STACK_VIEWPORT_NEW_STACK,
+      newStackCallback
+    );
   }
 
   function elementDisabledHandler(evt) {
@@ -284,10 +289,11 @@ export default async function init({
       contextMenuHandleClick
     );
 
-    eventTarget.removeEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
-      const { element } = evt.detail;
-      utilities.stackPrefetch.disable(element);
-    });
+    // TODO - consider removing the callback when all elements are gone
+    // eventTarget.removeEventListener(
+    //   EVENTS.STACK_VIEWPORT_NEW_STACK,
+    //   newStackCallback
+    // );
   }
 
   eventTarget.addEventListener(
