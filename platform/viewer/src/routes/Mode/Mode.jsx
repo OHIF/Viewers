@@ -86,8 +86,6 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
   const rawStudyMetadatas = studiesForPatientResponse.data.results;
   const { Modality, StudyDescription, body_parts_examined } = studyMetadata;
 
-  console.log(body_parts_examined);
-
   const hpStudies = [];
   for (const rawMetadata of rawStudyMetadatas) {
     if (rawMetadata.StudyInstanceUID !== StudyInstanceUID) {
