@@ -1,7 +1,23 @@
 {
+  "directories": {
+    "src": {
+      "relativeTo": "OHIF",
+      "directory": ".."
+    },
+    "config-point": {
+      "comment": "This example shows how to add a directory location, with git information",
+      "relativeTo": "src",
+      "directory": "config-point",
+      "git": "https://github.com/OHIF/config-point.git"
+    }
+  },
   "extensions": [
     {
       "packageName": "@ohif/extension-cornerstone",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-tmtv",
       "version": "3.0.0"
     },
     {
@@ -23,10 +39,6 @@
     {
       "packageName": "@ohif/extension-dicom-video",
       "version": "3.0.1"
-    },
-    {
-      "packageName": "@ohif/extension-tmtv",
-      "version": "3.0.0"
     }
   ],
   "modes": [
@@ -35,8 +47,16 @@
       "version": "3.0.0"
     }
   ],
-  "modesFactory": [
-  ],
-  "umd": [
+  "packages": [
+    "@ohif/core",
+    "@ohif/ui",
+    "dcmjs",
+    "react",
+    {
+      "comment": "This is a UMD dependency example, available only if checked out and built in the config-point directory above.",
+      "packageName": "config-point",
+      "relativeTo": "config-point",
+      "directory": "."
+    }
   ]
 }

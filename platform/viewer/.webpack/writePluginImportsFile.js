@@ -1,4 +1,4 @@
-const pluginConfig = require('../pluginConfig.json');
+const pluginConfig = require('../pluginConfig');
 const fs = require('fs');
 
 const autogenerationDisclaimer = `
@@ -8,26 +8,15 @@ const autogenerationDisclaimer = `
 function constructLines(input, categoryName) {
   let pluginCount = 0;
 
-  const lines = {
-    importLines: [],
-    addToWindowLines: [],
-  };
+  const lines = [];
 
   if (!input) return lines;
 
   input.forEach(entry => {
-    const packageName = entry.packageName;
+    const packageName = (typeof entry === 'string') ?
+      entry : entry.packageName;
 
-    const defaultImportName = `${categoryName}${pluginCount}`;
-
-    lines.importLines.push(
-      `import ${defaultImportName} from '${packageName}';\n`
-    );
-    lines.addToWindowLines.push(
-      `${categoryName}.push(${defaultImportName});\n`
-    );
-
-    pluginCount++;
+    lines.push(`${categoryName}.push('${packageName}')`);
   });
 
   return lines;
@@ -43,66 +32,119 @@ function getFormattedImportBlock(importLines) {
   return content;
 }
 
-function getFormattedWindowBlock(addToWindowLines) {
-  let content = "const extensions = [];\n" +
-    "const modes = [];\n" +
-    "const modesFactory = [];\n" +
-    "window.extensions = extensions;\n" +
-    "window.modes = modes;\n\n";
+const staticBlock = [
+  "import umdLoader from './umdLoader';",
+  "export const defaultModes = [];",
+  "window.modes = defaultModes;",
+  "export const defaultExtensions = [];",
+  "window.extensions = defaultExtensions;",
+  "export const defaultHotLoad = [];\n",
+  "// Loads the default hot load list, and waits for any hot load functions",
+  "const pluginImports = (hotLoad = defaultHotLoad) =>",
+  "  Promise.all(hotLoad.map(it => umdLoader(it))).then(loaded => loaded.map(",
+  "    it => it?.hotLoad?.() ) )",
+  "export default pluginImports;\n"
+];
 
-  addToWindowLines.forEach(addToWindowLine => {
-    content += addToWindowLine;
-  });
 
-  return content;
-}
-
-function getRuntimeLoadModesExtensions() {
-  return "\n\n// Add a dynamic runtime loader\n" +
-    "export default async () => {\n" +
-    " for(const modeFactory of modesFactory) {\n" +
-    "  const newModes = await modeFactory(modes,extensions);\n" +
-    "  newModes.forEach(newMode => modes.push(newMode));\n" +
-    "}\n}\n";
-}
-
-const createCopyPluginFromExtensions = (SRC_DIR, DIST_DIR, plugins) => {
-
-  return plugins.map(plugin => {
-    const from = `${SRC_DIR}/../node_modules/${plugin.packageName}/public/`;
-    const exists = fs.existsSync(from);
-    return exists ? {
+const createCopyPluginFromExtensions = (directory, copyItems, directories) => {
+  const from = `${directory}/public/`;
+  if (fs.existsSync(from)) {
+    copyItems.push({
       from,
-      to: DIST_DIR,
+      to: resolveDirectory('DIST', '.', directories),
       toType: 'dir',
-    } : undefined;
+    });
   }
-  ).filter(x => !!x);
 }
+
+const resolveDirectory = (relativeTo, directory, directories) => {
+  if (relativeTo) {
+    const relative = directories[relativeTo];
+    if (!relative) {
+      throw new Error(`Couldn't find relativeTo path ${relativeTo}`);
+    }
+
+    const rootDirectory = (typeof relative === 'string') ?
+      relative :
+      resolveDirectory(relative.relativeTo, relative.directory, directories);
+    if (directory === '.') return rootDirectory;
+    return `${rootDirectory}/${directory}`;
+  }
+  return directory;
+}
+
+const createImportItem = (item, importerLines, lines, copyItems, directories) => {
+  const useItem = (typeof item === 'string') ? { packageName: item } : item;
+  const { directory, link, relativeTo, packageName, hot } = useItem;
+  const linkDirectory = resolveDirectory('VIEWER', `node_modules/${packageName}`, directories);
+  const rootDirectory = resolveDirectory('OHIF', `node_modules/${packageName}`, directories);;
+  if (directory && !link) {
+    // This is an external directory item
+    const location = resolveDirectory(relativeTo, directory, directories);
+    if (!location) {
+      console.log("UMD module", item.packageName, "in", directory, "not included");
+      return;
+    }
+    createCopyPluginFromExtensions(location, copyItems, directories);
+  } else if (fs.existsSync(linkDirectory)) {
+    createCopyPluginFromExtensions(linkDirectory, copyItems, directories);
+    importerLines.push(`  if( name==='${packageName}') return import('${packageName}')`);
+  } else if (fs.existsSync(rootDirectory)) {
+    createCopyPluginFromExtensions(rootDirectory, copyItems, directories);
+    importerLines.push(`  if( name==='${packageName}') return import('${packageName}')`);
+  } else {
+    const msg = `No package or link directory found for ${packageName}, tried: ${linkDirectory} and ${rootDirectory}`;
+    throw new Error(msg);
+  }
+
+  if (hot) {
+    lines.push(`defaultHotLoad.push('${packageName}');`)
+  }
+}
+
+/** Returns the copy plugin from extensions list, and adds the
+ * lines directly to lines
+ */
+const createImporter = (pluginConfig, lines) => {
+  const { extensions, modes, packages = [], directories = {} } = pluginConfig;
+  const copyPlugin = [];
+  const importerLines = ["umdLoader.registerImport(name => {"];
+
+  extensions.forEach(item => createImportItem(item, importerLines, lines, copyPlugin, directories));
+  modes.forEach(item => createImportItem(item, importerLines, lines, copyPlugin, directories));
+  packages.forEach(item => createImportItem(item, importerLines, lines, copyPlugin, directories));
+
+  importerLines.push("});");
+  lines.push('', '// Importer Definition', ...importerLines);
+
+  return copyPlugin;
+}
+
+// Some global information about the overall deployment
 
 function writePluginImportsFile(SRC_DIR, DIST_DIR) {
-  let pluginImportsJsContent = autogenerationDisclaimer;
+  if (!pluginConfig.directories) pluginConfig.directories = {};
+  const { directories = {} } = pluginConfig;
+  directories.VIEWER = `${SRC_DIR}/..`;
+  directories.OHIF = `${SRC_DIR}/../../..`;
+  directories.DIST = DIST_DIR;
 
-  const extensionLines = constructLines(pluginConfig.extensions, 'extensions');
-  const modeLines = constructLines(pluginConfig.modes, 'modes');
-  const modesFactoryLines = constructLines(pluginConfig.modesFactory, 'modesFactory');
-
-  pluginImportsJsContent += getFormattedImportBlock([
-    ...extensionLines.importLines,
-    ...modeLines.importLines,
-    ...modesFactoryLines.importLines,
-  ]);
-  pluginImportsJsContent += getFormattedWindowBlock([
-    ...extensionLines.addToWindowLines,
-    ...modeLines.addToWindowLines,
-    ...modesFactoryLines.addToWindowLines,
-  ]);
-
-  pluginImportsJsContent += getRuntimeLoadModesExtensions();
+  const lines = [];
+  lines.push(autogenerationDisclaimer);
+  lines.push(...staticBlock);
+  lines.push('', '// Extension Imports');
+  lines.push(...constructLines(pluginConfig.extensions, 'defaultExtensions'));
+  lines.push('', '// Modes Imports');
+  lines.push(...constructLines(pluginConfig.modes, 'defaultModes'));
+  lines.push('');
+  const copyPluginFromExtensions = createImporter(pluginConfig, lines);
+  lines.push('', '// Webpack Copy block')
+  lines.push('const webpackCopy=', JSON.stringify(copyPluginFromExtensions, null, 2));
 
   fs.writeFileSync(
     `${SRC_DIR}/pluginImports.js`,
-    pluginImportsJsContent,
+    lines.join('\n'),
     { flag: 'w+' },
     err => {
       if (err) {
@@ -111,16 +153,6 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
       }
     }
   );
-
-  const copyPluginFromExtensions = createCopyPluginFromExtensions(
-    SRC_DIR, DIST_DIR,
-    [
-      ...pluginConfig.modesFactory,
-      ...pluginConfig.modes,
-      ...pluginConfig.extensions,
-      ...pluginConfig.umd,
-    ]
-  )
 
   return copyPluginFromExtensions;
 }

@@ -15,17 +15,21 @@ import ReactDOM from 'react-dom';
  * pluginImports.js imports all of the modes and extensions and adds them
  * to the window for processing.
  */
-import loadDynamicImports from './pluginImports.js';
+import loadDynamicImports, {
+  defaultExtensions,
+  defaultModes,
+} from './pluginImports.js';
 
 loadDynamicImports().then(() => {
+
   /**
    * Combine our appConfiguration with installed extensions and modes.
    * In the future appConfiguration may contain modes added at runtime.
    *  */
   const appProps = {
     config: window ? window.config : {},
-    defaultExtensions: window.extensions,
-    defaultModes: window.modes,
+    defaultExtensions: defaultExtensions,
+    defaultModes: defaultModes,
   };
 
   /** Create App */

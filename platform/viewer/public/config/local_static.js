@@ -1,8 +1,9 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
-  extensions: [],
-  modes: [],
+  // Extensions added to the base set, defined by name.
+  // The unknown tests the load of missing dependencies (sends a message but no error)
+  extensions: ['@ohif/extension-tmtv', 'unknown'],
+  modes: ['@ohif/mode-longitudinal'],
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
   // filterQueryParam: false,
