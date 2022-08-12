@@ -3,7 +3,7 @@ const pkg = require('../package.json');
 
 const outputFile = 'index.umd.js';
 const rootDir = path.resolve(__dirname, '../');
-const outputFolder = path.join(__dirname, '../dist');
+const outputFolder = path.join(__dirname, '../public/umd', pkg.name);
 
 const config = {
   mode: 'production',
@@ -14,8 +14,8 @@ const config = {
     filename: outputFile,
     library: pkg.name,
     libraryTarget: 'umd',
+    publicPath: `/umd/${pkg.name}/`,
     umdNamedDefine: true,
-    globalObject: "typeof self !== 'undefined' ? self : this",
   },
   externals: [
     {
@@ -36,6 +36,36 @@ const config = {
         commonjs: '@ohif/ui',
         amd: '@ohif/ui',
         root: '@ohif/ui',
+      },
+      '@cornerstonejs/core': {
+        commonjs2: '@cornerstonejs/core',
+        commonjs: '@cornerstonejs/core',
+        amd: '@cornerstonejs/core',
+        root: '@cornerstonejs/core',
+      },
+      '@cornerstonejs/tools': {
+        commonjs2: '@cornerstonejs/tools',
+        commonjs: '@cornerstonejs/tools',
+        amd: '@cornerstonejs/tools',
+        root: '@cornerstonejs/tools',
+      },
+      '@ohif/ui': {
+        commonjs2: '@ohif/ui',
+        commonjs: '@ohif/ui',
+        amd: '@ohif/ui',
+        root: '@ohif/ui',
+      },
+      '@ohif/mode-longitudinal': {
+        commonjs2: '@ohif/mode-longitudinal',
+        commonjs: '@ohif/mode-longitudinal',
+        amd: '@ohif/mode-longitudinal',
+        root: '@ohif/mode-longitudinal',
+      },
+      'config-point': {
+        commonjs2: 'config-point',
+        commonjs: 'config-point',
+        amd: 'config-point',
+        root: 'config-point',
       },
     },
   ],

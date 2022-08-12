@@ -17,7 +17,8 @@ async function editPackageJson(options) {
       description,
       author,
       license,
-      files: ['dist', 'README.md'],
+      main: `public/umd/${name}/index.umd.js`,
+      files: ['public/**', 'README.md'],
     },
     packageJson
   );

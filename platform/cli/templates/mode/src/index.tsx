@@ -89,7 +89,7 @@ function modeFactory({ modeConfiguration }) {
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
     /** HangingProtocols used by the mode */
-    hangingProtocols: [''],
+    hangingProtocols: [ohif.hangingProtocols],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */
