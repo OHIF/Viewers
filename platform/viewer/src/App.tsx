@@ -28,7 +28,7 @@ let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
 function App({ config, defaultExtensions, defaultModes }) {
   const [init, setInit] = useState(null);
-
+  localStorage.removeItem("signoutEvent"); //Remove possible leftover from previous session
   useEffect(() => {
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes)

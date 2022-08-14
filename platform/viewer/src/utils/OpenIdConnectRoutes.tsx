@@ -56,6 +56,7 @@ const initUserManager = (oidc, routerBasename) => {
 
 function LogoutComponent(props) {
   const { userManager } = props;
+  localStorage.setItem("signoutEvent", "true");
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   userManager.signoutRedirect({ post_logout_redirect_uri: query.get("redirect_uri") });
@@ -126,6 +127,15 @@ function OpenIdConnectRoutes({
   };
 
   const navigate = useNavigate();
+
+  //for multi-tab logout
+  window.addEventListener('storage', () => {
+    var signOutEvent = localStorage.getItem("signoutEvent");
+    if (signOutEvent) {
+      navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
+      localStorage.removeItem("signoutEvent");
+    }
+  });
 
   useEffect(() => {
     UserAuthenticationService.set({ enabled: true });
