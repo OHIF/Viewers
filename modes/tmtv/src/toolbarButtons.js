@@ -272,8 +272,7 @@ const toolbarButtons = [
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text:
-              'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },
@@ -307,6 +306,7 @@ const toolbarButtons = [
       isAction: true, // ?
       renderer: WindowLevelMenuItem,
       items: [
+        _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),
         _createColormap('Red Hot', 'red_hot'),

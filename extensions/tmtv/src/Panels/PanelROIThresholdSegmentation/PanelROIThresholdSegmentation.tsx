@@ -297,7 +297,7 @@ export default function PanelRoiThresholdSegmentation({
           name={'info'}
           className={'ml-4 mr-3 text-primary-active'}
         />
-        <span>{'About'}</span>
+        <span>{'User Guide'}</span>
       </div>
     </div>
   );
