@@ -15,7 +15,7 @@ function constructLines(input, categoryName) {
 
   if (!input) return lines;
 
-  input.forEach(entry => {
+  input.forEach((entry) => {
     const packageName = entry.packageName;
 
     const defaultImportName = `${categoryName}${pluginCount}`;
@@ -36,7 +36,7 @@ function constructLines(input, categoryName) {
 function getFormattedImportBlock(importLines) {
   let content = '';
   // Imports
-  importLines.forEach(importLine => {
+  importLines.forEach((importLine) => {
     content += importLine;
   });
 
@@ -44,13 +44,14 @@ function getFormattedImportBlock(importLines) {
 }
 
 function getFormattedWindowBlock(addToWindowLines) {
-  let content = "const extensions = [];\n" +
-    "const modes = [];\n" +
-    "const modesFactory = [];\n" +
-    "window.extensions = extensions;\n" +
-    "window.modes = modes;\n\n";
+  let content =
+    'const extensions = [];\n' +
+    'const modes = [];\n' +
+    'const modesFactory = [];\n' +
+    'window.extensions = extensions;\n' +
+    'window.modes = modes;\n\n';
 
-  addToWindowLines.forEach(addToWindowLine => {
+  addToWindowLines.forEach((addToWindowLine) => {
     content += addToWindowLine;
   });
 
@@ -58,34 +59,57 @@ function getFormattedWindowBlock(addToWindowLines) {
 }
 
 function getRuntimeLoadModesExtensions() {
-  return "\n\n// Add a dynamic runtime loader\n" +
-    "export default async () => {\n" +
-    " for(const modeFactory of modesFactory) {\n" +
-    "  const newModes = await modeFactory(modes,extensions);\n" +
-    "  newModes.forEach(newMode => modes.push(newMode));\n" +
-    "}\n}\n";
+  return (
+    '\n\n// Add a dynamic runtime loader\n' +
+    'export default async () => {\n' +
+    ' for(const modeFactory of modesFactory) {\n' +
+    '  const newModes = await modeFactory(modes,extensions);\n' +
+    '  newModes.forEach(newMode => modes.push(newMode));\n' +
+    '}\n}\n'
+  );
 }
 
-const createCopyPluginFromExtensions = (SRC_DIR, DIST_DIR, plugins) => {
+const createCopyPluginPublicToDist = (SRC_DIR, DIST_DIR, plugins) => {
+  return plugins
+    .map((plugin) => {
+      const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/public/`;
+      const exists = fs.existsSync(from);
+      return exists
+        ? {
+            from,
+            to: DIST_DIR,
+            toType: 'dir',
+          }
+        : undefined;
+    })
+    .filter((x) => !!x);
+};
 
-  return plugins.map(plugin => {
-    const from = `${SRC_DIR}/../node_modules/${plugin.packageName}/public/`;
-    const exists = fs.existsSync(from);
-    return exists ? {
-      from,
-      to: DIST_DIR,
-      toType: 'dir',
-    } : undefined;
-  }
-  ).filter(x => !!x);
-}
+const createCopyPluginDistToDist = (SRC_DIR, DIST_DIR, plugins) => {
+  return plugins
+    .map((plugin) => {
+      const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/dist/`;
+      const exists = fs.existsSync(from);
+      return exists
+        ? {
+            from,
+            to: DIST_DIR,
+            toType: 'dir',
+          }
+        : undefined;
+    })
+    .filter((x) => !!x);
+};
 
 function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   let pluginImportsJsContent = autogenerationDisclaimer;
 
   const extensionLines = constructLines(pluginConfig.extensions, 'extensions');
   const modeLines = constructLines(pluginConfig.modes, 'modes');
-  const modesFactoryLines = constructLines(pluginConfig.modesFactory, 'modesFactory');
+  const modesFactoryLines = constructLines(
+    pluginConfig.modesFactory,
+    'modesFactory'
+  );
 
   pluginImportsJsContent += getFormattedImportBlock([
     ...extensionLines.importLines,
@@ -104,7 +128,7 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     `${SRC_DIR}/pluginImports.js`,
     pluginImportsJsContent,
     { flag: 'w+' },
-    err => {
+    (err) => {
       if (err) {
         console.error(err);
         return;
@@ -112,17 +136,24 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     }
   );
 
-  const copyPluginFromExtensions = createCopyPluginFromExtensions(
-    SRC_DIR, DIST_DIR,
+  const copyPluginPublicToDist = createCopyPluginPublicToDist(
+    SRC_DIR,
+    DIST_DIR,
     [
       ...pluginConfig.modesFactory,
       ...pluginConfig.modes,
       ...pluginConfig.extensions,
       ...pluginConfig.umd,
     ]
-  )
+  );
+  const copyPluginDistToDist = createCopyPluginDistToDist(SRC_DIR, DIST_DIR, [
+    ...pluginConfig.modesFactory,
+    ...pluginConfig.modes,
+    ...pluginConfig.extensions,
+    ...pluginConfig.umd,
+  ]);
 
-  return copyPluginFromExtensions;
+  return [...copyPluginPublicToDist, ...copyPluginDistToDist];
 }
 
 module.exports = writePluginImportsFile;
