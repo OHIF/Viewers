@@ -3347,6 +3347,16 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@loomhq/loom-embed@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@loomhq/loom-embed/-/loom-embed-1.5.0.tgz#1f5a72a3bef30958c05b37a94ec86af78c3626c9"
+  integrity sha512-1Rilv+Ta39Rk2mEb8wzfLSpPhl6ax7kfLNnfYTAGK4mCJIxwQ1o/BY46QRbIpQT/SdfsFCvvNWa57hlEEaduGA==
+
+"@loomhq/record-sdk@^2.35.20":
+  version "2.35.20"
+  resolved "https://registry.yarnpkg.com/@loomhq/record-sdk/-/record-sdk-2.35.20.tgz#0276feaf882b8bd1b8426025ca45795fa2f23d04"
+  integrity sha512-ezP1MYuCVSIRdwNW/7g5VZXfrgiyIuHZdz5RJ4WcZ2Bre8zy95tQ/EpA14R4PF2CYq7gWZFhTVzwm89UCXs+CA==
+
 "@material-ui/core@^4.12.3":
   version "4.12.3"
   resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-4.12.3.tgz#80d665caf0f1f034e52355c5450c0e38b099d3ca"
@@ -3504,10 +3514,10 @@
     outvariant "^1.2.0"
     strict-event-emitter "^0.2.0"
 
-"@newlantern/viewer@^4.4.8":
-  version "4.4.13"
-  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.13.tgz#585864b9b119207b416c7114f6c34c4477270ee4"
-  integrity sha512-dZ0J26XX1+dQJqaPGie1lRyDz0uHz2KDRiE/4uGrgfslzYB1scuuTUbo0ptX2T5YtXYPk1XEpAKkEJLeMYW+YA==
+"@newlantern/viewer@^4.4.16":
+  version "4.4.16"
+  resolved "https://registry.yarnpkg.com/@newlantern/viewer/-/viewer-4.4.16.tgz#ccebadeec79efd5b5fad4513dcad887c5a56cd56"
+  integrity sha512-DFmu3JTYPxQXixMbE/h98lpOJutr9FeFAHRzn8p9dMh2YJPlaH88fzm3QTSywIppjjprmJ6L9Mpo0IiyXdb2OQ==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

@@ -105,14 +105,8 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
     study => study.StudyInstanceUID === StudyInstanceUID
   );
 
-  let data = [];
-  try {
-    const { data: user } = await nlApi.get('/api/users/me');
-    const res = await nlApi.get(`/api/hanging-protocol/?user=${user.id}`);
-    data = res.data;
-  } catch (err) {
-    console.log(err);
-  }
+  const user = JSON.parse(window.localStorage.getItem('newlantern_user'));
+  const { data } = await nlApi.get(`/api/hanging-protocol/?user=${user.id}`);
 
   const viewportSettings = criteria => {
     const settings = [];
