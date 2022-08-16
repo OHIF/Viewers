@@ -90,6 +90,7 @@
     "cypress-file-upload": "^3.5.3",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.15",
+    "glob": "^8.0.3",
     "tailwindcss": "2.2.4",
     "terser-webpack-plugin": "^5.1.1",
     "webpack": "^5.50.0",
