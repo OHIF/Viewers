@@ -5,6 +5,8 @@ const outputFile = 'index.umd.js';
 const rootDir = path.resolve(__dirname, '../');
 const outputFolder = path.join(__dirname, `../dist/umd/${pkg.name}/`);
 
+// Todo: add ESM build for the extension in addition to umd build
+
 const config = {
   mode: 'production',
   entry: rootDir + '/' + pkg.module,
