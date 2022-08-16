@@ -204,6 +204,7 @@ export class StudyPrefetcher {
       'SeriesInstanceUID',
       image.imageId
     );
+    if (!study) return null;
     return study.getSeriesByUID(SeriesInstanceUID);
   }
 
@@ -219,6 +220,7 @@ export class StudyPrefetcher {
       'instance',
       image.imageId
     );
+    if (!series) return null;
     return series.getInstanceByUID(instanceMetadata.SOPInstanceUID);
   }
 
@@ -231,11 +233,11 @@ export class StudyPrefetcher {
   getDisplaySetByUID(displaySetInstanceUID) {
     let displaySet;
     this.studies.forEach(study => {
-      const ds = study.displaySets.find(
-        ds => ds.displaySetInstanceUID === displaySetInstanceUID
-      );
-      if (ds) {
-        displaySet = ds;
+      if (study !== undefined) {
+        const ds = study.displaySets.find(ds => ds.displaySetInstanceUID === displaySetInstanceUID);
+        if (ds) {
+          displaySet = ds;
+        }
       }
     });
     return displaySet;
@@ -282,6 +284,7 @@ export class StudyPrefetcher {
     }
 
     const study = this.getStudy(image);
+    if (study !== undefined) return;
     const series = this.getSeries(study, image);
     const instance = this.getInstance(series, image);
     const displaySets = study.displaySets;
@@ -471,11 +474,11 @@ export class StudyPrefetcher {
    */
   getImageIdsFromDisplaySets(displaySets) {
     let imageIds = [];
-
-    displaySets.forEach(displaySet => {
-      imageIds = imageIds.concat(this.getImageIdsFromDisplaySet(displaySet));
-    });
-
+    if (displaySets) {
+      displaySets.forEach(displaySet => {
+        imageIds = imageIds.concat(this.getImageIdsFromDisplaySet(displaySet));
+      });
+    }
     return imageIds;
   }
 

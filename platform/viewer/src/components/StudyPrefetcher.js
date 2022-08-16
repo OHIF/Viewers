@@ -39,7 +39,7 @@ const StudyPrefetcher = ({ studies, options }) => {
       const series = studyPrefetcher.getSeries(study, detail.image);
       const instance = studyPrefetcher.getInstance(series, detail.image);
 
-      if (study.displaySets && study.displaySets.length > 0) {
+      if (study && study.displaySets && study.displaySets.length > 0) {
         const {
           displaySetInstanceUID,
         } = studyPrefetcher.getDisplaySetBySOPInstanceUID(
