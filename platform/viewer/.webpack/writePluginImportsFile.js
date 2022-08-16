@@ -15,7 +15,7 @@ function constructLines(input, categoryName) {
 
   if (!input) return lines;
 
-  input.forEach((entry) => {
+  input.forEach(entry => {
     const packageName = entry.packageName;
 
     const defaultImportName = `${categoryName}${pluginCount}`;
@@ -36,7 +36,7 @@ function constructLines(input, categoryName) {
 function getFormattedImportBlock(importLines) {
   let content = '';
   // Imports
-  importLines.forEach((importLine) => {
+  importLines.forEach(importLine => {
     content += importLine;
   });
 
@@ -51,7 +51,7 @@ function getFormattedWindowBlock(addToWindowLines) {
     'window.extensions = extensions;\n' +
     'window.modes = modes;\n\n';
 
-  addToWindowLines.forEach((addToWindowLine) => {
+  addToWindowLines.forEach(addToWindowLine => {
     content += addToWindowLine;
   });
 
@@ -69,10 +69,15 @@ function getRuntimeLoadModesExtensions() {
   );
 }
 
-const createCopyPluginPublicToDist = (SRC_DIR, DIST_DIR, plugins) => {
+const createCopyPluginToDistForLink = (
+  SRC_DIR,
+  DIST_DIR,
+  plugins,
+  folderName
+) => {
   return plugins
-    .map((plugin) => {
-      const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/public/`;
+    .map(plugin => {
+      const from = `${SRC_DIR}/../node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
       return exists
         ? {
@@ -82,13 +87,18 @@ const createCopyPluginPublicToDist = (SRC_DIR, DIST_DIR, plugins) => {
           }
         : undefined;
     })
-    .filter((x) => !!x);
+    .filter(x => !!x);
 };
 
-const createCopyPluginDistToDist = (SRC_DIR, DIST_DIR, plugins) => {
+const createCopyPluginToDistForBuild = (
+  SRC_DIR,
+  DIST_DIR,
+  plugins,
+  folderName
+) => {
   return plugins
-    .map((plugin) => {
-      const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/dist/`;
+    .map(plugin => {
+      const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
       return exists
         ? {
@@ -98,7 +108,7 @@ const createCopyPluginDistToDist = (SRC_DIR, DIST_DIR, plugins) => {
           }
         : undefined;
     })
-    .filter((x) => !!x);
+    .filter(x => !!x);
 };
 
 function writePluginImportsFile(SRC_DIR, DIST_DIR) {
@@ -128,7 +138,7 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     `${SRC_DIR}/pluginImports.js`,
     pluginImportsJsContent,
     { flag: 'w+' },
-    (err) => {
+    err => {
       if (err) {
         console.error(err);
         return;
@@ -136,7 +146,11 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     }
   );
 
-  const copyPluginPublicToDist = createCopyPluginPublicToDist(
+  // Build packages using cli add-mode and add-extension
+  // will get added to the root node_modules, but the linked packages
+  // will be hosted at the viewer node_modules.
+
+  const copyPluginPublicToDistBuild = createCopyPluginToDistForBuild(
     SRC_DIR,
     DIST_DIR,
     [
@@ -144,16 +158,54 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
       ...pluginConfig.modes,
       ...pluginConfig.extensions,
       ...pluginConfig.umd,
-    ]
+    ],
+    'public'
   );
-  const copyPluginDistToDist = createCopyPluginDistToDist(SRC_DIR, DIST_DIR, [
-    ...pluginConfig.modesFactory,
-    ...pluginConfig.modes,
-    ...pluginConfig.extensions,
-    ...pluginConfig.umd,
-  ]);
 
-  return [...copyPluginPublicToDist, ...copyPluginDistToDist];
+  const copyPluginPublicToDistLink = createCopyPluginToDistForLink(
+    SRC_DIR,
+    DIST_DIR,
+    [
+      ...pluginConfig.modesFactory,
+      ...pluginConfig.modes,
+      ...pluginConfig.extensions,
+      ...pluginConfig.umd,
+    ],
+    'public'
+  );
+
+  // Temporary way to copy chunks from the dist folder so that the become
+  // available
+  const copyPluginDistToDistBuild = createCopyPluginToDistForBuild(
+    SRC_DIR,
+    DIST_DIR,
+    [
+      ...pluginConfig.modesFactory,
+      ...pluginConfig.modes,
+      ...pluginConfig.extensions,
+      ...pluginConfig.umd,
+    ],
+    'dist'
+  );
+
+  const copyPluginDistToDistLink = createCopyPluginToDistForLink(
+    SRC_DIR,
+    DIST_DIR,
+    [
+      ...pluginConfig.modesFactory,
+      ...pluginConfig.modes,
+      ...pluginConfig.extensions,
+      ...pluginConfig.umd,
+    ],
+    'dist'
+  );
+
+  return [
+    ...copyPluginPublicToDistBuild,
+    ...copyPluginPublicToDistLink,
+    ...copyPluginDistToDistBuild,
+    ...copyPluginDistToDistLink,
+  ];
 }
 
 module.exports = writePluginImportsFile;

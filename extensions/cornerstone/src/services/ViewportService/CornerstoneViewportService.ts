@@ -166,14 +166,12 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const {
-      viewportOptions,
-      displaySetOptions,
-    } = this._getViewportAndDisplaySetOptions(
-      publicViewportOptions,
-      publicDisplaySetOptions,
-      viewportInfo
-    );
+    const { viewportOptions, displaySetOptions } =
+      this._getViewportAndDisplaySetOptions(
+        publicViewportOptions,
+        publicDisplaySetOptions,
+        viewportInfo
+      );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -400,6 +398,7 @@ class CornerstoneViewportService implements IViewportService {
       volume.load();
     });
 
+    // This returns the async continuation only
     return this.setVolumesForViewport(viewport, volumeInputArray);
   }
 
@@ -416,9 +415,8 @@ class CornerstoneViewportService implements IViewportService {
     ) {
       const { index, preset } = initialImageOptions;
 
-      const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
-        viewport
-      );
+      const { numberOfSlices } =
+        csUtils.getImageSliceDataForVolumeViewport(viewport);
 
       const imageIndex = this._getInitialImageIndex(
         numberOfSlices,
@@ -434,6 +432,8 @@ class CornerstoneViewportService implements IViewportService {
     viewport.render();
   }
 
+  // Todo: keepCamera is an interim solution until we have a better solution for
+  // keeping the camera position when the viewport data is changed
   public updateViewport(viewportIndex, viewportData, keepCamera = false) {
     const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
 

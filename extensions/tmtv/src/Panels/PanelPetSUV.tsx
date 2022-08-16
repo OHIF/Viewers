@@ -24,11 +24,8 @@ const DEFAULT_MEATADATA = {
  */
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const {
-    DisplaySetService,
-    ToolGroupService,
-    ToolBarService,
-  } = servicesManager.services;
+  const { DisplaySetService, ToolGroupService, ToolBarService } =
+    servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -164,7 +161,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Patient Weight (KG)')}
+              label={t('Patient Weight (kg)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
@@ -195,7 +192,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Half Life (Seconds)')}
+              label={t('Half Life (s)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
