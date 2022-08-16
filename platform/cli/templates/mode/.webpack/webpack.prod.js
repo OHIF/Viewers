@@ -14,6 +14,7 @@ const config = {
     filename: outputFile,
     library: pkg.name,
     libraryTarget: 'umd',
+    chunkFilename: '[name].chunk.js',
     umdNamedDefine: true,
     globalObject: "typeof self !== 'undefined' ? self : this",
   },
