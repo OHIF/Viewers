@@ -347,4 +347,14 @@ export default [
       ],
     },
   },
+  {
+    id: '3DTools',
+    type: 'ohif.action',
+    props: {
+      icon: 'tool-cube',
+      label: 'MIP/MPR in development',
+      commandName: undefined,
+      disabled: true,
+    },
+  },
 ];
