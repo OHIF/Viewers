@@ -433,7 +433,7 @@ export default function ModeRoute({
 
     const setupRouteInit = async () => {
       if (route.init) {
-        await route.init({
+        return await route.init({
           servicesManager,
           extensionManager,
           hotkeysManager,
@@ -442,7 +442,7 @@ export default function ModeRoute({
         });
       }
 
-      await defaultRouteInit({
+      return await defaultRouteInit({
         servicesManager,
         extensionManager,
         hotkeysManager,
