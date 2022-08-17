@@ -1,24 +1,75 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, matchPath } from 'react-router';
-import { Route, Switch } from 'react-router-dom';
+import { Switch, Redirect, Route } from 'react-router-dom';
 import { NProgress } from '@tanem/react-nprogress';
 import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { ViewerbaseDragDropContext, ErrorBoundary, asyncComponent, retryImport } from '@ohif/ui';
+import {
+  ViewerbaseDragDropContext,
+  ErrorBoundary,
+  asyncComponent,
+  retryImport,
+} from '@ohif/ui';
 import { SignoutCallbackComponent } from 'redux-oidc';
 import * as RoutesUtil from './routes/routesUtil';
 
-import NotFound from './routes/NotFound.js';
-import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
 // Contexts
 import AppContext from './context/AppContext';
-const CallbackPage = asyncComponent(() =>
-  retryImport(() => import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js'))
+import { renderRoutes } from './routes';
+import LoginPage from './pages/login';
+import DashboardLayout from './layouts';
+import SamplePage from './pages/SamplePage';
+import AuthGuard from './guards/AuthGuard';
+// import UplouderPage from './pages/Uplouder';
+import GuestGuard from './guards/GuestGuard';
+import { setActiveStep } from '../../core/src/redux/actions';
+import { ApplicationSteps } from '../../core/src/redux/reducers/steps';
+
+const ViewerRouting = asyncComponent(() =>
+  retryImport(() =>
+    import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
+  )
 );
+// const RadionicRouting = asyncComponent(() =>
+//   retryImport(() =>
+//     import(
+//       /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsRouting.js'
+//     )
+//   )
+// );
+
+// const RadionicReportRouting = asyncComponent(() =>
+//   retryImport(() =>
+//     import(
+//       /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsReportRouting.js'
+//     )
+//   )
+// );
+
+const CallbackPage = asyncComponent(() =>
+  retryImport(() =>
+    import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js')
+  )
+);
+const StudyListRouting = asyncComponent(() =>
+  retryImport(() =>
+    import(
+      /* webpackChunkName: "StudyListRouting" */ './studylist/StudyListRouting.js'
+    )
+  )
+);
+
+// const NnunetPage = asyncComponent(() =>
+//   retryImport(() =>
+//     import(
+//       /* webpackChunkName: "StudyListRouting" */ './routes/ViewerRouting2.js'
+//     )
+//   )
+// );
 
 class OHIFStandaloneViewer extends Component {
   static contextType = AppContext;
@@ -47,178 +98,224 @@ class OHIFStandaloneViewer extends Component {
   }
 
   render() {
-    const { user, userManager } = this.props;
-    const { appConfig = {} } = this.context;
-    const userNotLoggedIn = userManager && (!user || user.expired);
-    if (userNotLoggedIn) {
-      const { pathname, search } = this.props.location;
+    const { userManager } = this.props;
 
-      if (pathname !== '/callback') {
-        sessionStorage.setItem(
-          'ohif-redirect-to',
-          JSON.stringify({ pathname, search })
-        );
-      }
-
-      return (
-        <Switch>
-          <Route
-            exact
-            path="/silent-refresh.html"
-            onEnter={RoutesUtil.reload}
-          />
-          <Route
-            exact
-            path="/logout-redirect"
-            render={() => (
-              <SignoutCallbackComponent
-                userManager={userManager}
-                successCallback={() => console.log('Signout successful')}
-                errorCallback={error => {
-                  console.warn(error);
-                  console.warn('Signout failed');
-                }}
-              />
-            )}
-          />
-          <Route
-            path="/callback"
-            render={() => <CallbackPage userManager={userManager} />}
-          />
-          <Route
-            path="/login"
-            component={() => {
-              const queryParams = new URLSearchParams(
-                this.props.location.search
-              );
-              const iss = queryParams.get('iss');
-              const loginHint = queryParams.get('login_hint');
-              const targetLinkUri = queryParams.get('target_link_uri');
-              const oidcAuthority =
-                appConfig.oidc !== null && appConfig.oidc[0].authority;
-              if (iss !== oidcAuthority) {
-                console.error(
-                  'iss of /login does not match the oidc authority'
-                );
-                return null;
-              }
-
-              userManager.removeUser().then(() => {
-                if (targetLinkUri !== null) {
-                  const ohifRedirectTo = {
-                    pathname: new URL(targetLinkUri).pathname,
-                  };
-                  sessionStorage.setItem(
-                    'ohif-redirect-to',
-                    JSON.stringify(ohifRedirectTo)
-                  );
-                } else {
-                  const ohifRedirectTo = {
-                    pathname: '/',
-                  };
-                  sessionStorage.setItem(
-                    'ohif-redirect-to',
-                    JSON.stringify(ohifRedirectTo)
-                  );
-                }
-
-                if (loginHint !== null) {
-                  userManager.signinRedirect({ login_hint: loginHint });
-                } else {
-                  userManager.signinRedirect();
-                }
-              });
-
-              return null;
-            }}
-          />
-          <Route
-            component={() => {
-              userManager.getUser().then(user => {
-                if (user) {
-                  userManager.signinSilent();
-                } else {
-                  userManager.signinRedirect();
-                }
-              });
-
-              return null;
-            }}
-          />
-        </Switch>
-      );
-    }
-
-    /**
-     * Note: this approach for routing is caused by the conflict between
-     * react-transition-group and react-router's <Switch> component.
-     *
-     * See http://reactcommunity.org/react-transition-group/with-react-router/
-     */
-    const routes = RoutesUtil.getRoutes(appConfig);
-
-    const currentPath = this.props.location.pathname;
-    const noMatchingRoutes = !routes.find(r =>
-      matchPath(currentPath, {
-        path: r.path,
+    const routes = [
+      {
         exact: true,
-      })
-    );
+        path: '/404',
+        component: SamplePage,
+      },
+      {
+        exact: true,
+        // guard: GuestGuard,
+        path: '/silent-refresh.html',
+        onEnter: () => {
+          RoutesUtil.reload();
+        },
+      },
+      {
+        exact: true,
+        // guard: GuestGuard,
+        path: '/logout-refresh.html',
+        onEnter: () => {
+          RoutesUtil.reload();
+        },
+      },
+      {
+        exact: true,
+        // guard: GuestGuard,
+        path: '/logout-redirect',
+        component: () => (
+          <SignoutCallbackComponent
+            userManager={userManager}
+            successCallback={() => console.log('Signout successful')}
+            errorCallback={error => {
+              console.warn(error);
+              console.warn('Signout failed');
+            }}
+          />
+        ),
+      },
+      {
+        exact: true,
+        guard: GuestGuard,
+        path: '/login',
+        component: () => <LoginPage />,
+      },
+      {
+        exact: true,
+        path: '/callback',
+        component: () => <CallbackPage userManager={userManager} />,
+      },
+      {
+        exact: true,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path: '/uplouder',
+        component: SamplePage,
+      },
 
-    return (
-      <>
-        <NProgress isAnimating={this.state.isLoading}>
-          {({ isFinished, progress, animationDuration }) => (
-            <Container
-              isFinished={isFinished}
-              animationDuration={animationDuration}
-            >
-              <Bar progress={progress} animationDuration={animationDuration} />
-            </Container>
-          )}
-        </NProgress>
-        <Route exact path="/silent-refresh.html" onEnter={RoutesUtil.reload} />
-        <Route exact path="/logout-redirect.html" onEnter={RoutesUtil.reload} />
-        {!noMatchingRoutes &&
-          routes.map(({ path, Component }) => (
-            <Route key={path} exact path={path}>
-              {({ match }) => (
-                <CSSTransition
-                  in={match !== null}
-                  timeout={300}
-                  classNames="fade"
-                  unmountOnExit
-                  onEnter={() => {
-                    this.setState({
-                      isLoading: true,
-                    });
-                  }}
-                  onEntered={() => {
-                    this.setState({
-                      isLoading: false,
-                    });
-                  }}
-                >
-                  {match === null ? (
-                    <></>
-                  ) : (
-                      <ErrorBoundary context={match.url}>
-                        <Component match={match} location={this.props.location} />
-                      </ErrorBoundary>
-                    )}
-                </CSSTransition>
-              )}
-            </Route>
-          ))}
-        {noMatchingRoutes && <NotFound />}
-      </>
-    );
+      // {
+      //   path: '/organ',
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   routes: [
+      //     {
+      //       exact: true,
+      //       path: '/organ/select',
+      //       component: SelectOrganPage,
+      //     },
+      //     {
+      //       exact: true,
+      //       path: '/organ/studylist',
+      //       component: SamplePage,
+      //     },
+      //     {
+      //       component: () => <Redirect to="/organ/select" />,
+      //     },
+      //   ],
+      // },
+      {
+        exact: true,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path: '/studylist',
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[1].step);
+        // },
+        component: StudyListRouting,
+      },
+      {
+        exact: false,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        onEnter: () => {
+          this.props.onStepChange(ApplicationSteps[1].step);
+        },
+        path:
+          '/studylist/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
+        component: StudyListRouting,
+      },
+
+      // {
+      //   exact: true,
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   path: '/segmentation',
+      //   component: SamplePage,
+      // },
+      // {
+      //   exact: true,
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   path: '/viewer',
+      //   component: StandaloneRouting,
+      // // },
+      // {
+      //   exact: true,
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   path: '/viewer/:studyInstanceUIDs',
+      //   component: ViewerRouting,
+      // },
+      // {
+      //   exact: true,
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   path: '/viewer/:studyInstanceUIDs',
+      //   component: ViewerRouting,
+      // },
+      {
+        exact: false,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path:
+          '/view/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[2].step);
+        // },
+        component: ViewerRouting,
+      },
+      {
+        exact: false,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path:
+          '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[4].step);
+        // },
+        component: ViewerRouting,
+      },
+      // {
+      //   exact: false,
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   path:
+      //     '/nnunet/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+      //   component: NnunetPage,
+      // },
+
+      // {
+      //   path: '/radionics',
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   routes: [
+      //     {
+      //       exact: false,
+      //       path:
+      //         '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+      //       component: RadionicReportRouting,
+      //     },
+      //     {
+      //       exact: false,
+      //       path:
+      //         '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+
+      //       component: RadionicRouting,
+      //     },
+      //   ],
+      // },
+
+      {
+        exact: true,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path: '/profile',
+        component: SamplePage,
+      },
+      {
+        path: '*',
+        layout: DashboardLayout,
+        routes: [
+          {
+            exact: true,
+            path: '/',
+            component: () => <Redirect to="/studylist" />,
+          },
+          // {
+          //   component: () => <Redirect to="/404" />,
+          // },
+        ],
+      },
+    ];
+
+    return <div className="App">{renderRoutes(routes)}</div>;
   }
 }
 
 const mapStateToProps = state => {
   return {
     user: state.oidc.user,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onStepChange: step => {
+      dispatch(setActiveStep(step));
+    },
   };
 };
 

@@ -25,7 +25,17 @@ class CallbackPage extends Component {
           throw new Error(error);
         }}
       >
-        <div>Redirecting...</div>
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <p style={{ color: 'white' }}>Redirecting...</p>
+        </div>
       </CallbackComponent>
     );
   }
