@@ -55,6 +55,10 @@ const variantClasses = {
     black:
       'bg-black text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
+  disabled: {
+    default:
+      'text-white active:opacity-80 focus:bg-primary-light focus:text-black',
+  },
 };
 
 const sizeClasses = {

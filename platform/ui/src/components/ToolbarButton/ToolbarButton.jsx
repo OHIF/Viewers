@@ -17,6 +17,7 @@ const ToolbarButton = ({
   isActive: _isActive,
   bState = {},
   //
+  disabled,
 }) => {
   const { primaryToolId } = bState;
   const isActive = _isActive || (type === 'tool' && id === primaryToolId);
@@ -33,6 +34,7 @@ const ToolbarButton = ({
 
   const activeClass = isActive ? 'active' : '';
   const shouldShowDropdown = !!isActive && !!dropdownContent;
+  const variant = disabled ? 'disabled' : isActive ? 'contained' : 'text';
 
   return (
     <div key={id}>
@@ -42,7 +44,7 @@ const ToolbarButton = ({
         tight={shouldShowDropdown}
       >
         <IconButton
-          variant={isActive ? 'contained' : 'text'}
+          variant={variant}
           size="toolbar"
           className={classnames('mx-1', activeClass, classes.type[type])}
           onClick={() => {
@@ -56,6 +58,7 @@ const ToolbarButton = ({
           name={label}
           key={id}
           id={id}
+          disabled={disabled}
         >
           <Icon name={icon} />
         </IconButton>
@@ -68,6 +71,7 @@ ToolbarButton.defaultProps = {
   dropdownContent: null,
   isActive: false,
   type: 'action',
+  disabled: false,
 };
 
 ToolbarButton.propTypes = {
