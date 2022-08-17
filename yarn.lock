@@ -2350,7 +2350,7 @@
     "@cornerstonejs/core" "^0.14.4"
     cornerstone-wado-image-loader "^4.2.1"
 
-"@cornerstonejs/tools@^0.21.3", "@cornerstonejs/tools@^0.21.7":
+"@cornerstonejs/tools@^0.21.3", "@cornerstonejs/tools@^0.21.4", "@cornerstonejs/tools@^0.21.7":
   version "0.21.7"
   resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.21.7.tgz#9243a2f0b400cb869bc8c62e4377634a787aac6d"
   integrity sha512-2alQr2JkaUiPyBi9aipeo/quKoo5Xwr/fABiO6ce9Ur0DQpp9WZ2jZWtC/xtC36QvrXIDAruEEq5WNV4ZASPJQ==
@@ -4532,6 +4532,16 @@
     moment "^2.29.3"
     query-string "^7.1.1"
 
+"@radicalimaging/hp-extension@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@radicalimaging/hp-extension/-/hp-extension-3.3.1.tgz#3ed12d42f878e600caa5fc9eaa1e5ca6b91b5af6"
+  integrity sha512-qYuzf9zg4GfcmU2gztTYNQ4PFumpTSkpUQ2smn0d0pyAmt+eXoRI5mqp2n4eYbRiTAfDKazaDfwxpOi+vQSDKQ==
+  dependencies:
+    "@babel/runtime" "7.7.6"
+    "@cornerstonejs/tools" "^0.21.4"
+    config-point "^0.4.8"
+    lodash "^4.17.21"
+
 "@radicalimaging/hp-mode@^3.3.2":
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/@radicalimaging/hp-mode/-/hp-mode-3.3.2.tgz#6f8a07fd204e0c20008994436158e26d67999834"
@@ -4548,12 +4558,13 @@
   dependencies:
     "@babel/runtime" "7.7.6"
 
-"@radicalimaging/volume-mode@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@radicalimaging/volume-mode/-/volume-mode-3.3.0.tgz#e3b22cd654dec7b54eed51577eaed6b1755b311e"
-  integrity sha512-5NBBbLrum4OfpOmT3ZlG1u8b/TRZOJFEdB/B9g8etWqtPpxJjx5IbaNMnFeoqk9SoQ3D/MCHU3AYEzopLLLWZA==
+"@radicalimaging/volume-mode@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@radicalimaging/volume-mode/-/volume-mode-3.3.1.tgz#93d82bc89707c68c65f91473861a6519ce8dd0fd"
+  integrity sha512-89NR4HedE5pi3N2HNrOFbCXUHW2vg19hEAlyF2LtcbJfOYyvjcf2yjp1QFxdVjI9N49a86Fb7vvUtFL+piV7/w==
   dependencies:
     "@babel/runtime" "7.7.6"
+    "@radicalimaging/config-mode" "^3.3.0"
     config-point "^0.4.8"
 
 "@reach/router@^1.3.4":
