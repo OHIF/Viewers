@@ -18,7 +18,7 @@ import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import { withAppContext } from '../context/AppContext';
 
-class ToolbarRow extends Component {
+class RadiomicsToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
   // closed if selected is null/undefined
   static propTypes = {
@@ -80,10 +80,6 @@ class ToolbarRow extends Component {
     panelModules.forEach(panelExtension => {
       const panelModule = panelExtension.module;
       const defaultContexts = Array.from(panelModule.defaultContext);
-      const buttonsToRemove = [
-        'lung-module-similarity-panel',
-        'theta-details-panel',
-      ];
 
       panelModule.menuOptions.forEach(menuOption => {
         const contexts = Array.from(menuOption.context || defaultContexts);
@@ -104,8 +100,8 @@ class ToolbarRow extends Component {
             bottomLabel: menuOption.label,
           };
           const from = menuOption.from || 'right';
-          if (!buttonsToRemove.includes(menuOptionEntry.value))
-            this.buttonGroups[from].push(menuOptionEntry);
+
+          this.buttonGroups[from].push(menuOptionEntry);
         }
       });
     });
@@ -204,9 +200,9 @@ class ToolbarRow extends Component {
   };
 
   removeToolBarButton = buttons => {
-    const buttonsToRemove = ['brushTools'];
+    const buttonsToRemove = ['AiTrigger'];
     // remove from button where key is in buttonsToRemove
-    buttons = buttons.filter(button => !buttonsToRemove.includes(button.key));
+    buttons = buttons.filter(button => buttonsToRemove.includes(button.key));
     return buttons;
   };
 
@@ -216,42 +212,19 @@ class ToolbarRow extends Component {
       this.state.toolbarButtons,
       this.state.activeButtons
     );
-    const { inEditSegmentationMode } = this.props;
     const onPress = (side, value) => {
       this.props.handleSidePanelChange(side, value);
     };
     const onPressLeft = onPress.bind(this, 'left');
     const onPressRight = onPress.bind(this, 'right');
 
-    if (!inEditSegmentationMode && buttonComponents.length > 0)
-      buttonComponents = this.removeToolBarButton(buttonComponents);
-    // buttonComponents = this.removeToolBarButton(buttonComponents);
+    buttonComponents = this.removeToolBarButton(buttonComponents);
 
     return (
       <>
         <div className="ToolbarRow">
-          <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
-            <RoundedButtonGroup
-              options={this.buttonGroups.left}
-              value={this.props.selectedLeftSidePanel || ''}
-              onValueChanged={onPressLeft}
-            />
-          </div>
           {buttonComponents}
           <ConnectedLayoutButton />
-          <div
-            className="pull-right m-t-1 rm-x-1"
-            style={{ marginLeft: 'auto' }}
-          >
-            {/* {this.buttonGroups.right.length && ( */}
-            {inEditSegmentationMode && this.buttonGroups.right.length && (
-              <RoundedButtonGroup
-                options={this.buttonGroups.right}
-                value={this.props.selectedRightSidePanel || ''}
-                onValueChanged={onPressRight}
-              />
-            )}
-          </div>
         </div>
       </>
     );
@@ -434,5 +407,5 @@ function _handleBuiltIn(button) {
 }
 
 export default withTranslation(['Common', 'ViewportDownloadForm'])(
-  withModal(withDialog(withAppContext(ToolbarRow)))
+  withModal(withDialog(withAppContext(RadiomicsToolbarRow)))
 );

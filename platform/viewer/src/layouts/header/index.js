@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, matchPath, Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Icon } from '@ohif/ui';
 
 import StepItem from './StepItem';
 import { ApplicationSteps } from '../../../../core/src/redux/reducers/steps';
@@ -89,38 +90,16 @@ const Header = ({ onMobileClose, openMobile }) => {
             fontweight: '400',
             marginLeft: '45px',
             fontSize: '28px',
+            display: 'flex',
+            flexDirection: 'row',
           }}
         >
-          ThetaTech
+          <Icon name="ohif-logo" className="header-logo-image" />
+          <h4>ThetaTech</h4>
         </div>
       </div>
 
       <div className="portal__header">{content}</div>
-      {/* <div
-        style={
-          {
-            // flex: 1,
-          }
-        }
-      >
-        <div>
-          <div>
-            <RouterLink to="/uplouder">
-              <div
-                style={{
-                  borderRadius: '20px',
-                  marginRight: '45px',
-                  padding: '10px 20px',
-                  background: '#ffffff1a',
-                  color: 'white',
-                }}
-              >
-                Import files
-              </div>
-            </RouterLink>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };

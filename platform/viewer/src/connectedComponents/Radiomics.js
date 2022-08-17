@@ -1,30 +1,155 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useLogger } from '@ohif/ui';
+import './Radiomics.css';
 import { withRouter, matchPath } from 'react-router';
+import cornerstoneTools from 'cornerstone-tools';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
-import ConnectedHeader from './ConnectedHeader.js';
-import ToolbarRow from './ToolbarRow.js';
-import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
-import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
 
 import './Viewer.css';
-import { finished } from 'stream';
-import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextUtil from './JobsContextUtil.js';
-class Viewer extends Component {
+import ToolbarRow from './RadiomicsToolbarRow';
+import SidePanel from '../components/SidePanel';
+import ConnectedStudyBrowser from './ConnectedStudyBrowser';
+import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
+
+const RadiomicSummary = () => {
+  return (
+    <div
+      style={{
+        width: '100%',
+        background: '#ffffff0d',
+        padding: '20px',
+      }}
+    >
+      <div
+        style={{
+          paddingBottom: '40px',
+        }}
+      >
+        <h1
+          style={{
+            textAlign: 'left',
+            margin: 0,
+          }}
+        >
+          RadCard Report Summary
+        </h1>
+      </div>
+
+      <div
+        style={{
+          height: '100%',
+          flex: 1,
+        }}
+      >
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2 className="cad">Patient ID : </h2>
+          <h2>abc123 </h2>
+        </div>
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2 className="cad">Classifier: </h2>
+          <h2>Resnet-18 </h2>
+        </div>
+
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2 className="cad">Prediction: </h2>
+          <h2>Necrosis</h2>
+        </div>
+
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2 className="cad">Confidence: </h2>
+          <h2>81%</h2>
+        </div>
+
+        <div className="" style={{}}>
+          <button
+            style={{
+              marginTop: '20px',
+              border: '1px yellow solid',
+              fontSize: '24px',
+              background: 'black',
+              color: 'white',
+              padding: '12px',
+            }}
+          >
+            Print To PDF
+          </button>
+        </div>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+        }}
+      ></div>
+    </div>
+  );
+};
+
+const Morphology = () => {
+  return (
+    <div
+      className=""
+      style={{
+        width: '100%',
+        height: '100%',
+        padding: '20px',
+        background: '#ffffff0d',
+      }}
+    >
+      <div className="">
+        <h1
+          style={{
+            textAlign: 'left',
+            margin: 0,
+          }}
+        >
+          3D Morphology{' '}
+        </h1>
+      </div>
+    </div>
+  );
+};
+class Radiomics extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
       PropTypes.shape({
@@ -94,19 +219,54 @@ class Viewer extends Component {
 
   state = {
     loading: true,
-    inEditSegmentationMode: false,
-    isLeftSidePanelOpen: true,
-    selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
+    isLeftSidePanelOpen: false,
+    selectedLeftSidePanel: '', // TODO: Don't hardcode this
     isRightSidePanelOpen: false,
     selectedRightSidePanel: '',
+    selectedExtraPanel: '',
     // selectedRightSidePanel: 'xnat-segmentation-panel',
     thumbnails: [],
+    isEditSelection: true,
+  };
+
+  onCornerstageLoaded = event => {
+    setTimeout(() => {
+      // const { EVENTS } = cornerstoneTools;
+      // const view_ports = cornerstone.getEnabledElements();
+      // const viewports = view_ports[0];
+
+      // const element = getEnabledElement(view_ports.indexOf(viewports));
+      // if (element) {
+      //   element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
+      //     console.log('measurement completed', event);
+      //   });
+      // }
+
+      this.handleSidePanelChange('right', 'theta-details-panel');
+      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
+      this.triggerReload();
+    }, 5000);
   };
 
   componentWillUnmount() {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
+    // const { EVENTS } = cornerstoneTools;
+    // const view_ports = cornerstone.getEnabledElements();
+    // const viewports = view_ports[0];
+
+    // const element = getEnabledElement(view_ports.indexOf(viewports));
+    // if (element) {
+    //   element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
+    //     console.log('measurement completed', event);
+    //   });
+    // }
+
+    cornerstone.events.removeEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
   }
 
   retrieveTimepoints = filter => {
@@ -218,27 +378,10 @@ class Viewer extends Component {
       });
     }
 
-    const location = this.props.location;
-
-    const inEditSegmentationMode = matchPath(location.pathname, {
-      path:
-        '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      exact: true,
-    });
-
-    this.setState({
-      inEditSegmentationMode: inEditSegmentationMode ? true : false,
-    });
-
-    if (inEditSegmentationMode)
-      cornerstone.events.addEventListener(
-        cornerstone.EVENTS.ELEMENT_ENABLED,
-        event => {
-          setTimeout(() => {
-            this.handleSidePanelChange('right', 'xnat-segmentation-panel');
-          }, 2000);
-        }
-      );
+    cornerstone.events.addEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
@@ -267,6 +410,26 @@ class Viewer extends Component {
       series: fetchedSeries,
     });
   }
+
+  triggerReload() {
+    setTimeout(() => {
+      document.getElementById('trigger').click();
+    }, 2000);
+    // if (window && window.parent) {
+    //   window.parent.postMessage(
+    //     {
+    //       action: 'triggerExternalReload',
+    //     },
+    //     '*'
+    //   );
+    // }
+  }
+
+  handleBack = () => {
+    const location = this.props.location;
+    const pathname = location.pathname.replace('radionics/report', 'radionics');
+    this.props.history.push(pathname);
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const {
@@ -338,38 +501,6 @@ class Viewer extends Component {
     this.setState(updatedState);
   };
 
-  handleGoBack = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('edit', 'view');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-
-  handleGoRadionics = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('edit', 'radionics');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-  handleGoEdit = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('view', 'edit');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-
   render() {
     if (this.state.loading) {
       return (
@@ -387,15 +518,15 @@ class Viewer extends Component {
       );
     }
 
-    let VisiblePanelLeft, VisiblePanelRight;
+    let SimilarScans, CollageView, extraPanel;
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
     panelExtensions.forEach(panelExt => {
       panelExt.module.components.forEach(comp => {
         if (comp.id === this.state.selectedRightSidePanel) {
-          VisiblePanelRight = comp.component;
+          CollageView = comp.component;
         } else if (comp.id === this.state.selectedLeftSidePanel) {
-          VisiblePanelLeft = comp.component;
+          SimilarScans = comp.component;
         }
       });
     });
@@ -413,91 +544,146 @@ class Viewer extends Component {
           instance={text}
         />
 
-        {/* TOOLBAR */}
-        <ErrorBoundaryDialog context="ToolbarRow">
-          <ToolbarRow
-            activeViewport={
-              this.props.viewports[this.props.activeViewportIndex]
-            }
-            inEditSegmentationMode={this.state.inEditSegmentationMode}
-            isDerivedDisplaySetsLoaded={this.props.isDerivedDisplaySetsLoaded}
-            isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-            isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-            selectedLeftSidePanel={
-              this.state.isLeftSidePanelOpen
-                ? this.state.selectedLeftSidePanel
-                : ''
-            }
-            selectedRightSidePanel={
-              this.state.isRightSidePanelOpen
-                ? this.state.selectedRightSidePanel
-                : ''
-            }
-            handleSidePanelChange={this.handleSidePanelChange}
-            studies={this.props.studies}
-          />
-        </ErrorBoundaryDialog>
+        <div
+          style={{
+            paddingBottom: 140,
+          }}
+        >
+          <div className="container">
+            <div className="container-item">
+              <button className="btn btn-danger" onClick={this.handleBack}>
+                Edit Mask Selection
+              </button>
+            </div>
+          </div>
+          <div className="container">
+            <div className="container-item">
+              <RadiomicSummary />
+            </div>
+            <div className="container-item-extra">
+              {/* VIEWPORTS + SIDEPANELS */}
+              <div
+                style={{
+                  width: '100%',
+                  background: '#ffffff0d',
+                  padding: '20px',
+                }}
+              >
+                <div>
+                  <h1
+                    style={{
+                      textAlign: 'left',
+                      margin: 0,
+                    }}
+                  >
+                    Collage
+                  </h1>
+                </div>
+
+                {/* MAIN */}
+                <div className="container">
+                  <div className="container-item-extra">
+                    <div className={classNames('main-content')}>
+                      <ErrorBoundaryDialog context="ViewerMain">
+                        <ConnectedViewerMain
+                          studies={_removeUnwantedSeries(
+                            this.props.studies,
+                            this.source_series_ref
+                          )}
+                          isStudyLoaded={this.props.isStudyLoaded}
+                        />
+                      </ErrorBoundaryDialog>
+
+                      <div></div>
+                    </div>
+                  </div>
+
+                  <div className="container-item">
+                    <ErrorBoundaryDialog context="RightSidePanel">
+                      <div>
+                        {CollageView && (
+                          <CollageView
+                            isOpen={true}
+                            viewports={this.props.viewports}
+                            studies={this.props.studies}
+                            activeIndex={this.props.activeViewportIndex}
+                            activeViewport={
+                              this.props.viewports[
+                                this.props.activeViewportIndex
+                              ]
+                            }
+                            getActiveViewport={this._getActiveViewport}
+                          />
+                        )}
+                      </div>
+                    </ErrorBoundaryDialog>{' '}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="container">
+            <div className="container-item">
+              {/* RIGHT */}
+              <div
+                style={{
+                  width: '100%',
+                  background: '#ffffff0d',
+                  padding: '20px',
+                }}
+              >
+                <div>
+                  <h1
+                    style={{
+                      textAlign: 'left',
+                      margin: 0,
+                    }}
+                  >
+                    Similarity Looking Scans
+                  </h1>
+
+                  {/* <button
+                    className="btn btn-primary"
+                    onClick={() => document.getElementById('trigger').click()}
+                  >
+                    reload
+                  </button> */}
+                </div>
+
+                <ErrorBoundaryDialog context="RightSidePanel">
+                  <div>
+                    {SimilarScans && (
+                      <SimilarScans
+                        isOpen={true}
+                        viewports={this.props.viewports}
+                        studies={this.props.studies}
+                        activeIndex={this.props.activeViewportIndex}
+                        activeViewport={
+                          this.props.viewports[this.props.activeViewportIndex]
+                        }
+                        getActiveViewport={this._getActiveViewport}
+                      />
+                    )}
+                  </div>
+                </ErrorBoundaryDialog>
+              </div>
+            </div>
+            <div className="container-item">
+              <Morphology />
+            </div>
+          </div>
+        </div>
 
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
 
         {/* VIEWPORTS + SIDEPANELS */}
-        <div className="FlexboxLayout">
-          {/* LEFT */}
-          <ErrorBoundaryDialog context="LeftSidePanel">
-            <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-              {VisiblePanelLeft ? (
-                <VisiblePanelLeft
-                  viewports={this.props.viewports}
-                  studies={this.props.studies}
-                  activeIndex={this.props.activeViewportIndex}
-                />
-              ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
-            </SidePanel>
-          </ErrorBoundaryDialog>
-
-          {/* MAIN */}
-          <div className={classNames('main-content')}>
-            <ErrorBoundaryDialog context="ViewerMain">
-              <ConnectedViewerMain
-                studies={_removeUnwantedSeries(
-                  this.props.studies,
-                  this.source_series_ref
-                )}
-                isStudyLoaded={this.props.isStudyLoaded}
-              />
-            </ErrorBoundaryDialog>
-          </div>
-
-          {/* RIGHT */}
-          <ErrorBoundaryDialog context="RightSidePanel">
-            <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
-              {VisiblePanelRight && (
-                <VisiblePanelRight
-                  isOpen={this.state.isRightSidePanelOpen}
-                  viewports={this.props.viewports}
-                  studies={this.props.studies}
-                  activeIndex={this.props.activeViewportIndex}
-                  activeViewport={
-                    this.props.viewports[this.props.activeViewportIndex]
-                  }
-                  getActiveViewport={this._getActiveViewport}
-                />
-              )}
-            </SidePanel>
-          </ErrorBoundaryDialog>
-        </div>
+        <div className="FlexboxLayout">{/* LEFT */}</div>
       </>
     );
   }
 }
-
-export default withRouter(withDialog(Viewer));
+export default withRouter(withDialog(Radiomics));
 
 /**
  * Async function to check if there are any inconsistences in the series.

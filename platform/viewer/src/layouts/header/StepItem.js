@@ -6,17 +6,10 @@ const StepItem = ({ className, href, open: openProp, title, ...rest }) => {
   return (
     <div
       className={classNames('steps', {
-        active: open,
+        active: openProp,
       })}
     >
-      <div
-        className="title"
-        style={{
-          color: '#fff',
-        }}
-      >
-        {title}
-      </div>
+      <div className="title">{title}</div>
     </div>
   );
 };

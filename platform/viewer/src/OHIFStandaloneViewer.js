@@ -34,21 +34,21 @@ const ViewerRouting = asyncComponent(() =>
     import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
   )
 );
-// const RadionicRouting = asyncComponent(() =>
-//   retryImport(() =>
-//     import(
-//       /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsRouting.js'
-//     )
-//   )
-// );
+const RadionicRouting = asyncComponent(() =>
+  retryImport(() =>
+    import(
+      /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsRouting.js'
+    )
+  )
+);
 
-// const RadionicReportRouting = asyncComponent(() =>
-//   retryImport(() =>
-//     import(
-//       /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsReportRouting.js'
-//     )
-//   )
-// );
+const RadionicReportRouting = asyncComponent(() =>
+  retryImport(() =>
+    import(
+      /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsReportRouting.js'
+    )
+  )
+);
 
 const CallbackPage = asyncComponent(() =>
   retryImport(() =>
@@ -63,13 +63,13 @@ const StudyListRouting = asyncComponent(() =>
   )
 );
 
-// const NnunetPage = asyncComponent(() =>
-//   retryImport(() =>
-//     import(
-//       /* webpackChunkName: "StudyListRouting" */ './routes/ViewerRouting2.js'
-//     )
-//   )
-// );
+const NnunetPage = asyncComponent(() =>
+  retryImport(() =>
+    import(
+      /* webpackChunkName: "StudyListRouting" */ './routes/ViewerRouting2.js'
+    )
+  )
+);
 
 class OHIFStandaloneViewer extends Component {
   static contextType = AppContext;
@@ -190,9 +190,9 @@ class OHIFStandaloneViewer extends Component {
         exact: false,
         guard: AuthGuard,
         layout: DashboardLayout,
-        onEnter: () => {
-          this.props.onStepChange(ApplicationSteps[1].step);
-        },
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[1].step);
+        // },
         path:
           '/studylist/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
         component: StudyListRouting,
@@ -248,35 +248,35 @@ class OHIFStandaloneViewer extends Component {
         // },
         component: ViewerRouting,
       },
-      // {
-      //   exact: false,
-      //   guard: AuthGuard,
-      //   layout: DashboardLayout,
-      //   path:
-      //     '/nnunet/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      //   component: NnunetPage,
-      // },
+      {
+        exact: false,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path:
+          '/nnunet/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        component: NnunetPage,
+      },
 
-      // {
-      //   path: '/radionics',
-      //   guard: AuthGuard,
-      //   layout: DashboardLayout,
-      //   routes: [
-      //     {
-      //       exact: false,
-      //       path:
-      //         '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      //       component: RadionicReportRouting,
-      //     },
-      //     {
-      //       exact: false,
-      //       path:
-      //         '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+      {
+        path: '/radionics',
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        routes: [
+          {
+            exact: false,
+            path:
+              '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+            component: RadionicReportRouting,
+          },
+          {
+            exact: false,
+            path:
+              '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
 
-      //       component: RadionicRouting,
-      //     },
-      //   ],
-      // },
+            component: RadionicRouting,
+          },
+        ],
+      },
 
       {
         exact: true,
@@ -321,7 +321,7 @@ const mapDispatchToProps = dispatch => {
 
 const ConnectedOHIFStandaloneViewer = connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(OHIFStandaloneViewer);
 
 export default ViewerbaseDragDropContext(

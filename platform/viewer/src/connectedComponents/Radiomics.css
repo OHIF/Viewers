@@ -1,0 +1,28 @@
+#viewer {
+  background-color: black;
+  width: 80%;
+  padding-top: 120px;
+}
+
+.loadingTextDiv {
+  color: var(--text-secondary-color);
+  font-size: 30px;
+}
+
+/* Pattern styles */
+.container {
+  display: flex;
+  /* background-color: #ff9e2c; */
+}
+
+.container-item {
+  flex: 1;
+  padding: 1rem;
+  background-color: black;
+}
+
+.container-item-extra {
+  flex: 2;
+  padding: 1rem;
+  background-color: black;
+}

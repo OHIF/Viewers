@@ -1,0 +1,142 @@
+/* Viewer Route */
+.entry-header {
+  padding: 10px 15px;
+  height: var(--top-bar-height);
+}
+
+.header-left-box {
+  display: inline-block;
+  position: relative;
+}
+
+.header-brand {
+  text-decoration: none;
+  height: 30px;
+  float: left;
+  clear: both;
+}
+
+/* Home Page */
+.entry-header.header-big {
+  background: rgba(21, 25, 30, 0.7);
+  padding: 35px var(--study-list-padding);
+  height: auto;
+  display: inline-block;
+  width: 100%;
+}
+
+.entry-header.header-big .header-brand {
+  height: 50px;
+  padding: 0;
+}
+
+.entry-header.header-big .header-logo-image {
+  margin-right: 20px;
+  width: 50px;
+  height: 50px;
+}
+
+.entry-header.header-big .header-logo-text {
+  width: 474px;
+  height: auto;
+}
+
+/** OTHER STYLES **/
+
+.dd-item {
+  width: 100%;
+}
+
+.header-viewerLink {
+  float: left;
+}
+
+.header-logo-image {
+  fill: transparent;
+  height: 100%;
+  margin: 0 8px 0 0;
+  width: 30px;
+  float: left;
+}
+
+.header-btn {
+  color: var(--text-secondary-color);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.header-btn:hover {
+  color: var(--hover-color);
+}
+
+.header-btn:active {
+  color: var(--active-color);
+}
+
+.header-studyListLinkSection {
+  border-left: var(--ui-border-thickness) solid var(--ui-border-color);
+  margin: 3px 0 0 10px;
+  padding: 0 0 0 10px;
+  display: inline-block;
+}
+
+.header-menu {
+  color: var(--text-primary-color);
+  float: right;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.entry-header.header-big .header-menu {
+  margin-right: 0;
+}
+
+.header-menu .research-use {
+  float: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: #91b9cd;
+  margin-right: 1rem;
+}
+
+.notification-bar {
+  display: none;
+  position: absolute;
+  height: 20px;
+  line-height: 20px;
+  width: 100%;
+  background-color: #91b9cd;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+}
+
+@media only screen and (max-width: 768px) {
+  .entry-header,
+  .entry-header.header-big {
+    padding: 30px 15px 10px 15px;
+  }
+  .entry-header.header-big .header-logo-image {
+    margin: 0 10px 0 0;
+    width: 25px;
+    height: 25px;
+  }
+
+  .entry-header.header-big .header-logo-text {
+    width: 40%;
+  }
+
+  /* Toggle Notification Bar */
+  .notification-bar {
+    display: block;
+  }
+  .header-menu .research-use {
+    display: none;
+  }
+}

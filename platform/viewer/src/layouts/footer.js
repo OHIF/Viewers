@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router';
-import Logo from '../components/logo';
+// import Logo from '../components/Logo/logo';
 
 export const Footer = () => {
   const user = useSelector(state => state.oidc.user);
@@ -30,7 +30,7 @@ export const Footer = () => {
     else if (activeStep === 4)
       pathname = location.pathname.replace('edit', 'view');
     else if (activeStep === 5)
-      pathname = location.pathname.replace('radionics', 'edit');
+      pathname = location.pathname.replace('radionics/report', 'edit');
     history.push(pathname);
   };
 

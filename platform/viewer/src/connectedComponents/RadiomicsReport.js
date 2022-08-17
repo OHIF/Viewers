@@ -1,30 +1,28 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useLogger } from '@ohif/ui';
+import './Radiomics.css';
 import { withRouter, matchPath } from 'react-router';
+import cornerstoneTools from 'cornerstone-tools';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
-import ConnectedHeader from './ConnectedHeader.js';
-import ToolbarRow from './ToolbarRow.js';
-import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
-import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
 
 import './Viewer.css';
-import { finished } from 'stream';
-import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextUtil from './JobsContextUtil.js';
-class Viewer extends Component {
+import ToolbarRow from './RadiomicsToolbarRow';
+import SidePanel from '../components/SidePanel';
+import ConnectedStudyBrowser from './ConnectedStudyBrowser';
+
+class RadiomicsReport extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
       PropTypes.shape({
@@ -94,19 +92,53 @@ class Viewer extends Component {
 
   state = {
     loading: true,
-    inEditSegmentationMode: false,
-    isLeftSidePanelOpen: true,
-    selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
+    isLeftSidePanelOpen: false,
+    selectedLeftSidePanel: '', // TODO: Don't hardcode this
     isRightSidePanelOpen: false,
     selectedRightSidePanel: '',
     // selectedRightSidePanel: 'xnat-segmentation-panel',
     thumbnails: [],
+    isEditSelection: false,
+  };
+
+  onCornerstageLoaded = event => {
+    setTimeout(() => {
+      // const { EVENTS } = cornerstoneTools;
+      // const view_ports = cornerstone.getEnabledElements();
+      // const viewports = view_ports[0];
+
+      // const element = getEnabledElement(view_ports.indexOf(viewports));
+      // if (element) {
+      //   element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
+      //     console.log('measurement completed', event);
+      //   });
+      // }
+      console.log('event', event);
+
+      this.handleSidePanelChange('right', 'lung-module-similarity-panel');
+      // this.handleSidePanelChange('left', 'theta-details-panel');
+    }, 5000);
   };
 
   componentWillUnmount() {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
+    // const { EVENTS } = cornerstoneTools;
+    // const view_ports = cornerstone.getEnabledElements();
+    // const viewports = view_ports[0];
+
+    // const element = getEnabledElement(view_ports.indexOf(viewports));
+    // if (element) {
+    //   element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
+    //     console.log('measurement completed', event);
+    //   });
+    // }
+
+    cornerstone.events.removeEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
   }
 
   retrieveTimepoints = filter => {
@@ -218,27 +250,10 @@ class Viewer extends Component {
       });
     }
 
-    const location = this.props.location;
-
-    const inEditSegmentationMode = matchPath(location.pathname, {
-      path:
-        '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      exact: true,
-    });
-
-    this.setState({
-      inEditSegmentationMode: inEditSegmentationMode ? true : false,
-    });
-
-    if (inEditSegmentationMode)
-      cornerstone.events.addEventListener(
-        cornerstone.EVENTS.ELEMENT_ENABLED,
-        event => {
-          setTimeout(() => {
-            this.handleSidePanelChange('right', 'xnat-segmentation-panel');
-          }, 2000);
-        }
-      );
+    cornerstone.events.addEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
@@ -267,6 +282,26 @@ class Viewer extends Component {
       series: fetchedSeries,
     });
   }
+
+  triggerReload() {
+    setTimeout(() => {
+      document.getElementById('trigger').click();
+    }, 2000);
+    // if (window && window.parent) {
+    //   window.parent.postMessage(
+    //     {
+    //       action: 'triggerExternalReload',
+    //     },
+    //     '*'
+    //   );
+    // }
+  }
+
+  handleGoRadionics = () => {
+    const location = this.props.location;
+    const pathname = location.pathname.replace('radionics', 'radionics/report');
+    this.props.history.push(pathname);
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const {
@@ -338,38 +373,6 @@ class Viewer extends Component {
     this.setState(updatedState);
   };
 
-  handleGoBack = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('edit', 'view');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-
-  handleGoRadionics = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('edit', 'radionics');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-  handleGoEdit = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('view', 'edit');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-
   render() {
     if (this.state.loading) {
       return (
@@ -412,31 +415,85 @@ class Viewer extends Component {
           overlay={false}
           instance={text}
         />
+        {/* layout */}
 
-        {/* TOOLBAR */}
-        <ErrorBoundaryDialog context="ToolbarRow">
-          <ToolbarRow
-            activeViewport={
-              this.props.viewports[this.props.activeViewportIndex]
-            }
-            inEditSegmentationMode={this.state.inEditSegmentationMode}
-            isDerivedDisplaySetsLoaded={this.props.isDerivedDisplaySetsLoaded}
-            isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-            isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-            selectedLeftSidePanel={
-              this.state.isLeftSidePanelOpen
-                ? this.state.selectedLeftSidePanel
-                : ''
-            }
-            selectedRightSidePanel={
-              this.state.isRightSidePanelOpen
-                ? this.state.selectedRightSidePanel
-                : ''
-            }
-            handleSidePanelChange={this.handleSidePanelChange}
-            studies={this.props.studies}
-          />
-        </ErrorBoundaryDialog>
+        <div>
+          <div className="container">
+            {/* VIEWPORTS + SIDEPANELS */}
+            <div
+              style={{
+                width: '100%',
+                background: '#ffffff0d',
+                padding: '20px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <h2
+                    style={{
+                      textAlign: 'left',
+                    }}
+                  >
+                    Edit Selection
+                  </h2>
+                </div>
+                <div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={this.handleGoRadionics}
+                  >
+                    Generate
+                  </button>
+                </div>
+              </div>
+
+              <ErrorBoundaryDialog context="ToolbarRow">
+                <ToolbarRow
+                  activeViewport={
+                    this.props.viewports[this.props.activeViewportIndex]
+                  }
+                  inEditSegmentationMode={this.state.inEditSegmentationMode}
+                  isDerivedDisplaySetsLoaded={
+                    this.props.isDerivedDisplaySetsLoaded
+                  }
+                  isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
+                  isRightSidePanelOpen={this.state.isRightSidePanelOpen}
+                  selectedLeftSidePanel={
+                    this.state.isLeftSidePanelOpen
+                      ? this.state.selectedLeftSidePanel
+                      : ''
+                  }
+                  selectedRightSidePanel={
+                    this.state.isRightSidePanelOpen
+                      ? this.state.selectedRightSidePanel
+                      : ''
+                  }
+                  handleSidePanelChange={this.handleSidePanelChange}
+                  studies={this.props.studies}
+                />
+              </ErrorBoundaryDialog>
+
+              {/* MAIN */}
+              <div className={classNames('main-content')}>
+                <ErrorBoundaryDialog context="ViewerMain">
+                  <ConnectedViewerMain
+                    studies={_removeUnwantedSeries(
+                      this.props.studies,
+                      this.source_series_ref
+                    )}
+                    isStudyLoaded={this.props.isStudyLoaded}
+                  />
+                </ErrorBoundaryDialog>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
@@ -460,44 +517,12 @@ class Viewer extends Component {
               )}
             </SidePanel>
           </ErrorBoundaryDialog>
-
-          {/* MAIN */}
-          <div className={classNames('main-content')}>
-            <ErrorBoundaryDialog context="ViewerMain">
-              <ConnectedViewerMain
-                studies={_removeUnwantedSeries(
-                  this.props.studies,
-                  this.source_series_ref
-                )}
-                isStudyLoaded={this.props.isStudyLoaded}
-              />
-            </ErrorBoundaryDialog>
-          </div>
-
-          {/* RIGHT */}
-          <ErrorBoundaryDialog context="RightSidePanel">
-            <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
-              {VisiblePanelRight && (
-                <VisiblePanelRight
-                  isOpen={this.state.isRightSidePanelOpen}
-                  viewports={this.props.viewports}
-                  studies={this.props.studies}
-                  activeIndex={this.props.activeViewportIndex}
-                  activeViewport={
-                    this.props.viewports[this.props.activeViewportIndex]
-                  }
-                  getActiveViewport={this._getActiveViewport}
-                />
-              )}
-            </SidePanel>
-          </ErrorBoundaryDialog>
         </div>
       </>
     );
   }
 }
-
-export default withRouter(withDialog(Viewer));
+export default withRouter(withDialog(RadiomicsReport));
 
 /**
  * Async function to check if there are any inconsistences in the series.

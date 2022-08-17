@@ -12,6 +12,7 @@ import { Tooltip } from '../../../../../ui/src/components/tooltip';
 import ExpandableToolMenu from '../../../../../ui/src/viewer/ExpandableToolMenu';
 import circularLoading from '../../ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import { useLottie } from 'lottie-react';
+import eventBus from '../../../lib/eventBus';
 
 const RenderSimilarityResult = ({ data, imgDimensions }) => {
   return (
@@ -95,11 +96,13 @@ const RenderLoadingModal = () => {
   return (
     <div
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
+        // position: 'fixed',
+        // top: 0,
+        // left: 0,
+        // width: '100vw',
+        // height: '100vh',
+        width: '100%',
+        height: '100%',
         background: 'rgba(0,0,0,0.3)',
         display: 'flex',
         flexDirection: 'column',
@@ -172,6 +175,16 @@ const SearchDetails = props => {
   client.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${access_token}`;
     return config;
+  });
+
+  useEffect(() => {
+    eventBus.on('triggerReload', data =>
+      document.getElementById('trigger').click()
+    );
+
+    return () => {
+      eventBus.remove('triggerReload');
+    };
   });
 
   useEffect(() => {
@@ -344,7 +357,7 @@ const SearchDetails = props => {
   };
 
   const sendParams = async data => {
-    setLoadingState('searching', {data});
+    setLoadingState('searching', { data });
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
     const email = user.profile.email;
@@ -412,140 +425,24 @@ const SearchDetails = props => {
   }
 
   return (
-    <div className="component">
+    <div
+      className="component"
+      style={{
+        backgroundColor: '#ffffff00',
+      }}
+    >
+      <button
+        style={{
+          display: 'none',
+        }}
+        onClick={triggerJob}
+        id="trigger"
+        className="syncButton"
+      >
+        trigger
+      </button>
       {loadingState && <RenderLoadingModal />}
-      {Object.keys(toolData).length > 0 && (
-        <div>
-          <div className="title-header">Parameters</div>
-          <h4>Dimensions </h4>
-          <p>
-            <b>Width:</b> {width}
-          </p>
-          <p>
-            <b>Height:</b> {height}
-          </p>
-          <h4>Coordinates</h4>
-          <p>
-            <b>x:</b> {x}
-          </p>
-          <p>
-            <b>y:</b> {y}
-          </p>
-          <br />
 
-          {!newSearchState ? null : (
-            <label>
-              <div
-                className="triggerButton"
-                style={{
-                  marginBottom: 20,
-                  border: '0px',
-                  outline: 'none',
-                  borderWidth: 0,
-                }}
-              >
-                <button
-                  onClick={triggerJob}
-                  disabled={isDisabled}
-                  className="syncButton"
-                >
-                  {loadingState === 'searching'
-                    ? 'Searching'
-                    : 'Search For Similarity'}
-                </button>
-              </div>
-            </label>
-          )}
-        </div>
-      )}
-
-      {!Boolean(resultsListState.length) && !loadingState ? null : (
-        <div
-          onClick={
-            Boolean(resultsListState.length)
-              ? () => setShowListState(!showListState)
-              : null
-          }
-          style={{
-            width: '100%',
-            padding: '10px 20px',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            border: '1px solid #20A5D7',
-            borderRadius: 10,
-            color: '#20A5D7',
-            marginTop: 10,
-          }}
-        >
-          <p
-            style={{
-              margin: 0,
-              padding: 0,
-            }}
-          >
-            {loadingState === 'list'
-              ? 'Fetching Jobs'
-              : `Job ${
-                  similarityResultState ? similarityResultState.job_id : 0
-                }`}
-          </p>
-          <p
-            style={{
-              margin: 0,
-              padding: 0,
-            }}
-          >
-            {showListState ? 'x' : 'v'}
-          </p>
-        </div>
-      )}
-      {Boolean(resultsListState.length) && showListState && (
-        <div
-          style={{
-            width: '100%',
-            // border: '1px solid red',
-            position: 'relative',
-            top: 20,
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              maxHeight: 250,
-              overflowY: 'scroll',
-              border: '1px solid #20A5D7',
-              background: '#000',
-              position: 'absolute',
-              borderRadius: 10,
-              color: '#20A5D7',
-            }}
-          >
-            {resultsListState.map((item, index) => {
-              return (
-                <p
-                  onClick={() => {
-                    console.log({ item });
-                    setShowListState(!showListState);
-                    setSimilarityResultState(item);
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '15px 20px',
-                    margin: 0,
-                    // border: '1px solid red',
-                  }}
-                >
-                  Job {item.job_id}
-                </p>
-              );
-            })}
-          </div>
-        </div>
-      )}
       {similarityResultState ? (
         <div
           style={{
@@ -553,32 +450,15 @@ const SearchDetails = props => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            paddingTop: 20,
+            // paddingTop: 20,
           }}
         >
-          <p
-            style={{
-              color: 'yellow',
-              alignSelf: 'flex-start',
-              marginLeft: 20,
-            }}
-          >
-            Query Image
-          </p>
-          <img
-            src={similarityResultState.query}
-            style={{
-              width: '90%',
-              marginBottom: 20,
-              border: '2.55px solid green',
-            }}
-          />
           <div
             style={{
               width: '100%',
               display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
+              // flexDirection: 'row',
+              // flexWrap: 'wrap',
             }}
           >
             {similarityResultState.knn.map((res, index) => {
@@ -591,7 +471,6 @@ const SearchDetails = props => {
                     alignItems: 'center',
                     paddingTop: 20,
                     paddingBottom: 20,
-                    background: '#151A1F',
                     position: 'relative',
                     cursor: 'pointer',
                   }}

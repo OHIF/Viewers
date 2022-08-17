@@ -13,7 +13,7 @@ export const ApplicationSteps = {
   },
   3: {
     step: 3,
-    title: 'nnUnet 3',
+    title: 'nnUnet',
     href: '/nnunet',
   },
   4: {

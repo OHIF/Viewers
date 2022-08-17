@@ -45,8 +45,8 @@ const Jobs = ({
   } = useContext(JobsContext);
   const access_token = user.access_token;
 
-  const path = window.location.pathname;
-
+  let path = window.location.pathname;
+  path = path.replace('radionics/report', 'projects');
   const base_url = `wadors:https://healthcare.googleapis.com/v1${path.replace(
     'study',
     'dicomWeb/studies'

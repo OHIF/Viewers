@@ -10,7 +10,6 @@ import {
   useDebounce,
   useMedia,
 } from '@ohif/ui';
-import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import * as RoutesUtil from '../routes/routesUtil';
 import moment from 'moment';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
@@ -19,8 +18,6 @@ import ImportIdcModal from '../importIdc/ImportIdcModal.js';
 import filesToStudies from '../lib/filesToStudies.js';
 
 // Contexts
-import UserManagerContext from '../context/UserManagerContext';
-import WhiteLabelingContext from '../context/WhiteLabelingContext';
 import AppContext from '../context/AppContext';
 
 const { urlUtil: UrlUtil } = OHIF.utils;
@@ -227,23 +224,6 @@ function StudyListRoute(props) {
         onSuccess={handleImportSuccessful}
       />
 
-      <WhiteLabelingContext.Consumer>
-        {whiteLabeling => (
-          <UserManagerContext.Consumer>
-            {userManager => (
-              <ConnectedHeader
-                useLargeLogo={true}
-                user={user}
-                userManager={userManager}
-              >
-                {whiteLabeling &&
-                  whiteLabeling.createLogoComponentFn &&
-                  whiteLabeling.createLogoComponentFn(React)}
-              </ConnectedHeader>
-            )}
-          </UserManagerContext.Consumer>
-        )}
-      </WhiteLabelingContext.Consumer>
       <div className="study-list-header">
         <div className="header">
           <h1 style={{ fontWeight: 300, fontSize: '22px' }}>
