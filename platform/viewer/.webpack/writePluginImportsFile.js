@@ -112,26 +112,6 @@ const createCopyPluginToDistForBuild = (
     .filter(x => !!x);
 };
 
-const createCopyPluginChunksToDistForBuild = (SRC_DIR, DIST_DIR, plugins) => {
-  const toCopy = [];
-
-  for (const plugin of plugins) {
-    const distFolder = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/dist/umd/`;
-
-    const files = glob.sync(`${distFolder}/**/*.chunk.js*`);
-
-    if (files.length > 0) {
-      files.forEach(file => {
-        const from = file;
-        const to = DIST_DIR;
-        toCopy.push({ from, to });
-      });
-    }
-  }
-
-  return toCopy;
-};
-
 function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   let pluginImportsJsContent = autogenerationDisclaimer;
 
@@ -221,24 +201,16 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     'dist'
   );
 
-  // Copy over the chunks if there are in the umd build of the plugin
-  const copyPluginChunksToDistForBuild = createCopyPluginChunksToDistForBuild(
-    SRC_DIR,
-    DIST_DIR,
-    [
-      ...pluginConfig.modesFactory,
-      ...pluginConfig.modes,
-      ...pluginConfig.extensions,
-      ...pluginConfig.umd,
-    ]
-  );
-
+  console.log('copy plugins', [...copyPluginPublicToDistBuild,
+  ...copyPluginPublicToDistLink,
+  ...copyPluginDistToDistBuild,
+  ...copyPluginDistToDistLink,
+  ])
   return [
     ...copyPluginPublicToDistBuild,
     ...copyPluginPublicToDistLink,
     ...copyPluginDistToDistBuild,
     ...copyPluginDistToDistLink,
-    ...copyPluginChunksToDistForBuild,
   ];
 }
 
