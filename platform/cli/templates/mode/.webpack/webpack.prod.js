@@ -14,6 +14,7 @@ const config = {
     path: outputFolder,
     filename: outputFile,
     library: pkg.name,
+    publicPath: `/umd/${pkg.name}/`,
     libraryTarget: 'umd',
     chunkFilename: '[name].chunk.js',
     umdNamedDefine: true,
