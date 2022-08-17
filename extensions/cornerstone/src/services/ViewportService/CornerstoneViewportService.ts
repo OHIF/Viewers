@@ -166,14 +166,12 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const {
-      viewportOptions,
-      displaySetOptions,
-    } = this._getViewportAndDisplaySetOptions(
-      publicViewportOptions,
-      publicDisplaySetOptions,
-      viewportInfo
-    );
+    const { viewportOptions, displaySetOptions } =
+      this._getViewportAndDisplaySetOptions(
+        publicViewportOptions,
+        publicDisplaySetOptions,
+        viewportInfo
+      );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -400,48 +398,57 @@ class CornerstoneViewportService implements IViewportService {
       volume.load();
     });
 
-    this.setVolumesForViewport(viewport, volumeInputArray);
+    // This returns the async continuation only
+    return this.setVolumesForViewport(viewport, volumeInputArray);
   }
 
-  public setVolumesForViewport(viewport, volumeInputArray) {
-    viewport.setVolumes(volumeInputArray).then(() => {
-      const viewportInfo = this.getViewportInfo(viewport.id);
-      const initialImageOptions = viewportInfo.getInitialImageOptions();
+  public async setVolumesForViewport(viewport, volumeInputArray) {
+    await viewport.setVolumes(volumeInputArray);
 
-      if (
-        initialImageOptions &&
-        (initialImageOptions.preset !== undefined ||
-          initialImageOptions.index !== undefined)
-      ) {
-        const { index, preset } = initialImageOptions;
+    const viewportInfo = this.getViewportInfo(viewport.id);
+    const initialImageOptions = viewportInfo.getInitialImageOptions();
 
-        const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
-          viewport
-        );
+    if (
+      initialImageOptions &&
+      (initialImageOptions.preset !== undefined ||
+        initialImageOptions.index !== undefined)
+    ) {
+      const { index, preset } = initialImageOptions;
 
-        const imageIndex = this._getInitialImageIndex(
-          numberOfSlices,
-          index,
-          preset
-        );
+      const { numberOfSlices } =
+        csUtils.getImageSliceDataForVolumeViewport(viewport);
 
-        csToolsUtils.jumpToSlice(viewport.element, {
-          imageIndex,
-        });
-      }
+      const imageIndex = this._getInitialImageIndex(
+        numberOfSlices,
+        index,
+        preset
+      );
 
-      viewport.render();
-    });
+      csToolsUtils.jumpToSlice(viewport.element, {
+        imageIndex,
+      });
+    }
+
+    viewport.render();
   }
 
-  public updateViewport(viewportIndex, viewportData) {
+  // Todo: keepCamera is an interim solution until we have a better solution for
+  // keeping the camera position when the viewport data is changed
+  public updateViewport(viewportIndex, viewportData, keepCamera = false) {
     const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
 
     const viewportId = viewportInfo.getViewportId();
     const viewport = this.getCornerstoneViewport(viewportId);
+    const viewportCamera = viewport.getCamera();
 
     if (viewport instanceof VolumeViewport) {
-      this._setVolumeViewport(viewport, viewportData, viewportInfo);
+      this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
+        if (keepCamera) {
+          viewport.setCamera(viewportCamera);
+          viewport.render();
+        }
+      });
+
       return;
     }
 

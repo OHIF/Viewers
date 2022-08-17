@@ -23,7 +23,9 @@ class ImageScrollbar extends PureComponent {
       <div className="scroll">
         <div className="scroll-holder">
           <input
-            className="imageSlider"
+            // adding mousetrap let the mousetrap know about the scrollbar otherwise,
+            // it will not capture the keyboard event
+            className="imageSlider mousetrap"
             style={this.style}
             type="range"
             min="0"

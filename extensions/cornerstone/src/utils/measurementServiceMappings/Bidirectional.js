@@ -172,8 +172,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
 
   // Area is the same for all series
   const { length, width, SeriesNumber, SOPInstanceUID } = mappedAnnotations[0];
-  const roundedLength = utils.roundNumber(length, 1);
-  const roundedWidth = utils.roundNumber(width, 1);
+  const roundedLength = utils.roundNumber(length, 2);
+  const roundedWidth = utils.roundNumber(width, 2);
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID

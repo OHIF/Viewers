@@ -115,19 +115,18 @@ const commandsModule = ({ servicesManager }) => {
       const renderingEngine = CornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
-      const lower = windowCenterNum - windowWidthNum / 2.0;
-      const upper = windowCenterNum + windowWidthNum / 2.0;
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
+        windowWidthNum,
+        windowCenterNum
+      );
 
-      if (viewport instanceof StackViewport) {
-        viewport.setProperties({
-          voiRange: {
-            upper,
-            lower,
-          },
-        });
-
-        viewport.render();
-      }
+      viewport.setProperties({
+        voiRange: {
+          upper,
+          lower,
+        },
+      });
+      viewport.render();
     },
     toggleCrosshairs({ toolGroupId, toggledState }) {
       const toolName = 'Crosshairs';

@@ -36,14 +36,14 @@ function getPanelModule({
       name: 'petSUV',
       iconName: 'edit-patient',
       iconLabel: 'PET SUV',
-      label: 'PET-SUV',
+      label: 'PET SUV',
       component: wrappedPanelPetSuv,
     },
     {
       name: 'ROIThresholdSeg',
       iconName: 'tool-create-threshold',
-      iconLabel: 'Threshold Seg',
-      label: 'Threshold-Seg',
+      iconLabel: 'ROI Threshold',
+      label: 'ROI Threshold',
       component: wrappedROIThresholdSeg,
     },
   ];

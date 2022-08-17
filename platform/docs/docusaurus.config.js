@@ -218,7 +218,6 @@ module.exports = {
 
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
-            const nextVersionDocsDirPath = 'docs';
             return `https://github.com/OHIF/Viewers/edit/v3-stable/platform/docs/docs/${docPath}`;
           },
           showLastUpdateAuthor: true,
@@ -234,11 +233,10 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: 'Version 3.1 - Cornerstone3D 🚧',
+              label: 'Version 3.2 - Cornerstone3D Volume API 🚧',
             },
             '2.0': {
               label: 'Version 2.0 - Master branch',
-              //path: `2.0`,
             },
           },
         },

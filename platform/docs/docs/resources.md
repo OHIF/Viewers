@@ -11,6 +11,15 @@ and other resources that we have provided to the community in the past:
 
 ## 2022
 
+### OHIF Demo to Interns
+[[Slides]](https://docs.google.com/presentation/d/1a2PkUnqkVMaXaBsuFn7-PPlBJULU3dBwzI_44gKFeYI/edit?usp=sharing)
+
+### SIIM 2022 - Updates from the Imaging Informatics Community
+We participated in the SIIM 2022 conference to give update for the imaging
+informatics community.
+[[Slides]](https://docs.google.com/presentation/d/1EUGaUzQtGhZbZWpGLe6ONqChpVMw9Qr9l3KHODevMow/edit?usp=sharing)
+[[Video]](https://vimeo.com/734463662/dbd5a88371)
+
 ### The Imaging Network Ontario - Remote
 
 The Imaging Network Ontario (ImNO) is an annual symposium that brings together

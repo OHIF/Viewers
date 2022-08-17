@@ -1,6 +1,6 @@
 import { toolGroupIds } from '../initToolGroups';
 
-export default function setEllipticalROIConfiguration(
+export default function setFusionActiveVolume(
   matches,
   toolNames,
   ToolGroupService,
@@ -22,15 +22,31 @@ export default function setEllipticalROIConfiguration(
     return;
   }
 
-  const toolConfig = ToolGroupService.getToolConfiguration(
+  const wlToolConfig = ToolGroupService.getToolConfiguration(
+    toolGroupIds.Fusion,
+    toolNames.WindowLevel
+  );
+
+  const ellipticalToolConfig = ToolGroupService.getToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.EllipticalROI
   );
 
-  const ellipticalROIConfig = {
-    ...toolConfig,
+  const windowLevelConfig = {
+    ...wlToolConfig,
     volumeId: displaySets[0].displaySetInstanceUID,
   };
+
+  const ellipticalROIConfig = {
+    ...ellipticalToolConfig,
+    volumeId: displaySets[0].displaySetInstanceUID,
+  };
+
+  ToolGroupService.setToolConfiguration(
+    toolGroupIds.Fusion,
+    toolNames.WindowLevel,
+    windowLevelConfig
+  );
 
   ToolGroupService.setToolConfiguration(
     toolGroupIds.Fusion,

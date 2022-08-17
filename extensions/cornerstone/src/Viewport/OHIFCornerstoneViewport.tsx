@@ -195,9 +195,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
             DisplaySetService
           );
 
+          const keepCamera = true;
           CornerstoneViewportService.updateViewport(
             viewportIndex,
-            newViewportData
+            newViewportData,
+            keepCamera
           );
 
           setViewportData(newViewportData);

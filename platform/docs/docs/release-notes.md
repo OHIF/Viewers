@@ -109,7 +109,7 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     </tr>
     <tr>
         <td align="left">Segmentation support</td>
-        <td align="center">🔜</td>
+        <td align="center">✅</td>
         <td align="center">Not Started</td>
     </tr>
     <tr>
@@ -129,7 +129,7 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     </tr>
     <tr>
         <td align="left">VTK Extension + MIP / MPR layout</td>
-        <td align="center">🔜</td>
+        <td align="center">✅</td>
         <td align="center">3D rendering and 3D annotation tools via Cornerstone3D</td>
     </tr>
     <tr>

@@ -67,7 +67,7 @@ function _createWwwcPreset(preset, title, subtitle) {
       {
         commandName: 'setWindowLevel',
         commandOptions: {
-          windowLevel: windowLevelPresets[preset],
+          ...windowLevelPresets[preset],
         },
         context: 'CORNERSTONE',
       },
@@ -272,8 +272,7 @@ const toolbarButtons = [
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text:
-              'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },
@@ -307,9 +306,10 @@ const toolbarButtons = [
       isAction: true, // ?
       renderer: WindowLevelMenuItem,
       items: [
+        _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),
-        _createColormap('Ret Hot', 'red_hot'),
+        _createColormap('Red Hot', 'red_hot'),
         _createColormap('Perfusion', 'perfusion'),
         _createColormap('Rainbow', 'rainbow_2'),
         _createColormap('SUV', 'suv'),

@@ -325,6 +325,12 @@ const ptCT = {
                 source: true,
                 target: true,
               },
+              {
+                type: 'voi',
+                id: 'ptFusionWLSync',
+                source: true,
+                target: false,
+              },
             ],
           },
           displaySets: [
@@ -360,6 +366,12 @@ const ptCT = {
                 source: true,
                 target: true,
               },
+              {
+                type: 'voi',
+                id: 'ptFusionWLSync',
+                source: true,
+                target: false,
+              },
             ],
           },
           displaySets: [
@@ -394,6 +406,12 @@ const ptCT = {
                 id: 'ptWLSync',
                 source: true,
                 target: true,
+              },
+              {
+                type: 'voi',
+                id: 'ptFusionWLSync',
+                source: true,
+                target: false,
               },
             ],
           },
@@ -437,6 +455,12 @@ const ptCT = {
                 type: 'voi',
                 id: 'fusionWLSync',
                 source: true,
+                target: true,
+              },
+              {
+                type: 'voi',
+                id: 'ptFusionWLSync',
+                source: false,
                 target: true,
               },
             ],
@@ -486,6 +510,12 @@ const ptCT = {
                 source: true,
                 target: true,
               },
+              {
+                type: 'voi',
+                id: 'ptFusionWLSync',
+                source: false,
+                target: true,
+              },
             ],
           },
           displaySets: [
@@ -533,6 +563,12 @@ const ptCT = {
                 source: true,
                 target: true,
               },
+              {
+                type: 'voi',
+                id: 'ptFusionWLSync',
+                source: false,
+                target: true,
+              },
             ],
           },
           displaySets: [
@@ -558,9 +594,24 @@ const ptCT = {
             orientation: 'sagittal',
             background: [1, 1, 1],
             toolGroupId: 'mipToolGroup',
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'ptWLSync',
+                source: true,
+                target: true,
+              },
+              {
+                type: 'voi',
+                id: 'ptFusionWLSync',
+                source: true,
+                target: false,
+              },
+            ],
+
             // Custom props can be used to set custom properties which extensions
             // can react on.
-            customViewportOptions: {
+            customViewportProps: {
               // We use viewportDisplay to filter the viewports which are displayed
               // in mip and we set the scrollbar according to their rotation index
               // in the cornerstone extension.
