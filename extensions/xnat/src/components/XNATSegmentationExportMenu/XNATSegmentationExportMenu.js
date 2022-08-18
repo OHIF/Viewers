@@ -95,17 +95,17 @@ class XNATSegmentationExportMenu extends React.Component {
     this.handleExportSegmentations(segList);
   }
 
-  handleSegmentationCompression(seg) {
-    return new Promise((res, rej) => {
-      Zlib.gzip(JSON.stringify(seg), (err, result) => {
-        console.log({ err, result });
+  // handleSegmentationCompression(seg) {
+  //   return new Promise((res, rej) => {
+  //     Zlib.gzip(JSON.stringify(seg), (err, result) => {
+  //       console.log({ err, result });
 
-        if (err) return rej(err);
+  //       if (err) return rej(err);
 
-        res(result);
-      });
-    });
-  }
+  //       res(result);
+  //     });
+  //   });
+  // }
 
   updateAndSaveLocalSegmentations(b) {
     console.log({ b });
