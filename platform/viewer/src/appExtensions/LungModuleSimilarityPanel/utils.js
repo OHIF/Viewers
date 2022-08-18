@@ -71,7 +71,7 @@ export const getSegArray = ({ segmentations, numSlices, rows, columns }) => {
   const flattened = Array(numSlices).fill(Array(rows * columns).fill(0));
   console.log({ flattened });
   segmentations.forEach((item, index) => {
-    console.log({ item, index });
+    // console.log({ item, index });
 
     flattened[index] = Array.from(item.pixelData);
     return;
@@ -96,7 +96,7 @@ export const getSplitSegArray = ({ flatSegmentationArray, index }) => {
 };
 
 export const mergePixelData = ({ currPixelData, item, segmentIndex }) => {
-  console.log('mergePixelData', { currPixelData, item, segmentIndex });
+  // console.log('mergePixelData', { currPixelData, item, segmentIndex });
   if (currPixelData) {
     item.map((val, index) => {
       if (val === 1) {
@@ -104,10 +104,10 @@ export const mergePixelData = ({ currPixelData, item, segmentIndex }) => {
       }
     });
 
-    console.log({ currPixelData, item });
+    // console.log({ currPixelData, item });
     return currPixelData;
   } else {
-    console.log('no pixel data... returning imported pixels');
+    // console.log('no pixel data... returning imported pixels');
     return item.map((val, index) => {
       if (val === 1) {
         return segmentIndex;
@@ -129,10 +129,9 @@ export const getUpdatedSegments = ({
   const segmentsOnLabelmap = Array(segmentIndex + 1)
     .fill(0)
     .map((_, index) => {
-      console.log('segmentsOnLabelmap', { index });
+      // console.log('segmentsOnLabelmap', { index });
       return index;
     });
-  console.log({ segmentsOnLabelmap });
 
   console.log({ segmentsOnLabelmap });
   return segmentation.map((item, i) => {

@@ -91,7 +91,7 @@ const RenderLoadingIcon = ({ size }) => {
   );
 };
 
-const RenderLoadingModal = () => {
+export const RenderLoadingModal = () => {
   return (
     <div
       style={{
@@ -105,6 +105,7 @@ const RenderLoadingModal = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 1000,
       }}
     >
       <RenderLoadingIcon size={70} />

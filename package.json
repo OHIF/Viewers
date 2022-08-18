@@ -44,6 +44,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "core-js": "^3.2.1",
+    "crypto-js": "^4.1.1",
     "mathjs": "^10.6.3",
     "pako": "^2.0.4",
     "react-zlib-js": "^1.0.5",
