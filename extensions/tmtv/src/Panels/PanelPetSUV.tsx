@@ -24,8 +24,11 @@ const DEFAULT_MEATADATA = {
  */
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const { DisplaySetService, ToolGroupService, ToolBarService } =
-    servicesManager.services;
+  const {
+    DisplaySetService,
+    ToolGroupService,
+    ToolBarService,
+  } = servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -210,7 +213,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Injection Time (Seconds)')}
+              label={t('Injection Time (s)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
@@ -228,7 +231,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Acquisition Time (Seconds)')}
+              label={t('Acquisition Time (s)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
