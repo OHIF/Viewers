@@ -29,7 +29,6 @@ const mapStateToProps = (state, ownProps) => {
   if (state.extensions && state.extensions.cornerstone) {
     dataFromStore = state.extensions.cornerstone;
   }
-
   // If this is the active viewport, enable prefetching.
   const { viewportIndex } = ownProps; //.viewportData;
   const isActive = viewportIndex === state.viewports.activeViewportIndex;
@@ -37,7 +36,8 @@ const mapStateToProps = (state, ownProps) => {
     state.viewports.viewportSpecificData[viewportIndex] || {};
 
   // CINE
-  let isPlaying = false;
+  let isPlaying =
+    state.viewports.viewportSpecificData[0]['Modality'] === 'US' ? true : false;
   let frameRate = 24;
 
   if (viewportSpecificData && viewportSpecificData.cine) {
