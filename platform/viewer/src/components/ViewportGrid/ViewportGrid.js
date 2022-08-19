@@ -13,6 +13,7 @@ import EmptyViewport from './EmptyViewport.js';
 const { loadAndCacheDerivedDisplaySets } = utils;
 
 const ViewportGrid = function(props) {
+  console.log(props.layout.viewports[0]['plugin'], 'this.props');
   const {
     activeViewportIndex,
     availablePlugins,
@@ -44,7 +45,7 @@ const ViewportGrid = function(props) {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
     }
-  }, [studies, viewportData, isStudyLoaded, snackbar]);
+  }, [studies, viewportData, isStudyLoaded, snackbar, logger]);
 
   const getViewportPanes = () =>
     layout.viewports.map((layout, viewportIndex) => {
@@ -76,9 +77,20 @@ const ViewportGrid = function(props) {
           ? displaySet.plugin
           : layout.plugin;
 
+      var data1234;
+      const data123 = () => {
+        if (props.layout.viewports[0]['vtk']) {
+          data1234 = viewportIndex;
+        } else {
+          data1234 = activeViewportIndex;
+        }
+      };
+
+      console.log(data123());
       const ViewportComponent = _getViewportComponent(
         data, // Why do we pass this as `ViewportData`, when that's not really what it is?
-        viewportIndex,
+        // viewportIndex,
+        data1234,
         children,
         availablePlugins,
         pluginName,
@@ -92,7 +104,7 @@ const ViewportGrid = function(props) {
           className={classNames('viewport-container', {
             active: activeViewportIndex === viewportIndex,
           })}
-          key={viewportIndex}
+          key={activeViewportIndex}
         >
           {ViewportComponent}
         </ViewportPane>
