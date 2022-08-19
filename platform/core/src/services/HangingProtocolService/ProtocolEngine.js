@@ -116,12 +116,15 @@ export default class ProtocolEngine {
       }
     });
 
-    // If no matches were found, select the default protocol
+    // If no matches were found, select the default protocol if provided
+    // if not select the first protocol in the list
     if (!matched.length) {
       return [
         {
           score: 1,
-          protocol: this.protocols.find(protocol => protocol.id === 'default'),
+          protocol:
+            this.protocols.find(protocol => protocol.id === 'default') ??
+            this.protocols[0],
         },
       ];
     }

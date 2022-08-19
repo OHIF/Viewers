@@ -1,5 +1,5 @@
 const ptCT = {
-  id: 'test',
+  id: 'tmtv-pt-ct',
   locked: true,
   hasUpdatedPriorsInformation: false,
   name: 'Default',
@@ -15,17 +15,6 @@ const ptCT = {
   ],
   imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
-    {
-      id: 'wauZK2QNEfDPwcAQo',
-      weight: 1,
-      attribute: 'StudyInstanceUID',
-      constraint: {
-        contains: {
-          value: '1.3.6.1.4.',
-        },
-      },
-      required: false,
-    },
     {
       id: 'wauZK2QNEfDPwcAQo',
       weight: 1,

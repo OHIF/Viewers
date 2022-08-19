@@ -186,7 +186,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [ohif.hangingProtocols, tmtv.hangingProtocols],
+    hangingProtocols: [tmtv.hangingProtocols],
     sopClassHandlers: [ohif.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
