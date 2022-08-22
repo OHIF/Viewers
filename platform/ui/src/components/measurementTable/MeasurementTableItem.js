@@ -9,6 +9,14 @@ import { TableListItem } from './../tableList/TableListItem.js';
 
 import './MeasurementTableItem.styl';
 
+const ColoredCircle = ({ color }) => {
+  return <div className="item-color" style={{ backgroundColor: color }}></div>;
+};
+
+ColoredCircle.propTypes = {
+  color: PropTypes.string.isRequired,
+};
+
 class MeasurementTableItem extends Component {
   static propTypes = {
     measurementData: PropTypes.object.isRequired,
@@ -20,6 +28,14 @@ class MeasurementTableItem extends Component {
     itemIndex: PropTypes.number,
     t: PropTypes.func,
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      collapsed: true,
+      visible: true,
+    };
+  }
 
   render() {
     const {
@@ -93,27 +109,113 @@ class MeasurementTableItem extends Component {
       actionButtons.push(deleteButton);
     }
 
-    return (
-      <TableListItem
-        itemKey={this.props.measurementData.measurementNumber}
-        itemClass={`measurementItem ${this.props.itemClass} ${hasWarningClass}`}
-        itemIndex={this.props.itemIndex}
-        onItemClick={this.onItemClick}
-      >
-        <div>
-          <div className="measurementLocation">
-            {this.props.t(this.props.measurementData.label, {
-              keySeparator: '>',
-              nsSeparator: '|',
+    if (
+      this.props.measurementData.isSRText === true &&
+      this.props.measurementData.labels &&
+      this.props.measurementData.labels.length > 0
+    ) {
+      return (
+        <React.Fragment>
+          <TableListItem
+            key={this.props.measurementData.measurementNumber}
+            itemKey={this.props.measurementData.measurementNumber}
+            itemClass={`measurementItem ${this.props.itemClass} ${hasWarningClass}`}
+            itemIndex={this.props.itemIndex}
+            onItemClick={this.onItemClick}
+          >
+            <div>
+              <div className="measurementLocation">
+                {this.props.t(this.props.measurementData.label, {
+                  keySeparator: '>',
+                  nsSeparator: '|',
+                })}
+              </div>
+            </div>
+            <div className="icons">
+              <div className="displayTexts">{this.getDataDisplayText()}</div>
+              <Icon
+                className={`eye-icon`}
+                name={this.state.visible ? 'eye' : 'eye-closed'}
+                width="20px"
+                height="20px"
+                onClick={() => {
+                  this.props.measurementData.labels.forEach(label => {
+                    label.visible = !this.state.visible;
+                  });
+
+                  this.setState({
+                    visible: !this.state.visible,
+                  });
+                }}
+              />
+              <Icon
+                className={`angle-double-${
+                  this.state.collapsed ? 'down' : 'up'
+                }`}
+                name={`angle-double-${this.state.collapsed ? 'down' : 'up'}`}
+                width="20px"
+                height="20px"
+                onClick={() => {
+                  this.setState({
+                    collapsed: !this.state.collapsed,
+                  });
+                }}
+              />
+            </div>
+          </TableListItem>
+          {this.state.collapsed &&
+            this.props.measurementData.labels.map((SRLabel, index) => {
+              return (
+                <TableListItem
+                  key={index}
+                  itemKey={index}
+                  itemMeta={<ColoredCircle color={SRLabel.color} />}
+                  itemMetaClass="item-color-section"
+                  onItemClick={this.onItemClick}
+                >
+                  <div>
+                    <div className="icons">
+                      <span>{SRLabel.label + ' : ' + SRLabel.value}</span>
+                      <Icon
+                        className={`eye-icon`}
+                        name={SRLabel.visible ? 'eye' : 'eye-closed'}
+                        width="20px"
+                        height="20px"
+                        onClick={() => {
+                          SRLabel.visible = !SRLabel.visible;
+                        }}
+                      />
+                    </div>
+                  </div>
+                </TableListItem>
+              );
             })}
+        </React.Fragment>
+      );
+    } else {
+      return (
+        <TableListItem
+          key={this.props.measurementData.measurementNumber}
+          itemKey={this.props.measurementData.measurementNumber}
+          itemClass={`measurementItem ${this.props.itemClass} ${hasWarningClass}`}
+          itemIndex={this.props.itemIndex}
+          onItemClick={this.onItemClick}
+        >
+          <div>
+            <div className="measurementLocation">
+              {this.props.t(this.props.measurementData.label, {
+                keySeparator: '>',
+                nsSeparator: '|',
+              })}
+            </div>
+            <div className="displayTexts">{this.getDataDisplayText()}</div>
+            {!this.props.measurementData.isReadOnly && (
+              <div className="rowActions">{actionButtons}</div>
+            )}
           </div>
-          <div className="displayTexts">{this.getDataDisplayText()}</div>
-          {!this.props.measurementData.isReadOnly && (
-            <div className="rowActions">{actionButtons}</div>
-          )}
-        </div>
-      </TableListItem>
-    );
+        </TableListItem>
+      );
+    }
   };
 
   onItemClick = event => {
