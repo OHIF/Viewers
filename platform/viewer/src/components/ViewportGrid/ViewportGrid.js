@@ -13,6 +13,7 @@ import EmptyViewport from './EmptyViewport.js';
 const { loadAndCacheDerivedDisplaySets } = utils;
 
 const ViewportGrid = function(props) {
+  console.log(props, 'plugin');
   const {
     activeViewportIndex,
     availablePlugins,
@@ -44,7 +45,7 @@ const ViewportGrid = function(props) {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
     }
-  }, [studies, viewportData, isStudyLoaded, snackbar]);
+  }, [studies, viewportData, isStudyLoaded, snackbar, logger]);
 
   const getViewportPanes = () =>
     layout.viewports.map((layout, viewportIndex) => {
@@ -76,14 +77,34 @@ const ViewportGrid = function(props) {
           ? displaySet.plugin
           : layout.plugin;
 
-      const ViewportComponent = _getViewportComponent(
-        data, // Why do we pass this as `ViewportData`, when that's not really what it is?
-        viewportIndex,
-        children,
-        availablePlugins,
-        pluginName,
-        defaultPluginName
-      );
+      var ViewportComponent;
+      if (viewportData[0]['plugin'] === 'vtk') {
+        ViewportComponent = _getViewportComponent(
+          data, // Why do we pass this as `ViewportData`, when that's not really what it is?
+          viewportIndex,
+          children,
+          availablePlugins,
+          pluginName,
+          defaultPluginName
+        );
+      } else {
+        ViewportComponent = _getViewportComponent(
+          data, // Why do we pass this as `ViewportData`, when that's not really what it is?
+          activeViewportIndex,
+          children,
+          availablePlugins,
+          pluginName,
+          defaultPluginName
+        );
+      }
+      // ViewportComponent = _getViewportComponent(
+      //   data, // Why do we pass this as `ViewportData`, when that's not really what it is?
+      //   viewportIndex,
+      //   children,
+      //   availablePlugins,
+      //   pluginName,
+      //   defaultPluginName
+      // );
 
       return (
         <ViewportPane
