@@ -381,7 +381,7 @@ function _handleBuiltIn(button) {
   const { dialog, t } = this.props;
   const { dialogId } = this.state;
   const { id, options } = button;
-
+  debugger
   if (options.behavior === 'CINE') {
     if (dialogId) {
       dialog.dismiss({ id: dialogId });

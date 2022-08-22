@@ -95,7 +95,7 @@ class Viewer extends Component {
 
   state = {
     isLeftSidePanelOpen: true,
-    isRightSidePanelOpen: false,
+    isRightSidePanelOpen: true,
     selectedRightSidePanel: '',
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
@@ -469,7 +469,7 @@ export default withDialog(Viewer);
  * @param {*object} study
  * @returns {bool}
  */
-const _checkForDerivedDisplaySets = async function(displaySet, study) {
+const _checkForDerivedDisplaySets = async function (displaySet, study) {
   let derivedDisplaySetsNumber = 0;
   if (
     displaySet.Modality &&
@@ -504,7 +504,7 @@ const _checkForDerivedDisplaySets = async function(displaySet, study) {
  * @param {*object} displaySet
  * @returns {[string]} an array of strings containing the warnings
  */
-const _checkForSeriesInconsistencesWarnings = async function(displaySet) {
+const _checkForSeriesInconsistencesWarnings = async function (displaySet) {
   if (displaySet.inconsistencyWarnings) {
     // warnings already checked and cached in displaySet
     return displaySet.inconsistencyWarnings;
@@ -598,7 +598,7 @@ const _checkForSeriesInconsistencesWarnings = async function(displaySet) {
  * @param {string} activeDisplaySetInstanceUID
  * @returns {boolean} is active.
  */
-const _isDisplaySetActive = function(
+const _isDisplaySetActive = function (
   displaySet,
   studies,
   activeDisplaySetInstanceUID
@@ -644,7 +644,7 @@ const _isDisplaySetActive = function(
       );
       active = referencedDisplaySet
         ? activeDisplaySetInstanceUID ===
-          referencedDisplaySet.displaySetInstanceUID
+        referencedDisplaySet.displaySetInstanceUID
         : false;
     } else {
       const referencedDisplaySet = displaySet.getSourceDisplaySet(
@@ -653,7 +653,7 @@ const _isDisplaySetActive = function(
       );
       active = referencedDisplaySet
         ? activeDisplaySetInstanceUID ===
-          referencedDisplaySet.displaySetInstanceUID
+        referencedDisplaySet.displaySetInstanceUID
         : false;
     }
   }
@@ -671,7 +671,7 @@ const _isDisplaySetActive = function(
  * @param {Study[]} studies
  * @param {string} activeDisplaySetInstanceUID
  */
-const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
+const _mapStudiesToThumbnails = function (studies, activeDisplaySetInstanceUID) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
     const thumbnails = study.displaySets.map(displaySet => {

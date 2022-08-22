@@ -15,14 +15,28 @@ const { setViewportSpecificData } = OHIF.redux.actions;
 // A dispatch action should be able to pull this at the time of an event?
 // `isPlaying` and `cineFrameRate` might matter, but I think we can prop pass for those.
 const mapStateToProps = state => {
+  function formatNumberPrecision(number, precision) {
+    if (number !== null) {
+      return parseFloat(number).toFixed(precision);
+    }
+  }
+  var data1 = formatNumberPrecision(
+    1000 / state.viewports.viewportSpecificData[0]['frameRate'],
+    1
+  );
+  var data = formatNumberPrecision(
+    state.viewports.viewportSpecificData[0]['frameRate'],
+    2
+  );
+  console.log(data, data1, 'abcd');
   // Get activeViewport's `cine` and `stack`
   const { viewportSpecificData, activeViewportIndex } = state.viewports;
   const { cine } = viewportSpecificData[activeViewportIndex] || {};
   const dom = commandsManager.runCommand('getActiveViewportEnabledElement');
-
+  debugger;
   const cineData = cine || {
-    isPlaying: false,
-    cineFrameRate: 24,
+    isPlaying: true,
+    cineFrameRate: parseFloat(data1) ? parseFloat(data1) : 24,
   };
 
   // New props we're creating?
@@ -47,11 +61,14 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     activeViewportCineData,
     activeViewportIndex,
   } = propsFromState;
-
+  debugger;
+  console.log(ownProps, 'was here');
   return {
     cineFrameRate: activeViewportCineData.cineFrameRate,
     isPlaying: activeViewportCineData.isPlaying,
     onPlayPauseChanged: isPlaying => {
+      debugger;
+
       const cine = cloneDeep(activeViewportCineData);
       cine.isPlaying = !cine.isPlaying;
 
@@ -62,7 +79,6 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     onFrameRateChanged: frameRate => {
       const cine = cloneDeep(activeViewportCineData);
       cine.cineFrameRate = frameRate;
-
       propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
         cine,
       });

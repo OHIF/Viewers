@@ -38,15 +38,15 @@ const mapStateToProps = (state, ownProps) => {
   // CINE
   let isPlaying =
     state.viewports.viewportSpecificData[0]['Modality'] === 'US' ? true : false;
-  let frameRate = 24;
+  let frameRate = 28;
 
   if (viewportSpecificData && viewportSpecificData.cine) {
     const cine = viewportSpecificData.cine;
 
     isPlaying = cine.isPlaying === true;
-    frameRate = cine.cineFrameRate || frameRate;
+    frameRate = 28;
+    console.log(viewportSpecificData, frameRate, 'abcd');
   }
-
   return {
     // layout: state.viewports.layout,
     isActive,

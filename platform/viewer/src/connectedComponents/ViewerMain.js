@@ -203,12 +203,12 @@ class ViewerMain extends Component {
     }
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
+    console.log(this.state, 'this.props');
   };
 
   render() {
     const { viewportSpecificData } = this.props;
     const viewportData = values(viewportSpecificData);
-
     return (
       <div className="ViewerMain">
         {this.state.displaySets.length && (

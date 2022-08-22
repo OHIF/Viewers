@@ -85,6 +85,7 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
 
     const cineModule = cornerstone.metaData.get('cineModule', imageId) || {};
     const { frameTime } = cineModule;
+    console.log(frameTime, 'frameTime');
 
     const frameRate = formatNumberPrecision(1000 / frameTime, 1);
     const compression = getCompression(imageId);
