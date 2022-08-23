@@ -94,7 +94,7 @@ const Header = ({ onMobileClose, openMobile }) => {
             flexDirection: 'row',
           }}
         >
-          <Icon name="ohif-logo" className="header-logo-image" />
+          {/* <Icon name="ohif-logo" className="header-logo-image" /> */}
           <h4>ThetaTech</h4>
         </div>
       </div>

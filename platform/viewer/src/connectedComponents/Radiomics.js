@@ -10,7 +10,7 @@ import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { extensionManager } from './../App.js';
+import { commandsManager, extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
@@ -22,6 +22,7 @@ import ToolbarRow from './RadiomicsToolbarRow';
 import SidePanel from '../components/SidePanel';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
+import eventBus from '../lib/eventBus';
 
 const RadiomicSummary = () => {
   return (
@@ -149,6 +150,7 @@ const Morphology = () => {
     </div>
   );
 };
+
 class Radiomics extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -252,6 +254,11 @@ class Radiomics extends Component {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
+
     // const { EVENTS } = cornerstoneTools;
     // const view_ports = cornerstone.getEnabledElements();
     // const viewports = view_ports[0];
@@ -262,7 +269,6 @@ class Radiomics extends Component {
     //     console.log('measurement completed', event);
     //   });
     // }
-
     cornerstone.events.removeEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
@@ -683,6 +689,7 @@ class Radiomics extends Component {
     );
   }
 }
+
 export default withRouter(withDialog(Radiomics));
 
 /**

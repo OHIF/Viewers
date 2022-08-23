@@ -23,17 +23,27 @@ export default function handleSingleMeasurementRemoved({
   if (!collection) return;
 
   const measurementTypeId = measurementApi.toolsGroupsMap[toolType];
-  const measurement = collection.find(t => t._id === measurementData._id);
 
-  // Stop here if the measurement is already gone or never existed
-  if (!measurement) return;
-
-  // Remove all the measurements with the given type and number
-  const { lesionNamingNumber, timepointId } = measurement;
-  measurementApi.deleteMeasurements(toolType, measurementTypeId, {
-    lesionNamingNumber,
-    timepointId,
+  collection.forEach(measurement => {
+    const { lesionNamingNumber, timepointId } = measurement;
+    measurementApi.deleteMeasurements(toolType, measurementTypeId, {
+      lesionNamingNumber,
+      timepointId,
+    });
+    refreshCornerstoneViewports();
   });
+
+  // const measurement = collection.find(t => t._id === measurementData._id);
+
+  // // Stop here if the measurement is already gone or never existed
+  // if (!measurement) return;
+
+  // // Remove all the measurements with the given type and number
+  // const { lesionNamingNumber, timepointId } = measurement;
+  // measurementApi.deleteMeasurements(toolType, measurementTypeId, {
+  //   lesionNamingNumber,
+  //   timepointId,
+  // });
 
   // TODO: This is very hacky, but will work for now
   refreshCornerstoneViewports();

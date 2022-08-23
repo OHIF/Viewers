@@ -453,6 +453,16 @@ const SearchDetails = props => {
             // paddingTop: 20,
           }}
         >
+          <img
+            src={similarityResultState.query}
+            style={{
+              width: 200,
+              height: 200,
+              marginBottom: 20,
+              border: '2.55px solid green',
+            }}
+          />
+
           <div
             style={{
               width: '100%',

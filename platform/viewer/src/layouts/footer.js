@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router';
-// import Logo from '../components/Logo/logo';
 
-export const Footer = () => {
+const Footer = () => {
   const user = useSelector(state => state.oidc.user);
   const history = useHistory();
   const location = useLocation();
@@ -90,3 +89,5 @@ export const Footer = () => {
     </footer>
   );
 };
+
+export default Footer;

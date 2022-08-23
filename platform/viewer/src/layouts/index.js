@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Sidebar from './sidebar';
 import Header from './header';
-import { Footer } from './footer';
+import Footer from './footer';
 
 const DashboardLayout = ({ children }) => {
   const [isMobileNavOpen, setMobileNavOpen] = useState(false);

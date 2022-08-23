@@ -123,6 +123,10 @@ export default class XNATSegmentationPanel extends React.Component {
   }
 
   componentWillUnmount() {
+    this.state.segments.forEach(segment => {
+      this.onDeleteClick(segment.index);
+    });
+
     this.removeEventListeners();
   }
 
@@ -142,6 +146,8 @@ export default class XNATSegmentationPanel extends React.Component {
   }
 
   removeEventListeners() {
+    // remove segments
+
     cornerstoneTools.store.state.enabledElements.forEach(enabledElement => {
       enabledElement.removeEventListener(
         'peppermintautosegmentgenerationevent',
@@ -189,6 +195,15 @@ export default class XNATSegmentationPanel extends React.Component {
     if (!viewports) {
       return;
     }
+
+    this.props.studies.map(study => {
+      const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
+      if (studyMetadata._displaySets.length == 0) {
+        study.displaySets.map(displaySet =>
+          studyMetadata.addDisplaySet(displaySet)
+        );
+      }
+    });
 
     const firstImageId = _getFirstImageId(viewports[activeIndex]);
 
@@ -272,7 +287,7 @@ export default class XNATSegmentationPanel extends React.Component {
       // Start from 1, as label 0 is an empty segment.
       for (let i = 1; i < metadata.length; i++) {
         if (!metadata[i]) {
-      console.log('no metadata');
+          console.log('no metadata');
 
           metadata[i] = newMetadata;
           segmentAdded = true;
@@ -282,7 +297,7 @@ export default class XNATSegmentationPanel extends React.Component {
       }
 
       if (!segmentAdded) {
-      console.log('segment not added', );
+        console.log('segment not added');
 
         metadata.push(newMetadata);
         labelmap3D.activeSegmentIndex = metadata.length - 1;
@@ -377,7 +392,10 @@ export default class XNATSegmentationPanel extends React.Component {
     const imageIds = toolState.data[0].imageIds;
     const imageId = imageIds[frameIndex];
     const SOPInstanceUID = cornerstone.metaData.get('SOPInstanceUID', imageId);
-    const StudyInstanceUID = cornerstone.metaData.get('StudyInstanceUID', imageId);
+    const StudyInstanceUID = cornerstone.metaData.get(
+      'StudyInstanceUID',
+      imageId
+    );
 
     onSegmentItemClick({
       StudyInstanceUID,
@@ -589,9 +607,7 @@ export default class XNATSegmentationPanel extends React.Component {
           <div className="roiCollectionBody">
             <div className="workingCollectionHeader">
               <h4> {importMetadata.name} </h4>
-              <div>
-                {addSegmentButton}
-              </div>
+              <div>{addSegmentButton}</div>
             </div>
             {/*<SegmentationMenuListHeader importMetadata={importMetadata} />*/}
             <div className="collectionSection">

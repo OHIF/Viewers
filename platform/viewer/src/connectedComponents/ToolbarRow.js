@@ -203,8 +203,32 @@ class ToolbarRow extends Component {
     }
   };
 
-  removeToolBarButton = buttons => {
-    const buttonsToRemove = ['brushTools'];
+  removeForView = buttons => {
+    const buttonsToRemove = [
+      'Length',
+      'Cine',
+      'Angle',
+      'ArrowAnnotate',
+      'Reset',
+      'More',
+      'AiTrigger',
+      'brushTools',
+    ];
+    // remove from button where key is in buttonsToRemove
+    buttons = buttons.filter(button => !buttonsToRemove.includes(button.key));
+    return buttons;
+  };
+  removeForEdit = buttons => {
+    const buttonsToRemove = [
+      'Length',
+      'Cine',
+      'Angle',
+      'ArrowAnnotate',
+      'Reset',
+      'More',
+      'AiTrigger',
+      // 'brushTools',
+    ];
     // remove from button where key is in buttonsToRemove
     buttons = buttons.filter(button => !buttonsToRemove.includes(button.key));
     return buttons;
@@ -223,9 +247,9 @@ class ToolbarRow extends Component {
     const onPressLeft = onPress.bind(this, 'left');
     const onPressRight = onPress.bind(this, 'right');
 
-    if (!inEditSegmentationMode && buttonComponents.length > 0)
-      buttonComponents = this.removeToolBarButton(buttonComponents);
-    // buttonComponents = this.removeToolBarButton(buttonComponents);
+    if (inEditSegmentationMode && buttonComponents.length > 0)
+      buttonComponents = this.removeForEdit(buttonComponents);
+    else buttonComponents = this.removeForView(buttonComponents);
 
     return (
       <>
