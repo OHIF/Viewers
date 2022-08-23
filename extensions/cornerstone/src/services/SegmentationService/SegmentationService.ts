@@ -19,8 +19,13 @@ import {
 import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 
 const { COLOR_LUT } = cstConstants;
+const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 
-type SegmentationConfig = cstTypes.LabelmapTypes.LabelmapConfig;
+type SegmentationConfig = cstTypes.LabelmapTypes.LabelmapConfig & {
+  renderInactiveSegmentations: boolean;
+  brushSize: number;
+  brushThresholdGate: number;
+};
 
 type Segment = {
   // the label for the segment
@@ -45,7 +50,7 @@ type Segmentation = {
   // if segmentation contains any data (often calculated from labelmap)
   cachedStats: Record<string, any>;
   // displayText is the text that is displayed on the segmentation panel (often derived from the data)
-  displayText: string;
+  displayText?: string[];
   // the id of the segmentation
   id: string;
   // if the segmentation is the active segmentation being used in the viewer
@@ -64,6 +69,26 @@ type Segmentation = {
   type: cstEnums.SegmentationRepresentations;
   // if labelmap, the id of the volume that the labelmap is associated with
   volumeId?: string;
+};
+
+// Schema to generate a segmentation
+type SegmentationSchema = {
+  // active segment index for the segmentation
+  activeSegmentIndex: number;
+  // statistics that are derived from the segmentation
+  cachedStats: Record<string, number>;
+  // the displayText for the segmentation in the panels
+  displayText?: string[];
+  // segmentation id
+  id: string;
+  // segmentation label
+  label: string;
+  // segment indices that are locked for the segmentation
+  segmentsLocked: Set<number>;
+  // the type of the segmentation (e.g., Labelmap etc.)
+  type: cstEnums.SegmentationRepresentations;
+  // the volume id of the volume that the labelmap is associated with, this only exists for the labelmap representation
+  volumeId: string;
 };
 
 const EVENTS = {
@@ -99,7 +124,7 @@ class SegmentationService {
 
     this.servicesManager = servicesManager;
 
-    this.initSegmentationService();
+    this._initSegmentationService();
   }
 
   public destroy = () => {
@@ -114,11 +139,26 @@ class SegmentationService {
     );
   };
 
-  public addSegmentToSegmentation(
+  /**
+   * It adds a segment to a segmentation, basically just setting the properties for
+   * the segment
+   * @param segmentationId - The ID of the segmentation you want to add a
+   * segment to.
+   * @param segmentIndex - The index of the segment to add.
+   * @param properties - The properties of the segment to add including
+   * -- label: the label of the segment
+   * -- color: the color of the segment
+   * -- opacity: the opacity of the segment
+   * -- visibility: the visibility of the segment (boolean)
+   * -- isLocked: whether the segment is locked for editing
+   * -- active: whether the segment is currently the active segment to be edited
+   */
+  public addSegment(
     segmentationId: string,
     segmentIndex: number,
-    label: string,
+    toolGroupId?: string,
     properties?: {
+      label?: string;
       color?: Types.Point3;
       opacity?: number;
       visibility?: boolean;
@@ -130,11 +170,16 @@ class SegmentationService {
       throw new Error('Segment index 0 is reserved for "no label"');
     }
 
+    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+
     const {
       segmentationRepresentationUID,
       segmentation,
-      toolGroupId,
-    } = this._getSegmentationInfo(segmentationId);
+    } = this._getSegmentationInfo(segmentationId, toolGroupId);
+
+    if (segmentation.segments[segmentIndex]) {
+      throw new Error(`Segment ${segmentIndex} already exists`);
+    }
 
     const rgbaColor = cstSegmentation.config.color.getColorForSegmentIndex(
       toolGroupId,
@@ -143,7 +188,7 @@ class SegmentationService {
     );
 
     segmentation.segments[segmentIndex] = {
-      label,
+      label: properties.label,
       segmentIndex: segmentIndex,
       color: [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
       opacity: rgbaColor[3],
@@ -164,42 +209,41 @@ class SegmentationService {
       } = properties;
 
       if (newColor !== undefined) {
-        this._setSegmentColorForSegmentation(
+        this._setSegmentColor(
           segmentationId,
           segmentIndex,
           newColor,
+          toolGroupId,
           suppressEvents
         );
       }
 
       if (opacity !== undefined) {
-        this._setSegmentOpacityForSegmentation(
+        this._setSegmentOpacity(
           segmentationId,
           segmentIndex,
           opacity,
+          toolGroupId,
           suppressEvents
         );
       }
 
       if (visibility !== undefined) {
-        this._setSegmentVisibilityForSegmentation(
+        this._setSegmentVisibility(
           segmentationId,
           segmentIndex,
           visibility,
+          toolGroupId,
           suppressEvents
         );
       }
 
       if (active !== undefined) {
-        this._setActiveSegmentForSegmentation(
-          segmentationId,
-          segmentIndex,
-          suppressEvents
-        );
+        this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
       }
 
       if (isLocked !== undefined) {
-        this._setSegmentLockedForSegmentation(
+        this._setSegmentLocked(
           segmentationId,
           segmentIndex,
           isLocked,
@@ -209,11 +253,7 @@ class SegmentationService {
     }
 
     if (segmentation.activeSegmentIndex === null) {
-      this._setActiveSegmentForSegmentation(
-        segmentationId,
-        segmentIndex,
-        suppressEvents
-      );
+      this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
     }
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
@@ -221,10 +261,7 @@ class SegmentationService {
     });
   }
 
-  public removeSegmentFromSegmentation(
-    segmentationId: string,
-    segmentIndex: number
-  ): void {
+  public removeSegment(segmentationId: string, segmentIndex: number): void {
     const segmentation = this.getSegmentation(segmentationId);
 
     if (segmentation === undefined) {
@@ -244,6 +281,7 @@ class SegmentationService {
     delete segmentation.segments[segmentIndex];
 
     // Get volume and delete the labels
+    // Todo: handle other segmentations other than labelmap
     const labelmapVolume = this.getLabelmapVolume(segmentationId);
 
     const { scalarData, dimensions } = labelmapVolume;
@@ -282,11 +320,7 @@ class SegmentationService {
         ? Number(segmentIndices[0])
         : 1;
 
-      this._setActiveSegmentForSegmentation(
-        segmentationId,
-        newActiveSegmentIndex,
-        true
-      );
+      this._setActiveSegment(segmentationId, newActiveSegmentIndex, true);
     }
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
@@ -294,16 +328,19 @@ class SegmentationService {
     });
   }
 
-  public setSegmentVisibilityForSegmentation(
+  public setSegmentVisibility(
     segmentationId: string,
     segmentIndex: number,
-    isVisible: boolean
+    isVisible: boolean,
+    toolGroupId?: string
   ): void {
-    this._setSegmentVisibilityForSegmentation(
+    const suppressEvents = false;
+    this._setSegmentVisibility(
       segmentationId,
       segmentIndex,
       isVisible,
-      false
+      toolGroupId,
+      suppressEvents
     );
   }
 
@@ -312,34 +349,37 @@ class SegmentationService {
     segmentIndex: number,
     isLocked: boolean
   ): void {
-    this._setSegmentLockedForSegmentation(
+    const suppressEvents = false;
+    this._setSegmentLocked(
       segmentationId,
       segmentIndex,
       isLocked,
-      false
+      suppressEvents
     );
   }
 
-  public setSegmentLabelForSegmentation(
+  public setSegmentLabel(
     segmentationId: string,
     segmentIndex: number,
-    label: string
+    segmentLabel: string
   ): void {
-    this._setSegmentLabelForSegmentation(segmentationId, segmentIndex, label);
+    this._setSegmentLabel(segmentationId, segmentIndex, segmentLabel);
   }
 
-  public setSegmentColorForSegmentation(
+  public setSegmentColor(
     segmentationId: string,
     segmentIndex: number,
-    color: Types.Point3
+    color: Types.Point3,
+    toolGroupId?: string
   ): void {
-    this._setSegmentColorForSegmentation(segmentationId, segmentIndex, color);
+    this._setSegmentColor(segmentationId, segmentIndex, color, toolGroupId);
   }
 
-  public setSegmentRGBAForSegmentation = (
+  public setSegmentRGBA = (
     segmentationId: string,
     segmentIndex: number,
-    rgbaColor: cstTypes.Color
+    rgbaColor: cstTypes.Color,
+    toolGroupId?: string
   ): void => {
     const segmentation = this.getSegmentation(segmentationId);
 
@@ -348,17 +388,19 @@ class SegmentationService {
     }
 
     const suppressEvents = true;
-    this._setSegmentOpacityForSegmentation(
+    this._setSegmentOpacity(
       segmentationId,
       segmentIndex,
       rgbaColor[3],
+      toolGroupId,
       suppressEvents
     );
 
-    this._setSegmentColorForSegmentation(
+    this._setSegmentColor(
       segmentationId,
       segmentIndex,
       [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
+      toolGroupId,
       suppressEvents
     );
 
@@ -367,51 +409,34 @@ class SegmentationService {
     });
   };
 
-  public setSegmentOpacityForSegmentation(
+  public setSegmentOpacity(
     segmentationId: string,
     segmentIndex: number,
-    opacity: number
+    opacity: number,
+    toolGroupId?: string
   ): void {
-    this._setSegmentOpacityForSegmentation(
-      segmentationId,
-      segmentIndex,
-      opacity
-    );
+    this._setSegmentOpacity(segmentationId, segmentIndex, opacity, toolGroupId);
   }
 
   public setActiveSegmentationForToolGroup(
     segmentationId: string,
     toolGroupId?: string
   ): void {
-    if (toolGroupId === undefined) {
-      toolGroupId = this.getToolGroupId();
-    }
+    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
 
-    this._setActiveSegmentationForToolGroup(segmentationId, toolGroupId, false);
-  }
-
-  private getSegmentationRepresentation(segmentationId, toolGroupId) {
-    const segmentationRepresentations = cstSegmentation.state.getSegmentationRepresentations(
-      toolGroupId
+    const suppressEvents = false;
+    this._setActiveSegmentationForToolGroup(
+      segmentationId,
+      toolGroupId,
+      suppressEvents
     );
-
-    if (segmentationRepresentations.length === 0) {
-      return;
-    }
-    // Todo: this finds the first segmentation representation that matches the segmentationId
-    // If there are two labelmap representations from the same segmentation, this will not work
-    const representation = segmentationRepresentations.find(
-      representation => representation.segmentationId === segmentationId
-    );
-
-    return representation;
   }
 
   public setActiveSegmentForSegmentation(
     segmentationId: string,
     segmentIndex: number
   ): void {
-    this._setActiveSegmentForSegmentation(segmentationId, segmentIndex, false);
+    this._setActiveSegment(segmentationId, segmentIndex, false);
   }
 
   /**
@@ -438,7 +463,7 @@ class SegmentationService {
   }
 
   public addOrUpdateSegmentation(
-    segmentationSchema,
+    segmentationSchema: SegmentationSchema,
     notYetUpdatedAtSource = false
   ) {
     const { id: segmentationId } = segmentationSchema;
@@ -448,7 +473,7 @@ class SegmentationService {
       // Update the segmentation (mostly for assigning metadata/labels)
       Object.assign(segmentation, segmentationSchema);
 
-      this.updateCornerstoneSegmentations({
+      this._updateCornerstoneSegmentations({
         segmentationId,
         notYetUpdatedAtSource,
       });
@@ -456,61 +481,60 @@ class SegmentationService {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
         segmentation,
       });
-    } else {
-      // Add the segmentation
-      cstSegmentation.addSegmentations([
-        {
-          segmentationId,
-          representation: {
-            // The type of segmentation
-            type: csToolsEnums.SegmentationRepresentations.Labelmap,
-            // The actual segmentation data, in the case of labelmap this is a
-            // reference to the source volume of the segmentation.
-            // TODO: will need to generalise this when we have segmentations
-            // other than labelmaps.
-            data: {
-              volumeId: segmentationId,
-            },
+
+      return;
+    }
+
+    // Add the segmentation otherwise
+    cstSegmentation.addSegmentations([
+      {
+        segmentationId,
+        representation: {
+          type: LABELMAP,
+          // Todo: need to be generalized
+          data: {
+            volumeId: segmentationId,
           },
         },
-      ]);
+      },
+    ]);
 
-      // Define a new color LUT and associate it with this segmentation.
-      const newColorLUT = this.generateNewColorLUT();
-      const newColorLUTIndex = this.getNextColorLUTIndex();
+    // Define a new color LUT and associate it with this segmentation.
 
-      cstSegmentation.config.color.addColorLUT(newColorLUT, newColorLUTIndex);
+    // Todo: need to be generalized to accept custom color LUTs
+    const newColorLUT = this.generateNewColorLUT();
+    const newColorLUTIndex = this.getNextColorLUTIndex();
 
-      if (
-        segmentationSchema.label === undefined ||
-        segmentationSchema.label === ''
-      ) {
-        segmentationSchema.label = 'Segmentation';
-      }
+    cstSegmentation.config.color.addColorLUT(newColorLUT, newColorLUTIndex);
 
-      this.segmentations[segmentationId] = {
-        ...segmentationSchema,
-        segments: [],
-        activeSegmentIndex: null,
-        segmentCount: 0,
-        // Default to false, consumer should set it active using the API, may be adding lots of segmentations at once.
-        isActive: false,
-        colorLUTIndex: newColorLUTIndex,
-        isVisible: true,
-        modified: false,
-      };
-
-      segmentation = this.segmentations[segmentationId];
-
-      this.updateCornerstoneSegmentations({
-        segmentationId,
-        notYetUpdatedAtSource: true,
-      });
-
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
-        segmentation,
-      });
+    if (
+      segmentationSchema.label === undefined ||
+      segmentationSchema.label === ''
+    ) {
+      segmentationSchema.label = 'Segmentation';
     }
+
+    this.segmentations[segmentationId] = {
+      ...segmentationSchema,
+      segments: [],
+      activeSegmentIndex: segmentationSchema.activeSegmentIndex ?? null,
+      segmentCount: 0,
+      // Default to false, consumer should set it active using the API, may be adding lots of segmentations at once.
+      isActive: false,
+      colorLUTIndex: newColorLUTIndex,
+      isVisible: true,
+    };
+
+    segmentation = this.segmentations[segmentationId];
+
+    this._updateCornerstoneSegmentations({
+      segmentationId,
+      notYetUpdatedAtSource: true,
+    });
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+      segmentation,
+    });
   }
 
   public createSegmentationForDisplaySet = async (
@@ -523,37 +547,24 @@ class SegmentationService {
 
     // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
     // it is easily compressible in worker thread.
-    const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(
-      volumeId,
-      {
-        volumeId: segmentationId,
-        targetBuffer: {
-          type: 'Uint8Array',
-        },
-      }
-    );
-
-    // Force use of a shared array buffer
-    const sab = csUtils.createUint8SharedArray(derivedVolume.scalarData.length);
-
-    const scalarArray = vtkDataArray.newInstance({
-      name: 'Pixels',
-      numberOfComponents: 1,
-      values: sab,
+    await volumeLoader.createAndCacheDerivedVolume(volumeId, {
+      volumeId: segmentationId,
+      targetBuffer: {
+        type: 'Uint8Array',
+        sharedArrayBuffer: true,
+      },
     });
 
-    derivedVolume.scalarData = sab;
-    derivedVolume.imageData.getPointData().setScalars(scalarArray);
-
-    const segmentationSchema = {
+    const segmentationSchema: SegmentationSchema = {
       id: segmentationId,
       volumeId: segmentationId,
+      activeSegmentIndex: 1,
+      cachedStats: {},
+      label: options?.label,
+      segmentsLocked: new Set(),
+      type: LABELMAP,
+      displayText: [],
     };
-
-    if (options?.label !== undefined) {
-      // @ts-ignore
-      segmentationSchema.label = options.label;
-    }
 
     this.addOrUpdateSegmentation(segmentationSchema);
 
@@ -608,7 +619,7 @@ class SegmentationService {
    *
    * @param {string} segmentationId The segmentation id
    */
-  public remove(segmentationId: string) {
+  public remove(segmentationId: string): void {
     const segmentation = this.segmentations[segmentationId];
     const wasActive = segmentation.isActive;
 
@@ -621,11 +632,11 @@ class SegmentationService {
 
     const { colorLUTIndex } = segmentation;
 
-    this.removeSegmentationFromCornerstone(segmentationId);
+    this._removeSegmentationFromCornerstone(segmentationId);
 
     // Delete associated colormap
     // Todo: bring this back
-    // cstSegmentation.state.removeColorLUT(colorLUTIndex);
+    cstSegmentation.state.removeColorLUT(colorLUTIndex);
 
     delete this.segmentations[segmentationId];
 
@@ -639,7 +650,7 @@ class SegmentationService {
 
         this._setActiveSegmentationForToolGroup(
           id,
-          this.getToolGroupId(),
+          this._getFirstToolGroupId(),
           false
         );
       }
@@ -650,24 +661,16 @@ class SegmentationService {
     });
   }
 
-  public getConfiguration = (): SegmentationConfig => {
-    // TODO: Need to think hot to generalize this. Takes first toolgroup
-    // to get brush info. Brush info _should_ be per tool group, so need to think
-    // about how we do this for multiple tool groups.
-    const firstToolGroupId = this.getToolGroupId();
+  public getConfiguration = (toolGroupId?: string): SegmentationConfig => {
+    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
 
-    let brushSize;
-    let brushThresholdGate;
+    const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(
+      toolGroupId
+    );
 
-    if (firstToolGroupId) {
-      brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(
-        firstToolGroupId
-      );
-
-      brushThresholdGate = cstUtils.segmentation.getBrushThresholdForToolGroup(
-        firstToolGroupId
-      );
-    }
+    const brushThresholdGate = cstUtils.segmentation.getBrushThresholdForToolGroup(
+      toolGroupId
+    );
 
     const config = cstSegmentation.config.getGlobalConfig();
     const { renderInactiveSegmentations } = config;
@@ -676,52 +679,52 @@ class SegmentationService {
 
     const {
       renderOutline,
-      outlineWidthActive: outlineThickness,
+      outlineWidthActive,
       renderFill,
-      fillAlpha: fillOpacity,
-      fillAlphaInactive: inactiveSegmentationOpacity,
+      fillAlpha,
+      fillAlphaInactive,
     } = labelmapRepresentationConfig;
 
     return {
-      renderOutline,
-      outlineThickness,
-      fillOpacity,
-      renderFill,
-      renderInactiveSegmentations,
-      inactiveSegmentationOpacity,
       brushSize,
       brushThresholdGate,
+      fillAlpha,
+      fillAlphaInactive,
+      outlineWidthActive,
+      renderFill,
+      renderInactiveSegmentations,
+      renderOutline,
     };
   };
 
-  public setConfiguration = (configuration: SegmentationConfig) => {
+  public setConfiguration = (configuration: SegmentationConfig): void => {
     const {
-      renderOutline,
-      outlineThickness,
-      fillOpacity,
-      renderFill,
-      renderInactiveSegmentations,
-      inactiveSegmentationOpacity,
       brushSize,
       brushThresholdGate,
+      fillAlpha,
+      fillAlphaInactive,
+      outlineWidthActive,
+      renderFill,
+      renderInactiveSegmentations,
+      renderOutline,
     } = configuration;
 
     if (renderOutline !== undefined) {
-      this.setLabelmapConfigValue('renderOutline', renderOutline);
+      this._setLabelmapConfigValue('renderOutline', renderOutline);
     }
 
-    if (outlineThickness !== undefined) {
+    if (outlineWidthActive !== undefined) {
       // Set for both active and inactive segmentations
-      this.setLabelmapConfigValue('outlineWidthActive', outlineThickness);
-      this.setLabelmapConfigValue('outlineWidthInactive', outlineThickness);
+      this._setLabelmapConfigValue('outlineWidthActive', outlineWidthActive);
+      this._setLabelmapConfigValue('outlineWidthInactive', outlineWidthActive);
     }
 
-    if (fillOpacity !== undefined) {
-      this.setLabelmapConfigValue('fillAlpha', fillOpacity);
+    if (fillAlpha !== undefined) {
+      this._setLabelmapConfigValue('fillAlpha', fillAlpha);
     }
 
     if (renderFill !== undefined) {
-      this.setLabelmapConfigValue('renderFill', renderFill);
+      this._setLabelmapConfigValue('renderFill', renderFill);
     }
 
     if (renderInactiveSegmentations !== undefined) {
@@ -731,11 +734,8 @@ class SegmentationService {
       cstSegmentation.config.setGlobalConfig(config);
     }
 
-    if (inactiveSegmentationOpacity !== undefined) {
-      this.setLabelmapConfigValue(
-        'fillAlphaInactive',
-        inactiveSegmentationOpacity
-      );
+    if (fillAlphaInactive !== undefined) {
+      this._setLabelmapConfigValue('fillAlphaInactive', fillAlphaInactive);
     }
 
     if (brushSize !== undefined) {
@@ -751,7 +751,7 @@ class SegmentationService {
     if (brushThresholdGate !== undefined) {
       const { ToolGroupService } = this.servicesManager.services;
 
-      const toolGroupIds = ToolGroupService.getToolGroupIds();
+      const toolGroupIds = ToolGroupService.getFirstToolGroupIds();
 
       toolGroupIds.forEach(toolGroupId => {
         cstUtils.segmentation.setBrushThresholdForToolGroup(
@@ -787,11 +787,13 @@ class SegmentationService {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
     }
 
-    segmentations.forEach(segmentation => {
-      segmentation.isActive = segmentation.id === segmentationId;
-    });
+    // Todo: this has a bug in which others are not set to inactive,
+    // commenting it for now
+    // segmentations.forEach(segmentation => {
+    //   segmentation.isActive = segmentation.id === segmentationId;
+    // });
 
-    const representation = this.getSegmentationRepresentation(
+    const representation = this._getSegmentationRepresentation(
       segmentationId,
       toolGroupId
     );
@@ -822,7 +824,7 @@ class SegmentationService {
 
     segmentation.isVisible = !segmentation.isVisible;
 
-    this.updateCornerstoneSegmentationVisibility(segmentationId);
+    this._updateCornerstoneSegmentationVisibility(segmentationId);
 
     if (suppressEvents === false) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
@@ -831,7 +833,7 @@ class SegmentationService {
     }
   };
 
-  private _setActiveSegmentForSegmentation(
+  private _setActiveSegment(
     segmentationId: string,
     segmentIndex: number,
     suppressEvents = false
@@ -856,160 +858,11 @@ class SegmentationService {
     }
   }
 
-  private _setSegmentLabelForSegmentation(
-    segmentationId: string,
-    segmentIndex: number,
-    label: string,
-    suppressEvents = false
-  ) {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-    }
-
-    const segmentInfo = segmentation.segments[segmentIndex];
-
-    if (segmentInfo === undefined) {
-      throw new Error(
-        `Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`
-      );
-    }
-
-    segmentInfo.label = label;
-
-    if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-        segmentation,
-      });
-    }
-  }
-
-  private setLabelmapConfigValue = (property, value) => {
-    const config = cstSegmentation.config.getGlobalConfig();
-
-    config.representations.LABELMAP[property] = value;
-    cstSegmentation.config.setGlobalConfig(config);
-
-    const { CornerstoneViewportService } = this.servicesManager.services;
-
-    const renderingEngine = CornerstoneViewportService.getRenderingEngine();
-    const viewportIds = CornerstoneViewportService.getViewportIds();
-
-    renderingEngine.renderViewports(viewportIds);
-  };
-
-  private initSegmentationService() {
-    // Connect Segmentation Service to Cornerstone3D.
-    eventTarget.addEventListener(
-      csToolsEnums.Events.SEGMENTATION_MODIFIED,
-      this._onSegmentationModified
-    );
-
-    eventTarget.addEventListener(
-      csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
-      this._onSegmentationDataModified
-    );
-  }
-
-  private _onSegmentationDataModified = evt => {
-    const { segmentationId } = evt.detail;
-
-    const segmentation = this.getSegmentation(segmentationId);
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_DATA_MODIFIED, {
-      segmentation,
-    });
-  };
-
-  private _onSegmentationModified = evt => {
-    const { segmentationId } = evt.detail;
-
-    const segmentation = this.segmentations[segmentationId];
-
-    if (segmentation === undefined) {
-      // Part of add operation, not update operation, exit early.
-      return;
-    }
-
-    const segmentationState = cstSegmentation.state.getSegmentation(
-      segmentationId
-    );
-
-    if (!segmentationState) {
-      return;
-    }
-
-    if (
-      !Object.keys(segmentationState.representationData).includes(
-        csToolsEnums.SegmentationRepresentations.Labelmap
-      )
-    ) {
-      throw new Error('Non-labelmap representations are not supported yet');
-    }
-
-    const {
-      activeSegmentIndex,
-      cachedStats,
-      segmentsLocked,
-      representationData,
-      label,
-      type,
-    } = segmentationState;
-
-    const labelmapRepresentationData =
-      representationData[csToolsEnums.SegmentationRepresentations.Labelmap];
-
-    // TODO: handle other representations when available in cornerstone3D
-    const segmentationSchema = {
-      activeSegmentIndex,
-      cachedStats,
-      displayText: [],
-      id: segmentationId,
-      label,
-      segmentsLocked,
-      type,
-      volumeId: labelmapRepresentationData.volumeId,
-    };
-
-    try {
-      this.addOrUpdateSegmentation(segmentationSchema);
-    } catch (error) {
-      console.warn(
-        `Failed to add/update segmentation ${segmentationId}`,
-        error
-      );
-    }
-  };
-
-  private _getSegmentationInfo(segmentationId: string) {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-    }
-    const toolGroupId = this.getToolGroupId();
-
-    const segmentationRepresentation = this.getSegmentationRepresentation(
-      segmentationId,
-      toolGroupId
-    );
-
-    if (!segmentationRepresentation) {
-      throw new Error(
-        'Must add representation to toolgroup before setting segments, currently'
-      );
-    }
-
-    const { segmentationRepresentationUID } = segmentationRepresentation;
-
-    return { segmentationRepresentationUID, segmentation, toolGroupId };
-  }
-
-  private _setSegmentColorForSegmentation = (
+  private _setSegmentColor = (
     segmentationId: string,
     segmentIndex: number,
     color: Types.Point3,
+    toolGroupId?: string,
     suppressEvents = false
   ) => {
     const segmentation = this.getSegmentation(segmentationId);
@@ -1026,8 +879,9 @@ class SegmentationService {
       );
     }
 
-    const toolGroupId = this.getToolGroupId();
-    const segmentationRepresentation = this.getSegmentationRepresentation(
+    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+
+    const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
       toolGroupId
     );
@@ -1061,7 +915,7 @@ class SegmentationService {
     }
   };
 
-  private _setSegmentLockedForSegmentation(
+  private _setSegmentLocked(
     segmentationId: string,
     segmentIndex: number,
     isLocked: boolean,
@@ -1096,17 +950,19 @@ class SegmentationService {
     }
   }
 
-  private _setSegmentVisibilityForSegmentation(
+  private _setSegmentVisibility(
     segmentationId: string,
     segmentIndex: number,
     isVisible: boolean,
+    toolGroupId?: string,
     suppressEvents = false
   ) {
+    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+
     const {
-      toolGroupId,
       segmentationRepresentationUID,
       segmentation,
-    } = this._getSegmentationInfo(segmentationId);
+    } = this._getSegmentationInfo(segmentationId, toolGroupId);
 
     if (segmentation === undefined) {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
@@ -1136,10 +992,11 @@ class SegmentationService {
     }
   }
 
-  private _setSegmentOpacityForSegmentation = (
+  private _setSegmentOpacity = (
     segmentationId: string,
     segmentIndex: number,
     opacity: number,
+    toolGroupId?: string,
     suppressEvents = false
   ) => {
     const segmentation = this.getSegmentation(segmentationId);
@@ -1156,8 +1013,9 @@ class SegmentationService {
       );
     }
 
-    const toolGroupId = this.getToolGroupId();
-    const segmentationRepresentation = this.getSegmentationRepresentation(
+    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+
+    const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
       toolGroupId
     );
@@ -1191,7 +1049,173 @@ class SegmentationService {
     }
   };
 
-  private removeSegmentationFromCornerstone(segmentationId: string) {
+  private _setSegmentLabel(
+    segmentationId: string,
+    segmentIndex: number,
+    segmentLabel: string,
+    suppressEvents = false
+  ) {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (segmentation === undefined) {
+      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+    }
+
+    const segmentInfo = segmentation.segments[segmentIndex];
+
+    if (segmentInfo === undefined) {
+      throw new Error(
+        `Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`
+      );
+    }
+
+    segmentInfo.label = segmentLabel;
+
+    if (suppressEvents === false) {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+        segmentation,
+      });
+    }
+  }
+
+  private _getSegmentationRepresentation(segmentationId, toolGroupId) {
+    const segmentationRepresentations = this.getSegmentationRepresentationsForToolGroup(
+      toolGroupId
+    );
+
+    if (segmentationRepresentations.length === 0) {
+      return;
+    }
+
+    // Todo: this finds the first segmentation representation that matches the segmentationId
+    // If there are two labelmap representations from the same segmentation, this will not work
+    const representation = segmentationRepresentations.find(
+      representation => representation.segmentationId === segmentationId
+    );
+
+    return representation;
+  }
+
+  private _setLabelmapConfigValue = (property, value) => {
+    const config = cstSegmentation.config.getGlobalConfig();
+
+    config.representations.LABELMAP[property] = value;
+    cstSegmentation.config.setGlobalConfig(config);
+
+    const { CornerstoneViewportService } = this.servicesManager.services;
+
+    const renderingEngine = CornerstoneViewportService.getRenderingEngine();
+    const viewportIds = CornerstoneViewportService.getViewportIds();
+
+    renderingEngine.renderViewports(viewportIds);
+  };
+
+  private _initSegmentationService() {
+    // Connect Segmentation Service to Cornerstone3D.
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_MODIFIED,
+      this._onSegmentationModified
+    );
+
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
+      this._onSegmentationDataModified
+    );
+  }
+
+  private _onSegmentationDataModified = evt => {
+    const { segmentationId } = evt.detail;
+
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (segmentation === undefined) {
+      // Part of add operation, not update operation, exit early.
+      return;
+    }
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_DATA_MODIFIED, {
+      segmentation,
+    });
+  };
+
+  private _onSegmentationModified = evt => {
+    const { segmentationId } = evt.detail;
+
+    const segmentation = this.segmentations[segmentationId];
+
+    if (segmentation === undefined) {
+      // Part of add operation, not update operation, exit early.
+      return;
+    }
+
+    const segmentationState = cstSegmentation.state.getSegmentation(
+      segmentationId
+    );
+
+    if (!segmentationState) {
+      return;
+    }
+
+    if (!Object.keys(segmentationState.representationData).includes(LABELMAP)) {
+      throw new Error('Non-labelmap representations are not supported yet');
+    }
+
+    const {
+      activeSegmentIndex,
+      cachedStats,
+      segmentsLocked,
+      representationData,
+      label,
+      type,
+    } = segmentationState;
+
+    const labelmapRepresentationData = representationData[LABELMAP];
+
+    // TODO: handle other representations when available in cornerstone3D
+    const segmentationSchema = {
+      activeSegmentIndex,
+      cachedStats,
+      displayText: [],
+      id: segmentationId,
+      label,
+      segmentsLocked,
+      type,
+      volumeId: labelmapRepresentationData.volumeId,
+    };
+
+    try {
+      this.addOrUpdateSegmentation(segmentationSchema);
+    } catch (error) {
+      console.warn(
+        `Failed to add/update segmentation ${segmentationId}`,
+        error
+      );
+    }
+  };
+
+  private _getSegmentationInfo(segmentationId: string, toolGroupId: string) {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (segmentation === undefined) {
+      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+    }
+    const segmentationRepresentation = this._getSegmentationRepresentation(
+      segmentationId,
+      toolGroupId
+    );
+
+    if (!segmentationRepresentation) {
+      throw new Error(
+        'Must add representation to toolgroup before setting segments, currently'
+      );
+    }
+
+    const { segmentationRepresentationUID } = segmentationRepresentation;
+
+    return { segmentationRepresentationUID, segmentation };
+  }
+
+  private _removeSegmentationFromCornerstone(segmentationId: string) {
     // TODO: This should be from the configuration
     const removeFromCache = true;
     const segmentationState = cstSegmentation.state;
@@ -1232,7 +1256,7 @@ class SegmentationService {
     }
   }
 
-  private updateCornerstoneSegmentations({
+  private _updateCornerstoneSegmentations({
     segmentationId,
     notYetUpdatedAtSource,
   }) {
@@ -1252,7 +1276,7 @@ class SegmentationService {
     }
   }
 
-  private updateCornerstoneSegmentationVisibility = segmentationId => {
+  private _updateCornerstoneSegmentationVisibility = segmentationId => {
     const segmentationState = cstSegmentation.state;
     const toolGroupIds = segmentationState.getToolGroupsWithSegmentation(
       segmentationId
@@ -1286,15 +1310,9 @@ class SegmentationService {
     });
   };
 
-  private getToolGroupId = () => {
+  private _getFirstToolGroupId = () => {
     const { ToolGroupService } = this.servicesManager.services;
     const toolGroupIds = ToolGroupService.getToolGroupIds();
-
-    if (toolGroupIds.length > 1) {
-      console.warn(
-        'The Segmentation Service currently supports one tool group. There is a mapping from one segmentation to multiple different segmentationRepresentations that needs to be generalised'
-      );
-    }
 
     return toolGroupIds[0];
   };

@@ -94,7 +94,7 @@ export default function PanelRoiThresholdSegmentation({
       selectedSegmentationId
     );
 
-    const data = {
+    const cachedStats = {
       lesionStats,
       suvPeak,
       lesionGlyoclysisStats,
@@ -103,8 +103,9 @@ export default function PanelRoiThresholdSegmentation({
     const notYetUpdatedAtSource = true;
     SegmentationService.addOrUpdateSegmentation(
       {
-        ...Object.assign(segmentation, data),
-        text: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
+        ...segmentation,
+        ...Object.assign(segmentation.cachedStats, cachedStats),
+        displayText: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
       },
       notYetUpdatedAtSource
     );

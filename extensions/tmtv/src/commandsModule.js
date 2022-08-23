@@ -12,6 +12,7 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
+const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
 const commandsModule = ({
   servicesManager,
@@ -133,10 +134,10 @@ const commandsModule = ({
         ptDisplaySet.displaySetInstanceUID
       );
 
+      // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
-      const representationType =
-        csTools.Enums.SegmentationRepresentations.Labelmap;
+      const representationType = LABELMAP;
 
       for (const toolGroupId of toolGroupIds) {
         await SegmentationService.addSegmentationRepresentationToToolGroup(
@@ -169,9 +170,7 @@ const commandsModule = ({
       );
 
       const { representationData } = segmentation;
-      const { volumeId: segVolumeId } = representationData[
-        csTools.Enums.SegmentationRepresentations.Labelmap
-      ];
+      const { volumeId: segVolumeId } = representationData[LABELMAP];
 
       const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
 
@@ -452,7 +451,7 @@ const commandsModule = ({
       let report = {};
 
       for (const segmentation of segmentations) {
-        const { id, label, data } = segmentation;
+        const { id, label, cachedStats: data } = segmentation;
 
         const segReport = { id, label };
 
@@ -472,7 +471,7 @@ const commandsModule = ({
           }
         });
 
-        const labelmapVolume = cornerstone.cache.getVolume(id);
+        const labelmapVolume = SegmentationService.getLabelmapVolume(id);
 
         if (!labelmapVolume) {
           report[id] = segReport;
@@ -482,7 +481,7 @@ const commandsModule = ({
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume = cornerstone.cache.getVolume(
+        const referencedVolume = SegmentationService.getLabelmapVolume(
           referencedVolumeId
         );
 
