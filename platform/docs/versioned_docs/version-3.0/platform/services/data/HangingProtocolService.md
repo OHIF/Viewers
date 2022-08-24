@@ -9,19 +9,23 @@ sidebar_label: Hanging Protocol Service
 
 `HangingProtocolService` is a migration of the `OHIF-v1` hanging protocol
 engine. This service handles the arrangement of the images in the viewport. In
-short, the registered protocols will get matched with the Series that are
-available for the series. Each protocol gets a point, and they are ranked. The
+short, the registered protocols will get matched with the DisplaySets that are
+available for the study. Each protocol gets a score, and they are ranked. The
 winning protocol gets applied and its settings run for the viewports.
 
 You can read more about hanging protocols
 [here](http://dicom.nema.org/dicom/Conf-2005/Day-2_Selected_Papers/B305_Morgan_HangProto_v1.pdf).
 In short with `OHIF-v3` hanging protocols you can:
 
-- Define what layout of the viewport should the viewer starts with (2x2 layout)
+- Define what layout of the viewport should the viewer starts with (eg 2x2 layout)
 - Define which series gets displayed in which position of the layout
 - Apply certain initial viewport settings; e.g., inverting the contrast
 - Enable certain tools based on what series are displayed: link prostate T2 and
   ADC MRI.
+- Apply synchronization settings between different viewports or between setting and viewports
+- Register custom synchronization settings for viewports
+- Register custom attribute extractors
+- Select "next display set" from the matching display sets, both on navigation and initial view
 
 ## Skeleton of A Hanging Protocol
 
@@ -127,6 +131,7 @@ const defaultProtocol = {
 Let's discuss each property in depth.
 
 - `id`: unique identifier for the protocol
+- `name`: Name displayed to the user to select this protocol
 
 - `protocolMatchingRules`: A list of criteria for the protocol along with the
   provided points for ranking.
@@ -235,17 +240,6 @@ There are two events that get publish in `HangingProtocolService`:
 
 - `addCustomAttribute`: adding a custom attribute for matching. (see below)
 
-- `addCustomViewportSetting`: adding a custom setting to a viewport (initial
-  `voi`). Below, we explain in detail how to add custom viewport settings via
-  protocol definitions. `addCustomViewportSetting` is another way to set these
-  settings which is exposed by API
-
-- `hps.applyCustomViewportSettings(viewportOptions, viewport,...args)` will run
-  the callback registered with addCustomViewportSetting for all custom settings
-  whose name matches the id of the custom viewport, with the arguments (id, value, viewport, ...args)
-
-
-
 Default initialization of the modes handles running the `HangingProtocolService`
 
 ## Custom Attribute
@@ -259,30 +253,25 @@ and you want to match based on it. Good news is that, in `OHIF-v3` you can
 define you custom attribute and use it for matching.
 
 There are various ways that you can let `HangingProtocolService` know of you
-custom attribute. We will show how to add it inside the mode configuration.
+custom attribute. We will show how to add it inside the an extension.  This extension
+also shows how to register a sync group service which can be referenced
+in the sync group settings.
 
 ```js
-const deafultProtocol = {
-  id: 'defaultProtocol',
+const myCustomProtocol = {
+  id: 'myCustomProtocol',
   /** ... **/
   protocolMatchingRules: [
     {
       id: 'vSjk7NCYjtdS3XZAw',
-      weight: 3,
-      attribute: 'timepoint',
+      attribute: 'timepointId',
       constraint: {
-        equals: {
-          value: 'first',
-        },
+        equals: 'first',
       },
       required: false,
     },
   ],
-  stages: [
-    /** ... **/
-  ],
-  numberOfPriorsReferenced: -1,
-};
+...
 
 // Custom function for custom attribute
 const getTimePointUID = metaData => {
@@ -290,45 +279,13 @@ const getTimePointUID = metaData => {
   return myBackEndAPI(metaData);
 };
 
-function modeFactory() {
-  return {
-    id: 'myMode',
-    /** .. **/
-    routes: [
-      {
-        path: 'myModeRoute',
-        init: async ({}) => {
-          const {
-            DicomMetadataStore,
-            HangingProtocolService,
-          } = servicesManager.services;
-
-          const onSeriesAdded = ({
-            StudyInstanceUID,
-            madeInClient = false,
-          }) => {
-            const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-
-            // Adding custom attribute to the hangingprotocol
-            HangingProtocolService.addCustomAttribute(
-              'timepoint',
-              'timepoint',
-              metaData => getFirstMeasurementSeriesInstanceUID(metaData)
-            );
-
-            HangingProtocolService.run(studyMetadata, DisplaySetService.getActiveDisplaySets());
-          };
-
-          DicomMetadataStore.subscribe(
-            DicomMetadataStore.EVENTS.SERIES_ADDED,
-            onSeriesAdded
-          );
-        },
-      },
-    ],
-    /** ... **/
-  };
-}
+ preRegistration: ({
+    servicesManager,
+  }) => {
+    const { HangingProtocolService, SyncGroupService } = servicesManager.services;
+    HangingProtocolService.addCustomAttribute('timepointId', 'TimePoint ID', getTimePointUID);
+    SyncGroupService.setSynchronizer('initialzoompan', initialZoomPan);
+  }
 ```
 
 ## Viewport Settings
@@ -377,3 +334,15 @@ viewportSettings: [
   },
 ];
 ```
+
+## Sync Groups
+The sync groups are listeners to events that synchronize viewport settings to
+some other settings.  There are three default/provided sync groups: `zoomPan`,
+`cameraPosition` and `voi`.  These are defined in the `syncGroups` array.
+Additionally, other synchronization types can be created and registered on the
+`SyncGroupService.setSynchronizer`, by registering a new id, and a creator method.
+
+The sync group service is specific to the `cornerstone-extension` because the
+actual behaviour of the synchronizers is dependent on the specific viewport.
+Different viewport types could redifine the same synchronizer names in
+different ways appropriate to that viewport.
