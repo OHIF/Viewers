@@ -13,8 +13,7 @@ Currently it works:</br>
 Guide</strong></a>
 
 <h3>Results</h3>
-<img src="https://user-images.githubusercontent.com/86238895/181750762-2f1b451a-aa0f-4cda-b4e5-a0be9284fb90.png" />
-- Video: https://user-images.githubusercontent.com/86238895/181758822-2a971043-1213-43dc-91cc-485038f73953.mp4
+<img src="https://user-images.githubusercontent.com/86238895/186395831-a460b9b7-89d9-4ba7-a4b6-c12867bd5a4d.png" />
 
 <h3>Features</h3>
 <ul>

@@ -31,7 +31,6 @@
     "@ohif/core": "^0.50.0",
     "dicom-parser": "^1.8.13",
     "cornerstone-core": "^2.6.1",
-    "c3": "^0.7.20",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
