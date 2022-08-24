@@ -84,7 +84,7 @@ class DicomECGViewport extends Component {
       this.divView,
       this.props.viewportIndex
     );
-    viewer.loadECG();
+    viewer.loadCanvas();
   }
 }
 
