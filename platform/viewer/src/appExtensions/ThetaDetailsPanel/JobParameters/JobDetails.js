@@ -57,7 +57,6 @@ const JobParameters = props => {
     // retrieving rectangle tool roi data from element
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-
     if (tool_data && tool_data.data.length > 0) {
       setToolData(tool_data.data[0]);
 
@@ -86,6 +85,13 @@ const JobParameters = props => {
     return () =>
       element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
   }, []);
+
+  useEffect(() => {
+    if (!isDisabled)
+      setTimeout(() => {
+        // document.getElementById('triggerNewJob').click();
+      }, 500);
+  }, [isDisabled]);
 
   const eventhandler = event => {
     setIsDisabled(true);
@@ -214,6 +220,10 @@ const JobParameters = props => {
           <label>
             <div className="triggerButton">
               <button
+                id="triggerNewJob"
+                style={{
+                  display: 'none',
+                }}
                 onClick={triggerJob}
                 disabled={isDisabled}
                 className="syncButton"
