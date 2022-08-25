@@ -62,7 +62,9 @@ function Local() {
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
     // Todo: navigate to work list and let user select a mode
-    navigate(`/viewer/dicomlocal?StudyInstanceUIDs=${studies[0]}`);
+    let query = new URLSearchParams();
+    studies.forEach(id=> query.append('StudyInstanceUIDs', id))
+    navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
   };
 
   // Set body style
