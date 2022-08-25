@@ -234,7 +234,7 @@ class MetadataProvider {
 
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
-        const { WindowCenter, WindowWidth } = instance;
+        const { WindowCenter, WindowWidth, VOILUTFunction } = instance;
         if (WindowCenter === undefined || WindowWidth === undefined) {
           return;
         }
@@ -248,6 +248,7 @@ class MetadataProvider {
         metadata = {
           windowCenter: toNumber(windowCenter),
           windowWidth: toNumber(windowWidth),
+          voiLUTFunction: VOILUTFunction
         };
 
         break;
