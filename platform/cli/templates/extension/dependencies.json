@@ -1,7 +1,7 @@
 {
   "repository": "OHIF/Viewers",
   "keywords": ["ohif-extension"],
-  "module": "src/index.js",
+  "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
     "npm": ">=6",
@@ -42,6 +42,7 @@
     "babel-plugin-inline-react-svg": "^2.0.1",
     "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.18.6",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^8.0.0-beta.4",
     "clean-webpack-plugin": "^4.0.0",
