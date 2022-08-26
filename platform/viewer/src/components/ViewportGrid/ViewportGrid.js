@@ -69,6 +69,7 @@ const ViewportGrid = function(props) {
   const changedSegmentsRef = useRef([]);
   const editedSegmentationRef = useRef({});
   const [loadingState, setLoadingState] = useState(true);
+  const [fetchedSegmentations, setFetchedSegmentations] = useState(false);
 
   useEffect(() => {
     console.log({
@@ -113,7 +114,6 @@ const ViewportGrid = function(props) {
     };
 
     targeDiv.addEventListener('mouseup', handleDragEnd);
-    onImportButtonClick();
 
     return () => {
       targeDiv.removeEventListener('mouseup', handleDragEnd);
@@ -206,6 +206,7 @@ const ViewportGrid = function(props) {
       viewportData.forEach(displaySet => {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
+      !fetchedSegmentations && onImportButtonClick();
     }
   }, [studies, viewportData, isStudyLoaded, snackbar]);
 
@@ -431,19 +432,9 @@ const ViewportGrid = function(props) {
     const labelmap2D = segmentationModule.getters.labelmap2D
       ? segmentationModule.getters.labelmap2D(element)
       : false;
-    console.log({ labelmap2D });
-
-    // if (!labelmap2D || !segmentationModule.getters.labelmap2D) {
-    //   console.warn('labelmap2D unavailable. retrying...', { labelmap2D });
-    //   return setTimeout(() => {
-    //     console.log('retrying');
-    //     addSegmentationToCanvas({
-    //       segmentation,
-    //       label,
-    //       element,
-    //     });
-    //   }, 2000);
-    // }
+    console.log({
+      labelmap2D,
+    });
 
     const {
       labelmap3D,
@@ -494,9 +485,6 @@ const ViewportGrid = function(props) {
       console.log({
         updatedLm2d: segmentationModule.getters.labelmap2D(element),
       });
-
-      refreshViewports();
-      triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
     } else {
       //theres something on this layer so we need to find the last layer and work on the one after it
       console.warn('layer occupied', labelmap3D);
@@ -526,67 +514,115 @@ const ViewportGrid = function(props) {
       console.log({
         updatedLm2d: segmentationModule.getters.labelmap2D(element),
       });
-
-      refreshViewports();
-      triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
     }
   };
 
   const importSegmentationLayers = ({ segmentations }) => {
-    const segmentationsList = Object.keys(segmentations);
-    console.log({ segmentationsList });
+                                                            const segmentationsList = Object.keys(
+                                                              segmentations
+                                                            );
+                                                            console.log({
+                                                              segmentationsList,
+                                                            });
 
-    const hashBucket = {};
+                                                            const view_ports = cornerstone.getEnabledElements();
+                                                            const viewports =
+                                                              view_ports[0];
 
-    segmentationsList.forEach(async (item, index) => {
-      console.log({ item });
-      const segDetails = segmentations[item];
+                                                            const element = getEnabledElement(
+                                                              view_ports.indexOf(
+                                                                viewports
+                                                              )
+                                                            );
 
-      // const hashed = await sha256(item);
-      const hashed = crypto.SHA512(segDetails.segmentation).toString();
-      console.log({
-        hashed,
-        segDetails,
-      });
+                                                            const hashBucket = {};
 
-      hashBucket[item] = hashed;
+                                                            // console.time('segmentationsList each');
+                                                            segmentationsList.forEach(
+                                                              async (
+                                                                item,
+                                                                index
+                                                              ) => {
+                                                                // console.time('segmentationsList each' + index);
+                                                                console.log({
+                                                                  item,
+                                                                });
+                                                                const segDetails =
+                                                                  segmentations[
+                                                                    item
+                                                                  ];
 
-      const uncompressed = uncompress({
-        segmentation: segDetails.segmentation,
-        shape:
-          typeof segDetails.shape === 'string'
-            ? JSON.parse(segDetails.shape)
-            : segDetails.shape,
-      });
-      console.log({
-        uncompressed,
-      });
+                                                                // const hashed = await sha256(item);
+                                                                const hashed = crypto
+                                                                  .SHA512(
+                                                                    segDetails.segmentation
+                                                                  )
+                                                                  .toString();
+                                                                console.log({
+                                                                  hashed,
+                                                                  segDetails,
+                                                                });
 
-      const view_ports = cornerstone.getEnabledElements();
-      const viewports = view_ports[0];
+                                                                hashBucket[
+                                                                  item
+                                                                ] = hashed;
 
-      const element = getEnabledElement(view_ports.indexOf(viewports));
-      if (!element) {
-        return;
-      }
+                                                                const uncompressed = uncompress(
+                                                                  {
+                                                                    segmentation:
+                                                                      segDetails.segmentation,
+                                                                    shape:
+                                                                      typeof segDetails.shape ===
+                                                                      'string'
+                                                                        ? JSON.parse(
+                                                                            segDetails.shape
+                                                                          )
+                                                                        : segDetails.shape,
+                                                                  }
+                                                                );
+                                                                console.log({
+                                                                  uncompressed,
+                                                                });
 
-      console.warn({
-        uncompressed,
-        item,
-      });
+                                                                if (!element) {
+                                                                  return;
+                                                                }
 
-      addSegmentationToCanvas({
-        segmentation: uncompressed,
-        label: item,
-        element,
-      });
-    });
+                                                                console.warn({
+                                                                  uncompressed,
+                                                                  item,
+                                                                });
 
-    console.log({ hashBucket });
-    // const appContext = this.context;
-    editedSegmentationRef.current = hashBucket;
-    setLoadingState(false);
-  };
+                                                                addSegmentationToCanvas(
+                                                                  {
+                                                                    segmentation: uncompressed,
+                                                                    label: item,
+                                                                    element,
+                                                                  }
+                                                                );
+                                                                // console.timeEnd('segmentationsList each' + index);
+                                                              }
+                                                            );
+                                                            // console.timeEnd('segmentationsList each');
+
+                                                            console.log({
+                                                              hashBucket,
+                                                            });
+                                                            // const appContext = this.context;
+                                                            editedSegmentationRef.current = hashBucket;
+                                                            setLoadingState(
+                                                              false
+                                                            );
+                                                            setFetchedSegmentations(
+                                                              true
+                                                            );
+                                                            refreshViewports();
+                                                            triggerEvent(
+                                                              element,
+                                                              'peppermintautosegmentgenerationevent',
+                                                              {}
+                                                            );
+                                                          };
 
   const fetchSegmentationsFromLocalStorage = () => {
     try {
