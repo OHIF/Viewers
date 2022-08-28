@@ -92,7 +92,7 @@ const RenderLoadingIcon = ({ size }) => {
   );
 };
 
-const RenderLoadingModal = () => {
+export const RenderLoadingModal = () => {
   return (
     <div
       style={{
@@ -108,6 +108,7 @@ const RenderLoadingModal = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 1000,
       }}
     >
       <RenderLoadingIcon size={70} />
@@ -230,10 +231,10 @@ const SearchDetails = props => {
 
     // Pull event from cornerstone-tools
     const { EVENTS } = cornerstoneTools;
-    element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
+    // element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
 
-    return () =>
-      element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
+    // return () =>
+    // element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
   }, []);
 
   React.useEffect(() => {

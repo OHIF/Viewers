@@ -24,6 +24,7 @@ import './Viewer.css';
 import { finished } from 'stream';
 import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextUtil from './JobsContextUtil.js';
+import eventBus from '../lib/eventBus.js';
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -104,6 +105,9 @@ class Viewer extends Component {
   };
 
   componentWillUnmount() {
+    if (this.props.location.pathname.includes('/edit')) {
+      eventBus.dispatch('clearSegmentations', {});
+    }
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }

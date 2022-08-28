@@ -19,17 +19,29 @@ import { Icon } from '@ohif/ui';
 import MaskRoiPropertyModal from './XNATSegmentationMenu/MaskRoiPropertyModal.js';
 import showModal from './common/showModal.js';
 import refreshViewports from '../utils/refreshViewports';
+import { connect } from 'react-redux';
+import eventBus from '@ohif/viewer/src/lib/eventBus.js';
 
-import './XNATRoiPanel.styl';
+// import './XNATRoiPanel.styl';
+// import {
+//   client,
+//   getUpdatedSegments,
+//   uncompress,
+// } from '@ohif/viewer/src/appExtensions/LungModuleSimilarityPanel/utils.js';
+// import { getEnabledElement } from '../../../cornerstone/src/state.js';
+// import crypto from 'crypto-js';
 
 const UNSUPPORTED_EXPORT_MODALITIES = ['MG'];
 
-const { studyMetadataManager } = utils;
 const segmentationModule = cornerstoneTools.getModule('segmentation');
 const segmentationState = segmentationModule.state;
 const { getToolState } = cornerstoneTools;
+const { studyMetadataManager } = utils;
 
-const _getFirstImageId = ({ StudyInstanceUID, displaySetInstanceUID }) => {
+export const _getFirstImageId = ({
+  StudyInstanceUID,
+  displaySetInstanceUID,
+}) => {
   try {
     const studies = studyMetadataManager.all();
     const studyMetadata = studies.find(
@@ -54,7 +66,7 @@ const _getFirstImageId = ({ StudyInstanceUID, displaySetInstanceUID }) => {
  * and renaming Segments. As well as setting configuration settings for
  * the Brush tools.
  */
-export default class XNATSegmentationPanel extends React.Component {
+class XNATSegmentationPanel extends React.Component {
   static propTypes = {
     isOpen: PropTypes.any,
     studies: PropTypes.any,
@@ -123,11 +135,14 @@ export default class XNATSegmentationPanel extends React.Component {
   }
 
   componentWillUnmount() {
-    this.state.segments.forEach(segment => {
-      this.onDeleteClick(segment.index);
-    });
-
     this.removeEventListeners();
+  }
+
+  componentDidMount() {
+    // const appContext = this.context;
+
+    console.log('segpanel mounted', { props: this.props });
+    // this.onImportButtonClick();
   }
 
   addEventListeners() {
@@ -143,6 +158,12 @@ export default class XNATSegmentationPanel extends React.Component {
       'finishedmaskimportusingmodalevent',
       this.cornerstoneEventListenerHandler
     );
+
+    eventBus.on('clearSegmentations', data => {
+      this.state.segments.forEach(segment => {
+        this.onDeleteClick(segment.index);
+      });
+    });
   }
 
   removeEventListeners() {
@@ -158,6 +179,7 @@ export default class XNATSegmentationPanel extends React.Component {
       'finishedmaskimportusingmodalevent',
       this.cornerstoneEventListenerHandler
     );
+    eventBus.remove('clearSegmentations');
   }
 
   cornerstoneEventListenerHandler() {
@@ -190,7 +212,10 @@ export default class XNATSegmentationPanel extends React.Component {
   }
 
   componentDidUpdate() {
+    // const appContext = this.context;
     const { viewports, activeIndex } = this.props;
+
+    console.log('segpanel updated', { props: this.props });
 
     if (!viewports) {
       return;
@@ -271,6 +296,10 @@ export default class XNATSegmentationPanel extends React.Component {
       importing: false,
       exporting: false,
     });
+  }
+
+  onEditSegmentation() {
+    console.log('exporting seg');
   }
 
   onNewSegment(label = 'Unnamed Segment') {
@@ -477,6 +506,205 @@ export default class XNATSegmentationPanel extends React.Component {
     return brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
   }
 
+  // addSegmentationToCanvas({ segmentation, label, element }) {
+  //   console.warn({ segmentation, label, element });
+  //   const labelmap2D = segmentationModule.getters.labelmap2D(element);
+  //   const {
+  //     labelmap3D,
+  //     currentImageIdIndex,
+  //     activeLabelmapIndex,
+  //     ...rest
+  //   } = segmentationModule.getters.labelmap2D(element);
+
+  //   let segmentIndex = labelmap3D.activeSegmentIndex;
+  //   let metadata = labelmap3D.metadata[segmentIndex];
+
+  //   console.log({
+  //     metadata,
+  //     segmentIndex,
+  //   });
+
+  //   if (!metadata) {
+  //     console.warn('layer not occupied');
+
+  //     metadata = generateSegmentationMetadata(label);
+  //     segmentIndex = labelmap3D.activeSegmentIndex;
+
+  //     const updated2dMaps = getUpdatedSegments({
+  //       segmentation,
+  //       segmentIndex,
+  //       currPixelData: labelmap3D.labelmaps2D,
+  //     });
+  //     console.log({
+  //       updated2dMaps,
+  //     });
+
+  //     labelmap2D.labelmap3D.labelmaps2D = updated2dMaps;
+  //     if (segmentIndex === 1) {
+  //       const mDataInit = Array(1);
+  //       mDataInit[1] = metadata;
+  //       labelmap2D.labelmap3D.metadata = mDataInit;
+  //     } else {
+  //       labelmap2D.labelmap3D.metadata[segmentIndex] = metadata;
+  //     }
+  //     labelmap2D.labelmap3D.activeSegmentIndex = segmentIndex;
+
+  //     console.warn('updatedLabelmaps2s', {
+  //       labelmap2D,
+  //       segmentIndex,
+  //     });
+  //     segmentationModule.setters.updateSegmentsOnLabelmap2D(labelmap2D);
+
+  //     console.log({
+  //       updatedLm2d: segmentationModule.getters.labelmap2D(element),
+  //     });
+
+  //     refreshViewports();
+  //     triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
+  //   } else {
+  //     //theres something on this layer so we need to find the last layer and work on the one after it
+  //     console.warn('layer occupied', labelmap3D);
+
+  //     metadata = generateSegmentationMetadata(label);
+  //     segmentIndex = labelmap3D.metadata.length;
+
+  //     const updated2dMaps = getUpdatedSegments({
+  //       segmentation,
+  //       segmentIndex,
+  //       currPixelData: labelmap3D.labelmaps2D,
+  //     });
+  //     console.log({
+  //       updated2dMaps,
+  //     });
+
+  //     labelmap2D.labelmap3D.labelmaps2D = updated2dMaps;
+  //     labelmap2D.labelmap3D.metadata[segmentIndex] = metadata;
+  //     labelmap2D.labelmap3D.activeSegmentIndex = segmentIndex;
+
+  //     console.log({ labelmap2D, segmentIndex });
+  //     segmentationModule.setters.updateSegmentsOnLabelmap2D(labelmap2D);
+
+  //     console.log({
+  //       updatedLm2d: segmentationModule.getters.labelmap2D(element),
+  //     });
+
+  //     refreshViewports();
+  //     triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
+  //   }
+  // }
+
+  // importSegmentationLayers({ segmentations }) {
+  //   const segmentationsList = Object.keys(segmentations);
+  //   console.log({ segmentationsList });
+
+  //   const hashBucket = {};
+
+  //   segmentationsList.forEach(async (item, index) => {
+  //     console.log({ item });
+  //     const segDetails = segmentations[item];
+
+  //     // const hashed = await sha256(item);
+  //     const hashed = crypto.SHA512(segDetails.segmentation).toString();
+  //     console.log({
+  //       hashed,
+  //       segDetails,
+  //     });
+
+  //     hashBucket[item] = hashed;
+
+  //     const uncompressed = uncompress({
+  //       segmentation: segDetails.segmentation,
+  //       shape:
+  //         typeof segDetails.shape === 'string'
+  //           ? JSON.parse(segDetails.shape)
+  //           : segDetails.shape,
+  //     });
+  //     console.log({
+  //       uncompressed,
+  //     });
+
+  //     const view_ports = cornerstone.getEnabledElements();
+  //     const viewports = view_ports[0];
+
+  //     const element = getEnabledElement(view_ports.indexOf(viewports));
+  //     if (!element) {
+  //       return;
+  //     }
+
+  //     console.warn({
+  //       uncompressed,
+  //       item,
+  //     });
+
+  //     this.addSegmentationToCanvas({
+  //       segmentation: uncompressed,
+  //       label: item,
+  //       element,
+  //     });
+  //   });
+
+  //   console.log({ hashBucket });
+  //   // const appContext = this.context;
+  //   this.props.appContext.setEditedSegmentation(hashBucket);
+  // }
+
+  // fetchSegmentationsFromLocalStorage() {
+  //   try {
+  //     const segmentationsJson = localStorage.getItem('segmentation');
+  //     console.log({ segmentationsJson });
+  //     const segmentations =
+  //       segmentationsJson && segmentationsJson !== 'undefined'
+  //         ? JSON.parse(segmentationsJson)
+  //         : {};
+  //     return segmentations;
+  //   } catch (error) {
+  //     console.log({ error });
+  //   }
+  // }
+
+  // fetchSegmentations() {
+  //   return new Promise(async (res, rej) => {
+  //     try {
+  //       console.log('fetch segmentation', this.props);
+  //       const series_uid = this.props.viewports[0].SeriesInstanceUID;
+  //       // const email = 'nick.fragakis%40thetatech.ai';
+  //       const email = this.props.user.profile.email;
+
+  //       console.log({ series_uid });
+
+  //       const body = {
+  //         email: 'bimpongamoako@gmail.com', //'nick.fragakis@thetatech.ai',
+  //       };
+
+  //       console.log({ payload: body });
+
+  //       await client
+  //         .get(`/segmentations?series=${series_uid}&email=${email}`, body)
+  //         .then(async response => {
+  //           console.log({ response });
+  //           res(response.data);
+  //         })
+  //         .catch(error => {
+  //           console.log(error);
+  //         });
+  //     } catch (error) {
+  //       console.log({ error });
+  //       rej(error);
+  //     }
+  //   });
+  // }
+
+  // async onImportButtonClick() {
+  //   //  const segmentations = this.fetchSegmentationsFromLocalStorage();
+  //   const segmentations = await this.fetchSegmentations();
+  //   console.log({ segmentations });
+  //   this.importSegmentationLayers({
+  //     segmentations,
+  //   });
+  //   this.onIOComplete();
+  //   return;
+  // }
+
   /**
    * _segments - Returns an array of segment metadata for the active series.
    *
@@ -592,14 +820,16 @@ export default class XNATSegmentationPanel extends React.Component {
                 width="20px"
                 height="20px"
                 onClick={() =>
-                  this.setState({ showSegmentationSettings: true })
+                  this.setState({
+                    showSegmentationSettings: true,
+                  })
                 }
               />
             </div>
             <MenuIOButtons
-              ImportCallbackOrComponent={XNATSegmentationImportMenu}
+              // ImportCallbackOrComponent={XNATSegmentationImportMenu}
               ExportCallbackOrComponent={XNATSegmentationExportMenu}
-              onImportButtonClick={() => this.setState({ importing: true })}
+              // onImportButtonClick={() => this.setState({ importing: true })}
               onExportButtonClick={() => this.setState({ exporting: true })}
               exportDisabledMessage={exportDisabledMessage}
             />
@@ -619,7 +849,11 @@ export default class XNATSegmentationPanel extends React.Component {
                     </th>
                     <th width="75%" className="left-aligned-cell">
                       Label
-                      <span style={{ color: 'var(--text-secondary-color)' }}>
+                      <span
+                        style={{
+                          color: 'var(--text-secondary-color)',
+                        }}
+                      >
                         {' '}
                         / Type{' '}
                       </span>
@@ -666,3 +900,16 @@ export default class XNATSegmentationPanel extends React.Component {
     return <React.Fragment>{component}</React.Fragment>;
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    user: state.oidc.user,
+  };
+};
+
+const ConnectedSegmentationPanel = connect(
+  mapStateToProps,
+  null
+)(XNATSegmentationPanel);
+
+export default ConnectedSegmentationPanel;

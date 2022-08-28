@@ -34,6 +34,7 @@ const ViewerRouting = asyncComponent(() =>
     import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
   )
 );
+
 const RadionicRouting = asyncComponent(() =>
   retryImport(() =>
     import(
@@ -55,6 +56,7 @@ const CallbackPage = asyncComponent(() =>
     import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js')
   )
 );
+
 const StudyListRouting = asyncComponent(() =>
   retryImport(() =>
     import(
@@ -124,12 +126,17 @@ class OHIFStandaloneViewer extends Component {
       },
       {
         exact: true,
+        path: '/callback',
+        component: () => <CallbackPage userManager={userManager} />,
+      },
+      {
+        exact: true,
         // guard: GuestGuard,
         path: '/logout-redirect',
         component: () => (
           <SignoutCallbackComponent
             userManager={userManager}
-            successCallback={() => console.log('Signout successful')}
+            successCalslback={() => console.log('Signout successful')}
             errorCallback={error => {
               console.warn(error);
               console.warn('Signout failed');
@@ -176,6 +183,7 @@ class OHIFStandaloneViewer extends Component {
       //     },
       //   ],
       // },
+
       {
         exact: true,
         guard: AuthGuard,
@@ -198,20 +206,20 @@ class OHIFStandaloneViewer extends Component {
         component: StudyListRouting,
       },
 
-      // {
-      //   exact: true,
-      //   guard: AuthGuard,
-      //   layout: DashboardLayout,
-      //   path: '/segmentation',
-      //   component: SamplePage,
-      // },
-      // {
-      //   exact: true,
-      //   guard: AuthGuard,
-      //   layout: DashboardLayout,
-      //   path: '/viewer',
-      //   component: StandaloneRouting,
-      // // },
+      {
+        exact: false,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path: '/segmentation',
+        component: SamplePage,
+      },
+      {
+        exact: false,
+        guard: AuthGuard,
+        layout: DashboardLayout,
+        path: '/viewer',
+        component: SamplePage,
+      },
       // {
       //   exact: true,
       //   guard: AuthGuard,

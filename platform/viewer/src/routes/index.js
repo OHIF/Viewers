@@ -13,13 +13,9 @@ export const renderRoutes = (routes = []) => (
         const Guard = route.guard || Fragment;
         const Layout = route.layout || Fragment;
         const Component = route.component;
-        const onEnter = route.onEnter;
-        if (onEnter)
-          return <Route exact path={route.path} onEnter={RoutesUtil.reload} />;
 
         return (
           <Route
-            // eslint-disable-next-line react/no-array-index-key
             key={i}
             path={route.path}
             exact={route.exact}
@@ -29,13 +25,7 @@ export const renderRoutes = (routes = []) => (
                   {route.routes ? (
                     renderRoutes(route.routes)
                   ) : (
-                    <ErrorBoundary context={props.match.url}>
-                      <Component
-                        match={props.match}
-                        location={props.location}
-                        {...props}
-                      />
-                    </ErrorBoundary>
+                    <Component {...props} />
                   )}
                 </Layout>
               </Guard>
