@@ -6,6 +6,7 @@ import studies from './studies';
 import timepointManager from './timepointManager';
 import viewports from './viewports';
 import collections from './collections';
+import steps from './steps';
 
 const reducers = {
   extensions,
@@ -16,6 +17,7 @@ const reducers = {
   timepointManager,
   viewports,
   collections,
+  steps,
 };
 
 export default reducers;

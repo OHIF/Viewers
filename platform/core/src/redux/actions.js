@@ -127,6 +127,13 @@ export const setCollections = collections => ({
   collections,
 });
 
+// redesign actions
+
+export const setActiveStep = step => ({
+  type: 'SET_ACTIVE_STEP',
+  step,
+});
+
 const actions = {
   /**
    * VIEWPORT
@@ -151,6 +158,8 @@ const actions = {
 
   // set collection action
   setCollections,
+  // redesign actions
+  setActiveStep,
 };
 
 export default actions;

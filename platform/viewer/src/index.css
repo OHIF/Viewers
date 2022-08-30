@@ -1,0 +1,463 @@
+/* ==========================================================================
+   Tab-Accordian
+   ========================================================================== */
+
+html,
+body {
+  height: 100%;
+}
+body {
+  background: #000000;
+  margin: 0px;
+  padding: 0px;
+  font-size: 12px;
+  line-height: 24px;
+  font-weight: 500;
+  color: #6d6e72;
+  position: relative;
+  font-display: auto;
+  font-style: normal;
+  font-family: 'sofia-pro';
+}
+
+a:focus,
+input:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0px;
+  padding: 0px;
+  -webkit-font-smoothing: antialiased;
+  /* margin-bottom: 15px; */
+  color: #ffffff;
+}
+/*  */
+a {
+  color: #018aff;
+  text-decoration: none;
+  transition: all ease-out 0.3s;
+  -webkit-transition: all ease-out 0.3s;
+  -moz-transition: all ease-out 0.3s;
+  -ms-transition: all ease-out 0.3s;
+  -o-transition: all ease-out 0.3s;
+}
+a:hover {
+  text-decoration: none;
+  color: #3ba4ff;
+}
+label {
+  font-weight: normal;
+  margin: 0;
+}
+p {
+  font-size: 14px;
+  /* line-height: 24px; */
+  color: #6d6e72;
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  margin-bottom: 15px;
+}
+ul,
+ol,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+focus {
+  outline: none;
+}
+/* ==========================================================================
+       Css reset begin
+       ========================================================================== */
+
+/*========================== Commen styles ========================*/
+.set__as--bg {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+}
+span.make__bg {
+  display: none;
+}
+.fullwidth {
+  width: 100%;
+}
+.primary-btn {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  position: relative;
+  -webkit-transition: all ease-out 0.3s;
+  -o-transition: all ease-out 0.3s;
+  transition: all ease-out 0.3s;
+  border: none;
+  border-radius: 3px;
+  color: #ffffff;
+  padding: 12px 25px;
+  background: grey;
+}
+.primary-btn:hover {
+  color: #ffffff;
+}
+
+/*========================== Commen styles ========================*/
+
+/* =========================== footer ============================= */
+.master-footer {
+  display: block;
+  padding: 18px;
+  position: fixed;
+  background-color: #000000;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #fff;
+  z-index: 9;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+/* ===================== Dashboard ===================== */
+.portal__header {
+  display: block;
+  /* padding: 16px 16px 16px 15px; */
+  /* position: fixed; */
+  background-color: #000000;
+  /* top: 0; */
+  flex: 5;
+  /* left: 0; */
+  /* width: 100%; */
+  /* z-index: 9; */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+/* ===================== Main menu bar ===================== */
+a.menu-toggle {
+  position: absolute;
+  display: block;
+  width: 45px;
+  height: 45px;
+  top: 20px;
+  right: -45px;
+  /* left: -45px; */
+  padding-top: 4px;
+  box-sizing: border-box;
+}
+a.menu-toggle span.line {
+  position: relative;
+  width: 55%;
+  height: 2px;
+  background: #fff;
+  margin: 7px auto;
+  display: block;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+}
+a.menu-toggle.active span.line {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  background: rgb(46, 35, 9);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform-origin: center center;
+}
+a.menu-toggle.active span.line.a {
+  transform: rotate(45deg);
+}
+a.menu-toggle.active span.line.c {
+  transform: rotate(-45deg);
+}
+a.menu-toggle.active span.line.b {
+  opacity: 0;
+}
+.main__menu--bar {
+  top: 0;
+  transition: all ease-out 0.2s;
+  background: white;
+  display: block;
+  height: 100vh;
+  width: 240px;
+  position: fixed;
+  /* right: -240px; */
+  left: -240px;
+  z-index: 10;
+}
+
+.main__menu--bar.expand {
+  left: 0;
+  /* right: 0; */
+}
+.main__menu--bar.expand a.menu-toggle {
+  right: 0px;
+  /* left: 0px; */
+  z-index: 9;
+}
+
+.sidebar__menu {
+  display: block;
+  overflow: auto;
+  position: relative;
+  padding: 30px;
+  padding-top: 80px;
+  height: 90vh;
+}
+.sidebar__menu::-webkit-scrollbar {
+  width: 8px;
+  background: #c1c1c1;
+}
+.sidebar__menu::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+.sidebar__menu::-webkit-scrollbar-thumb {
+  background-color: #888888;
+}
+.sidebar__menu > ul.menu-list {
+  display: block;
+  margin-bottom: 15px;
+}
+.sidebar__menu > ul.menu-list > li {
+  display: block;
+  padding: 9px 0;
+}
+.sidebar__menu > ul.menu-list > li > a {
+  display: block;
+  font-size: 20px;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 16px;
+  padding-left: 35px;
+  padding-right: 0;
+  position: relative;
+  transition: all ease-out 0s;
+  -webkit-border-top-right-radius: 35px;
+  -webkit-border-bottom-right-radius: 35px;
+  -moz-border-radius-topright: 35px;
+  -moz-border-radius-bottomright: 35px;
+  border-top-right-radius: 35px;
+  border-bottom-right-radius: 35px;
+}
+.sidebar__menu > ul.menu-list > li > a > span.icon {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
+  margin-right: 20px;
+}
+.sidebar__menu > ul.menu-list > li > a:hover,
+.sidebar__menu > ul.menu-list > li.active > a {
+  color: #ffffff;
+  background: rgb(46, 35, 9);
+  background: -moz-linear-gradient(
+    left,
+    rgba(46, 35, 9, 1) 0%,
+    rgba(201, 159, 77, 1) 50%,
+    rgba(112, 80, 22, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    left,
+    rgba(46, 35, 9, 1) 0%,
+    rgba(201, 159, 77, 1) 50%,
+    rgba(112, 80, 22, 1) 100%
+  );
+  background: linear-gradient(
+    to right,
+    rgba(46, 35, 9, 1) 0%,
+    rgba(201, 159, 77, 1) 50%,
+    rgba(112, 80, 22, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2e2309', endColorstr='#705016',GradientType=1 );
+}
+.sidebar__menu > ul.menu-list > li > ul {
+  display: block;
+  margin-left: 85px;
+  position: relative;
+}
+.sidebar__menu > ul.menu-list > li > ul::before {
+  content: '';
+  width: 1px;
+  height: 80%;
+  display: block;
+  background: #69665d;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.sidebar__menu > ul.menu-list > li > ul > li {
+  display: block;
+  padding: 10px 0;
+}
+.sidebar__menu > ul.menu-list > li > ul > li > a {
+  display: block;
+  color: #a5a5a5;
+  font-size: 18px;
+  padding-left: 30px;
+  position: relative;
+}
+.sidebar__menu > ul.menu-list > li > ul > li > a:hover {
+  color: #ffffff;
+}
+.sidebar__menu > ul.menu-list > li > ul > li > a::before {
+  content: '';
+  width: 18px;
+  height: 9px;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 4px;
+  border-left: 1px solid #69665d;
+  border-bottom: 1px solid #69665d;
+  -webkit-border-bottom-left-radius: 20px;
+  -moz-border-radius-bottomleft: 20px;
+  border-bottom-left-radius: 20px;
+}
+.sidebar__menu > ul.menu-list > li > ul > li > a::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  display: block;
+  background: #baa878;
+  position: absolute;
+  left: 18px;
+  top: 10px;
+  border-radius: 100%;
+}
+
+.portal__wraper {
+  padding-top: 100px;
+  position: relative;
+  background-color: #000000;
+  min-height: 100vh;
+  width: 100%;
+  color: white;
+}
+
+/* ===================== Main menu bar ===================== */
+
+.page-container {
+  /* padding: 20px; */
+  /* padding-top: 200px; */
+  position: relative;
+  background-color: #000000;
+  /* min-height: 100vh; */
+  display: flex;
+  width: 100%;
+  /* flex-direction: column; */
+  align-items: center;
+  /* justify-content: center; */
+  /* font-size: calc(10px + 2vmin); */
+  /* color: white; */
+}
+/* ====================== Progress arrow index ============= */
+
+.steps-container {
+  overflow: hidden;
+  padding: 8px;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 80%;
+}
+.steps {
+  position: relative;
+  display: inline-block;
+  height: 38px;
+  flex: 1;
+  margin-right: 32px;
+  /* padding: 12px; */
+  /* margin-left: 12px; */
+  /* margin-right: 12px; */
+  cursor: pointer;
+  transition: background 1s;
+}
+
+.steps:after,
+.steps:before {
+  position: absolute;
+  content: '';
+  left: 0px;
+  height: 50%;
+  width: 100%;
+  border-top: 2px solid grey;
+  border-bottom: 2px solid grey;
+  border-left: 2px solid grey; /* thicker border as skew makes them look thin */
+  border-right: 2px solid grey;
+}
+
+.steps:before {
+  transform: skew(45deg);
+  top: 0px;
+  border-bottom: none;
+  transform-origin: top left;
+}
+
+.steps:after {
+  transform: skew(-45deg);
+  bottom: -3px;
+  border-top: none;
+  transform-origin: bottom left;
+}
+
+.steps .title {
+  display: flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: right;
+  width: 100%;
+  height: 100%;
+  font-size: small;
+}
+
+.steps .title:before {
+}
+.steps.active .title {
+  /* font-weight: bold; */
+}
+.steps.active:before,
+.steps.active:after {
+  border-top-color: yellow;
+  border-bottom-color: yellow;
+  border-right-color: yellow;
+  border-left-color: yellow;
+}

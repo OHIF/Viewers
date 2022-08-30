@@ -57,7 +57,6 @@ const JobParameters = props => {
     // retrieving rectangle tool roi data from element
     const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
 
-
     if (tool_data && tool_data.data.length > 0) {
       setToolData(tool_data.data[0]);
 
@@ -81,11 +80,18 @@ const JobParameters = props => {
 
     // Pull event from cornerstone-tools
     const { EVENTS } = cornerstoneTools;
-    element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
+    // element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
 
-    return () =>
-      element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
+    // return () =>
+    // element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, eventhandler);
   }, []);
+
+  useEffect(() => {
+    if (!isDisabled)
+      setTimeout(() => {
+        document.getElementById('triggerNewJob').click();
+      }, 1000);
+  }, [isDisabled]);
 
   const eventhandler = event => {
     setIsDisabled(true);
@@ -166,9 +172,9 @@ const JobParameters = props => {
     await client
       .post(`/texture`, body)
       .then(response => {
-        cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
-          {}
-        );
+        // cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+        //   {}
+        // );
         cornerstone.updateImage(element);
 
         if (response.status === 202) {
@@ -180,7 +186,7 @@ const JobParameters = props => {
         }
 
         // clearing all params
-        clearParams();
+        // clearParams();
 
         // set stackscroll as active tool
         cornerstoneTools.setToolActive('StackScroll', { mouseButtonMask: 1 });
@@ -194,26 +200,13 @@ const JobParameters = props => {
     <div className="component">
       {Object.keys(toolData).length > 0 && (
         <div>
-          <div className="title-header">Parameters</div>
-          <h4>Dimensions </h4>
-          <p>
-            <b>Width:</b> {width}
-          </p>
-          <p>
-            <b>Height:</b> {height}
-          </p>
-          <h4>Coordinates</h4>
-          <p>
-            <b>x:</b> {x}
-          </p>
-          <p>
-            <b>y:</b> {y}
-          </p>
-          <br />
-
           <label>
             <div className="triggerButton">
               <button
+                id="triggerNewJob"
+                style={{
+                  display: 'none',
+                }}
                 onClick={triggerJob}
                 disabled={isDisabled}
                 className="syncButton"

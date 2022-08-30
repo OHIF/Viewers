@@ -30,6 +30,8 @@ import { generateSegmentationMetadata } from '../../../../../extensions/xnat/src
 import refreshViewports from '../../../../../extensions/dicom-segmentation/src/utils/refreshViewports';
 import { triggerEvent } from 'cornerstone-core';
 import { RenderLoadingModal } from '../../appExtensions/LungModuleSimilarityPanel/SearchParameters/SearchDetails';
+import { useLocation } from 'react-router';
+const { studyMetadataManager } = utils;
 
 const { loadAndCacheDerivedDisplaySets } = utils;
 
@@ -57,6 +59,7 @@ const ViewportGrid = function(props) {
   if (!viewportData || !viewportData.length) {
     return null;
   }
+  const location = useLocation();
 
   const snackbar = useSnackbarContext();
   const logger = useLogger();
@@ -68,7 +71,9 @@ const ViewportGrid = function(props) {
   const elementRef = useRef(null);
   const changedSegmentsRef = useRef([]);
   const editedSegmentationRef = useRef({});
-  const [loadingState, setLoadingState] = useState(true);
+  const [loadingState, setLoadingState] = useState(
+    location.pathname.includes('/edit')
+  );
 
   useEffect(() => {
     console.log({
@@ -95,7 +100,17 @@ const ViewportGrid = function(props) {
       segmentationModule,
       cornerstoneTools,
     });
-    const firstImageId = _getFirstImageId(props.viewportData[0]);
+
+    props.studies.map(study => {
+      const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
+      if (studyMetadata._displaySets.length == 0) {
+        study.displaySets.map(displaySet =>
+          studyMetadata.addDisplaySet(displaySet)
+        );
+      }
+    });
+
+    let firstImageId = _getFirstImageId(props.viewportData[0]);
 
     const imagePlaneModule =
       cornerstone.metaData.get('imagePlaneModule', firstImageId) || {};
@@ -111,12 +126,12 @@ const ViewportGrid = function(props) {
       rows,
       columns,
     };
-
-    targeDiv.addEventListener('mouseup', handleDragEnd);
-    onImportButtonClick();
+    if (location.pathname.includes('/edit'))
+      targeDiv.addEventListener('mouseup', handleDragEnd);
 
     return () => {
-      targeDiv.removeEventListener('mouseup', handleDragEnd);
+      if (location.pathname.includes('/edit'))
+        targeDiv.removeEventListener('mouseup', handleDragEnd);
     };
   }, [activeViewportIndex]);
 
@@ -206,6 +221,7 @@ const ViewportGrid = function(props) {
       viewportData.forEach(displaySet => {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
+      if (location.pathname.includes('/edit')) onImportButtonClick();
     }
   }, [studies, viewportData, isStudyLoaded, snackbar]);
 

@@ -12,6 +12,7 @@ const TextureFeature = props => {
   const [isLoading, setIsLoading] = React.useState(true);
   const { user, viewport } = props;
   const [isActive, setIsActive] = useState(false);
+  const [showMore, setShowMore] = useState(true);
   const access_token = user.access_token;
   const email = user.profile.email;
   const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
@@ -80,6 +81,9 @@ const TextureFeature = props => {
     setOverlayStatus(false);
   };
 
+  let filterjobs = jobs;
+  if (filterjobs.length > 0 && showMore) filterjobs = filterjobs.slice(0, 2);
+
   return (
     <div className="component">
       <div className="title-header">Texture Features</div>
@@ -100,30 +104,35 @@ const TextureFeature = props => {
         </div>
       )}
 
-      {!isLoading && jobs.length > 0 && (
-        <div className="accordion">
-          {jobs.map((data, index) => (
-            <Jobs
-              key={index}
-              user={user}
-              viewport={viewport}
-              series={series}
-              data={data}
-              instances={instancesRef.current}
-              isActive={isActive === index}
-              setIsActive={() => {
-                if (isActive === index) {
-                  setIsActive(false);
-                } else {
-                  setIsActive(index);
-                }
-              }}
-            />
-          ))}
-        </div>
+      {!isLoading && filterjobs.length > 0 && (
+        <>
+          <div className="accordion">
+            {filterjobs.map((data, index) => (
+              <Jobs
+                key={index}
+                user={user}
+                viewport={viewport}
+                series={series}
+                data={data}
+                instances={instancesRef.current}
+                isActive={isActive === index}
+                setIsActive={() => {
+                  if (isActive === index) {
+                    setIsActive(false);
+                  } else {
+                    setIsActive(index);
+                  }
+                }}
+              />
+            ))}
+          </div>
+          <button onClick={() => setShowMore(!showMore)} className="syncButton">
+            {showMore ? 'Show More' : 'Show less'}
+          </button>
+        </>
       )}
 
-      {!isLoading && jobs.length <= 0 && (
+      {!isLoading && filterjobs.length <= 0 && (
         <div className="accordion">
           <p>
             There are current no jobs created. Kindly select the AiTrigger

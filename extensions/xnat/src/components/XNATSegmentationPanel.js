@@ -20,6 +20,7 @@ import MaskRoiPropertyModal from './XNATSegmentationMenu/MaskRoiPropertyModal.js
 import showModal from './common/showModal.js';
 import refreshViewports from '../utils/refreshViewports';
 import { connect } from 'react-redux';
+import eventBus from '@ohif/viewer/src/lib/eventBus.js';
 
 // import './XNATRoiPanel.styl';
 // import {
@@ -157,9 +158,17 @@ class XNATSegmentationPanel extends React.Component {
       'finishedmaskimportusingmodalevent',
       this.cornerstoneEventListenerHandler
     );
+
+    eventBus.on('clearSegmentations', data => {
+      this.state.segments.forEach(segment => {
+        this.onDeleteClick(segment.index);
+      });
+    });
   }
 
   removeEventListeners() {
+    // remove segments
+
     cornerstoneTools.store.state.enabledElements.forEach(enabledElement => {
       enabledElement.removeEventListener(
         'peppermintautosegmentgenerationevent',
@@ -170,6 +179,7 @@ class XNATSegmentationPanel extends React.Component {
       'finishedmaskimportusingmodalevent',
       this.cornerstoneEventListenerHandler
     );
+    eventBus.remove('clearSegmentations');
   }
 
   cornerstoneEventListenerHandler() {
@@ -210,6 +220,15 @@ class XNATSegmentationPanel extends React.Component {
     if (!viewports) {
       return;
     }
+
+    this.props.studies.map(study => {
+      const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
+      if (studyMetadata._displaySets.length == 0) {
+        study.displaySets.map(displaySet =>
+          studyMetadata.addDisplaySet(displaySet)
+        );
+      }
+    });
 
     const firstImageId = _getFirstImageId(viewports[activeIndex]);
 
