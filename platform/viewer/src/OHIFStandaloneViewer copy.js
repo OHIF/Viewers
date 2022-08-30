@@ -100,7 +100,9 @@ class OHIFStandaloneViewer extends Component {
   }
 
   render() {
-    const { userManager } = this.props;
+    const { user, userManager } = this.props;
+    const { appConfig = {} } = this.context;
+    const userNotLoggedIn = userManager && (!user || user.expired);
 
     const routes = [
       {
@@ -309,7 +311,7 @@ class OHIFStandaloneViewer extends Component {
       },
     ];
 
-    return <div className="App">{renderRoutes(routes)}</div>;
+    return <div className="App">{renderRoutes(routes, userNotLoggedIn)}</div>;
   }
 }
 

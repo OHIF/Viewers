@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, matchPath, Redirect } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
@@ -23,6 +23,8 @@ import './theme-tide.css';
 import AppContext from './context/AppContext';
 import DashboardLayout from './layouts';
 import { renderRoutes } from './routes';
+import LoginPage from './pages/login';
+import LoadingScreen from './components/LoadingScreen';
 const ViewerRouting = asyncComponent(() =>
   retryImport(() =>
     import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
@@ -101,7 +103,6 @@ class OHIFStandaloneViewer extends Component {
 
   render() {
     const { user, userManager } = this.props;
-    const { appConfig = {} } = this.context;
     const userNotLoggedIn = userManager && (!user || user.expired);
     if (userNotLoggedIn) {
       const { pathname, search } = this.props.location;
@@ -138,53 +139,7 @@ class OHIFStandaloneViewer extends Component {
             path="/callback"
             render={() => <CallbackPage userManager={userManager} />}
           />
-          <Route
-            path="/login"
-            component={() => {
-              const queryParams = new URLSearchParams(
-                this.props.location.search
-              );
-              const iss = queryParams.get('iss');
-              const loginHint = queryParams.get('login_hint');
-              const targetLinkUri = queryParams.get('target_link_uri');
-              const oidcAuthority =
-                appConfig.oidc !== null && appConfig.oidc[0].authority;
-              if (iss !== oidcAuthority) {
-                console.error(
-                  'iss of /login does not match the oidc authority'
-                );
-                return null;
-              }
-
-              userManager.removeUser().then(() => {
-                if (targetLinkUri !== null) {
-                  const ohifRedirectTo = {
-                    pathname: new URL(targetLinkUri).pathname,
-                  };
-                  sessionStorage.setItem(
-                    'ohif-redirect-to',
-                    JSON.stringify(ohifRedirectTo)
-                  );
-                } else {
-                  const ohifRedirectTo = {
-                    pathname: '/',
-                  };
-                  sessionStorage.setItem(
-                    'ohif-redirect-to',
-                    JSON.stringify(ohifRedirectTo)
-                  );
-                }
-
-                if (loginHint !== null) {
-                  userManager.signinRedirect({ login_hint: loginHint });
-                } else {
-                  userManager.signinRedirect();
-                }
-              });
-
-              return null;
-            }}
-          />
+          <Route path="/" render={() => <LoginPage />} />
           <Route
             component={() => {
               userManager.getUser().then(user => {
@@ -322,14 +277,74 @@ class OHIFStandaloneViewer extends Component {
             path: '/',
             component: () => <Redirect to="/studylist" />,
           },
-          {
-            component: () => <Redirect to="/404" />,
-          },
+          // {
+          //   component: () => <Redirect to="/404" />,
+          // },
         ],
       },
     ];
 
-    return <div className="App">{renderRoutes(routes)}</div>;
+    return (
+      <>
+        <NProgress isAnimating={this.state.isLoading}>
+          {({ isFinished, progress, animationDuration }) => (
+            <Container
+              isFinished={isFinished}
+              animationDuration={animationDuration}
+            >
+              <Bar progress={progress} animationDuration={animationDuration} />
+            </Container>
+          )}
+        </NProgress>
+
+        <div className="App">
+          <Suspense fallback={<LoadingScreen />}>
+            <Switch>
+              {routes.map((route, i) => {
+                const Layout = route.layout || Fragment;
+                const Component = route.component;
+
+                return (
+                  <Route
+                    key={i}
+                    path={route.path}
+                    exact={route.exact}
+                    render={props => (
+                      <CSSTransition
+                        in={props.match !== null}
+                        timeout={300}
+                        classNames="fade"
+                        unmountOnExit
+                        onEnter={() => {
+                          this.setState({
+                            isLoading: true,
+                          });
+                        }}
+                        onEntered={() => {
+                          this.setState({
+                            isLoading: false,
+                          });
+                        }}
+                      >
+                        <Layout>
+                          {route.routes ? (
+                            renderRoutes(route.routes)
+                          ) : (
+                            <ErrorBoundary context={props.match.url}>
+                              <Component {...props} />
+                            </ErrorBoundary>
+                          )}
+                        </Layout>
+                      </CSSTransition>
+                    )}
+                  />
+                );
+              })}
+            </Switch>
+          </Suspense>
+        </div>
+      </>
+    );
   }
 }
 

@@ -60,9 +60,7 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
   // adding event listener for when user starts to get new dimensions
   element.addEventListener(EVENTS.MEASUREMENT_ADDED, () => {
     const toolState =
-      cornerstoneTools
-        .globalImageIdSpecificToolStateManager
-        .toolState;
+      cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
     // if (Object.keys(toolState).length > 0) {
     //   if (count === 1) {

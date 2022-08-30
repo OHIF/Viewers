@@ -172,9 +172,9 @@ const JobParameters = props => {
     await client
       .post(`/texture`, body)
       .then(response => {
-        // cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
-        //   {}
-        // );
+        cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+          {}
+        );
         cornerstone.updateImage(element);
 
         if (response.status === 202) {
@@ -186,7 +186,7 @@ const JobParameters = props => {
         }
 
         // clearing all params
-        // clearParams();
+        clearParams();
 
         // set stackscroll as active tool
         cornerstoneTools.setToolActive('StackScroll', { mouseButtonMask: 1 });

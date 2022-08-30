@@ -325,90 +325,101 @@ class XNATSegmentationExportMenu extends React.Component {
   }
 
   render() {
-    const { label, segList, exporting, importMetadata } = this.state;
+             const { label, segList, exporting, importMetadata } = this.state;
 
-    let segExportListBody;
+             let segExportListBody;
 
-    if (segList && segList.length === 1) {
-      defaultName = segList[0].metadata.SegmentLabel;
-    }
+             // if (segList && segList.length === 1) {
+             //   defaultName = segList[0].metadata.SegmentLabel;
+             // }
 
-    const emptySegList = segList.length === 0;
+             const emptySegList = segList.length === 0;
 
-    if (emptySegList) {
-      segExportListBody = (
-        <>
-          <h5>Empty segments data. Export is no available.</h5>
-        </>
-      );
-    } else if (exporting) {
-      segExportListBody = (
-        <>
-          <h5>exporting segmentations. Please wait...</h5>
-        </>
-      );
-    } else {
-      segExportListBody = (
-        <table className="collectionTable">
-          <tbody>
-            {importMetadata ? (
-              <tr className="mask-export-list-collection-info">
-                <th className="left-aligned-cell">{importMetadata.name}</th>
-                <th className="centered-cell">{importMetadata.label}</th>
-                <th className="right-aligned-cell">{importMetadata.type}</th>
-              </tr>
-            ) : (
-              <tr className="mask-export-list-collection-info">
-                <th colSpan="3" className="left-aligned-cell">
-                  New Mask Collection
-                </th>
-              </tr>
-            )}
+             if (emptySegList) {
+               segExportListBody = (
+                 <>
+                   <h5>Empty segments data. Export is no available.</h5>
+                 </>
+               );
+             } else if (exporting) {
+               segExportListBody = (
+                 <>
+                   <h5>exporting segmentations. Please wait...</h5>
+                 </>
+               );
+             } else {
+               segExportListBody = (
+                 <table className="collectionTable">
+                   <tbody>
+                     {importMetadata ? (
+                       <tr className="mask-export-list-collection-info">
+                         <th className="left-aligned-cell">
+                           {importMetadata.name}
+                         </th>
+                         <th className="centered-cell">
+                           {importMetadata.label}
+                         </th>
+                         <th className="right-aligned-cell">
+                           {importMetadata.type}
+                         </th>
+                       </tr>
+                     ) : (
+                       <tr className="mask-export-list-collection-info">
+                         <th colSpan="3" className="left-aligned-cell">
+                           New Mask Collection
+                         </th>
+                       </tr>
+                     )}
 
-            <tr>
-              <th>Label</th>
-              <th className="centered-cell">Category</th>
-              <th className="centered-cell">Type</th>
-            </tr>
-            {segList.map(segment => (
-              <SegmentationExportListItem
-                key={segment.index}
-                segIndex={segment.index}
-                metadata={segment.metadata}
-              />
-            ))}
-          </tbody>
-        </table>
-      );
-    }
+                     <tr>
+                       <th>Label</th>
+                       <th className="centered-cell">Category</th>
+                       <th className="centered-cell">Type</th>
+                     </tr>
+                     {segList.map(segment => (
+                       <SegmentationExportListItem
+                         key={segment.index}
+                         segIndex={segment.index}
+                         metadata={segment.metadata}
+                       />
+                     ))}
+                   </tbody>
+                 </table>
+               );
+             }
 
-    return (
-      <div className="xnatPanel">
-        <div className="panelHeader">
-          <h3>Export mask-based ROI collection</h3>
-          {!exporting && (
-            <button className="small" onClick={this.onCloseButtonClick}>
-              <Icon name="xnat-cancel" />
-            </button>
-          )}
-        </div>
+             return (
+               <div className="xnatPanel">
+                 <div className="panelHeader">
+                   <h3>Export mask-based ROI collection</h3>
+                   {!exporting && (
+                     <button
+                       className="small"
+                       onClick={this.onCloseButtonClick}
+                     >
+                       <Icon name="xnat-cancel" />
+                     </button>
+                   )}
+                 </div>
 
-        <div className="roiCollectionBody limitHeight">{segExportListBody}</div>
+                 <div className="roiCollectionBody limitHeight">
+                   {segExportListBody}
+                 </div>
 
-        {!exporting && !emptySegList && (
-          <div className="roiCollectionFooter">
-            <button
-              onClick={this.handleExportSegmentations}
-              style={{ marginLeft: 10 }}
-            >
-              <Icon name="xnat-export" />
-              Export
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  }
+                 {!exporting && !emptySegList && (
+                   <div className="roiCollectionFooter">
+                     <button
+                       onClick={this.handleExportSegmentations}
+                       style={{ marginLeft: 10 }}
+                     >
+                       <Icon name="xnat-export" />
+                       Export
+                     </button>
+                   </div>
+                 )}
+               </div>
+             );
+           }
 }
 
 const mapStateToProps = state => {

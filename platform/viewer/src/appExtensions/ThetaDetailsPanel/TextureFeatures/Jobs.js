@@ -76,7 +76,7 @@ const Jobs = ({
 
     if (statusRef.current === 'RUNNING' && data.status === 'DONE') {
       cornerstone.imageCache.purgeCache();
-      // window.location.reload();
+      window.location.reload();
     }
   }, [data.status]);
 
