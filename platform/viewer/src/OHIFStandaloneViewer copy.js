@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter, matchPath, Redirect } from 'react-router';
-import { Route, Switch } from 'react-router-dom';
+import { withRouter, matchPath } from 'react-router';
+import { Switch, Redirect, Route } from 'react-router-dom';
 import { NProgress } from '@tanem/react-nprogress';
 import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
@@ -14,15 +14,21 @@ import {
 import { SignoutCallbackComponent } from 'redux-oidc';
 import * as RoutesUtil from './routes/routesUtil';
 
-import NotFound from './routes/NotFound.js';
-import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
 // Contexts
 import AppContext from './context/AppContext';
-import DashboardLayout from './layouts';
 import { renderRoutes } from './routes';
+import LoginPage from './pages/login';
+import DashboardLayout from './layouts';
+import SamplePage from './pages/SamplePage';
+import AuthGuard from './guards/AuthGuard';
+// import UplouderPage from './pages/Uplouder';
+import GuestGuard from './guards/GuestGuard';
+import { setActiveStep } from '../../core/src/redux/actions';
+import { ApplicationSteps } from '../../core/src/redux/reducers/steps';
+
 const ViewerRouting = asyncComponent(() =>
   retryImport(() =>
     import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
@@ -67,12 +73,6 @@ const NnunetPage = asyncComponent(() =>
   )
 );
 
-const SamplePage = asyncComponent(() =>
-  retryImport(() =>
-    import(/* webpackChunkName: "StudyListRouting" */ './pages/SamplePage.js')
-  )
-);
-
 class OHIFStandaloneViewer extends Component {
   static contextType = AppContext;
   state = {
@@ -100,114 +100,8 @@ class OHIFStandaloneViewer extends Component {
   }
 
   render() {
-    const { user, userManager } = this.props;
-    const { appConfig = {} } = this.context;
-    const userNotLoggedIn = userManager && (!user || user.expired);
-    if (userNotLoggedIn) {
-      const { pathname, search } = this.props.location;
+    const { userManager } = this.props;
 
-      if (pathname !== '/callback') {
-        sessionStorage.setItem(
-          'ohif-redirect-to',
-          JSON.stringify({ pathname, search })
-        );
-      }
-
-      return (
-        <Switch>
-          <Route
-            exact
-            path="/silent-refresh.html"
-            onEnter={RoutesUtil.reload}
-          />
-          <Route
-            exact
-            path="/logout-redirect"
-            render={() => (
-              <SignoutCallbackComponent
-                userManager={userManager}
-                successCallback={() => console.log('Signout successful')}
-                errorCallback={error => {
-                  console.warn(error);
-                  console.warn('Signout failed');
-                }}
-              />
-            )}
-          />
-          <Route
-            path="/callback"
-            render={() => <CallbackPage userManager={userManager} />}
-          />
-          <Route
-            path="/login"
-            component={() => {
-              const queryParams = new URLSearchParams(
-                this.props.location.search
-              );
-              const iss = queryParams.get('iss');
-              const loginHint = queryParams.get('login_hint');
-              const targetLinkUri = queryParams.get('target_link_uri');
-              const oidcAuthority =
-                appConfig.oidc !== null && appConfig.oidc[0].authority;
-              if (iss !== oidcAuthority) {
-                console.error(
-                  'iss of /login does not match the oidc authority'
-                );
-                return null;
-              }
-
-              userManager.removeUser().then(() => {
-                if (targetLinkUri !== null) {
-                  const ohifRedirectTo = {
-                    pathname: new URL(targetLinkUri).pathname,
-                  };
-                  sessionStorage.setItem(
-                    'ohif-redirect-to',
-                    JSON.stringify(ohifRedirectTo)
-                  );
-                } else {
-                  const ohifRedirectTo = {
-                    pathname: '/',
-                  };
-                  sessionStorage.setItem(
-                    'ohif-redirect-to',
-                    JSON.stringify(ohifRedirectTo)
-                  );
-                }
-
-                if (loginHint !== null) {
-                  userManager.signinRedirect({ login_hint: loginHint });
-                } else {
-                  userManager.signinRedirect();
-                }
-              });
-
-              return null;
-            }}
-          />
-          <Route
-            component={() => {
-              userManager.getUser().then(user => {
-                if (user) {
-                  userManager.signinSilent();
-                } else {
-                  userManager.signinRedirect();
-                }
-              });
-
-              return null;
-            }}
-          />
-        </Switch>
-      );
-    }
-
-    /**
-     * Note: this approach for routing is caused by the conflict between
-     * react-transition-group and react-router's <Switch> component.
-     *
-     * See http://reactcommunity.org/react-transition-group/with-react-router/
-     */
     const routes = [
       {
         exact: true,
@@ -216,6 +110,7 @@ class OHIFStandaloneViewer extends Component {
       },
       {
         exact: true,
+        // guard: GuestGuard,
         path: '/silent-refresh.html',
         onEnter: () => {
           RoutesUtil.reload();
@@ -223,30 +118,89 @@ class OHIFStandaloneViewer extends Component {
       },
       {
         exact: true,
+        // guard: GuestGuard,
         path: '/logout-refresh.html',
         onEnter: () => {
           RoutesUtil.reload();
         },
       },
-
       {
         exact: true,
+        path: '/callback',
+        component: () => <CallbackPage userManager={userManager} />,
+      },
+      {
+        exact: true,
+        // guard: GuestGuard,
+        path: '/logout-redirect',
+        component: () => (
+          <SignoutCallbackComponent
+            userManager={userManager}
+            successCalslback={() => console.log('Signout successful')}
+            errorCallback={error => {
+              console.warn(error);
+              console.warn('Signout failed');
+            }}
+          />
+        ),
+      },
+      {
+        exact: true,
+        guard: GuestGuard,
+        path: '/login',
+        component: () => <LoginPage />,
+      },
+      {
+        exact: true,
+        path: '/callback',
+        component: () => <CallbackPage userManager={userManager} />,
+      },
+      {
+        exact: true,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/uplouder',
         component: SamplePage,
       },
 
+      // {
+      //   path: '/organ',
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   routes: [
+      //     {
+      //       exact: true,
+      //       path: '/organ/select',
+      //       component: SelectOrganPage,
+      //     },
+      //     {
+      //       exact: true,
+      //       path: '/organ/studylist',
+      //       component: SamplePage,
+      //     },
+      //     {
+      //       component: () => <Redirect to="/organ/select" />,
+      //     },
+      //   ],
+      // },
+
       {
         exact: true,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/studylist',
-
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[1].step);
+        // },
         component: StudyListRouting,
       },
       {
         exact: false,
+        guard: AuthGuard,
         layout: DashboardLayout,
-
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[1].step);
+        // },
         path:
           '/studylist/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
         component: StudyListRouting,
@@ -254,33 +208,57 @@ class OHIFStandaloneViewer extends Component {
 
       {
         exact: false,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/segmentation',
         component: SamplePage,
       },
       {
         exact: false,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/viewer',
         component: SamplePage,
       },
+      // {
+      //   exact: true,
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   path: '/viewer/:studyInstanceUIDs',
+      //   component: ViewerRouting,
+      // },
+      // {
+      //   exact: true,
+      //   guard: AuthGuard,
+      //   layout: DashboardLayout,
+      //   path: '/viewer/:studyInstanceUIDs',
+      //   component: ViewerRouting,
+      // },
       {
         exact: false,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path:
           '/view/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[2].step);
+        // },
         component: ViewerRouting,
       },
       {
         exact: false,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path:
           '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-
+        // onEnter: () => {
+        //   this.props.onStepChange(ApplicationSteps[4].step);
+        // },
         component: ViewerRouting,
       },
       {
         exact: false,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path:
           '/nnunet/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
@@ -289,6 +267,7 @@ class OHIFStandaloneViewer extends Component {
 
       {
         path: '/radionics',
+        guard: AuthGuard,
         layout: DashboardLayout,
         routes: [
           {
@@ -309,6 +288,7 @@ class OHIFStandaloneViewer extends Component {
 
       {
         exact: true,
+        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/profile',
         component: SamplePage,
@@ -322,9 +302,9 @@ class OHIFStandaloneViewer extends Component {
             path: '/',
             component: () => <Redirect to="/studylist" />,
           },
-          {
-            component: () => <Redirect to="/404" />,
-          },
+          // {
+          //   component: () => <Redirect to="/404" />,
+          // },
         ],
       },
     ];
@@ -339,9 +319,17 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = dispatch => {
+  return {
+    onStepChange: step => {
+      dispatch(setActiveStep(step));
+    },
+  };
+};
+
 const ConnectedOHIFStandaloneViewer = connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(OHIFStandaloneViewer);
 
 export default ViewerbaseDragDropContext(
