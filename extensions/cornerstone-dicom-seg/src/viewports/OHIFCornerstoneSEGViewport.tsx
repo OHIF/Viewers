@@ -1,12 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
+
+import { eventTarget, cache, Enums } from '@cornerstonejs/core';
+import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import {
   Notification,
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
+
+import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 
 const { formatDate } = utils;
 
@@ -26,6 +31,7 @@ function OHIFCornerstoneSEGViewport(props) {
     DisplaySetService,
     ToolGroupService,
     CornerstoneViewportService,
+    SegmentationService,
   } = servicesManager.services;
 
   // SEG viewport will always have a single display set
@@ -39,9 +45,9 @@ function OHIFCornerstoneSEGViewport(props) {
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
 
   // States
-  const [isSegDisplaySetLoaded, setIsSegDisplaySetLoaded] = useState(false);
   const [toolGroupId, setToolGroupId] = useState(null);
   const [referencedDisplaySet, setReferencedDisplaySet] = useState(null);
+  const [segmentationIsLoaded, setSegmentationIsLoaded] = useState(false);
   const [
     referencedDisplaySetMetadata,
     setReferencedDisplaySetMetadata,
@@ -52,6 +58,7 @@ function OHIFCornerstoneSEGViewport(props) {
   // );
   const [element, setElement] = useState(null);
   const { viewports, activeViewportIndex } = viewportGrid;
+  const callbackRef = useRef(null);
 
   /**
    * OnElementEnabled callback which is called after the cornerstoneExtension
@@ -66,90 +73,24 @@ function OHIFCornerstoneSEGViewport(props) {
   const onElementDisabled = () => {
     setElement(null);
 
-    // remove the temporary tool Group from the state
+    // remove the segmentation representations as well
+    SegmentationService.removeSegmentationRepresentationFromToolGroup(
+      toolGroupId
+    );
+
+    // Note: toolgroup should be removed after the segmentation representations
+    // are removed, since cornerstone need to remove the labelmap before removing
+    // the toolgroup
     ToolGroupService.destroyToolGroup(toolGroupId);
   };
 
-  useEffect(() => {
-    if (toolGroupId !== null) {
-      return;
-    }
-
-    const createdToolGroupId = _createToolGroupAndAddTools(
-      ToolGroupService,
-      viewportIndex,
-      extensionManager
+  const DisplaySegmentationImage = useCallback(async () => {
+    const segmentationId = segDisplaySet.displaySetInstanceUID;
+    SegmentationService.addSegmentationRepresentationToToolGroup(
+      toolGroupId,
+      segmentationId
     );
-    setToolGroupId(createdToolGroupId);
-
-    return () => {
-      // we don't need a cleanup function, because the tool group is destroyed
-      // when the element is disabled automatically
-      // _removeToolGroup(toolGroupId);
-    };
-  }, [toolGroupId]);
-
-  // const updateViewport = useCallback(
-  //   newMeasurementSelected => {
-  //     const {
-  //       StudyInstanceUID,
-  //       displaySetInstanceUID,
-  //       sopClassUids,
-  //     } = segDisplaySet;
-
-  //     if (!StudyInstanceUID || !displaySetInstanceUID) {
-  //       return;
-  //     }
-
-  //     if (sopClassUids && sopClassUids.length > 1) {
-  //       // Todo: what happens if there are multiple SOP Classes? Why we are
-  //       // not throwing an error?
-  //       console.warn(
-  //         'More than one SOPClassUID in the same series is not yet supported.'
-  //       );
-  //     }
-
-  //     _getViewportReferencedDisplaySetData(
-  //       segDisplaySet,
-  //       newMeasurementSelected,
-  //       DisplaySetService
-  //     ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
-  //       setMeasurementSelected(newMeasurementSelected);
-  //       setreferencedDisplaySet(referencedDisplaySet);
-  //       setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
-
-  //       if (
-  //         referencedDisplaySet.displaySetInstanceUID ===
-  //         referencedDisplaySet?.displaySetInstanceUID
-  //       ) {
-  //         const { measurements } = segDisplaySet;
-
-  //         // it means that we have a new referenced display set, and the
-  //         // imageIdIndex will handle it by updating the viewport, but if they
-  //         // are the same we just need to use MeasurementService to jump to the
-  //         // new measurement
-  //         const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-  //           viewportIndex
-  //         );
-
-  //         const csViewport = CornerstoneViewportService.getCornerstoneViewport(
-  //           viewportInfo.getViewportId()
-  //         );
-
-  //         const imageIds = csViewport.getImageIds();
-
-  //         const imageIdIndex = imageIds.indexOf(
-  //           measurements[newMeasurementSelected].imageId
-  //         );
-
-  //         if (imageIdIndex !== -1) {
-  //           csViewport.setImageIdIndex(imageIdIndex);
-  //         }
-  //       }
-  //     });
-  //   },
-  //   [dataSource, segDisplaySet, referencedDisplaySet, viewportIndex]
-  // );
+  }, [segDisplaySet, toolGroupId]);
 
   const getCornerstoneViewport = useCallback(() => {
     if (!referencedDisplaySet) {
@@ -229,61 +170,67 @@ function OHIFCornerstoneSEGViewport(props) {
   }, []);
 
   useEffect(() => {
+    if (toolGroupId !== null) {
+      return;
+    }
+
+    const _toolGroupId = createSEGToolGroupAndAddTools(
+      ToolGroupService,
+      viewportIndex,
+      extensionManager
+    );
+
+    setToolGroupId(_toolGroupId);
+
+    return () => {
+      // we don't need a cleanup function, because the tool group is destroyed
+      // when the element is disabled automatically
+      // _removeToolGroup(toolGroupId);
+    };
+  }, [toolGroupId]);
+
+  useEffect(() => {
     const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
 
-    const { referencedDisplaySetMetadata } = _getReferencedDisplaySetMetadata(
+    const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
       referencedDisplaySet
     );
 
     setReferencedDisplaySet(referencedDisplaySet);
     setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
+
+    const loadSegmentations = async () => {
+      await segDisplaySet.load(toolGroupId);
+      setSegmentationIsLoaded(true);
+    };
+
+    if (!segDisplaySet.isLoaded) {
+      loadSegmentations();
+    }
   }, [segDisplaySet]);
 
-  /**
-   * Loading the segmentations from the SEG viewport, only when the toolGroup
-   * for the viewport is created.
-   */
   useEffect(() => {
-    const { unsubscribe } = ToolGroupService.subscribe(
-      ToolGroupService.EVENTS.VIEWPORT_ADDED,
-      ({ toolGroupId: newToolGroupId }) => {
-        if (newToolGroupId !== toolGroupId) {
-          return;
-        }
+    if (!segmentationIsLoaded) {
+      return;
+    }
 
-        const loadSegmentations = async () => {
-          await segDisplaySet.load(toolGroupId);
-          setIsSegDisplaySetLoaded(true);
-        };
+    const { referencedVolumeId } = segDisplaySet;
+    const referencedVolume = cache.getVolume(referencedVolumeId);
 
-        if (!segDisplaySet.isLoaded) {
-          loadSegmentations();
-        }
+    if (referencedVolume) {
+      DisplaySegmentationImage();
+      return;
+    }
+
+    eventTarget.addEventListener(Enums.Events.IMAGE_VOLUME_MODIFIED, evt => {
+      if (callbackRef.current) {
+        return;
       }
-    );
 
-    return () => {
-      unsubscribe();
-    };
-  }, [toolGroupId, segDisplaySet, referencedDisplaySet]);
-
-  /**
-   * Hook to update the tracking identifiers when the selected measurement changes or
-   * the element changes
-   */
-  // useEffect(() => {
-  //   if (!element || !segDisplaySet.isLoaded) {
-  //     return;
-  //   }
-  //   setTrackingIdentifiers(measurementSelected);
-  // }, [measurementSelected, element, setTrackingIdentifiers, segDisplaySet]);
-
-  /**
-   * Data fetching for the SEG displaySet
-   */
-  // useEffect(() => {
-  //   updateViewport();
-  // }, [dataSource, segDisplaySet]);
+      callbackRef.current = true;
+      DisplaySegmentationImage();
+    });
+  }, [segDisplaySet, segmentationIsLoaded]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -394,42 +341,6 @@ OHIFCornerstoneSEGViewport.defaultProps = {
   customProps: {},
 };
 
-function _createToolGroupAndAddTools(
-  ToolGroupService,
-  viewportIndex,
-  extensionManager
-) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.tools'
-  );
-
-  const { toolNames, Enums } = utilityModule.exports;
-
-  const tools = {
-    active: [
-      {
-        toolName: toolNames.WindowLevel,
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-      },
-      {
-        toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
-      },
-      {
-        toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
-      },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
-    ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
-  };
-
-  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
-  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
-
-  return toolGroupId;
-}
-
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
@@ -446,7 +357,7 @@ function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
     SpacingBetweenSlices: image0.SpacingBetweenSlices,
   };
 
-  return { referencedDisplaySetMetadata, referencedDisplaySet };
+  return referencedDisplaySetMetadata;
 }
 
 export default OHIFCornerstoneSEGViewport;

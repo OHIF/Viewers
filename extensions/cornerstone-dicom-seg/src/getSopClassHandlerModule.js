@@ -1,7 +1,7 @@
 import vtkMath from '@kitware/vtk.js/Common/Core/Math';
 
-import { cache, eventTarget, Enums, volumeLoader } from '@cornerstonejs/core';
 import { utils } from '@ohif/core';
+import { cache } from '@cornerstonejs/core';
 
 import { SOPClassHandlerId } from './id';
 import dcmjs from 'dcmjs';
@@ -87,86 +87,57 @@ function _getDisplaySetsFromSeries(
     return referencedDisplaySet;
   };
 
-  displaySet.load = async toolGroupId =>
-    await _load(toolGroupId, displaySet, extensionManager, servicesManager);
+  displaySet.load = async () =>
+    await _load(displaySet, servicesManager, extensionManager);
 
   return [displaySet];
 }
 
-async function _load(
-  toolGroupId,
-  segDisplaySet,
-  extensionManager,
-  servicesManager
-) {
-  const { SegmentationService } = servicesManager.services;
-
-  if (!segDisplaySet.isLoaded) {
-    // const segArrayBuffer = await instance.PixelData.retrieveBulkData();
-    const utilityModule = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.utilityModule.common'
-    );
-
-    const { dicomLoaderService } = utilityModule.exports;
-    const segArrayBuffer = await dicomLoaderService.findDicomDataPromise(
-      segDisplaySet
-    );
-
-    const dicomData = DicomMessage.readFile(segArrayBuffer);
-    const dataset = DicomMetaDictionary.naturalizeDataset(dicomData.dict);
-    dataset._meta = DicomMetaDictionary.namifyDataset(dicomData.meta);
-
-    if (!Array.isArray(dataset.SegmentSequence)) {
-      dataset.SegmentSequence = [dataset.SegmentSequence];
-    }
-
-    const segments = _getSegments(dataset);
-    segDisplaySet.segments = segments;
-
-    // We can either wait for the referenced displaySet to be handled by cornerstone
-    // hence the volume get created and we use that to created derived volume for the
-    // segmentation, or we calculate the volume metadata ourselves here from the referenced
-    // displaySet.
-    segDisplaySet.isLoaded = true;
-  }
-
-  const { referencedVolumeId } = segDisplaySet;
-  const referencedVolume = cache.getVolume(referencedVolumeId);
-
-  if (referencedVolume) {
-    _loadAndDisplaySegmentation(
-      toolGroupId,
-      segDisplaySet,
-      SegmentationService
-    );
+async function _load(segDisplaySet, servicesManager, extensionManager) {
+  if (segDisplaySet.isLoaded) {
     return;
   }
 
-  let callbackRun = false;
-  eventTarget.addEventListener(Enums.Events.IMAGE_VOLUME_MODIFIED, evt => {
-    if (!callbackRun) {
-      callbackRun = true;
-      _loadAndDisplaySegmentation(
-        toolGroupId,
-        segDisplaySet,
-        SegmentationService
-      );
-    }
-  });
-}
+  const { SegmentationService } = servicesManager.services;
+  // const segArrayBuffer = await instance.PixelData.retrieveBulkData();
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.common'
+  );
 
-async function _loadAndDisplaySegmentation(
-  toolGroupId,
-  segDisplaySet,
-  SegmentationService
-) {
-  const segmentationId = await SegmentationService.createSegmentationForSEGDisplaySet(
+  const { dicomLoaderService } = utilityModule.exports;
+  const segArrayBuffer = await dicomLoaderService.findDicomDataPromise(
     segDisplaySet
   );
-  SegmentationService.addSegmentationRepresentationToToolGroup(
-    toolGroupId,
-    segmentationId
-  );
+
+  const dicomData = DicomMessage.readFile(segArrayBuffer);
+  const dataset = DicomMetaDictionary.naturalizeDataset(dicomData.dict);
+  dataset._meta = DicomMetaDictionary.namifyDataset(dicomData.meta);
+
+  if (!Array.isArray(dataset.SegmentSequence)) {
+    dataset.SegmentSequence = [dataset.SegmentSequence];
+  }
+
+  const segments = _getSegments(dataset);
+  segDisplaySet.segments = segments;
+
+  if (!_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
+    const suppressEvents = true;
+    await SegmentationService.createSegmentationForSEGDisplaySet(
+      segDisplaySet,
+      null,
+      suppressEvents
+    );
+  }
+
+  segDisplaySet.isLoaded = true;
+}
+
+function _segmentationExistsInCache(segDisplaySet, SegmentationService) {
+  // This should be abstracted with the CornerstoneCacheService
+  const labelmapVolumeId = segDisplaySet.displaySetInstanceUID;
+  const segVolume = SegmentationService.getLabelmapVolume(labelmapVolumeId);
+
+  return segVolume !== undefined;
 }
 
 function _getPixelData(dataset, segments) {

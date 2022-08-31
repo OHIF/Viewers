@@ -712,6 +712,22 @@ class SegmentationService {
     );
   };
 
+  public removeSegmentationRepresentationFromToolGroup(
+    toolGroupId: string,
+    segmentationIds?: string[]
+  ): void {
+    segmentationIds =
+      segmentationIds ??
+      cstSegmentation.state
+        .getSegmentationRepresentations(toolGroupId)
+        .map(rep => rep.segmentationRepresentationUID);
+
+    cstSegmentation.removeSegmentationsFromToolGroup(
+      toolGroupId,
+      segmentationIds
+    );
+  }
+
   /**
    * Removes a segmentation and broadcasts the removed event.
    *
