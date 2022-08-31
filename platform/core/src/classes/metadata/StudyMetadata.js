@@ -350,6 +350,13 @@ class StudyMetadata extends Metadata {
               referencedSeriesInstanceUID
             );
           } else {
+            if (
+              !displaySet.referencedDisplaySets ||
+              displaySet.referencedDisplaySets.length === 0
+            ) {
+              return false;
+            }
+
             const filteredReferencedDisplaySets = displaySet.referencedDisplaySets.filter(
               referencedDisplaySet =>
                 referencedDisplaySet.SeriesInstanceUID ===
