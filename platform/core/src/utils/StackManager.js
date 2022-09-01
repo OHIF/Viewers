@@ -25,7 +25,7 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
   const imageIds = [];
   let imageId;
 
-  displaySet.images.forEach((instance, imageIndex) => {
+  images.forEach((instance, imageIndex) => {
     const image = instance.getData();
     const metaData = {
       instance: image, // in this context, instance will be the data of the InstanceMetadata object...
@@ -35,7 +35,7 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
       imageIndex: imageIndex + 1,
     };
 
-    const naturalizedInstance = instance.getData().metadata;
+    const naturalizedInstance = image.metadata;
     const NumberOfFrames = naturalizedInstance.NumberOfFrames;
 
     if (NumberOfFrames > 1) {

@@ -8,6 +8,17 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
   const { MeasurementService } = servicesManager.services;
 
   const srDisplaySets = displaySets.filter(ds => ds.Modality === 'SR');
+  const imageDisplaySets = displaySets.filter(
+    ds =>
+      ds.Modality !== 'SR' &&
+      ds.Modality !== 'SEG' &&
+      ds.Modality !== 'RTSTRUCT' &&
+      ds.Modality !== 'RTDOSE'
+  );
+
+  imageDisplaySets.forEach(imageDisplaySet => {
+    imageDisplaySet.SRLabels = [];
+  });
 
   srDisplaySets.forEach(srDisplaySet => {
     const firstInstance = srDisplaySet.metadata;
@@ -28,13 +39,6 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
     srDisplaySet.isRehydratable = isRehydratable(srDisplaySet, mappings);
     srDisplaySet.isLoaded = true;
 
-    const imageDisplaySets = displaySets.filter(
-      ds =>
-        ds.Modality !== 'SR' &&
-        ds.Modality !== 'SEG' &&
-        ds.Modality !== 'RTSTRUCT' &&
-        ds.Modality !== 'RTDOSE'
-    );
     imageDisplaySets.forEach(imageDisplaySet => {
       // Check currently added displaySets and add measurements if the sources exist.
       checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, imageDisplaySet);
@@ -127,7 +131,6 @@ const checkIfCanAddMeasurementsToDisplaySet = (
 
   const imageIds = images.map(i => i.getImageId());
   const SOPInstanceUIDs = images.map(i => i.SOPInstanceUID);
-  imageDisplaySet.SRLabels = [];
   const colors = new Map();
   measurements.forEach(measurement => {
     const { coords } = measurement;
