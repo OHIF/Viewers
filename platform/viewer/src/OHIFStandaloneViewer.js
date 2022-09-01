@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter, matchPath } from 'react-router';
-import { Switch, Redirect, Route } from 'react-router-dom';
+import { withRouter, matchPath, Redirect } from 'react-router';
+import { Route, Switch } from 'react-router-dom';
 import { NProgress } from '@tanem/react-nprogress';
 import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
@@ -14,21 +14,17 @@ import {
 import { SignoutCallbackComponent } from 'redux-oidc';
 import * as RoutesUtil from './routes/routesUtil';
 
+import NotFound from './routes/NotFound.js';
+import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
 // Contexts
 import AppContext from './context/AppContext';
+import DashboardLayout from './layouts';
 import { renderRoutes } from './routes';
 import LoginPage from './pages/login';
-import DashboardLayout from './layouts';
-import SamplePage from './pages/SamplePage';
-import AuthGuard from './guards/AuthGuard';
-// import UplouderPage from './pages/Uplouder';
-import GuestGuard from './guards/GuestGuard';
-import { setActiveStep } from '../../core/src/redux/actions';
-import { ApplicationSteps } from '../../core/src/redux/reducers/steps';
-
+import LoadingScreen from './components/LoadingScreen';
 const ViewerRouting = asyncComponent(() =>
   retryImport(() =>
     import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
@@ -43,7 +39,7 @@ const RadionicRouting = asyncComponent(() =>
   )
 );
 
-const RadionicReportRouting = asyncComponent(() =>
+const SelectMaskRouting = asyncComponent(() =>
   retryImport(() =>
     import(
       /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsReportRouting.js'
@@ -70,6 +66,12 @@ const NnunetPage = asyncComponent(() =>
     import(
       /* webpackChunkName: "StudyListRouting" */ './routes/ViewerRouting2.js'
     )
+  )
+);
+
+const SamplePage = asyncComponent(() =>
+  retryImport(() =>
+    import(/* webpackChunkName: "StudyListRouting" */ './pages/SamplePage.js')
   )
 );
 
@@ -100,8 +102,67 @@ class OHIFStandaloneViewer extends Component {
   }
 
   render() {
-    const { userManager } = this.props;
+    const { user, userManager } = this.props;
+    const userNotLoggedIn = userManager && (!user || user.expired);
+    if (userNotLoggedIn) {
+      const { pathname, search } = this.props.location;
 
+      if (pathname !== '/callback') {
+        sessionStorage.setItem(
+          'ohif-redirect-to',
+          JSON.stringify({ pathname, search })
+        );
+      }
+
+      return (
+        <Switch>
+          <Route
+            exact
+            path="/silent-refresh.html"
+            onEnter={RoutesUtil.reload}
+          />
+          <Route
+            exact
+            path="/logout-redirect"
+            render={() => (
+              <SignoutCallbackComponent
+                userManager={userManager}
+                successCallback={() => console.log('Signout successful')}
+                errorCallback={error => {
+                  console.warn(error);
+                  console.warn('Signout failed');
+                }}
+              />
+            )}
+          />
+          <Route
+            path="/callback"
+            render={() => <CallbackPage userManager={userManager} />}
+          />
+          <Route path="/" render={() => <LoginPage />} />
+          <Route
+            component={() => {
+              userManager.getUser().then(user => {
+                if (user) {
+                  userManager.signinSilent();
+                } else {
+                  userManager.signinRedirect();
+                }
+              });
+
+              return null;
+            }}
+          />
+        </Switch>
+      );
+    }
+
+    /**
+     * Note: this approach for routing is caused by the conflict between
+     * react-transition-group and react-router's <Switch> component.
+     *
+     * See http://reactcommunity.org/react-transition-group/with-react-router/
+     */
     const routes = [
       {
         exact: true,
@@ -110,7 +171,6 @@ class OHIFStandaloneViewer extends Component {
       },
       {
         exact: true,
-        // guard: GuestGuard,
         path: '/silent-refresh.html',
         onEnter: () => {
           RoutesUtil.reload();
@@ -118,89 +178,30 @@ class OHIFStandaloneViewer extends Component {
       },
       {
         exact: true,
-        // guard: GuestGuard,
         path: '/logout-refresh.html',
         onEnter: () => {
           RoutesUtil.reload();
         },
       },
+
       {
         exact: true,
-        path: '/callback',
-        component: () => <CallbackPage userManager={userManager} />,
-      },
-      {
-        exact: true,
-        // guard: GuestGuard,
-        path: '/logout-redirect',
-        component: () => (
-          <SignoutCallbackComponent
-            userManager={userManager}
-            successCalslback={() => console.log('Signout successful')}
-            errorCallback={error => {
-              console.warn(error);
-              console.warn('Signout failed');
-            }}
-          />
-        ),
-      },
-      {
-        exact: true,
-        guard: GuestGuard,
-        path: '/login',
-        component: () => <LoginPage />,
-      },
-      {
-        exact: true,
-        path: '/callback',
-        component: () => <CallbackPage userManager={userManager} />,
-      },
-      {
-        exact: true,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/uplouder',
         component: SamplePage,
       },
 
-      // {
-      //   path: '/organ',
-      //   guard: AuthGuard,
-      //   layout: DashboardLayout,
-      //   routes: [
-      //     {
-      //       exact: true,
-      //       path: '/organ/select',
-      //       component: SelectOrganPage,
-      //     },
-      //     {
-      //       exact: true,
-      //       path: '/organ/studylist',
-      //       component: SamplePage,
-      //     },
-      //     {
-      //       component: () => <Redirect to="/organ/select" />,
-      //     },
-      //   ],
-      // },
-
       {
         exact: true,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/studylist',
-        // onEnter: () => {
-        //   this.props.onStepChange(ApplicationSteps[1].step);
-        // },
+
         component: StudyListRouting,
       },
       {
         exact: false,
-        guard: AuthGuard,
         layout: DashboardLayout,
-        // onEnter: () => {
-        //   this.props.onStepChange(ApplicationSteps[1].step);
-        // },
+
         path:
           '/studylist/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
         component: StudyListRouting,
@@ -208,87 +209,75 @@ class OHIFStandaloneViewer extends Component {
 
       {
         exact: false,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/segmentation',
         component: SamplePage,
       },
       {
         exact: false,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/viewer',
         component: SamplePage,
       },
-      // {
-      //   exact: true,
-      //   guard: AuthGuard,
-      //   layout: DashboardLayout,
-      //   path: '/viewer/:studyInstanceUIDs',
-      //   component: ViewerRouting,
-      // },
-      // {
-      //   exact: true,
-      //   guard: AuthGuard,
-      //   layout: DashboardLayout,
-      //   path: '/viewer/:studyInstanceUIDs',
-      //   component: ViewerRouting,
-      // },
       {
         exact: false,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path:
           '/view/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-        // onEnter: () => {
-        //   this.props.onStepChange(ApplicationSteps[2].step);
-        // },
         component: ViewerRouting,
       },
       {
         exact: false,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path:
           '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-        // onEnter: () => {
-        //   this.props.onStepChange(ApplicationSteps[4].step);
-        // },
+
         component: ViewerRouting,
       },
       {
         exact: false,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path:
           '/nnunet/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
         component: NnunetPage,
       },
-
       {
-        path: '/radionics',
-        guard: AuthGuard,
+        exact: false,
         layout: DashboardLayout,
-        routes: [
-          {
-            exact: false,
-            path:
-              '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-            component: RadionicReportRouting,
-          },
-          {
-            exact: false,
-            path:
-              '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-
-            component: RadionicRouting,
-          },
-        ],
+        path:
+          '/selectmask/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        component: SelectMaskRouting,
       },
+      {
+        exact: false,
+        layout: DashboardLayout,
+        path:
+          '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        component: RadionicRouting,
+      },
+
+      // {
+      //   path: '/radionics',
+      //   layout: DashboardLayout,
+      //   routes: [
+      //     {
+      //       exact: false,
+      //       path:
+      //         '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+      //       component: SelectMaskRouting,
+      //     },
+      //     {
+      //       exact: false,
+      //       path:
+      //         '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+
+      //       component: RadionicRouting,
+      //     },
+      //   ],
+      // },
 
       {
         exact: true,
-        guard: AuthGuard,
         layout: DashboardLayout,
         path: '/profile',
         component: SamplePage,
@@ -309,7 +298,67 @@ class OHIFStandaloneViewer extends Component {
       },
     ];
 
-    return <div className="App">{renderRoutes(routes)}</div>;
+    return (
+      <>
+        <NProgress isAnimating={this.state.isLoading}>
+          {({ isFinished, progress, animationDuration }) => (
+            <Container
+              isFinished={isFinished}
+              animationDuration={animationDuration}
+            >
+              <Bar progress={progress} animationDuration={animationDuration} />
+            </Container>
+          )}
+        </NProgress>
+
+        <div className="App">
+          <Suspense fallback={<LoadingScreen />}>
+            <Switch>
+              {routes.map((route, i) => {
+                const Layout = route.layout || Fragment;
+                const Component = route.component;
+
+                return (
+                  <Route
+                    key={i}
+                    path={route.path}
+                    exact={route.exact}
+                    render={props => (
+                      <CSSTransition
+                        in={props.match !== null}
+                        timeout={300}
+                        classNames="fade"
+                        unmountOnExit
+                        onEnter={() => {
+                          this.setState({
+                            isLoading: true,
+                          });
+                        }}
+                        onEntered={() => {
+                          this.setState({
+                            isLoading: false,
+                          });
+                        }}
+                      >
+                        <Layout>
+                          {route.routes ? (
+                            renderRoutes(route.routes)
+                          ) : (
+                            <ErrorBoundary context={props.match.url}>
+                              <Component {...props} />
+                            </ErrorBoundary>
+                          )}
+                        </Layout>
+                      </CSSTransition>
+                    )}
+                  />
+                );
+              })}
+            </Switch>
+          </Suspense>
+        </div>
+      </>
+    );
   }
 }
 
@@ -319,17 +368,9 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onStepChange: step => {
-      dispatch(setActiveStep(step));
-    },
-  };
-};
-
 const ConnectedOHIFStandaloneViewer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(OHIFStandaloneViewer);
 
 export default ViewerbaseDragDropContext(

@@ -82,7 +82,7 @@ const TextureFeature = props => {
   };
 
   let filterjobs = jobs;
-  if (filterjobs.length > 0 && showMore) filterjobs = filterjobs.slice(0, 2);
+  if (filterjobs.length > 0 && showMore) filterjobs = filterjobs.slice(0, 1);
 
   return (
     <div className="component">

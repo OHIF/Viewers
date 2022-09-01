@@ -221,6 +221,7 @@ class Radiomics extends Component {
 
   state = {
     loading: true,
+    showSegments: true,
     isLeftSidePanelOpen: false,
     selectedLeftSidePanel: '', // TODO: Don't hardcode this
     isRightSidePanelOpen: false,
@@ -433,7 +434,7 @@ class Radiomics extends Component {
 
   handleBack = () => {
     const location = this.props.location;
-    const pathname = location.pathname.replace('radionics/report', 'radionics');
+    const pathname = location.pathname.replace('radionics', 'selectmask');
     this.props.history.push(pathname);
   };
 
@@ -507,6 +508,28 @@ class Radiomics extends Component {
     this.setState(updatedState);
   };
 
+  toggleSegmentations() {
+    if (this.state.showSegments) {
+      this.setState(
+        {
+          showSegments: !this.state.showSegments,
+        },
+        () => {
+          eventBus.dispatch('clearSegmentations', {});
+        }
+      );
+    } else {
+      this.setState(
+        {
+          showSegments: !this.state.showSegments,
+        },
+        () => {
+          eventBus.dispatch('importSegmentations', {});
+        }
+      );
+    }
+  }
+
   render() {
     if (this.state.loading) {
       return (
@@ -559,6 +582,12 @@ class Radiomics extends Component {
             <div className="container-item">
               <button className="btn btn-danger" onClick={this.handleBack}>
                 Edit Mask Selection
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={this.toggleSegmentations}
+              >
+                toggleSegmentations
               </button>
             </div>
           </div>

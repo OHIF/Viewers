@@ -964,6 +964,8 @@ export default class MeasurementApi {
 
     // Synchronize the new data with cornerstone tools
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+    const crtlsState = cornerstoneTools.store.state.tools;
+    const modules = cornerstoneTools.store.modules;
 
     entries.forEach(entry => {
       const measurementsData = [];
