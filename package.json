@@ -13,6 +13,10 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
+    "build:dev": "env-cmd -f platform/viewer/.env.dev lerna run build:viewer --stream",
+    "build:test": "env-cmd -f platform/viewer/.env.test lerna run build:viewer --stream",
+    "build:stage": "env-cmd -f platform/viewer/.env.stage lerna run build:viewer --stream",
+    "build:production": "env-cmd -f platform/viewer/.env.production lerna run build:viewer --stream",
     "build:lt": "lerna run build:viewer:lesion-tracker --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
@@ -67,6 +71,7 @@
     "css-loader": "^3.2.0",
     "cypress-file-upload": "^3.5.3",
     "dotenv": "^8.1.0",
+    "env-cmd": "latest",
     "eslint": "5.16.0",
     "eslint-config-prettier": "^6.4.0",
     "eslint-config-react-app": "^4.0.1",

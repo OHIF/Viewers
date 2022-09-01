@@ -1,3 +1,4 @@
+
 # Use Nginx Alpine image
 FROM nginx:stable-alpine
 
@@ -24,5 +25,5 @@ CMD ["nginx", "-g", "daemon off;"]
 
 
 #### Build and Push Docker Image
-# export PUBLIC_URL=./ && yarn build && docker build -f Dockerfile-Local-Build -t oitrepo.ccr.cancer.gov/mibair/ohif_viewer .
+# yarn build:development && docker build -f Dockerfile-Local-Build -t oitrepo.ccr.cancer.gov/mibair/ohif_viewer .
 # docker push oitrepo.ccr.cancer.gov/mibair/ohif_viewer:latest
