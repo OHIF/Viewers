@@ -40,6 +40,36 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
 
   // Adding event listener to checking when user is done deriving a measurement
   element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, function(e) {
+    // let allROIToolData = {};
+    // let toolROITypes = [
+    //   'StackScroll',
+    //   'Pan',
+    //   'Zoom',
+    //   'Wwwc',
+    //   'EllipticalRoi',
+    //   'RectangleRoi',
+    //   'ArrowAnnotate',
+    //   'Length',
+    //   'CobbAngle',
+    //   'Angle',
+    //   'Bidirectional',
+    //   'FreehandRoi',
+    //   'Calibration',
+    // ]; // whatever the types you are using and wanting to save
+
+    // for (let i = 0; i < toolROITypes.length; i++) {
+    //   let toolROIType = toolROITypes[i];
+    //   let toolROIData = cornerstoneTools.getToolState(element, toolROIType);
+
+    //   if (toolROIData !== undefined) {
+    //     allROIToolData[toolROITypes[i]] = toolROIData;
+    //   }
+    // }
+    // let toolROIDataString = JSON.stringify(allROIToolData);
+
+    // const crtlsState = cornerstoneTools.store;
+    // const modules = cornerstoneTools.store.modules;
+
     const event_data = e.detail;
     const toolState =
       cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;

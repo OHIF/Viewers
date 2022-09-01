@@ -31,6 +31,7 @@ import refreshViewports from '../../../../../extensions/dicom-segmentation/src/u
 import { triggerEvent } from 'cornerstone-core';
 import { RenderLoadingModal } from '../../appExtensions/LungModuleSimilarityPanel/SearchParameters/SearchDetails';
 import { useLocation } from 'react-router';
+import eventBus from '../../lib/eventBus';
 
 const { loadAndCacheDerivedDisplaySets, studyMetadataManager } = utils;
 
@@ -71,10 +72,20 @@ const ViewportGrid = function(props) {
   const changedSegmentsRef = useRef([]);
   const editedSegmentationRef = useRef({});
   const [loadingState, setLoadingState] = useState(
-    location.pathname.includes('/edit')
+    location.pathname.includes('/edit') ||
+      location.pathname.includes('/radionics')
   );
   const [fetchedSegmentations, setFetchedSegmentations] = useState(false);
 
+  useEffect(() => {
+    eventBus.on('importSegmentations', data => {
+      setFetchedSegmentations(false);
+      onImportButtonClick();
+    });
+    return () => {
+      eventBus.remove('importSegmentations');
+    };
+  }, []);
   useEffect(() => {
     console.log({
       activeViewportIndex,
@@ -126,11 +137,17 @@ const ViewportGrid = function(props) {
       rows,
       columns,
     };
-    if (location.pathname.includes('/edit'))
+    if (
+      location.pathname.includes('/edit') ||
+      location.pathname.includes('/radionics')
+    )
       targeDiv.addEventListener('mouseup', handleDragEnd);
 
     return () => {
-      if (location.pathname.includes('/edit'))
+      if (
+        location.pathname.includes('/edit') ||
+        location.pathname.includes('/radionics')
+      )
         targeDiv.removeEventListener('mouseup', handleDragEnd);
     };
   }, [activeViewportIndex]);
@@ -221,7 +238,10 @@ const ViewportGrid = function(props) {
       viewportData.forEach(displaySet => {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
-      if (location.pathname.includes('/edit'))
+      if (
+        location.pathname.includes('/edit') ||
+        location.pathname.includes('/radionics')
+      )
         !fetchedSegmentations && onImportButtonClick();
     }
   }, [studies, viewportData, isStudyLoaded, snackbar]);

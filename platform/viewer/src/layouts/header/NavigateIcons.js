@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router';
 
-const Footer = () => {
-  const user = useSelector(state => state.oidc.user);
+const NavigateIcons = () => {
   const history = useHistory();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState(1);
@@ -49,31 +48,27 @@ const Footer = () => {
     }
   }, [location.pathname]);
 
-  // if (activeStep === 1) return <></>;
-
   return (
-    <footer className="master-footer">
-      {/* <div>
-        {activeStep > 1 && (
-          <button
-            className="btn btn-danger pull-left"
-            disabled={activeStep === 0}
-            onClick={handleBack}
-          >
-            {activeStep === 2 || activeStep === 3
-              ? 'Back to Study List'
-              : 'Back '}
-          </button>
-        )}
-      </div> */}
-
-      {/* <div
+    <footer className="">
+      <div
         style={{
           display: 'flex',
           flexDirection: 'row',
         }}
       >
-        {activeStep > 1 && activeStep < 5 && (
+        <div>
+          {activeStep > 1 && (
+            <button
+              className="btn btn-danger pull-left"
+              disabled={activeStep === 0}
+              onClick={handleBack}
+            >
+              back
+            </button>
+          )}
+        </div>
+
+        {activeStep > 1 && activeStep < 6 && (
           <button
             style={{
               marginLeft: '10px',
@@ -85,9 +80,9 @@ const Footer = () => {
             next
           </button>
         )}
-      </div> */}
+      </div>
     </footer>
   );
 };
 
-export default Footer;
+export default NavigateIcons;

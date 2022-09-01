@@ -18,12 +18,17 @@ export const ApplicationSteps = {
   },
   4: {
     step: 4,
-    title: 'Edit Segmentation',
+    title: 'Segmentations',
     href: '/edit',
   },
   5: {
     step: 5,
-    title: 'Radionics Reports',
+    title: 'Mask Selection',
+    href: '/selectmask',
+  },
+  6: {
+    step: 6,
+    title: 'Radionics',
     href: '/radionics',
   },
 };

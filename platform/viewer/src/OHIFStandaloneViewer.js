@@ -39,7 +39,7 @@ const RadionicRouting = asyncComponent(() =>
   )
 );
 
-const RadionicReportRouting = asyncComponent(() =>
+const SelectMaskRouting = asyncComponent(() =>
   retryImport(() =>
     import(
       /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsReportRouting.js'
@@ -241,26 +241,40 @@ class OHIFStandaloneViewer extends Component {
           '/nnunet/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
         component: NnunetPage,
       },
-
       {
-        path: '/radionics',
+        exact: false,
         layout: DashboardLayout,
-        routes: [
-          {
-            exact: false,
-            path:
-              '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-            component: RadionicReportRouting,
-          },
-          {
-            exact: false,
-            path:
-              '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-
-            component: RadionicRouting,
-          },
-        ],
+        path:
+          '/selectmask/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        component: SelectMaskRouting,
       },
+      {
+        exact: false,
+        layout: DashboardLayout,
+        path:
+          '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        component: RadionicRouting,
+      },
+
+      // {
+      //   path: '/radionics',
+      //   layout: DashboardLayout,
+      //   routes: [
+      //     {
+      //       exact: false,
+      //       path:
+      //         '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+      //       component: SelectMaskRouting,
+      //     },
+      //     {
+      //       exact: false,
+      //       path:
+      //         '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+
+      //       component: RadionicRouting,
+      //     },
+      //   ],
+      // },
 
       {
         exact: true,

@@ -5,6 +5,7 @@ import { Icon } from '@ohif/ui';
 
 import StepItem from './StepItem';
 import { ApplicationSteps } from '../../../../core/src/redux/reducers/steps';
+import NavigateIcons from './NavigateIcons';
 
 export const navConfig = Object.values(ApplicationSteps);
 
@@ -82,7 +83,7 @@ const Header = ({ onMobileClose, openMobile }) => {
       <div
         style={{
           color: '#fff',
-          flex: 1,
+          // flex: 1,
         }}
       >
         <div
@@ -100,6 +101,14 @@ const Header = ({ onMobileClose, openMobile }) => {
       </div>
 
       <div className="portal__header">{content}</div>
+      <div
+        style={{
+          color: '#fff',
+          // flex: 1,
+        }}
+      >
+        <NavigateIcons />
+      </div>
     </div>
   );
 };
