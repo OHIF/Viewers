@@ -24,11 +24,15 @@ const NavigateIcons = () => {
 
   const handleBack = () => {
     let pathname = '';
-    if (activeStep === 2 || activeStep == 3) pathname = '/studylist';
+    if (activeStep === 2) pathname = '/studylist';
+    else if (activeStep === 3)
+      pathname = location.pathname.replace('nnunet', 'view');
     else if (activeStep === 4)
       pathname = location.pathname.replace('edit', 'view');
     else if (activeStep === 5)
-      pathname = location.pathname.replace('radionics', 'edit');
+      pathname = location.pathname.replace('selectmask', 'edit');
+    else if (activeStep === 6)
+      pathname = location.pathname.replace('radionics', 'selectmask');
     history.push(pathname);
   };
 

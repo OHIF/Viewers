@@ -255,10 +255,12 @@ class Radiomics extends Component {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
-    const view_ports = cornerstone.getEnabledElements();
-    const viewports = view_ports[0];
-    const element = getEnabledElement(view_ports.indexOf(viewports));
-    cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
+    try {
+      const view_ports = cornerstone.getEnabledElements();
+      const viewports = view_ports[0];
+      const element = getEnabledElement(view_ports.indexOf(viewports));
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
+    } catch (error) {}
 
     // const { EVENTS } = cornerstoneTools;
     // const view_ports = cornerstone.getEnabledElements();
@@ -578,7 +580,7 @@ class Radiomics extends Component {
             paddingBottom: 140,
           }}
         >
-          <div className="container">
+          {/* <div className="container">
             <div className="container-item">
               <button className="btn btn-danger" onClick={this.handleBack}>
                 Edit Mask Selection
@@ -590,7 +592,7 @@ class Radiomics extends Component {
                 toggleSegmentations
               </button>
             </div>
-          </div>
+          </div> */}
           <div className="container">
             <div className="container-item">
               <RadiomicSummary />

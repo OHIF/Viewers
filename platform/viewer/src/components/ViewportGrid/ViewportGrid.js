@@ -757,7 +757,7 @@ const ViewportGrid = function(props) {
         width: '100%',
       }}
     >
-      {loadingState && <RenderLoadingModal />}
+      {/* {loadingState && <RenderLoadingModal />} */}
       {ViewportPanes}
     </div>
   );
@@ -841,9 +841,6 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedViewportGrid = connect(
-  mapStateToProps,
-  null
-)(ViewportGrid);
+const ConnectedViewportGrid = connect(mapStateToProps, null)(ViewportGrid);
 
 export default ConnectedViewportGrid;
