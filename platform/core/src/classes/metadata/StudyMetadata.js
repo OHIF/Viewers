@@ -275,6 +275,8 @@ class StudyMetadata extends Metadata {
 
     const otherDisplaySets = allDisplaySets.filter(
       ds =>
+        ds &&
+        derivatedDisplaySet &&
         ds.displaySetInstanceUID !== derivatedDisplaySet.displaySetInstanceUID
     );
 
