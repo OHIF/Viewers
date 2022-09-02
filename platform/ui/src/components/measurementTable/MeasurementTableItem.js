@@ -175,7 +175,9 @@ class MeasurementTableItem extends Component {
                 >
                   <div>
                     <div className="icons">
-                      <span>{SRLabel.label + ' : ' + SRLabel.value}</span>
+                      <span style={{ width: '90px' }}>
+                        {SRLabel.label + ' : ' + SRLabel.value}
+                      </span>
                       <Icon
                         className={`eye-icon`}
                         name={SRLabel.visible ? 'eye' : 'eye-closed'}

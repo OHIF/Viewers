@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';

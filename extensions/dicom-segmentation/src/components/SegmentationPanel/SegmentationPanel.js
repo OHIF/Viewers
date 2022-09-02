@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
@@ -224,10 +224,7 @@ const SegmentationPanel = ({
         )
       );
     };
-  }, [
-    activeIndex,
-    viewports,
-  ]);
+  }, [activeIndex, viewports]);
 
   const updateSegmentationComboBox = e => {
     const index = e.detail.activatedLabelmapIndex;
@@ -694,7 +691,7 @@ const SegmentationPanel = ({
           count={state.segmentList.length}
           isVisible={
             state.segmentsHidden.filter(isHidden => isHidden === true).length <
-            state.segmentNumbers.length && state.segmentNumbers.length > 0
+              state.segmentNumbers.length && state.segmentNumbers.length > 0
           }
           onVisibilityChange={onVisibilityChangeHandler}
         >
