@@ -113,10 +113,11 @@ function ViewerViewportGrid(props) {
 
   // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-      activeDisplaySets => {
-        updateDisplaySetsForViewports(activeDisplaySets);
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+      () => {
+        const displaySets = DisplaySetService.getActiveDisplaySets();
+        updateDisplaySetsForViewports(displaySets);
       }
     );
 
