@@ -16,7 +16,7 @@ const viewportIdVolumeInputArrayMap = new Map<string, unknown[]>();
 export default function interleaveTopToBottom({
   data: { viewportId, volumeInputArray },
   displaySetsMatchDetails,
-  matchDetails,
+  viewportMatchDetails: matchDetails,
 }) {
   viewportIdVolumeInputArrayMap.set(viewportId, volumeInputArray);
 

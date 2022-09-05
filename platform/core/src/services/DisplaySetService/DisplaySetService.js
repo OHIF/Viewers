@@ -33,7 +33,6 @@ export default class DisplaySetService {
     this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
-    this._suppressDisplaySetsChangedEvent = false;
 
     Object.assign(this, pubSubServiceInterface);
   }
@@ -42,7 +41,6 @@ export default class DisplaySetService {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];
-    this._suppressDisplaySetsChangedEvent = false;
   }
 
   _addDisplaySetsToCache(displaySets) {
@@ -119,9 +117,7 @@ export default class DisplaySetService {
     displaySetCache.splice(displaySetCacheIndex, 1);
     activeDisplaySets.splice(activeDisplaySetsIndex, 1);
 
-    if (!this._suppressDisplaySetsChangedEvent) {
-      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
-    }
+    this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     this._broadcastEvent(EVENTS.DISPLAY_SETS_REMOVED, {
       displaySetInstanceUIDs: [displaySetInstanceUID],
     });
@@ -184,12 +180,7 @@ export default class DisplaySetService {
     // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
     // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent unnecessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
-      if (!madeInClient && !this._suppressDisplaySetsChangedEvent) {
-        this._broadcastEvent(
-          EVENTS.DISPLAY_SETS_CHANGED,
-          this.activeDisplaySets
-        );
-      }
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
         displaySetsAdded,
         options,
@@ -198,15 +189,6 @@ export default class DisplaySetService {
       return displaySetsAdded;
     }
   };
-
-  suppressDisplaySetsChangedEvent() {
-    this._suppressDisplaySetsChangedEvent = true;
-  }
-
-  broadcastDisplaySetsChangedEvent() {
-    this._suppressDisplaySetsChangedEvent = false;
-    this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
-  }
 
   makeDisplaySetForInstances(instancesSrc, settings) {
     let instances = instancesSrc;

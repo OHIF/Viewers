@@ -41,9 +41,9 @@ const commandsModule = ({
   }
 
   function _getMatchedViewportsToolGroupIds() {
-    const [matchedViewports] = HangingProtocolService.getState();
+    const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
-    matchedViewports.forEach(({ viewportOptions }) => {
+    viewportMatchDetails.forEach(({ viewportOptions }) => {
       const { toolGroupId } = viewportOptions;
       if (toolGroupIds.indexOf(toolGroupId) === -1) {
         toolGroupIds.push(toolGroupId);
@@ -54,33 +54,30 @@ const commandsModule = ({
   }
 
   const actions = {
-    getMatchingPTDisplaySet: () => {
+    getMatchingPTDisplaySet: ({ viewportMatchDetails }) => {
       // Todo: this is assuming that the hanging protocol has successfully matched
       // the correct PT. For future, we should have a way to filter out the PTs
       // that are in the viewer layout (but then we have the problem of the attenuation
       // corrected PT vs the non-attenuation correct PT)
-      const matches = HangingProtocolService.getDisplaySetsMatchDetails();
-
-      const matchedSeriesInstanceUIDs = Array.from(matches.values()).map(
-        ({ SeriesInstanceUID }) => SeriesInstanceUID
-      );
 
       let ptDisplaySet = null;
-      for (const SeriesInstanceUID of matchedSeriesInstanceUIDs) {
-        const displaySets = DisplaySetService.getDisplaySetsForSeries(
-          SeriesInstanceUID
+      for (const matched of viewportMatchDetails) {
+        const { displaySetsInfo } = matched;
+        const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
+          DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
         );
 
         if (!displaySets || displaySets.length === 0) {
           continue;
         }
 
-        const displaySet = displaySets[0];
-        if (displaySet.Modality !== 'PT') {
-          continue;
-        }
+        ptDisplaySet = displaySets.find(
+          displaySet => displaySet.Modality === 'PT'
+        );
 
-        ptDisplaySet = displaySet;
+        if (ptDisplaySet) {
+          break;
+        }
       }
 
       return ptDisplaySet;

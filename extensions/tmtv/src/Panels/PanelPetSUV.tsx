@@ -28,6 +28,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     DisplaySetService,
     ToolGroupService,
     ToolBarService,
+    HangingProtocolService,
   } = servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
@@ -52,8 +53,10 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     [metadata]
   );
 
-  const getMatchingPTDisplaySet = useCallback(() => {
-    const ptDisplaySet = commandsManager.runCommand('getMatchingPTDisplaySet');
+  const getMatchingPTDisplaySet = useCallback(viewportMatchDetails => {
+    const ptDisplaySet = commandsManager.runCommand('getMatchingPTDisplaySet', {
+      viewportMatchDetails,
+    });
 
     if (!ptDisplaySet) {
       return;
@@ -70,13 +73,13 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   }, []);
 
   useEffect(() => {
-    const displaySets = DisplaySetService.activeDisplaySets;
-
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
     if (!displaySets.length) {
       return;
     }
 
-    const displaySetInfo = getMatchingPTDisplaySet();
+    const displaySetInfo = getMatchingPTDisplaySet(viewportMatchDetails);
 
     if (!displaySetInfo) {
       return;
@@ -89,10 +92,10 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 
   // get the patientMetadata from the StudyInstanceUIDs and update the state
   useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      () => {
-        const displaySetInfo = getMatchingPTDisplaySet();
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+      ({ viewportMatchDetails }) => {
+        const displaySetInfo = getMatchingPTDisplaySet(viewportMatchDetails);
 
         if (!displaySetInfo) {
           return;
