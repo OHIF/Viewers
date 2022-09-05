@@ -40,7 +40,7 @@ const match = (
       readValues[attribute] =
         metadataInstance[attribute] ??
         ((metadataInstance.images || metadataInstance.others || [])[0] || {})[
-        attribute
+          attribute
         ];
     }
 

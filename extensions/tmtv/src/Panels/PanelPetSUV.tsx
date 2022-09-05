@@ -97,7 +97,6 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
         if (!displaySetInfo) {
           return;
         }
-
         const { ptDisplaySet, metadata } = displaySetInfo;
         setPtDisplaySet(ptDisplaySet);
         setMetadata(metadata);

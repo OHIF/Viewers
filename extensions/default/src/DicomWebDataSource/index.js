@@ -473,10 +473,11 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
-      const seriesDeliveredPromises = seriesPromises.map(
-        promise => promise.then(instances => {
+      const seriesDeliveredPromises = seriesPromises.map(promise =>
+        promise.then(instances => {
           storeInstances(instances);
-        }));
+        })
+      );
       await Promise.all(seriesDeliveredPromises);
       setSuccessFlag();
     },

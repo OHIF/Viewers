@@ -2,7 +2,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
 import StudyMetadata from '../DicomMetadataStore/StudyMetadata';
-import DisplaySet from '../DisplaySetService/DisplaySet';
+import IDisplaySet from '../DisplaySetService/IDisplaySet';
 
 const EVENTS = {
   STAGE_CHANGE: 'event::hanging_protocol_stage_change',
@@ -21,7 +21,7 @@ class HangingProtocolService {
   matchDetails: object[];
   hpAlreadyApplied: boolean[] = [];
   customViewportSettings = [];
-  displaySets: DisplaySet[] = [];
+  displaySets: IDisplaySet[] = [];
   activeStudy: object;
   debugLogging: false;
 
@@ -167,7 +167,7 @@ class HangingProtocolService {
     return (
       this.activeImageLoadStrategyName !== null &&
       this.registeredImageLoadStrategies[
-      this.activeImageLoadStrategyName
+        this.activeImageLoadStrategyName
       ] instanceof Function
     );
   }

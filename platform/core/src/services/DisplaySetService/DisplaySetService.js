@@ -33,7 +33,7 @@ export default class DisplaySetService {
     this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
-    this._holdChangeEvents = null;
+    this._suppressDisplaySetsChangedEvent = false;
 
     Object.assign(this, pubSubServiceInterface);
   }
@@ -42,7 +42,7 @@ export default class DisplaySetService {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];
-    this._holdChangeEvents = null;
+    this._suppressDisplaySetsChangedEvent = false;
   }
 
   _addDisplaySetsToCache(displaySets) {
@@ -119,7 +119,9 @@ export default class DisplaySetService {
     displaySetCache.splice(displaySetCacheIndex, 1);
     activeDisplaySets.splice(activeDisplaySetsIndex, 1);
 
-    this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    if (!this._suppressDisplaySetsChangedEvent) {
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    }
     this._broadcastEvent(EVENTS.DISPLAY_SETS_REMOVED, {
       displaySetInstanceUIDs: [displaySetInstanceUID],
     });
@@ -182,10 +184,11 @@ export default class DisplaySetService {
     // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
     // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent unnecessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
-      if (this._holdChangeEvents) {
-        this._holdChangeEvents.push(...displaySetsAdded);
-      } else if (!madeInClient) {
-        this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+      if (!madeInClient && !this._suppressDisplaySetsChangedEvent) {
+        this._broadcastEvent(
+          EVENTS.DISPLAY_SETS_CHANGED,
+          this.activeDisplaySets
+        );
       }
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
         displaySetsAdded,
@@ -196,14 +199,12 @@ export default class DisplaySetService {
     }
   };
 
-  holdChangeEvents() {
-    if (!this._holdChangeEvents) this._holdChangeEvents = [];
+  suppressDisplaySetsChangedEvent() {
+    this._suppressDisplaySetsChangedEvent = true;
   }
 
-  fireHoldChangeEvents() {
-    if (!this._holdChangeEvents) return;
-    const heldDisplaySets = this._holdChangeEvents;
-    this._holdChangeEvents = null;
+  broadcastDisplaySetsChangedEvent() {
+    this._suppressDisplaySetsChangedEvent = false;
     this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
   }
 

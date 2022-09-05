@@ -168,12 +168,14 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const { viewportOptions, displaySetOptions } =
-      this._getViewportAndDisplaySetOptions(
-        publicViewportOptions,
-        publicDisplaySetOptions,
-        viewportInfo
-      );
+    const {
+      viewportOptions,
+      displaySetOptions,
+    } = this._getViewportAndDisplaySetOptions(
+      publicViewportOptions,
+      publicDisplaySetOptions,
+      viewportInfo
+    );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -267,9 +269,7 @@ class CornerstoneViewportService implements IViewportService {
     viewportInfo: ViewportInfo
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
-    const viewportOptions = viewportInfo.getViewportOptions();
     const { imageIds, initialImageIndex } = viewportData;
-    const { hangingProtocolService } = this;
 
     let initialImageIndexToUse = initialImageIndex;
 
@@ -418,8 +418,9 @@ class CornerstoneViewportService implements IViewportService {
     ) {
       const { index, preset } = initialImageOptions;
 
-      const { numberOfSlices } =
-        csUtils.getImageSliceDataForVolumeViewport(viewport);
+      const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
+        viewport
+      );
 
       const imageIndex = this._getInitialImageIndex(
         numberOfSlices,
@@ -555,7 +556,7 @@ class CornerstoneViewportService implements IViewportService {
   ): {
     viewportOptions: ViewportOptions;
     displaySetOptions: DisplaySetOptions[];
-    } {
+  } {
     const viewportIndex = viewportInfo.getViewportIndex();
 
     // Creating a temporary viewportInfo to handle defaults

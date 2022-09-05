@@ -67,20 +67,20 @@ function defaultRouteInit({ servicesManager, studyInstanceUIDs, dataSource }) {
       seriesAddedUnsubscribe();
     }
   );
-  // Add the unsubscription to the list in case the cancel happens before the
+  // Add the unsubscriptions to the list in case the cancel happens before the
   // service is done.
   unsubscriptions.push(seriesAddedUnsubscribe);
 
   // The hanging protocol matching service is fairly expensive to run multiple
   // times, and doesn't allow partial matches to be made (it will simply fail
-  // to display anything if a required match failes), so hold off the matches
+  // to display anything if a required match fails), so hold off the matches
   // here until the entire study is ready.
-  DisplaySetService.holdChangeEvents();
+  DisplaySetService.suppressDisplaySetsChangedEvent();
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({ StudyInstanceUID })
   );
   Promise.allSettled(allRetrieves).then(() => {
-    DisplaySetService.fireHoldChangeEvents();
+    DisplaySetService.broadcastDisplaySetsChangedEvent();
   });
 
   return unsubscriptions;
