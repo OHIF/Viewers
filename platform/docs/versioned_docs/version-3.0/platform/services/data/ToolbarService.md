@@ -210,6 +210,16 @@ to create `MeasurementTools` nested button
           toolName: 'EllipticalRoi',
         }
       },
+      // Planar Freehand tool
+      {
+        id: 'PlanarFreehandROI',
+        icon: 'tool-freehand',
+        label: 'Planar Freehand',
+        type: 'tool',
+        commandOptions: {
+          toolName: 'PlanarFreehandROI',
+        }
+      },
     ],
   },
 }

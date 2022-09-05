@@ -1,6 +1,7 @@
 import { eventTarget } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
+import cloneDeep from 'lodash.clonedeep';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
@@ -22,6 +23,7 @@ const initMeasurementService = (
     Bidirectional,
     EllipticalROI,
     ArrowAnnotate,
+    PlanarFreehandROI,
   } = measurementServiceMappingsFactory(
     MeasurementService,
     DisplaySetService,
@@ -63,6 +65,14 @@ const initMeasurementService = (
     ArrowAnnotate.matchingCriteria,
     ArrowAnnotate.toAnnotation,
     ArrowAnnotate.toMeasurement
+  );
+
+  MeasurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'PlanarFreehandROI',
+    PlanarFreehandROI.matchingCriteria,
+    PlanarFreehandROI.toAnnotation,
+    PlanarFreehandROI.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;
@@ -264,12 +274,7 @@ const connectMeasurementServiceToTools = (
           FrameOfReferenceUID: measurement.FrameOfReferenceUID,
           referencedImageId: imageId,
         },
-        data: {
-          text: data.annotation.data.text,
-          handles: { ...data.annotation.data.handles },
-          cachedStats: { ...data.annotation.data.cachedStats },
-          label: data.annotation.data.label,
-        },
+        data: cloneDeep(data.annotation.data),
       });
     }
   );

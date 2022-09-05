@@ -217,28 +217,32 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     referencedImageId,
     options
   ) {
-    // Todo: this needs to use the drawPolyLine from cs3D since it is implemented
-    // now, before it was implemented with a loop over drawLine which is hacky
-
+    const drawingOptions = {
+      color: options.color,
+      width: options.lineWidth,
+    };
     let canvasCoordinates;
     renderableData.map((data, index) => {
       canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
 
+      const lineUID = `${index}`;
       if (canvasCoordinates.length === 2) {
-        const lineUID = `${index}`;
         drawing.drawLine(
           svgDrawingHelper,
           annotationUID,
           lineUID,
           canvasCoordinates[0],
           canvasCoordinates[1],
-          {
-            color: options.color,
-            width: options.lineWidth,
-          }
+          drawingOptions
         );
       } else {
-        throw new Error('Drawing polyline for SR not yet implemented');
+        drawing.drawPolyline(
+          svgDrawingHelper,
+          annotationUID,
+          lineUID,
+          canvasCoordinates,
+          drawingOptions
+        );
       }
     });
 

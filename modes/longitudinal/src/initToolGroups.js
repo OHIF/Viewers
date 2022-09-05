@@ -32,6 +32,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
+      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },
@@ -108,6 +109,7 @@ function initSRToolGroup(extensionManager, ToolGroupService, commandsManager) {
       { toolName: SRToolNames.SRArrowAnnotate },
       { toolName: SRToolNames.SRBidirectional },
       { toolName: SRToolNames.SREllipticalROI },
+      { toolName: SRToolNames.SRPlanarFreehandROI },
     ],
     enabled: [
       {

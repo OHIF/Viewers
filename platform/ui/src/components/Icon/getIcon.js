@@ -62,6 +62,7 @@ import toolReset from './../../assets/icons/tool-reset.svg';
 import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
+import toolFreehand from './../../assets/icons/tool-freehand.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 
 /** Old OHIF */
@@ -131,6 +132,7 @@ const ICONS = {
   'tool-rectangle': toolRectangle,
   'tool-fusion-color': toolFusionColor,
   'tool-create-threshold': toolCreateThreshold,
+  'tool-freehand': toolFreehand,
   'edit-patient': editPatient,
 
   /** Old OHIF */

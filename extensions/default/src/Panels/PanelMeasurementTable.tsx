@@ -11,6 +11,7 @@ const { downloadCSVReport } = utils;
 // tools with measurements to display inside the panel
 const MEASUREMENT_TOOLS = [
   'EllipticalROI',
+  'PlanarFreehandROI',
   'RectangleROI',
   'Length',
   'Bidirectional',

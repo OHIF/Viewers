@@ -1,7 +1,8 @@
-import Length from './Length';
+import ArrowAnnotate from './ArrowAnnotate';
 import Bidirectional from './Bidirectional';
 import EllipticalROI from './EllipticalROI';
-import ArrowAnnotate from './ArrowAnnotate';
+import Length from './Length';
+import PlanarFreehandROI from './PlanarFreehandROI';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
@@ -105,6 +106,23 @@ const measurementServiceMappingsFactory = (
       matchingCriteria: [
         {
           valueType: MeasurementService.VALUE_TYPES.POINT,
+          points: 1,
+        },
+      ],
+    },
+    PlanarFreehandROI: {
+      toAnnotation: PlanarFreehandROI.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        PlanarFreehandROI.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          CornerstoneViewportService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          // OHIF does not yet support multi points for matching criteria
           points: 1,
         },
       ],

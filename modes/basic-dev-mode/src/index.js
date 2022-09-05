@@ -82,6 +82,7 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.Probe },
           { toolName: toolNames.EllipticalROI },
           { toolName: toolNames.RectangleROI },
+          { toolName: toolNames.PlanarFreehandROI },
           { toolName: toolNames.StackScroll },
         ],
         // enabled
