@@ -46,6 +46,7 @@ function _getDisplaySetsFromSeries(
     referencedDisplaySetInstanceUID: null,
     isDerivedDisplaySet: true,
     isLoaded: false,
+    isHydrated: false,
     segments: {},
     sopClassUids,
     instance,

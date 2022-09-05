@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
-
+import classNames from 'classnames';
 import { eventTarget, cache, Enums } from '@cornerstonejs/core';
 import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import {
@@ -9,9 +9,13 @@ import {
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
+  Icon,
+  Tooltip,
 } from '@ohif/ui';
 
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
+import _hydrateSEGDisplaySet from '../utils/_hydrateSEG';
+import promptHydrateSEG from '../utils/promptHydrateSEG';
 
 const { formatDate } = utils;
 
@@ -47,15 +51,16 @@ function OHIFCornerstoneSEGViewport(props) {
   // States
   const [toolGroupId, setToolGroupId] = useState(null);
   const [referencedDisplaySet, setReferencedDisplaySet] = useState(null);
-  const [segmentationIsLoaded, setSegmentationIsLoaded] = useState(false);
+  const [renderSEG, setRenderSEG] = useState(false);
+  const [segmentationIsLoaded, setSegmentationIsLoaded] = useState(
+    segDisplaySet.isLoaded
+  );
   const [
     referencedDisplaySetMetadata,
     setReferencedDisplaySetMetadata,
   ] = useState(null);
 
-  // const [isHydrated, setIsHydrated] = useState(
-  //   segDisplaySet.isHydrated
-  // );
+  const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportIndex } = viewportGrid;
   const callbackRef = useRef(null);
@@ -84,14 +89,6 @@ function OHIFCornerstoneSEGViewport(props) {
     ToolGroupService.destroyToolGroup(toolGroupId);
   };
 
-  const DisplaySegmentationImage = useCallback(async () => {
-    const segmentationId = segDisplaySet.displaySetInstanceUID;
-    SegmentationService.addSegmentationRepresentationToToolGroup(
-      toolGroupId,
-      segmentationId
-    );
-  }, [segDisplaySet, toolGroupId]);
-
   const getCornerstoneViewport = useCallback(() => {
     if (!referencedDisplaySet) {
       return null;
@@ -116,6 +113,7 @@ function OHIFCornerstoneSEGViewport(props) {
       <Component
         {...props}
         displaySets={[referencedDisplaySet, segDisplaySet]}
+        // secondaryDisplaySets={[segDisplaySet} ]}
         viewportOptions={{
           toolGroupId: `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`,
           viewportType: 'volume',
@@ -128,7 +126,7 @@ function OHIFCornerstoneSEGViewport(props) {
     );
   }, [referencedDisplaySet, viewportIndex]);
 
-  const onMeasurementChange = useCallback(direction => {
+  const onSegmentChange = useCallback(direction => {
     // let newMeasurementSelected = measurementSelected;
     // if (direction === 'right') {
     //   newMeasurementSelected++;
@@ -144,6 +142,33 @@ function OHIFCornerstoneSEGViewport(props) {
     // setTrackingIdentifiers(newMeasurementSelected);
     // updateViewport(newMeasurementSelected);
   }, []);
+
+  const displaySegmentation = async toolGroupId => {
+    const { referencedVolumeId } = segDisplaySet;
+    const referencedVolume = cache.getVolume(referencedVolumeId);
+    const segmentationId = segDisplaySet.displaySetInstanceUID;
+
+    if (referencedVolume) {
+      SegmentationService.addSegmentationRepresentationToToolGroup(
+        toolGroupId,
+        segmentationId
+      );
+      return;
+    }
+
+    // Todo: this feels like to be a wrong event
+    eventTarget.addEventListener(Enums.Events.IMAGE_VOLUME_MODIFIED, evt => {
+      if (callbackRef.current) {
+        return;
+      }
+
+      callbackRef.current = true;
+      SegmentationService.addSegmentationRepresentationToToolGroup(
+        toolGroupId,
+        segmentationId
+      );
+    });
+  };
 
   /**
    Cleanup the SEG viewport when the viewport is destroyed
@@ -207,30 +232,38 @@ function OHIFCornerstoneSEGViewport(props) {
     if (!segDisplaySet.isLoaded) {
       loadSegmentations();
     }
+
+    setIsHydrated(segDisplaySet.isHydrated);
   }, [segDisplaySet]);
 
   useEffect(() => {
-    if (!segmentationIsLoaded) {
-      return;
-    }
+    const { unsubscribe } = ToolGroupService.subscribe(
+      ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ toolGroupId: tlgId }) => {
+        if (toolGroupId !== tlgId) {
+          return;
+        }
 
-    const { referencedVolumeId } = segDisplaySet;
-    const referencedVolume = cache.getVolume(referencedVolumeId);
-
-    if (referencedVolume) {
-      DisplaySegmentationImage();
-      return;
-    }
-
-    eventTarget.addEventListener(Enums.Events.IMAGE_VOLUME_MODIFIED, evt => {
-      if (callbackRef.current) {
-        return;
+        setRenderSEG(true);
       }
+    );
 
-      callbackRef.current = true;
-      DisplaySegmentationImage();
-    });
-  }, [segDisplaySet, segmentationIsLoaded]);
+    if (renderSEG && segmentationIsLoaded) {
+      displaySegmentation(toolGroupId);
+    }
+
+    return () => {
+      unsubscribe();
+    };
+  }, [segDisplaySet, toolGroupId, segmentationIsLoaded, renderSEG]);
+
+  // useEffect(() => {
+  //   if (!segmentationIsLoaded || !toolGroupId) {
+  //     return;
+  //   }
+
+  //   displaySegmentation(toolGroupId);
+  // }, [toolGroupId, segmentationIsLoaded]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -251,8 +284,6 @@ function OHIFCornerstoneSEGViewport(props) {
     });
   }
 
-  const { Modality } = segDisplaySet;
-
   const {
     PatientID,
     PatientName,
@@ -266,7 +297,19 @@ function OHIFCornerstoneSEGViewport(props) {
     SeriesNumber,
   } = referencedDisplaySetMetadata;
 
-  // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
+  const onPillClick = () => {
+    const isHydrated = promptHydrateSEG({
+      servicesManager,
+      viewportIndex,
+      segDisplaySet,
+      toolGroupId,
+    });
+
+    if (isHydrated) {
+      setIsHydrated(true);
+    }
+  };
+
   return (
     <>
       <ViewportActionBar
@@ -274,25 +317,19 @@ function OHIFCornerstoneSEGViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        onPillClick={() => {
-          // sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SEG', {
-          //   displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
-          //   viewportIndex,
-          // });
-          console.debug('SEG viewport pill click');
+        onSeriesChange={onSegmentChange}
+        getStatusComponent={() => {
+          return _getStatusComponent({
+            isHydrated,
+            onPillClick,
+          });
         }}
-        onSeriesChange={onMeasurementChange}
         studyData={{
           label: viewportLabel,
           useAltStyling: true,
-          isTracked: false,
-          isLocked: false,
-          isRehydratable: segDisplaySet.isRehydratable,
-          isHydrated: false,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
           seriesDescription: `SEG Viewport ${SeriesDescription}`,
-          modality: Modality,
           patientInformation: {
             patientName: PatientName
               ? OHIF.utils.formatPN(PatientName.Alphabetic)
@@ -340,6 +377,93 @@ OHIFCornerstoneSEGViewport.propTypes = {
 OHIFCornerstoneSEGViewport.defaultProps = {
   customProps: {},
 };
+
+function _getStatusComponent({ isHydrated, onPillClick }) {
+  let ToolTipMessage = null;
+  let StatusIcon = null;
+
+  switch (isHydrated) {
+    case true:
+      StatusIcon = () => (
+        <div
+          className="flex items-center justify-center -mr-1 rounded-full"
+          style={{
+            width: '18px',
+            height: '18px',
+            backgroundColor: '#98e5c1',
+            border: 'solid 1.5px #000000',
+          }}
+        >
+          <Icon
+            name="exclamation"
+            style={{ color: '#000', width: '12px', height: '12px' }}
+          />
+        </div>
+      );
+
+      ToolTipMessage = () => (
+        <div>This Segmentation is loaded in the segmentation panel</div>
+      );
+      break;
+    case false:
+      StatusIcon = () => (
+        <div
+          className="flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200"
+          style={{
+            width: '18px',
+            height: '18px',
+            border: 'solid 1.5px #000000',
+          }}
+        >
+          <Icon
+            name="arrow-left"
+            style={{ color: '#000', width: '14px', height: '14px' }}
+          />
+        </div>
+      );
+
+      ToolTipMessage = () => <div>Click to load segmentation.</div>;
+  }
+
+  const StatusPill = () => (
+    <div
+      className={classNames(
+        'group relative flex items-center justify-center px-2 rounded-full cursor-default bg-customgreen-100',
+        {
+          'hover:bg-customblue-100': !isHydrated,
+          'cursor-pointer': !isHydrated,
+        }
+      )}
+      style={{
+        height: '24px',
+        width: '55px',
+      }}
+      onClick={() => {
+        if (!isHydrated) {
+          if (onPillClick) {
+            onPillClick();
+          }
+        }
+      }}
+    >
+      <div className="pr-1 text-base font-bold leading-none text-black">
+        SEG
+      </div>
+      <StatusIcon />
+    </div>
+  );
+
+  return (
+    <>
+      {ToolTipMessage && (
+        <Tooltip content={<ToolTipMessage />} position="bottom-left">
+          <StatusPill />
+        </Tooltip>
+      )}
+      {!ToolTipMessage && <StatusPill />}
+    </>
+  );
+}
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   const image0 = referencedDisplaySet.images[0];
