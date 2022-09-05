@@ -57,11 +57,6 @@ There are three events that get broadcasted in `DisplaySetService`:
 | DISPLAY_SETS_CHANGED | Fires when a displayset is changed                   |
 | DISPLAY_SETS_REMOVED | Fires when a displayset is removed                   |
 
-For the DISPLAY_SETS_CHANGED event, the firing of the event can be held by
-calling `DisplaySetService.suppressDisplaySetsChangedEvent()`, and then re-enabled by
-calling `DisplaySetService.broadcastDisplaySetsChangedEvent()`.  This allows loading
-all data before firing the display sets changed, so as to get a single
-notification.
 
 
 ## API
