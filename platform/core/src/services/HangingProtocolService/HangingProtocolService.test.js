@@ -137,11 +137,14 @@ describe('HangingProtocolService', () => {
   describe('run', () => {
     it('matches best image match', () => {
       hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
-      const state = hps.getState();
-      const [matchDetails, alreadyApplied] = state;
-      expect(alreadyApplied).toMatchObject([false]);
-      expect(matchDetails.length).toBe(1);
-      expect(matchDetails[0]).toMatchObject({
+      const {
+        hpAlreadyApplied,
+        viewportMatchDetails,
+        displaySetMatchDetails,
+      } = hps.getMatchDetails();
+      expect(hpAlreadyApplied).toMatchObject([false]);
+      expect(viewportMatchDetails.length).toBe(1);
+      expect(viewportMatchDetails[0]).toMatchObject({
         viewportOptions: {
           viewportId: 'ctAXIAL',
           viewportType: 'volume',
