@@ -299,7 +299,7 @@ class RadiomicsReport extends Component {
 
   handleGoRadionics = () => {
     const location = this.props.location;
-    const pathname = location.pathname.replace('radionics', 'radionics/report');
+    const pathname = location.pathname.replace('selectmask', 'radionics');
     this.props.history.push(pathname);
   };
 
@@ -443,14 +443,14 @@ class RadiomicsReport extends Component {
                     Edit Selection
                   </h2>
                 </div>
-                <div>
+                {/* <div>
                   <button
                     className="btn btn-primary"
                     onClick={this.handleGoRadionics}
                   >
                     Generate
                   </button>
-                </div>
+                </div> */}
               </div>
 
               <ErrorBoundaryDialog context="ToolbarRow">

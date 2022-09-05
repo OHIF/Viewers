@@ -20,15 +20,15 @@ export const renderRoutes = (routes = []) => (
             path={route.path}
             exact={route.exact}
             render={props => (
-              <Guard>
-                <Layout>
-                  {route.routes ? (
-                    renderRoutes(route.routes)
-                  ) : (
-                    <Component {...props} />
-                  )}
-                </Layout>
-              </Guard>
+              // <Guard userNotLoggedIn={userNotLoggedIn}>
+              <Layout>
+                {route.routes ? (
+                  renderRoutes(route.routes)
+                ) : (
+                  <Component {...props} />
+                )}
+              </Layout>
+              // </Guard>
             )}
           />
         );

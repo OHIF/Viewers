@@ -221,6 +221,7 @@ class Radiomics extends Component {
 
   state = {
     loading: true,
+    showSegments: true,
     isLeftSidePanelOpen: false,
     selectedLeftSidePanel: '', // TODO: Don't hardcode this
     isRightSidePanelOpen: false,
@@ -254,10 +255,12 @@ class Radiomics extends Component {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
-    const view_ports = cornerstone.getEnabledElements();
-    const viewports = view_ports[0];
-    const element = getEnabledElement(view_ports.indexOf(viewports));
-    cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
+    try {
+      const view_ports = cornerstone.getEnabledElements();
+      const viewports = view_ports[0];
+      const element = getEnabledElement(view_ports.indexOf(viewports));
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
+    } catch (error) {}
 
     // const { EVENTS } = cornerstoneTools;
     // const view_ports = cornerstone.getEnabledElements();
@@ -433,7 +436,7 @@ class Radiomics extends Component {
 
   handleBack = () => {
     const location = this.props.location;
-    const pathname = location.pathname.replace('radionics/report', 'radionics');
+    const pathname = location.pathname.replace('radionics', 'selectmask');
     this.props.history.push(pathname);
   };
 
@@ -507,6 +510,28 @@ class Radiomics extends Component {
     this.setState(updatedState);
   };
 
+  toggleSegmentations() {
+    if (this.state.showSegments) {
+      this.setState(
+        {
+          showSegments: !this.state.showSegments,
+        },
+        () => {
+          eventBus.dispatch('clearSegmentations', {});
+        }
+      );
+    } else {
+      this.setState(
+        {
+          showSegments: !this.state.showSegments,
+        },
+        () => {
+          eventBus.dispatch('importSegmentations', {});
+        }
+      );
+    }
+  }
+
   render() {
     if (this.state.loading) {
       return (
@@ -555,13 +580,19 @@ class Radiomics extends Component {
             paddingBottom: 140,
           }}
         >
-          <div className="container">
+          {/* <div className="container">
             <div className="container-item">
               <button className="btn btn-danger" onClick={this.handleBack}>
                 Edit Mask Selection
               </button>
+              <button
+                className="btn btn-danger"
+                onClick={this.toggleSegmentations}
+              >
+                toggleSegmentations
+              </button>
             </div>
-          </div>
+          </div> */}
           <div className="container">
             <div className="container-item">
               <RadiomicSummary />

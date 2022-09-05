@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 import UserManagerContext from '../context/UserManagerContext';
 import { useSelector } from 'react-redux';
 
-const AuthGuard = ({ children }) => {
-  const userManager = useContext(UserManagerContext);
-  const user = useSelector(state => state.oidc.user);
-  const isAuthenticated = userManager && (!user || user.expired);
+const AuthGuard = ({ userNotLoggedIn, children }) => {
+  // const userManager = useContext(UserManagerContext);
+  // const user = useSelector(state => state.oidc.user);
+  // const isAuthenticated = userManager && (!user || user.expired);
 
   // const isAuthenticated = false;
-  if (isAuthenticated) {
+  if (userNotLoggedIn) {
     return <Redirect to="/login" />;
   }
 

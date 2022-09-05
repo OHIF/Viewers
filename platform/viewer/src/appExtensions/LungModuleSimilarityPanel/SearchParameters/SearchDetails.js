@@ -201,14 +201,24 @@ const SearchDetails = props => {
     setElement(element);
 
     // retrieving rectangle tool roi data from element
-    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
-    if (tool_data && tool_data.data.length > 0) {
-      setToolData(tool_data.data[0]);
 
-      let startX = parseInt(tool_data.data[0].handles.start.x.toFixed(2));
-      let startY = parseInt(tool_data.data[0].handles.start.y.toFixed(2));
-      let endX = parseInt(tool_data.data[0].handles.end.x.toFixed(2));
-      let endY = parseInt(tool_data.data[0].handles.end.y.toFixed(2));
+    let tool_data = localStorage.getItem('mask');
+    tool_data =
+      tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+
+    // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    if (tool_data) {
+      // if (tool_data && tool_data.data.length > 0) {
+      setToolData(tool_data);
+
+      let startX = parseInt(tool_data.handles.start.x.toFixed(2));
+      let startY = parseInt(tool_data.handles.start.y.toFixed(2));
+      let endX = parseInt(tool_data.handles.end.x.toFixed(2));
+      let endY = parseInt(tool_data.handles.end.y.toFixed(2));
+      // let startX = parseInt(tool_data.data[0].handles.start.x.toFixed(2));
+      // let startY = parseInt(tool_data.data[0].handles.start.y.toFixed(2));
+      // let endX = parseInt(tool_data.data[0].handles.end.x.toFixed(2));
+      // let endY = parseInt(tool_data.data[0].handles.end.y.toFixed(2));
 
       const x_min = Math.min(startX, endX);
       const x_max = Math.max(startX, endX);
@@ -278,10 +288,14 @@ const SearchDetails = props => {
   };
 
   const triggerJob = () => {
-    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
-    const data = tool_data.data[0];
+    // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    // const data = tool_data.data[0];
 
-    sendParams(data);
+    let tool_data = localStorage.getItem('mask');
+    tool_data =
+      tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+
+    sendParams(tool_data);
   };
 
   const clearParams = () => {
@@ -545,9 +559,6 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedSearchDetails = connect(
-  mapStateToProps,
-  null
-)(SearchDetails);
+const ConnectedSearchDetails = connect(mapStateToProps, null)(SearchDetails);
 
 export default withModal(ConnectedSearchDetails);

@@ -111,7 +111,7 @@ export const mergePixelData = ({ currPixelData, item, segmentIndex }) => {
     return item.map((val, index) => {
       if (val === 1) {
         return segmentIndex;
-      }
+      } else return 0;
     });
   }
 };
@@ -135,15 +135,20 @@ export const getUpdatedSegments = ({
 
   console.log({ segmentsOnLabelmap });
   return segmentation.map((item, i) => {
-    const updatedPixelData = mergePixelData({
-      currPixelData: currPixelData[i] ? currPixelData[i].pixelData : false,
-      item,
-      segmentIndex,
-    });
+                                         const updatedPixelData = mergePixelData(
+                                           {
+                                             currPixelData: currPixelData[i]
+                                               ? currPixelData[i].pixelData
+                                               : false,
+                                             item,
+                                             segmentIndex,
+                                           }
+                                         );
 
-    return {
-      pixelData: updatedPixelData,
-      segmentsOnLabelmap,
-    };
-  });
+                                         // console.log({ updatedPixelData });
+                                         return {
+                                           pixelData: updatedPixelData,
+                                           segmentsOnLabelmap,
+                                         };
+                                       });
 };

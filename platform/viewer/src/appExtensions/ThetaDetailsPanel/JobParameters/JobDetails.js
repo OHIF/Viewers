@@ -54,16 +54,26 @@ const JobParameters = props => {
 
     setElement(element);
 
-    // retrieving rectangle tool roi data from element
-    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    let tool_data = localStorage.getItem('mask');
+    tool_data =
+        tool_data && tool_data !== 'undefined'
+          ? JSON.parse(tool_data)
+          : {};
 
-    if (tool_data && tool_data.data.length > 0) {
-      setToolData(tool_data.data[0]);
 
-      let startX = parseInt(tool_data.data[0].handles.start.x.toFixed(2));
-      let startY = parseInt(tool_data.data[0].handles.start.y.toFixed(2));
-      let endX = parseInt(tool_data.data[0].handles.end.x.toFixed(2));
-      let endY = parseInt(tool_data.data[0].handles.end.y.toFixed(2));
+    // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    if (tool_data ) {
+    // if (tool_data && tool_data.data.length > 0) {
+      setToolData(tool_data);
+
+      let startX = parseInt(tool_data.handles.start.x.toFixed(2));
+      let startY = parseInt(tool_data.handles.start.y.toFixed(2));
+      let endX = parseInt(tool_data.handles.end.x.toFixed(2));
+      let endY = parseInt(tool_data.handles.end.y.toFixed(2));
+      // let startX = parseInt(tool_data.data[0].handles.start.x.toFixed(2));
+      // let startY = parseInt(tool_data.data[0].handles.start.y.toFixed(2));
+      // let endX = parseInt(tool_data.data[0].handles.end.x.toFixed(2));
+      // let endY = parseInt(tool_data.data[0].handles.end.y.toFixed(2));
 
       const x_min = Math.min(startX, endX);
       const x_max = Math.max(startX, endX);
@@ -172,9 +182,9 @@ const JobParameters = props => {
     await client
       .post(`/texture`, body)
       .then(response => {
-        // cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
-        //   {}
-        // );
+        cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+          {}
+        );
         cornerstone.updateImage(element);
 
         if (response.status === 202) {
@@ -186,7 +196,7 @@ const JobParameters = props => {
         }
 
         // clearing all params
-        // clearParams();
+        clearParams();
 
         // set stackscroll as active tool
         cornerstoneTools.setToolActive('StackScroll', { mouseButtonMask: 1 });

@@ -33,11 +33,11 @@ class XNATSegmentationImportMenu extends React.Component {
   }
 
   componentDidMount() {
-                        console.log('import onmount');
+    console.log('import onmount');
 
-                        //  this.fetchSegmentationsFromLocalStorage();
-                        this.onImportButtonClick();
-                      }
+    //  this.fetchSegmentationsFromLocalStorage();
+    this.onImportButtonClick();
+  }
 
   getSegmentationName(key) {
     return key.split('-').join(' ');
@@ -99,9 +99,6 @@ class XNATSegmentationImportMenu extends React.Component {
       console.log({
         updatedLm2d: segmentationModule.getters.labelmap2D(element),
       });
-
-      refreshViewports();
-      triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
     } else {
       //theres something on this layer so we need to find the last layer and work on the one after it
       console.warn('layer occupied', labelmap3D);
@@ -128,15 +125,17 @@ class XNATSegmentationImportMenu extends React.Component {
       console.log({
         updatedLm2d: segmentationModule.getters.labelmap2D(element),
       });
-
-      refreshViewports();
-      triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
     }
   }
 
   importSegmentationLayers({ segmentations }) {
     const segmentationsList = Object.keys(segmentations);
     console.log({ segmentationsList });
+
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+
+    const element = getEnabledElement(view_ports.indexOf(viewports));
 
     segmentationsList.forEach((item, index) => {
       console.log({ item });
@@ -151,15 +150,14 @@ class XNATSegmentationImportMenu extends React.Component {
       });
       console.log({ uncompressed });
 
-      const view_ports = cornerstone.getEnabledElements();
-      const viewports = view_ports[0];
-
-      const element = getEnabledElement(view_ports.indexOf(viewports));
       if (!element) {
         return;
       }
 
-      console.warn({ uncompressed, item });
+      console.warn({
+        uncompressed,
+        item,
+      });
 
       this.addSegmentationToCanvas({
         segmentation: uncompressed,
@@ -167,6 +165,10 @@ class XNATSegmentationImportMenu extends React.Component {
         element,
       });
     });
+
+    console.log('refresh viewports', {});
+    refreshViewports();
+    triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
   }
 
   fetchSegmentationsFromLocalStorage() {
@@ -216,14 +218,14 @@ class XNATSegmentationImportMenu extends React.Component {
   }
 
   async onImportButtonClick() {
-                                //  const segmentations = this.fetchSegmentationsFromLocalStorage();
-                                const segmentations = await this.fetchSegmentations();
-                                console.log({ segmentations });
-                                this.importSegmentationLayers({
-                                  segmentations,
-                                });
-                                return;
-                              }
+    //  const segmentations = this.fetchSegmentationsFromLocalStorage();
+    const segmentations = await this.fetchSegmentations();
+    console.log({ segmentations });
+    this.importSegmentationLayers({
+      segmentations,
+    });
+    return;
+  }
 
   render() {
     const { importing } = this.state;

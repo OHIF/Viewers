@@ -259,6 +259,7 @@ function StudyListRoute(props) {
           // Rows
           studies={studies}
           onSelectItem={studyInstanceUID => {
+            // dispatch the studyId here
             const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
               studyInstanceUIDs: studyInstanceUID,
             });

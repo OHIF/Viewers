@@ -31,9 +31,9 @@ import refreshViewports from '../../../../../extensions/dicom-segmentation/src/u
 import { triggerEvent } from 'cornerstone-core';
 import { RenderLoadingModal } from '../../appExtensions/LungModuleSimilarityPanel/SearchParameters/SearchDetails';
 import { useLocation } from 'react-router';
-const { studyMetadataManager } = utils;
+import eventBus from '../../lib/eventBus';
 
-const { loadAndCacheDerivedDisplaySets } = utils;
+const { loadAndCacheDerivedDisplaySets, studyMetadataManager } = utils;
 
 const ViewportGrid = function(props) {
   const {
@@ -72,9 +72,20 @@ const ViewportGrid = function(props) {
   const changedSegmentsRef = useRef([]);
   const editedSegmentationRef = useRef({});
   const [loadingState, setLoadingState] = useState(
-    location.pathname.includes('/edit')
+    location.pathname.includes('/edit') ||
+      location.pathname.includes('/radionics')
   );
+  const [fetchedSegmentations, setFetchedSegmentations] = useState(false);
 
+  useEffect(() => {
+    eventBus.on('importSegmentations', data => {
+      setFetchedSegmentations(false);
+      onImportButtonClick();
+    });
+    return () => {
+      eventBus.remove('importSegmentations');
+    };
+  }, []);
   useEffect(() => {
     console.log({
       activeViewportIndex,
@@ -126,11 +137,17 @@ const ViewportGrid = function(props) {
       rows,
       columns,
     };
-    if (location.pathname.includes('/edit'))
+    if (
+      location.pathname.includes('/edit') ||
+      location.pathname.includes('/radionics')
+    )
       targeDiv.addEventListener('mouseup', handleDragEnd);
 
     return () => {
-      if (location.pathname.includes('/edit'))
+      if (
+        location.pathname.includes('/edit') ||
+        location.pathname.includes('/radionics')
+      )
         targeDiv.removeEventListener('mouseup', handleDragEnd);
     };
   }, [activeViewportIndex]);
@@ -221,7 +238,11 @@ const ViewportGrid = function(props) {
       viewportData.forEach(displaySet => {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
-      if (location.pathname.includes('/edit')) onImportButtonClick();
+      if (
+        location.pathname.includes('/edit') ||
+        location.pathname.includes('/radionics')
+      )
+        !fetchedSegmentations && onImportButtonClick();
     }
   }, [studies, viewportData, isStudyLoaded, snackbar]);
 
@@ -447,19 +468,9 @@ const ViewportGrid = function(props) {
     const labelmap2D = segmentationModule.getters.labelmap2D
       ? segmentationModule.getters.labelmap2D(element)
       : false;
-    console.log({ labelmap2D });
-
-    // if (!labelmap2D || !segmentationModule.getters.labelmap2D) {
-    //   console.warn('labelmap2D unavailable. retrying...', { labelmap2D });
-    //   return setTimeout(() => {
-    //     console.log('retrying');
-    //     addSegmentationToCanvas({
-    //       segmentation,
-    //       label,
-    //       element,
-    //     });
-    //   }, 2000);
-    // }
+    console.log({
+      labelmap2D,
+    });
 
     const {
       labelmap3D,
@@ -510,9 +521,6 @@ const ViewportGrid = function(props) {
       console.log({
         updatedLm2d: segmentationModule.getters.labelmap2D(element),
       });
-
-      refreshViewports();
-      triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
     } else {
       //theres something on this layer so we need to find the last layer and work on the one after it
       console.warn('layer occupied', labelmap3D);
@@ -542,20 +550,28 @@ const ViewportGrid = function(props) {
       console.log({
         updatedLm2d: segmentationModule.getters.labelmap2D(element),
       });
-
-      refreshViewports();
-      triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
     }
   };
 
   const importSegmentationLayers = ({ segmentations }) => {
     const segmentationsList = Object.keys(segmentations);
-    console.log({ segmentationsList });
+    console.log({
+      segmentationsList,
+    });
+
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+
+    const element = getEnabledElement(view_ports.indexOf(viewports));
 
     const hashBucket = {};
 
+    // console.time('segmentationsList each');
     segmentationsList.forEach(async (item, index) => {
-      console.log({ item });
+      // console.time('segmentationsList each' + index);
+      console.log({
+        item,
+      });
       const segDetails = segmentations[item];
 
       // const hashed = await sha256(item);
@@ -578,10 +594,6 @@ const ViewportGrid = function(props) {
         uncompressed,
       });
 
-      const view_ports = cornerstone.getEnabledElements();
-      const viewports = view_ports[0];
-
-      const element = getEnabledElement(view_ports.indexOf(viewports));
       if (!element) {
         return;
       }
@@ -596,12 +608,19 @@ const ViewportGrid = function(props) {
         label: item,
         element,
       });
+      // console.timeEnd('segmentationsList each' + index);
     });
+    // console.timeEnd('segmentationsList each');
 
-    console.log({ hashBucket });
+    console.log({
+      hashBucket,
+    });
     // const appContext = this.context;
     editedSegmentationRef.current = hashBucket;
     setLoadingState(false);
+    setFetchedSegmentations(true);
+    refreshViewports();
+    triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
   };
 
   const fetchSegmentationsFromLocalStorage = () => {
@@ -738,7 +757,7 @@ const ViewportGrid = function(props) {
         width: '100%',
       }}
     >
-      {loadingState && <RenderLoadingModal />}
+      {/* {loadingState && <RenderLoadingModal />} */}
       {ViewportPanes}
     </div>
   );
@@ -822,9 +841,6 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedViewportGrid = connect(
-  mapStateToProps,
-  null
-)(ViewportGrid);
+const ConnectedViewportGrid = connect(mapStateToProps, null)(ViewportGrid);
 
 export default ConnectedViewportGrid;
