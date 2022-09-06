@@ -239,16 +239,16 @@ function OHIFCornerstoneSEGViewport(props) {
   } = referencedDisplaySetRef.current.metadata;
 
   const onPillClick = () => {
-    const isHydrated = promptHydrateSEG({
+    promptHydrateSEG({
       servicesManager,
       viewportIndex,
       segDisplaySet,
       toolGroupId,
+    }).then(isHydrated => {
+      if (isHydrated) {
+        setIsHydrated(true);
+      }
     });
-
-    if (isHydrated) {
-      setIsHydrated(true);
-    }
   };
 
   return (
