@@ -51,7 +51,8 @@ export default class ToolGroupService {
   }
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
-    const renderingEngine = this.CornerstoneViewportService.getRenderingEngine();
+    const renderingEngine =
+      this.CornerstoneViewportService.getRenderingEngine();
     return ToolGroupManager.getToolGroupForViewport(
       viewportId,
       renderingEngine.id
@@ -73,6 +74,7 @@ export default class ToolGroupService {
   }
 
   public destroyToolGroup(toolGroupId: string) {
+    debugger;
     ToolGroupManager.destroyToolGroup(toolGroupId);
     this.toolGroupIds.delete(toolGroupId);
   }

@@ -18,7 +18,6 @@ import _hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 
 const { formatDate } = utils;
-
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
 function OHIFCornerstoneSEGViewport(props) {
@@ -31,11 +30,10 @@ function OHIFCornerstoneSEGViewport(props) {
     extensionManager,
   } = props;
 
-  const {
-    DisplaySetService,
-    ToolGroupService,
-    SegmentationService,
-  } = servicesManager.services;
+  const { DisplaySetService, ToolGroupService, SegmentationService } =
+    servicesManager.services;
+
+  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
 
   // SEG viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -48,11 +46,13 @@ function OHIFCornerstoneSEGViewport(props) {
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
 
   // States
-  const [toolGroupId, setToolGroupId] = useState(null);
-  const referencedDisplaySetRef = useRef(null);
-
+  const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
+
+  // refs
+  const referencedDisplaySetRef = useRef(null);
+
   const { viewports, activeViewportIndex } = viewportGrid;
 
   /**
@@ -67,15 +67,6 @@ function OHIFCornerstoneSEGViewport(props) {
 
   const onElementDisabled = () => {
     setElement(null);
-    // remove the segmentation representations as well
-    SegmentationService.removeSegmentationRepresentationFromToolGroup(
-      toolGroupId
-    );
-
-    // Note: toolgroup should be removed after the segmentation representations
-    // are removed, since cornerstone need to remove the labelmap before removing
-    // the toolgroup
-    ToolGroupService.destroyToolGroup(toolGroupId);
   };
 
   const getCornerstoneViewport = useCallback(() => {
@@ -83,13 +74,10 @@ function OHIFCornerstoneSEGViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const {
-      displaySet: referencedDisplaySet,
-    } = referencedDisplaySetRef.current;
+    const { displaySet: referencedDisplaySet } =
+      referencedDisplaySetRef.current;
 
     const displaySets = [referencedDisplaySet, segDisplaySet];
-
-    console.debug('ref ds', referencedDisplaySet.SeriesDescription);
 
     // if (segmentationIsLoaded) {
     //   displaySets.push(segDisplaySet);
@@ -113,14 +101,14 @@ function OHIFCornerstoneSEGViewport(props) {
         viewportOptions={{
           viewportType: 'volume',
           orientation: 'axial', // todo: make this default orientation
-          toolGroupId,
+          toolGroupId: toolGroupId,
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}
         // initialImageIndex={initialImageIndex}
       ></Component>
     );
-  }, [viewportIndex, segDisplaySet, toolGroupId]);
+  }, [viewportIndex, segDisplaySet]);
 
   const onSegmentChange = useCallback(direction => {
     // let newMeasurementSelected = measurementSelected;
@@ -164,32 +152,38 @@ function OHIFCornerstoneSEGViewport(props) {
   }, []);
 
   useEffect(() => {
-    if (toolGroupId !== null) {
+    const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+
+    if (toolGroup) {
       return;
     }
 
-    const _toolGroupId = createSEGToolGroupAndAddTools(
+    createSEGToolGroupAndAddTools(
       ToolGroupService,
-      viewportIndex,
+      toolGroupId,
       extensionManager
     );
 
-    setToolGroupId(_toolGroupId);
+    setToolGroupCreated(true);
 
     return () => {
+      // remove the segmentation representations if seg displayset changed
+      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+        toolGroupId
+      );
+
+      ToolGroupService.destroyToolGroup(toolGroupId);
       // we don't need a cleanup function, because the tool group is destroyed
       // when the element is disabled automatically
       // _removeToolGroup(toolGroupId);
     };
-  }, [toolGroupId]);
+  }, []);
 
   useEffect(() => {
-    console.debug('getting new ference displayset');
     const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
 
-    const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
-      referencedDisplaySet
-    );
+    const referencedDisplaySetMetadata =
+      _getReferencedDisplaySetMetadata(referencedDisplaySet);
 
     referencedDisplaySetRef.current = {
       displaySet: referencedDisplaySet,
@@ -198,33 +192,17 @@ function OHIFCornerstoneSEGViewport(props) {
     setIsHydrated(segDisplaySet.isHydrated);
 
     return () => {
-      console.debug('cleanup ****************');
+      // remove the segmentation representations if seg displayset changed
+      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+        toolGroupId
+      );
       referencedDisplaySetRef.current = null;
     };
   }, [segDisplaySet]);
 
-  useEffect(() => {
-    const { unsubscribe } = ToolGroupService.subscribe(
-      ToolGroupService.EVENTS.VIEWPORT_ADDED,
-      ({ toolGroupId: tlgId }) => {
-        if (toolGroupId !== tlgId) {
-          return;
-        }
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [segDisplaySet, toolGroupId]);
-
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 
-  console.debug(
-    'trying to pass with SEG display set',
-    segDisplaySet.SeriesDescription
-  );
   const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
 
   if (
@@ -234,8 +212,6 @@ function OHIFCornerstoneSEGViewport(props) {
   ) {
     return null;
   }
-
-  console.debug('passed with ref', referencedDisplaySetRef.current.metadata);
 
   if (children && children.length) {
     childrenWithProps = children.map((child, index) => {

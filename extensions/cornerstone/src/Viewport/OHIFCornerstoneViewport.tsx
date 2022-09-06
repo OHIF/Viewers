@@ -113,9 +113,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
 
       const { viewportId, element } = evt.detail;
-      const viewportInfo = CornerstoneViewportService.getViewportInfo(
-        viewportId
-      );
+      const viewportInfo =
+        CornerstoneViewportService.getViewportInfo(viewportId);
       const viewportIndex = viewportInfo.getViewportIndex();
 
       setEnabledElement(viewportIndex, element);
@@ -159,9 +158,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
-      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
+      const viewportInfo =
+        CornerstoneViewportService.getViewportInfoByIndex(viewportIndex);
 
       const viewportId = viewportInfo.getViewportId();
       const renderingEngineId = viewportInfo.getRenderingEngineId();
@@ -203,18 +201,18 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       async invalidatedDisplaySetInstanceUID => {
-        const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-          viewportIndex
-        );
+        const viewportInfo =
+          CornerstoneViewportService.getViewportInfoByIndex(viewportIndex);
 
         if (viewportInfo.hasDisplaySet(invalidatedDisplaySetInstanceUID)) {
           const viewportData = viewportInfo.getViewportData();
-          const newViewportData = await CornerstoneCacheService.invalidateViewportData(
-            viewportData,
-            invalidatedDisplaySetInstanceUID,
-            dataSource,
-            DisplaySetService
-          );
+          const newViewportData =
+            await CornerstoneCacheService.invalidateViewportData(
+              viewportData,
+              invalidatedDisplaySetInstanceUID,
+              dataSource,
+              DisplaySetService
+            );
 
           const keepCamera = true;
           CornerstoneViewportService.updateViewport(
@@ -266,14 +264,15 @@ const OHIFCornerstoneViewport = React.memo(props => {
    * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
    */
   useEffect(() => {
-    const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
-      MeasurementService,
-      DisplaySetService,
-      elementRef,
-      viewportIndex,
-      displaySets,
-      viewportGridService
-    );
+    const unsubscribeFromJumpToMeasurementEvents =
+      _subscribeToJumpToMeasurementEvents(
+        MeasurementService,
+        DisplaySetService,
+        elementRef,
+        viewportIndex,
+        displaySets,
+        viewportGridService
+      );
 
     _checkForCachedJumpToMeasurementEvents(
       MeasurementService,
@@ -364,9 +363,8 @@ function _checkForCachedJumpToMeasurementEvents(
     displaySet => displaySet.displaySetInstanceUID
   );
 
-  const measurementIdToJumpTo = MeasurementService.getJumpToMeasurement(
-    viewportIndex
-  );
+  const measurementIdToJumpTo =
+    MeasurementService.getJumpToMeasurement(viewportIndex);
 
   if (measurementIdToJumpTo && elementRef) {
     // Jump to measurement if the measurement exists

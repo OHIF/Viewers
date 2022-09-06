@@ -1,8 +1,6 @@
-const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
-
 function createSEGToolGroupAndAddTools(
   ToolGroupService,
-  viewportIndex,
+  toolGroupId,
   extensionManager
 ) {
   const utilityModule = extensionManager.getModuleEntry(
@@ -30,10 +28,7 @@ function createSEGToolGroupAndAddTools(
     enabled: [{ toolName: toolNames.SegmentationDisplay }],
   };
 
-  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
   ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
-
-  return toolGroupId;
 }
 
 export default createSEGToolGroupAndAddTools;
