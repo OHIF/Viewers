@@ -28,15 +28,6 @@ function defaultRouteInit({ servicesManager, studyInstanceUIDs, dataSource }) {
     unsubscribe: instanceAddedUnsubscribe,
   } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    // Todo: DisplaySetService makes the displayset when ALL instances are added
-    // However, making a displayset only requires one instance and one instance only
-    // you can look at the sopClassHandlers which you will see only the first instance
-    // is used to make the displayset. This is a huge performance bottleneck
-    // since we are waiting for all instances to be added before making the displayset
-    // Making a displaySet can be broken down into 2 steps: 1) as soon as the first
-    // instance is added, create the displayset and 2) when all instances are
-    // added to the store, update the displayset with the rest of instances.
-    // This improvement will make the first draw of the hung viewport way faster.
     function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
       const seriesMetadata = DicomMetadataStore.getSeries(
         StudyInstanceUID,
@@ -55,8 +46,9 @@ function defaultRouteInit({ servicesManager, studyInstanceUIDs, dataSource }) {
 
   // The hanging protocol matching service is fairly expensive to run multiple
   // times, and doesn't allow partial matches to be made (it will simply fail
-  // to display anything if a required match fails), so hold off the matches
-  // here until the entire study is ready.
+  // to display anything if a required match fails), so we wait here until all metadata
+  // is retrieved (which will synchronously trigger the display set creation)
+  // until we run the hanging protocol matching service.
 
   Promise.allSettled(allRetrieves).then(() => {
     const displaySets = DisplaySetService.getActiveDisplaySets();

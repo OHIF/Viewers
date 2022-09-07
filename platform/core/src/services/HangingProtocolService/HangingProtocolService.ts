@@ -39,6 +39,12 @@ type DisplaySetMatchDetails = {
   sortingInfo: any;
 };
 
+type HangingProtocolMatchDetails = {
+  displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
+  viewportMatchDetails: ViewportMatchDetails[];
+  hpAlreadyApplied: boolean[];
+};
+
 class HangingProtocolService {
   studies: StudyMetadata[];
   protocols: Record<string, unknown>[];
@@ -116,11 +122,7 @@ class HangingProtocolService {
     // this.ProtocolEngine.reset()
   }
 
-  public getMatchDetails(): {
-    viewportMatchDetails: ViewportMatchDetails[];
-    displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
-    hpAlreadyApplied: boolean[];
-  } {
+  public getMatchDetails(): HangingProtocolMatchDetails {
     return {
       viewportMatchDetails: this.viewportMatchDetails,
       displaySetMatchDetails: this.displaySetMatchDetails,
@@ -330,6 +332,7 @@ class HangingProtocolService {
 
     this._broadcastChange(this.EVENTS.PROTOCOL_CHANGED, {
       viewportMatchDetails: this.viewportMatchDetails,
+      displaySetMatchDetails: this.displaySetMatchDetails,
       hpAlreadyApplied: this.hpAlreadyApplied,
     });
   }
@@ -665,6 +668,7 @@ class HangingProtocolService {
     this._broadcastChange(this.EVENTS.STAGE_CHANGE, {
       viewportMatchDetails: this.viewportMatchDetails,
       hpAlreadyApplied: this.hpAlreadyApplied,
+      displaySetMatchDetails: this.displaySetMatchDetails,
     });
     return true;
   }
