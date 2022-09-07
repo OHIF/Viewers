@@ -33,27 +33,24 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
-  const handleMetadataChange = useCallback(
-    metadata => {
-      setMetadata(prevState => {
-        const newState = { ...prevState };
-        Object.keys(metadata).forEach(key => {
-          if (typeof metadata[key] === 'object') {
-            newState[key] = {
-              ...prevState[key],
-              ...metadata[key],
-            };
-          } else {
-            newState[key] = metadata[key];
-          }
-        });
-        return newState;
+  const handleMetadataChange = metadata => {
+    setMetadata(prevState => {
+      const newState = { ...prevState };
+      Object.keys(metadata).forEach(key => {
+        if (typeof metadata[key] === 'object') {
+          newState[key] = {
+            ...prevState[key],
+            ...metadata[key],
+          };
+        } else {
+          newState[key] = metadata[key];
+        }
       });
-    },
-    [metadata]
-  );
+      return newState;
+    });
+  };
 
-  const getMatchingPTDisplaySet = useCallback(viewportMatchDetails => {
+  const getMatchingPTDisplaySet = viewportMatchDetails => {
     const ptDisplaySet = commandsManager.runCommand('getMatchingPTDisplaySet', {
       viewportMatchDetails,
     });
@@ -70,7 +67,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       ptDisplaySet,
       metadata,
     };
-  }, []);
+  };
 
   useEffect(() => {
     const displaySets = DisplaySetService.getActiveDisplaySets();

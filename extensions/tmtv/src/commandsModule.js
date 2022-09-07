@@ -118,7 +118,10 @@ const commandsModule = ({
     createNewLabelmapFromPT: async () => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
-      const ptDisplaySet = actions.getMatchingPTDisplaySet();
+      const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
+      const ptDisplaySet = actions.getMatchingPTDisplaySet({
+        viewportMatchDetails,
+      });
 
       if (!ptDisplaySet) {
         UINotificationService.error('No matching PT display set found');
@@ -562,8 +565,11 @@ const commandsModule = ({
     },
     setFusionPTColormap: ({ toolGroupId, colormap }) => {
       const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+      const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
 
-      const ptDisplaySet = actions.getMatchingPTDisplaySet();
+      const ptDisplaySet = actions.getMatchingPTDisplaySet({
+        viewportMatchDetails,
+      });
 
       if (!ptDisplaySet) {
         return;
