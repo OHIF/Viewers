@@ -59,7 +59,6 @@ There are three events that get broadcasted in `DisplaySetService`:
 
 
 
-
 ## API
 Let's find out about the public API for `DisplaySetService`.
 
@@ -83,3 +82,7 @@ Let's find out about the public API for `DisplaySetService`.
 - `getActiveDisplaySets`: Returns the active displaySets
 
 - `deleteDisplaySet`: Deletes the displaySets from the displaySets cache
+
+- `holdChangeEvents`: Prevents firing change events (currently only works on add event).
+
+- `fireHoldChangeEvents`: Causes the change event to be fired IF there were any changes.  No longer holds events.
