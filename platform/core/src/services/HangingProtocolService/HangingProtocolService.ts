@@ -2,27 +2,60 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
 import StudyMetadata from '../DicomMetadataStore/StudyMetadata';
-import DisplaySet from '../DisplaySetService/DisplaySet';
+import IDisplaySet from '../DisplaySetService/IDisplaySet';
 
 const EVENTS = {
   STAGE_CHANGE: 'event::hanging_protocol_stage_change',
+  PROTOCOL_CHANGED: 'event::hanging_protocol_changed',
   NEW_LAYOUT: 'event::hanging_protocol_new_layout',
   CUSTOM_IMAGE_LOAD_PERFORMED:
     'event::hanging_protocol_custom_image_load_performed',
 };
 
+type ViewportOptions = {
+  orientation: string;
+  toolGroupId: string;
+  viewportId: string;
+  viewportType: string;
+  initialImageOptions: Record<string, unknown>;
+  syncGroups: Record<string, unknown>;
+};
+
+type ViewportMatchDetails = {
+  viewportOptions: ViewportOptions;
+  displaySetsInfo: {
+    SeriesInstanceUID: string;
+    displaySetInstanceUID: string;
+    displaySetOptions: Record<string, unknown>;
+  };
+};
+
+type DisplaySetMatchDetails = {
+  SeriesInstanceUID: string;
+  StudyInstanceUID: string;
+  displaySetInstanceUID: string;
+  matchDetails: any;
+  matchingScore: number;
+  sortingInfo: any;
+};
+
+type HangingProtocolMatchDetails = {
+  displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
+  viewportMatchDetails: ViewportMatchDetails[];
+  hpAlreadyApplied: boolean[];
+};
+
 class HangingProtocolService {
   studies: StudyMetadata[];
-  protocols: object[];
-  protocol: object;
+  protocols: Record<string, unknown>[];
+  protocol: Record<string, unknown>;
   stage: number;
-  _commandsManager: object;
+  _commandsManager: Record<string, unknown>;
   protocolEngine: ProtocolEngine;
-  matchDetails: object[];
   hpAlreadyApplied: boolean[] = [];
   customViewportSettings = [];
-  displaySets: DisplaySet[] = [];
-  activeStudy: object;
+  displaySets: IDisplaySet[] = [];
+  activeStudy: Record<string, unknown>;
   debugLogging: false;
 
   customAttributeRetrievalCallbacks = {
@@ -53,18 +86,16 @@ class HangingProtocolService {
 
   /**
    * displaySetMatchDetails = <displaySetId, match>
-   * DisplaySetId is the id defined in the hangingProtocol
-   * match is an object that contains information about
-   *
-   * {
-   *   SeriesInstanceUID,
-   *   StudyInstanceUID,
-   *   matchDetails,
-   *   matchingScore,
-   *   sortingInfo
-   * }
+   * DisplaySetId is the id defined in the hangingProtocol object itself
+   * and match is an object that contains information about
    */
-  displaySetMatchDetails = new Map();
+  displaySetMatchDetails: Map<string, DisplaySetMatchDetails> = new Map();
+
+  /**
+   * An array that contains for each viewport (viewportIndex) specified in the
+   * hanging protocol, an object of the form
+   */
+  viewportMatchDetails = [] as ViewportMatchDetails[];
 
   constructor(commandsManager) {
     this._commandsManager = commandsManager;
@@ -72,16 +103,7 @@ class HangingProtocolService {
     this.protocolEngine = undefined;
     this.protocol = undefined;
     this.stage = undefined;
-    /**
-     * An array that contains for each viewport (viewportIndex) specified in the
-     * hanging protocol, an object of the form
-     *
-     * {
-     *   viewportOptions,
-     *   displaySetsInfo, // contains array of  [ { SeriesInstanceUID, displaySetOPtions}, ... ]
-     * }
-     */
-    this.matchDetails = [];
+
     this.studies = [];
     Object.defineProperty(this, 'EVENTS', {
       value: EVENTS,
@@ -96,16 +118,16 @@ class HangingProtocolService {
     this.studies = [];
     this.protocols = [];
     this.hpAlreadyApplied = [];
-    this.matchDetails = [];
+    this.viewportMatchDetails = [];
     // this.ProtocolEngine.reset()
   }
 
-  public getDisplaySetsMatchDetails() {
-    return this.displaySetMatchDetails;
-  }
-
-  public getState() {
-    return [this.matchDetails, this.hpAlreadyApplied];
+  public getMatchDetails(): HangingProtocolMatchDetails {
+    return {
+      viewportMatchDetails: this.viewportMatchDetails,
+      displaySetMatchDetails: this.displaySetMatchDetails,
+      hpAlreadyApplied: this.hpAlreadyApplied,
+    };
   }
 
   public getProtocols() {
@@ -167,7 +189,7 @@ class HangingProtocolService {
     return (
       this.activeImageLoadStrategyName !== null &&
       this.registeredImageLoadStrategies[
-      this.activeImageLoadStrategyName
+        this.activeImageLoadStrategyName
       ] instanceof Function
     );
   }
@@ -241,8 +263,8 @@ class HangingProtocolService {
     ];
     const loadedData = loader({
       data,
-      displaySetsMatchDetails: this.getDisplaySetsMatchDetails(),
-      matchDetails: this.matchDetails,
+      displaySetsMatchDetails: this.displaySetMatchDetails,
+      viewportMatchDetails: this.viewportMatchDetails,
     });
 
     // if loader successfully re-arranged the data with the custom strategy
@@ -307,6 +329,12 @@ class HangingProtocolService {
       }
     }
     this._updateViewports();
+
+    this._broadcastChange(this.EVENTS.PROTOCOL_CHANGED, {
+      viewportMatchDetails: this.viewportMatchDetails,
+      displaySetMatchDetails: this.displaySetMatchDetails,
+      hpAlreadyApplied: this.hpAlreadyApplied,
+    });
   }
 
   /**
@@ -435,7 +463,7 @@ class HangingProtocolService {
         }
       );
 
-      this.matchDetails[viewportIndex] = {
+      this.viewportMatchDetails[viewportIndex] = {
         viewportOptions,
         displaySetsInfo,
       };
@@ -638,8 +666,9 @@ class HangingProtocolService {
 
     // Everything went well
     this._broadcastChange(this.EVENTS.STAGE_CHANGE, {
-      matchDetails: this.matchDetails,
+      viewportMatchDetails: this.viewportMatchDetails,
       hpAlreadyApplied: this.hpAlreadyApplied,
+      displaySetMatchDetails: this.displaySetMatchDetails,
     });
     return true;
   }

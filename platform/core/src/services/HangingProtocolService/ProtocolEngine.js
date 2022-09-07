@@ -71,10 +71,10 @@ export default class ProtocolEngine {
 
       // If it is not already in the MatchedProtocols Collection, insert it with its score
       if (!this.matchedProtocols.has(protocol.id)) {
-        // console.log(
-        //   'ProtocolEngine::updateProtocolMatches inserting protocol match',
-        //   matchedDetail
-        // );
+        console.log(
+          'ProtocolEngine::updateProtocolMatches inserting protocol match',
+          matchedDetail
+        );
         this.matchedProtocols.set(protocol.id, protocol);
         this.matchedProtocolScores[protocol.id] = matchedDetail.score;
       }

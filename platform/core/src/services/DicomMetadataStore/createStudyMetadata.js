@@ -41,7 +41,9 @@ function createStudyMetadata(StudyInstanceUID) {
      */
     addInstancesToSeries: function(instances) {
       const { SeriesInstanceUID } = instances[0];
-      if (!this.StudyDescription) this.StudyDescription = instances[0].StudyDescription;
+      if (!this.StudyDescription) {
+        this.StudyDescription = instances[0].StudyDescription;
+      }
       const existingSeries = this.series.find(
         s => s.SeriesInstanceUID === SeriesInstanceUID
       );

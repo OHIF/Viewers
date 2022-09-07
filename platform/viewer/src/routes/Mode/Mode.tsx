@@ -24,13 +24,11 @@ function defaultRouteInit({ servicesManager, studyInstanceUIDs, dataSource }) {
   } = servicesManager.services;
 
   const unsubscriptions = [];
-  // TODO: This should be baked into core, not manual?
-  // DisplaySetService would wire this up?
   const {
     unsubscribe: instanceAddedUnsubscribe,
   } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
+    function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
       const seriesMetadata = DicomMetadataStore.getSeries(
         StudyInstanceUID,
         SeriesInstanceUID
@@ -42,45 +40,43 @@ function defaultRouteInit({ servicesManager, studyInstanceUIDs, dataSource }) {
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  const { unsubscribe: seriesAddedUnsubscribe } = DisplaySetService.subscribe(
-    DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-    displaySets => {
-      if (!displaySets || !displaySets.length) return;
-      const studyMap = {};
-      // Prior studies don't quite work properly yet, but the studies list
-      // is at least being generated and passed in.
-      const studies = displaySets.reduce((prev, curr) => {
-        const { StudyInstanceUID } = curr;
-        if (!studyMap[StudyInstanceUID]) {
-          const study = DicomMetadataStore.getStudy(StudyInstanceUID);
-          studyMap[StudyInstanceUID] = study;
-          prev.push(study);
-        }
-        return prev;
-      }, []);
-      // The assumption is that the display set at position 0 is the first
-      // study being displayed, and is thus the "active" study.
-      const activeStudy = studies[0];
-      HangingProtocolService.run({ studies, activeStudy, displaySets });
-      // Don't fire off any more hanging protocol service initiates since
-      // it may well re-layout the study.
-      seriesAddedUnsubscribe();
-    }
-  );
-  // Add the unsubscription to the list in case the cancel happens before the
-  // service is done.
-  unsubscriptions.push(seriesAddedUnsubscribe);
-
-  // The hanging protocol matching service is fairly expensive to run multiple
-  // times, and doesn't allow partial matches to be made (it will simply fail
-  // to display anything if a required match failes), so hold off the matches
-  // here until the entire study is ready.
-  DisplaySetService.holdChangeEvents();
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({ StudyInstanceUID })
   );
+
+  // The hanging protocol matching service is fairly expensive to run multiple
+  // times, and doesn't allow partial matches to be made (it will simply fail
+  // to display anything if a required match fails), so we wait here until all metadata
+  // is retrieved (which will synchronously trigger the display set creation)
+  // until we run the hanging protocol matching service.
+
   Promise.allSettled(allRetrieves).then(() => {
-    DisplaySetService.fireHoldChangeEvents();
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+
+    if (!displaySets || !displaySets.length) {
+      return;
+    }
+
+    const studyMap = {};
+
+    // Prior studies don't quite work properly yet, but the studies list
+    // is at least being generated and passed in.
+    const studies = displaySets.reduce((prev, curr) => {
+      const { StudyInstanceUID } = curr;
+      if (!studyMap[StudyInstanceUID]) {
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+        studyMap[StudyInstanceUID] = study;
+        prev.push(study);
+      }
+      return prev;
+    }, []);
+
+    // The assumption is that the display set at position 0 is the first
+    // study being displayed, and is thus the "active" study.
+    const activeStudy = studies[0];
+
+    // run the hanging protocol matching service on the displaySets
+    HangingProtocolService.run({ studies, activeStudy, displaySets });
   });
 
   return unsubscriptions;

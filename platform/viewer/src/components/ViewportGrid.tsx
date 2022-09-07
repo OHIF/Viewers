@@ -26,12 +26,12 @@ function ViewerViewportGrid(props) {
         return;
       }
 
-      const [
-        matchDetails,
+      const {
+        viewportMatchDetails,
         hpAlreadyApplied,
-      ] = HangingProtocolService.getState();
+      } = HangingProtocolService.getMatchDetails();
 
-      if (!matchDetails.length) {
+      if (!viewportMatchDetails.length) {
         return;
       }
 
@@ -43,11 +43,11 @@ function ViewerViewportGrid(props) {
         }
 
         // if current viewport doesn't have a match
-        if (matchDetails[i] === undefined) {
+        if (viewportMatchDetails[i] === undefined) {
           return;
         }
 
-        const { displaySetsInfo, viewportOptions } = matchDetails[i];
+        const { displaySetsInfo, viewportOptions } = viewportMatchDetails[i];
 
         const displaySetUIDsToHang = [];
         const displaySetUIDsToHangOptions = [];
@@ -113,10 +113,11 @@ function ViewerViewportGrid(props) {
 
   // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-      activeDisplaySets => {
-        updateDisplaySetsForViewports(activeDisplaySets);
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+      () => {
+        const displaySets = DisplaySetService.getActiveDisplaySets();
+        updateDisplaySetsForViewports(displaySets);
       }
     );
 
