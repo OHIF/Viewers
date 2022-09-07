@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { Icon, Thumbnail, Tooltip } from '../';
+import { stringNumber } from '../../Types';
 
 const ThumbnailTracked = ({
   displaySetInstanceUID,
@@ -137,7 +138,7 @@ ThumbnailTracked.propTypes = {
   imageSrc: PropTypes.string,
   imageAltText: PropTypes.string,
   description: PropTypes.string.isRequired,
-  seriesNumber: PropTypes.string.isRequired,
+  seriesNumber: stringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,

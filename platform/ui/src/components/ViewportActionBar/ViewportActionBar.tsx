@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip, CinePlayer } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { useTranslation } from 'react-i18next';
+import { stringNumber } from '../../Types';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -336,7 +337,7 @@ ViewportActionBar.propTypes = {
     isTracked: PropTypes.bool.isRequired,
     isRehydratable: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
-    currentSeries: PropTypes.string.isRequired,
+    currentSeries: stringNumber.isRequired,
     seriesDescription: PropTypes.string.isRequired,
     modality: PropTypes.string.isRequired,
     patientInformation: PropTypes.shape({
