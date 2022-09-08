@@ -176,7 +176,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Total Dose (Mbq)')}
+              label={t('Total Dose (bq)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
