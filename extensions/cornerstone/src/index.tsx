@@ -3,7 +3,6 @@ import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import {
   Enums as cs3DEnums,
-  CONSTANTS,
   imageLoadPoolManager,
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
@@ -119,7 +118,6 @@ const cornerstoneExtension = {
         name: 'core',
         exports: {
           Enums: cs3DEnums,
-          CONSTANTS,
         },
       },
       {

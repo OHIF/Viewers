@@ -32,8 +32,8 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "classnames": "^2.2.6",
-    "@cornerstonejs/core": "^0.14.4",
-    "@cornerstonejs/tools": "^0.21.7",
+    "@cornerstonejs/core": "^0.16.1",
+    "@cornerstonejs/tools": "^0.24.1",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
     "dcmjs": "^0.24.5",
     "prop-types": "^15.6.2",

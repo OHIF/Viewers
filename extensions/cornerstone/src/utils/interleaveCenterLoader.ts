@@ -8,8 +8,8 @@ const viewportIdVolumeInputArrayMap = new Map<string, unknown[]>();
 
 /**
  * This function caches the volumeUIDs until all the volumes inside the
- * hangging protocol are initialized. Then it goes through the imageIds
- * of the volumes, and interleav them, in order for the volumes to be loaded
+ * hanging protocol are initialized. Then it goes through the imageIds
+ * of the volumes, and interleave them, in order for the volumes to be loaded
  * together from middle to the start and the end.
  * @param {Object} props image loading properties from Cornerstone ViewportService
  * @returns
@@ -17,7 +17,7 @@ const viewportIdVolumeInputArrayMap = new Map<string, unknown[]>();
 export default function interleaveCenterLoader({
   data: { viewportId, volumeInputArray },
   displaySetsMatchDetails,
-  matchDetails,
+  viewportMatchDetails: matchDetails,
 }) {
   viewportIdVolumeInputArrayMap.set(viewportId, volumeInputArray);
 

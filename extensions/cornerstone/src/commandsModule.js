@@ -404,6 +404,17 @@ const commandsModule = ({ servicesManager }) => {
         viewport.render();
       }
     },
+    incrementActiveViewport: () => {
+      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
+      ViewportGridService.setActiveViewportIndex(nextViewportIndex);
+    },
+    decrementActiveViewport: () => {
+      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const nextViewportIndex =
+        (activeViewportIndex - 1 + viewports.length) % viewports.length;
+      ViewportGridService.setActiveViewportIndex(nextViewportIndex);
+    },
   };
 
   const definitions = {
@@ -431,6 +442,14 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.rotateViewport,
       storeContexts: [],
       options: { rotation: -90 },
+    },
+    incrementActiveViewport: {
+      commandFn: actions.incrementActiveViewport,
+      storeContexts: [],
+    },
+    decrementActiveViewport: {
+      commandFn: actions.decrementActiveViewport,
+      storeContexts: [],
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,

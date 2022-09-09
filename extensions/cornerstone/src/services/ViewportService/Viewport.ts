@@ -1,4 +1,4 @@
-import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import { Types, Enums } from '@cornerstonejs/core';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -16,7 +16,6 @@ export type ViewportOptions = {
   viewportId: string;
   orientation?: Types.Orientation;
   background?: Types.Point3;
-  initialView?: string;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -28,7 +27,6 @@ export type PublicViewportOptions = {
   viewportId?: string;
   orientation?: string;
   background?: Types.Point3;
-  initialView?: string;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -139,7 +137,7 @@ class ViewportInfo {
     if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     } else {
-      orientation = CONSTANTS.ORIENTATION.AXIAL;
+      orientation = Enums.OrientationAxis.AXIAL;
     }
 
     if (!toolGroupId) {

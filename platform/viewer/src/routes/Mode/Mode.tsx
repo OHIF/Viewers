@@ -9,24 +9,26 @@ import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
-async function defaultRouteInit({
-  servicesManager,
-  studyInstanceUIDs,
-  dataSource,
-}) {
+/**
+ * Initialize the route.
+ *
+ * @param props.servicesManager to read services from
+ * @param props.studyInstanceUIDs for a list of studies to read
+ * @param props.dataSource to read the data from
+ * @returns array of subscriptions to cancel
+ */
+function defaultRouteInit({ servicesManager, studyInstanceUIDs, dataSource }) {
   const {
     DisplaySetService,
     HangingProtocolService,
   } = servicesManager.services;
 
   const unsubscriptions = [];
-  // TODO: This should be baked into core, not manual?
-  // DisplaySetService would wire this up?
   const {
     unsubscribe: instanceAddedUnsubscribe,
   } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
+    function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
       const seriesMetadata = DicomMetadataStore.getSeries(
         StudyInstanceUID,
         SeriesInstanceUID
@@ -38,19 +40,43 @@ async function defaultRouteInit({
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.SERIES_ADDED,
-    ({ StudyInstanceUID, madeInClient }) => {
-      const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-      if (!madeInClient) {
-        HangingProtocolService.run(studyMetadata);
-      }
-    }
+  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
+    dataSource.retrieve.series.metadata({ StudyInstanceUID })
   );
-  unsubscriptions.push(seriesAddedUnsubscribe);
 
-  studyInstanceUIDs.forEach(StudyInstanceUID => {
-    dataSource.retrieve.series.metadata({ StudyInstanceUID });
+  // The hanging protocol matching service is fairly expensive to run multiple
+  // times, and doesn't allow partial matches to be made (it will simply fail
+  // to display anything if a required match fails), so we wait here until all metadata
+  // is retrieved (which will synchronously trigger the display set creation)
+  // until we run the hanging protocol matching service.
+
+  Promise.allSettled(allRetrieves).then(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+
+    if (!displaySets || !displaySets.length) {
+      return;
+    }
+
+    const studyMap = {};
+
+    // Prior studies don't quite work properly yet, but the studies list
+    // is at least being generated and passed in.
+    const studies = displaySets.reduce((prev, curr) => {
+      const { StudyInstanceUID } = curr;
+      if (!studyMap[StudyInstanceUID]) {
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+        studyMap[StudyInstanceUID] = study;
+        prev.push(study);
+      }
+      return prev;
+    }, []);
+
+    // The assumption is that the display set at position 0 is the first
+    // study being displayed, and is thus the "active" study.
+    const activeStudy = studies[0];
+
+    // run the hanging protocol matching service on the displaySets
+    HangingProtocolService.run({ studies, activeStudy, displaySets });
   });
 
   return unsubscriptions;
@@ -236,7 +262,7 @@ export default function ModeRoute({
         });
       }
 
-      return await defaultRouteInit({
+      return defaultRouteInit({
         servicesManager,
         studyInstanceUIDs,
         dataSource,

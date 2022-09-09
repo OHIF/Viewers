@@ -43,9 +43,9 @@
   },
   "dependencies": {
     "@babel/runtime": "7.17.9",
-    "@cornerstonejs/core": "^0.14.5",
-    "@cornerstonejs/streaming-image-volume-loader": "^0.4.16",
-    "@cornerstonejs/tools": "^0.21.8",
+    "@cornerstonejs/core": "^0.16.1",
+    "@cornerstonejs/streaming-image-volume-loader": "^0.4.23",
+    "@cornerstonejs/tools": "^0.24.1",
     "@kitware/vtk.js": "^24.18.7",
     "dom-to-image": "^2.6.0",
     "lodash.debounce": "4.0.8",

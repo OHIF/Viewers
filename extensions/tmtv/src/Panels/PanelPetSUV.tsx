@@ -28,32 +28,32 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     DisplaySetService,
     ToolGroupService,
     ToolBarService,
+    HangingProtocolService,
   } = servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
-  const handleMetadataChange = useCallback(
-    metadata => {
-      setMetadata(prevState => {
-        const newState = { ...prevState };
-        Object.keys(metadata).forEach(key => {
-          if (typeof metadata[key] === 'object') {
-            newState[key] = {
-              ...prevState[key],
-              ...metadata[key],
-            };
-          } else {
-            newState[key] = metadata[key];
-          }
-        });
-        return newState;
+  const handleMetadataChange = metadata => {
+    setMetadata(prevState => {
+      const newState = { ...prevState };
+      Object.keys(metadata).forEach(key => {
+        if (typeof metadata[key] === 'object') {
+          newState[key] = {
+            ...prevState[key],
+            ...metadata[key],
+          };
+        } else {
+          newState[key] = metadata[key];
+        }
       });
-    },
-    [metadata]
-  );
+      return newState;
+    });
+  };
 
-  const getMatchingPTDisplaySet = useCallback(() => {
-    const ptDisplaySet = commandsManager.runCommand('getMatchingPTDisplaySet');
+  const getMatchingPTDisplaySet = viewportMatchDetails => {
+    const ptDisplaySet = commandsManager.runCommand('getMatchingPTDisplaySet', {
+      viewportMatchDetails,
+    });
 
     if (!ptDisplaySet) {
       return;
@@ -67,16 +67,16 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       ptDisplaySet,
       metadata,
     };
-  }, []);
+  };
 
   useEffect(() => {
-    const displaySets = DisplaySetService.activeDisplaySets;
-
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+    const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
     if (!displaySets.length) {
       return;
     }
 
-    const displaySetInfo = getMatchingPTDisplaySet();
+    const displaySetInfo = getMatchingPTDisplaySet(viewportMatchDetails);
 
     if (!displaySetInfo) {
       return;
@@ -89,15 +89,14 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 
   // get the patientMetadata from the StudyInstanceUIDs and update the state
   useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      () => {
-        const displaySetInfo = getMatchingPTDisplaySet();
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+      ({ viewportMatchDetails }) => {
+        const displaySetInfo = getMatchingPTDisplaySet(viewportMatchDetails);
 
         if (!displaySetInfo) {
           return;
         }
-
         const { ptDisplaySet, metadata } = displaySetInfo;
         setPtDisplaySet(ptDisplaySet);
         setMetadata(metadata);
@@ -177,7 +176,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               }}
             />
             <Input
-              label={t('Total Dose (Mbq)')}
+              label={t('Total Dose (bq)')}
               labelClassName="text-white"
               className="mt-1 mb-2 bg-black border-primary-main"
               type="text"
