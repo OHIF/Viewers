@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icon } from '../';
-import { stringNumber } from '../../Types';
+import { StringNumber } from '../../Types';
 
 /**
  *
@@ -99,7 +99,7 @@ Thumbnail.propTypes = {
   }),
   imageAltText: PropTypes.string,
   description: PropTypes.string.isRequired,
-  seriesNumber: stringNumber.isRequired,
+  seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,

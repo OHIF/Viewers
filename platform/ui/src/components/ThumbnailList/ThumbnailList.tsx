@@ -111,11 +111,11 @@ ThumbnailList.propTypes = {
       imageSrc: PropTypes.string,
       imageAltText: PropTypes.string,
       seriesDate: PropTypes.string,
-      seriesNumber: Types.stringNumber,
+      seriesNumber: Types.StringNumber,
       numInstances: PropTypes.number,
       description: PropTypes.string,
-      componentType: Types.thumbnailType.isRequired,
-      viewportIdentificator: Types.stringArray,
+      componentType: Types.ThumbnailType.isRequired,
+      viewportIdentificator: Types.StringArray,
       isTracked: PropTypes.bool,
       /**
        * Data the thumbnail should expose to a receiving drop target. Use a matching

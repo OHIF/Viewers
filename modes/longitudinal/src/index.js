@@ -3,6 +3,10 @@ import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
 
+// Allow this mode by excluding non-imaging modalities such as SR, SEG
+// Also, SM is not a simple imaging modalities, so exclude it.
+const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
+
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
@@ -120,15 +124,12 @@ function modeFactory() {
       series: [],
     },
 
-    // Allow this mode by excluding non-imaging modalities such as SR, SEG
-    // Also, SM is not a simple imaging modalities, so exclude it.
-    NON_IMAGE_MODALITIES: ['SM', 'ECG', 'SR', 'SEG'],
-    isValidMode: function ({ modalities }) {
+    isValidMode: function({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
-      return !!modalities_list.filter(modality =>
-        this.NON_IMAGE_MODALITIES.indexOf(modality) == -1
+      return !!modalities_list.filter(
+        modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1
       ).length;
     },
     routes: [
