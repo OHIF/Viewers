@@ -25,7 +25,7 @@ function createDicomLocalApi(dicomLocalConfig) {
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
+      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
 
       const StudyInstanceUIDs =
         queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
