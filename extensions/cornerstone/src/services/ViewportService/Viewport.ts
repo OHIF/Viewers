@@ -1,4 +1,4 @@
-import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import { Types, Enums } from '@cornerstonejs/core';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -137,7 +137,7 @@ class ViewportInfo {
     if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     } else {
-      orientation = CONSTANTS.ORIENTATION.AXIAL;
+      orientation = Enums.OrientationAxis.AXIAL;
     }
 
     if (!toolGroupId) {

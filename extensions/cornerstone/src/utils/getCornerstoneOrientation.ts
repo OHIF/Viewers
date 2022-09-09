@@ -1,4 +1,4 @@
-import { CONSTANTS } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/core';
 import { log } from '@ohif/core';
 
 const AXIAL = 'axial';
@@ -7,16 +7,16 @@ const CORONAL = 'coronal';
 
 export default function getCornerstoneOrientation(
   orientation: string
-): CONSTANTS.ORIENTATION {
+): Enums.OrientationAxis {
   switch (orientation.toLowerCase()) {
     case AXIAL:
-      return CONSTANTS.ORIENTATION.AXIAL;
+      return Enums.OrientationAxis.AXIAL;
     case SAGITTAL:
-      return CONSTANTS.ORIENTATION.SAGITTAL;
+      return Enums.OrientationAxis.SAGITTAL;
     case CORONAL:
-      return CONSTANTS.ORIENTATION.CORONAL;
+      return Enums.OrientationAxis.CORONAL;
     default:
-      log.wanr('Choosing default orientation: axial');
-      return CONSTANTS.ORIENTATION.AXIAL;
+      log.wanr('Choosing acquisition plane orientation');
+      return Enums.OrientationAxis.ACQUISITION;
   }
 }
