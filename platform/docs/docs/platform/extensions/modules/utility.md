@@ -29,7 +29,6 @@ getUtilityModule({ servicesManager }) {
         name: 'core',
         exports: {
           Enums: cs3DEnums,
-          CONSTANTS,
         },
       },
       {
