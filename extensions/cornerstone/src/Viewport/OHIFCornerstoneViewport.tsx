@@ -419,7 +419,7 @@ OHIFCornerstoneViewport.propTypes = {
   displaySets: PropTypes.array.isRequired,
   dataSource: PropTypes.object.isRequired,
   viewportOptions: PropTypes.object,
-  displaySetOptions: PropTypes.arrayOf(PropTypes.object),
+  displaySetOptions: PropTypes.arrayOf(PropTypes.any),
   servicesManager: PropTypes.object.isRequired,
   onElementEnabled: PropTypes.func,
   // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation

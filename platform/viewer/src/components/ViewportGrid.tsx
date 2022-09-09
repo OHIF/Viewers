@@ -370,8 +370,9 @@ function _getViewportComponent(displaySets, viewportComponents) {
   const SOPClassHandlerId = displaySets[0].SOPClassHandlerId;
 
   for (let i = 0; i < viewportComponents.length; i++) {
-    if (!viewportComponents[i])
+    if (!viewportComponents[i]) {
       throw new Error('viewport components not defined');
+    }
     if (!viewportComponents[i].displaySetsToDisplay) {
       throw new Error('displaySetsToDisplay is null');
     }

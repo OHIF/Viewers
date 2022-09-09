@@ -3,6 +3,9 @@
 //export { utils };
 
 /** CONTEXT/HOOKS */
+// Export types - need to do as two lines due to a bug in babel
+import * as Types from './Types';
+
 export {
   useCine,
   CineProvider,
@@ -104,3 +107,4 @@ export {
 export { getIcon, ICONS } from './components/Icon/getIcon';
 export { BackgroundColor } from './pages/Colors/BackgroundColor';
 export { ModalComponent } from './contextProviders/ModalComponent';
+export { Types };
