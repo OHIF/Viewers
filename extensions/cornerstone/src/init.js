@@ -281,7 +281,9 @@ export default async function init({
     const { viewportId, element } = evt.detail;
 
     const viewportInfo = CornerstoneViewportService.getViewportInfo(viewportId);
-    ToolGroupService.disable(viewportInfo);
+    const renderingEngineId = viewportInfo.getRenderingEngineId();
+
+    ToolGroupService.disable(viewportId, renderingEngineId);
 
     element.removeEventListener(
       cs3DToolsEvents.MOUSE_CLICK,

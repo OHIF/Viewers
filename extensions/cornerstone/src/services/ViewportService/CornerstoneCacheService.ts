@@ -170,6 +170,14 @@ class CornerstoneCacheService {
     const volumeData = [];
 
     for (const displaySet of displaySets) {
+      // Don't create volumes for the displaySets that have custom load
+      // function (e.g., SEG, RT, since they rely on the reference volumes
+      // and they take care of their own loading after they are created in their
+      // getSOPClassHandler method
+      if (displaySet.load && displaySet.load instanceof Function) {
+        continue;
+      }
+
       const volumeId = displaySet.displaySetInstanceUID;
 
       let volumeImageIds = this.volumeImageIds.get(

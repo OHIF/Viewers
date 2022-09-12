@@ -42,8 +42,6 @@ class CornerstoneViewportService implements IViewportService {
   renderingEngine: Types.IRenderingEngine | null;
   viewportsInfo: Map<number, ViewportInfo>;
   viewportGridResizeObserver: ResizeObserver | null;
-  // TODO - get the right type here.
-  hangingProtocolService: object;
 
   /**
    * Service-specific
@@ -55,6 +53,7 @@ class CornerstoneViewportService implements IViewportService {
   enableResizeDetector: true;
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
+  servicesManager = null;
 
   constructor(servicesManager) {
     this.renderingEngine = null;
@@ -63,8 +62,7 @@ class CornerstoneViewportService implements IViewportService {
     //
     this.listeners = {};
     this.EVENTS = EVENTS;
-    const { HangingProtocolService } = servicesManager.services;
-    this.hangingProtocolService = HangingProtocolService;
+    this.servicesManager = servicesManager;
     Object.assign(this, pubSubServiceInterface);
     //
   }
@@ -357,7 +355,7 @@ class CornerstoneViewportService implements IViewportService {
     // (This call may or may not create sub-requests for series metadata)
     const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
-    const { hangingProtocolService } = this;
+    const { HangingProtocolService } = this.servicesManager.services;
 
     for (const [index, data] of viewportData.data.entries()) {
       const imageIds = data.imageIds;
@@ -381,11 +379,11 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     if (
-      hangingProtocolService.hasCustomImageLoadStrategy() &&
-      !hangingProtocolService.customImageLoadPerformed
+      HangingProtocolService.hasCustomImageLoadStrategy() &&
+      !HangingProtocolService.customImageLoadPerformed
     ) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      return hangingProtocolService.runImageLoadStrategy({
+      return HangingProtocolService.runImageLoadStrategy({
         viewportId: viewport.id,
         volumeInputArray,
       });

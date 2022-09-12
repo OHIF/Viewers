@@ -1,6 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
 
-import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import { pubSubServiceInterface } from '@ohif/core';
 import {
   utilities as cstUtils,
@@ -106,6 +105,8 @@ const EVENTS = {
 };
 
 const VALUE_TYPES = {};
+
+const EPSILON = 0.0001;
 
 class SegmentationService {
   listeners = {};
@@ -464,8 +465,9 @@ class SegmentationService {
 
   public addOrUpdateSegmentation(
     segmentationSchema: SegmentationSchema,
+    suppressEvents = false,
     notYetUpdatedAtSource = false
-  ) {
+  ): string {
     const { id: segmentationId } = segmentationSchema;
     let segmentation = this.segmentations[segmentationId];
 
@@ -478,11 +480,13 @@ class SegmentationService {
         notYetUpdatedAtSource,
       });
 
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-        segmentation,
-      });
+      if (!suppressEvents) {
+        this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+          segmentation,
+        });
+      }
 
-      return;
+      return segmentationId;
     }
 
     // Add the segmentation otherwise
@@ -532,9 +536,103 @@ class SegmentationService {
       notYetUpdatedAtSource: true,
     });
 
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
-      segmentation,
-    });
+    if (!suppressEvents) {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+        segmentation,
+      });
+    }
+
+    return segmentationId;
+  }
+
+  public async createSegmentationForSEGDisplaySet(
+    segDisplaySet,
+    segmentationId?: string,
+    suppressEvents = false
+  ): Promise<string> {
+    segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
+    const { segments, referencedVolumeId } = segDisplaySet;
+
+    if (!segments || !referencedVolumeId) {
+      throw new Error(
+        'To create the segmentation from SEG displaySet, the displaySet should be loaded first, you can perform segDisplaySet.load() before calling this method.'
+      );
+    }
+
+    const referencedVolume = cache.getVolume(referencedVolumeId);
+
+    if (!referencedVolume) {
+      throw new Error(
+        `No volume found for referencedVolumeId: ${referencedVolumeId}`
+      );
+    }
+
+    // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
+    // it is easily compressible in worker thread.
+    const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(
+      referencedVolumeId,
+      {
+        volumeId: segmentationId,
+        targetBuffer: {
+          type: 'Uint8Array',
+          sharedArrayBuffer: true,
+        },
+      }
+    );
+    const [rows, columns, numImages] = derivedVolume.dimensions;
+    const derivedVolumeScalarData = derivedVolume.scalarData;
+
+    // Note: ideally we could use the TypedArray set method, but since each
+    // slice can have multiple segments, we need to loop over each slice and
+    // set the segment value for each segment.
+
+    for (const segmentIndex in segments) {
+      const segmentInfo = segments[segmentIndex];
+      const {
+        numberOfFrames: segNumberOfFrame,
+        pixelData: segPixelData,
+      } = segmentInfo;
+
+      const imageIdIndex = this._getSegmentImageIdIndex(
+        segmentInfo,
+        segmentIndex,
+        referencedVolume
+      );
+
+      const step = rows * columns;
+
+      // Note: this for loop is not optimized, since DICOM SEG stores
+      // each segment as a separate labelmap so if there is a slice
+      // that has multiple segments, we will have to loop over each
+      // segment and we cannot use the TypedArray set method.
+      for (let slice = 0; slice < numImages; slice++) {
+        if (slice < imageIdIndex || slice >= imageIdIndex + segNumberOfFrame) {
+          continue;
+        }
+
+        for (let i = 0; i < step; i++) {
+          const derivedPixelIndex = i + slice * step;
+          const segPixelIndex = i + (slice - imageIdIndex) * step;
+
+          if (segPixelData[segPixelIndex] !== 0) {
+            derivedVolumeScalarData[derivedPixelIndex] = Number(segmentIndex);
+          }
+        }
+      }
+    }
+
+    const segmentationSchema = {
+      id: segmentationId,
+      volumeId: segmentationId,
+      activeSegmentIndex: 1,
+      cachedStats: {},
+      label: '',
+      segmentsLocked: new Set(),
+      type: LABELMAP,
+      displayText: [],
+    };
+
+    return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);
   }
 
   public createSegmentationForDisplaySet = async (
@@ -1341,6 +1439,41 @@ class SegmentationService {
    */
   private arrayOfObjects = obj => {
     return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
+  };
+
+  private _getSegmentImageIdIndex = (
+    segmentInfo,
+    segmentIndex,
+    referencedVolume
+  ) => {
+    const referencedImageOrigin = referencedVolume.origin;
+    const referencedVolumeSliceSpacing = referencedVolume.spacing[2];
+
+    const segmentImagePositionPatient = segmentInfo.firstImagePositionPatient;
+
+    // find the closest slice in the referenced volume to the segment's first image position
+    // this is the slice where the segment will be inserted in the scalarData
+    const estimatedSliceNumber =
+      Math.sqrt(
+        Math.pow(segmentImagePositionPatient[0] - referencedImageOrigin[0], 2) +
+          Math.pow(
+            segmentImagePositionPatient[1] - referencedImageOrigin[1],
+            2
+          ) +
+          Math.pow(segmentImagePositionPatient[2] - referencedImageOrigin[2], 2)
+      ) / referencedVolumeSliceSpacing;
+
+    if (
+      Math.abs(Math.round(estimatedSliceNumber) - estimatedSliceNumber) >
+      EPSILON
+    ) {
+      throw new Error(
+        `Segment ${segmentIndex} has an invalid image position: ${segmentImagePositionPatient} which starts
+        from the middle of the slice of the referenced volume.`
+      );
+    }
+
+    return Math.round(estimatedSliceNumber);
   };
 }
 

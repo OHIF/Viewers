@@ -337,7 +337,9 @@ ViewportActionBar.propTypes = {
     //
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,
+    isLocked: PropTypes.bool.isRequired,
     isRehydratable: PropTypes.bool.isRequired,
+    isHydrated: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
     currentSeries: StringNumber.isRequired,
     seriesDescription: PropTypes.string.isRequired,

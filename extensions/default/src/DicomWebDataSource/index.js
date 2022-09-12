@@ -441,6 +441,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach((instance, index) => {
+          instance.wadoRoot = dicomWebConfig.wadoRoot;
+          instance.wadoUri = dicomWebConfig.wadoUri;
+
           const imageId = implementation.getImageIdsForInstance({
             instance,
           });

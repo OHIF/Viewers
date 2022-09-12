@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 import {
@@ -6,7 +6,6 @@ import {
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
-  useImageViewer,
 } from '@ohif/ui';
 
 const { formatDate } = utils;
@@ -16,7 +15,6 @@ const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 function OHIFCornerstoneSEGViewport(props) {
   const {
     children,
-    dataSource,
     displaySets,
     viewportIndex,
     viewportLabel,
@@ -26,6 +24,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
   const {
     DisplaySetService,
+    ToolGroupService,
     CornerstoneViewportService,
   } = servicesManager.services;
 
@@ -36,17 +35,21 @@ function OHIFCornerstoneSEGViewport(props) {
 
   const segDisplaySet = displaySets[0];
 
-  const { StudyInstanceUIDs } = useImageViewer();
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
-  const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(
-    null
-  );
+
+  // States
+  const [isSegDisplaySetLoaded, setIsSegDisplaySetLoaded] = useState(false);
+  const [toolGroupId, setToolGroupId] = useState(null);
+  const [referencedDisplaySet, setReferencedDisplaySet] = useState(null);
   const [
     referencedDisplaySetMetadata,
     setReferencedDisplaySetMetadata,
   ] = useState(null);
-  const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
+
+  // const [isHydrated, setIsHydrated] = useState(
+  //   segDisplaySet.isHydrated
+  // );
   const [element, setElement] = useState(null);
   const { viewports, activeViewportIndex } = viewportGrid;
 
@@ -59,6 +62,32 @@ function OHIFCornerstoneSEGViewport(props) {
   const onElementEnabled = evt => {
     setElement(evt.detail.element);
   };
+
+  const onElementDisabled = () => {
+    setElement(null);
+
+    // remove the temporary tool Group from the state
+    ToolGroupService.destroyToolGroup(toolGroupId);
+  };
+
+  useEffect(() => {
+    if (toolGroupId !== null) {
+      return;
+    }
+
+    const createdToolGroupId = _createToolGroupAndAddTools(
+      ToolGroupService,
+      viewportIndex,
+      extensionManager
+    );
+    setToolGroupId(createdToolGroupId);
+
+    return () => {
+      // we don't need a cleanup function, because the tool group is destroyed
+      // when the element is disabled automatically
+      // _removeToolGroup(toolGroupId);
+    };
+  }, [toolGroupId]);
 
   // const updateViewport = useCallback(
   //   newMeasurementSelected => {
@@ -86,12 +115,12 @@ function OHIFCornerstoneSEGViewport(props) {
   //       DisplaySetService
   //     ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
   //       setMeasurementSelected(newMeasurementSelected);
-  //       setActiveImageDisplaySetData(referencedDisplaySet);
+  //       setreferencedDisplaySet(referencedDisplaySet);
   //       setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
 
   //       if (
   //         referencedDisplaySet.displaySetInstanceUID ===
-  //         activeImageDisplaySetData?.displaySetInstanceUID
+  //         referencedDisplaySet?.displaySetInstanceUID
   //       ) {
   //         const { measurements } = segDisplaySet;
 
@@ -119,11 +148,11 @@ function OHIFCornerstoneSEGViewport(props) {
   //       }
   //     });
   //   },
-  //   [dataSource, segDisplaySet, activeImageDisplaySetData, viewportIndex]
+  //   [dataSource, segDisplaySet, referencedDisplaySet, viewportIndex]
   // );
 
   const getCornerstoneViewport = useCallback(() => {
-    if (!activeImageDisplaySetData) {
+    if (!referencedDisplaySet) {
       return null;
     }
 
@@ -138,53 +167,42 @@ function OHIFCornerstoneSEGViewport(props) {
     //   return null;
     // }
 
-    // const initialImageIndex = activeImageDisplaySetData.images.findIndex(
+    // const initialImageIndex = referencedDisplaySet.images.findIndex(
     //   image => image.imageId === measurement.imageId
     // );
 
     return (
       <Component
         {...props}
-        // should be passed second since we don't want SR displaySet to
-        // override the activeImageDisplaySetData
-        displaySets={[activeImageDisplaySetData]}
+        displaySets={[referencedDisplaySet, segDisplaySet]}
         viewportOptions={{
-          toolGroupId: `${SEG_TOOLGROUP_BASE_NAME}`,
+          toolGroupId: `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`,
+          viewportType: 'volume',
+          orientation: 'axial', // todo: make this default orientation
         }}
         onElementEnabled={onElementEnabled}
+        onElementDisabled={onElementDisabled}
         // initialImageIndex={initialImageIndex}
       ></Component>
     );
-  }, [activeImageDisplaySetData, viewportIndex]);
+  }, [referencedDisplaySet, viewportIndex]);
 
-  // const onMeasurementChange = useCallback(
-  //   direction => {
-  //     let newMeasurementSelected = measurementSelected;
-
-  //     if (direction === 'right') {
-  //       newMeasurementSelected++;
-
-  //       if (newMeasurementSelected >= measurementCount) {
-  //         newMeasurementSelected = 0;
-  //       }
-  //     } else {
-  //       newMeasurementSelected--;
-
-  //       if (newMeasurementSelected < 0) {
-  //         newMeasurementSelected = measurementCount - 1;
-  //       }
-  //     }
-
-  //     setTrackingIdentifiers(newMeasurementSelected);
-  //     updateViewport(newMeasurementSelected);
-  //   },
-  //   [
-  //     measurementSelected,
-  //     measurementCount,
-  //     updateViewport,
-  //     setTrackingIdentifiers,
-  //   ]
-  // );
+  const onMeasurementChange = useCallback(direction => {
+    // let newMeasurementSelected = measurementSelected;
+    // if (direction === 'right') {
+    //   newMeasurementSelected++;
+    //   if (newMeasurementSelected >= measurementCount) {
+    //     newMeasurementSelected = 0;
+    //   }
+    // } else {
+    //   newMeasurementSelected--;
+    //   if (newMeasurementSelected < 0) {
+    //     newMeasurementSelected = measurementCount - 1;
+    //   }
+    // }
+    // setTrackingIdentifiers(newMeasurementSelected);
+    // updateViewport(newMeasurementSelected);
+  }, []);
 
   /**
    Cleanup the SEG viewport when the viewport is destroyed
@@ -210,20 +228,44 @@ function OHIFCornerstoneSEGViewport(props) {
     };
   }, []);
 
+  useEffect(() => {
+    const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
+
+    const { referencedDisplaySetMetadata } = _getReferencedDisplaySetMetadata(
+      referencedDisplaySet
+    );
+
+    setReferencedDisplaySet(referencedDisplaySet);
+    setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
+  }, [segDisplaySet]);
+
   /**
-   * Loading the segmentations from the SEG viewport, which goes through the
-   * isHydratable check, the outcome for the isHydrated state here is always FALSE
-   * since we don't do the hydration here.
+   * Loading the segmentations from the SEG viewport, only when the toolGroup
+   * for the viewport is created.
    */
   useEffect(() => {
-    if (!segDisplaySet.isLoaded) {
-      segDisplaySet.load();
-    }
-    // setIsHydrated(segDisplaySet.isHydrated);
+    const { unsubscribe } = ToolGroupService.subscribe(
+      ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ toolGroupId: newToolGroupId }) => {
+        if (newToolGroupId !== toolGroupId) {
+          return;
+        }
 
-    // const numMeasurements = segDisplaySet.measurements.length;
-    // setMeasurementCount(numMeasurements);
-  }, [segDisplaySet]);
+        const loadSegmentations = async () => {
+          await segDisplaySet.load(toolGroupId);
+          setIsSegDisplaySetLoaded(true);
+        };
+
+        if (!segDisplaySet.isLoaded) {
+          loadSegmentations();
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [toolGroupId, segDisplaySet, referencedDisplaySet]);
 
   /**
    * Hook to update the tracking identifiers when the selected measurement changes or
@@ -237,15 +279,6 @@ function OHIFCornerstoneSEGViewport(props) {
   // }, [measurementSelected, element, setTrackingIdentifiers, segDisplaySet]);
 
   /**
-   * Todo: what is this, not sure what it does regarding the react aspect,
-   * it is updating a local variable? which is not state.
-   */
-  // let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
-  // useEffect(() => {
-  //   isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
-  // }, [trackedMeasurements]);
-
-  /**
    * Data fetching for the SEG displaySet
    */
   // useEffect(() => {
@@ -255,7 +288,7 @@ function OHIFCornerstoneSEGViewport(props) {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 
-  if (!activeImageDisplaySetData || !referencedDisplaySetMetadata) {
+  if (!referencedDisplaySet || !referencedDisplaySetMetadata) {
     return null;
   }
 
@@ -295,10 +328,11 @@ function OHIFCornerstoneSEGViewport(props) {
           evt.preventDefault();
         }}
         onPillClick={() => {
-          sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
-            displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
-            viewportIndex,
-          });
+          // sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SEG', {
+          //   displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
+          //   viewportIndex,
+          // });
+          console.debug('SEG viewport pill click');
         }}
         onSeriesChange={onMeasurementChange}
         studyData={{
@@ -310,7 +344,7 @@ function OHIFCornerstoneSEGViewport(props) {
           isHydrated: false,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
-          seriesDescription: SeriesDescription,
+          seriesDescription: `SEG Viewport ${SeriesDescription}`,
           modality: Modality,
           patientInformation: {
             patientName: PatientName
@@ -360,20 +394,43 @@ OHIFCornerstoneSEGViewport.defaultProps = {
   customProps: {},
 };
 
-async function _getViewportReferencedDisplaySetData(
-  displaySet,
-  measurementSelected,
-  DisplaySetService
+function _createToolGroupAndAddTools(
+  ToolGroupService,
+  viewportIndex,
+  extensionManager
 ) {
-  const { measurements } = displaySet;
-  const measurement = measurements[measurementSelected];
-
-  const { displaySetInstanceUID } = measurement;
-
-  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
+  const { toolNames, Enums } = utilityModule.exports;
+
+  const tools = {
+    active: [
+      {
+        toolName: toolNames.WindowLevel,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
+      {
+        toolName: toolNames.Pan,
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+      },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+      },
+      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+    ],
+    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+  };
+
+  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
+  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
+
+  return toolGroupId;
+}
+
+function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
     PatientID: image0.PatientID,

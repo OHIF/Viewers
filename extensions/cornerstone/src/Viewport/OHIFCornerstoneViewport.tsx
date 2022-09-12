@@ -190,7 +190,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       );
 
       if (onElementDisabled) {
-        onElementDisabled();
+        onElementDisabled(viewportInfo);
       }
     };
   }, []);
