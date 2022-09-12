@@ -291,9 +291,9 @@ class OHIFStandaloneViewer extends Component {
             path: '/',
             component: () => <Redirect to="/studylist" />,
           },
-          // {
-          //   component: () => <Redirect to="/404" />,
-          // },
+          {
+            component: () => <Redirect to="/" />,
+          },
         ],
       },
     ];
