@@ -78,6 +78,7 @@ export default {
           onConfigurationChange={onConfigurationChangeHandler}
           onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
           onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
+          servicesManager={servicesManager}
         />
       );
     };
