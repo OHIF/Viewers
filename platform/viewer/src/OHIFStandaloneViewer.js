@@ -75,6 +75,12 @@ const SamplePage = asyncComponent(() =>
   )
 );
 
+const UplouderPage = asyncComponent(() =>
+  retryImport(() =>
+    import(/* webpackChunkName: "StudyListRouting" */ './pages/Uplouder.js')
+  )
+);
+
 class OHIFStandaloneViewer extends Component {
   static contextType = AppContext;
   state = {
@@ -188,7 +194,7 @@ class OHIFStandaloneViewer extends Component {
         exact: true,
         layout: DashboardLayout,
         path: '/uplouder',
-        component: SamplePage,
+        component: UplouderPage,
       },
 
       {
@@ -216,16 +222,11 @@ class OHIFStandaloneViewer extends Component {
       {
         exact: false,
         layout: DashboardLayout,
-        path: '/viewer',
-        component: SamplePage,
-      },
-      {
-        exact: false,
-        layout: DashboardLayout,
         path:
           '/view/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
         component: ViewerRouting,
       },
+
       {
         exact: false,
         layout: DashboardLayout,
@@ -291,9 +292,9 @@ class OHIFStandaloneViewer extends Component {
             path: '/',
             component: () => <Redirect to="/studylist" />,
           },
-          // {
-          //   component: () => <Redirect to="/404" />,
-          // },
+          {
+            component: () => <Redirect to="/" />,
+          },
         ],
       },
     ];
