@@ -1,6 +1,6 @@
-import { parameters } from '@storybook/addon-docs/dist/esm/frameworks/react/config';
+import React from 'react';
 import { addParameters } from '@storybook/react';
-import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
+import { DocsPage, DocsContainer } from '@storybook/addon-docs';
 import {
   Heading,
   SectionName,
@@ -15,7 +15,6 @@ import './custom.css';
 // https://github.com/mondaycom/monday-ui-react-core/tree/master/.storybook
 addParameters({
   docs: {
-    ...parameters.docs,
     inlineStories: true,
     container: ({ children, context }) => (
       <DocsContainer context={context}>{children}</DocsContainer>
