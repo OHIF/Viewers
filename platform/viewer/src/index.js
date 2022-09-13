@@ -15,9 +15,10 @@ import ReactDOM from 'react-dom';
  * to the window for processing.
  */
 import loadDynamicImports, { loadRuntimeImports } from './pluginImports.js';
+import loadDynamicConfig from './loadDynamicConfig';
 
-loadDynamicImports().then(() => {
-  loadRuntimeImports(window.config).then(() => {
+Promise.all([loadDynamicImports(), loadDynamicConfig(window.config)]).then(
+  arr => {
     /**
      * Combine our appConfiguration with installed extensions and modes.
      * In the future appConfiguration may contain modes added at runtime.
@@ -32,5 +33,5 @@ loadDynamicImports().then(() => {
     const app = React.createElement(App, appProps, null);
     /** Render */
     ReactDOM.render(app, document.getElementById('root'));
-  });
-});
+  }
+);

@@ -98,7 +98,7 @@ function DataSourceWrapper(props) {
       const newOffset =
         Math.floor(
           (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) /
-            STUDIES_LIMIT
+          STUDIES_LIMIT
         ) *
         (STUDIES_LIMIT - 1);
       const isLocationUpdated = data.location !== location;
@@ -167,6 +167,8 @@ function _getQueryFilterValues(query, queryLimit) {
     // Offset...
     offset:
       Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
+    // Config for dynamic config urls
+    config: query.get('configUrl'),
   };
 
   // patientName: good
