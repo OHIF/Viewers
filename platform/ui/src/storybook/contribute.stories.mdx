@@ -66,8 +66,8 @@ error. Always check the code block when you get an error.
 For instance the following code block will generate the error (notice the extra
 vertical space in the code block):
 
-```jsx
-export const TooltipTemplate = (args) => (
+```tsx
+export const TooltipTemplate = args => (
   <div className="h-16 w-full">
     <div class="w-8 h-8 mx-auto">
       <Tooltip {...args}>
@@ -91,7 +91,7 @@ stories with the same name, it will cause an error.
 
 The following code block will generate an error:
 
-```jsx
+```tsx
 <Canvas>
   <Story name="Variants">
     <Typography variant="h1" color="initial">
