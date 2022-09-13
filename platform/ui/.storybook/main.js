@@ -16,20 +16,20 @@ module.exports = {
     // You can change the configuration based on that.
     // 'PRODUCTION' is used when building the static version of storybook.
 
-    config.module.rules[0].use[0].options.plugins[1] = [
-      '@babel/plugin-proposal-class-properties',
-      { loose: true },
-    ];
+    // config.module.rules[0].use[0].options.plugins[1] = [
+    //   '@babel/plugin-proposal-class-properties',
+    //   { loose: true },
+    // ];
 
-    config.module.rules[0].use[0].options.plugins[3] = [
-      '@babel/plugin-proposal-private-methods',
-      { loose: true },
-    ];
+    // config.module.rules[0].use[0].options.plugins[3] = [
+    //   '@babel/plugin-proposal-private-methods',
+    //   { loose: true },
+    // ];
 
-    config.module.rules[0].use[0].options.plugins[4] = [
-      '@babel/plugin-proposal-private-property-in-object',
-      { loose: true },
-    ];
+    // config.module.rules[0].use[0].options.plugins[4] = [
+    //   '@babel/plugin-proposal-private-property-in-object',
+    //   { loose: true },
+    // ];
 
     // Make whatever fine-grained changes you need
     config.module.rules.push({

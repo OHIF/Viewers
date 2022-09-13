@@ -8,10 +8,10 @@ module.exports = {
   ],
   plugins: [
     'inline-react-svg',
-    '@babel/plugin-proposal-class-properties',
+    ['@babel/plugin-proposal-class-properties', { loose: true }],
     '@babel/plugin-transform-typescript',
-    '@babel/plugin-proposal-private-property-in-object',
-    '@babel/plugin-proposal-private-methods',
+    ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+    ['@babel/plugin-proposal-private-methods', { loose: true }],
   ],
   env: {
     test: {
