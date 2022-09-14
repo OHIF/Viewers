@@ -128,14 +128,17 @@ function OpenIdConnectRoutes({
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    window.addEventListener('storage', () => {
+      var signOutEvent = localStorage.getItem("signoutEvent");
+      if (signOutEvent) {
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
+      }
+    });
+    return localStorage.removeItem("signoutEvent"); //remove if left over from previous session
+  }, [])
   //for multi-tab logout
-  window.addEventListener('storage', () => {
-    var signOutEvent = localStorage.getItem("signoutEvent");
-    if (signOutEvent) {
-      navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
-      localStorage.removeItem("signoutEvent");
-    }
-  });
+
 
   useEffect(() => {
     UserAuthenticationService.set({ enabled: true });
