@@ -24,7 +24,7 @@ const Dialog = ({
 
   const theme = 'bg-secondary-light';
   const flex = 'flex flex-col';
-  const border = 'border-0 rounded-lg shadow-lg';
+  const border = 'border-0 rounded-lg drop-shadow-lg';
   const outline = 'outline-none focus:outline-none';
   const position = 'relative';
   const width = 'w-full';

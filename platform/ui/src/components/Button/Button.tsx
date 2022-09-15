@@ -126,16 +126,18 @@ const Button = ({
     }
   };
 
+  const finalClassName = classnames(
+    baseClasses,
+    variantClasses[variant][color],
+    roundedClasses[rounded],
+    sizeClasses[size],
+    fullWidthClasses[fullWidth],
+    className
+  );
+
   return (
     <button
-      className={classnames(
-        className,
-        baseClasses,
-        variantClasses[variant][color],
-        roundedClasses[rounded],
-        sizeClasses[size],
-        fullWidthClasses[fullWidth]
-      )}
+      className={finalClassName}
       disabled={disabled}
       ref={buttonElement}
       onClick={handleOnClick}

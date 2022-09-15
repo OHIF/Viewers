@@ -62,8 +62,8 @@ function Local() {
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
     // Todo: navigate to work list and let user select a mode
-    let query = new URLSearchParams();
-    studies.forEach(id=> query.append('StudyInstanceUIDs', id))
+    const query = new URLSearchParams();
+    studies.forEach(id => query.append('StudyInstanceUIDs', id));
     navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
   };
 
@@ -80,7 +80,7 @@ function Local() {
       {({ getRootProps }) => (
         <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
           <div className="h-screen w-screen flex justify-center items-center ">
-            <div className="py-8 px-8 mx-auto bg-secondary-dark shadow-md space-y-2 rounded-lg">
+            <div className="py-8 px-8 mx-auto bg-secondary-dark drop-shadow-md space-y-2 rounded-lg">
               <img
                 className="block mx-auto h-10"
                 src="./customLogo.svg"

@@ -255,7 +255,7 @@ const ViewportActionBar = ({
       }}
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-1 flex-grow mt-2 min-w-48">
+      <div className="flex flex-1 grow mt-2 min-w-48">
         <div className="flex items-center">
           <span className="mr-2 text-white text-large">{label}</span>
           {showStatus && renderIconStatus()}
