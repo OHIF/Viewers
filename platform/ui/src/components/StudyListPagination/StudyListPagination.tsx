@@ -9,7 +9,7 @@ const StudyListPagination = ({
   perPage,
   onChangePerPage,
 }) => {
-  const { t } = useTranslation("StudyList")
+  const { t } = useTranslation('StudyList');
 
   const navigateToPage = page => {
     const toPage = page < 1 ? 1 : page;
@@ -21,8 +21,10 @@ const StudyListPagination = ({
     { value: '50', label: '50' },
     { value: '100', label: '100' },
   ];
-  const [selectedRange, setSelectedRange] = useState(ranges.find(r => r.value === perPage));
-  const onSelectedRange = (selectedRange) => {
+  const [selectedRange, setSelectedRange] = useState(
+    ranges.find(r => r.value === perPage)
+  );
+  const onSelectedRange = selectedRange => {
     setSelectedRange(selectedRange);
     onChangePerPage(selectedRange.value);
   };
@@ -33,7 +35,7 @@ const StudyListPagination = ({
         <div className="flex justify-between">
           <div className="flex items-center">
             <Select
-              id={"rows-per-page"}
+              id={'rows-per-page'}
               className="relative mr-3 w-16 border-primary-main"
               options={ranges}
               value={selectedRange}
@@ -57,7 +59,8 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="border-primary-main px-4 py-2 text-base"
-                  color="white"
+                  color="primaryLight"
+                  variant="outlined"
                   onClick={() => navigateToPage(1)}
                 >
                   {`<<`}
@@ -65,13 +68,17 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="border-primary-main py-2 px-2 text-base"
-                  color="white"
+                  color="primaryLight"
+                  variant="outlined"
                   onClick={() => navigateToPage(currentPage - 1)}
-                >{t(`< Previous`)}</Button>
+                >
+                  {t(`< Previous`)}
+                </Button>
                 <Button
                   size="initial"
                   className="border-primary-main py-2 px-4 text-base"
-                  color="white"
+                  color="primaryLight"
+                  variant="outlined"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
                   {t(`Next >`)}

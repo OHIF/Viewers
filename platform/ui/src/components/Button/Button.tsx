@@ -47,6 +47,8 @@ const variantClasses = {
       'border bg-transparent border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     black:
       'border bg-black border-primary-main text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
+    primaryLight:
+      'border bg-transparent border-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   contained: {
     default:

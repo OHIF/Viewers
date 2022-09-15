@@ -38,17 +38,21 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
           />
         </div>
         <div className="w-1/2">
-          <ButtonGroup color="black" size="inherit">
+          <ButtonGroup>
             <Button
-              className="px-2 py-2 text-base"
+              size="initial"
+              className="px-2 py-2 text-base text-white"
+              color="primaryLight"
+              variant="outlined"
               onClick={() => runCommand('setStartSliceForROIThresholdTool')}
             >
               {t('Start')}
             </Button>
-          </ButtonGroup>
-          <ButtonGroup color="black" size="inherit">
             <Button
-              className="px-2 py-2 text-base"
+              size="initial"
+              color="primaryLight"
+              variant="outlined"
+              className="px-2 py-2 text-base text-white"
               onClick={() => runCommand('setEndSliceForROIThresholdTool')}
             >
               {t('End')}

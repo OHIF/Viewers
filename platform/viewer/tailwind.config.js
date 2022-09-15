@@ -1,6 +1,10 @@
+// Todo: we probably should add external installed extensions/modes here as well.
+
 module.exports = {
   content: [
     './src/**/*.{jsx,js,ts,tsx, css}',
+    '../../extensions/**/*.{jsx,js,ts,tsx, css}',
+    '../../modes/**/*.{jsx,js,ts,tsx, css}',
     './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx, css}',
     '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
