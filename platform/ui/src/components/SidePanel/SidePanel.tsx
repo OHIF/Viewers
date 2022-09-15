@@ -89,6 +89,7 @@ const SidePanel = ({
           key={i}
           variant="text"
           color="inherit"
+          border="none"
           onClick={() => {
             setComponentOpen(childComponent.name);
           }}
@@ -97,7 +98,7 @@ const SidePanel = ({
             width: `${collapsedWidth}px`,
           }}
           name={childComponent.name}
-          className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b"
+          className="flex flex-col text-xs px-1 text-white border-transparent border-b"
         >
           <Icon
             name={childComponent.iconName}
@@ -126,6 +127,7 @@ const SidePanel = ({
             <Button
               variant="text"
               color="inherit"
+              border="none"
               rounded="none"
               onClick={() => {
                 setComponentOpen(null);

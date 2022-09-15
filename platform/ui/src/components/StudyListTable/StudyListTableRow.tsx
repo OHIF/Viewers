@@ -30,7 +30,7 @@ const StudyListTableRow = props => {
               <tbody>
                 <tr
                   className={classnames(
-                    'cursor-pointer hover:bg-secondary-main transition duration-300 bg-black',
+                    'cursor-pointer hover:bg-secondary-main transition duration-300',
                     {
                       'bg-primary-dark': !isExpanded,
                     },

@@ -55,11 +55,12 @@ const StudyListPagination = ({
               <Typography className="opacity-60 mr-4 text-base">
                 Page {currentPage}
               </Typography>
-              <ButtonGroup color="primary">
+              <ButtonGroup>
                 <Button
                   size="initial"
-                  className="border-primary-main px-4 py-2 text-base"
-                  color="primaryLight"
+                  className="px-4 py-2 text-base"
+                  color="white"
+                  border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(1)}
                 >
@@ -67,8 +68,9 @@ const StudyListPagination = ({
                 </Button>
                 <Button
                   size="initial"
-                  className="border-primary-main py-2 px-2 text-base"
-                  color="primaryLight"
+                  className="py-2 px-2 text-base"
+                  color="white"
+                  border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(currentPage - 1)}
                 >
@@ -76,8 +78,9 @@ const StudyListPagination = ({
                 </Button>
                 <Button
                   size="initial"
-                  className="border-primary-main py-2 px-4 text-base"
-                  color="primaryLight"
+                  className="py-2 px-4 text-base"
+                  color="white"
+                  border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
