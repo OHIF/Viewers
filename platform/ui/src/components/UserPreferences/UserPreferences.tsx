@@ -98,17 +98,23 @@ const UserPreferences = ({
         />
       </Section>
       <div className="flex flex-row justify-between">
-        <Button variant="outlined" onClick={onResetHandler} disabled={disabled}>
+        <Button
+          variant="outlined"
+          border="light"
+          onClick={onResetHandler}
+          disabled={disabled}
+        >
           {t('Reset to Defaults')}
         </Button>
         <div className="flex flex-row">
-          <Button variant="outlined" onClick={onCancelHandler}>
+          <Button variant="outlined" border="light" onClick={onCancelHandler}>
             {t('Cancel')}
           </Button>
           <Button
             variant="contained"
             disabled={state.isDisabled}
             color="light"
+            border="light"
             className="ml-2"
             onClick={onSubmitHandler}
           >

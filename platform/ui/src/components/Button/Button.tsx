@@ -10,7 +10,7 @@ const defaults = {
   disabled: false,
   fullWidth: false,
   rounded: 'medium',
-  border: 'default',
+  border: 'none',
   size: 'medium',
   type: 'button',
   variant: 'contained',
@@ -49,6 +49,8 @@ const variants = {
       'bg-black text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
     primaryActive:
       'text-primary-active hover:opacity-80 active:opacity-100 focus:opacity-80',
+    primaryLight:
+      'border bg-transparent border-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   contained: {
     default: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
@@ -115,7 +117,7 @@ const _getVariantClass = (variant, color, bgColor = null) => {
 
 const borderClasses = {
   none: '',
-  default: 'border border-primary-light',
+  light: 'border border-primary-light',
   primary: 'border border-primary-main',
   primaryActive: 'border border-primary-active',
   secondary: 'border border-secondary-light',
