@@ -75,12 +75,10 @@ function setServiceImplementation({
     serviceImplementation._getState = getStateImplementation;
   }
   if (setActiveViewportIndexImplementation) {
-    serviceImplementation._setActiveViewportIndex =
-      setActiveViewportIndexImplementation;
+    serviceImplementation._setActiveViewportIndex = setActiveViewportIndexImplementation;
   }
   if (setDisplaySetsForViewportImplementation) {
-    serviceImplementation._setDisplaySetsForViewport =
-      setDisplaySetsForViewportImplementation;
+    serviceImplementation._setDisplaySetsForViewport = setDisplaySetsForViewportImplementation;
   }
   if (setLayoutImplementation) {
     serviceImplementation._setLayout = setLayoutImplementation;

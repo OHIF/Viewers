@@ -64,6 +64,17 @@ import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
+import panelGroupMore from './../../assets/icons/panel-group-more.svg';
+import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
+import rowAdd from './../../assets/icons/row-add.svg';
+import rowEdit from './../../assets/icons/row-edit.svg';
+import rowHidden from './../../assets/icons/row-hidden.svg';
+import rowHideAll from './../../assets/icons/row-hide-all.svg';
+import rowHide from './../../assets/icons/row-hide.svg';
+import rowLocked from './../../assets/icons/row-locked.svg';
+import rowShowAll from './../../assets/icons/row-show-all.svg';
+import rowUnhide from './../../assets/icons/row-unhide.svg';
+import rowUnlocked from './../../assets/icons/row-unlocked.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -108,6 +119,17 @@ const ICONS = {
   sorting: sorting,
   tracked: tracked,
   unlink: unlink,
+  'panel-group-more': panelGroupMore,
+  'panel-group-open-close': panelGroupOpenClose,
+  'row-add': rowAdd,
+  'row-edit': rowEdit,
+  'row-hidden': rowHidden,
+  'row-hide-all': rowHideAll,
+  'row-hide': rowHide,
+  'row-locked': rowLocked,
+  'row-show-all': rowShowAll,
+  'row-unhide': rowUnhide,
+  'row-unlocked': rowUnlocked,
 
   /** Tools */
   'tool-zoom': toolZoom,

@@ -140,9 +140,11 @@ const commandsModule = ({
       const representationType = LABELMAP;
 
       for (const toolGroupId of toolGroupIds) {
+        const hydrateSegmentation = true;
         await SegmentationService.addSegmentationRepresentationToToolGroup(
           toolGroupId,
           segmentationId,
+          hydrateSegmentation,
           representationType
         );
 

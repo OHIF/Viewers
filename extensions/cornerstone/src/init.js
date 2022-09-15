@@ -72,6 +72,8 @@ export default async function init({
     SegmentationService,
   } = servicesManager.services;
 
+  window.SegmentationService = SegmentationService;
+
   const metadataProvider = OHIF.classes.MetadataProvider;
 
   volumeLoader.registerVolumeLoader(

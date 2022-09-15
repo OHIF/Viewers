@@ -27,8 +27,10 @@ function ViewerViewportGrid(props) {
         return;
       }
 
-      const { viewportMatchDetails, hpAlreadyApplied } =
-        HangingProtocolService.getMatchDetails();
+      const {
+        viewportMatchDetails,
+        hpAlreadyApplied,
+      } = HangingProtocolService.getMatchDetails();
 
       if (!viewportMatchDetails.length) {
         return;

@@ -67,6 +67,7 @@ export {
   Notification,
   Select,
   SegmentationTable,
+  SegmentationGroupTable,
   SidePanel,
   SplitButton,
   StudyBrowser,

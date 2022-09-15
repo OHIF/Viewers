@@ -24,6 +24,7 @@ import NavBar from './NavBar';
 import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
+import SegmentationGroupTable from './SegmentationGroupTable';
 import SidePanel from './SidePanel';
 import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
@@ -98,6 +99,7 @@ export {
   Notification,
   Select,
   SegmentationTable,
+  SegmentationGroupTable,
   SidePanel,
   SplitButton,
   StudyBrowser,

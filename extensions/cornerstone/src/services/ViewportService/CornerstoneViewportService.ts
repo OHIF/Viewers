@@ -146,9 +146,9 @@ class CornerstoneViewportService implements IViewportService {
     this.renderingEngine.disableElement(viewportId);
     this.viewportsInfo.delete(viewportIndex);
 
-    if (this.viewportsInfo.size === 0) {
-      this.destroy();
-    }
+    // if (this.viewportsInfo.size === 0) {
+    //   this.destroy();
+    // }
   }
 
   /**
@@ -169,12 +169,14 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const { viewportOptions, displaySetOptions } =
-      this._getViewportAndDisplaySetOptions(
-        publicViewportOptions,
-        publicDisplaySetOptions,
-        viewportInfo
-      );
+    const {
+      viewportOptions,
+      displaySetOptions,
+    } = this._getViewportAndDisplaySetOptions(
+      publicViewportOptions,
+      publicDisplaySetOptions,
+      viewportInfo
+    );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -274,8 +276,11 @@ class CornerstoneViewportService implements IViewportService {
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIndex, displaySetInstanceUID } =
-      viewportData.data;
+    const {
+      imageIds,
+      initialImageIndex,
+      displaySetInstanceUID,
+    } = viewportData.data;
 
     this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
@@ -425,8 +430,11 @@ class CornerstoneViewportService implements IViewportService {
 
     // load any secondary displaySets
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
-    const { DisplaySetService, SegmentationService, ToolGroupService } =
-      this.servicesManager.services;
+    const {
+      DisplaySetService,
+      SegmentationService,
+      ToolGroupService,
+    } = this.servicesManager.services;
 
     for (const displaySetInstanceUID of displaySetInstanceUIDs) {
       const displaySet = DisplaySetService.getDisplaySetByUID(
@@ -463,8 +471,9 @@ class CornerstoneViewportService implements IViewportService {
     ) {
       const { index, preset } = initialImageOptions;
 
-      const { numberOfSlices } =
-        csUtils.getImageSliceDataForVolumeViewport(viewport);
+      const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
+        viewport
+      );
 
       const imageIndex = this._getInitialImageIndex(
         numberOfSlices,

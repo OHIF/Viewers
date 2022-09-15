@@ -5,25 +5,22 @@ import SegmentationGroup from './SegmentationGroup';
 import SegmentationConfig from './SegmentationConfig';
 
 const AddNewSegmentationAndConfig = ({ onConfigChange }) => {
-  const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] =
-    useState(false);
+  const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] = useState(
+    false
+  );
 
   return (
     <div className="flex flex-col">
-      <div className="flex items-center px-3 py-2">
-        <div className="flex items-center  gap-2">
-          <Icon name="tool-crosshair" className="w-4 h-4 text-white" />
-          <span className="text-base text-white ">Add New Segmentation</span>
+      <div className="flex items-center pl-1 py-1 border-2 border-secondary-main">
+        <Icon name="settings" className="w-4 h-4 text-white" />
+        <div className="text-base font-inter text-primary-active pl-2 ">
+          Appearance
         </div>
-        <div className="flex-grow" />
-        <div className="w-4 h-4 flex items-center justify-center">
-          <Icon
-            name="settings"
-            className="w-4 h-4 text-white"
-            onClick={() =>
-              setIsSegmentationConfigOpen(!isSegmentationConfigOpen)
-            }
-          />
+      </div>
+      <div className="flex items-center pl-1 py-1">
+        <Icon name="row-add" className="w-6 h-6 text-white" />
+        <div className="text-base font-inter text-primary-active pl-2 ">
+          Add Segmentation
         </div>
       </div>
       {isSegmentationConfigOpen && (
@@ -59,7 +56,7 @@ const SegmentationGroupTable = ({
   return (
     <div>
       <AddNewSegmentationAndConfig onConfigChange={onGlobalConfigChange} />
-      <div className="flex flex-col mt-2 gap-2">
+      <div className="flex flex-col gap-2">
         {!!segmentations.length &&
           segmentations.map(segmentation => {
             const {

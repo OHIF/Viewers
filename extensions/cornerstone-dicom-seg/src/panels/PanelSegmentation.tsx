@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationTable, Button, Icon } from '@ohif/ui';
+import { SegmentationGroupTable, Button, Icon } from '@ohif/ui';
 import classnames from 'classnames';
 
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ export default function PanelSegmentation({
 }) {
   const { SegmentationService } = servicesManager.services;
 
-  const { t } = useTranslation('PanelSUV');
+  const { t } = useTranslation('PanelSegmentation');
   const [labelmapLoading, setLabelmapLoading] = useState(false);
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentations, setSegmentations] = useState(() =>
@@ -49,7 +49,7 @@ export default function PanelSegmentation({
         {/* show segmentation table */}
         <div className="mt-4">
           {segmentations?.length ? (
-            <SegmentationTable
+            <SegmentationGroupTable
               title={t('Segmentations')}
               amount={segmentations.length}
               segmentations={segmentations}

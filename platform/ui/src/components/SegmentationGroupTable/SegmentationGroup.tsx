@@ -8,8 +8,9 @@ import Icon from '../Icon';
 import IconButton from '../IconButton';
 
 const AddNewSegmentRow = ({ onConfigChange }) => {
-  const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] =
-    useState(false);
+  const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] = useState(
+    false
+  );
 
   return (
     <div className="flex flex-col">
@@ -48,20 +49,18 @@ const SegmentGroupHeader = ({
   return (
     <div className="flex items-center px-2 pl-3 py-2 bg-secondary-main gap-2">
       <Icon
-        name="chevron-down"
+        name="panel-group-open-close"
         className={classnames(
           'w-4 h-4 text-white transition duration-300 cursor-pointer',
           {
-            'transform rotate-180': !isMinimized,
+            'transform rotate-90': !isMinimized,
           }
         )}
         onClick={() => onToggleMinimizeSegmentation(id)}
       />
       <span className="text-base text-white ">{label}</span>
       <div className="flex-grow" />
-      <div className="bg-gray-800 rounded-sm w-4 h-4 flex items-center justify-center">
-        <span className="text-base text-white ">{segmentCount}</span>
-      </div>
+      <span className="text-base text-white ">{segmentCount}</span>
       <div className="flex">
         <Dropdown
           id="options"
@@ -78,13 +77,13 @@ const SegmentGroupHeader = ({
           ]}
         >
           <IconButton
-            id={'options-chevron-down-icon'}
+            id={''}
             variant="text"
             color="inherit"
             size="initial"
             className="text-primary-active"
           >
-            <Icon name="chevron-down" />
+            <Icon name="panel-group-more" />
           </IconButton>
         </Dropdown>
       </div>
@@ -142,8 +141,13 @@ const SegmentationGroup = ({
                   return null;
                 }
 
-                const { segmentIndex, color, label, isVisible, isLocked } =
-                  segment;
+                const {
+                  segmentIndex,
+                  color,
+                  label,
+                  isVisible,
+                  isLocked,
+                } = segment;
                 return (
                   <SegmentItem
                     key={segmentIndex}

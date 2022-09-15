@@ -30,8 +30,11 @@ function OHIFCornerstoneSEGViewport(props) {
     extensionManager,
   } = props;
 
-  const { DisplaySetService, ToolGroupService, SegmentationService } =
-    servicesManager.services;
+  const {
+    DisplaySetService,
+    ToolGroupService,
+    SegmentationService,
+  } = servicesManager.services;
 
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
 
@@ -74,8 +77,9 @@ function OHIFCornerstoneSEGViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const { displaySet: referencedDisplaySet } =
-      referencedDisplaySetRef.current;
+    const {
+      displaySet: referencedDisplaySet,
+    } = referencedDisplaySetRef.current;
 
     const displaySets = [referencedDisplaySet, segDisplaySet];
 
@@ -173,17 +177,15 @@ function OHIFCornerstoneSEGViewport(props) {
       );
 
       ToolGroupService.destroyToolGroup(toolGroupId);
-      // we don't need a cleanup function, because the tool group is destroyed
-      // when the element is disabled automatically
-      // _removeToolGroup(toolGroupId);
     };
   }, []);
 
   useEffect(() => {
     const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
 
-    const referencedDisplaySetMetadata =
-      _getReferencedDisplaySetMetadata(referencedDisplaySet);
+    const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
+      referencedDisplaySet
+    );
 
     referencedDisplaySetRef.current = {
       displaySet: referencedDisplaySet,
@@ -293,6 +295,7 @@ function OHIFCornerstoneSEGViewport(props) {
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification
+              id="viewport-notification"
               message={viewportDialogState.message}
               type={viewportDialogState.type}
               actions={viewportDialogState.actions}

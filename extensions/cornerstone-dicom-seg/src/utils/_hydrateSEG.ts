@@ -4,10 +4,7 @@ async function _hydrateSEGDisplaySet({
   toolGroupId,
   servicesManager,
 }) {
-  const { HangingProtocolService, SegmentationService, ViewportGridService } =
-    servicesManager.services;
-
-  const viewportsState = ViewportGridService.getState();
+  const { SegmentationService, ViewportGridService } = servicesManager.services;
 
   const displaySetInstanceUIDs = [
     segDisplaySet.referencedDisplaySetInstanceUID,
@@ -25,14 +22,9 @@ async function _hydrateSEGDisplaySet({
     suppressEvents
   );
 
-  const defaultToolGroupId = 'default';
-  const hydrateSegmentation = true;
+  SegmentationService.hydrateSegmentation(segDisplaySet.displaySetInstanceUID);
 
-  await SegmentationService.addSegmentationRepresentationToToolGroup(
-    defaultToolGroupId,
-    segmentationId,
-    hydrateSegmentation
-  );
+  const defaultToolGroupId = 'default';
 
   ViewportGridService.setDisplaySetsForViewport({
     viewportIndex,
