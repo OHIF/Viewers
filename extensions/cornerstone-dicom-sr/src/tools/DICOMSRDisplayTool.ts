@@ -99,7 +99,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const annotation = filteredAnnotations[i];
       const annotationUID = annotation.annotationUID;
       const { renderableData } = annotation.data.cachedStats;
-      const { label, cachedStats } = annotation.data;
+      const { cachedStats } = annotation.data;
       const { referencedImageId } = annotation.metadata;
 
       styleSpecifier.annotationUID = annotationUID;
@@ -121,22 +121,30 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         const renderableDataForGraphicType = renderableData[GraphicType];
 
         let renderMethod;
+        let renderTextBox;
+        let canvasCoordinatesAdapter;
 
         switch (GraphicType) {
           case SCOORD_TYPES.POINT:
             renderMethod = this.renderPoint;
+            renderTextBox = this.renderTextBox;
             break;
           case SCOORD_TYPES.MULTIPOINT:
             renderMethod = this.renderMultipoint;
+            renderTextBox = this.renderTextBox;
             break;
           case SCOORD_TYPES.POLYLINE:
             renderMethod = this.renderPolyLine;
             break;
           case SCOORD_TYPES.CIRCLE:
             renderMethod = this.renderEllipse;
+            renderTextBox = this.renderTextBox;
             break;
           case SCOORD_TYPES.ELLIPSE:
             renderMethod = this.renderEllipse;
+            renderTextBox = this.renderTextBox;
+            canvasCoordinatesAdapter =
+              utilities.math.ellipse.getCanvasEllipseCorners;
             break;
           default:
             throw new Error(`Unsupported GraphicType: ${GraphicType}`);
@@ -151,60 +159,18 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           options
         );
 
-        if (!canvasCoordinates) {
-          return;
-        }
-
-        const textLines = this._getTextBoxLinesFromLabels(label);
-
-        let canvasCornersToUseForTextBox = canvasCoordinates;
-
-        if (GraphicType === SCOORD_TYPES.ELLIPSE) {
-          canvasCornersToUseForTextBox = utilities.math.ellipse.getCanvasEllipseCorners(
-            canvasCoordinates
+        if (typeof renderTextBox === 'function') {
+          renderTextBox.call(
+            this,
+            svgDrawingHelper,
+            viewport,
+            canvasCoordinates,
+            canvasCoordinatesAdapter,
+            annotation,
+            styleSpecifier,
+            options
           );
         }
-
-        const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(
-          canvasCornersToUseForTextBox
-        );
-
-        annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(
-          canvasTextBoxCoords
-        );
-
-        const textBoxPosition = viewport.worldToCanvas(
-          annotation.data.handles.textBox.worldPosition
-        );
-
-        const textBoxUID = '1';
-        const textBoxOptions = this.getLinkedTextBoxStyle(
-          styleSpecifier,
-          annotation
-        );
-
-        const boundingBox = drawing.drawLinkedTextBox(
-          svgDrawingHelper,
-          annotationUID,
-          textBoxUID,
-          textLines,
-          textBoxPosition,
-          canvasCoordinates,
-          {},
-          {
-            ...textBoxOptions,
-            color,
-          }
-        );
-
-        const { x: left, y: top, width, height } = boundingBox;
-
-        annotation.data.handles.textBox.worldBoundingBox = {
-          topLeft: viewport.canvasToWorld([left, top]),
-          topRight: viewport.canvasToWorld([left + width, top]),
-          bottomLeft: viewport.canvasToWorld([left, top + height]),
-          bottomRight: viewport.canvasToWorld([left + width, top + height]),
-        };
       });
     }
   };
@@ -370,6 +336,71 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     });
 
     return canvasCoordinates;
+  }
+
+  renderTextBox(
+    svgDrawingHelper,
+    viewport,
+    canvasCoordinates,
+    canvasCoordinatesAdapter,
+    annotation,
+    styleSpecifier,
+    options = {}
+  ) {
+    if (!canvasCoordinates || !annotation) {
+      return;
+    }
+
+    const { annotationUID, data = {} } = annotation;
+    const { label } = data;
+    const { color } = options;
+
+    let adaptedCanvasCoordinates = canvasCoordinates;
+    // adapt coordinates if there is an adapter
+    if (typeof canvasCoordinatesAdapter === 'function') {
+      adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
+    }
+    const textLines = this._getTextBoxLinesFromLabels(label);
+    const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(
+      adaptedCanvasCoordinates
+    );
+
+    annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(
+      canvasTextBoxCoords
+    );
+
+    const textBoxPosition = viewport.worldToCanvas(
+      annotation.data.handles.textBox.worldPosition
+    );
+
+    const textBoxUID = '1';
+    const textBoxOptions = this.getLinkedTextBoxStyle(
+      styleSpecifier,
+      annotation
+    );
+
+    const boundingBox = drawing.drawLinkedTextBox(
+      svgDrawingHelper,
+      annotationUID,
+      textBoxUID,
+      textLines,
+      textBoxPosition,
+      canvasCoordinates,
+      {},
+      {
+        ...textBoxOptions,
+        color,
+      }
+    );
+
+    const { x: left, y: top, width, height } = boundingBox;
+
+    annotation.data.handles.textBox.worldBoundingBox = {
+      topLeft: viewport.canvasToWorld([left, top]),
+      topRight: viewport.canvasToWorld([left + width, top]),
+      bottomLeft: viewport.canvasToWorld([left, top + height]),
+      bottomRight: viewport.canvasToWorld([left + width, top + height]),
+    };
   }
 }
 

@@ -30,7 +30,6 @@ function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },

@@ -52,7 +52,7 @@ function TrackedMeasurementsContextProvider(
       );
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
+      if (evt.data.createdDisplaySetInstanceUIDs?.length > 0) {
         const StructuredReportDisplaySetInstanceUID =
           evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
 
