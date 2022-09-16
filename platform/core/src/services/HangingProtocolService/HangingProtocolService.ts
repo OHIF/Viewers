@@ -371,6 +371,10 @@ class HangingProtocolService {
       return;
     }
 
+    // each time we are updating the viewports, we need to reset the
+    // matching applied
+    this.hpAlreadyApplied = [];
+
     // reset displaySetMatchDetails
     this.displaySetMatchDetails = new Map();
 
