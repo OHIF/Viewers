@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.38](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.37...@ohif/viewer@4.12.38) (2022-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.37](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.36...@ohif/viewer@4.12.37) (2022-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.36](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.35...@ohif/viewer@4.12.36) (2022-09-08)
+
+
+### Bug Fixes
+
+* hotkey page up/down did not work ([#2910](https://github.com/OHIF/Viewers/issues/2910)) ([d74ad37](https://github.com/OHIF/Viewers/commit/d74ad370e091c8af2d93ec35f688c4ef902bab2b))
+
+
+
+
+
+## [4.12.35](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.34...@ohif/viewer@4.12.35) (2022-09-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.34](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.33...@ohif/viewer@4.12.34) (2022-09-01)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.33](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.32...@ohif/viewer@4.12.33) (2022-08-31)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.32](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.31...@ohif/viewer@4.12.32) (2022-08-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.31](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.30...@ohif/viewer@4.12.31) (2022-08-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.12.30](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.29...@ohif/viewer@4.12.30) (2022-06-30)
 
 **Note:** Version bump only for package @ohif/viewer

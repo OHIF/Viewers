@@ -67,12 +67,13 @@ export class HotkeysManager {
         UINotificationService,
         LoggerService,
       } = this._servicesManager.services;
-      const message = 'Erro while setting hotkeys';
+      const message = 'Error while setting hotkeys';
       LoggerService.error({ error, message });
       UINotificationService.show({
         title: 'Hotkeys Manager',
         message,
         type: 'error',
+        autoClose: false,
       });
     }
   }

@@ -102,6 +102,35 @@ async function makeSOPInstance(server, study, instance) {
     SOPInstanceUID,
   } = naturalizedInstance;
 
+  const validate = string => {
+    let rgx = /[^.0-9]+/g;
+    return string.match(rgx);
+  };
+
+  if (StudyInstanceUID === undefined || validate(StudyInstanceUID)) {
+    const error =
+      'makeSOPInstance: StudyInstanceUID is not conforming with the UID (DICOM UI VR) character repertoire, skipping SOPInstance.';
+    console.error(error);
+
+    return;
+  }
+
+  if (SeriesInstanceUID === undefined || validate(SeriesInstanceUID)) {
+    const error =
+      'makeSOPInstance: SeriesInstanceUID is not conforming with the UID (DICOM UI VR) character repertoire, skipping SOPInstance.';
+    console.error(error);
+
+    return;
+  }
+
+  if (SOPInstanceUID === undefined || validate(SOPInstanceUID)) {
+    const error =
+      'makeSOPInstance: SOPInstanceUID is not conforming with the UID (DICOM UI VR) character repertoire, skipping SOPInstance.';
+    console.error(error);
+
+    return;
+  }
+
   let series = study.seriesMap[SeriesInstanceUID];
 
   if (!series) {
