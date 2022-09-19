@@ -128,3 +128,5 @@ export const sopClassDictionary = {
   ImplantAssemblyTemplateStorage: '1.2.840.10008.5.1.4.44.1',
   ImplantTemplateGroupStorage: '1.2.840.10008.5.1.4.45.1',
 };
+
+export default sopClassDictionary;
