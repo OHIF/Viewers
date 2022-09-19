@@ -115,7 +115,10 @@ type Protocol = {
   numberOfPriorsReferenced?: number;
 };
 
-type ProtocolGenerator = (servicesManager: any) => Protocol;
+type ProtocolGenerator = ({servicesManager: any, commandsManager: any}) => {
+  protocol: Protocol;
+  matchingDisplaySets: any;
+};
 
 export type {
   ProtocolGenerator,

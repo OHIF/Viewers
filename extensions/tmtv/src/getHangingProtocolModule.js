@@ -1,5 +1,5 @@
 const ptCT = {
-  id: 'tmtv-pt-ct',
+  id: 'ptCT',
   locked: true,
   hasUpdatedPriorsInformation: false,
   name: 'Default',
@@ -643,8 +643,8 @@ const ptCT = {
 function getHangingProtocolModule() {
   return [
     {
-      name: 'ptCT',
-      protocols: [ptCT],
+      id: ptCT.id,
+      protocol: ptCT,
     },
   ];
 }

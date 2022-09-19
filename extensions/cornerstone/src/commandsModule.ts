@@ -420,7 +420,7 @@ const commandsModule = ({ servicesManager }) => {
         (activeViewportIndex - 1 + viewports.length) % viewports.length;
       ViewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
-    setHangingProtocol: (protocolId: string) => {
+    setHangingProtocol: ({ protocolId }) => {
       HangingProtocolService.setProtocol(protocolId);
     },
   };

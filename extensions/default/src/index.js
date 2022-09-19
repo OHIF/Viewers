@@ -4,6 +4,7 @@ import getPanelModule from './getPanelModule';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getToolbarModule from './getToolbarModule';
 import commandsModule from './commandsModule';
+import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByStudyInstanceUID from './Panels/getStudiesForPatientByStudyInstanceUID';
 import { id } from './id.js';
 import init from './init';
@@ -19,6 +20,7 @@ const defaultExtension = {
   getDataSourcesModule,
   getLayoutTemplateModule,
   getPanelModule,
+  getHangingProtocolModule,
   getSopClassHandlerModule,
   getToolbarModule,
   getCommandsModule({ servicesManager, commandsManager }) {

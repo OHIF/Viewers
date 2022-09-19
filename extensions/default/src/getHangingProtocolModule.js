@@ -53,4 +53,13 @@ const defaultProtocol = {
   numberOfPriorsReferenced: -1,
 };
 
-export default defaultProtocol;
+function getHangingProtocolModule() {
+  return [
+    {
+      id: defaultProtocol.id,
+      protocol: defaultProtocol,
+    },
+  ];
+}
+
+export default getHangingProtocolModule;

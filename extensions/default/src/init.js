@@ -2,7 +2,6 @@ import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
-import defaultProtocol from './utilities/defaultHangingProtocol';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -12,11 +11,6 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} configuration
  */
 export default function init({ servicesManager, configuration }) {
-  const { HangingProtocolService } = servicesManager.services;
-
-  // add default protocol
-  HangingProtocolService.addProtocol('default', defaultProtocol);
-
   // Add
   DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,

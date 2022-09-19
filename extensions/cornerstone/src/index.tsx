@@ -9,6 +9,7 @@ import {
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import init from './init.js';
 import commandsModule from './commandsModule';
+import getHangingProtocolModule from './getHangingProtocolModule';
 import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
 import { toolNames } from './initCornerstoneTools';
@@ -70,6 +71,7 @@ const cornerstoneExtension = {
     servicesManager.registerService(SyncGroupService(servicesManager));
     await init({ servicesManager, commandsManager, configuration, appConfig });
   },
+  getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
       // const onNewImageHandler = jumpData => {

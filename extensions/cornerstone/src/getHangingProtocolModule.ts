@@ -1,9 +1,9 @@
 import { Types } from '@ohif/core';
 
-export default function MPRHangingProtocolGenerator({
+const MPRHangingProtocolGenerator: Types.HangingProtocol.ProtocolGenerator = ({
   servicesManager,
   commandsManager,
-}): Types.HangingProtocol.Protocol {
+}) => {
   const {
     ViewportGridService,
     UINotificationService,
@@ -89,7 +89,7 @@ export default function MPRHangingProtocolGenerator({
     };
   });
 
-  return {
+  const protocol = {
     id: 'mpr',
     stages: [
       {
@@ -127,4 +127,20 @@ export default function MPRHangingProtocolGenerator({
       },
     ],
   };
+
+  return {
+    protocol,
+    matchingDisplaySets,
+  };
+};
+
+function getHangingProtocolModule() {
+  return [
+    {
+      id: 'mpr',
+      protocol: MPRHangingProtocolGenerator,
+    },
+  ];
 }
+
+export default getHangingProtocolModule;

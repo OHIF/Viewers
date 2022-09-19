@@ -144,10 +144,11 @@ class HangingProtocolService {
 
     if (protocol instanceof Function) {
       try {
-        return protocol({
-          servicesManager: this._servicesManager,
-          commandsManager: this._commandsManager,
-        });
+        const { protocol: generatedProtocol } = this._getProtocolFromGenerator(
+          protocol
+        );
+
+        return generatedProtocol;
       } catch (error) {
         console.warn(
           `Error while executing protocol generator for protocol ${id}: ${error}`
@@ -173,6 +174,10 @@ class HangingProtocolService {
       );
     }
 
+    if (!(protocol instanceof Function)) {
+      protocol = this._validateProtocol(protocol as HangingProtocol.Protocol);
+    }
+
     this.protocols.set(protocolId, protocol);
   }
 
@@ -190,20 +195,21 @@ class HangingProtocolService {
    * @param protocol is a specific protocol to apply.
    * @returns
    */
-  public run({ studies, displaySets, activeStudy }, protocol) {
+  public run({ studies, displaySets, activeStudy }, protocolId) {
     this.studies = [...studies];
     this.displaySets = displaySets;
     this.activeStudy = activeStudy || studies[0];
-
-    if (protocol) {
-      this._setProtocol(protocol);
-      return;
-    }
 
     this.protocolEngine = new ProtocolEngine(
       this.getProtocols(),
       this.customAttributeRetrievalCallbacks
     );
+
+    if (protocolId) {
+      const protocol = this.getProtocolById(protocolId);
+      this._setProtocol(protocol);
+      return;
+    }
 
     const matchedProtocol = this.protocolEngine.run({
       studies: this.studies,
@@ -383,10 +389,9 @@ class HangingProtocolService {
 
       if (foundProtocol instanceof Function) {
         try {
-          protocol = foundProtocol({
-            servicesManager: this._servicesManager,
-            commandsManager: this._commandsManager,
-          });
+          ({ protocol, matchingDisplaySets } = this._getProtocolFromGenerator(
+            foundProtocol
+          ));
         } catch (error) {
           console.warn(
             `HangingProtocolService::setProtocol - protocol ${protocolId} failed to execute`,
@@ -450,6 +455,25 @@ class HangingProtocolService {
    */
   _getCurrentStageModel() {
     return this.protocol.stages[this.stage];
+  }
+
+  private _getProtocolFromGenerator(
+    protocolGenerator: HangingProtocol.ProtocolGenerator
+  ): {
+    protocol: HangingProtocol.Protocol;
+    matchingDisplaySets: Record<string, HangingProtocol.DisplaySetMatchDetails>;
+  } {
+    const { protocol, matchingDisplaySets } = protocolGenerator({
+      servicesManager: this._servicesManager,
+      commandsManager: this._commandsManager,
+    });
+
+    const validatedProtocol = this._validateProtocol(protocol);
+
+    return {
+      protocol: validatedProtocol,
+      matchingDisplaySets,
+    };
   }
 
   /**
