@@ -49,11 +49,18 @@ export function ViewportGridProvider({ children, service }) {
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
         const payload = action.payload;
         const { viewportIndex, displaySetInstanceUIDs } = payload;
-        const viewport = state.viewports[viewportIndex];
-        const viewportOptions =
-          payload.viewportOptions || viewport.viewportOptions || {};
-        const displaySetOptions = payload.displaySetOptions ||
-          viewport.displaySetOptions || [{}];
+
+        // Note: there should be no inheritance happening at this level,
+        // we can't assume the new displaySet can inherit the previous
+        // displaySet's or viewportOptions at all. For instance, dragging
+        // and dropping a SEG/RT displaySet without any viewportOptions
+        // or displaySetOptions should not inherit the previous displaySet's
+        // which might have been a PDF Viewport. The viewport itself
+        // will deal with inheritance if required. Here is just a simple
+        // provider.
+        const viewportOptions = payload.viewportOptions || {};
+        const displaySetOptions = payload.displaySetOptions || [{}];
+
         const viewports = state.viewports.slice();
 
         // merge the displaySetOptions and viewportOptions and displaySetInstanceUIDs

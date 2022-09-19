@@ -258,8 +258,14 @@ function _getInstanceNumberFromVolume(
   const isAcquisitionPlane = vec3.length(cross) < EPSILON;
 
   if (isAcquisitionPlane) {
+    const imageId = imageIds[imageIndex];
+
+    if (!imageId) {
+      return {};
+    }
+
     const { instanceNumber } =
-      metaData.get('generalImageModule', imageIds[imageIndex]) || {};
+      metaData.get('generalImageModule', imageId) || {};
     return parseInt(instanceNumber);
   }
 }
