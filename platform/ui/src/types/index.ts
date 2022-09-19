@@ -1,4 +1,7 @@
 import PropTypes from 'prop-types';
+import ThumbnailType from './ThumbnailType';
+
+// A few miscellaneous types declared inline here.
 
 /**
  * StringNumber often comes back from DICOMweb for integer valued items.
@@ -10,11 +13,5 @@ const StringNumber = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
  * might have multiple values such as window level descriptions.
  */
 const StringArray = PropTypes.oneOfType([PropTypes.string, PropTypes.array]);
-
-const ThumbnailType = PropTypes.oneOf([
-  'thumbnail',
-  'thumbnailTracked',
-  'thumbnailNoImage',
-]);
 
 export { StringNumber, StringArray, ThumbnailType };

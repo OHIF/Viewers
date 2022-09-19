@@ -1,6 +1,6 @@
 import { ExtensionManager, MODULE_TYPES } from './extensions';
 import { ServicesManager } from './services';
-import classes, { CommandsManager, HotkeysManager } from './classes/';
+import classes, { CommandsManager, HotkeysManager } from './classes';
 
 import DICOMWeb from './DICOMWeb';
 import errorHandler from './errorHandler.js';
@@ -8,8 +8,9 @@ import log from './log.js';
 import object from './object.js';
 import string from './string.js';
 import user from './user.js';
-import utils from './utils/';
+import utils from './utils';
 import defaults from './defaults';
+import * as Types from './types';
 
 import {
   CineService,
@@ -107,6 +108,7 @@ export {
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
+  Types,
 };
 
 export { OHIF };

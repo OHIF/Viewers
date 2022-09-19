@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
 import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
-import { StringNumber } from '../../Types';
+import { StringNumber } from '../../types';
 
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';

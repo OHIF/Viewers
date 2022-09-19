@@ -4,7 +4,7 @@
 
 /** CONTEXT/HOOKS */
 // Export types - need to do as two lines due to a bug in babel
-import * as Types from './Types';
+import * as Types from './types';
 
 export {
   useCine,
