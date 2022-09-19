@@ -37,6 +37,7 @@ export default class ServicesManager {
       this.services[service.name] = service.create({
         configuration,
         commandsManager: this._commandsManager,
+        servicesManager: this,
       });
     } else {
       log.warn(`Service create factory function not defined. Exiting early.`);

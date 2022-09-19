@@ -115,7 +115,10 @@ type Protocol = {
   numberOfPriorsReferenced?: number;
 };
 
+type ProtocolGenerator = (servicesManager: any) => Protocol;
+
 export type {
+  ProtocolGenerator,
   ViewportOptions,
   ViewportMatchDetails,
   DisplaySetMatchDetails,

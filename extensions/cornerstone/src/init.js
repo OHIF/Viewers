@@ -28,6 +28,7 @@ import initCineService from './initCineService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initSegmentationService from './initSegmentationService';
+import MPRHangingProtocolGenerator from './utils/MPRHangingProtocol';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -89,6 +90,9 @@ export default async function init({
     'interleaveTopToBottom',
     interleaveTopToBottom
   );
+
+  // it registers the MPR protocol for later use
+  HangingProtocolService.addProtocol('MPR', MPRHangingProtocolGenerator);
 
   imageLoader.registerImageLoader(
     'streaming-wadors',

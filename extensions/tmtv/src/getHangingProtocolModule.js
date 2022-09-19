@@ -18,6 +18,17 @@ const ptCT = {
     {
       id: 'wauZK2QNEfDPwcAQo',
       weight: 1,
+      attribute: 'ModalitiesInStudy',
+      constraint: {
+        contains: {
+          value: ['CT', 'PT'],
+        },
+      },
+      required: false,
+    },
+    {
+      id: 'wauZK2QNEfDPwcAQo',
+      weight: 1,
       attribute: 'StudyDescription',
       constraint: {
         contains: {

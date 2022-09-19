@@ -8,7 +8,7 @@ import Consumer from './Consumer';
 
 import * as HangingProtocol from './HangingProtocol';
 
-export {
+export type {
   HangingProtocol,
   StudyMetadata,
   SeriesMetadata,

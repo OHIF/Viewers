@@ -2,7 +2,6 @@ import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
 import getPanelModule from './getPanelModule';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
-import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getToolbarModule from './getToolbarModule';
 import commandsModule from './commandsModule';
 import getStudiesForPatientByStudyInstanceUID from './Panels/getStudiesForPatientByStudyInstanceUID';
@@ -18,7 +17,6 @@ const defaultExtension = {
     init({ servicesManager, configuration });
   },
   getDataSourcesModule,
-  getHangingProtocolModule,
   getLayoutTemplateModule,
   getPanelModule,
   getSopClassHandlerModule,

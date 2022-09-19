@@ -13,12 +13,17 @@ const EVENTS = {
     'event::hanging_protocol_custom_image_load_performed',
 };
 
+type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
+
 class HangingProtocolService {
   studies: StudyMetadata[];
-  protocols: HangingProtocol.Protocol[];
+  // stores all the protocols (object or function that returns an object) in a map
+  protocols: Map<string, Protocol>;
+  // the current protocol that is being applied to the viewports in object format
   protocol: HangingProtocol.Protocol;
   stage: number;
   _commandsManager: Record<string, unknown>;
+  _servicesManager: Record<string, unknown>;
   protocolEngine: ProtocolEngine;
   hpAlreadyApplied: boolean[] = [];
   customViewportSettings = [];
@@ -69,9 +74,10 @@ class HangingProtocolService {
    */
   viewportMatchDetails = [] as HangingProtocol.ViewportMatchDetails[];
 
-  constructor(commandsManager) {
+  constructor(commandsManager, servicesManager) {
     this._commandsManager = commandsManager;
-    this.protocols = [];
+    this._servicesManager = servicesManager;
+    this.protocols = new Map();
     this.protocolEngine = undefined;
     this.protocol = undefined;
     this.stage = undefined;
@@ -88,10 +94,14 @@ class HangingProtocolService {
 
   public reset() {
     this.studies = [];
-    this.protocols = [];
+    this.protocols = new Map();
     this.hpAlreadyApplied = [];
     this.viewportMatchDetails = [];
     // this.ProtocolEngine.reset()
+  }
+
+  public getDefaultProtocol(): HangingProtocol.Protocol {
+    return this.getProtocolById('default');
   }
 
   public getMatchDetails(): HangingProtocol.HangingProtocolMatchDetails {
@@ -102,16 +112,68 @@ class HangingProtocolService {
     };
   }
 
+  /**
+   * It loops over the protocols map object, and checks whether the protocol
+   * is a function, if so, it executes it and returns the result as a protocol object
+   * otherwise it returns the protocol object itself
+   *
+   * @returns all the hanging protocol registered in the HangingProtocolService
+   */
   public getProtocols(): HangingProtocol.Protocol[] {
-    return this.protocols;
+    // this.protocols is a map of protocols with the protocol id as the key
+    // and the protocol or a function that returns a protocol as the value
+    const protocols = [];
+    // @ts-ignore
+    for (const protocolId of this.protocols.keys()) {
+      const protocol = this.getProtocolById(protocolId);
+      if (protocol) {
+        protocols.push(protocol);
+      }
+    }
+
+    return protocols;
   }
 
-  public addProtocols(protocols: HangingProtocol.Protocol[]): void {
-    protocols.forEach(protocol => {
-      if (this.protocols.indexOf(protocol) === -1) {
-        this.protocols.push(this._validateProtocol(protocol));
+  /**
+   * Returns the protocol with the given id
+   * @param protocolId - the id of the protocol
+   * @returns protocol - the protocol with the given id
+   */
+  public getProtocolById(id: string): HangingProtocol.Protocol {
+    const protocol = this.protocols.get(id);
+
+    if (protocol instanceof Function) {
+      try {
+        return protocol({
+          servicesManager: this._servicesManager,
+          commandsManager: this._commandsManager,
+        });
+      } catch (error) {
+        console.warn(
+          `Error while executing protocol generator for protocol ${id}: ${error}`
+        );
       }
-    });
+    } else {
+      return protocol;
+    }
+  }
+
+  /**
+   * It adds a protocol to the protocols map object. If a protocol with the given
+   * id already exists, warn the user and overwrite it.
+   *
+   * @param {string} protocolId - The id of the protocol.
+   * @param {Protocol} protocol - Protocol - This is the protocol that you want to
+   * add to the protocol manager.
+   */
+  public addProtocol(protocolId: string, protocol: Protocol): void {
+    if (this.protocols.has(protocolId)) {
+      console.warn(
+        `A protocol with id ${protocolId} already exists. It will be overwritten.`
+      );
+    }
+
+    this.protocols.set(protocolId, protocol);
   }
 
   /**
@@ -133,23 +195,22 @@ class HangingProtocolService {
     this.displaySets = displaySets;
     this.activeStudy = activeStudy || studies[0];
 
-    this.protocolEngine = new ProtocolEngine(
-      this.protocols,
-      this.customAttributeRetrievalCallbacks
-    );
-
-    // if there is no pre-defined protocol
-    if (!protocol || protocol.id === undefined) {
-      const matchedProtocol = this.protocolEngine.run({
-        studies: this.studies,
-        activeStudy,
-        displaySets,
-      });
-      this._setProtocol(matchedProtocol);
+    if (protocol) {
+      this._setProtocol(protocol);
       return;
     }
 
-    this._setProtocol(protocol);
+    this.protocolEngine = new ProtocolEngine(
+      this.getProtocols(),
+      this.customAttributeRetrievalCallbacks
+    );
+
+    const matchedProtocol = this.protocolEngine.run({
+      studies: this.studies,
+      activeStudy,
+      displaySets,
+    });
+    this._setProtocol(matchedProtocol);
   }
 
   /**
@@ -297,12 +358,46 @@ class HangingProtocolService {
     return protocol;
   }
 
-  public applyProtocol(
-    protocol: HangingProtocol.Protocol,
-    matchingDisplaySets: Record<string, HangingProtocol.DisplaySetMatchDetails>
+  /**
+   * It applied the protocol to the current studies and display sets based on the
+   * protocolId that is provided.
+   * @param protocolId - name of the protocol to be set
+   * @param protocol - protocol object (optional), if not provided, the protocol
+   * will be retrieved from the list of protocols by its name
+   * @param matchingDisplaySets - predefined display sets to be used for the protocol
+   */
+  public setProtocol(
+    protocolId: string,
+    protocol?: HangingProtocol.Protocol,
+    matchingDisplaySets?: Record<string, HangingProtocol.DisplaySetMatchDetails>
   ): void {
-    protocol = this._validateProtocol(protocol);
-    this.protocols.push(protocol);
+    if (!protocol) {
+      const foundProtocol = this.protocols.get(protocolId);
+
+      if (!foundProtocol) {
+        console.warn(
+          `HangingProtocolService::setProtocol - protocol ${protocolId} not found`
+        );
+        return;
+      }
+
+      if (foundProtocol instanceof Function) {
+        try {
+          protocol = foundProtocol({
+            servicesManager: this._servicesManager,
+            commandsManager: this._commandsManager,
+          });
+        } catch (error) {
+          console.warn(
+            `HangingProtocolService::setProtocol - protocol ${protocolId} failed to execute`,
+            error
+          );
+          return;
+        }
+      } else {
+        protocol = foundProtocol;
+      }
+    }
 
     this._setProtocol(protocol, matchingDisplaySets);
   }
@@ -311,8 +406,6 @@ class HangingProtocolService {
     protocol: HangingProtocol.Protocol,
     matchingDisplaySets?: Record<string, HangingProtocol.DisplaySetMatchDetails>
   ): void {
-    // TODO: Add proper Protocol class to validate the protocols
-    // which are entered manually
     this.stage = 0;
     this.protocol = protocol;
     const { imageLoadStrategy } = protocol;

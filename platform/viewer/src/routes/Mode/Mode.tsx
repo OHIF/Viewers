@@ -247,7 +247,9 @@ export default function ModeRoute({
       );
 
       if (hangingProtocolModule?.protocols) {
-        HangingProtocolService.addProtocols(hangingProtocolModule.protocols);
+        hangingProtocolModule.protocols.forEach(protocol => {
+          HangingProtocolService.addProtocol(protocol.id, protocol);
+        });
       }
     });
 
