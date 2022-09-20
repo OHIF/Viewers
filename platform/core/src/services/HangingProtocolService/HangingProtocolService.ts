@@ -1,7 +1,7 @@
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
-import StudyMetadata from '../DicomMetadataStore/StudyMetadata';
+import StudyMetadata from '../../types/StudyMetadata';
 import IDisplaySet from '../DisplaySetService/IDisplaySet';
 
 const EVENTS = {

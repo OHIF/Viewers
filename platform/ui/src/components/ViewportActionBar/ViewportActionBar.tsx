@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip, CinePlayer } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { useTranslation } from 'react-i18next';
-import { StringNumber } from '../../Types';
+import { StringNumber } from '../../types';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',

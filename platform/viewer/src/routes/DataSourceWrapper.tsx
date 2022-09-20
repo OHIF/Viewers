@@ -32,11 +32,16 @@ function DataSourceWrapper(props) {
     return acc.concat(mods);
   }, []);
 
-  // Grabbing first for now - should get active?
-  const name = webApiDataSources[0].name;
+  // Grabbing first defined for now - should get active
   // TODO: Why does this return an array?
-  const dataSource = extensionManager.getDataSources(name)[0];
-
+  const dataSource = webApiDataSources
+    .map(ds => extensionManager.getDataSources(ds.name)?.[0])
+    .find(it => it !== undefined);
+  if (!dataSource) {
+    throw new Error(
+      `No data source found for any of ${webApiDataSources.map(it => it.name)}`
+    );
+  }
   // Route props --> studies.mapParams
   // mapParams --> studies.search
   // studies.search --> studies.processResults
@@ -168,7 +173,7 @@ function _getQueryFilterValues(query, queryLimit) {
   return queryFilterValues;
 
   function _tryParseInt(str, defaultValue) {
-    var retValue = defaultValue;
+    let retValue = defaultValue;
     if (str !== null) {
       if (str.length > 0) {
         if (!isNaN(str)) {

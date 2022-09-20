@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { Icon, Thumbnail, Tooltip } from '../';
-import { StringNumber } from '../../Types';
+import { StringNumber } from '../../types';
 
 const ThumbnailTracked = ({
   displaySetInstanceUID,
