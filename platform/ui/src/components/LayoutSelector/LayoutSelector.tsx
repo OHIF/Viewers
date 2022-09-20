@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function LayoutSelector({ onSelection }) {
+function LayoutSelector({ onSelection, rows, columns}) {
   const [hoveredIndex, setHoveredIndex] = useState();
-  const hoverX = hoveredIndex % 3;
-  const hoverY = Math.floor(hoveredIndex / 3);
+  const hoverX = hoveredIndex % columns;
+  const hoverY = Math.floor(hoveredIndex / columns);
   const isHovered = index => {
-    const x = index % 3;
-    const y = Math.floor(index / 3);
+    const x = index % columns;
+    const y = Math.floor(index / columns);
 
     return x <= hoverX && y <= hoverY;
   };
 
+  const gridSize = '20px '
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: '20px 20px 20px',
-        gridTemplateRows: '20px 20px 20px',
+        gridTemplateColumns: gridSize.repeat(columns),
+        gridTemplateRows: gridSize.repeat(rows),
         backgroundColor: '#090c29', // primary-dark
       }}
       className="p-2"
     >
-      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(index => (
+      {Array.apply(null, Array(rows*columns)).map(function (_, i) {return i;}).map(index => (
         <div
           key={index}
           style={{
@@ -31,8 +32,8 @@ function LayoutSelector({ onSelection }) {
           }}
           className="cursor-pointer"
           onClick={() => {
-            const x = index % 3;
-            const y = Math.floor(index / 3);
+            const x = index % columns;
+            const y = Math.floor(index / columns);
 
             onSelection({
               numRows: y + 1,
@@ -49,10 +50,14 @@ function LayoutSelector({ onSelection }) {
 
 LayoutSelector.defaultProps = {
   onSelection: () => {},
+  columns: 3,
+  rows: 3
 };
 
 LayoutSelector.propTypes = {
   onSelection: PropTypes.func.isRequired,
+  columns: PropTypes.number.isRequired,
+  rows: PropTypes.number.isRequired,
 };
 
 export default LayoutSelector;

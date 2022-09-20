@@ -5,7 +5,7 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
-function LayoutSelector() {
+function LayoutSelector({rows, columns}) {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
@@ -41,6 +41,8 @@ function LayoutSelector() {
       dropdownContent={
         DropdownContent !== null && (
           <DropdownContent
+            rows={rows}
+            columns={columns}
             onSelection={({ numRows, numCols }) => {
               viewportGridService.setLayout({ numCols, numRows });
             }}
