@@ -43,6 +43,14 @@ All notable changes to this project will be documented in this file. See
 
 
 
+## [1.12.34](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.12.33...@ohif/extension-vtk@1.12.34) (2022-09-20)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [1.12.33](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.12.32...@ohif/extension-vtk@1.12.33) (2022-09-19)
 
 **Note:** Version bump only for package @ohif/extension-vtk
