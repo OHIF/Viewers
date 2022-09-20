@@ -12,6 +12,7 @@ const imagesTypes = [
   sopClassDictionary.EnhancedCTImageStorage,
   sopClassDictionary.LegacyConvertedEnhancedCTImageStorage,
   sopClassDictionary.UltrasoundMultiframeImageStorage,
+  sopClassDictionary.EnhancedUSVolumeStorage,
   sopClassDictionary.MRImageStorage,
   sopClassDictionary.EnhancedMRImageStorage,
   sopClassDictionary.EnhancedMRColorImageStorage,

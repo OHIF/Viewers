@@ -5,6 +5,7 @@ import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacin
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
+import combineFrameInstance from '../utils/combineFrameInstance';
 
 class MetadataProvider {
   constructor() {
@@ -57,12 +58,20 @@ class MetadataProvider {
       return;
     }
 
-    const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = uids;
+    const {
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID,
+      frameNumber,
+    } = uids;
 
-    return DicomMetadataStore.getInstance(
+    const instance = DicomMetadataStore.getInstance(
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID
+    );
+    return (
+      (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
     );
   }
 
@@ -408,7 +417,10 @@ class MetadataProvider {
     //   SOPInstanceUID,
     // })
     // somewhere else
-    if (imageId.startsWith('wadors:')) {
+    if (
+      imageId.startsWith('wadors:') ||
+      imageId.startsWith('streaming-wadors:')
+    ) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
 
@@ -416,6 +428,7 @@ class MetadataProvider {
         StudyInstanceUID: splitImageId[0], // Note: splitImageId[1] === 'series'
         SeriesInstanceUID: splitImageId[2], // Note: splitImageId[3] === 'instances'
         SOPInstanceUID: splitImageId[4],
+        frameNumber: splitImageId[6],
       };
     } else if (imageId.includes('?requestType=WADO')) {
       const qs = queryString.parse(imageId);
@@ -424,6 +437,7 @@ class MetadataProvider {
         StudyInstanceUID: qs.studyUID,
         SeriesInstanceUID: qs.seriesUID,
         SOPInstanceUID: qs.objectUID,
+        frameNumber: qs.frameNumber,
       };
     }
 
@@ -438,7 +452,13 @@ class MetadataProvider {
       imageURI = imageIdToURI(imageId);
     }
 
-    return this.imageURIToUIDs.get(imageURI);
+    const uids = this.imageURIToUIDs.get(imageURI);
+    const frameNumber = imageId.split(/\/frames\//)[1];
+
+    if (uids && frameNumber !== undefined) {
+      return { ...uids, frameNumber };
+    }
+    return uids;
   }
 }
 
