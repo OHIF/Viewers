@@ -70,7 +70,9 @@ class MetadataProvider {
       SeriesInstanceUID,
       SOPInstanceUID
     );
-    return combineFrameInstance(frameNumber, instance);
+    return (
+      (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
+    );
   }
 
   get(query, imageId, options = { fallback: false }) {
