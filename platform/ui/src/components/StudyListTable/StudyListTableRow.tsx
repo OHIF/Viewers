@@ -17,9 +17,12 @@ const StudyListTableRow = props => {
         >
           <div
             className={classnames(
-              'w-full transition border-transparent duration-300',
+              'w-full transition duration-300',
               {
                 'border border-primary-light rounded overflow-hidden mb-2 hover:border-secondary-light': isExpanded,
+              },
+              {
+                'border-transparent': !isExpanded,
               }
             )}
           >
@@ -27,7 +30,7 @@ const StudyListTableRow = props => {
               <tbody>
                 <tr
                   className={classnames(
-                    'cursor-pointer hover:bg-secondary-main transition duration-300 bg-black',
+                    'cursor-pointer hover:bg-secondary-main transition duration-300',
                     {
                       'bg-primary-dark': !isExpanded,
                     },
@@ -54,15 +57,19 @@ const StudyListTableRow = props => {
                           {index === 0 && (
                             <div>
                               <Icon
-                                name={isExpanded ? 'chevron-down' : 'chevron-right'}
+                                name={
+                                  isExpanded ? 'chevron-down' : 'chevron-right'
+                                }
                                 className="mr-4 inline-flex"
                               />
                             </div>
                           )}
-                          <div className={classnames(
-                            { 'overflow-hidden': true },
-                            { 'truncate': true }
-                          )}>
+                          <div
+                            className={classnames(
+                              { 'overflow-hidden': true },
+                              { truncate: true }
+                            )}
+                          >
                             {content}
                           </div>
                         </div>

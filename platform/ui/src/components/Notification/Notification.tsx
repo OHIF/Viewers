@@ -66,7 +66,7 @@ const Notification = ({
       className="flex flex-col p-2 mx-2 mt-2 rounded bg-common-bright"
       data-cy={id}
     >
-      <div className="flex flex-grow">
+      <div className="flex grow">
         <Icon name={icon} className={classnames('w-5', color)} />
         <span className="ml-2 text-base text-black">{message}</span>
       </div>

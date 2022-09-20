@@ -255,7 +255,7 @@ const ViewportActionBar = ({
       }}
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-1 flex-grow mt-2 min-w-48">
+      <div className="flex flex-1 grow mt-2 min-w-48">
         <div className="flex items-center">
           <span className="mr-2 text-white text-large">{label}</span>
           {showStatus && renderIconStatus()}
@@ -287,12 +287,14 @@ const ViewportActionBar = ({
             <Button
               size="initial"
               className="px-2 py-1 bg-black"
+              border="light"
               onClick={() => onSeriesChange('left')}
             >
               <Icon name="chevron-left" className="w-4 text-white" />
             </Button>
             <Button
               size="initial"
+              border="light"
               className="px-2 py-1 bg-black"
               onClick={() => onSeriesChange('right')}
             >

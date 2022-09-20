@@ -45,6 +45,7 @@ const classes = {
     initial: 'text-white',
     inherit: 'text-inherit',
     primary: 'text-primary-main',
+    primaryActive: 'text-primary-active',
     secondary: 'text-common-light',
     error: 'text-red-600',
   },

@@ -293,7 +293,7 @@ const ViewportDownloadForm = ({
         </div>
         <div className="flex">
           <div className="flex w-1/3">
-            <div className="flex flex-col flex-grow">
+            <div className="flex flex-col grow">
               <div className="w-full">
                 <Input
                   type="number"

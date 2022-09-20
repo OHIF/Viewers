@@ -10,6 +10,7 @@ const defaults = {
   disabled: false,
   fullWidth: false,
   rounded: 'medium',
+  border: 'none',
   size: 'medium',
   type: 'button',
   variant: 'contained',
@@ -23,7 +24,7 @@ const roundedClasses = {
   full: 'rounded-full',
 };
 
-const variantClasses = {
+const variants = {
   text: {
     default:
       'text-primary-light hover:bg-primary-light hover:text-white active:opacity-80 focus:bg-primary-light focus:text-white',
@@ -38,39 +39,90 @@ const variantClasses = {
   },
   outlined: {
     default:
-      'border bg-trasparent border-primary-light text-primary-light hover:bg-primary-light hover:text-black focus:text-black focus:bg-primary-light active:opacity-80',
+      'text-primary-light hover:bg-primary-light hover:text-black focus:text-black focus:bg-primary-light active:opacity-80',
     primary:
-      'border bg-transparent border-primary-main text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'border bg-transparent border-secondary-light text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white:
-      'border bg-transparent border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
+    white: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     black:
-      'border bg-black border-primary-main text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
+      'text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
+    primaryActive:
+      'text-primary-active hover:opacity-80 active:opacity-100 focus:opacity-80',
+    primaryLight:
+      'border bg-transparent border-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   contained: {
-    default:
-      'bg-primary-light text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
-    primary:
-      'bg-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    default: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+    primary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'bg-secondary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white:
-      'bg-white text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
-    black:
-      'bg-black text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    white: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+    black: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     light:
-      'border bg-primary-light border-primary-light text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   disabled: {
-    default: 'cursor-not-allowed opacity-50 bg-primary-light text-black',
-    primary: 'cursor-not-allowed opacity-50 bg-primary-main text-white',
-    secondary: 'cursor-not-allowed opacity-50 bg-secondary-light text-white',
-    white: 'cursor-not-allowed opacity-50 bg-white text-black',
-    black: 'cursor-not-allowed opacity-50 bg-black text-white',
-    light:
-      'cursor-not-allowed opacity-50 border bg-primary-light border-primary-light text-black',
+    default: 'cursor-not-allowed opacity-50 text-black',
+    primary: 'cursor-not-allowed opacity-50 text-white',
+    secondary: 'cursor-not-allowed opacity-50 text-white',
+    white: 'cursor-not-allowed opacity-50 text-black',
+    black: 'cursor-not-allowed opacity-50 text-white',
+    light: 'cursor-not-allowed opacity-50 border text-black',
   },
+};
+
+const defaultVariantBackGroundColor = {
+  text: {
+    default: '',
+    primary: '',
+    secondary: '',
+    white: '',
+    black: '',
+  },
+  outlined: {
+    default: 'bg-transparent',
+    primary: 'bg-transparent',
+    secondary: 'bg-transparent',
+    black: 'bg-black',
+    white: '',
+  },
+  contained: {
+    default: 'bg-primary-light',
+    primary: 'bg-primary-main',
+    secondary: 'bg-secondary-light',
+    white: 'bg-white',
+    black: 'bg-black',
+    light: 'bg-primary-light',
+  },
+  disabled: {
+    default: 'bg-primary-light',
+    primary: 'bg-primary-main',
+    secondary: 'bg-secondary-light',
+    white: 'bg-white',
+    black: 'bg-black',
+    light: 'bg-primary-light',
+  },
+};
+
+const _getVariantClass = (variant, color, bgColor = null) => {
+  const defaultBackgroundColor = defaultVariantBackGroundColor[variant][color];
+
+  if (!bgColor) {
+    bgColor = defaultBackgroundColor;
+  }
+
+  return `${variants[variant][color]} ${bgColor}`;
+};
+
+const borderClasses = {
+  none: '',
+  light: 'border border-primary-light',
+  primary: 'border border-primary-main',
+  primaryActive: 'border border-primary-active',
+  secondary: 'border border-secondary-light',
+  white: 'border border-white',
+  black: 'border border-black',
 };
 
 const sizeClasses = {
@@ -89,11 +141,13 @@ const Button = ({
   children,
   variant = defaults.variant,
   color = defaults.color,
+  border = defaults.border,
   size = defaults.size,
   rounded = defaults.rounded,
   disabled = defaults.disabled,
   type = defaults.type,
   fullWidth = defaults.fullWidth,
+  bgColor = null,
   startIcon: startIconProp,
   endIcon: endIconProp,
   name,
@@ -126,16 +180,19 @@ const Button = ({
     }
   };
 
+  const finalClassName = classnames(
+    baseClasses,
+    _getVariantClass(variant, color, bgColor),
+    borderClasses[border],
+    roundedClasses[rounded],
+    sizeClasses[size],
+    fullWidthClasses[fullWidth],
+    className
+  );
+
   return (
     <button
-      className={classnames(
-        className,
-        baseClasses,
-        variantClasses[variant][color],
-        roundedClasses[rounded],
-        sizeClasses[size],
-        fullWidthClasses[fullWidth]
-      )}
+      className={finalClassName}
       disabled={disabled}
       ref={buttonElement}
       onClick={handleOnClick}
@@ -176,6 +233,14 @@ Button.propTypes = {
     'inherit',
     'light',
   ]),
+  border: PropTypes.oneOf([
+    'none',
+    'default',
+    'primary',
+    'secondary',
+    'white',
+    'black',
+  ]),
   /** Whether the button should have full width  */
   fullWidth: PropTypes.bool,
   /** Whether the button should be disabled  */
@@ -189,6 +254,8 @@ Button.propTypes = {
   endIcon: PropTypes.node,
   /** Additional TailwindCSS classnames */
   className: PropTypes.string,
+  /** Background color for the button to override*/
+  bgColor: PropTypes.string,
 };
 
 export default Button;

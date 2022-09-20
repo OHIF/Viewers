@@ -6,8 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
 import { StringNumber } from '../../Types';
 
-const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
-const activeButtonClasses = 'bg-primary-main';
+const buttonClasses = 'text-white text-base border-none p-2 min-w-18';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -92,11 +91,9 @@ const StudyBrowser = ({
             return (
               <Button
                 key={name}
-                className={classnames(
-                  buttonClasses,
-                  isActive && activeButtonClasses
-                )}
+                className={classnames(buttonClasses)}
                 size="initial"
+                bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
                 onClick={() => {
                   onClickTab(name);
                 }}

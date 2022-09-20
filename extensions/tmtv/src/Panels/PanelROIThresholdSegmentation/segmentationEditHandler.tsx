@@ -29,7 +29,7 @@ function segmentationItemEditHandler({ id, servicesManager }) {
     showOverlay: true,
     content: Dialog,
     contentProps: {
-      title: 'Enter your annotation',
+      title: 'Enter your Segmentation',
       noCloseButton: true,
       value: { label: segmentation.label || '' },
       body: ({ value, setValue }) => {

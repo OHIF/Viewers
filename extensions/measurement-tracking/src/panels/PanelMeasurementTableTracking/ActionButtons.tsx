@@ -9,16 +9,22 @@ function ActionButtons({ onExportClick, onCreateReportClick }) {
 
   return (
     <React.Fragment>
-      <ButtonGroup color="black" size="inherit">
-        <Button className="text-base px-2 py-2" onClick={onExportClick}>
-          {t('Export')}
-        </Button>
-      </ButtonGroup>
       <Button
-        className="ml-2 text-base"
+        className="text-base px-2 py-2"
+        size="initial"
         variant="outlined"
-        size="small"
+        color="default"
+        border="secondary"
+        onClick={onExportClick}
+      >
+        {t('Export')}
+      </Button>
+      <Button
+        className="ml-2 px-2 text-base"
+        variant="outlined"
+        size="initial"
         color="black"
+        border="secondary"
         onClick={onCreateReportClick}
       >
         {t('Create Report')}

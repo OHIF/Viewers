@@ -148,13 +148,11 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
       {
         <div className="flex flex-col">
-          <div className="flex flex-col p-4 space-y-2 bg-primary-dark">
+          <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
             <Input
               label={t('Patient Sex')}
-              labelClassName="text-white"
-              className="mt-1 mb-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
+              labelClassName="text-white mb-2"
+              className="mt-1"
               value={metadata.PatientSex || ''}
               onChange={e => {
                 handleMetadataChange({
@@ -164,10 +162,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
             />
             <Input
               label={t('Patient Weight (kg)')}
-              labelClassName="text-white"
-              className="mt-1 mb-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
+              labelClassName="text-white mb-2"
+              className="mt-1"
               value={metadata.PatientWeight || ''}
               onChange={e => {
                 handleMetadataChange({
@@ -177,10 +173,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
             />
             <Input
               label={t('Total Dose (bq)')}
-              labelClassName="text-white"
-              className="mt-1 mb-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
+              labelClassName="text-white mb-2"
+              className="mt-1"
               value={
                 metadata.RadiopharmaceuticalInformationSequence
                   .RadionuclideTotalDose || ''
@@ -195,10 +189,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
             />
             <Input
               label={t('Half Life (s)')}
-              labelClassName="text-white"
-              className="mt-1 mb-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
+              labelClassName="text-white mb-2"
+              className="mt-1"
               value={
                 metadata.RadiopharmaceuticalInformationSequence
                   .RadionuclideHalfLife || ''
@@ -213,10 +205,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
             />
             <Input
               label={t('Injection Time (s)')}
-              labelClassName="text-white"
-              className="mt-1 mb-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
+              labelClassName="text-white mb-2"
+              className="mt-1"
               value={
                 metadata.RadiopharmaceuticalInformationSequence
                   .RadiopharmaceuticalStartTime || ''
@@ -231,21 +221,15 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
             />
             <Input
               label={t('Acquisition Time (s)')}
-              labelClassName="text-white"
-              className="mt-1 mb-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
+              labelClassName="text-white mb-2"
+              className="mt-1 mb-2"
               value={metadata.SeriesTime || ''}
               onChange={() => {}}
             />
+            <Button color="primary" onClick={updateMetadata}>
+              Reload Data
+            </Button>
           </div>
-          <Button
-            color="primary"
-            onClick={updateMetadata}
-            className="px-1 py-1 mx-4 mt-2 text-xs text-white border-b border-transparent"
-          >
-            Reload Data
-          </Button>
         </div>
       }
     </div>

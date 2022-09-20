@@ -5,7 +5,7 @@ import ReactModal from 'react-modal';
 import './Modal.css';
 
 import { Typography, Icon } from '../';
-import { useModal } from '../../contextProviders'
+import { useModal } from '../../contextProviders';
 
 if (typeof document !== 'undefined') {
   ReactModal.setAppElement(document.getElementById('root'));
@@ -31,7 +31,7 @@ const Modal = ({
         <header className="flex items-center p-4 border-b-2 border-black bg-secondary-dark rounded-tl rounded-tr">
           <Typography
             variant="h4"
-            className="flex flex-grow text-primary-light font-light"
+            className="flex grow text-primary-light font-light"
           >
             {title}
           </Typography>

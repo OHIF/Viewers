@@ -12,7 +12,7 @@ const StudyListFilter = ({
   isFiltering,
   numOfStudies,
 }) => {
-  const { t } = useTranslation("StudyList")
+  const { t } = useTranslation('StudyList');
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
   const setFilterSorting = sortingValues => {
@@ -39,15 +39,20 @@ const StudyListFilter = ({
                   <Button
                     rounded="full"
                     variant="outlined"
-                    color="primary"
-                    className="mx-8 text-primary-active border-primary-active"
+                    color="primaryActive"
+                    border="primaryActive"
+                    className="mx-8"
                     startIcon={<Icon name="cancel" />}
                     onClick={clearFilters}
                   >
                     {t('Clear filters')}
                   </Button>
                 )}
-                <Typography variant="h4" className="mr-2" data-cy={"num-studies"}>
+                <Typography
+                  variant="h4"
+                  className="mr-2"
+                  data-cy={'num-studies'}
+                >
                   {numOfStudies > 100 ? '>100' : numOfStudies}
                 </Typography>
                 <Typography
