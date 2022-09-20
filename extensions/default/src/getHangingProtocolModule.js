@@ -26,7 +26,33 @@ const defaultProtocol = {
           // Unused currently
           imageMatchingRules: [],
           // Matches displaysets, NOT series
-          seriesMatchingRules: [],
+          seriesMatchingRules: [
+            {
+              id: 'nRl6SgkPMx8HzLDVT',
+              weight: 1,
+              attribute: 'Modality',
+              constraint: {
+                doesNotContain: {
+                  value: 'RT',
+                },
+                doesNotEqual: {
+                  value: 'SR'
+                },
+              },
+              required: true,
+            },
+            {
+              id: 'F7udwbMm9UEtR7aDA',
+              weight: 1,
+              attribute: 'Modality',
+              constraint: {
+                doesNotEqual: {
+                  value: 'REG',
+                }
+              },
+              required: true,
+            },
+          ],
           studyMatchingRules: [],
         },
       ],
