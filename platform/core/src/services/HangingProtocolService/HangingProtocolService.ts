@@ -3,6 +3,7 @@ import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
 import StudyMetadata from '../../types/StudyMetadata';
 import IDisplaySet from '../DisplaySetService/IDisplaySet';
+import { HangingProtocol } from '../../types';
 
 const EVENTS = {
   STAGE_CHANGE: 'event::hanging_protocol_stage_change',
@@ -12,43 +13,10 @@ const EVENTS = {
     'event::hanging_protocol_custom_image_load_performed',
 };
 
-type ViewportOptions = {
-  orientation: string;
-  toolGroupId: string;
-  viewportId: string;
-  viewportType: string;
-  initialImageOptions: Record<string, unknown>;
-  syncGroups: Record<string, unknown>;
-};
-
-type ViewportMatchDetails = {
-  viewportOptions: ViewportOptions;
-  displaySetsInfo: {
-    SeriesInstanceUID: string;
-    displaySetInstanceUID: string;
-    displaySetOptions: Record<string, unknown>;
-  };
-};
-
-type DisplaySetMatchDetails = {
-  SeriesInstanceUID: string;
-  StudyInstanceUID: string;
-  displaySetInstanceUID: string;
-  matchDetails: any;
-  matchingScore: number;
-  sortingInfo: any;
-};
-
-type HangingProtocolMatchDetails = {
-  displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
-  viewportMatchDetails: ViewportMatchDetails[];
-  hpAlreadyApplied: boolean[];
-};
-
 class HangingProtocolService {
   studies: StudyMetadata[];
-  protocols: Record<string, unknown>[];
-  protocol: Record<string, unknown>;
+  protocols: HangingProtocol.Protocol[];
+  protocol: HangingProtocol.Protocol;
   stage: number;
   _commandsManager: Record<string, unknown>;
   protocolEngine: ProtocolEngine;
@@ -57,6 +25,7 @@ class HangingProtocolService {
   displaySets: IDisplaySet[] = [];
   activeStudy: Record<string, unknown>;
   debugLogging: false;
+  EVENTS: { [key: string]: string };
 
   customAttributeRetrievalCallbacks = {
     NumberOfStudyRelatedSeries: {
@@ -89,13 +58,16 @@ class HangingProtocolService {
    * DisplaySetId is the id defined in the hangingProtocol object itself
    * and match is an object that contains information about
    */
-  displaySetMatchDetails: Map<string, DisplaySetMatchDetails> = new Map();
+  displaySetMatchDetails: Map<
+    string,
+    HangingProtocol.DisplaySetMatchDetails
+  > = new Map();
 
   /**
    * An array that contains for each viewport (viewportIndex) specified in the
    * hanging protocol, an object of the form
    */
-  viewportMatchDetails = [] as ViewportMatchDetails[];
+  viewportMatchDetails = [] as HangingProtocol.ViewportMatchDetails[];
 
   constructor(commandsManager) {
     this._commandsManager = commandsManager;
@@ -122,7 +94,7 @@ class HangingProtocolService {
     // this.ProtocolEngine.reset()
   }
 
-  public getMatchDetails(): HangingProtocolMatchDetails {
+  public getMatchDetails(): HangingProtocol.HangingProtocolMatchDetails {
     return {
       viewportMatchDetails: this.viewportMatchDetails,
       displaySetMatchDetails: this.displaySetMatchDetails,
@@ -185,7 +157,7 @@ class HangingProtocolService {
    * and its callback has been added to the HangingProtocolService
    * @returns {boolean} true
    */
-  public hasCustomImageLoadStrategy() {
+  public hasCustomImageLoadStrategy(): boolean {
     return (
       this.activeImageLoadStrategyName !== null &&
       this.registeredImageLoadStrategies[
@@ -194,7 +166,7 @@ class HangingProtocolService {
     );
   }
 
-  public getCustomImageLoadPerformed() {
+  public getCustomImageLoadPerformed(): boolean {
     return this.customImageLoadPerformed;
   }
 
@@ -203,13 +175,13 @@ class HangingProtocolService {
    * @param {string} name strategy name
    * @param {Function} callback image loader callback
    */
-  public registerImageLoadStrategy(name, callback) {
+  public registerImageLoadStrategy(name, callback): void {
     if (callback instanceof Function && name) {
       this.registeredImageLoadStrategies[name] = callback;
     }
   }
 
-  public setHangingProtocolAppliedForViewport(i) {
+  public setHangingProtocolAppliedForViewport(i): void {
     this.hpAlreadyApplied[i] = true;
   }
 
@@ -222,7 +194,12 @@ class HangingProtocolService {
    * @param callback The function used to calculate the attribute value from the other attributes at its level (e.g. study/series/image)
    * @param options to add to the "this" object for the custom attribute retriever
    */
-  public addCustomAttribute(attributeId, attributeName, callback, options) {
+  public addCustomAttribute(
+    attributeId: string,
+    attributeName: string,
+    callback: (metadata: any) => any,
+    options: Record<string, any> = {}
+  ): void {
     this.customAttributeRetrievalCallbacks[attributeId] = {
       ...options,
       id: attributeId,
@@ -234,7 +211,7 @@ class HangingProtocolService {
   /**
    * Switches to the next protocol stage in the display set sequence
    */
-  public nextProtocolStage() {
+  public nextProtocolStage(): void {
     console.log('ProtocolEngine::nextProtocolStage');
 
     if (!this._setCurrentProtocolStage(1)) {
@@ -245,7 +222,7 @@ class HangingProtocolService {
   /**
    * Switches to the previous protocol stage in the display set sequence
    */
-  public previousProtocolStage() {
+  public previousProtocolStage(): void {
     console.log('ProtocolEngine::previousProtocolStage');
 
     if (!this._setCurrentProtocolStage(-1)) {
@@ -257,7 +234,7 @@ class HangingProtocolService {
    * Executes the callback function for the custom loading strategy for the images
    * if no strategy is set, the default strategy is used
    */
-  runImageLoadStrategy(data) {
+  runImageLoadStrategy(data): void {
     const loader = this.registeredImageLoadStrategies[
       this.activeImageLoadStrategyName
     ];
@@ -277,8 +254,14 @@ class HangingProtocolService {
     this._broadcastChange(this.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED, loadedData);
   }
 
-  _validateProtocol(protocol) {
+  _validateProtocol(
+    protocol: HangingProtocol.Protocol
+  ): HangingProtocol.Protocol {
     protocol.id = protocol.id || protocol.name;
+    const defaultViewportOptions = {
+      toolGroupId: 'default',
+      viewportType: 'stack',
+    };
     // Automatically compute some number of attributes if they
     // aren't present.  Makes defining new HPs easier.
     protocol.name = protocol.name || protocol.id;
@@ -292,13 +275,14 @@ class HangingProtocolService {
 
         for (let i = 0; i < rows * columns; i++) {
           stage.viewports.push({
-            viewportOptions: {},
+            viewportOptions: defaultViewportOptions,
             displaySets: [],
           });
         }
       } else {
         stage.viewports.forEach(viewport => {
-          viewport.viewportOptions = viewport.viewportOptions || {};
+          viewport.viewportOptions =
+            viewport.viewportOptions || defaultViewportOptions;
           if (!viewport.displaySets) {
             viewport.displaySets = [];
           } else {
@@ -313,7 +297,14 @@ class HangingProtocolService {
     return protocol;
   }
 
-  _setProtocol(protocol) {
+  public applyProtocol(
+    protocol: HangingProtocol.Protocol,
+    matchingDisplaySets: Map<string, HangingProtocol.DisplaySetMatchDetails>
+  ) {
+    this._setProtocol(protocol, matchingDisplaySets);
+  }
+
+  private _setProtocol(protocol, matchingDisplaySets = {}) {
     // TODO: Add proper Protocol class to validate the protocols
     // which are entered manually
     this.stage = 0;
@@ -392,7 +383,7 @@ class HangingProtocolService {
     }
 
     this.customImageLoadPerformed = false;
-    const { type: layoutType } = stageModel.viewportStructure;
+    const { layoutType } = stageModel.viewportStructure;
 
     // Retrieve the properties associated with the current display set's viewport structure template
     // If no such layout properties exist, stop here.
@@ -430,6 +421,8 @@ class HangingProtocolService {
       // but it is a info to locate the displaySet from the displaySetService
       const displaySetsInfo = [];
       viewport.displaySets.forEach(
+        // Todo: why do we have displaySetIndex here? It is not used in the protocol
+        // definition
         ({ id, displaySetIndex = 0, options: displaySetOptions }) => {
           const viewportDisplaySetMain = this.displaySetMatchDetails.get(id);
           // Use the display set index to allow getting the "next" match, eg
@@ -445,7 +438,7 @@ class HangingProtocolService {
               displaySetInstanceUID,
             } = viewportDisplaySet;
 
-            const displaySetInfo = {
+            const displaySetInfo: HangingProtocol.DisplaySetInfo = {
               SeriesInstanceUID,
               displaySetInstanceUID,
               displaySetOptions,
@@ -524,6 +517,7 @@ class HangingProtocolService {
         const seriesMatchDetails = this.protocolEngine.findMatch(
           displaySet,
           seriesMatchingRules,
+          // Todo: why we have images here since the matching type does not have it
           { studies: this.studies, instance: displaySet.images?.[0] }
         );
 

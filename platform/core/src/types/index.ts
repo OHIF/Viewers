@@ -6,4 +6,12 @@ import {
 
 import Consumer from './Consumer';
 
-export { StudyMetadata, SeriesMetadata, InstanceMetadata, Consumer };
+import * as HangingProtocol from './HangingProtocol';
+
+export {
+  HangingProtocol,
+  StudyMetadata,
+  SeriesMetadata,
+  InstanceMetadata,
+  Consumer,
+};
