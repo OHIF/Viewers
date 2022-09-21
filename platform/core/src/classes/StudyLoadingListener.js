@@ -469,8 +469,8 @@ class StudyLoadingListener {
 
       // TODO: Make this work for plugins
       if (!stack) {
-        console.warn('Skipping adding displaySet to StudyLoadingListener');
-        console.warn(displaySet);
+        //console.warn('Skipping adding displaySet to StudyLoadingListener');
+        //console.warn(displaySet);
         return;
       }
 

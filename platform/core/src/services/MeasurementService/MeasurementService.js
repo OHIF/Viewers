@@ -420,6 +420,10 @@ class MeasurementService {
       throw new Error('No source definition provided.');
     }
 
+    if (definition == 'stack' || definition == 'stackPrefetch') {
+      return;
+    }
+
     const sourceInfo = this._getSourceInfo(source);
 
     if (!this._sourceHasMappings(source)) {
