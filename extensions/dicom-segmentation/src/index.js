@@ -32,7 +32,6 @@ export default {
 
     const ExtendedSegmentationPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();
-
       const onDisplaySetLoadFailureHandler = error => {
         LoggerService.error({ error, message: error.message });
         UINotificationService.show({
