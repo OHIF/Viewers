@@ -119,7 +119,7 @@ function getDisplaySetsFromSeries(instances) {
         acquisitionDatetime: instance.AcquisitionDateTime,
       });
       displaySets.push(displaySet);
-    } else if (isSingleImageModality(instance.modality)) {
+    } else if (isSingleImageModality(instance.Modality)) {
       displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({
         sopClassUids,
