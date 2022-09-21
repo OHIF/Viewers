@@ -29,7 +29,7 @@ const SegmentItem = ({
   return (
     <div
       className={classnames(
-        'group relative flex cursor-pointer items-stretch bg-primary-dark outline-none transition duration-300 ',
+        'group relative flex cursor-pointer items-stretch bg-primary-dark outline-none transition duration-300 text-[12px]',
         {
           'border border-primary-light rounded-l-sm':
             isHovering || isSegmentIndexHovering,
@@ -54,7 +54,7 @@ const SegmentItem = ({
       >
         <div
           className={classnames(
-            'w-[27px] h-[27px] flex items-center justify-center border-r border-r-black ',
+            'w-[27px] h-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
             {
               'bg-primary-light text-black rounded-sm': isActive,
               'bg-primary-dark text-aqua-pale': !isActive && isVisible,
@@ -72,7 +72,7 @@ const SegmentItem = ({
               }}
             />
           ) : (
-            <div className={classnames('flex items-center pr-2')}>
+            <div className={classnames('flex items-center pr-2 ')}>
               {segmentIndex}
             </div>
           )}
@@ -93,7 +93,7 @@ const SegmentItem = ({
             className={classnames('w-[8px] h-[8px] rounded-full')}
             style={{ backgroundColor: cssColor }}
           />
-          <div className="text-xs">{label}</div>
+          <div>{label}</div>
         </div>
         {!isVisible && !isHovering && (
           <Icon

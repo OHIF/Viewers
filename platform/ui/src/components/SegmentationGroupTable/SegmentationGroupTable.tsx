@@ -4,19 +4,36 @@ import { Icon } from '../';
 import SegmentationGroup from './SegmentationGroup';
 import SegmentationConfig from './SegmentationConfig';
 
-const GetSegmentationConfig = ({ onConfigChange }) => {
+const GetSegmentationConfig = ({
+  onConfigChange,
+  showAddSegmentation,
+  onSegmentationAdd,
+}) => {
   const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] = useState(
     false
   );
 
   return (
-    <div className="flex flex-col text-primary-active border-b-2 border-secondary-main group">
+    <div className="flex flex-col text-primary-active bg-black text-[12px] h-[42px] px-[8px]">
       <div
-        className="flex items-center pl-[12px] py-[6px] cursor-pointer group-hover:opacity-80"
+        className="flex items-center cursor-pointer"
         onClick={() => setIsSegmentationConfigOpen(!isSegmentationConfigOpen)}
       >
-        <Icon name="settings" className="w-4 h-4 cursor-pointer" />
-        <div className="pl-2">Appearance</div>
+        <div
+          className="flex items-center pt-[9px] cursor-pointer hover:opacity-80"
+          onClick={() => onSegmentationAdd()}
+        >
+          <Icon name="row-add" className="w-6 h-6" />
+          <div className="pl-1">Add</div>
+        </div>
+        <div className="flex-grow" />
+        <div className="flex items-center pt-[9px] cursor-pointer hover:opacity-80">
+          <Icon
+            name="settings"
+            className="w-4 h-4 cursor-pointer hover:opacity-80"
+          />
+          <div className="pl-2">Appearance</div>
+        </div>
       </div>
       {isSegmentationConfigOpen && (
         <SegmentationConfig onConfigChange={onConfigChange} />
@@ -60,18 +77,11 @@ const SegmentationGroupTable = ({
 
   return (
     <div className="font-inter">
-      <GetSegmentationConfig onConfigChange={onGlobalConfigChange} />
-      {showAddSegmentation && (
-        <div className="text-primary-active">
-          <div
-            className="flex items-center pl-[8px] py-[6px] cursor-pointer hover:opacity-80"
-            onClick={() => onSegmentationAdd()}
-          >
-            <Icon name="row-add" className="w-5 h-5" />
-            <div className="pl-2">Add Segmentation</div>
-          </div>
-        </div>
-      )}
+      <GetSegmentationConfig
+        onConfigChange={onGlobalConfigChange}
+        showAddSegmentation={showAddSegmentation}
+        onSegmentationAdd={onSegmentationAdd}
+      />
       <div className="flex flex-col gap-2">
         {!!segmentations.length &&
           segmentations.map(segmentation => {

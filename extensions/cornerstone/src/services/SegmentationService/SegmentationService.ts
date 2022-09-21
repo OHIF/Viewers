@@ -16,6 +16,7 @@ import {
   Types,
   metaData,
 } from '@cornerstonejs/core';
+import isEqual from 'lodash.isequal';
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -78,7 +79,7 @@ type SegmentationSchema = {
   // active segment index for the segmentation
   activeSegmentIndex: number;
   // statistics that are derived from the segmentation
-  cachedStats: Record<string, number>;
+  cachedStats: Record<string, any>;
   // the displayText for the segmentation in the panels
   displayText?: string[];
   // segmentation id
@@ -655,6 +656,11 @@ class SegmentationService {
       const segmentInfo = segments[segmentIndex];
       const { pixelData: segPixelData } = segmentInfo;
 
+      let segmentX = 0;
+      let segmentY = 0;
+      let segmentZ = 0;
+      let count = 0;
+
       segmentInfo.functionalGroups.forEach(
         (functionalGroup, functionalGroupIndex) => {
           const imageIdIndex = this._getSegmentImageIdIndex(
@@ -690,10 +696,31 @@ class SegmentationService {
               derivedVolumeScalarData[i] === 0
             ) {
               derivedVolumeScalarData[i] = segmentIndex;
+
+              segmentX += i % columns;
+              segmentY += Math.floor(i / columns) % rows;
+              segmentZ += Math.floor(i / (columns * rows));
+              count++;
             }
           }
         }
       );
+
+      // middle of the segment
+      const x = Math.floor(segmentX / count);
+      const y = Math.floor(segmentY / count);
+      const z = Math.floor(segmentZ / count);
+
+      segmentationSchema.cachedStats = {
+        ...segmentationSchema.cachedStats,
+        segmentCenter: {
+          ...segmentationSchema.cachedStats.segmentCenter,
+          [segmentIndex]: {
+            center: [x, y, z],
+            modifyTime: Date.now(),
+          },
+        },
+      };
     }
 
     segmentationSchema.segmentCount = Object.keys(segments).length;
@@ -1608,11 +1635,15 @@ class SegmentationService {
       segmentationId
     );
     const segmentation = this.segmentations[segmentationId];
-    const { label } = segmentation;
+    const { label, cachedStats } = segmentation;
 
     // Update the label in the source if necessary
     if (sourceSegmentation.label !== label) {
       sourceSegmentation.label = label;
+    }
+
+    if (!isEqual(sourceSegmentation.cachedStats, cachedStats)) {
+      sourceSegmentation.cachedStats = cachedStats;
     }
   }
 

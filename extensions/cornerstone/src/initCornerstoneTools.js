@@ -74,6 +74,7 @@ const toolNames = {
   Magnify: MagnifyTool.toolName,
   Crosshairs: CrosshairsTool.toolName,
   SegmentationDisplay: SegmentationDisplayTool.toolName,
+  SegmentationCrosshairs: 'SegmentationCrosshairs',
 };
 
 export { toolNames };

@@ -246,6 +246,7 @@ function _getSegments(dataset) {
       offset: null,
       size: null,
       pixelData: null,
+      label: segment.SegmentLabel,
     };
   });
 

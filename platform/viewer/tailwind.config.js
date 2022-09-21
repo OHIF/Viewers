@@ -287,7 +287,7 @@ module.exports = {
     },
     fontFamily: {
       sans: [
-        'Lato',
+        'Inter',
         'system-ui',
         '-apple-system',
         'BlinkMacSystemFont',
@@ -328,7 +328,7 @@ module.exports = {
       hairline: '100',
       thin: '200',
       light: '300',
-      normal: '400',
+      normal: '300',
       medium: '500',
       semibold: '600',
       bold: '700',

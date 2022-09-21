@@ -10,12 +10,12 @@ const AddNewSegmentRow = ({ onConfigChange, onSegmentAdd }) => {
   return (
     <div className="flex flex-col">
       <div
-        className="flex items-center px-3 py-[5px] bg-black text-primary-active hover:opacity-80 cursor-pointer"
+        className="flex items-center px-3 h-[27px] bg-black text-primary-active hover:opacity-80 cursor-pointer text-[12px]"
         onClick={() => onSegmentAdd()}
       >
-        <div className="flex items-center gap-2 pl-5">
-          <Icon name="row-add" className="w-4 h-4" />
-          <span className="">Add Segment</span>
+        <div className="flex items-center pl-">
+          <Icon name="row-add" className="w-6 h-6" />
+          <div className="">Add Segment</div>
         </div>
         <div className="flex-grow" />
       </div>
@@ -40,7 +40,7 @@ const SegmentGroupHeader = ({
   return (
     <div
       className={classnames(
-        'flex items-center pr-2 pl-[8px] py-[4px]  gap-2 rounded-t-md border-b border-secondary-light cursor-pointer',
+        'flex items-center pr-2 pl-[10px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
         {
           'bg-secondary-main': isActive,
           'bg-secondary-dark': !isActive,

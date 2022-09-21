@@ -3,6 +3,7 @@ import React from 'react';
 
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
+import init from './init';
 
 const Component = React.lazy(() => {
   return import(
@@ -38,7 +39,9 @@ const extension = {
     servicesManager,
     commandsManager,
     configuration = {},
-  }) => {},
+  }) => {
+    init({ servicesManager, commandsManager, configuration });
+  },
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,

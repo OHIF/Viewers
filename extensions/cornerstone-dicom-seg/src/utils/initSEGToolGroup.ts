@@ -1,3 +1,5 @@
+const SEGMENTATION_CROSSHAIRS = 'SegmentationCrosshairs';
+
 function createSEGToolGroupAndAddTools(
   ToolGroupService,
   toolGroupId,
@@ -25,10 +27,15 @@ function createSEGToolGroupAndAddTools(
       },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [
+      { toolName: toolNames.SegmentationDisplay },
+      {
+        toolName: toolNames.SegmentationCrosshairs,
+      },
+    ],
   };
 
-  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
+  return ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
 }
 
 export default createSEGToolGroupAndAddTools;
