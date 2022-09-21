@@ -11,6 +11,8 @@ import {
   segmentation,
   utilities as csToolsUtils,
 } from '@cornerstonejs/tools';
+
+import { Types } from '@ohif/core';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
 import { getEnabledElement as OHIFgetEnabledElement } from './state';
@@ -26,6 +28,9 @@ const commandsModule = ({ servicesManager }) => {
     UIDialogService,
     CornerstoneViewportService,
     SegmentationService,
+    DisplaySetService,
+    HangingProtocolService,
+    UINotificationService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
@@ -415,6 +420,9 @@ const commandsModule = ({ servicesManager }) => {
         (activeViewportIndex - 1 + viewports.length) % viewports.length;
       ViewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
+    setHangingProtocol: ({ protocolId }) => {
+      HangingProtocolService.setProtocol(protocolId);
+    },
   };
 
   const definitions = {
@@ -534,6 +542,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
+      storeContexts: [],
+      options: {},
+    },
+    setHangingProtocol: {
+      commandFn: actions.setHangingProtocol,
       storeContexts: [],
       options: {},
     },

@@ -22,6 +22,20 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
+  if (
+    prevProps.viewportOptions.orientation !==
+    nextProps.viewportOptions.orientation
+  ) {
+    return false;
+  }
+
+  if (
+    prevProps.viewportOptions.viewportType !==
+    nextProps.viewportOptions.viewportType
+  ) {
+    return false;
+  }
+
   const prevDisplaySets = prevProps.displaySets[0];
   const nextDisplaySets = nextProps.displaySets[0];
 

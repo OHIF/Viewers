@@ -290,6 +290,23 @@ const toolbarButtons = [
       columns: 3,
     },
   },
+  // Todo: MPR not ready yet for SEG support, not activating it now
+  {
+    id: 'MPR',
+    type: 'ohif.action',
+    props: {
+      icon: 'old-play',
+      label: 'MPR',
+      type: 'action',
+      commands: [
+        {
+          commandName: 'setHangingProtocol',
+          commandOptions: { protocolId: 'mpr' },
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  },
   // More...
   {
     id: 'MoreTools',

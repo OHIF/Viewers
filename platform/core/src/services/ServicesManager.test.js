@@ -4,10 +4,15 @@ import log from '../log.js';
 jest.mock('./../log.js');
 
 describe('ServicesManager.js', () => {
-  let servicesManager;
+  let servicesManager, commandsManager;
 
   beforeEach(() => {
-    servicesManager = new ServicesManager();
+    commandsManager = {
+      createContext: jest.fn(),
+      getContext: jest.fn(),
+      registerCommand: jest.fn(),
+    };
+    servicesManager = new ServicesManager(commandsManager);
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -90,9 +95,9 @@ describe('ServicesManager.js', () => {
 
       servicesManager.registerService(fakeService, configuration);
 
-      expect(fakeService.create.mock.calls[0][0]).toEqual({
-        configuration,
-      });
+      expect(fakeService.create.mock.calls[0][0].configuration.config).toBe(
+        configuration.config
+      );
     });
   });
 });

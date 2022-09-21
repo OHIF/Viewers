@@ -28,7 +28,7 @@ const deafultProtocol = {
       id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
-        type: 'grid',
+        layoutType: 'grid',
         properties: {
           rows: 1,
           columns: 2,
@@ -64,8 +64,8 @@ const deafultProtocol = {
 function getHangingProtocolModule() {
   return [
     {
-      name: hangingProtocolName,
-      protocols: [defaultProtocol],
+      id: 'default',
+      protocol: deafultProtocol,
     },
   ];
 }
