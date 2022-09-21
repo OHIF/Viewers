@@ -102,11 +102,11 @@ class HangingProtocolService {
     };
   }
 
-  public getProtocols() {
+  public getProtocols(): HangingProtocol.Protocol[] {
     return this.protocols;
   }
 
-  public addProtocols(protocols) {
+  public addProtocols(protocols: HangingProtocol.Protocol[]): void {
     protocols.forEach(protocol => {
       if (this.protocols.indexOf(protocol) === -1) {
         this.protocols.push(this._validateProtocol(protocol));
@@ -299,12 +299,18 @@ class HangingProtocolService {
 
   public applyProtocol(
     protocol: HangingProtocol.Protocol,
-    matchingDisplaySets: Map<string, HangingProtocol.DisplaySetMatchDetails>
-  ) {
+    matchingDisplaySets: Record<string, HangingProtocol.DisplaySetMatchDetails>
+  ): void {
+    protocol = this._validateProtocol(protocol);
+    this.protocols.push(protocol);
+
     this._setProtocol(protocol, matchingDisplaySets);
   }
 
-  private _setProtocol(protocol, matchingDisplaySets = {}) {
+  private _setProtocol(
+    protocol: HangingProtocol.Protocol,
+    matchingDisplaySets?: Record<string, HangingProtocol.DisplaySetMatchDetails>
+  ): void {
     // TODO: Add proper Protocol class to validate the protocols
     // which are entered manually
     this.stage = 0;
@@ -319,7 +325,7 @@ class HangingProtocolService {
         this.activeImageLoadStrategyName = imageLoadStrategy;
       }
     }
-    this._updateViewports();
+    this._updateViewports(matchingDisplaySets);
 
     this._broadcastChange(this.EVENTS.PROTOCOL_CHANGED, {
       viewportMatchDetails: this.viewportMatchDetails,
@@ -356,7 +362,9 @@ class HangingProtocolService {
   /**
    * Updates the viewports with the selected protocol stage.
    */
-  _updateViewports() {
+  _updateViewports(
+    matchingDisplaySets?: Record<string, HangingProtocol.DisplaySetMatchDetails>
+  ): void {
     // Make sure we have an active protocol with a non-empty array of display sets
     if (!this._getNumProtocolStages()) {
       console.log('No protocol stages - nothing to display');
@@ -365,6 +373,12 @@ class HangingProtocolService {
 
     // reset displaySetMatchDetails
     this.displaySetMatchDetails = new Map();
+
+    if (matchingDisplaySets) {
+      this.displaySetMatchDetails = new Map(
+        Object.entries(matchingDisplaySets)
+      );
+    }
 
     // Retrieve the current stage
     const stageModel = this._getCurrentStageModel();
@@ -403,14 +417,19 @@ class HangingProtocolService {
     });
 
     // Matching the displaySets
+    for (const displaySet of stageModel.displaySets) {
+      // skip matching if already matched
+      if (this.displaySetMatchDetails.has(displaySet.id)) {
+        continue;
+      }
 
-    stageModel.displaySets.forEach(displaySet => {
       const { bestMatch, matchingScores } = this._matchImages(displaySet);
       this.displaySetMatchDetails.set(displaySet.id, bestMatch);
+
       if (bestMatch) {
         bestMatch.matchingScores = matchingScores;
       }
-    });
+    }
 
     // Loop through each viewport
     stageModel.viewports.forEach((viewport, viewportIndex) => {
