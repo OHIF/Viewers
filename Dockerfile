@@ -34,7 +34,6 @@ RUN yarn install --frozen-lockfile --verbose
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
-	@@ -62,7 +61,7 @@ RUN yarn run build
 
 # Stage 3: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
