@@ -41,10 +41,7 @@ const initUserManager = (oidc, routerBasename) => {
 
   const openIdConnectConfiguration = Object.assign({}, firstOpenIdClient, {
     redirect_uri: _makeAbsoluteIfNecessary(redirect_uri, baseUri),
-    silent_redirect_uri: _makeAbsoluteIfNecessary(
-      silent_redirect_uri,
-      baseUri
-    ),
+    silent_redirect_uri: _makeAbsoluteIfNecessary(silent_redirect_uri, baseUri),
     post_logout_redirect_uri: _makeAbsoluteIfNecessary(
       post_logout_redirect_uri,
       baseUri
@@ -52,14 +49,16 @@ const initUserManager = (oidc, routerBasename) => {
   });
 
   return getUserManagerForOpenIdConnectClient(openIdConnectConfiguration);
-}
+};
 
 function LogoutComponent(props) {
   const { userManager } = props;
-  localStorage.setItem("signoutEvent", "true");
+  localStorage.setItem('signoutEvent', 'true');
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  userManager.signoutRedirect({ post_logout_redirect_uri: query.get("redirect_uri") });
+  userManager.signoutRedirect({
+    post_logout_redirect_uri: query.get('redirect_uri'),
+  });
   return null;
 }
 
@@ -69,9 +68,7 @@ function LoginComponent(userManager) {
   const loginHint = queryParams.get('login_hint');
   const targetLinkUri = queryParams.get('target_link_uri');
   if (iss !== oidcAuthority) {
-    console.error(
-      'iss of /login does not match the oidc authority'
-    );
+    console.error('iss of /login does not match the oidc authority');
     return null;
   }
 
@@ -107,7 +104,7 @@ function LoginComponent(userManager) {
 function OpenIdConnectRoutes({
   oidc,
   routerBasename,
-  UserAuthenticationService
+  UserAuthenticationService,
 }) {
   const userManager = initUserManager(oidc, routerBasename);
 
@@ -115,12 +112,12 @@ function OpenIdConnectRoutes({
     const user = UserAuthenticationService.getUser();
 
     return {
-      Authorization: `Bearer ${user.access_token}`
+      Authorization: `Bearer ${user.access_token}`,
     };
-  }
+  };
 
   const handleUnauthenticated = () => {
-    userManager.signinRedirect()
+    userManager.signinRedirect();
 
     // return null because this is used in a react component
     return null;
@@ -130,33 +127,43 @@ function OpenIdConnectRoutes({
 
   //for multi-tab logout
   useEffect(() => {
-    window.addEventListener('storage', () => {
-      var signOutEvent = localStorage.getItem("signoutEvent");
+    const storageEventListener = event => {
+      const signOutEvent = localStorage.getItem('signoutEvent');
       if (signOutEvent) {
-        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
+        navigate(
+          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
+        );
       }
-    });
-    return localStorage.removeItem("signoutEvent");
-  }, [])
+    };
 
+    window.addEventListener('storage', storageEventListener);
+
+    return () => {
+      window.removeEventListener('storage', storageEventListener);
+      localStorage.removeItem('signoutEvent');
+    };
+  }, []);
 
   useEffect(() => {
     UserAuthenticationService.set({ enabled: true });
 
     UserAuthenticationService.setServiceImplementation({
       getAuthorizationHeader,
-      handleUnauthenticated
+      handleUnauthenticated,
     });
-  }, [])
+  }, []);
 
   const oidcAuthority = oidc[0].authority;
 
   const location = useLocation();
   const { pathname, search } = location;
 
-  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname//.replace(routerBasename,'')
-  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri).pathname//.replace(routerBasename,'')
-  const post_logout_redirect_uri = new URL(userManager.settings._post_logout_redirect_uri).pathname//.replace(routerBasename,'');
+  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname; //.replace(routerBasename,'')
+  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri)
+    .pathname; //.replace(routerBasename,'')
+  const post_logout_redirect_uri = new URL(
+    userManager.settings._post_logout_redirect_uri
+  ).pathname; //.replace(routerBasename,'');
 
   // const pathnameRelative = pathname.replace(routerBasename,'');
 
@@ -169,10 +176,7 @@ function OpenIdConnectRoutes({
 
   return (
     <Routes basename={routerBasename}>
-      <Route
-        path={silent_refresh_uri}
-        onEnter={window.location.reload}
-      />
+      <Route path={silent_refresh_uri} onEnter={window.location.reload} />
       <Route
         path={post_logout_redirect_uri}
         element={
@@ -188,22 +192,32 @@ function OpenIdConnectRoutes({
       />
       <Route
         path={redirect_uri}
-        element={<CallbackPage userManager={userManager} onRedirectSuccess={(user) => {
-          const { pathname, search = '' } = JSON.parse(
-            sessionStorage.getItem('ohif-redirect-to')
-          );
+        element={
+          <CallbackPage
+            userManager={userManager}
+            onRedirectSuccess={user => {
+              const { pathname, search = '' } = JSON.parse(
+                sessionStorage.getItem('ohif-redirect-to')
+              );
 
-          UserAuthenticationService.setUser(user);
+              UserAuthenticationService.setUser(user);
 
-          navigate({
-            pathname,
-            search
-          })
-        }} />}
+              navigate({
+                pathname,
+                search,
+              });
+            }}
+          />
+        }
       />
       <Route
         path="/login"
-        element={<LoginComponent userManager={userManager} oidcAuthority={oidcAuthority} />}
+        element={
+          <LoginComponent
+            userManager={userManager}
+            oidcAuthority={oidcAuthority}
+          />
+        }
       />
       <Route
         path="/logout"
