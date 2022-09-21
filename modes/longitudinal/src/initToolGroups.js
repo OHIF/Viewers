@@ -147,12 +147,12 @@ function initToolGroups(extensionManager, ToolGroupService, commandsManager) {
     'default'
   );
   initSRToolGroup(extensionManager, ToolGroupService, commandsManager);
-  // initDefaultToolGroup(
-  //   extensionManager,
-  //   ToolGroupService,
-  //   commandsManager,
-  //   'mpr'
-  // );
+  initDefaultToolGroup(
+    extensionManager,
+    ToolGroupService,
+    commandsManager,
+    'mpr'
+  );
 }
 
 export default initToolGroups;

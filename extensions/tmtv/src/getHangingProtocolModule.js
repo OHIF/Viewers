@@ -20,9 +20,7 @@ const ptCT = {
       weight: 1,
       attribute: 'ModalitiesInStudy',
       constraint: {
-        contains: {
-          value: ['CT', 'PT'],
-        },
+        contains: ['CT', 'PT'],
       },
       required: false,
     },

@@ -135,7 +135,10 @@ class HangingProtocolService {
   }
 
   /**
-   * Returns the protocol with the given id
+   * Returns the protocol with the given id, it will get the protocol from the
+   * protocols map object and if it is a function, it will execute it and return
+   * the result as a protocol object
+   *
    * @param protocolId - the id of the protocol
    * @returns protocol - the protocol with the given id
    */

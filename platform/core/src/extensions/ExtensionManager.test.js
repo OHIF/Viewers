@@ -18,6 +18,9 @@ describe('ExtensionManager.js', () => {
       services: {
         // Required for DataSource Module initiation
         UserAuthenticationService: jest.fn(),
+        HangingProtocolService: {
+          addProtocol: jest.fn(),
+        },
       },
     };
     appConfig = {
