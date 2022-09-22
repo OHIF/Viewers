@@ -14,20 +14,22 @@ const GetSegmentationConfig = ({
   );
 
   return (
-    <div className="flex flex-col text-primary-active bg-black text-[12px] h-[42px] px-[8px]">
+    <div className="flex flex-col text-primary-active bg-black text-[12px] px-[8px] justify-center">
       <div
-        className="flex items-center cursor-pointer"
+        className="flex items-center cursor-pointer h-[42px]"
         onClick={() => setIsSegmentationConfigOpen(!isSegmentationConfigOpen)}
       >
-        <div
-          className="flex items-center pt-[9px] cursor-pointer hover:opacity-80"
-          onClick={() => onSegmentationAdd()}
-        >
-          <Icon name="row-add" className="w-6 h-6" />
-          <div className="pl-1">Add</div>
-        </div>
+        {showAddSegmentation && (
+          <div
+            className="flex items-center cursor-pointer hover:opacity-80"
+            onClick={() => onSegmentationAdd()}
+          >
+            <Icon name="row-add" className="w-6 h-6" />
+            <div className="pl-1">Add</div>
+          </div>
+        )}
         <div className="flex-grow" />
-        <div className="flex items-center pt-[9px] cursor-pointer hover:opacity-80">
+        <div className="flex items-center cursor-pointer hover:opacity-80">
           <Icon
             name="settings"
             className="w-4 h-4 cursor-pointer hover:opacity-80"
@@ -44,19 +46,20 @@ const GetSegmentationConfig = ({
 
 const SegmentationGroupTable = ({
   segmentations,
-  onSegmentationClick,
-  onSegmentClick,
   onGlobalConfigChange,
   onSegmentationAdd,
-  onSegmentationRename,
+  onSegmentationEdit,
+  onSegmentationClick,
   onSegmentationDelete,
   showAddSegmentation,
   showAddSegment,
+  onSegmentClick,
   onSegmentAdd,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
   onToggleSegmentVisibility,
+  onSegmentColorClick,
 }) => {
   const [isMinimized, setIsMinimized] = useState(() => {
     return segmentations.reduce((acc, { id }) => {
@@ -106,10 +109,11 @@ const SegmentationGroupTable = ({
                 segmentCount={segmentCount}
                 isActive={isActive}
                 isVisible={isVisible}
+                onSegmentColorClick={onSegmentColorClick}
                 onSegmentationClick={() => onSegmentationClick(id)}
                 activeSegmentIndex={activeSegmentIndex}
                 onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-                onSegmentationRename={onSegmentationRename}
+                onSegmentationEdit={onSegmentationEdit}
                 onSegmentationDelete={onSegmentationDelete}
                 onSegmentClick={onSegmentClick}
                 onSegmentEdit={onSegmentEdit}

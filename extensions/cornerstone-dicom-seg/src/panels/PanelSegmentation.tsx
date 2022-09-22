@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable, Button, Icon } from '@ohif/ui';
 import classnames from 'classnames';
+import callInputDialog from './callInputDialog';
 
 import { useTranslation } from 'react-i18next';
 
@@ -9,25 +10,22 @@ export default function PanelSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const { SegmentationService } = servicesManager.services;
+  const { SegmentationService, UIDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
-  const [labelmapLoading, setLabelmapLoading] = useState(false);
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentations, setSegmentations] = useState(() =>
     SegmentationService.getSegmentations()
   );
 
-  /**
-   * Update UI based on segmentation changes (added, removed, updated)
-   */
   useEffect(() => {
     // ~~ Subscription
     const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
     const updated = SegmentationService.EVENTS.SEGMENTATION_UPDATED;
+    const removed = SegmentationService.EVENTS.SEGMENTATION_REMOVED;
     const subscriptions = [];
 
-    [added, updated].forEach(evt => {
+    [added, updated, removed].forEach(evt => {
       const { unsubscribe } = SegmentationService.subscribe(evt, () => {
         const segmentations = SegmentationService.getSegmentations();
         setSegmentations(segmentations);
@@ -42,6 +40,115 @@ export default function PanelSegmentation({
     };
   }, []);
 
+  const onSegmentationClick = (segmentationId: string) => {
+    SegmentationService.setActiveSegmentationForToolGroup(segmentationId);
+  };
+
+  const onSegmentationDelete = (segmentationId: string) => {
+    SegmentationService.remove(segmentationId);
+  };
+
+  const onSegmentClick = (segmentationId, segmentIndex) => {
+    SegmentationService.setActiveSegmentForSegmentation(
+      segmentationId,
+      segmentIndex
+    );
+  };
+
+  const onSegmentEdit = (segmentationId, segmentIndex) => {
+    const segmentation = SegmentationService.getSegmentation(segmentationId);
+
+    const segment = segmentation.segments[segmentIndex];
+    const { label } = segment;
+
+    callInputDialog(UIDialogService, label, (label, actionId) => {
+      if (label === '') {
+        return;
+      }
+
+      SegmentationService.setSegmentLabelForSegmentation(
+        segmentationId,
+        segmentIndex,
+        label
+      );
+    });
+  };
+
+  const onSegmentationEdit = segmentationId => {
+    const segmentation = SegmentationService.getSegmentation(segmentationId);
+    const { label } = segmentation;
+
+    callInputDialog(UIDialogService, label, (label, actionId) => {
+      if (label === '') {
+        return;
+      }
+
+      SegmentationService.addOrUpdateSegmentation(
+        { id: segmentationId, label },
+        true
+      );
+    });
+  };
+
+  const onSegmentColorClick = (segmentationId, segmentIndex) => {
+    const segmentation = SegmentationService.getSegmentation(segmentationId);
+
+    const segment = segmentation.segments[segmentIndex];
+    const { color, opacity } = segment;
+
+    // react-color expects rgb 0-255 and a 0-1.
+    const rgbaColor = {
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      a: opacity / 255.0,
+    };
+
+    callColorPickerDialog(
+      UIDialogService,
+      rgbaColor,
+      (newRgbaColor, actionId) => {
+        if (actionId === 'cancel') {
+          return;
+        }
+
+        SegmentationService.setSegmentRGBAColorForSegmentation(
+          segmentationId,
+          segmentIndex,
+          [
+            newRgbaColor.r,
+            newRgbaColor.g,
+            newRgbaColor.b,
+            newRgbaColor.a * 255.0,
+          ]
+        );
+      }
+    );
+  };
+
+  const onSegmentDelete = (segmentationId, segmentIndex) => {
+    SegmentationService.removeSegmentFromSegmentation(
+      segmentationId,
+      segmentIndex
+    );
+  };
+
+  const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
+    const segmentation = SegmentationService.getSegmentation(segmentationId);
+    const segmentInfo = segmentation.segments[segmentIndex];
+    const isVisible = !segmentInfo.isVisible;
+
+    SegmentationService.setSegmentVisibility(
+      segmentationId,
+      segmentIndex,
+      isVisible
+    );
+  };
+
+  const onToggleSegmentationVisibility = segmentationId => {
+    SegmentationService.toggleSegmentationVisibility(segmentationId);
+  };
+
   return (
     <div className="flex flex-col justify-between h-full">
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
@@ -50,26 +157,18 @@ export default function PanelSegmentation({
           <SegmentationGroupTable
             title={t('Segmentations')}
             amount={segmentations.length}
+            showAddSegmentation={false}
             segmentations={segmentations}
             activeSegmentationId={selectedSegmentationId}
-            onClick={id => {}}
-            onToggleVisibility={id => {
-              SegmentationService.toggleSegmentationVisibility(id);
-            }}
-            onToggleVisibilityAll={ids => {
-              ids.map(id => {
-                SegmentationService.toggleSegmentationVisibility(id);
-              });
-            }}
-            onDelete={id => {
-              SegmentationService.remove(id);
-            }}
-            onEdit={id => {
-              segmentationEditHandler({
-                id,
-                servicesManager,
-              });
-            }}
+            onSegmentationClick={onSegmentationClick}
+            onSegmentationDelete={onSegmentationDelete}
+            onSegmentationEdit={onSegmentationEdit}
+            onSegmentClick={onSegmentClick}
+            onSegmentEdit={onSegmentEdit}
+            onSegmentColorClick={onSegmentColorClick}
+            onSegmentDelete={onSegmentDelete}
+            onToggleSegmentVisibility={onToggleSegmentVisibility}
+            onToggleSegmentationVisibility={onToggleSegmentationVisibility}
           />
         ) : null}
       </div>

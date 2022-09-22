@@ -29,13 +29,14 @@ const SegmentItem = ({
   return (
     <div
       className={classnames(
-        'group relative flex cursor-pointer items-stretch bg-primary-dark outline-none transition duration-300 text-[12px]',
+        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px]',
         {
-          'border border-primary-light rounded-l-sm':
+          'border border-primary-light rounded-sm':
             isHovering || isSegmentIndexHovering,
         },
         {
-          'border border-transparent': !isHovering && !isSegmentIndexHovering,
+          'border border-transparent rounded-lg':
+            !isHovering && !isSegmentIndexHovering,
         }
       )}
       onMouseEnter={onMouseEnter}
@@ -56,7 +57,7 @@ const SegmentItem = ({
           className={classnames(
             'w-[27px] h-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
             {
-              'bg-primary-light text-black rounded-sm': isActive,
+              'bg-primary-light text-black': isActive,
               'bg-primary-dark text-aqua-pale': !isActive && isVisible,
               'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
             }
@@ -84,7 +85,7 @@ const SegmentItem = ({
           {
             'bg-secondary-dark text-primary-light': isActive,
             'bg-primary-dark text-aqua-pale': !isActive && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
+            'bg-[#140e2e] opacity-60 text-[#537594]': !isVisible,
           }
         )}
       >
@@ -127,7 +128,7 @@ const SegmentItem = ({
                 })}
                 onClick={e => {
                   e.stopPropagation();
-                  onEdit(segmentationId, segmentIndex);
+                  onToggleVisibility(segmentationId, segmentIndex);
                 }}
               />
             ) : (
@@ -139,7 +140,7 @@ const SegmentItem = ({
                 })}
                 onClick={e => {
                   e.stopPropagation();
-                  onEdit(segmentationId, segmentIndex);
+                  onToggleVisibility(segmentationId, segmentIndex);
                 }}
               />
             )}

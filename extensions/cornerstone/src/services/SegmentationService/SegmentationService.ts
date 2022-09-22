@@ -121,8 +121,6 @@ const EVENTS = {
 
 const VALUE_TYPES = {};
 
-const EPSILON = 0.0001;
-
 class SegmentationService {
   listeners = {};
   segmentations: Record<string, Segmentation>;
@@ -349,9 +347,9 @@ class SegmentationService {
     segmentationId: string,
     segmentIndex: number,
     isVisible: boolean,
-    toolGroupId?: string
+    toolGroupId?: string,
+    suppressEvents = false
   ): void {
-    const suppressEvents = false;
     this._setSegmentVisibility(
       segmentationId,
       segmentIndex,
@@ -506,7 +504,6 @@ class SegmentationService {
   ): string {
     const { id: segmentationId } = segmentationSchema;
     let segmentation = this.segmentations[segmentationId];
-
     if (segmentation) {
       // Update the segmentation (mostly for assigning metadata/labels)
       Object.assign(segmentation, segmentationSchema);
@@ -1089,6 +1086,43 @@ class SegmentationService {
     return cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
   };
 
+  public setSegmentLabelForSegmentation(
+    segmentationId: string,
+    segmentIndex: number,
+    label: string
+  ) {
+    this._setSegmentLabelForSegmentation(segmentationId, segmentIndex, label);
+  }
+
+  private _setSegmentLabelForSegmentation(
+    segmentationId: string,
+    segmentIndex: number,
+    label: string,
+    suppressEvents = false
+  ) {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (segmentation === undefined) {
+      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+    }
+
+    const segmentInfo = segmentation.segments[segmentIndex];
+
+    if (segmentInfo === undefined) {
+      throw new Error(
+        `Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`
+      );
+    }
+
+    segmentInfo.label = label;
+
+    if (suppressEvents === false) {
+      // this._setSegmentationModified(segmentationId);
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+        segmentation,
+      });
+    }
+  }
   public shouldRenderSegmentation(
     viewportDisplaySetInstanceUIDs,
     segDisplaySetInstanceUID
@@ -1217,7 +1251,7 @@ class SegmentationService {
     const segments = segmentation.segments;
 
     if (!segments) {
-      return null;
+      return;
     }
 
     if (segments && segments.length > 0) {
@@ -1678,6 +1712,19 @@ class SegmentationService {
         representation.segmentationRepresentationUID,
         !visibility
       );
+
+      // set all segments to visible as well
+      const segments = this.getSegmentation(segmentationId).segments;
+      Object.keys(segments).forEach(segmentIndex => {
+        if (segmentIndex !== '0') {
+          this._setSegmentVisibility(
+            segmentationId,
+            Number(segmentIndex),
+            !visibility,
+            toolGroupId
+          );
+        }
+      });
     });
   };
 

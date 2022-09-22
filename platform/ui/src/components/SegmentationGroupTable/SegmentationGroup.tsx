@@ -6,18 +6,36 @@ import classnames from 'classnames';
 import Icon from '../Icon';
 import IconButton from '../IconButton';
 
-const AddNewSegmentRow = ({ onConfigChange, onSegmentAdd }) => {
+const AddNewSegmentRow = ({
+  id,
+  onConfigChange,
+  onToggleSegmentationVisibility,
+  onSegmentAdd,
+  isVisible,
+  showAddSegment,
+}) => {
   return (
-    <div className="flex flex-col">
-      <div
-        className="flex items-center px-3 h-[27px] bg-black text-primary-active hover:opacity-80 cursor-pointer text-[12px]"
-        onClick={() => onSegmentAdd()}
-      >
-        <div className="flex items-center pl-">
-          <Icon name="row-add" className="w-6 h-6" />
-          <div className="">Add Segment</div>
-        </div>
+    <div>
+      <div className="flex items-center pl-[29px] bg-black text-primary-active hover:opacity-80 cursor-pointer text-[12px] py-1">
+        {showAddSegment && (
+          <div className="flex items-center" onClick={() => onSegmentAdd()}>
+            <Icon name="row-add" className="w-5 h-5" />
+            <div className="">Add Segment</div>
+          </div>
+        )}
         <div className="flex-grow" />
+        <div
+          className="flex items-center pr-3"
+          onClick={() => {
+            onToggleSegmentationVisibility(id);
+          }}
+        >
+          {isVisible ? (
+            <Icon name="row-hide-all" className="w-5 h-5" />
+          ) : (
+            <Icon name="row-show-all" className="w-5 h-5" />
+          )}
+        </div>
       </div>
       {/* {isSegmentationConfigOpen && (
         <SegmentationConfig onConfigChange={onConfigChange} />
@@ -34,7 +52,7 @@ const SegmentGroupHeader = ({
   label,
   isActive,
   segmentCount,
-  onSegmentationRename,
+  onSegmentationEdit,
   onSegmentationDelete,
 }) => {
   return (
@@ -70,12 +88,12 @@ const SegmentGroupHeader = ({
         }}
       >
         <Dropdown
-          id="options"
+          id="segmentation-dropdown"
           showDropdownIcon={false}
           list={[
             {
               title: 'Rename',
-              onClick: onSegmentationRename,
+              onClick: onSegmentationEdit,
             },
             {
               title: 'Delete',
@@ -111,9 +129,8 @@ const SegmentationGroup = ({
   activeSegmentIndex,
   onSegmentAdd,
   onSegmentationClick,
-  onClickSegmentEdit,
   onClickSegmentColor,
-  onSegmentationRename,
+  onSegmentationEdit,
   onToggleSegmentVisibility,
   onToggleSegmentationVisibility,
   onSegmentDelete,
@@ -133,19 +150,21 @@ const SegmentationGroup = ({
           onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
           onSegmentationClick={onSegmentationClick}
           segmentCount={segmentCount}
-          onSegmentationRename={onSegmentationRename}
+          onSegmentationEdit={onSegmentationEdit}
           onSegmentationDelete={onSegmentationDelete}
         />
 
         {/* Add segment row */}
         {!isMinimized && (
           <div className="flex flex-col">
-            {showAddSegment && (
-              <AddNewSegmentRow
-                onConfigChange={onSegmentationConfigChange}
-                onSegmentAdd={onSegmentAdd}
-              />
-            )}
+            <AddNewSegmentRow
+              onConfigChange={onSegmentationConfigChange}
+              onSegmentAdd={onSegmentAdd}
+              isVisible={isVisible}
+              onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+              id={id}
+              showAddSegment={showAddSegment}
+            />
             {!!segments.length &&
               segments.map(segment => {
                 if (segment === undefined || segment === null) {
@@ -206,7 +225,7 @@ SegmentationGroup.propTypes = {
 
   onSegmentationClick: PropTypes.func.isRequired,
   onClickSegmentColor: PropTypes.func.isRequired,
-  onSegmentationRename: PropTypes.func.isRequired,
+  onSegmentationEdit: PropTypes.func.isRequired,
   onSegmentDelete: PropTypes.func.isRequired,
   onToggleMinimizeSegmentation: PropTypes.func.isRequired,
   onSegmentationConfigChange: PropTypes.func.isRequired,
