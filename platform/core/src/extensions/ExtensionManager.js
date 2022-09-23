@@ -286,8 +286,17 @@ export default class ExtensionManager {
 
   _initHangingProtocolsModule = (extensionModule, extensionId) => {
     const { HangingProtocolService } = this._servicesManager.services;
-    extensionModule.forEach(({ id, protocol }) => {
-      HangingProtocolService.addProtocol(id, protocol);
+    extensionModule.forEach(({ id, protocol, protocols }) => {
+      if (protocol) {
+        // Only auto-register if protocol specified, otherwise let mode register
+        HangingProtocolService.addProtocol(id, protocol);
+      }
+      // Deal with the older schema where items could be grouped
+      if (protocols) {
+        protocols.forEach(child => {
+          HangingProtocolService.addProtocol(child.id, child);
+        });
+      }
     });
   };
 

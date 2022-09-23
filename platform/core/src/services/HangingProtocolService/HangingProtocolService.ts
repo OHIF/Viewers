@@ -15,10 +15,19 @@ const EVENTS = {
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
+// Deal with the name change from type to viewportType as an any object.
+const fixViewportOptionsType = viewportOptions => {
+  if (!viewportOptions.viewportType) {
+    viewportOptions.viewportType = viewportOptions.type || 'stack';
+  }
+};
+
 class HangingProtocolService {
   studies: StudyMetadata[];
   // stores all the protocols (object or function that returns an object) in a map
   protocols: Map<string, Protocol>;
+  // Contains the list of currently active keys
+  activeProtocolIds: string[];
   // the current protocol that is being applied to the viewports in object format
   protocol: HangingProtocol.Protocol;
   stage: number;
@@ -123,8 +132,9 @@ class HangingProtocolService {
     // this.protocols is a map of protocols with the protocol id as the key
     // and the protocol or a function that returns a protocol as the value
     const protocols = [];
+    const keys = this.activeProtocolIds || this.protocols.keys();
     // @ts-ignore
-    for (const protocolId of this.protocols.keys()) {
+    for (const protocolId of keys) {
       const protocol = this.getProtocolById(protocolId);
       if (protocol) {
         protocols.push(protocol);
@@ -182,6 +192,48 @@ class HangingProtocolService {
     }
 
     this.protocols.set(protocolId, protocol);
+  }
+
+  /** Sets the given protocol object as active.  Also sets the default
+   * for the given id to the specified protocol - allows updating which
+   * protocol is active for a given name.
+   */
+  public setActiveProtocol(id: string, protocol?: Protocol): void {
+    if (protocol && this.protocols.get(id) !== protocol) {
+      this.addProtocol(id, protocol);
+    }
+    if (!this.activeProtocolIds) {
+      this.activeProtocolIds = [];
+    }
+    this.activeProtocolIds.push(id);
+  }
+
+  /** Sets the active hanging protocols set, given the extension names to load.
+   * @params extensionManager is the extension manager to load from
+   * @paprams hangingProtocols is a list of extensions to use for the
+   * active set.  If this is
+   */
+  public setActiveProtocols(
+    extensionManager: Record<string, unknown>,
+    hangingProtocols?: string[]
+  ): void {
+    this.activeProtocolIds = null;
+    if (!hangingProtocols) {
+      return;
+    }
+    this.activeProtocolIds = [];
+    hangingProtocols.forEach(extensionProtocols => {
+      const hangingProtocolModule = extensionManager.getModuleEntry(
+        extensionProtocols
+      );
+
+      if (hangingProtocolModule?.protocols) {
+        hangingProtocolModule.protocols.forEach(protocol =>
+          this.setActiveProtocol(protocol.id, protocol)
+        );
+      }
+      this.setActiveProtocol(hangingProtocolModule?.protocol);
+    });
   }
 
   /**
@@ -353,6 +405,7 @@ class HangingProtocolService {
         stage.viewports.forEach(viewport => {
           viewport.viewportOptions =
             viewport.viewportOptions || defaultViewportOptions;
+          fixViewportOptionsType(viewport.viewportOptions);
           if (!viewport.displaySets) {
             viewport.displaySets = [];
           } else {

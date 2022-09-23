@@ -114,9 +114,14 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { DisplaySetService } = servicesManager.services;
+  const {
+    DisplaySetService,
+    HangingProtocolService: hangingProtocolService,
+  } = servicesManager.services;
 
   const { extensions, sopClassHandlers, hotkeys, hangingProtocol } = mode;
+  // Allow the mode to specify the active hanging protocols list
+  const { hangingProtocols } = mode;
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;
@@ -242,6 +247,13 @@ export default function ModeRoute({
       commandsManager,
     });
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
+
+    // Sets the active hanging protocols - if hangingProtocols is undefined,
+    // resets to default.
+    hangingProtocolService.setActiveProtocols(
+      extensionManager,
+      hangingProtocols
+    );
 
     const setupRouteInit = async () => {
       if (route.init) {
