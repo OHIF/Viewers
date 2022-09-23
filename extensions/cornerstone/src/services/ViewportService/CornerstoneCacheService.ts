@@ -32,6 +32,8 @@ const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstone::viewportdatachanged',
 };
 
+export type IViewportData = StackData | VolumeData;
+
 class CornerstoneCacheService {
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
@@ -57,10 +59,11 @@ class CornerstoneCacheService {
     displaySets: unknown[],
     viewportType: string,
     dataSource: unknown,
+    callback: (val: IViewportData) => unknown,
     initialImageIndex?: number
   ): Promise<StackData | VolumeData> {
     const cs3DViewportType = getCornerstoneViewportType(viewportType);
-    let viewportData: StackData | VolumeData;
+    let viewportData: IViewportData;
 
     if (cs3DViewportType === Enums.ViewportType.STACK) {
       viewportData = await this._getStackViewportData(
@@ -76,6 +79,8 @@ class CornerstoneCacheService {
 
     viewportData.viewportType = cs3DViewportType;
 
+    await callback(viewportData);
+
     this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
       viewportData,
       viewportIndex,
@@ -83,7 +88,6 @@ class CornerstoneCacheService {
 
     return viewportData;
   }
-
   public async invalidateViewportData(
     viewportData: VolumeData,
     invalidatedDisplaySetInstanceUID: string,

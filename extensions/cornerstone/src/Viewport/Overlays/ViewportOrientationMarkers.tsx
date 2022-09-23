@@ -137,7 +137,7 @@ function ViewportOrientationMarkers({
       }
 
       const imageIndex = imageSliceData.imageIndex;
-      const imageId = viewportData?.imageIds[imageIndex];
+      const imageId = viewportData.imageIds?.[imageIndex];
 
       // Workaround for below TODO stub
       if (!imageId) {
