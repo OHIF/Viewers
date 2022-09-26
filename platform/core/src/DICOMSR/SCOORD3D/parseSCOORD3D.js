@@ -12,8 +12,7 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
     ds =>
       ds.Modality !== 'SR' &&
       ds.Modality !== 'SEG' &&
-      ds.Modality !== 'RTSTRUCT' &&
-      ds.Modality !== 'RTDOSE'
+      ds.Modality !== 'RTSTRUCT'
   );
 
   imageDisplaySets.forEach(imageDisplaySet => {
