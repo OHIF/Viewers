@@ -25,15 +25,15 @@ const AddNewSegmentRow = ({
         )}
         <div className="flex-grow" />
         <div
-          className="flex items-center pr-3"
+          className="flex items-center pr-2"
           onClick={() => {
             onToggleSegmentationVisibility(id);
           }}
         >
           {isVisible ? (
-            <Icon name="row-hide-all" className="w-5 h-5" />
-          ) : (
             <Icon name="row-show-all" className="w-5 h-5" />
+          ) : (
+            <Icon name="row-hide-all" className="w-5 h-5" />
           )}
         </div>
       </div>
@@ -65,12 +65,16 @@ const SegmentGroupHeader = ({
         }
       )}
       onClick={evt => {
-        onToggleMinimizeSegmentation(id);
+        evt.stopPropagation();
         onSegmentationClick(id);
       }}
     >
       <Icon
         name="panel-group-open-close"
+        onClick={evt => {
+          evt.stopPropagation();
+          onToggleMinimizeSegmentation(id);
+        }}
         className={classnames(
           'w-5 h-5 text-white transition duration-300 cursor-pointer',
           {
@@ -82,7 +86,6 @@ const SegmentGroupHeader = ({
       <div className="flex-grow" />
       <span className="text-white ">{segmentCount}</span>
       <div
-        className="flex"
         onClick={e => {
           e.stopPropagation();
         }}
@@ -93,11 +96,15 @@ const SegmentGroupHeader = ({
           list={[
             {
               title: 'Rename',
-              onClick: onSegmentationEdit,
+              onClick: () => {
+                onSegmentationEdit(id);
+              },
             },
             {
               title: 'Delete',
-              onClick: onSegmentationDelete,
+              onClick: () => {
+                onSegmentationDelete(id);
+              },
             },
           ]}
         >
@@ -124,6 +131,7 @@ const SegmentationGroup = ({
   isActive,
   onSegmentClick,
   isMinimized,
+  onSegmentColorClick,
   showAddSegment,
   segments,
   activeSegmentIndex,
@@ -191,7 +199,7 @@ const SegmentationGroup = ({
                     onClick={onSegmentClick}
                     onEdit={onSegmentEdit}
                     onDelete={onSegmentDelete}
-                    onColor={onClickSegmentColor}
+                    onColor={onSegmentColorClick}
                     onToggleVisibility={onToggleSegmentVisibility}
                   />
                 );

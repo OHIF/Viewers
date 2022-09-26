@@ -825,6 +825,13 @@ class SegmentationService {
       ]
     );
 
+    // set the latest segmentation representation as active one
+    this._setActiveSegmentationForToolGroup(
+      segmentationId,
+      toolGroupId,
+      segmentationRepresentationUIDs[0]
+    );
+
     cstSegmentation.config.color.setColorLUT(
       toolGroupId,
       segmentationRepresentationUIDs[0],
@@ -833,7 +840,7 @@ class SegmentationService {
 
     // add the segmentation segments properly
     for (const segment of segmentation.segments) {
-      if (segment === null || segment == undefined) {
+      if (segment === null || segment === undefined) {
         continue;
       }
 
@@ -886,6 +893,37 @@ class SegmentationService {
         );
       }
     }
+  };
+
+  public setSegmentRGBAColorForSegmentation = (
+    segmentationId: string,
+    segmentIndex: number,
+    rgbaColor
+  ) => {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (segmentation === undefined) {
+      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+    }
+
+    this._setSegmentOpacity(
+      segmentationId,
+      segmentIndex,
+      rgbaColor[3],
+      null, // toolGroupId
+      true
+    );
+    this._setSegmentColor(
+      segmentationId,
+      segmentIndex,
+      [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
+      null, // toolGroupId
+      true
+    );
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      segmentation,
+    });
   };
 
   public hydrateSegmentation = (
@@ -1176,11 +1214,9 @@ class SegmentationService {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
     }
 
-    // Todo: this has a bug in which others are not set to inactive,
-    // commenting it for now
-    // segmentations.forEach(segmentation => {
-    //   segmentation.isActive = segmentation.id === segmentationId;
-    // });
+    segmentations.forEach(segmentation => {
+      segmentation.isActive = segmentation.id === segmentationId;
+    });
 
     const representation = this._getSegmentationRepresentation(
       segmentationId,

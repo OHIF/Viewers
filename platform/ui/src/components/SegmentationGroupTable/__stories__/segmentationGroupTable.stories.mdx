@@ -37,17 +37,8 @@ SegmentationGroupTable is a component that renders the SegmentationGroupTables.
     name="Overview"
     args={{
       activeSegmentationId: 'ed8d6f8d-4035-438d-9032-36d5912aaa3a',
-      onSegmentationAdd: () => window.alert('onSegmentationAdd'),
-      onSegmentationRename: () => window.alert('onSegmentationRename'),
-      onSegmentationDelete: () => window.alert('onSegmentationDelete'),
-      onSegmentClick: () => window.alert('onSegmentClick'),
-      onSegmentEdit: () => window.alert('onSegmentEdit'),
-      onSegmentHide: () => window.alert('onSegmentHide'),
-      onSegmentAdd: () => window.alert('onSegmentAdd'),
-      onSegmentDelete: () => window.alert('onSegmentDelete'),
-      onToggleSegmentationVisibility: () => window.alert('onToggleSegmentationVisibility'),
-      onToggleSegmentVisibility: () => window.alert('onToggleSegmentVisibility'),
       showAddSegmentation: true,
+      isMinimized: {"4be5-b9b2-ed33-fa86970568e7": false},
       showAddSegment: true,
        segmentations: [
   {
@@ -100,7 +91,7 @@ SegmentationGroupTable is a component that renders the SegmentationGroupTables.
         "isLocked": false
       }
     ],
-    "isActive": true,
+    "isActive": false,
     "colorLUTIndex": 1,
     "isVisible": true
   },
@@ -130,7 +121,7 @@ SegmentationGroupTable is a component that renders the SegmentationGroupTables.
         "isLocked": false,
       },
     ],
-    "isActive": false,
+    "isActive": true,
     "colorLUTIndex": 1,
     "isVisible": true
   }

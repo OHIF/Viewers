@@ -60,24 +60,9 @@ const SegmentationGroupTable = ({
   onToggleSegmentationVisibility,
   onToggleSegmentVisibility,
   onSegmentColorClick,
+  isMinimized,
+  onToggleMinimizeSegmentation,
 }) => {
-  const [isMinimized, setIsMinimized] = useState(() => {
-    return segmentations.reduce((acc, { id }) => {
-      acc[id] = true;
-      return acc;
-    }, {});
-  });
-
-  const onToggleMinimizeSegmentation = useCallback(
-    id => {
-      setIsMinimized(prevState => ({
-        ...prevState,
-        [id]: !prevState[id],
-      }));
-    },
-    [setIsMinimized]
-  );
-
   return (
     <div className="font-inter">
       <GetSegmentationConfig
@@ -85,7 +70,7 @@ const SegmentationGroupTable = ({
         showAddSegmentation={showAddSegmentation}
         onSegmentationAdd={onSegmentationAdd}
       />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
         {!!segmentations.length &&
           segmentations.map(segmentation => {
             const {
@@ -99,29 +84,34 @@ const SegmentationGroupTable = ({
               activeSegmentIndex,
             } = segmentation;
             return (
-              <SegmentationGroup
-                key={id}
-                id={id}
-                label={label}
-                isMinimized={isMinimized[id]}
-                segments={segments}
-                showAddSegment={showAddSegment}
-                segmentCount={segmentCount}
-                isActive={isActive}
-                isVisible={isVisible}
-                onSegmentColorClick={onSegmentColorClick}
-                onSegmentationClick={() => onSegmentationClick(id)}
-                activeSegmentIndex={activeSegmentIndex}
-                onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-                onSegmentationEdit={onSegmentationEdit}
-                onSegmentationDelete={onSegmentationDelete}
-                onSegmentClick={onSegmentClick}
-                onSegmentEdit={onSegmentEdit}
-                onToggleSegmentVisibility={onToggleSegmentVisibility}
-                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-                onSegmentAdd={onSegmentAdd}
-                onSegmentDelete={onSegmentDelete}
-              />
+              <>
+                <SegmentationGroup
+                  key={id}
+                  id={id}
+                  label={label}
+                  isMinimized={isMinimized[id]}
+                  segments={segments}
+                  showAddSegment={showAddSegment}
+                  segmentCount={segmentCount}
+                  isActive={isActive}
+                  isVisible={isVisible}
+                  onSegmentColorClick={onSegmentColorClick}
+                  onSegmentationClick={() => onSegmentationClick(id)}
+                  activeSegmentIndex={activeSegmentIndex}
+                  onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+                  onSegmentationEdit={onSegmentationEdit}
+                  onSegmentationDelete={onSegmentationDelete}
+                  onSegmentClick={onSegmentClick}
+                  onSegmentEdit={onSegmentEdit}
+                  onToggleSegmentVisibility={onToggleSegmentVisibility}
+                  onToggleSegmentationVisibility={
+                    onToggleSegmentationVisibility
+                  }
+                  onSegmentAdd={onSegmentAdd}
+                  onSegmentDelete={onSegmentDelete}
+                />
+                <div className="h-2 bg-black"></div>
+              </>
             );
           })}
       </div>

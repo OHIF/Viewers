@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import callInputDialog from './callInputDialog';
 
 import { useTranslation } from 'react-i18next';
+import callColorPickerDialog from './callColorPickerDialog';
 
 export default function PanelSegmentation({
   servicesManager,
@@ -17,6 +18,29 @@ export default function PanelSegmentation({
   const [segmentations, setSegmentations] = useState(() =>
     SegmentationService.getSegmentations()
   );
+
+  const [isMinimized, setIsMinimized] = useState({});
+
+  const onToggleMinimizeSegmentation = useCallback(
+    id => {
+      setIsMinimized(prevState => ({
+        ...prevState,
+        [id]: !prevState[id],
+      }));
+    },
+    [setIsMinimized]
+  );
+
+  // Only expand the last segmentation added to the list and collapse the rest
+  useEffect(() => {
+    const lastSegmentationId = segmentations[segmentations.length - 1]?.id;
+    if (lastSegmentationId) {
+      setIsMinimized(prevState => ({
+        ...prevState,
+        [lastSegmentationId]: false,
+      }));
+    }
+  }, [segmentations, setIsMinimized]);
 
   useEffect(() => {
     // ~~ Subscription
@@ -84,8 +108,12 @@ export default function PanelSegmentation({
       }
 
       SegmentationService.addOrUpdateSegmentation(
-        { id: segmentationId, label },
-        true
+        {
+          id: segmentationId,
+          label,
+        },
+        false, // suppress event
+        true // notYetUpdatedAtSource
       );
     });
   };
@@ -151,7 +179,7 @@ export default function PanelSegmentation({
 
   return (
     <div className="flex flex-col justify-between h-full">
-      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+      <div className="invisible-scrollbar">
         {/* show segmentation table */}
         {segmentations?.length ? (
           <SegmentationGroupTable
@@ -159,6 +187,7 @@ export default function PanelSegmentation({
             amount={segmentations.length}
             showAddSegmentation={false}
             segmentations={segmentations}
+            isMinimized={isMinimized}
             activeSegmentationId={selectedSegmentationId}
             onSegmentationClick={onSegmentationClick}
             onSegmentationDelete={onSegmentationDelete}
@@ -169,6 +198,7 @@ export default function PanelSegmentation({
             onSegmentDelete={onSegmentDelete}
             onToggleSegmentVisibility={onToggleSegmentVisibility}
             onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+            onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
           />
         ) : null}
       </div>

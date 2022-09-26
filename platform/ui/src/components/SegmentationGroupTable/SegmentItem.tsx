@@ -81,7 +81,7 @@ const SegmentItem = ({
       </div>
       <div
         className={classnames(
-          'flex items-center justify-between w-full px-2 py-1 text-white border-r border-r-black ',
+          'flex items-center justify-between w-full pl-2 py-1 text-white border-r border-r-black ',
           {
             'bg-secondary-dark text-primary-light': isActive,
             'bg-primary-dark text-aqua-pale': !isActive && isVisible,
@@ -93,21 +93,27 @@ const SegmentItem = ({
           <div
             className={classnames('w-[8px] h-[8px] rounded-full')}
             style={{ backgroundColor: cssColor }}
+            onClick={e => {
+              e.stopPropagation();
+              onColor(segmentationId, segmentIndex);
+            }}
           />
           <div>{label}</div>
         </div>
         {!isVisible && !isHovering && (
-          <Icon
-            name="row-hidden"
-            className={classnames('w-5 h-5 text-[#3d5871')}
-            onClick={e => {
-              e.stopPropagation();
-              onToggleVisibility(segmentationId, segmentIndex);
-            }}
-          />
+          <div className="pr-[7px]">
+            <Icon
+              name="row-hidden"
+              className={classnames('w-5 h-5 text-[#3d5871] ')}
+              onClick={e => {
+                e.stopPropagation();
+                onToggleVisibility(segmentationId, segmentIndex);
+              }}
+            />
+          </div>
         )}
         {isHovering && (
-          <div className={classnames('flex items-center gap-2')}>
+          <div className={classnames('flex items-center pr-[7px]')}>
             <Icon
               name="row-edit"
               className={classnames('w-5 h-5', {
