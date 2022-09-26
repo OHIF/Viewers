@@ -1,0 +1,8 @@
+input[type='text'] {
+  -webkit-appearance: none;
+}
+
+input[type='text']:focus {
+  border: none;
+  outline: none;
+}

@@ -38,6 +38,8 @@ import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
 import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
+import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
+import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -130,6 +132,8 @@ const ICONS = {
   'row-show-all': rowShowAll,
   'row-unhide': rowUnhide,
   'row-unlocked': rowUnlocked,
+  'checkbox-checked': checkboxChecked,
+  'checkbox-unchecked': checkboxUnchecked,
 
   /** Tools */
   'tool-zoom': toolZoom,
