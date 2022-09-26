@@ -127,6 +127,7 @@ function OpenIdConnectRoutes({
 
   //for multi-tab logout
   useEffect(() => {
+    localStorage.removeItem('signoutEvent');
     const storageEventListener = event => {
       const signOutEvent = localStorage.getItem('signoutEvent');
       if (signOutEvent) {
@@ -140,7 +141,6 @@ function OpenIdConnectRoutes({
 
     return () => {
       window.removeEventListener('storage', storageEventListener);
-      localStorage.removeItem('signoutEvent');
     };
   }, []);
 
