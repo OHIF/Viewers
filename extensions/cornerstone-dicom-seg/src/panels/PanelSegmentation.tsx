@@ -178,31 +178,29 @@ export default function PanelSegmentation({
   };
 
   return (
-    <div className="flex flex-col justify-between h-full">
-      <div className="invisible-scrollbar">
-        {/* show segmentation table */}
-        {segmentations?.length ? (
-          <SegmentationGroupTable
-            title={t('Segmentations')}
-            amount={segmentations.length}
-            showAddSegmentation={false}
-            segmentations={segmentations}
-            isMinimized={isMinimized}
-            activeSegmentationId={selectedSegmentationId}
-            onSegmentationClick={onSegmentationClick}
-            onSegmentationDelete={onSegmentationDelete}
-            onSegmentationEdit={onSegmentationEdit}
-            onSegmentClick={onSegmentClick}
-            onSegmentEdit={onSegmentEdit}
-            onSegmentColorClick={onSegmentColorClick}
-            onSegmentDelete={onSegmentDelete}
-            onToggleSegmentVisibility={onToggleSegmentVisibility}
-            onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-            onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-          />
-        ) : null}
-      </div>
-      <div
+    <div className="flex flex-col justify-between h-full invisible-scrollbar">
+      {/* show segmentation table */}
+      {segmentations?.length ? (
+        <SegmentationGroupTable
+          title={t('Segmentations')}
+          amount={segmentations.length}
+          showAddSegmentation={false}
+          segmentations={segmentations}
+          isMinimized={isMinimized}
+          activeSegmentationId={selectedSegmentationId}
+          onSegmentationClick={onSegmentationClick}
+          onSegmentationDelete={onSegmentationDelete}
+          onSegmentationEdit={onSegmentationEdit}
+          onSegmentClick={onSegmentClick}
+          onSegmentEdit={onSegmentEdit}
+          onSegmentColorClick={onSegmentColorClick}
+          onSegmentDelete={onSegmentDelete}
+          onToggleSegmentVisibility={onToggleSegmentVisibility}
+          onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+          onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+        />
+      ) : null}
+      {/* <div
         className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mb-4 cursor-pointer"
         onClick={() => {
           // navigate to a url in a new tab
@@ -219,7 +217,7 @@ export default function PanelSegmentation({
           className={'ml-4 mr-3 text-primary-active'}
         />
         <span>{'User Guide'}</span>
-      </div>
+      </div> */}
     </div>
   );
 }

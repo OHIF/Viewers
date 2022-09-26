@@ -149,64 +149,60 @@ const SegmentationGroup = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <div>
-        <SegmentGroupHeader
-          id={id}
-          label={label}
-          isActive={isActive}
-          isMinimized={isMinimized}
-          onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-          onSegmentationClick={onSegmentationClick}
-          segmentCount={segmentCount}
-          onSegmentationEdit={onSegmentationEdit}
-          onSegmentationDelete={onSegmentationDelete}
-        />
+      <SegmentGroupHeader
+        id={id}
+        label={label}
+        isActive={isActive}
+        isMinimized={isMinimized}
+        onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+        onSegmentationClick={onSegmentationClick}
+        segmentCount={segmentCount}
+        onSegmentationEdit={onSegmentationEdit}
+        onSegmentationDelete={onSegmentationDelete}
+      />
+      {!isMinimized && (
+        <div className="max-h-104 ohif-scrollbar overflow-hidden">
+          <AddNewSegmentRow
+            onConfigChange={onSegmentationConfigChange}
+            onSegmentAdd={onSegmentAdd}
+            isVisible={isVisible}
+            onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+            id={id}
+            showAddSegment={showAddSegment}
+          />
+          {!!segments.length &&
+            segments.map(segment => {
+              if (segment === undefined || segment === null) {
+                return null;
+              }
 
-        {/* Add segment row */}
-        {!isMinimized && (
-          <div className="flex flex-col">
-            <AddNewSegmentRow
-              onConfigChange={onSegmentationConfigChange}
-              onSegmentAdd={onSegmentAdd}
-              isVisible={isVisible}
-              onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-              id={id}
-              showAddSegment={showAddSegment}
-            />
-            {!!segments.length &&
-              segments.map(segment => {
-                if (segment === undefined || segment === null) {
-                  return null;
-                }
-
-                const {
-                  segmentIndex,
-                  color,
-                  label,
-                  isVisible,
-                  isLocked,
-                } = segment;
-                return (
-                  <SegmentItem
-                    key={segmentIndex}
-                    segmentationId={id}
-                    segmentIndex={segmentIndex}
-                    label={label}
-                    color={color}
-                    isActive={activeSegmentIndex === segmentIndex}
-                    isLocked={isLocked}
-                    isVisible={isVisible}
-                    onClick={onSegmentClick}
-                    onEdit={onSegmentEdit}
-                    onDelete={onSegmentDelete}
-                    onColor={onSegmentColorClick}
-                    onToggleVisibility={onToggleSegmentVisibility}
-                  />
-                );
-              })}
-          </div>
-        )}
-      </div>
+              const {
+                segmentIndex,
+                color,
+                label,
+                isVisible,
+                isLocked,
+              } = segment;
+              return (
+                <SegmentItem
+                  key={segmentIndex}
+                  segmentationId={id}
+                  segmentIndex={segmentIndex}
+                  label={label}
+                  color={color}
+                  isActive={activeSegmentIndex === segmentIndex}
+                  isLocked={isLocked}
+                  isVisible={isVisible}
+                  onClick={onSegmentClick}
+                  onEdit={onSegmentEdit}
+                  onDelete={onSegmentDelete}
+                  onColor={onSegmentColorClick}
+                  onToggleVisibility={onToggleSegmentVisibility}
+                />
+              );
+            })}
+        </div>
+      )}
     </div>
   );
 };

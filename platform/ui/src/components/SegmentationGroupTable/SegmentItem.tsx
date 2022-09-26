@@ -29,14 +29,13 @@ const SegmentItem = ({
   return (
     <div
       className={classnames(
-        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px]',
+        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px] overflow-hidden',
         {
-          'border border-primary-light rounded-sm':
+          'border border-primary-light rounded-[3px]':
             isHovering || isSegmentIndexHovering,
         },
         {
-          'border border-transparent rounded-lg':
-            !isHovering && !isSegmentIndexHovering,
+          'border border-transparent': !isHovering && !isSegmentIndexHovering,
         }
       )}
       onMouseEnter={onMouseEnter}
@@ -57,7 +56,7 @@ const SegmentItem = ({
           className={classnames(
             'w-[27px] h-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
             {
-              'bg-primary-light text-black': isActive,
+              'bg-primary-light text-black border-l border-l-primary-light rounded-l-sm': isActive,
               'bg-primary-dark text-aqua-pale': !isActive && isVisible,
               'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
             }
@@ -81,7 +80,7 @@ const SegmentItem = ({
       </div>
       <div
         className={classnames(
-          'flex items-center justify-between w-full pl-2 py-1 text-white border-r border-r-black ',
+          'flex items-center justify-between w-full pl-2 py-1 text-white border-r border-r-black relative ',
           {
             'bg-secondary-dark text-primary-light': isActive,
             'bg-primary-dark text-aqua-pale': !isActive && isVisible,
@@ -89,69 +88,72 @@ const SegmentItem = ({
           }
         )}
       >
-        <div className={classnames('flex items-center gap-2')}>
+        <div className={classnames('flex items-baseline gap-2')}>
           <div
-            className={classnames('w-[8px] h-[8px] rounded-full')}
+            className={classnames('shrink-0 w-[8px] h-[8px] rounded-full')}
             style={{ backgroundColor: cssColor }}
             onClick={e => {
               e.stopPropagation();
               onColor(segmentationId, segmentIndex);
             }}
           />
-          <div>{label}</div>
+          <div className="">{label}</div>
         </div>
-        {!isVisible && !isHovering && (
-          <div className="pr-[7px]">
-            <Icon
-              name="row-hidden"
-              className={classnames('w-5 h-5 text-[#3d5871] ')}
-              onClick={e => {
-                e.stopPropagation();
-                onToggleVisibility(segmentationId, segmentIndex);
-              }}
-            />
-          </div>
-        )}
-        {isHovering && (
-          <div className={classnames('flex items-center pr-[7px]')}>
-            <Icon
-              name="row-edit"
-              className={classnames('w-5 h-5', {
-                'text-white': isLocked,
-                'text-primary-light': !isLocked,
-              })}
-              onClick={e => {
-                e.stopPropagation();
-                onEdit(segmentationId, segmentIndex);
-              }}
-            />
-            {isVisible ? (
+        {/* with faded background */}
+        <div className="absolute right-0 bg-black/15 rounded-lg pr-[7px]">
+          {!isVisible && !isHovering && (
+            <div>
               <Icon
-                name="row-hide"
+                name="row-hidden"
+                className={classnames('w-5 h-5 text-[#3d5871] ')}
+                onClick={e => {
+                  e.stopPropagation();
+                  onToggleVisibility(segmentationId, segmentIndex);
+                }}
+              />
+            </div>
+          )}
+          {isHovering && (
+            <div className={classnames('flex items-center')}>
+              <Icon
+                name="row-edit"
                 className={classnames('w-5 h-5', {
                   'text-white': isLocked,
                   'text-primary-light': !isLocked,
                 })}
                 onClick={e => {
                   e.stopPropagation();
-                  onToggleVisibility(segmentationId, segmentIndex);
+                  onEdit(segmentationId, segmentIndex);
                 }}
               />
-            ) : (
-              <Icon
-                name="row-unhide"
-                className={classnames('w-5 h-5', {
-                  'text-white': isLocked,
-                  'text-primary-light': !isLocked,
-                })}
-                onClick={e => {
-                  e.stopPropagation();
-                  onToggleVisibility(segmentationId, segmentIndex);
-                }}
-              />
-            )}
-          </div>
-        )}
+              {isVisible ? (
+                <Icon
+                  name="row-hide"
+                  className={classnames('w-5 h-5', {
+                    'text-white': isLocked,
+                    'text-primary-light': !isLocked,
+                  })}
+                  onClick={e => {
+                    e.stopPropagation();
+                    onToggleVisibility(segmentationId, segmentIndex);
+                  }}
+                />
+              ) : (
+                <Icon
+                  name="row-unhide"
+                  className={classnames('w-5 h-5', {
+                    'text-white': isLocked,
+                    'text-primary-light': !isLocked,
+                  })}
+                  onClick={e => {
+                    e.stopPropagation();
+                    onToggleVisibility(segmentationId, segmentIndex);
+                  }}
+                />
+              )}
+            </div>
+          )}
+        </div>
       </div>
       {/* <div className="relative flex flex-col w-full border-t border-t-black">
         <div className="fl`ex items-center mb-1 ml-2">

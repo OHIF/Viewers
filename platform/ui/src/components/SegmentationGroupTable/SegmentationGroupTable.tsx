@@ -14,7 +14,7 @@ const GetSegmentationConfig = ({
   );
 
   return (
-    <div className="flex flex-col text-primary-active bg-black text-[12px] px-[8px] justify-center">
+    <div className="flex flex-col text-primary-active bg-black text-[12px] px-[8px] justify-center ohif-scrollbar max-h-112">
       <div
         className="flex items-center cursor-pointer h-[42px]"
         onClick={() => setIsSegmentationConfigOpen(!isSegmentationConfigOpen)}
@@ -70,7 +70,7 @@ const SegmentationGroupTable = ({
         showAddSegmentation={showAddSegmentation}
         onSegmentationAdd={onSegmentationAdd}
       />
-      <div className="flex flex-col">
+      <div className="flex flex-col pr-[1px]">
         {!!segmentations.length &&
           segmentations.map(segmentation => {
             const {
