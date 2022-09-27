@@ -64,6 +64,9 @@ import HotkeyField from './HotkeyField';
 import Header from './Header';
 import ImageScrollbar from './ImageScrollbar';
 import ViewportOverlay from './ViewportOverlay';
+import InputRange from './InputRange';
+import InputNumber from './InputNumber';
+import CheckBox from './CheckBox';
 
 export {
   AboutModal,
@@ -75,6 +78,7 @@ export {
   ButtonGroup,
   ContextMenu,
   CinePlayer,
+  CheckBox,
   DateRange,
   Dialog,
   Dropdown,
@@ -87,6 +91,8 @@ export {
   Input,
   InputDateRange,
   InputGroup,
+  InputRange,
+  InputNumber,
   InputLabelWrapper,
   InputMultiSelect,
   InputText,

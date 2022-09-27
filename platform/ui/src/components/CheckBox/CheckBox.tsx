@@ -50,7 +50,7 @@ const CheckBox: React.FC<{
       <Typography
         variant={labelVariant ?? 'subtitle'}
         component="p"
-        className={labelClassName ?? 'text-white'}
+        className={labelClassName ?? 'text-white '}
       >
         {label}
       </Typography>

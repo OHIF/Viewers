@@ -58,7 +58,7 @@ const SegmentGroupHeader = ({
   return (
     <div
       className={classnames(
-        'flex items-center pr-2 pl-[10px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
+        'flex items-center pr-2 pl-[4px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
         {
           'bg-secondary-main': isActive,
           'bg-secondary-dark': !isActive,

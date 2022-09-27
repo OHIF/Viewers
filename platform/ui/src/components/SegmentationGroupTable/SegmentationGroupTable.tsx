@@ -1,47 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from '../';
+import Icon from '../Icon';
 import SegmentationGroup from './SegmentationGroup';
 import SegmentationConfig from './SegmentationConfig';
 
-const GetSegmentationConfig = ({
-  onConfigChange,
-  showAddSegmentation,
-  onSegmentationAdd,
-}) => {
-  const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] = useState(
-    false
-  );
-
-  return (
-    <div className="flex flex-col text-primary-active bg-black text-[12px] px-[8px] justify-center ohif-scrollbar max-h-112">
-      <div
-        className="flex items-center cursor-pointer h-[42px]"
-        onClick={() => setIsSegmentationConfigOpen(!isSegmentationConfigOpen)}
-      >
-        {showAddSegmentation && (
-          <div
-            className="flex items-center cursor-pointer hover:opacity-80"
-            onClick={() => onSegmentationAdd()}
-          >
-            <Icon name="row-add" className="w-6 h-6" />
-            <div className="pl-1">Add</div>
-          </div>
-        )}
-        <div className="flex-grow" />
-        <div className="flex items-center cursor-pointer hover:opacity-80">
-          <Icon
-            name="settings"
-            className="w-4 h-4 cursor-pointer hover:opacity-80"
-          />
-          <div className="pl-2">Appearance</div>
-        </div>
-      </div>
-      {isSegmentationConfigOpen && (
-        <SegmentationConfig onConfigChange={onConfigChange} />
-      )}
-    </div>
-  );
+const GetSegmentationConfig = ({ onConfigChange }) => {
+  return <SegmentationConfig onConfigChange={onConfigChange} />;
 };
 
 const SegmentationGroupTable = ({
@@ -64,7 +28,7 @@ const SegmentationGroupTable = ({
   onToggleMinimizeSegmentation,
 }) => {
   return (
-    <div className="font-inter">
+    <div className="font-inter font-[300]">
       <GetSegmentationConfig
         onConfigChange={onGlobalConfigChange}
         showAddSegmentation={showAddSegmentation}
@@ -115,6 +79,15 @@ const SegmentationGroupTable = ({
             );
           })}
       </div>
+      {showAddSegmentation && (
+        <div
+          className="flex items-center cursor-pointer hover:opacity-80 text-primary-active bg-black text-[12px] pl-1 h-[45px]"
+          onClick={() => onSegmentationAdd()}
+        >
+          <Icon name="row-add" className="w-5 h-5" />
+          <div className="pl-1">Add New Segmentation</div>
+        </div>
+      )}
     </div>
   );
 };

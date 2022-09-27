@@ -19,7 +19,8 @@ const InputRange: React.FC<{
   maxValue: number;
   step: number;
   unit?: string;
-  className?: string;
+  containerClassName?: string;
+  inputClassName?: string;
   labelClassName?: string;
   labelVariant?: string;
 }> = ({
@@ -29,7 +30,8 @@ const InputRange: React.FC<{
   maxValue,
   step = 1,
   unit = '',
-  className,
+  containerClassName,
+  inputClassName,
   labelClassName,
   labelVariant,
 }) => {
@@ -50,7 +52,7 @@ const InputRange: React.FC<{
   return (
     <div
       className={`flex items-center cursor-pointer space-x-1 ${
-        className ? className : ''
+        containerClassName ? containerClassName : ''
       }`}
     >
       <input
@@ -58,7 +60,9 @@ const InputRange: React.FC<{
         min={minValue}
         max={maxValue}
         value={rangeValue}
-        className={`appearance-none w-auto h-[3px] rounded-lg`}
+        className={`appearance-none h-[3px] rounded-lg ${
+          inputClassName ? inputClassName : ''
+        }`}
         style={{
           background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
             10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,

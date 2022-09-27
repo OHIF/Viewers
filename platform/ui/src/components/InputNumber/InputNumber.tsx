@@ -71,7 +71,7 @@ const InputNumber: React.FC<{
             variant="text"
             color="inherit"
             size="initial"
-            className="text-[#726f7e] transform rotate-180"
+            className="text-[#726f7e] transform rotate-180 grow"
             onClick={handleIncrement}
           >
             <Icon name="arrow-down" />
@@ -81,7 +81,7 @@ const InputNumber: React.FC<{
             variant="text"
             color="inherit"
             size="initial"
-            className="text-[#726f7e]"
+            className="text-[#726f7e] grow"
             onClick={handleDecrement}
           >
             <Icon name="arrow-down" />
