@@ -5,7 +5,7 @@ import {
   utilities as cstUtils,
   segmentation as cstSegmentation,
   CONSTANTS as cstConstants,
-  Enums as cstEnums,
+  Enums as csToolsEnums,
   Types as cstTypes,
 } from '@cornerstonejs/tools';
 import {
@@ -15,7 +15,6 @@ import {
   volumeLoader,
   Types,
 } from '@cornerstonejs/core';
-import { Enums as csToolsEnums } from '@cornerstonejs/tools';
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -65,7 +64,7 @@ type Segmentation = {
   // the set of segments that are locked
   segmentsLocked: Set<number>;
   // the segmentation representation type
-  type: cstEnums.SegmentationRepresentations;
+  type: csToolsEnums.SegmentationRepresentations;
   // if labelmap, the id of the volume that the labelmap is associated with
   volumeId?: string;
   // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport
@@ -88,7 +87,7 @@ type SegmentationSchema = {
   // segment indices that are locked for the segmentation
   segmentsLocked: Set<number>;
   // the type of the segmentation (e.g., Labelmap etc.)
-  type: cstEnums.SegmentationRepresentations;
+  type: csToolsEnums.SegmentationRepresentations;
   // the volume id of the volume that the labelmap is associated with, this only exists for the labelmap representation
   volumeId: string;
   // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport
@@ -750,7 +749,7 @@ class SegmentationService {
     toolGroupId: string,
     segmentationId: string,
     hydrateSegmentation = true,
-    representationType = cstEnums.SegmentationRepresentations.Labelmap
+    representationType = csToolsEnums.SegmentationRepresentations.Labelmap
   ): Promise<void> => {
     const segmentation = this.getSegmentation(segmentationId);
 

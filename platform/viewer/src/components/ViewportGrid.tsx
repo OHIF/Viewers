@@ -37,7 +37,7 @@ function ViewerViewportGrid(props) {
       // Match each viewport individually
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
       for (let i = 0; i < numViewports; i++) {
-        if (viewportsDisplaySetsMatched.get(i)) {
+        if (hpAlreadyApplied[i] === true) {
           continue;
         }
 
