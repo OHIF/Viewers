@@ -186,15 +186,6 @@ function CornerstoneViewportOverlay({
     return null;
   }
 
-  if (
-    viewportData.viewportType !== Enums.ViewportType.STACK &&
-    viewportData.data.some(d => d.imageIds === undefined)
-  ) {
-    throw new Error(
-      'ViewportOverlay: only viewports with imageIds is supported at this time'
-    );
-  }
-
   return (
     <ViewportOverlay
       topLeft={getTopLeftContent()}

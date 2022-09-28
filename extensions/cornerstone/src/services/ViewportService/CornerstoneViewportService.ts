@@ -41,6 +41,7 @@ class CornerstoneViewportService implements IViewportService {
   renderingEngine: Types.IRenderingEngine | null;
   viewportsInfo: Map<number, ViewportInfo>;
   viewportGridResizeObserver: ResizeObserver | null;
+  viewportsDisplaySets: Map<string, string[]> = new Map();
 
   /**
    * Service-specific
@@ -273,7 +274,13 @@ class CornerstoneViewportService implements IViewportService {
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIndex } = viewportData.data;
+    const {
+      imageIds,
+      initialImageIndex,
+      displaySetInstanceUID,
+    } = viewportData.data;
+
+    this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
     let initialImageIndexToUse = initialImageIndex;
 
@@ -361,11 +368,24 @@ class CornerstoneViewportService implements IViewportService {
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
     const { HangingProtocolService } = this.servicesManager.services;
 
+    const volumeToLoad = [];
+    const displaySetInstanceUIDs = [];
+    const secondaryDisplaySetsToLoad = [];
+
     for (const [index, data] of viewportData.data.entries()) {
-      const imageIds = data.imageIds;
-      const displaySetInstanceUID = data.displaySetInstanceUID;
+      const { volume, imageIds, displaySetInstanceUID } = data;
+
+      displaySetInstanceUIDs.push(displaySetInstanceUID);
+
+      if (!volume) {
+        secondaryDisplaySetsToLoad.push(displaySetInstanceUID);
+        continue;
+      }
+
+      volumeToLoad.push(volume);
+
       const displaySetOptions = displaySetOptionsArray[index];
-      const volumeId = displaySetInstanceUID;
+      const { volumeId } = volume;
 
       const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
 
@@ -382,6 +402,8 @@ class CornerstoneViewportService implements IViewportService {
       });
     }
 
+    this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
+
     if (
       HangingProtocolService.hasCustomImageLoadStrategy() &&
       !HangingProtocolService.customImageLoadPerformed
@@ -393,7 +415,7 @@ class CornerstoneViewportService implements IViewportService {
       });
     }
 
-    viewportData.data.forEach(({ volume }) => {
+    volumeToLoad.forEach(volume => {
       volume.load();
     });
 
@@ -403,6 +425,39 @@ class CornerstoneViewportService implements IViewportService {
 
   public async setVolumesForViewport(viewport, volumeInputArray) {
     await viewport.setVolumes(volumeInputArray);
+
+    // load any secondary displaySets
+    const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
+    const {
+      DisplaySetService,
+      SegmentationService,
+      ToolGroupService,
+    } = this.servicesManager.services;
+
+    for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+      const displaySet = DisplaySetService.getDisplaySetByUID(
+        displaySetInstanceUID
+      );
+
+      // Todo: this needs to be refactored to be more generic
+      if (displaySet && displaySet.Modality === 'SEG') {
+        // Load SEG
+        const segDisplaySet = displaySet;
+        const { referencedVolumeId } = segDisplaySet;
+        const referencedVolume = cache.getVolume(referencedVolumeId);
+        const segmentationId = segDisplaySet.displaySetInstanceUID;
+
+        const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+
+        if (referencedVolume) {
+          SegmentationService.addSegmentationRepresentationToToolGroup(
+            toolGroup.id,
+            segmentationId
+          );
+          return;
+        }
+      }
+    }
 
     const viewportInfo = this.getViewportInfo(viewport.id);
     const initialImageOptions = viewportInfo.getInitialImageOptions();

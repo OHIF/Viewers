@@ -74,9 +74,6 @@ export default async function init({
 
   const metadataProvider = OHIF.classes.MetadataProvider;
 
-  volumeLoader.registerUnknownVolumeLoader(
-    cornerstoneStreamingImageVolumeLoader
-  );
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
     cornerstoneStreamingImageVolumeLoader

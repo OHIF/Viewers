@@ -82,7 +82,8 @@ function _getDisplaySetsFromSeries(
     displaySet.referencedDisplaySetInstanceUID =
       referencedDisplaySet.displaySetInstanceUID;
 
-    const referencedVolumeId = referencedDisplaySet.displaySetInstanceUID;
+    // Todo: this needs to be able to work with other reference volumes (other than streaming) such as nifti, etc.
+    const referencedVolumeId = `cornerstoneStreamingImageVolume:${referencedDisplaySet.displaySetInstanceUID}`;
     displaySet.referencedVolumeId = referencedVolumeId;
 
     return referencedDisplaySet;
@@ -95,12 +96,32 @@ function _getDisplaySetsFromSeries(
 }
 
 async function _load(segDisplaySet, servicesManager, extensionManager) {
-  if (segDisplaySet.isLoaded) {
+  const { SegmentationService } = servicesManager.services;
+
+  if (_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
     return;
   }
 
-  const { SegmentationService } = servicesManager.services;
-  // const segArrayBuffer = await instance.PixelData.retrieveBulkData();
+  if (
+    !segDisplaySet.segments ||
+    Object.keys(segDisplaySet.segments).length === 0
+  ) {
+    const segments = await _loadSegments(extensionManager, segDisplaySet);
+
+    segDisplaySet.segments = segments;
+  }
+
+  const suppressEvents = true;
+  await SegmentationService.createSegmentationForSEGDisplaySet(
+    segDisplaySet,
+    null,
+    suppressEvents
+  );
+
+  segDisplaySet.isLoaded = true;
+}
+
+async function _loadSegments(extensionManager, segDisplaySet) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
@@ -119,18 +140,7 @@ async function _load(segDisplaySet, servicesManager, extensionManager) {
   }
 
   const segments = _getSegments(dataset);
-  segDisplaySet.segments = segments;
-
-  if (!_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
-    const suppressEvents = true;
-    await SegmentationService.createSegmentationForSEGDisplaySet(
-      segDisplaySet,
-      null,
-      suppressEvents
-    );
-  }
-
-  segDisplaySet.isLoaded = true;
+  return segments;
 }
 
 function _segmentationExistsInCache(segDisplaySet, SegmentationService) {
