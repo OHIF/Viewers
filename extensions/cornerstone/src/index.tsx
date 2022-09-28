@@ -12,6 +12,7 @@ import commandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
+import SegmentationService from './services/SegmentationService';
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement } from './state';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
@@ -69,6 +70,8 @@ const cornerstoneExtension = {
     );
     servicesManager.registerService(ToolGroupService(servicesManager));
     servicesManager.registerService(SyncGroupService(servicesManager));
+    servicesManager.registerService(SegmentationService(servicesManager));
+
     await init({ servicesManager, commandsManager, configuration, appConfig });
   },
   getHangingProtocolModule,

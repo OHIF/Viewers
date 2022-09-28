@@ -27,10 +27,7 @@ const commandsModule = ({ servicesManager }) => {
     ToolBarService,
     UIDialogService,
     CornerstoneViewportService,
-    SegmentationService,
-    DisplaySetService,
     HangingProtocolService,
-    UINotificationService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
@@ -333,58 +330,6 @@ const commandsModule = ({ servicesManager }) => {
 
       csToolsUtils.scroll(viewport, options);
     },
-    async createSegmentationForDisplaySet({ displaySetInstanceUID }) {
-      const volumeId = displaySetInstanceUID;
-
-      const segmentationUID = csUtils.uuidv4();
-      const segmentationId = `${volumeId}::${segmentationUID}`;
-
-      await volumeLoader.createAndCacheDerivedVolume(volumeId, {
-        volumeId: segmentationId,
-      });
-
-      // Add the segmentations to state
-      segmentation.addSegmentations([
-        {
-          segmentationId,
-          representation: {
-            // The type of segmentation
-            type: Enums.SegmentationRepresentations.Labelmap,
-            // The actual segmentation data, in the case of labelmap this is a
-            // reference to the source volume of the segmentation.
-            data: {
-              volumeId: segmentationId,
-            },
-          },
-        },
-      ]);
-
-      return segmentationId;
-    },
-    async addSegmentationRepresentationToToolGroup({
-      segmentationId,
-      toolGroupId,
-      representationType,
-    }) {
-      // // Add the segmentation representation to the toolgroup
-      await segmentation.addSegmentationRepresentations(toolGroupId, [
-        {
-          segmentationId,
-          type: representationType,
-        },
-      ]);
-    },
-    getLabelmapVolumes: ({ segmentations }) => {
-      if (!segmentations || !segmentations.length) {
-        segmentations = SegmentationService.getSegmentations();
-      }
-
-      const labelmapVolumes = segmentations.map(segmentation => {
-        return cache.getVolume(segmentation.id);
-      });
-
-      return labelmapVolumes;
-    },
     setViewportColormap: ({
       viewportIndex,
       displaySetInstanceUID,
@@ -521,22 +466,6 @@ const commandsModule = ({ servicesManager }) => {
     },
     setViewportActive: {
       commandFn: actions.setViewportActive,
-      storeContexts: [],
-      options: {},
-    },
-    createSegmentationForDisplaySet: {
-      commandFn: actions.createSegmentationForDisplaySet,
-      storeContexts: [],
-      options: {},
-    },
-    addSegmentationRepresentationToToolGroup: {
-      commandFn: actions.addSegmentationRepresentationToToolGroup,
-      storeContexts: [],
-      options: {},
-    },
-
-    getLabelmapVolumes: {
-      commandFn: actions.getLabelmapVolumes,
       storeContexts: [],
       options: {},
     },

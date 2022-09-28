@@ -140,6 +140,7 @@ function modeFactory({ modeConfiguration }) {
         SyncGroupService,
         MeasurementService,
         ToolBarService,
+        SegmentationService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
@@ -147,6 +148,7 @@ function modeFactory({ modeConfiguration }) {
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
+      SegmentationService.destroy();
     },
     validationTags: {
       study: [],
@@ -174,7 +176,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [tmtv.petSUV, tmtv.ROIThresholdPanel],
+              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

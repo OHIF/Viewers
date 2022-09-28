@@ -17,10 +17,10 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SOPClassUID,
   } = instance;
 
   const displaySet = {
-    //plugin: id,
     Modality: 'SEG',
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
@@ -30,20 +30,42 @@ function _getDisplaySetsFromSeries(
     SeriesInstanceUID,
     StudyInstanceUID,
     SOPClassHandlerId,
+    SOPClassUID,
     referencedImages: null,
-    measurements: null,
+    referencedSeriesInstanceUID: null,
     isDerivedDisplaySet: true,
     isLoaded: false,
     sopClassUids,
     instance,
   };
 
-  displaySet.load = () => {
-    alert('load');
-  };
+  const referencedSeriesSequence = instance.ReferencedSeriesSequence;
+
+  if (!referencedSeriesSequence) {
+    throw new Error('ReferencedSeriesSequence is missing for the SEG');
+  }
+
+  const referencedSeries = referencedSeriesSequence[0];
+
+  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence
+  displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
+
+  // displaySet.getSourceDisplaySet = (
+  // ) => {
+  //   return getSourceDisplaySet(
+  //     studies,
+  //     displaySet,
+  //     activateLabelMap,
+  //     onDisplaySetLoadFailureHandler
+  //   );
+  // };
 
   return [displaySet];
 }
+
+function getSourceDisplaySet(
+
+)
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {

@@ -27,7 +27,6 @@ import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
-import initSegmentationService from './initSegmentationService';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -113,8 +112,6 @@ export default async function init({
     DisplaySetService,
     CornerstoneViewportService
   );
-
-  initSegmentationService(SegmentationService, CornerstoneViewportService);
 
   initCineService(CineService);
 

@@ -25,6 +25,7 @@ const commandsModule = ({
     HangingProtocolService,
     ToolGroupService,
     CornerstoneViewportService,
+    SegmentationService,
   } = servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
@@ -128,11 +129,8 @@ const commandsModule = ({
         return;
       }
 
-      const segmentationId = await commandsManager.runCommand(
-        'createSegmentationForDisplaySet',
-        {
-          displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
-        }
+      const segmentationId = await SegmentationService.createSegmentationForDisplaySet(
+        ptDisplaySet.displaySetInstanceUID
       );
 
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
@@ -141,9 +139,15 @@ const commandsModule = ({
         csTools.Enums.SegmentationRepresentations.Labelmap;
 
       for (const toolGroupId of toolGroupIds) {
-        await commandsManager.runCommand(
-          'addSegmentationRepresentationToToolGroup',
-          { segmentationId, toolGroupId: toolGroupId, representationType }
+        await SegmentationService.addSegmentationRepresentationToToolGroup(
+          toolGroupId,
+          segmentationId,
+          representationType
+        );
+
+        SegmentationService.setActiveSegmentationForToolGroup(
+          segmentationId,
+          toolGroupId
         );
       }
 
@@ -153,23 +157,9 @@ const commandsModule = ({
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
       toolGroupIds.forEach(toolGroupId => {
-        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
+        SegmentationService.setActiveSegmentationForToolGroup(
+          segmentationId,
           toolGroupId
-        );
-
-        if (segmentationRepresentations.length === 0) {
-          return;
-        }
-
-        // Todo: this finds the first segmentation representation that matches the segmentationId
-        // If there are two labelmap representations from the same segmentation, this will not work
-        const representation = segmentationRepresentations.find(
-          representation => representation.segmentationId === segmentationId
-        );
-
-        csTools.segmentation.activeSegmentation.setActiveSegmentationRepresentation(
-          toolGroupId,
-          representation.segmentationRepresentationUID
         );
       });
     },
@@ -227,36 +217,6 @@ const commandsModule = ({
         [referencedVolume],
         configToUse
       );
-    },
-    toggleSegmentationVisibility: ({ segmentationId }) => {
-      const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
-      toolGroupIds.forEach(toolGroupId => {
-        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
-          toolGroupId
-        );
-
-        if (segmentationRepresentations.length === 0) {
-          return;
-        }
-
-        // Todo: this finds the first segmentation representation that matches the segmentationId
-        // If there are two labelmap representations from the same segmentation, this will not work
-        const representation = segmentationRepresentations.find(
-          representation => representation.segmentationId === segmentationId
-        );
-
-        const visibility = csTools.segmentation.config.visibility.getSegmentationVisibility(
-          toolGroupId,
-          representation.segmentationRepresentationUID
-        );
-
-        csTools.segmentation.config.visibility.setSegmentationVisibility(
-          toolGroupId,
-          representation.segmentationRepresentationUID,
-          !visibility
-        );
-      });
     },
     calculateSuvPeak: ({ labelmap }) => {
       const { referencedVolumeId } = labelmap;
@@ -326,9 +286,9 @@ const commandsModule = ({
       };
     },
     calculateTMTV: ({ segmentations }) => {
-      const labelmaps = commandsManager.runCommand('getLabelmapVolumes', {
-        segmentations,
-      });
+      const labelmaps = segmentations.map(s =>
+        SegmentationService.getLabelmapVolume(s.id)
+      );
 
       if (!labelmaps.length) {
         return;
@@ -351,9 +311,9 @@ const commandsModule = ({
       createAndDownloadTMTVReport(segReport, additionalReportRows);
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
-      const labelmapVolumes = commandsManager.runCommand('getLabelmapVolumes', {
-        segmentations,
-      });
+      const labelmapVolumes = segmentations.map(s =>
+        SegmentationService.getLabelmapVolume(s.id)
+      );
 
       let mergedLabelmap;
       // merge labelmap will through an error if labels maps are not the same size
@@ -408,7 +368,6 @@ const commandsModule = ({
         1e-3
       );
     },
-
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
@@ -634,11 +593,6 @@ const commandsModule = ({
     },
     thresholdSegmentationByRectangleROITool: {
       commandFn: actions.thresholdSegmentationByRectangleROITool,
-      storeContexts: [],
-      options: {},
-    },
-    toggleSegmentationVisibility: {
-      commandFn: actions.toggleSegmentationVisibility,
       storeContexts: [],
       options: {},
     },

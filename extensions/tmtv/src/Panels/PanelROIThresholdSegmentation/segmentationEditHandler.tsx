@@ -10,7 +10,6 @@ function segmentationItemEditHandler({ id, servicesManager }) {
     switch (action.id) {
       case 'save': {
         SegmentationService.addOrUpdateSegmentation(
-          id,
           {
             ...segmentation,
             ...value,

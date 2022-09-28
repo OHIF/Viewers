@@ -102,10 +102,8 @@ export default function PanelRoiThresholdSegmentation({
 
     const notYetUpdatedAtSource = true;
     SegmentationService.addOrUpdateSegmentation(
-      selectedSegmentationId,
       {
-        ...segmentation,
-        data: Object.assign(segmentation.data, data),
+        ...Object.assign(segmentation, data),
         text: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
       },
       notYetUpdatedAtSource
@@ -159,23 +157,6 @@ export default function PanelRoiThresholdSegmentation({
       unsubscribe();
     };
   }, []);
-
-  /**
-   * Toggle visibility of the segmentation
-   */
-  useEffect(() => {
-    const subscription = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_VISIBILITY_CHANGED,
-      ({ segmentation }) => {
-        runCommand('toggleSegmentationVisibility', {
-          segmentationId: segmentation.id,
-        });
-      }
-    );
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [SegmentationService]);
 
   /**
    * Whenever the segmentations change, update the TMTV calculations
@@ -249,10 +230,12 @@ export default function PanelRoiThresholdSegmentation({
                 setSelectedSegmentationId(id);
               }}
               onToggleVisibility={id => {
-                SegmentationService.toggleSegmentationsVisibility([id]);
+                SegmentationService.toggleSegmentationVisibility(id);
               }}
               onToggleVisibilityAll={ids => {
-                SegmentationService.toggleSegmentationsVisibility(ids);
+                ids.map(id => {
+                  SegmentationService.toggleSegmentationVisibility(id);
+                });
               }}
               onDelete={id => {
                 SegmentationService.remove(id);
@@ -312,7 +295,7 @@ PanelRoiThresholdSegmentation.propTypes = {
       SegmentationService: PropTypes.shape({
         getSegmentation: PropTypes.func.isRequired,
         getSegmentations: PropTypes.func.isRequired,
-        toggleSegmentationsVisibility: PropTypes.func.isRequired,
+        toggleSegmentationVisibility: PropTypes.func.isRequired,
         subscribe: PropTypes.func.isRequired,
         EVENTS: PropTypes.object.isRequired,
         VALUE_TYPES: PropTypes.object.isRequired,

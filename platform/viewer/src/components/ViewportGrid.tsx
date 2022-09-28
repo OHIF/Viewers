@@ -15,6 +15,7 @@ function ViewerViewportGrid(props) {
     DisplaySetService,
     MeasurementService,
     HangingProtocolService,
+    UINotificationService,
   } = servicesManager.services;
 
   /**
@@ -26,10 +27,8 @@ function ViewerViewportGrid(props) {
         return;
       }
 
-      const {
-        viewportMatchDetails,
-        hpAlreadyApplied,
-      } = HangingProtocolService.getMatchDetails();
+      const { viewportMatchDetails, hpAlreadyApplied } =
+        HangingProtocolService.getMatchDetails();
 
       if (!viewportMatchDetails.length) {
         return;
@@ -279,7 +278,8 @@ function ViewerViewportGrid(props) {
 
       const ViewportComponent = _getViewportComponent(
         displaySets,
-        viewportComponents
+        viewportComponents,
+        UINotificationService
       );
 
       // look inside displaySets to see if they need reRendering
@@ -361,7 +361,11 @@ ViewerViewportGrid.defaultProps = {
   viewportComponents: [],
 };
 
-function _getViewportComponent(displaySets, viewportComponents) {
+function _getViewportComponent(
+  displaySets,
+  viewportComponents,
+  UINotificationService
+) {
   if (!displaySets || !displaySets.length) {
     return EmptyViewport;
   }
@@ -383,7 +387,14 @@ function _getViewportComponent(displaySets, viewportComponents) {
       return component;
     }
   }
-  throw new Error(`No display set handler for ${SOPClassHandlerId}`);
+
+  UINotificationService.show({
+    title: 'Viewport Not Supported Yet',
+    message: `Cannot display SOPClassId of ${displaySets[0].SOPClassUID} yet`,
+    type: 'error',
+  });
+
+  return EmptyViewport;
 }
 
 export default ViewerViewportGrid;

@@ -118,12 +118,14 @@ function modeFactory() {
         SyncGroupService,
         MeasurementService,
         ToolBarService,
+        SegmentationService,
       } = servicesManager.services;
 
       ToolBarService.reset();
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
+      SegmentationService.destroy();
     },
     validationTags: {
       study: [],
