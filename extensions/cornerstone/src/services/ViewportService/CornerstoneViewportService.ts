@@ -462,18 +462,26 @@ class CornerstoneViewportService implements IViewportService {
       const segmentations = SegmentationService.getSegmentations();
 
       segmentations.forEach(segmentation => {
-        const { id: displaySetInstanceUID } = segmentation;
-        const segDisplaySet = DisplaySetService.getDisplaySetByUID(
-          displaySetInstanceUID
+        const { id: segDisplaySetInstanceUID } = segmentation;
+
+        const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
+          segDisplaySetInstanceUID
         );
 
-        const { referencedVolumeURI, referencedVolumeId } = segDisplaySet;
-        const referencedVolume = cache.getVolume(referencedVolumeURI);
+        let shouldDisplaySeg = false;
 
-        if (
-          referencedVolume &&
-          displaySetInstanceUIDs.includes(referencedVolumeURI)
-        ) {
+        for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+          const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(
+            displaySetInstanceUID
+          );
+
+          if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
+            shouldDisplaySeg = true;
+            break;
+          }
+        }
+
+        if (shouldDisplaySeg) {
           const toolGroup = ToolGroupService.getToolGroupForViewport(
             viewport.id
           );
@@ -659,6 +667,32 @@ class CornerstoneViewportService implements IViewportService {
       viewportOptions: newViewportOptions,
       displaySetOptions: newDisplaySetOptions,
     };
+  }
+
+  private _getFrameOfReferenceUID(displaySetInstanceUID) {
+    const { DisplaySetService } = this.servicesManager.services;
+
+    const displaySet = DisplaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+
+    if (!displaySet) {
+      return;
+    }
+
+    if (displaySet.frameOfReferenceUID) {
+      return displaySet.frameOfReferenceUID;
+    }
+
+    if (displaySet.Modality === 'SEG') {
+      const { instance } = displaySet;
+      return instance.FrameOfReferenceUID;
+    }
+
+    const { images } = displaySet;
+    if (images && images.length) {
+      return images[0].FrameOfReferenceUID;
+    }
   }
 }
 

@@ -9,8 +9,8 @@ const RESPONSE = {
 function promptHydrateSEG({
   servicesManager,
   segDisplaySet,
-  toolGroupId,
   viewportIndex,
+  toolGroupId = 'default',
 }) {
   const { UIViewportDialogService } = servicesManager.services;
 

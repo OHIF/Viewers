@@ -55,7 +55,31 @@ function areEqual(prevProps, nextProps) {
     }
   }
 
-  return true;
+  if (
+    prevProps.viewportOptions.viewportType !==
+    nextProps.viewportOptions.viewportType
+  ) {
+    return false;
+  }
+
+  const prevDisplaySets = prevProps.displaySets[0];
+  const nextDisplaySets = nextProps.displaySets[0];
+
+  if (prevDisplaySets && nextDisplaySets) {
+    const areSameDisplaySetInstanceUIDs =
+      prevDisplaySets.displaySetInstanceUID ===
+      nextDisplaySets.displaySetInstanceUID;
+    const areSameImageLength =
+      prevDisplaySets.images.length === nextDisplaySets.images.length;
+    const areSameImageIds = prevDisplaySets.images.every(
+      (prevImage, index) =>
+        prevImage.imageId === nextDisplaySets.images[index].imageId
+    );
+    return (
+      areSameDisplaySetInstanceUIDs && areSameImageLength && areSameImageIds
+    );
+  }
+  return false;
 }
 
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport

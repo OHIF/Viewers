@@ -82,6 +82,8 @@ type SegmentationSchema = {
   displayText?: string[];
   // segmentation id
   id: string;
+  // displaySetInstanceUID
+  displaySetInstanceUID: string;
   // segmentation label
   label: string;
   // segment indices that are locked for the segmentation
@@ -90,6 +92,8 @@ type SegmentationSchema = {
   type: csToolsEnums.SegmentationRepresentations;
   // the volume id of the volume that the labelmap is associated with, this only exists for the labelmap representation
   volumeId: string;
+  // the referenced volumeURI for the segmentation
+  referencedVolumeURI: string;
   // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport
   // but hydrated SEG -> segmentation that is persisted in the store)
   hydrated: boolean;
@@ -591,6 +595,8 @@ class SegmentationService {
     const segmentationSchema: SegmentationSchema = {
       id: segmentationId,
       volumeId: segmentationId,
+      displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
+      referencedVolumeURI: segDisplaySet.referencedVolumeURI,
       activeSegmentIndex: 1,
       cachedStats: {},
       label: '',
@@ -725,6 +731,8 @@ class SegmentationService {
     const segmentationSchema: SegmentationSchema = {
       id: segmentationId,
       volumeId: segmentationId,
+      displaySetInstanceUID,
+      referencedVolumeURI: volumeId.split(':')[0], // Todo: this is so ugly
       activeSegmentIndex: 1,
       cachedStats: {},
       label: options?.label,
@@ -1043,6 +1051,40 @@ class SegmentationService {
   public getSegmentationRepresentationsForToolGroup = toolGroupId => {
     return cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
   };
+
+  public shouldRenderSegmentation(
+    viewportDisplaySetInstanceUIDs,
+    segDisplaySetInstanceUID
+  ) {
+    const { DisplaySetService } = this.servicesManager.services;
+
+    let shouldDisplaySeg = false;
+
+    const segDisplaySet = DisplaySetService.getDisplaySetByUID(
+      segDisplaySetInstanceUID
+    );
+
+    const {
+      FrameOfReferenceUID: segFrameOfReferenceUID,
+    } = segDisplaySet.instance;
+
+    viewportDisplaySetInstanceUIDs.forEach(displaySetInstanceUID => {
+      // check if the displaySet is sharing the same frameOfReferenceUID
+      // with the new segmentation
+      const displaySet = DisplaySetService.getDisplaySetByUID(
+        displaySetInstanceUID
+      );
+
+      if (
+        displaySet.isReconstructable &&
+        displaySet?.images?.[0]?.FrameOfReferenceUID === segFrameOfReferenceUID
+      ) {
+        shouldDisplaySeg = true;
+      }
+    });
+
+    return shouldDisplaySeg;
+  }
 
   private _setActiveSegmentationForToolGroup(
     segmentationId: string,

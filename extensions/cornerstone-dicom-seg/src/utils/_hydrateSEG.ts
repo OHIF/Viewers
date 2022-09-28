@@ -8,7 +8,6 @@ async function _hydrateSEGDisplaySet({
 
   const displaySetInstanceUIDs = [
     segDisplaySet.referencedDisplaySetInstanceUID,
-    segDisplaySet.displaySetInstanceUID,
   ];
 
   let segmentationId = null;
@@ -24,19 +23,51 @@ async function _hydrateSEGDisplaySet({
 
   SegmentationService.hydrateSegmentation(segDisplaySet.displaySetInstanceUID);
 
-  const defaultToolGroupId = 'default';
+  const { viewports } = ViewportGridService.getState();
 
   ViewportGridService.setDisplaySetsForViewport({
     viewportIndex,
     displaySetInstanceUIDs: displaySetInstanceUIDs,
     viewportOptions: {
       viewportType: 'volume',
-      toolGroupId: defaultToolGroupId,
+      toolGroupId,
       initialImageOptions: {
         preset: 'middle',
       },
     },
   });
+
+  // Todo: fix this after we have a better way for stack viewport segmentations
+
+  // check every viewport in the viewports to see if the displaySetInstanceUID
+  // is being displayed, if so we need to update the viewport to use volume viewport
+  // (if already is not using it) since Cornerstone3D currently only supports
+  // volume viewport for segmentation
+  viewports.forEach((viewport, index) => {
+    if (index === viewportIndex) {
+      return;
+    }
+
+    const shouldDisplaySeg = SegmentationService.shouldRenderSegmentation(
+      viewport.displaySetInstanceUIDs,
+      segDisplaySet.displaySetInstanceUID
+    );
+
+    if (shouldDisplaySeg) {
+      ViewportGridService.setDisplaySetsForViewport({
+        viewportIndex: index,
+        displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
+        viewportOptions: {
+          viewportType: 'volume',
+          toolGroupId,
+          initialImageOptions: {
+            preset: 'middle',
+          },
+        },
+      });
+    }
+  });
+
   return true;
 }
 

@@ -242,7 +242,6 @@ function OHIFCornerstoneSEGViewport(props) {
       servicesManager,
       viewportIndex,
       segDisplaySet,
-      toolGroupId,
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);

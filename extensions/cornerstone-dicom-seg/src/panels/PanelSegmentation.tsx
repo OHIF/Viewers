@@ -30,7 +30,6 @@ export default function PanelSegmentation({
     [added, updated].forEach(evt => {
       const { unsubscribe } = SegmentationService.subscribe(evt, () => {
         const segmentations = SegmentationService.getSegmentations();
-        debugger;
         setSegmentations(segmentations);
       });
       subscriptions.push(unsubscribe);
