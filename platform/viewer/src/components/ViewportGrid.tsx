@@ -37,7 +37,7 @@ function ViewerViewportGrid(props) {
       // Match each viewport individually
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
       for (let i = 0; i < numViewports; i++) {
-        if (hpAlreadyApplied[i] === true) {
+        if (viewportsDisplaySetsMatched.get(i)) {
           continue;
         }
 
@@ -78,8 +78,15 @@ function ViewerViewportGrid(props) {
         // update the hanging protocol after making sure all the matched display sets are available
         // and set on the viewport
         if (displaySetUIDsToHang.length === displaySetsInfo.length) {
-          // The following will set the hpAlreadyApplied state
-          HangingProtocolService.setHangingProtocolAppliedForViewport(i);
+          // The following will set the viewportsDisplaySetsMatched state
+
+          const suppressEvent = true;
+          const applied = true;
+          HangingProtocolService.setHangingProtocolAppliedForViewport(
+            i,
+            applied,
+            suppressEvent
+          );
         }
       }
     },

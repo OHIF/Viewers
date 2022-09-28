@@ -61,13 +61,16 @@ type Segmentation = {
   // the number of segments in the segmentation
   segmentCount: number;
   // the array of segments with their details
-  segments: Segment[];
+  segments: Map<number, Segment>;
   // the set of segments that are locked
   segmentsLocked: Set<number>;
   // the segmentation representation type
   type: cstEnums.SegmentationRepresentations;
   // if labelmap, the id of the volume that the labelmap is associated with
   volumeId?: string;
+  // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport
+  // but hydrated SEG -> segmentation that is persisted in the store)
+  hydrated: boolean;
 };
 
 // Schema to generate a segmentation
@@ -88,6 +91,13 @@ type SegmentationSchema = {
   type: cstEnums.SegmentationRepresentations;
   // the volume id of the volume that the labelmap is associated with, this only exists for the labelmap representation
   volumeId: string;
+  // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport
+  // but hydrated SEG -> segmentation that is persisted in the store)
+  hydrated: boolean;
+  // the number of segments in the segmentation
+  segmentCount: number;
+  // the array of segments with their details
+  segments: Map<number, Segment>;
 };
 
 const EVENTS = {
@@ -122,7 +132,6 @@ class SegmentationService {
     this.listeners = {};
 
     Object.assign(this, pubSubServiceInterface);
-
     this.servicesManager = servicesManager;
 
     this._initSegmentationService();
@@ -173,12 +182,10 @@ class SegmentationService {
 
     toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
 
-    const {
-      segmentationRepresentationUID,
-      segmentation,
-    } = this._getSegmentationInfo(segmentationId, toolGroupId);
+    const { segmentationRepresentationUID, segmentation } =
+      this._getSegmentationInfo(segmentationId, toolGroupId);
 
-    if (segmentation.segments[segmentIndex]) {
+    if (segmentation.segments.get(segmentIndex)) {
       throw new Error(`Segment ${segmentIndex} already exists`);
     }
 
@@ -188,14 +195,14 @@ class SegmentationService {
       segmentIndex
     );
 
-    segmentation.segments[segmentIndex] = {
+    segmentation.segments.set(segmentIndex, {
       label: properties.label,
       segmentIndex: segmentIndex,
       color: [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
       opacity: rgbaColor[3],
       isVisible: true,
       isLocked: false,
-    };
+    });
 
     segmentation.segmentCount++;
 
@@ -257,6 +264,8 @@ class SegmentationService {
       this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
     }
 
+    // Todo: this includes nonhydrated segmentations which might not be
+    // persisted in the store
     this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
       segmentation,
     });
@@ -273,13 +282,13 @@ class SegmentationService {
       throw new Error('Segment index 0 is reserved for "no label"');
     }
 
-    if (segmentation.segments[segmentIndex] === undefined) {
+    if (segmentation.segments.get(segmentIndex) === undefined) {
       return;
     }
 
     segmentation.segmentCount--;
 
-    delete segmentation.segments[segmentIndex];
+    segmentation.segments.delete(segmentIndex);
 
     // Get volume and delete the labels
     // Todo: handle other segmentations other than labelmap
@@ -443,9 +452,29 @@ class SegmentationService {
   /**
    * Get all segmentations.
    *
+   * * @param filterNonHydratedSegmentations - If true, only return hydrated segmentations
+   * hydrated segmentations are those that have been loaded and persisted
+   * in the state, but non hydrated segmentations are those that are
+   * only created for the SEG displayset (SEG viewport) and the user might not
+   * have loaded them yet fully.
+   *
+
    * @return Array of segmentations
    */
-  public getSegmentations(): Segmentation[] {
+  public getSegmentations(
+    filterNonHydratedSegmentations = true
+  ): Segmentation[] {
+    const segmentations = this._getSegmentations();
+
+    return (
+      segmentations &&
+      segmentations.filter(segmentation => {
+        return !filterNonHydratedSegmentations || segmentation.hydrated;
+      })
+    );
+  }
+
+  private _getSegmentations(): Segmentation[] {
     const segmentations = this.arrayOfObjects(this.segmentations);
     return (
       segmentations &&
@@ -520,10 +549,9 @@ class SegmentationService {
 
     this.segmentations[segmentationId] = {
       ...segmentationSchema,
-      segments: [],
+      segments: segmentationSchema.segments || new Map(),
       activeSegmentIndex: segmentationSchema.activeSegmentIndex ?? null,
-      segmentCount: 0,
-      // Default to false, consumer should set it active using the API, may be adding lots of segmentations at once.
+      segmentCount: segmentationSchema.segmentCount ?? 0,
       isActive: false,
       colorLUTIndex: newColorLUTIndex,
       isVisible: true,
@@ -542,7 +570,7 @@ class SegmentationService {
       });
     }
 
-    return segmentationId;
+    return segmentation.id;
   }
 
   public async createSegmentationForSEGDisplaySet(
@@ -558,6 +586,32 @@ class SegmentationService {
         'To create the segmentation from SEG displaySet, the displaySet should be loaded first, you can perform segDisplaySet.load() before calling this method.'
       );
     }
+
+    const segmentationSchema: SegmentationSchema = {
+      id: segmentationId,
+      volumeId: segmentationId,
+      activeSegmentIndex: 1,
+      cachedStats: {},
+      label: '',
+      segmentsLocked: new Set(),
+      type: LABELMAP,
+      displayText: [],
+      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
+      segmentCount: 0,
+      segments: new Map(),
+    };
+
+    const labelmap = this.getLabelmapVolume(segmentationId);
+
+    if (labelmap) {
+      // if the labalemap with the same segmentationId already exists, we can
+      // just assume that the segmentation is already created and move on with
+      // updating the state
+      return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);
+    }
+
+    // if the labelmap doesn't exist, we need to create it first from the
+    // DICOM SEG displaySet data
 
     const referencedVolume = cache.getVolume(referencedVolumeId);
 
@@ -588,10 +642,8 @@ class SegmentationService {
 
     for (const segmentIndex in segments) {
       const segmentInfo = segments[segmentIndex];
-      const {
-        numberOfFrames: segNumberOfFrame,
-        pixelData: segPixelData,
-      } = segmentInfo;
+      const { numberOfFrames: segNumberOfFrame, pixelData: segPixelData } =
+        segmentInfo;
 
       const imageIdIndex = this._getSegmentImageIdIndex(
         segmentInfo,
@@ -621,16 +673,28 @@ class SegmentationService {
       }
     }
 
-    const segmentationSchema = {
-      id: segmentationId,
-      volumeId: segmentationId,
-      activeSegmentIndex: 1,
-      cachedStats: {},
-      label: '',
-      segmentsLocked: new Set(),
-      type: LABELMAP,
-      displayText: [],
-    };
+    segmentationSchema.segmentCount = Object.keys(segments).length;
+    segmentationSchema.segments = new Map() as Map<number, Segment>;
+
+    Object.keys(segments).forEach(segmentIndex => {
+      const segmentInfo = segments[segmentIndex];
+      const segIndex = Number(segmentIndex);
+
+      segmentationSchema.segments.set(segIndex, {
+        label: segmentInfo.label,
+        segmentIndex: Number(segmentIndex),
+        color: [
+          segmentInfo.color[0],
+          segmentInfo.color[1],
+          segmentInfo.color[2],
+        ],
+        opacity: segmentInfo.color[3],
+        isVisible: true,
+        isLocked: false,
+      });
+    });
+
+    console.debug(segmentationSchema.segments);
 
     return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);
   }
@@ -662,6 +726,9 @@ class SegmentationService {
       segmentsLocked: new Set(),
       type: LABELMAP,
       displayText: [],
+      hydrated: false,
+      segmentCount: 0,
+      segments: new Map() as Map<number, Segment>,
     };
 
     this.addOrUpdateSegmentation(segmentationSchema);
@@ -682,6 +749,7 @@ class SegmentationService {
   public addSegmentationRepresentationToToolGroup = async (
     toolGroupId: string,
     segmentationId: string,
+    hydrateSegmentation = true,
     representationType = cstEnums.SegmentationRepresentations.Labelmap
   ): Promise<void> => {
     const segmentation = this.getSegmentation(segmentationId);
@@ -692,24 +760,80 @@ class SegmentationService {
       );
     }
 
+    if (hydrateSegmentation) {
+      // hydrate the segmentation if it's not hydrated yet
+      segmentation.hydrated = true;
+    }
+
     const { colorLUTIndex } = segmentation;
 
     // Based on the segmentationId, set the colorLUTIndex.
-    const segmentationRepresentationUIDs = await cstSegmentation.addSegmentationRepresentations(
-      toolGroupId,
-      [
+    const segmentationRepresentationUIDs =
+      await cstSegmentation.addSegmentationRepresentations(toolGroupId, [
         {
           segmentationId,
           type: representationType,
         },
-      ]
-    );
+      ]);
 
     cstSegmentation.config.color.setColorLUT(
       toolGroupId,
       segmentationRepresentationUIDs[0],
       colorLUTIndex
     );
+
+    // add the segmentation segments properly
+    segmentation.segments.forEach((segment: Segment, index: number) => {
+      debugger;
+      const {
+        segmentIndex,
+        color,
+        isLocked,
+        isVisible: visibility,
+        opacity,
+      } = segment;
+
+      const suppressEvents = true;
+
+      if (color !== undefined) {
+        this._setSegmentColor(
+          segmentationId,
+          segmentIndex,
+          color,
+          toolGroupId,
+          suppressEvents
+        );
+      }
+
+      if (opacity !== undefined) {
+        this._setSegmentOpacity(
+          segmentationId,
+          segmentIndex,
+          opacity,
+          toolGroupId,
+          suppressEvents
+        );
+      }
+
+      if (visibility !== undefined) {
+        this._setSegmentVisibility(
+          segmentationId,
+          segmentIndex,
+          visibility,
+          toolGroupId,
+          suppressEvents
+        );
+      }
+
+      if (isLocked !== undefined) {
+        this._setSegmentLocked(
+          segmentationId,
+          segmentIndex,
+          isLocked,
+          suppressEvents
+        );
+      }
+    });
   };
 
   public removeSegmentationRepresentationFromToolGroup(
@@ -757,7 +881,7 @@ class SegmentationService {
     // If this segmentation was active, and there is another segmentation, set another one active.
 
     if (wasActive) {
-      const remainingSegmentations = this.getSegmentations();
+      const remainingSegmentations = this._getSegmentations();
 
       if (remainingSegmentations.length) {
         const { id } = remainingSegmentations[0];
@@ -778,13 +902,11 @@ class SegmentationService {
   public getConfiguration = (toolGroupId?: string): SegmentationConfig => {
     toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
 
-    const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(
-      toolGroupId
-    );
+    const brushSize =
+      cstUtils.segmentation.getBrushSizeForToolGroup(toolGroupId);
 
-    const brushThresholdGate = cstUtils.segmentation.getBrushThresholdForToolGroup(
-      toolGroupId
-    );
+    const brushThresholdGate =
+      cstUtils.segmentation.getBrushThresholdForToolGroup(toolGroupId);
 
     const config = cstSegmentation.config.getGlobalConfig();
     const { renderInactiveSegmentations } = config;
@@ -894,7 +1016,7 @@ class SegmentationService {
     toolGroupId: string,
     suppressEvents = false
   ) {
-    const segmentations = this.getSegmentations();
+    const segmentations = this._getSegmentations();
     const targetSegmentation = this.getSegmentation(segmentationId);
 
     if (targetSegmentation === undefined) {
@@ -985,7 +1107,7 @@ class SegmentationService {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
     }
 
-    const segmentInfo = segmentation.segments[segmentIndex];
+    const segmentInfo = segmentation.segments.get(segmentIndex);
 
     if (segmentInfo === undefined) {
       throw new Error(
@@ -1041,7 +1163,7 @@ class SegmentationService {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
     }
 
-    const segmentInfo = segmentation.segments[segmentIndex];
+    const segmentInfo = segmentation.segments.get(segmentIndex);
 
     if (segmentInfo === undefined) {
       throw new Error(
@@ -1073,16 +1195,14 @@ class SegmentationService {
   ) {
     toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
 
-    const {
-      segmentationRepresentationUID,
-      segmentation,
-    } = this._getSegmentationInfo(segmentationId, toolGroupId);
+    const { segmentationRepresentationUID, segmentation } =
+      this._getSegmentationInfo(segmentationId, toolGroupId);
 
     if (segmentation === undefined) {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
     }
 
-    const segmentInfo = segmentation.segments[segmentIndex];
+    const segmentInfo = segmentation.segments.get(segmentIndex);
 
     if (segmentInfo === undefined) {
       throw new Error(
@@ -1119,7 +1239,7 @@ class SegmentationService {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
     }
 
-    const segmentInfo = segmentation.segments[segmentIndex];
+    const segmentInfo = segmentation.segments.get(segmentIndex);
 
     if (segmentInfo === undefined) {
       throw new Error(
@@ -1175,7 +1295,7 @@ class SegmentationService {
       throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
     }
 
-    const segmentInfo = segmentation.segments[segmentIndex];
+    const segmentInfo = segmentation.segments.get(segmentIndex);
 
     if (segmentInfo === undefined) {
       throw new Error(
@@ -1193,9 +1313,8 @@ class SegmentationService {
   }
 
   private _getSegmentationRepresentation(segmentationId, toolGroupId) {
-    const segmentationRepresentations = this.getSegmentationRepresentationsForToolGroup(
-      toolGroupId
-    );
+    const segmentationRepresentations =
+      this.getSegmentationRepresentationsForToolGroup(toolGroupId);
 
     if (segmentationRepresentations.length === 0) {
       return;
@@ -1262,9 +1381,8 @@ class SegmentationService {
       return;
     }
 
-    const segmentationState = cstSegmentation.state.getSegmentation(
-      segmentationId
-    );
+    const segmentationState =
+      cstSegmentation.state.getSegmentation(segmentationId);
 
     if (!segmentationState) {
       return;
@@ -1339,14 +1457,12 @@ class SegmentationService {
       return;
     }
 
-    const toolGroupIds = segmentationState.getToolGroupsWithSegmentation(
-      segmentationId
-    );
+    const toolGroupIds =
+      segmentationState.getToolGroupsWithSegmentation(segmentationId);
 
     toolGroupIds.forEach(toolGroupId => {
-      const segmentationRepresentations = segmentationState.getSegmentationRepresentations(
-        toolGroupId
-      );
+      const segmentationRepresentations =
+        segmentationState.getSegmentationRepresentations(toolGroupId);
 
       const UIDsToRemove = [];
       segmentationRepresentations.forEach(representation => {
@@ -1378,9 +1494,8 @@ class SegmentationService {
       return;
     }
     const segmentationState = cstSegmentation.state;
-    const sourceSegmentation = segmentationState.getSegmentation(
-      segmentationId
-    );
+    const sourceSegmentation =
+      segmentationState.getSegmentation(segmentationId);
     const segmentation = this.segmentations[segmentationId];
     const { label } = segmentation;
 
@@ -1392,14 +1507,12 @@ class SegmentationService {
 
   private _updateCornerstoneSegmentationVisibility = segmentationId => {
     const segmentationState = cstSegmentation.state;
-    const toolGroupIds = segmentationState.getToolGroupsWithSegmentation(
-      segmentationId
-    );
+    const toolGroupIds =
+      segmentationState.getToolGroupsWithSegmentation(segmentationId);
 
     toolGroupIds.forEach(toolGroupId => {
-      const segmentationRepresentations = cstSegmentation.state.getSegmentationRepresentations(
-        toolGroupId
-      );
+      const segmentationRepresentations =
+        cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
 
       if (segmentationRepresentations.length === 0) {
         return;
@@ -1411,10 +1524,11 @@ class SegmentationService {
         representation => representation.segmentationId === segmentationId
       );
 
-      const visibility = cstSegmentation.config.visibility.getSegmentationVisibility(
-        toolGroupId,
-        representation.segmentationRepresentationUID
-      );
+      const visibility =
+        cstSegmentation.config.visibility.getSegmentationVisibility(
+          toolGroupId,
+          representation.segmentationRepresentationUID
+        );
 
       cstSegmentation.config.visibility.setSegmentationVisibility(
         toolGroupId,

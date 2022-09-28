@@ -4,21 +4,47 @@ async function _hydrateSEGDisplaySet({
   toolGroupId,
   servicesManager,
 }) {
-  const {
-    HangingProtocolService,
-    ViewportGridService,
-  } = servicesManager.services;
-
-  const perViewport = await HangingProtocolService.getPerViewport(
-    viewportIndex
-  );
+  const { HangingProtocolService, SegmentationService, ViewportGridService } =
+    servicesManager.services;
 
   const viewportsState = ViewportGridService.getState();
 
-  const newViewport = '';
+  const displaySetInstanceUIDs = [
+    segDisplaySet.referencedDisplaySetInstanceUID,
+    segDisplaySet.displaySetInstanceUID,
+  ];
 
-  const newProtocol = createProtocolFromViewports;
+  let segmentationId = null;
 
+  // We need the hydration to notify panels about the new segmentation added
+  const suppressEvents = false;
+
+  segmentationId = await SegmentationService.createSegmentationForSEGDisplaySet(
+    segDisplaySet,
+    segmentationId,
+    suppressEvents
+  );
+
+  const defaultToolGroupId = 'default';
+  const hydrateSegmentation = true;
+
+  await SegmentationService.addSegmentationRepresentationToToolGroup(
+    defaultToolGroupId,
+    segmentationId,
+    hydrateSegmentation
+  );
+
+  ViewportGridService.setDisplaySetsForViewport({
+    viewportIndex,
+    displaySetInstanceUIDs: displaySetInstanceUIDs,
+    viewportOptions: {
+      viewportType: 'volume',
+      toolGroupId: defaultToolGroupId,
+      initialImageOptions: {
+        preset: 'middle',
+      },
+    },
+  });
   return true;
 }
 

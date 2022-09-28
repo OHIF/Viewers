@@ -36,6 +36,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },
+      { toolName: toolNames.SegmentationDisplay },
     ],
     // enabled
     // disabled

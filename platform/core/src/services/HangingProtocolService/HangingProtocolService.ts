@@ -607,7 +607,7 @@ class HangingProtocolService {
     // Loop through each viewport
     stageModel.viewports.forEach((viewport, viewportIndex) => {
       const { viewportOptions } = viewport;
-      this.hpAlreadyApplied.push(false);
+      this.viewportsDisplaySetsMatched.set(viewportIndex, false);
 
       // DisplaySets for the viewport, Note: this is not the actual displaySet,
       // but it is a info to locate the displaySet from the displaySetService
@@ -821,7 +821,7 @@ class HangingProtocolService {
    * Changes the current stage to a new stage index in the display set sequence.
    * It checks if the next stage exists.
    *
-   * @param {Integer} stageAction An integer value specifying wheater next (1) or previous (-1) stage
+   * @param {Integer} stageAction An integer value specifying wheaten next (1) or previous (-1) stage
    * @return {Boolean} True if new stage has set or false, otherwise
    */
   _setCurrentProtocolStage(stageAction): boolean {

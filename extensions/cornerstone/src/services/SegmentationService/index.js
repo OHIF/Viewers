@@ -1,10 +1,10 @@
 import SegmentationService from './SegmentationService';
 
-export default function ExtendedSegmentationService(serviceManager) {
+export default function ExtendedSegmentationService(servicesManager) {
   return {
     name: 'SegmentationService',
     create: ({ configuration = {} }) => {
-      return new SegmentationService(serviceManager);
+      return new SegmentationService({ servicesManager });
     },
   };
 }

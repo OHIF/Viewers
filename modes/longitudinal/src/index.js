@@ -41,6 +41,7 @@ const dicomSeg = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const extensionDependencies = {
@@ -153,7 +154,7 @@ function modeFactory() {
             props: {
               leftPanels: [tracked.thumbnailList],
               // TODO: Should be optional, or required to pass empty array for slots?
-              rightPanels: [tracked.measurements],
+              rightPanels: [dicomSeg.panel, tracked.measurements],
               viewports: [
                 {
                   namespace: tracked.viewport,

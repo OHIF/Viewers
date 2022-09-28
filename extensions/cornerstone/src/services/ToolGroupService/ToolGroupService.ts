@@ -74,7 +74,6 @@ export default class ToolGroupService {
   }
 
   public destroyToolGroup(toolGroupId: string) {
-    debugger;
     ToolGroupManager.destroyToolGroup(toolGroupId);
     this.toolGroupIds.delete(toolGroupId);
   }
