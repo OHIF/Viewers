@@ -7,7 +7,10 @@ import {
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
+  Tooltip,
+  Icon,
 } from '@ohif/ui';
+import classNames from 'classnames';
 
 const { formatDate } = utils;
 
@@ -341,24 +344,23 @@ function OHIFCornerstoneSRViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        onPillClick={() => {
-          sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
-            displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
-            viewportIndex,
-          });
-        }}
         onSeriesChange={onMeasurementChange}
+        getStatusComponent={() =>
+          _getStatusComponent({
+            srDisplaySet,
+            viewportIndex,
+            isTracked: false,
+            isRehydratable: srDisplaySet.isRehydratable,
+            isLocked,
+            sendTrackedMeasurementsEvent,
+          })
+        }
         studyData={{
           label: viewportLabel,
           useAltStyling: true,
-          isTracked: false,
-          isLocked,
-          isRehydratable: srDisplaySet.isRehydratable,
-          isHydrated,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
-          modality: Modality,
           patientInformation: {
             patientName: PatientName
               ? OHIF.utils.formatPN(PatientName.Alphabetic)
@@ -437,6 +439,139 @@ async function _getViewportReferencedDisplaySetData(
   };
 
   return { referencedDisplaySetMetadata, referencedDisplaySet };
+}
+
+function _getStatusComponent({
+  srDisplaySet,
+  viewportIndex,
+  isRehydratable,
+  isLocked,
+  sendTrackedMeasurementsEvent,
+}) {
+  const onPillClick = () => {
+    sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
+      displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
+      viewportIndex,
+    });
+  };
+
+  // 1 - Incompatible
+  // 2 - Locked
+  // 3 - Rehydratable / Open
+  const state =
+    isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
+  let ToolTipMessage = null;
+  let StatusIcon = null;
+
+  switch (state) {
+    case 1:
+      StatusIcon = () => (
+        <div
+          className="flex items-center justify-center -mr-1 rounded-full"
+          style={{
+            width: '18px',
+            height: '18px',
+            backgroundColor: '#98e5c1',
+            border: 'solid 1.5px #000000',
+          }}
+        >
+          <Icon
+            name="exclamation"
+            style={{ color: '#000', width: '12px', height: '12px' }}
+          />
+        </div>
+      );
+
+      ToolTipMessage = () => (
+        <div>
+          This structured report is not compatible
+          <br />
+          with this application.
+        </div>
+      );
+      break;
+    case 2:
+      StatusIcon = () => (
+        <div
+          className="flex items-center justify-center -mr-1 bg-black rounded-full"
+          style={{
+            width: '18px',
+            height: '18px',
+          }}
+        >
+          <Icon
+            name="lock"
+            style={{ color: '#05D97C', width: '8px', height: '11px' }}
+          />
+        </div>
+      );
+
+      ToolTipMessage = () => (
+        <div>
+          This structured report is currently read-only
+          <br />
+          because you are tracking measurements in
+          <br />
+          another viewport.
+        </div>
+      );
+      break;
+    case 3:
+      StatusIcon = () => (
+        <div
+          className="flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200"
+          style={{
+            width: '18px',
+            height: '18px',
+            border: 'solid 1.5px #000000',
+          }}
+        >
+          <Icon
+            name="arrow-left"
+            style={{ color: '#000', width: '14px', height: '14px' }}
+          />
+        </div>
+      );
+
+      ToolTipMessage = () => <div>Click to restore measurements.</div>;
+  }
+
+  const StatusPill = () => (
+    <div
+      className={classNames(
+        'group relative flex items-center justify-center px-2 rounded-full cursor-default bg-customgreen-100',
+        {
+          'hover:bg-customblue-100': state === 3,
+          'cursor-pointer': state === 3,
+        }
+      )}
+      style={{
+        height: '24px',
+        width: '55px',
+      }}
+      onClick={() => {
+        if (state === 3) {
+          if (onPillClick) {
+            onPillClick();
+          }
+        }
+      }}
+    >
+      <span className="pr-1 text-lg font-bold leading-none text-black">SR</span>
+      <StatusIcon />
+    </div>
+  );
+
+  return (
+    <>
+      {ToolTipMessage && (
+        <Tooltip content={<ToolTipMessage />} position="bottom-left">
+          <StatusPill />
+        </Tooltip>
+      )}
+      {!ToolTipMessage && <StatusPill />}
+    </>
+  );
 }
 
 // function _onDoubleClick() {

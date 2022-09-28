@@ -8,6 +8,8 @@ import {
   useCine,
   useViewportGrid,
   useViewportDialog,
+  Tooltip,
+  Icon,
 } from '@ohif/ui';
 
 import { eventTarget, Enums } from '@cornerstonejs/core';
@@ -193,16 +195,14 @@ function TrackedCornerstoneViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
+        useAltStyling = {isTracked}
         onSeriesChange={direction => switchMeasurement(direction)}
+        getStatusComponent={() => _getStatusComponent(isTracked)}
         studyData={{
           label: viewportLabel,
-          isTracked,
-          isLocked: false,
-          isRehydratable: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
-          modality: Modality,
           patientInformation: {
             patientName: PatientName
               ? OHIF.utils.formatPN(PatientName.Alphabetic)
@@ -320,6 +320,45 @@ function _getNextMeasurementUID(
   const newTrackedMeasurementId = uids[measurementIndex];
 
   return newTrackedMeasurementId;
+}
+
+function _getStatusComponent(isTracked) {
+  const trackedIcon = isTracked ? 'tracked' : 'dotted-circle';
+
+  return (
+    <div className="relative">
+      <Tooltip
+        position="bottom-left"
+        content={
+          <div className="flex py-2">
+            <div className="flex pt-1">
+              <Icon name="info-link" className="w-4 text-primary-main" />
+            </div>
+            <div className="flex ml-4">
+              <span className="text-base text-common-light">
+                {isTracked ? (
+                  <>
+                    Series is
+                    <span className="font-bold text-white"> tracked</span> and
+                    can be viewed <br /> in the measurement panel
+                  </>
+                ) : (
+                  <>
+                    Measurements for
+                    <span className="font-bold text-white"> untracked </span>
+                    series <br /> will not be shown in the <br /> measurements
+                    panel
+                  </>
+                )}
+              </span>
+            </div>
+          </div>
+        }
+      >
+        <Icon name={trackedIcon} className="w-6 text-primary-light" />
+      </Tooltip>
+    </div>
+  );
 }
 
 export default TrackedCornerstoneViewport;
