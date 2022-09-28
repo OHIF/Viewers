@@ -14,6 +14,7 @@ import {
   utilities as csUtils,
   volumeLoader,
   Types,
+  metaData,
 } from '@cornerstonejs/core';
 
 const { COLOR_LUT } = cstConstants;
@@ -644,46 +645,55 @@ class SegmentationService {
         },
       }
     );
-    const [rows, columns, numImages] = derivedVolume.dimensions;
+    const [rows, columns] = derivedVolume.dimensions;
     const derivedVolumeScalarData = derivedVolume.scalarData;
 
     // Note: ideally we could use the TypedArray set method, but since each
     // slice can have multiple segments, we need to loop over each slice and
     // set the segment value for each segment.
-
     for (const segmentIndex in segments) {
       const segmentInfo = segments[segmentIndex];
-      const {
-        numberOfFrames: segNumberOfFrame,
-        pixelData: segPixelData,
-      } = segmentInfo;
+      const { pixelData: segPixelData } = segmentInfo;
 
-      const imageIdIndex = this._getSegmentImageIdIndex(
-        segmentInfo,
-        segmentIndex,
-        referencedVolume
-      );
+      segmentInfo.functionalGroups.forEach(
+        (functionalGroup, functionalGroupIndex) => {
+          const imageIdIndex = this._getSegmentImageIdIndex(
+            functionalGroup,
+            referencedVolume
+          );
 
-      const step = rows * columns;
+          if (imageIdIndex === -1) {
+            return;
+          }
 
-      // Note: this for loop is not optimized, since DICOM SEG stores
-      // each segment as a separate labelmap so if there is a slice
-      // that has multiple segments, we will have to loop over each
-      // segment and we cannot use the TypedArray set method.
-      for (let slice = 0; slice < numImages; slice++) {
-        if (slice < imageIdIndex || slice >= imageIdIndex + segNumberOfFrame) {
-          continue;
-        }
+          const step = rows * columns;
 
-        for (let i = 0; i < step; i++) {
-          const derivedPixelIndex = i + slice * step;
-          const segPixelIndex = i + (slice - imageIdIndex) * step;
+          const functionGroupPixelData = segPixelData.slice(
+            functionalGroupIndex * step,
+            (functionalGroupIndex + 1) * step
+          );
 
-          if (segPixelData[segPixelIndex] !== 0) {
-            derivedVolumeScalarData[derivedPixelIndex] = Number(segmentIndex);
+          const functionalGroupStartIndex = imageIdIndex * step;
+          const functionalGroupEndIndex = (imageIdIndex + 1) * step;
+
+          // Note: this for loop is not optimized, since DICOM SEG stores
+          // each segment as a separate labelmap so if there is a slice
+          // that has multiple segments, we will have to loop over each
+          // segment and we cannot use the TypedArray set method.
+          for (
+            let i = functionalGroupStartIndex, j = 0;
+            i < functionalGroupEndIndex;
+            i++, j++
+          ) {
+            if (
+              functionGroupPixelData[j] !== 0 &&
+              derivedVolumeScalarData[i] === 0
+            ) {
+              derivedVolumeScalarData[i] = segmentIndex;
+            }
           }
         }
-      }
+      );
     }
 
     segmentationSchema.segmentCount = Object.keys(segments).length;
@@ -1056,6 +1066,13 @@ class SegmentationService {
     viewportDisplaySetInstanceUIDs,
     segDisplaySetInstanceUID
   ) {
+    if (
+      !viewportDisplaySetInstanceUIDs ||
+      !viewportDisplaySetInstanceUIDs.length
+    ) {
+      return false;
+    }
+
     const { DisplaySetService } = this.servicesManager.services;
 
     let shouldDisplaySeg = false;
@@ -1666,39 +1683,19 @@ class SegmentationService {
     return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
   };
 
-  private _getSegmentImageIdIndex = (
-    segmentInfo,
-    segmentIndex,
-    referencedVolume
-  ) => {
-    const referencedImageOrigin = referencedVolume.origin;
-    const referencedVolumeSliceSpacing = referencedVolume.spacing[2];
+  private _getSegmentImageIdIndex = (functionalGroup, referencedVolume) => {
+    const {
+      ReferencedSOPInstanceUID,
+    } = functionalGroup.DerivationImageSequence.SourceImageSequence;
 
-    const segmentImagePositionPatient = segmentInfo.firstImagePositionPatient;
+    const { imageIds } = referencedVolume;
 
-    // find the closest slice in the referenced volume to the segment's first image position
-    // this is the slice where the segment will be inserted in the scalarData
-    const estimatedSliceNumber =
-      Math.sqrt(
-        Math.pow(segmentImagePositionPatient[0] - referencedImageOrigin[0], 2) +
-          Math.pow(
-            segmentImagePositionPatient[1] - referencedImageOrigin[1],
-            2
-          ) +
-          Math.pow(segmentImagePositionPatient[2] - referencedImageOrigin[2], 2)
-      ) / referencedVolumeSliceSpacing;
+    // this assumes the imageIds in the volume is ordered
+    return imageIds.findIndex(imageId => {
+      const { sopInstanceUid } = metaData.get('generalImageModule', imageId);
 
-    if (
-      Math.abs(Math.round(estimatedSliceNumber) - estimatedSliceNumber) >
-      EPSILON
-    ) {
-      throw new Error(
-        `Segment ${segmentIndex} has an invalid image position: ${segmentImagePositionPatient} which starts
-        from the middle of the slice of the referenced volume.`
-      );
-    }
-
-    return Math.round(estimatedSliceNumber);
+      return sopInstanceUid === ReferencedSOPInstanceUID;
+    });
   };
 }
 

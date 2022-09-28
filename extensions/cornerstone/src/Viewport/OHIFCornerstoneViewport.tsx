@@ -45,41 +45,44 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  const prevDisplaySets = prevProps.displaySets[0];
-  const nextDisplaySets = nextProps.displaySets[0];
+  const prevDisplaySets = prevProps.displaySets;
+  const nextDisplaySets = nextProps.displaySets;
 
-  // check if the array of displaySets is the same
-  for (let i = 0; i < prevDisplaySets.length; i++) {
-    if (prevDisplaySets[i] !== nextDisplaySets[i]) {
-      return false;
-    }
-  }
-
-  if (
-    prevProps.viewportOptions.viewportType !==
-    nextProps.viewportOptions.viewportType
-  ) {
+  if (prevDisplaySets.length !== nextDisplaySets.length) {
     return false;
   }
 
-  const prevDisplaySets = prevProps.displaySets[0];
-  const nextDisplaySets = nextProps.displaySets[0];
+  for (let i = 0; i < prevDisplaySets.length; i++) {
+    const prevDisplaySet = prevDisplaySets[i];
 
-  if (prevDisplaySets && nextDisplaySets) {
-    const areSameDisplaySetInstanceUIDs =
-      prevDisplaySets.displaySetInstanceUID ===
-      nextDisplaySets.displaySetInstanceUID;
-    const areSameImageLength =
-      prevDisplaySets.images.length === nextDisplaySets.images.length;
-    const areSameImageIds = prevDisplaySets.images.every(
-      (prevImage, index) =>
-        prevImage.imageId === nextDisplaySets.images[index].imageId
+    const foundDisplaySet = nextDisplaySets.find(
+      nextDisplaySet =>
+        nextDisplaySet.displaySetInstanceUID ===
+        prevDisplaySet.displaySetInstanceUID
     );
-    return (
-      areSameDisplaySetInstanceUIDs && areSameImageLength && areSameImageIds
-    );
+
+    if (!foundDisplaySet) {
+      return false;
+    }
+
+    // check they contain the same image
+    if (foundDisplaySet.images?.length !== prevDisplaySet.images?.length) {
+      return false;
+    }
+
+    // check if their imageIds are the same
+    if (foundDisplaySet.images?.length) {
+      for (let j = 0; j < foundDisplaySet.images.length; j++) {
+        if (
+          foundDisplaySet.images[j].imageId !== prevDisplaySet.images[j].imageId
+        ) {
+          return false;
+        }
+      }
+    }
   }
-  return false;
+
+  return true;
 }
 
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport

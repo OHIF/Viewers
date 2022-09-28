@@ -256,13 +256,6 @@ function _getSegments(dataset) {
     segments[segmentNumber].functionalGroups.push(functionalGroup);
   });
 
-  for (let segmentIndex in segments) {
-    const segmentInfo = segments[segmentIndex];
-    const firstGroup = segmentInfo.functionalGroups[0];
-    segmentInfo.firstImagePositionPatient =
-      firstGroup.PlanePositionSequence.ImagePositionPatient;
-  }
-
   return _getPixelData(dataset, segments);
 }
 
