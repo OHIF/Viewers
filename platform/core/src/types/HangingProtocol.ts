@@ -21,7 +21,7 @@ type DisplaySetMatchDetails = {
 type HangingProtocolMatchDetails = {
   displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
   viewportMatchDetails: ViewportMatchDetails[];
-  hpAlreadyApplied: boolean[];
+  hpAlreadyApplied: Map<number, boolean>;
 };
 
 type MatchingRule = {

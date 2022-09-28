@@ -27,7 +27,7 @@ class HangingProtocolService {
   _commandsManager: Record<string, unknown>;
   _servicesManager: Record<string, unknown>;
   protocolEngine: ProtocolEngine;
-  hpAlreadyApplied: boolean[] = [];
+  hpAlreadyApplied: Map<number, boolean> = new Map();
   customViewportSettings = [];
   displaySets: IDisplaySet[] = [];
   activeStudy: Record<string, unknown>;
@@ -97,7 +97,7 @@ class HangingProtocolService {
   public reset() {
     this.studies = [];
     this.protocols = new Map();
-    this.hpAlreadyApplied = [];
+    this.hpAlreadyApplied = new Map();
     this.viewportMatchDetails = [];
     // this.ProtocolEngine.reset()
   }
@@ -289,8 +289,8 @@ class HangingProtocolService {
     }
   }
 
-  public setHangingProtocolAppliedForViewport(i): void {
-    this.hpAlreadyApplied[i] = true;
+  setHangingProtocolAppliedForViewport(i, status, suppressEvent = false) {
+    this.hpAlreadyApplied.set(i, status);
   }
 
   /**
@@ -531,7 +531,7 @@ class HangingProtocolService {
 
     // each time we are updating the viewports, we need to reset the
     // matching applied
-    this.hpAlreadyApplied = [];
+    this.hpAlreadyApplied = new Map();
 
     // reset displaySetMatchDetails
     this.displaySetMatchDetails = new Map();
@@ -607,8 +607,7 @@ class HangingProtocolService {
     // Loop through each viewport
     stageModel.viewports.forEach((viewport, viewportIndex) => {
       const { viewportOptions } = viewport;
-      this.hpAlreadyApplied.push(false);
-
+      this.hpAlreadyApplied.set(viewportIndex, false);
       // DisplaySets for the viewport, Note: this is not the actual displaySet,
       // but it is a info to locate the displaySet from the displaySetService
       const displaySetsInfo = [];
@@ -825,8 +824,8 @@ class HangingProtocolService {
    * @return {Boolean} True if new stage has set or false, otherwise
    */
   _setCurrentProtocolStage(stageAction): boolean {
-    //reseting the applied protocols
-    this.hpAlreadyApplied = [];
+    //resseting the applied protocols
+    this.hpAlreadyApplied = new Map();
     // Check if previous or next stage is available
     if (stageAction === -1 && !this._isPreviousStageAvailable()) {
       return false;
