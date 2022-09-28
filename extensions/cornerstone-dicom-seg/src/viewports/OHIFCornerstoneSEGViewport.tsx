@@ -50,6 +50,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
   // States
   const [isToolGroupCreated, setToolGroupCreated] = useState(false);
+  const [selectedSegment, setSelectedSegment] = useState(1);
   const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
 
@@ -81,20 +82,7 @@ function OHIFCornerstoneSEGViewport(props) {
       displaySet: referencedDisplaySet,
     } = referencedDisplaySetRef.current;
 
-    // if (segmentationIsLoaded) {
-    //   displaySets.push(segDisplaySet);
-    // }
-
-    // const { measurements } = segDisplaySet;
-    // const measurement = measurements[measurementSelected];
-
-    // if (!measurement) {
-    //   return null;
-    // }
-
-    // const initialImageIndex = referencedDisplaySet.images.findIndex(
-    //   image => image.imageId === measurement.imageId
-    // );
+    // Todo: jump to the center of the first segment
 
     return (
       <Component
@@ -111,22 +99,33 @@ function OHIFCornerstoneSEGViewport(props) {
     );
   }, [viewportIndex, segDisplaySet]);
 
-  const onSegmentChange = useCallback(direction => {
-    // let newMeasurementSelected = measurementSelected;
-    // if (direction === 'right') {
-    //   newMeasurementSelected++;
-    //   if (newMeasurementSelected >= measurementCount) {
-    //     newMeasurementSelected = 0;
-    //   }
-    // } else {
-    //   newMeasurementSelected--;
-    //   if (newMeasurementSelected < 0) {
-    //     newMeasurementSelected = measurementCount - 1;
-    //   }
-    // }
-    // setTrackingIdentifiers(newMeasurementSelected);
-    // updateViewport(newMeasurementSelected);
-  }, []);
+  const onSegmentChange = useCallback(
+    direction => {
+      direction = direction === 'left' ? -1 : 1;
+      const segmentationId = segDisplaySet.displaySetInstanceUID;
+      const segmentation = SegmentationService.getSegmentation(segmentationId);
+
+      const { segments } = segmentation;
+
+      const numberOfSegments = Object.keys(segments).length;
+
+      let newSelectedSegmentIndex = selectedSegment + direction;
+
+      if (newSelectedSegmentIndex > numberOfSegments - 1) {
+        newSelectedSegmentIndex = 1;
+      } else if (newSelectedSegmentIndex === 0) {
+        newSelectedSegmentIndex = numberOfSegments - 1;
+      }
+
+      SegmentationService.jumpToSegmentCenter(
+        segmentationId,
+        newSelectedSegmentIndex,
+        toolGroupId
+      );
+      setSelectedSegment(newSelectedSegmentIndex);
+    },
+    [selectedSegment]
+  );
 
   /**
    Cleanup the SEG viewport when the viewport is destroyed

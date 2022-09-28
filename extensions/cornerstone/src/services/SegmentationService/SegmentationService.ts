@@ -766,10 +766,11 @@ class SegmentationService {
   public jumpToSegmentCenter(
     segmentationId: string,
     segmentIndex: number,
+    toolGroupId?: string,
     highlightAlpha = 0.99,
     highlightSegment = true,
     highlightTimeout = 1000,
-    highlightHideOthers = true
+    highlightHideOthers = false
   ): void {
     const { ToolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
@@ -777,7 +778,7 @@ class SegmentationService {
     const { world } = center;
 
     // todo: generalize
-    const toolGroupId = this._getFirstToolGroupId();
+    toolGroupId = toolGroupId || this._getFirstToolGroupId();
     const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
 
     const viewportsInfo = toolGroup.getViewportsInfo();
@@ -797,8 +798,8 @@ class SegmentationService {
       this.highlightSegment(
         segmentationId,
         segmentIndex,
+        toolGroupId,
         highlightAlpha,
-        null,
         highlightTimeout,
         highlightHideOthers
       );
@@ -808,8 +809,8 @@ class SegmentationService {
   public highlightSegment(
     segmentationId: string,
     segmentIndex: number,
-    alpha = 0.9999,
     toolGroupId?: string,
+    alpha = 0.9999,
     timeout = 1000,
     hideOthers = true
   ): void {
