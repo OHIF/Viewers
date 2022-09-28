@@ -19,7 +19,6 @@ import promptHydrateSEG from '../utils/promptHydrateSEG';
 
 const { formatDate } = utils;
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
-const SEGMENTATION_CROSSHAIRS = 'SegmentationCrosshairs';
 
 function OHIFCornerstoneSEGViewport(props) {
   const {
@@ -168,13 +167,6 @@ function OHIFCornerstoneSEGViewport(props) {
 
     setToolGroupCreated(true);
 
-    toolGroup.setToolConfiguration(SEGMENTATION_CROSSHAIRS, {
-      segmentIndex: 1,
-      segmentationId: segDisplaySet.displaySetInstanceUID,
-    });
-
-    toolGroup.setToolEnabled(SEGMENTATION_CROSSHAIRS);
-
     return () => {
       // remove the segmentation representations if seg displayset changed
       SegmentationService.removeSegmentationRepresentationFromToolGroup(
@@ -197,14 +189,6 @@ function OHIFCornerstoneSEGViewport(props) {
       metadata: referencedDisplaySetMetadata,
     };
     setIsHydrated(segDisplaySet.isHydrated);
-
-    const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
-    toolGroup.setToolConfiguration(SEGMENTATION_CROSSHAIRS, {
-      segmentIndex: 1,
-      segmentationId: segDisplaySet.displaySetInstanceUID,
-    });
-
-    toolGroup.setToolEnabled(SEGMENTATION_CROSSHAIRS);
 
     return () => {
       // remove the segmentation representations if seg displayset changed

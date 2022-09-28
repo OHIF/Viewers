@@ -77,6 +77,7 @@ export default function PanelSegmentation({
       segmentationId,
       segmentIndex
     );
+    SegmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
   };
 
   const onSegmentEdit = (segmentationId, segmentIndex) => {

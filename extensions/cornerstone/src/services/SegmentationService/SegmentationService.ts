@@ -15,6 +15,7 @@ import {
   volumeLoader,
   Types,
   metaData,
+  getEnabledElementByIds,
 } from '@cornerstonejs/core';
 import isEqual from 'lodash.isequal';
 
@@ -646,6 +647,13 @@ class SegmentationService {
     const [rows, columns] = derivedVolume.dimensions;
     const derivedVolumeScalarData = derivedVolume.scalarData;
 
+    const { imageIds } = referencedVolume;
+    const sopUIDImageIdIndexMap = imageIds.reduce((acc, imageId, index) => {
+      const { sopInstanceUid } = metaData.get('generalImageModule', imageId);
+      acc[sopInstanceUid] = index;
+      return acc;
+    }, {} as { [sopUID: string]: number });
+
     // Note: ideally we could use the TypedArray set method, but since each
     // slice can have multiple segments, we need to loop over each slice and
     // set the segment value for each segment.
@@ -660,10 +668,11 @@ class SegmentationService {
 
       segmentInfo.functionalGroups.forEach(
         (functionalGroup, functionalGroupIndex) => {
-          const imageIdIndex = this._getSegmentImageIdIndex(
-            functionalGroup,
-            referencedVolume
-          );
+          const {
+            ReferencedSOPInstanceUID,
+          } = functionalGroup.DerivationImageSequence.SourceImageSequence;
+
+          const imageIdIndex = sopUIDImageIdIndexMap[ReferencedSOPInstanceUID];
 
           if (imageIdIndex === -1) {
             return;
@@ -671,9 +680,13 @@ class SegmentationService {
 
           const step = rows * columns;
 
-          const functionGroupPixelData = segPixelData.slice(
+          // we need a faster way to get the pixel data for the current
+          // functional group, which we use typed array view
+
+          const functionGroupPixelData = new Uint8Array(
+            segPixelData.buffer,
             functionalGroupIndex * step,
-            (functionalGroupIndex + 1) * step
+            step
           );
 
           const functionalGroupStartIndex = imageIdIndex * step;
@@ -694,6 +707,7 @@ class SegmentationService {
             ) {
               derivedVolumeScalarData[i] = segmentIndex;
 
+              // centroid calculations
               segmentX += i % columns;
               segmentY += Math.floor(i / columns) % rows;
               segmentZ += Math.floor(i / (columns * rows));
@@ -703,18 +717,23 @@ class SegmentationService {
         }
       );
 
-      // middle of the segment
+      // centroid calculations
       const x = Math.floor(segmentX / count);
       const y = Math.floor(segmentY / count);
       const z = Math.floor(segmentZ / count);
+
+      const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
 
       segmentationSchema.cachedStats = {
         ...segmentationSchema.cachedStats,
         segmentCenter: {
           ...segmentationSchema.cachedStats.segmentCenter,
           [segmentIndex]: {
-            center: [x, y, z],
-            modifyTime: Date.now(),
+            center: {
+              image: [x, y, z],
+              world: centerWorld,
+            },
+            modifiedTime: Date.now(),
           },
         },
       };
@@ -742,6 +761,101 @@ class SegmentationService {
     });
 
     return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);
+  }
+
+  public jumpToSegmentCenter(
+    segmentationId: string,
+    segmentIndex: number,
+    highlightAlpha = 0.99,
+    highlightSegment = true,
+    highlightTimeout = 1000,
+    highlightHideOthers = true
+  ): void {
+    const { ToolGroupService } = this.servicesManager.services;
+    const center = this._getSegmentCenter(segmentationId, segmentIndex);
+
+    const { world } = center;
+
+    // todo: generalize
+    const toolGroupId = this._getFirstToolGroupId();
+    const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+
+    const viewportsInfo = toolGroup.getViewportsInfo();
+
+    // @ts-ignore
+    for (const { viewportId, renderingEngineId } of Object.values(
+      viewportsInfo
+    )) {
+      const { viewport } = getEnabledElementByIds(
+        viewportId,
+        renderingEngineId
+      );
+      cstUtils.viewport.jumpToWorld(viewport, world);
+    }
+
+    if (highlightSegment) {
+      this.highlightSegment(
+        segmentationId,
+        segmentIndex,
+        highlightAlpha,
+        null,
+        highlightTimeout,
+        highlightHideOthers
+      );
+    }
+  }
+
+  public highlightSegment(
+    segmentationId: string,
+    segmentIndex: number,
+    alpha = 0.9999,
+    toolGroupId?: string,
+    timeout = 1000,
+    hideOthers = true
+  ): void {
+    const segmentation = this.getSegmentation(segmentationId);
+    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+
+    const segmentationRepresentation = this._getSegmentationRepresentation(
+      segmentationId,
+      toolGroupId
+    );
+
+    const { segments } = segmentation;
+
+    const newSegmentSpecificConfig = {
+      [segmentIndex]: {
+        LABELMAP: {
+          fillAlpha: alpha,
+        },
+      },
+    };
+
+    if (hideOthers) {
+      for (let i = 0; i < segments.length; i++) {
+        if (i !== segmentIndex) {
+          newSegmentSpecificConfig[i] = {
+            LABELMAP: {
+              fillAlpha: 0,
+            },
+          };
+        }
+      }
+    }
+
+    cstSegmentation.config.setSegmentSpecificConfig(
+      toolGroupId,
+      segmentationRepresentation.segmentationRepresentationUID,
+      newSegmentSpecificConfig
+    );
+
+    setTimeout(() => {
+      cstSegmentation.config.setSegmentSpecificConfig(
+        toolGroupId,
+        segmentationRepresentation.segmentationRepresentationUID,
+        {}
+      );
+    }, timeout);
   }
 
   public createSegmentationForDisplaySet = async (
@@ -1352,6 +1466,30 @@ class SegmentationService {
     }
   };
 
+  private _getSegmentCenter(segmentationId, segmentIndex) {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (!segmentation) {
+      return;
+    }
+
+    const { cachedStats } = segmentation;
+
+    if (!cachedStats) {
+      return;
+    }
+
+    const { segmentCenter } = cachedStats;
+
+    if (!segmentCenter) {
+      return;
+    }
+
+    const { center } = segmentCenter[segmentIndex];
+
+    return center;
+  }
+
   private _setSegmentLocked(
     segmentationId: string,
     segmentIndex: number,
@@ -1795,21 +1933,6 @@ class SegmentationService {
    */
   private arrayOfObjects = obj => {
     return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
-  };
-
-  private _getSegmentImageIdIndex = (functionalGroup, referencedVolume) => {
-    const {
-      ReferencedSOPInstanceUID,
-    } = functionalGroup.DerivationImageSequence.SourceImageSequence;
-
-    const { imageIds } = referencedVolume;
-
-    // this assumes the imageIds in the volume is ordered
-    return imageIds.findIndex(imageId => {
-      const { sopInstanceUid } = metaData.get('generalImageModule', imageId);
-
-      return sopInstanceUid === ReferencedSOPInstanceUID;
-    });
   };
 }
 

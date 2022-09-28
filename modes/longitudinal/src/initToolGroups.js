@@ -38,7 +38,6 @@ function initDefaultToolGroup(
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
     ],
-    enabled: [{ toolName: toolNames.SegmentationCrosshairs }],
     // enabled
     // disabled
   };
