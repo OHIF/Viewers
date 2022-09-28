@@ -1,5 +1,5 @@
 import { Types } from '@cornerstonejs/core';
-import { StackData, VolumeData } from './CornerstoneCacheService';
+import { StackData, VolumeData } from '../../types/CornerstoneCacheService';
 import {
   DisplaySetOptions,
   PublicViewportOptions,

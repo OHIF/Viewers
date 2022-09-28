@@ -20,7 +20,7 @@ import ViewportInfo, {
 import {
   StackViewportData,
   VolumeViewportData,
-} from './CornerstoneCacheService';
+} from '../../types/CornerstoneCacheService';
 import {
   setColormap,
   setLowerUpperColorTransferFunction,
@@ -372,7 +372,6 @@ class CornerstoneViewportService implements IViewportService {
 
     const volumeToLoad = [];
     const displaySetInstanceUIDs = [];
-    const secondaryDisplaySetsToLoad = [];
 
     for (const [index, data] of viewportData.data.entries()) {
       const { volume, imageIds, displaySetInstanceUID } = data;
@@ -380,7 +379,6 @@ class CornerstoneViewportService implements IViewportService {
       displaySetInstanceUIDs.push(displaySetInstanceUID);
 
       if (!volume) {
-        secondaryDisplaySetsToLoad.push(displaySetInstanceUID);
         continue;
       }
 
@@ -426,39 +424,66 @@ class CornerstoneViewportService implements IViewportService {
   }
 
   public async setVolumesForViewport(viewport, volumeInputArray) {
-    await viewport.setVolumes(volumeInputArray);
-
-    // load any secondary displaySets
-    const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
     const {
       DisplaySetService,
       SegmentationService,
       ToolGroupService,
     } = this.servicesManager.services;
 
-    for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-      const displaySet = DisplaySetService.getDisplaySetByUID(
-        displaySetInstanceUID
-      );
+    await viewport.setVolumes(volumeInputArray);
 
-      // Todo: this needs to be refactored to be more generic
-      if (displaySet && displaySet.Modality === 'SEG') {
-        // Load SEG
-        const segDisplaySet = displaySet;
-        const { referencedVolumeId } = segDisplaySet;
-        const referencedVolume = cache.getVolume(referencedVolumeId);
-        const segmentationId = segDisplaySet.displaySetInstanceUID;
+    // load any secondary displaySets
+    const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
 
-        const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    const segDisplaySet = displaySetInstanceUIDs
+      .map(DisplaySetService.getDisplaySetByUID)
+      .find(displaySet => displaySet && displaySet.Modality === 'SEG');
 
-        if (referencedVolume) {
+    if (segDisplaySet) {
+      // If the displaySet is a SEG displaySet we assume it is a secondary displaySet
+      // and load it as non hydrated segmentation
+      const { referencedVolumeId } = segDisplaySet;
+      const referencedVolume = cache.getVolume(referencedVolumeId);
+      const segmentationId = segDisplaySet.displaySetInstanceUID;
+
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+
+      if (referencedVolume) {
+        SegmentationService.addSegmentationRepresentationToToolGroup(
+          toolGroup.id,
+          segmentationId
+        );
+      }
+    } else {
+      // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
+      // and we can look into hydrated segmentations to check if any of them are
+      // associated with the primary displaySet
+      // get segmentations only returns the hydrated segmentations
+      const segmentations = SegmentationService.getSegmentations();
+
+      segmentations.forEach(segmentation => {
+        const { id: displaySetInstanceUID } = segmentation;
+        const segDisplaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+
+        const { referencedVolumeURI, referencedVolumeId } = segDisplaySet;
+        const referencedVolume = cache.getVolume(referencedVolumeURI);
+
+        if (
+          referencedVolume &&
+          displaySetInstanceUIDs.includes(referencedVolumeURI)
+        ) {
+          const toolGroup = ToolGroupService.getToolGroupForViewport(
+            viewport.id
+          );
+
           SegmentationService.addSegmentationRepresentationToToolGroup(
             toolGroup.id,
-            segmentationId
+            segmentation.id
           );
-          return;
         }
-      }
+      });
     }
 
     const viewportInfo = this.getViewportInfo(viewport.id);

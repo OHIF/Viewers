@@ -81,8 +81,6 @@ function OHIFCornerstoneSEGViewport(props) {
       displaySet: referencedDisplaySet,
     } = referencedDisplaySetRef.current;
 
-    const displaySets = [referencedDisplaySet, segDisplaySet];
-
     // if (segmentationIsLoaded) {
     //   displaySets.push(segDisplaySet);
     // }
@@ -101,10 +99,9 @@ function OHIFCornerstoneSEGViewport(props) {
     return (
       <Component
         {...props}
-        displaySets={displaySets}
+        displaySets={[referencedDisplaySet, segDisplaySet]}
         viewportOptions={{
           viewportType: 'volume',
-          orientation: 'axial', // todo: make this default orientation
           toolGroupId: toolGroupId,
         }}
         onElementEnabled={onElementEnabled}

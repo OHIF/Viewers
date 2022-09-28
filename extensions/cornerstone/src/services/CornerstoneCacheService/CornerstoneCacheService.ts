@@ -1,30 +1,11 @@
-import { Enums, Types } from '@cornerstonejs/core';
+import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
+import { utils } from '@ohif/core';
 
-type StackData = {
-  StudyInstanceUID: string;
-  displaySetInstanceUID: string;
-  imageIds: string[];
-  frameRate?: number;
-  isClip?: boolean;
-  initialImageIndex?: number | string | null;
-};
-
-type VolumeData = {
-  studyInstanceUID: string;
-  displaySetInstanceUID: string;
-  volume?: Types.IVolume;
-  imageIds?: string[];
-};
-
-type StackViewportData = {
-  viewportType: Enums.ViewportType;
-  data: StackData;
-};
-
-type VolumeViewportData = {
-  viewportType: Enums.ViewportType;
-  data: VolumeData[];
-};
+import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
+import {
+  StackViewportData,
+  VolumeViewportData,
+} from '../../types/CornerstoneCacheService';
 
 const VOLUME_IMAGE_LOADER_SCHEME = 'streaming-wadors';
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
@@ -33,7 +14,9 @@ class CornerstoneCacheService {
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
 
-  constructor() {}
+  constructor(servicesManager) {
+    this.servicesManager = servicesManager;
+  }
 
   public getCacheSize() {
     return cs3DCache.getCacheSize();
@@ -45,10 +28,24 @@ class CornerstoneCacheService {
 
   public async createViewportData(
     displaySets: unknown[],
-    viewportType: string,
+    viewportOptions: Record<string, unknown>,
     dataSource: unknown,
     initialImageIndex?: number
   ): Promise<StackViewportData | VolumeViewportData> {
+    let viewportType = viewportOptions.viewportType as string;
+
+    // Todo: Since Cornerstone 3D currently doesn't support segmentation
+    // on stack viewport, we should check if whether the the displaySets
+    // that are about to be displayed are referenced in a segmentation
+    // as a reference volume, if so, we should hang a volume viewport
+    // instead of a stack viewport
+    if (this._shouldRenderSegmentation(displaySets)) {
+      viewportType = 'volume';
+
+      // update viewportOptions to reflect the new viewport type
+      viewportOptions.viewportType = viewportType;
+    }
+
     const cs3DViewportType = getCornerstoneViewportType(viewportType);
     let viewportData: StackViewportData | VolumeViewportData;
 
@@ -203,6 +200,31 @@ class CornerstoneCacheService {
     };
   }
 
+  private _shouldRenderSegmentation(displaySets) {
+    const { SegmentationService } = this.servicesManager.services;
+
+    const viewportDisplaySetInstanceUIDs = displaySets.map(
+      ({ displaySetInstanceUID }) => displaySetInstanceUID
+    );
+
+    // check inside segmentations if any of them are referencing the displaySets
+    // that are about to be displayed
+    const segmentations = SegmentationService.getSegmentations();
+
+    for (const segmentation of segmentations) {
+      const segDisplaySetInstanceUID = segmentation.displaySetInstanceUID;
+
+      const shouldDisplaySeg = SegmentationService.shouldRenderSegmentation(
+        viewportDisplaySetInstanceUIDs,
+        segDisplaySetInstanceUID
+      );
+
+      if (shouldDisplaySeg) {
+        return true;
+      }
+    }
+  }
+
   private _getCornerstoneStackImageIds(displaySet, dataSource): string[] {
     return dataSource.getImageIdsForDisplaySet(displaySet);
   }
@@ -220,5 +242,4 @@ class CornerstoneCacheService {
   }
 }
 
-const CacheService = new CornerstoneCacheService();
-export default CacheService;
+export default CornerstoneCacheService;

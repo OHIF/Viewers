@@ -1,38 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import SegmentItem from './SegmentItem';
-import SegmentationConfig from './SegmentationConfig';
 import Dropdown from '../Dropdown';
 import classnames from 'classnames';
 import Icon from '../Icon';
 import IconButton from '../IconButton';
 
-const AddNewSegmentRow = ({ onConfigChange }) => {
-  const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] = useState(
-    false
-  );
-
+const AddNewSegmentRow = ({ onConfigChange, onSegmentAdd }) => {
   return (
     <div className="flex flex-col">
-      <div className="flex items-center px-3 py-2">
-        <div className="flex items-center  gap-2">
-          <Icon name="tool-crosshair" className="w-4 h-4 text-white" />
-          <span className="text-base text-white ">Add Segment</span>
+      <div
+        className="flex items-center px-3 py-[5px] bg-black text-primary-active hover:opacity-80 cursor-pointer"
+        onClick={() => onSegmentAdd()}
+      >
+        <div className="flex items-center gap-2 pl-5">
+          <Icon name="row-add" className="w-4 h-4" />
+          <span className="">Add Segment</span>
         </div>
         <div className="flex-grow" />
-        <div className="w-4 h-4 flex items-center justify-center">
-          <Icon
-            name="settings"
-            className="w-4 h-4 text-white"
-            onClick={() =>
-              setIsSegmentationConfigOpen(!isSegmentationConfigOpen)
-            }
-          />
-        </div>
       </div>
-      {isSegmentationConfigOpen && (
+      {/* {isSegmentationConfigOpen && (
         <SegmentationConfig onConfigChange={onConfigChange} />
-      )}
+      )} */}
     </div>
   );
 };
@@ -40,39 +29,57 @@ const AddNewSegmentRow = ({ onConfigChange }) => {
 const SegmentGroupHeader = ({
   isMinimized,
   onToggleMinimizeSegmentation,
+  onSegmentationClick,
   id,
   label,
+  isActive,
   segmentCount,
-  onClickSegmentationEdit,
-  onClickSegmentationDelete,
+  onSegmentationRename,
+  onSegmentationDelete,
 }) => {
   return (
-    <div className="flex items-center px-2 pl-3 py-2 bg-secondary-main gap-2">
+    <div
+      className={classnames(
+        'flex items-center pr-2 pl-[8px] py-[4px]  gap-2 rounded-t-md border-b border-secondary-light cursor-pointer',
+        {
+          'bg-secondary-main': isActive,
+          'bg-secondary-dark': !isActive,
+        }
+      )}
+      onClick={evt => {
+        onToggleMinimizeSegmentation(id);
+        onSegmentationClick(id);
+      }}
+    >
       <Icon
         name="panel-group-open-close"
         className={classnames(
-          'w-4 h-4 text-white transition duration-300 cursor-pointer',
+          'w-5 h-5 text-white transition duration-300 cursor-pointer',
           {
             'transform rotate-90': !isMinimized,
           }
         )}
-        onClick={() => onToggleMinimizeSegmentation(id)}
       />
-      <span className="text-base text-white ">{label}</span>
+      <span className="text-white ">{label.toUpperCase()}</span>
       <div className="flex-grow" />
-      <span className="text-base text-white ">{segmentCount}</span>
-      <div className="flex">
+      <span className="text-white ">{segmentCount}</span>
+      <div
+        className="flex"
+        onClick={e => {
+          e.stopPropagation();
+        }}
+      >
         <Dropdown
           id="options"
           showDropdownIcon={false}
           list={[
             {
               title: 'Rename',
-              onClick: onClickSegmentationEdit,
+              onClick: onSegmentationRename,
             },
             {
               title: 'Delete',
-              onClick: onClickSegmentationDelete,
+              onClick: onSegmentationDelete,
             },
           ]}
         >
@@ -97,44 +104,48 @@ const SegmentationGroup = ({
   segmentCount,
   isVisible,
   isActive,
+  onSegmentClick,
   isMinimized,
+  showAddSegment,
   segments,
   activeSegmentIndex,
-  onClickNewSegment,
-  onClickSegment,
+  onSegmentAdd,
+  onSegmentationClick,
   onClickSegmentEdit,
-  onClickSegmentDelete,
-  onToggleSegmentLocked,
   onClickSegmentColor,
+  onSegmentationRename,
   onToggleSegmentVisibility,
   onToggleSegmentationVisibility,
-  onClickSegmentationEdit,
-  onClickSegmentationDelete,
-  onToggleActive,
+  onSegmentDelete,
   onToggleMinimizeSegmentation,
   onSegmentationConfigChange,
+  onSegmentationDelete,
+  onSegmentEdit,
 }) => {
   return (
     <div className="flex flex-col">
-      <div
-        className={classnames('flex flex-col', {
-          'border border-primary-light ': isActive,
-        })}
-      >
+      <div>
         <SegmentGroupHeader
-          isMinimized={isMinimized}
-          onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
           id={id}
           label={label}
+          isActive={isActive}
+          isMinimized={isMinimized}
+          onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+          onSegmentationClick={onSegmentationClick}
           segmentCount={segmentCount}
-          onClickSegmentationEdit={onClickSegmentationEdit}
-          onClickSegmentationDelete={onClickSegmentationDelete}
+          onSegmentationRename={onSegmentationRename}
+          onSegmentationDelete={onSegmentationDelete}
         />
 
         {/* Add segment row */}
         {!isMinimized && (
           <div className="flex flex-col">
-            <AddNewSegmentRow onConfigChange={onSegmentationConfigChange} />
+            {showAddSegment && (
+              <AddNewSegmentRow
+                onConfigChange={onSegmentationConfigChange}
+                onSegmentAdd={onSegmentAdd}
+              />
+            )}
             {!!segments.length &&
               segments.map(segment => {
                 if (segment === undefined || segment === null) {
@@ -158,18 +169,16 @@ const SegmentationGroup = ({
                     isActive={activeSegmentIndex === segmentIndex}
                     isLocked={isLocked}
                     isVisible={isVisible}
-                    onClick={onClickSegment}
-                    onEdit={onClickSegmentEdit}
-                    onDelete={onClickSegmentDelete}
+                    onClick={onSegmentClick}
+                    onEdit={onSegmentEdit}
+                    onDelete={onSegmentDelete}
                     onColor={onClickSegmentColor}
                     onToggleVisibility={onToggleSegmentVisibility}
-                    onToggleLocked={onToggleSegmentLocked}
                   />
                 );
               })}
           </div>
         )}
-        {/* Segments */}
       </div>
     </div>
   );
@@ -178,9 +187,11 @@ const SegmentationGroup = ({
 SegmentationGroup.propTypes = {
   label: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
+  segments: PropTypes.array.isRequired,
   segmentCount: PropTypes.number.isRequired,
   isVisible: PropTypes.bool.isRequired,
-  segments: PropTypes.array.isRequired,
+  isActive: PropTypes.bool.isRequired,
+  isMinimized: PropTypes.bool.isRequired,
   activeSegmentIndex: PropTypes.number,
   onClickNewSegment: PropTypes.func.isRequired,
   onClickSegment: PropTypes.func.isRequired,
@@ -189,6 +200,18 @@ SegmentationGroup.propTypes = {
   onToggleSegmentLocked: PropTypes.func,
   onToggleSegmentVisibility: PropTypes.func.isRequired,
   onToggleSegmentationVisibility: PropTypes.func.isRequired,
+  onSegmentClick: PropTypes.func.isRequired,
+  showAddSegment: PropTypes.bool.isRequired,
+  onSegmentAdd: PropTypes.func.isRequired,
+
+  onSegmentationClick: PropTypes.func.isRequired,
+  onClickSegmentColor: PropTypes.func.isRequired,
+  onSegmentationRename: PropTypes.func.isRequired,
+  onSegmentDelete: PropTypes.func.isRequired,
+  onToggleMinimizeSegmentation: PropTypes.func.isRequired,
+  onSegmentationConfigChange: PropTypes.func.isRequired,
+  onSegmentationDelete: PropTypes.func.isRequired,
+  onSegmentEdit: PropTypes.func.isRequired,
 };
 
 SegmentationGroup.defaultProps = {

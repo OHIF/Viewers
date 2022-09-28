@@ -19,6 +19,7 @@ const SegmentItem = ({
   onToggleLocked,
 }) => {
   const [isHovering, setIsHovering] = useState(false);
+  const [isSegmentIndexHovering, setIsSegmentIndexHovering] = useState(false);
 
   const onMouseEnter = () => setIsHovering(true);
   const onMouseLeave = () => setIsHovering(false);
@@ -28,9 +29,13 @@ const SegmentItem = ({
   return (
     <div
       className={classnames(
-        'group relative flex cursor-pointer items-stretch bg-black border outline-none border-transparent transition duration-300',
+        'group relative flex cursor-pointer items-stretch bg-primary-dark outline-none transition duration-300 ',
         {
-          'rounded overflow-hidden border-primary-light': isActive,
+          'border border-primary-light rounded-l-sm':
+            isHovering || isSegmentIndexHovering,
+        },
+        {
+          'border border-transparent': !isHovering && !isSegmentIndexHovering,
         }
       )}
       onMouseEnter={onMouseEnter}
@@ -40,39 +45,109 @@ const SegmentItem = ({
         onClick(segmentationId, segmentIndex);
       }}
       role="button"
-      tabIndex="0"
-      data-cy={'measurement-item'}
+      tabIndex={0}
+      data-cy={'segment-item'}
     >
       <div
+        onMouseEnter={() => setIsSegmentIndexHovering(true)}
+        onMouseLeave={() => setIsSegmentIndexHovering(false)}
+      >
+        <div
+          className={classnames(
+            'w-[27px] h-[27px] flex items-center justify-center border-r border-r-black ',
+            {
+              'bg-primary-light text-black rounded-sm': isActive,
+              'bg-primary-dark text-aqua-pale': !isActive && isVisible,
+              'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
+            }
+          )}
+        >
+          {isSegmentIndexHovering ? (
+            <Icon
+              name="close"
+              className={classnames('w-5 h-5 pr-2')}
+              onClick={e => {
+                e.stopPropagation();
+                onDelete(segmentationId, segmentIndex);
+              }}
+            />
+          ) : (
+            <div className={classnames('flex items-center pr-2')}>
+              {segmentIndex}
+            </div>
+          )}
+        </div>
+      </div>
+      <div
         className={classnames(
-          'text-center flex items-center justify-center w-6 h-auto text-base transition duration-300',
+          'flex items-center justify-between w-full px-2 py-1 text-white border-r border-r-black ',
           {
-            'bg-primary-light text-black': isActive,
-            'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
+            'bg-secondary-dark text-primary-light': isActive,
+            'bg-primary-dark text-aqua-pale': !isActive && isVisible,
+            'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
           }
         )}
       >
-        {isHovering ? (
+        <div className={classnames('flex items-center gap-2')}>
+          <div
+            className={classnames('w-[8px] h-[8px] rounded-full')}
+            style={{ backgroundColor: cssColor }}
+          />
+          <div className="text-xs">{label}</div>
+        </div>
+        {!isVisible && !isHovering && (
           <Icon
-            name="close"
-            className={classnames(
-              'w-5 transition duration-500 text-center hover:opacity-80',
-              {
-                'bg-primary-light text-black': isActive,
-                'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
-              }
-            )}
+            name="row-hidden"
+            className={classnames('w-5 h-5 text-[#3d5871')}
             onClick={e => {
               e.stopPropagation();
-              onDelete(segmentationId, segmentIndex);
+              onToggleVisibility(segmentationId, segmentIndex);
             }}
           />
-        ) : (
-          <span>{segmentIndex}</span>
+        )}
+        {isHovering && (
+          <div className={classnames('flex items-center gap-2')}>
+            <Icon
+              name="row-edit"
+              className={classnames('w-5 h-5', {
+                'text-white': isLocked,
+                'text-primary-light': !isLocked,
+              })}
+              onClick={e => {
+                e.stopPropagation();
+                onEdit(segmentationId, segmentIndex);
+              }}
+            />
+            {isVisible ? (
+              <Icon
+                name="row-hide"
+                className={classnames('w-5 h-5', {
+                  'text-white': isLocked,
+                  'text-primary-light': !isLocked,
+                })}
+                onClick={e => {
+                  e.stopPropagation();
+                  onEdit(segmentationId, segmentIndex);
+                }}
+              />
+            ) : (
+              <Icon
+                name="row-unhide"
+                className={classnames('w-5 h-5', {
+                  'text-white': isLocked,
+                  'text-primary-light': !isLocked,
+                })}
+                onClick={e => {
+                  e.stopPropagation();
+                  onEdit(segmentationId, segmentIndex);
+                }}
+              />
+            )}
+          </div>
         )}
       </div>
-      <div className="relative flex flex-col w-full p-1">
-        <div className="flex items-center mb-1 ml-2">
+      {/* <div className="relative flex flex-col w-full border-t border-t-black">
+        <div className="fl`ex items-center mb-1 ml-2">
           <div className="flex items-center flex-1 text-base text-primary-light">
             <div
               className={classnames(
@@ -130,7 +205,7 @@ const SegmentItem = ({
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -139,6 +214,8 @@ SegmentItem.propTypes = {
   segmentIndex: PropTypes.number.isRequired,
   segmentationId: PropTypes.string.isRequired,
   label: PropTypes.string,
+  // color as array
+  color: PropTypes.array,
   isActive: PropTypes.bool.isRequired,
   isVisible: PropTypes.bool.isRequired,
   isLocked: PropTypes.bool,

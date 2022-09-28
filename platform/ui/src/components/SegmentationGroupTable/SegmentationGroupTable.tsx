@@ -4,24 +4,19 @@ import { Icon } from '../';
 import SegmentationGroup from './SegmentationGroup';
 import SegmentationConfig from './SegmentationConfig';
 
-const AddNewSegmentationAndConfig = ({ onConfigChange }) => {
+const GetSegmentationConfig = ({ onConfigChange }) => {
   const [isSegmentationConfigOpen, setIsSegmentationConfigOpen] = useState(
     false
   );
 
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center pl-1 py-1 border-2 border-secondary-main">
-        <Icon name="settings" className="w-4 h-4 text-white" />
-        <div className="text-base font-inter text-primary-active pl-2 ">
-          Appearance
-        </div>
-      </div>
-      <div className="flex items-center pl-1 py-1">
-        <Icon name="row-add" className="w-6 h-6 text-white" />
-        <div className="text-base font-inter text-primary-active pl-2 ">
-          Add Segmentation
-        </div>
+    <div className="flex flex-col text-primary-active border-b-2 border-secondary-main group">
+      <div
+        className="flex items-center pl-[12px] py-[6px] cursor-pointer group-hover:opacity-80"
+        onClick={() => setIsSegmentationConfigOpen(!isSegmentationConfigOpen)}
+      >
+        <Icon name="settings" className="w-4 h-4 cursor-pointer" />
+        <div className="pl-2">Appearance</div>
       </div>
       {isSegmentationConfigOpen && (
         <SegmentationConfig onConfigChange={onConfigChange} />
@@ -32,9 +27,19 @@ const AddNewSegmentationAndConfig = ({ onConfigChange }) => {
 
 const SegmentationGroupTable = ({
   segmentations,
-  onClickSegmentation,
+  onSegmentationClick,
+  onSegmentClick,
   onGlobalConfigChange,
-  onSegmentationConfigChange,
+  onSegmentationAdd,
+  onSegmentationRename,
+  onSegmentationDelete,
+  showAddSegmentation,
+  showAddSegment,
+  onSegmentAdd,
+  onSegmentDelete,
+  onSegmentEdit,
+  onToggleSegmentationVisibility,
+  onToggleSegmentVisibility,
 }) => {
   const [isMinimized, setIsMinimized] = useState(() => {
     return segmentations.reduce((acc, { id }) => {
@@ -54,8 +59,19 @@ const SegmentationGroupTable = ({
   );
 
   return (
-    <div>
-      <AddNewSegmentationAndConfig onConfigChange={onGlobalConfigChange} />
+    <div className="font-inter">
+      <GetSegmentationConfig onConfigChange={onGlobalConfigChange} />
+      {showAddSegmentation && (
+        <div className="text-primary-active">
+          <div
+            className="flex items-center pl-[8px] py-[6px] cursor-pointer hover:opacity-80"
+            onClick={() => onSegmentationAdd()}
+          >
+            <Icon name="row-add" className="w-5 h-5" />
+            <div className="pl-2">Add Segmentation</div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col gap-2">
         {!!segmentations.length &&
           segmentations.map(segmentation => {
@@ -67,20 +83,30 @@ const SegmentationGroupTable = ({
               segments,
               isVisible,
               isActive,
+              activeSegmentIndex,
             } = segmentation;
             return (
               <SegmentationGroup
                 key={id}
                 id={id}
                 label={label}
-                segmentCount={segmentCount}
-                segments={segments}
-                isActive={isActive}
-                onClick={() => onClickSegmentation(id)}
-                isVisible={isVisible}
                 isMinimized={isMinimized[id]}
+                segments={segments}
+                showAddSegment={showAddSegment}
+                segmentCount={segmentCount}
+                isActive={isActive}
+                isVisible={isVisible}
+                onSegmentationClick={() => onSegmentationClick(id)}
+                activeSegmentIndex={activeSegmentIndex}
                 onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-                onSegmentationConfigChange={onSegmentationConfigChange}
+                onSegmentationRename={onSegmentationRename}
+                onSegmentationDelete={onSegmentationDelete}
+                onSegmentClick={onSegmentClick}
+                onSegmentEdit={onSegmentEdit}
+                onToggleSegmentVisibility={onToggleSegmentVisibility}
+                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+                onSegmentAdd={onSegmentAdd}
+                onSegmentDelete={onSegmentDelete}
               />
             );
           })}
@@ -111,7 +137,7 @@ SegmentationGroupTable.defaultProps = {
   onEdit: () => {},
   onToggleVisibility: () => {},
   onToggleVisibilityAll: () => {},
-  onClickSegmentation: () => {},
+  onSegmentationClick: () => {},
 };
 
 export default SegmentationGroupTable;

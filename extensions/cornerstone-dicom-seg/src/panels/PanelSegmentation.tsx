@@ -47,34 +47,32 @@ export default function PanelSegmentation({
     <div className="flex flex-col justify-between h-full">
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         {/* show segmentation table */}
-        <div className="mt-4">
-          {segmentations?.length ? (
-            <SegmentationGroupTable
-              title={t('Segmentations')}
-              amount={segmentations.length}
-              segmentations={segmentations}
-              activeSegmentationId={selectedSegmentationId}
-              onClick={id => {}}
-              onToggleVisibility={id => {
+        {segmentations?.length ? (
+          <SegmentationGroupTable
+            title={t('Segmentations')}
+            amount={segmentations.length}
+            segmentations={segmentations}
+            activeSegmentationId={selectedSegmentationId}
+            onClick={id => {}}
+            onToggleVisibility={id => {
+              SegmentationService.toggleSegmentationVisibility(id);
+            }}
+            onToggleVisibilityAll={ids => {
+              ids.map(id => {
                 SegmentationService.toggleSegmentationVisibility(id);
-              }}
-              onToggleVisibilityAll={ids => {
-                ids.map(id => {
-                  SegmentationService.toggleSegmentationVisibility(id);
-                });
-              }}
-              onDelete={id => {
-                SegmentationService.remove(id);
-              }}
-              onEdit={id => {
-                segmentationEditHandler({
-                  id,
-                  servicesManager,
-                });
-              }}
-            />
-          ) : null}
-        </div>
+              });
+            }}
+            onDelete={id => {
+              SegmentationService.remove(id);
+            }}
+            onEdit={id => {
+              segmentationEditHandler({
+                id,
+                servicesManager,
+              });
+            }}
+          />
+        ) : null}
       </div>
       <div
         className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mb-4 cursor-pointer"

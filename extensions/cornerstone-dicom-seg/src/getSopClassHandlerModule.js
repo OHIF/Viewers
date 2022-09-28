@@ -83,7 +83,8 @@ function _getDisplaySetsFromSeries(
       referencedDisplaySet.displaySetInstanceUID;
 
     // Todo: this needs to be able to work with other reference volumes (other than streaming) such as nifti, etc.
-    const referencedVolumeId = `cornerstoneStreamingImageVolume:${referencedDisplaySet.displaySetInstanceUID}`;
+    displaySet.referencedVolumeURI = referencedDisplaySet.displaySetInstanceUID;
+    const referencedVolumeId = `cornerstoneStreamingImageVolume:${displaySet.referencedVolumeURI}`;
     displaySet.referencedVolumeId = referencedVolumeId;
 
     return referencedDisplaySet;
