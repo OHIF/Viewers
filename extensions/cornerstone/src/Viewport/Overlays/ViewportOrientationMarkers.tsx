@@ -95,20 +95,23 @@ function ViewportOrientationMarkers({
     const cameraModifiedListener = (
       evt: Types.EventTypes.CameraModifiedEvent
     ) => {
-
       const { rotation, previousCamera, camera } = evt.detail;
 
       if (rotation !== undefined) {
         setRotation(rotation);
       }
 
-      if (camera.flipHorizontal !== undefined &&
-          previousCamera.flipHorizontal !== camera.flipHorizontal) {
+      if (
+        camera.flipHorizontal !== undefined &&
+        previousCamera.flipHorizontal !== camera.flipHorizontal
+      ) {
         setFlipHorizontal(camera.flipHorizontal);
       }
 
-      if (camera.flipVertical !== undefined &&
-          previousCamera.flipVertical !== camera.flipVertical) {
+      if (
+        camera.flipVertical !== undefined &&
+        previousCamera.flipVertical !== camera.flipVertical
+      ) {
         setFlipVertical(camera.flipVertical);
       }
     };
@@ -137,7 +140,7 @@ function ViewportOrientationMarkers({
       }
 
       const imageIndex = imageSliceData.imageIndex;
-      const imageId = viewportData.imageIds?.[imageIndex];
+      const imageId = viewportData.data.imageIds?.[imageIndex];
 
       // Workaround for below TODO stub
       if (!imageId) {

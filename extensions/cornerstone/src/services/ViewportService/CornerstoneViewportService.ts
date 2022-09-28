@@ -18,7 +18,10 @@ import ViewportInfo, {
   DisplaySetOptions,
   PublicViewportOptions,
 } from './Viewport';
-import { StackData, VolumeData } from './CornerstoneCacheService';
+import {
+  ViewportStackData,
+  ViewportVolumeData,
+} from './CornerstoneCacheService';
 import {
   setColormap,
   setLowerUpperColorTransferFunction,
@@ -160,7 +163,7 @@ class CornerstoneViewportService implements IViewportService {
    */
   public setViewportDisplaySets(
     viewportIndex: number,
-    viewportData: StackData | VolumeData,
+    viewportData: ViewportStackData | ViewportVolumeData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[]
   ): void {
@@ -168,14 +171,12 @@ class CornerstoneViewportService implements IViewportService {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const {
-      viewportOptions,
-      displaySetOptions,
-    } = this._getViewportAndDisplaySetOptions(
-      publicViewportOptions,
-      publicDisplaySetOptions,
-      viewportInfo
-    );
+    const { viewportOptions, displaySetOptions } =
+      this._getViewportAndDisplaySetOptions(
+        publicViewportOptions,
+        publicDisplaySetOptions,
+        viewportInfo
+      );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -265,11 +266,12 @@ class CornerstoneViewportService implements IViewportService {
 
   _setStackViewport(
     viewport: Types.IStackViewport,
-    viewportData: StackData,
+    viewportData: ViewportStackData,
     viewportInfo: ViewportInfo
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
-    const { imageIds, initialImageIndex } = viewportData;
+
+    const { imageIds, initialImageIndex } = viewportData.data;
 
     let initialImageIndexToUse = initialImageIndex;
 
@@ -339,7 +341,7 @@ class CornerstoneViewportService implements IViewportService {
 
   async _setVolumeViewport(
     viewport: Types.IVolumeViewport,
-    viewportData: VolumeData,
+    viewportData: ViewportVolumeData,
     viewportInfo: ViewportInfo
   ): Promise<void> {
     // TODO: We need to overhaul the way data sources work so requests can be made
@@ -357,19 +359,11 @@ class CornerstoneViewportService implements IViewportService {
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
     const { hangingProtocolService } = this;
 
-    for (let i = 0; i < viewportData.imageIds.length; i++) {
-      const imageIds = viewportData.imageIds[i];
-      const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
-      const displaySetOptions = displaySetOptionsArray[i];
-
+    for (const [index, data] of viewportData.data.entries()) {
+      const imageIds = data.imageIds;
+      const displaySetInstanceUID = data.displaySetInstanceUID;
+      const displaySetOptions = displaySetOptionsArray[index];
       const volumeId = displaySetInstanceUID;
-
-      // if (displaySet.needsRerendering) {
-      //   console.warn('Removing volume from cache', volumeId);
-      //   cache.removeVolumeLoadObject(volumeId);
-      //   displaySet.needsRerendering = false;
-      //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
-      // }
 
       const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
 
@@ -397,7 +391,7 @@ class CornerstoneViewportService implements IViewportService {
       });
     }
 
-    viewportData.volumes.forEach(volume => {
+    viewportData.data.forEach(({ volume }) => {
       volume.load();
     });
 
@@ -418,9 +412,8 @@ class CornerstoneViewportService implements IViewportService {
     ) {
       const { index, preset } = initialImageOptions;
 
-      const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
-        viewport
-      );
+      const { numberOfSlices } =
+        csUtils.getImageSliceDataForVolumeViewport(viewport);
 
       const imageIndex = this._getInitialImageIndex(
         numberOfSlices,
@@ -493,17 +486,21 @@ class CornerstoneViewportService implements IViewportService {
 
   _setDisplaySets(
     viewportId: string,
-    viewportData: StackData | VolumeData,
+    viewportData: ViewportStackData | ViewportVolumeData,
     viewportInfo: ViewportInfo
   ): void {
     const viewport = this.getCornerstoneViewport(viewportId);
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData as StackData, viewportInfo);
+      this._setStackViewport(
+        viewport,
+        viewportData as ViewportStackData,
+        viewportInfo
+      );
     } else if (viewport instanceof VolumeViewport) {
       this._setVolumeViewport(
         viewport,
-        viewportData as VolumeData,
+        viewportData as ViewportVolumeData,
         viewportInfo
       );
     } else {

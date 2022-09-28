@@ -186,7 +186,10 @@ function CornerstoneViewportOverlay({
     return null;
   }
 
-  if (viewportData.imageIds.length === 0) {
+  if (
+    viewportData.viewportType !== Enums.ViewportType.STACK &&
+    viewportData.data.some(d => d.imageIds === undefined)
+  ) {
     throw new Error(
       'ViewportOverlay: only viewports with imageIds is supported at this time'
     );
@@ -201,7 +204,7 @@ function CornerstoneViewportOverlay({
 }
 
 function _getInstanceNumberFromStack(viewportData, imageIndex) {
-  const imageIds = viewportData.imageIds;
+  const imageIds = viewportData.data.imageIds;
   const imageId = imageIds[imageIndex];
 
   if (!imageId) {

@@ -8,22 +8,30 @@ import { utils, pubSubServiceInterface } from '@ohif/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 
-export type StackData = {
+type StackData = {
   StudyInstanceUID: string;
   displaySetInstanceUID: string;
   imageIds: string[];
   frameRate?: number;
   isClip?: boolean;
   initialImageIndex?: number | string | null;
-  viewportType: Enums.ViewportType;
 };
 
-export type VolumeData = {
-  StudyInstanceUID: string;
-  displaySetInstanceUIDs: string[]; // can have more than one displaySet (fusion)
-  imageIds: string[][]; // can have more than one imageId list (fusion)
-  volumes: Types.IVolume[];
+type VolumeData = {
+  studyInstanceUID: string;
+  displaySetInstanceUID: string;
+  imageIds: string[];
+  volume: Types.IVolume;
+};
+
+export type ViewportStackData = {
   viewportType: Enums.ViewportType;
+  data: StackData;
+};
+
+export type ViewportVolumeData = {
+  viewportType: Enums.ViewportType;
+  data: VolumeData[];
 };
 
 const VOLUME_LOADER_SCHEME = 'streaming-wadors';
@@ -61,9 +69,9 @@ class CornerstoneCacheService {
     dataSource: unknown,
     callback: (val: IViewportData) => unknown,
     initialImageIndex?: number
-  ): Promise<StackData | VolumeData> {
+  ): Promise<ViewportStackData | ViewportVolumeData> {
     const cs3DViewportType = getCornerstoneViewportType(viewportType);
-    let viewportData: IViewportData;
+    let viewportData: ViewportStackData | ViewportVolumeData;
 
     if (cs3DViewportType === Enums.ViewportType.STACK) {
       viewportData = await this._getStackViewportData(
@@ -89,7 +97,7 @@ class CornerstoneCacheService {
     return viewportData;
   }
   public async invalidateViewportData(
-    viewportData: VolumeData,
+    viewportData: ViewportVolumeData,
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     DisplaySetService
@@ -105,8 +113,8 @@ class CornerstoneCacheService {
       cs3DCache.removeVolumeLoadObject(volumeId);
     }
 
-    const displaySets = viewportData.displaySetInstanceUIDs.map(
-      DisplaySetService.getDisplaySetByUID
+    const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
+      DisplaySetService.getDisplaySet(displaySetInstanceUID)
     );
 
     const newViewportData = await this._getVolumeViewportData(
@@ -121,7 +129,7 @@ class CornerstoneCacheService {
     dataSource,
     displaySets,
     initialImageIndex
-  ): StackData {
+  ): ViewportStackData {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
 
@@ -136,29 +144,30 @@ class CornerstoneCacheService {
 
     const { displaySetInstanceUID, StudyInstanceUID } = displaySet;
 
-    const stackData: StackData = {
-      StudyInstanceUID,
-      displaySetInstanceUID,
+    const ViewportStackData: ViewportStackData = {
       viewportType: Enums.ViewportType.STACK,
-      imageIds: stackImageIds,
+      data: {
+        StudyInstanceUID,
+        displaySetInstanceUID,
+        imageIds: stackImageIds,
+      },
     };
 
     if (typeof initialImageIndex === 'number') {
-      stackData.initialImageIndex = initialImageIndex;
+      ViewportStackData.data.initialImageIndex = initialImageIndex;
     }
 
-    return stackData;
+    return ViewportStackData;
   }
 
   private async _getVolumeViewportData(
     dataSource,
     displaySets
-  ): Promise<VolumeData> {
+  ): Promise<ViewportVolumeData> {
     // Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not
 
-    const volumeImageIdsArray = [];
-    const volumes = [];
+    const volumeData = [];
 
     for (const displaySet of displaySets) {
       const volumeId = displaySet.displaySetInstanceUID;
@@ -185,28 +194,17 @@ class CornerstoneCacheService {
         );
       }
 
-      volumeImageIdsArray.push(volumeImageIds);
-      volumes.push(volume);
+      volumeData.push({
+        StudyInstanceUID: displaySet.StudyInstanceUID,
+        displaySetInstanceUID: displaySet.displaySetInstanceUID,
+        imageIds: volumeImageIds,
+        volume,
+      });
     }
 
-    // assert displaySets are from the same study
-    const { StudyInstanceUID } = displaySets[0];
-    const displaySetInstanceUIDs = [];
-
-    displaySets.forEach(displaySet => {
-      if (displaySet.StudyInstanceUID !== StudyInstanceUID) {
-        throw new Error('Display sets are not from the same study');
-      }
-
-      displaySetInstanceUIDs.push(displaySet.displaySetInstanceUID);
-    });
-
     return {
-      StudyInstanceUID,
-      displaySetInstanceUIDs,
-      imageIds: volumeImageIdsArray,
       viewportType: Enums.ViewportType.ORTHOGRAPHIC,
-      volumes,
+      data: volumeData,
     };
   }
 

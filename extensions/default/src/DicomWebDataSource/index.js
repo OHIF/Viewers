@@ -423,6 +423,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
                 // any implementation that stores static copies of the metadata
                 StudyInstanceUID: naturalized.StudyInstanceUID,
               };
+              // Todo: this needs to be from wado dicom web client
               return qidoDicomWebClient.retrieveBulkData(options).then(val => {
                 const ret = (val && val[0]) || undefined;
                 value.Value = ret;

@@ -40,6 +40,7 @@ const dicompdf = {
 const dicomSeg = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
 
 const extensionDependencies = {
@@ -169,6 +170,10 @@ function modeFactory() {
                 {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],
+                },
+                {
+                  namespace: dicomSeg.viewport,
+                  displaySetsToDisplay: [dicomSeg.sopClassHandler],
                 },
               ],
             },

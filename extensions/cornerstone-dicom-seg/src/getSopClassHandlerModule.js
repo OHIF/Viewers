@@ -47,25 +47,26 @@ function _getDisplaySetsFromSeries(
 
   const referencedSeries = referencedSeriesSequence[0];
 
-  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence
+  displaySet.referencedImages =
+    instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
-  // displaySet.getSourceDisplaySet = (
-  // ) => {
-  //   return getSourceDisplaySet(
-  //     studies,
-  //     displaySet,
-  //     activateLabelMap,
-  //     onDisplaySetLoadFailureHandler
-  //   );
-  // };
+  displaySet.load = async () =>
+    await _load(displaySet, extensionManager, servicesManager);
 
   return [displaySet];
 }
 
-function getSourceDisplaySet(
+async function _load(displaySet, extensionManager, servicesManager) {
+  if (displaySet.isLoaded) {
+    return;
+  }
 
-)
+  const { instance } = displaySet;
+  const segArrayBuffer = await instance.PixelData.retrieveBulkData();
+
+  debugger;
+}
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {

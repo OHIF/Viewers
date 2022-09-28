@@ -1,5 +1,22 @@
 import { id } from './id';
+import React from 'react';
+
 import getSopClassHandlerModule from './getSopClassHandlerModule';
+
+const Component = React.lazy(() => {
+  return import(
+    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport'
+  );
+});
+
+const OHIFCornerstoneSEGViewport = props => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Component {...props} />
+    </React.Suspense>
+  );
+};
+
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -32,17 +49,21 @@ const extension = {
     commandsManager,
     extensionManager,
   }) => {},
-  /**
-   * ViewportModule should provide a list of viewports that will be available in OHIF
-   * for Modes to consume and use in the viewports. Each viewport is defined by
-   * {name, component} object. Example of a viewport module is the CornerstoneViewport
-   * that is provided by the Cornerstone extension in OHIF.
-   */
-  getViewportModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getViewportModule({ servicesManager, extensionManager }) {
+    const ExtendedOHIFCornerstoneSEGViewport = props => {
+      return (
+        <OHIFCornerstoneSEGViewport
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          {...props}
+        />
+      );
+    };
+
+    return [
+      { name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport },
+    ];
+  },
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be
    * available in OHIF for Modes to consume and use to create displaySets from Series.
