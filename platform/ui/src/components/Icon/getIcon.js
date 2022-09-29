@@ -40,6 +40,18 @@ import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
 import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
 import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
+import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
+import iconNext from './../../assets/icons/icon-next.svg';
+import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
+import iconPrev from './../../assets/icons/icon-prev.svg';
+import navigationPanelRightHide from './../../assets/icons/navigation-panel-right-hide.svg';
+import navigationPanelRightReveal from './../../assets/icons/navigation-panel-right-reveal.svg';
+import tabLinear from './../../assets/icons/tab-linear.svg';
+import tabPatientInfo from './../../assets/icons/tab-patient-info.svg';
+import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
+import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
+import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
+import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -77,6 +89,7 @@ import rowLocked from './../../assets/icons/row-locked.svg';
 import rowShowAll from './../../assets/icons/row-show-all.svg';
 import rowUnhide from './../../assets/icons/row-unhide.svg';
 import rowUnlocked from './../../assets/icons/row-unlocked.svg';
+import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -160,6 +173,19 @@ const ICONS = {
   'tool-fusion-color': toolFusionColor,
   'tool-create-threshold': toolCreateThreshold,
   'edit-patient': editPatient,
+  'icon-mpr': iconMPR,
+  'icon-next-inactive': iconNextInactive,
+  'icon-next': iconNext,
+  'icon-previous-inactive': iconPrevInactive,
+  'icon-previous': iconPrev,
+  'navigation-panel-right-hide': navigationPanelRightHide,
+  'navigation-panel-right-reveal': navigationPanelRightReveal,
+  'tab-linear': tabLinear,
+  'tab-patient-info': tabPatientInfo,
+  'tab-roi-threshold': tabROIThreshold,
+  'tab-segmentation': tabSegmentation,
+  'ui-arrow-down': uiArrowDown,
+  'ui-arrow-up': uiArrowUp,
 
   /** Old OHIF */
   'old-trash': oldTrash,
