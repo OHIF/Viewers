@@ -778,32 +778,44 @@ class SegmentationService {
     const { world } = center;
 
     // todo: generalize
-    toolGroupId = toolGroupId || this._getFirstToolGroupId();
-    const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+    toolGroupId =
+      toolGroupId || this._getToolGroupIdsWithSegmentation(segmentationId);
 
-    const viewportsInfo = toolGroup.getViewportsInfo();
+    const toolGroups = [];
 
-    // @ts-ignore
-    for (const { viewportId, renderingEngineId } of Object.values(
-      viewportsInfo
-    )) {
-      const { viewport } = getEnabledElementByIds(
-        viewportId,
-        renderingEngineId
-      );
-      cstUtils.viewport.jumpToWorld(viewport, world);
+    if (Array.isArray(toolGroupId)) {
+      toolGroupId.forEach(toolGroup => {
+        toolGroups.push(ToolGroupService.getToolGroup(toolGroup));
+      });
+    } else {
+      toolGroups.push(ToolGroupService.getToolGroup(toolGroupId));
     }
 
-    if (highlightSegment) {
-      this.highlightSegment(
-        segmentationId,
-        segmentIndex,
-        toolGroupId,
-        highlightAlpha,
-        highlightTimeout,
-        highlightHideOthers
-      );
-    }
+    toolGroups.forEach(toolGroup => {
+      const viewportsInfo = toolGroup.getViewportsInfo();
+
+      // @ts-ignore
+      for (const { viewportId, renderingEngineId } of Object.values(
+        viewportsInfo
+      )) {
+        const { viewport } = getEnabledElementByIds(
+          viewportId,
+          renderingEngineId
+        );
+        cstUtils.viewport.jumpToWorld(viewport, world);
+      }
+
+      if (highlightSegment) {
+        this.highlightSegment(
+          segmentationId,
+          segmentIndex,
+          toolGroup.id,
+          highlightAlpha,
+          highlightTimeout,
+          highlightHideOthers
+        );
+      }
+    });
   }
 
   public highlightSegment(
@@ -1902,6 +1914,15 @@ class SegmentationService {
       });
     });
   };
+
+  private _getToolGroupIdsWithSegmentation(segmentationId: string) {
+    const segmentationState = cstSegmentation.state;
+    const toolGroupIds = segmentationState.getToolGroupsWithSegmentation(
+      segmentationId
+    );
+
+    return toolGroupIds;
+  }
 
   private _getFirstToolGroupId = () => {
     const { ToolGroupService } = this.servicesManager.services;

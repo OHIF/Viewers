@@ -110,7 +110,7 @@ function modeFactory() {
         'Pan',
         'Capture',
         'Layout',
-        // 'MPR',
+        'MPR',
         'MoreTools',
       ]);
     },

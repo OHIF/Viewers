@@ -127,6 +127,18 @@ function OHIFCornerstoneSEGViewport(props) {
     [selectedSegment]
   );
 
+  useEffect(() => {
+    promptHydrateSEG({
+      servicesManager,
+      viewportIndex,
+      segDisplaySet,
+    }).then(isHydrated => {
+      if (isHydrated) {
+        setIsHydrated(true);
+      }
+    });
+  }, [servicesManager, viewportIndex, segDisplaySet]);
+
   /**
    Cleanup the SEG viewport when the viewport is destroyed
    */
