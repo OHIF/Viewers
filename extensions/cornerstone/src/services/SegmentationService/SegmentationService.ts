@@ -767,7 +767,7 @@ class SegmentationService {
     segmentationId: string,
     segmentIndex: number,
     toolGroupId?: string,
-    highlightAlpha = 0.99,
+    highlightAlpha = 0.9999999999999,
     highlightSegment = true,
     highlightTimeout = 1000,
     highlightHideOthers = false
@@ -822,7 +822,7 @@ class SegmentationService {
     segmentationId: string,
     segmentIndex: number,
     toolGroupId?: string,
-    alpha = 0.9999,
+    alpha = 0.9999999999999,
     timeout = 1000,
     hideOthers = true
   ): void {

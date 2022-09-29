@@ -24,6 +24,7 @@ function OHIFCornerstoneSEGViewport(props) {
   const {
     children,
     displaySets,
+    viewportOptions,
     viewportIndex,
     viewportLabel,
     servicesManager,
@@ -91,6 +92,7 @@ function OHIFCornerstoneSEGViewport(props) {
         viewportOptions={{
           viewportType: 'volume',
           toolGroupId: toolGroupId,
+          orientation: viewportOptions.orientation,
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}

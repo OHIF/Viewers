@@ -455,13 +455,32 @@ class CornerstoneViewportService implements IViewportService {
         );
       }
     } else {
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+      const toolGroupSegmentationRepresentations =
+        SegmentationService.getSegmentationRepresentationsForToolGroup(
+          toolGroup.id
+        ) || [];
+
+      // csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
       // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
       // and we can look into hydrated segmentations to check if any of them are
       // associated with the primary displaySet
       // get segmentations only returns the hydrated segmentations
       const segmentations = SegmentationService.getSegmentations();
 
-      segmentations.forEach(segmentation => {
+      for (const segmentation of segmentations) {
+        // if there is already a segmentation representation for this segmentation
+        // for this toolGroup, don't bother at all
+        if (
+          toolGroupSegmentationRepresentations.find(
+            representation => representation.segmentationId === segmentation.id
+          )
+        ) {
+          continue;
+        }
+
+        // otherwise, check if the hydrated segmentations are in the same FOR
+        // as the primary displaySet, if so add the representation (since it was not there)
         const { id: segDisplaySetInstanceUID } = segmentation;
 
         const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
@@ -491,10 +510,15 @@ class CornerstoneViewportService implements IViewportService {
             segmentation.id
           );
         }
-      });
+      }
     }
 
     const viewportInfo = this.getViewportInfo(viewport.id);
+    const viewportIndex = viewportInfo.getViewportIndex();
+
+    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
+
     const initialImageOptions = viewportInfo.getInitialImageOptions();
 
     if (
@@ -669,9 +693,8 @@ class CornerstoneViewportService implements IViewportService {
     };
   }
 
-  private _getFrameOfReferenceUID(displaySetInstanceUID) {
+  _getFrameOfReferenceUID(displaySetInstanceUID) {
     const { DisplaySetService } = this.servicesManager.services;
-
     const displaySet = DisplaySetService.getDisplaySetByUID(
       displaySetInstanceUID
     );
