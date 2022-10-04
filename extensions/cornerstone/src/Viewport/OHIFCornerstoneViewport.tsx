@@ -237,7 +237,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         displaySets,
         viewportOptions.viewportType,
         dataSource,
-        (viewportDataLoaded) => {
+        viewportDataLoaded => {
           CornerstoneViewportService.setViewportDisplaySets(
             viewportIndex,
             viewportDataLoaded,
@@ -394,7 +394,7 @@ function _jumpToMeasurement(
   viewportGridService
 ) {
   const targetElement = targetElementRef.current;
-  const { displaySetInstanceUID, SOPInstanceUID } = measurement;
+  const { displaySetInstanceUID, SOPInstanceUID, frameNumber } = measurement;
 
   if (!SOPInstanceUID) {
     console.warn('cannot jump in a non-acquisition plane measurements yet');
@@ -404,9 +404,14 @@ function _jumpToMeasurement(
     displaySetInstanceUID
   );
 
-  const imageIdIndex = referencedDisplaySet.images.findIndex(
+  // For multi-frame files, finding imageID simply by SOPInstanceUID won't work,
+  // as the "referencedDisplaySet.images" will only contain the Frame 1.
+  let imageIdIndex = referencedDisplaySet.images.findIndex(
     i => i.SOPInstanceUID === SOPInstanceUID
   );
+  if (referencedDisplaySet.isMultiFrame && frameNumber > 1) {
+    imageIdIndex = frameNumber - 1;
+  }
 
   // Todo: setCornerstoneMeasurementActive should be handled by the toolGroupManager
   //  to set it properly
