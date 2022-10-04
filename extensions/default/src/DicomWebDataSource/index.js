@@ -494,7 +494,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         const NumberOfFrames = instance.NumberOfFrames;
 
         if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
+          for (let i = 1; i <= NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,
               frame: i,
