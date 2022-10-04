@@ -4,13 +4,32 @@ import Icon from '../Icon';
 import SegmentationGroup from './SegmentationGroup';
 import SegmentationConfig from './SegmentationConfig';
 
-const GetSegmentationConfig = ({ onConfigChange }) => {
-  return <SegmentationConfig onConfigChange={onConfigChange} />;
+const GetSegmentationConfig = ({
+  setFillAlpha,
+  setFillAlphaInactive,
+  setOutlineWidthActive,
+  setRenderFill,
+  setRenderInactiveSegmentations,
+  setRenderOutline,
+  setOutlineOpacityActive,
+  segmentationConfig,
+}) => {
+  return (
+    <SegmentationConfig
+      setFillAlpha={setFillAlpha}
+      setFillAlphaInactive={setFillAlphaInactive}
+      setOutlineWidthActive={setOutlineWidthActive}
+      setOutlineOpacityActive={setOutlineOpacityActive}
+      setRenderFill={setRenderFill}
+      setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+      setRenderOutline={setRenderOutline}
+      segmentationConfig={segmentationConfig}
+    />
+  );
 };
 
 const SegmentationGroupTable = ({
   segmentations,
-  onGlobalConfigChange,
   onSegmentationAdd,
   onSegmentationEdit,
   onSegmentationClick,
@@ -19,6 +38,7 @@ const SegmentationGroupTable = ({
   showAddSegment,
   onSegmentClick,
   onSegmentAdd,
+  segmentationConfig,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
@@ -26,13 +46,27 @@ const SegmentationGroupTable = ({
   onSegmentColorClick,
   isMinimized,
   onToggleMinimizeSegmentation,
+  setFillAlpha,
+  setFillAlphaInactive,
+  setOutlineWidthActive,
+  setOutlineOpacityActive,
+  setRenderFill,
+  setRenderInactiveSegmentations,
+  setRenderOutline,
 }) => {
   return (
     <div className="font-inter font-[300]">
       <GetSegmentationConfig
-        onConfigChange={onGlobalConfigChange}
-        showAddSegmentation={showAddSegmentation}
-        onSegmentationAdd={onSegmentationAdd}
+        // showAddSegmentation={showAddSegmentation}
+        // onSegmentationAdd={onSegmentationAdd}
+        segmentationConfig={segmentationConfig}
+        setFillAlpha={setFillAlpha}
+        setFillAlphaInactive={setFillAlphaInactive}
+        setOutlineWidthActive={setOutlineWidthActive}
+        setOutlineOpacityActive={setOutlineOpacityActive}
+        setRenderFill={setRenderFill}
+        setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+        setRenderOutline={setRenderOutline}
       />
       <div className="flex flex-col pr-[1px]">
         {!!segmentations.length &&

@@ -62,7 +62,6 @@ export default async function init({
 
   const {
     UserAuthenticationService,
-    ToolGroupService,
     MeasurementService,
     DisplaySetService,
     UIDialogService,
@@ -73,6 +72,8 @@ export default async function init({
   } = servicesManager.services;
 
   window.SegmentationService = SegmentationService;
+  window.DisplaySetService = DisplaySetService;
+  window.services = servicesManager.services;
 
   const metadataProvider = OHIF.classes.MetadataProvider;
 

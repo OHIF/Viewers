@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import Icon from '../Icon';
+import classNames from 'classnames';
 import Typography from '../Typography';
 import './InputRange.css';
 
@@ -74,7 +74,7 @@ const InputRange: React.FC<{
       <Typography
         variant={labelVariant ?? 'subtitle'}
         component="p"
-        className={labelClassName ?? 'text-white'}
+        className={classNames('w-8', labelClassName ?? 'text-white')}
       >
         {rangeValue}
         {unit}

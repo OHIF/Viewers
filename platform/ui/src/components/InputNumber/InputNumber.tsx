@@ -22,7 +22,7 @@ const InputNumber: React.FC<{
   step: number;
   size?: string;
   className?: string;
-}> = ({ value, onChange, step, className, size = 'sm' }) => {
+}> = ({ value, onChange, step = 1, className, size = 'sm' }) => {
   const [numberValue, setNumberValue] = useState(value);
 
   const handleChange = useCallback(

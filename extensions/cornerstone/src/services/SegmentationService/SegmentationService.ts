@@ -795,9 +795,7 @@ class SegmentationService {
       const viewportsInfo = toolGroup.getViewportsInfo();
 
       // @ts-ignore
-      for (const { viewportId, renderingEngineId } of Object.values(
-        viewportsInfo
-      )) {
+      for (const { viewportId, renderingEngineId } of viewportsInfo) {
         const { viewport } = getEnabledElementByIds(
           viewportId,
           renderingEngineId
@@ -1086,7 +1084,8 @@ class SegmentationService {
 
     cstSegmentation.removeSegmentationsFromToolGroup(
       toolGroupId,
-      segmentationIds
+      segmentationIds,
+      true // immediate render
     );
   }
 
@@ -1159,6 +1158,7 @@ class SegmentationService {
       renderFill,
       fillAlpha,
       fillAlphaInactive,
+      outlineAlpha,
     } = labelmapRepresentationConfig;
 
     return {
@@ -1170,6 +1170,7 @@ class SegmentationService {
       renderFill,
       renderInactiveSegmentations,
       renderOutline,
+      outlineAlpha,
     };
   };
 
@@ -1180,6 +1181,7 @@ class SegmentationService {
       fillAlpha,
       fillAlphaInactive,
       outlineWidthActive,
+      outlineAlpha,
       renderFill,
       renderInactiveSegmentations,
       renderOutline,
@@ -1190,13 +1192,16 @@ class SegmentationService {
     }
 
     if (outlineWidthActive !== undefined) {
-      // Set for both active and inactive segmentations
       this._setLabelmapConfigValue('outlineWidthActive', outlineWidthActive);
-      this._setLabelmapConfigValue('outlineWidthInactive', outlineWidthActive);
+      // this._setLabelmapConfigValue('outlineWidthInactive', outlineWidthActive);
+    }
+
+    if (outlineAlpha !== undefined) {
+      this._setLabelmapConfigValue('outlineAlpha', outlineAlpha / 100);
     }
 
     if (fillAlpha !== undefined) {
-      this._setLabelmapConfigValue('fillAlpha', fillAlpha);
+      this._setLabelmapConfigValue('fillAlpha', fillAlpha / 100);
     }
 
     if (renderFill !== undefined) {
@@ -1211,7 +1216,10 @@ class SegmentationService {
     }
 
     if (fillAlphaInactive !== undefined) {
-      this._setLabelmapConfigValue('fillAlphaInactive', fillAlphaInactive);
+      this._setLabelmapConfigValue(
+        'fillAlphaInactive',
+        fillAlphaInactive / 100
+      );
     }
 
     if (brushSize !== undefined) {
@@ -1685,12 +1693,14 @@ class SegmentationService {
   }
 
   private _setLabelmapConfigValue = (property, value) => {
+    const { CornerstoneViewportService } = this.servicesManager.services;
+
     const config = cstSegmentation.config.getGlobalConfig();
 
     config.representations.LABELMAP[property] = value;
-    cstSegmentation.config.setGlobalConfig(config);
 
-    const { CornerstoneViewportService } = this.servicesManager.services;
+    // Todo: add non global (representation specific config as well)
+    cstSegmentation.config.setGlobalConfig(config);
 
     const renderingEngine = CornerstoneViewportService.getRenderingEngine();
     const viewportIds = CornerstoneViewportService.getViewportIds();
@@ -1832,7 +1842,8 @@ class SegmentationService {
       // remove segmentation representations
       cstSegmentation.removeSegmentationsFromToolGroup(
         toolGroupId,
-        UIDsToRemove
+        UIDsToRemove,
+        true // immediate
       );
     });
 

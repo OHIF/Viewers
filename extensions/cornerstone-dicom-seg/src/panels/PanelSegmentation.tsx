@@ -15,6 +15,11 @@ export default function PanelSegmentation({
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
+  const [
+    initialSegmentationConfigurations,
+    setInitialSegmentationConfigurations,
+  ] = useState(SegmentationService.getConfiguration());
+
   const [segmentations, setSegmentations] = useState(() =>
     SegmentationService.getSegmentations()
   );
@@ -77,6 +82,8 @@ export default function PanelSegmentation({
       segmentationId,
       segmentIndex
     );
+
+    SegmentationService.setActiveSegmentationForToolGroup(segmentationId);
     SegmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
   };
 
@@ -178,6 +185,16 @@ export default function PanelSegmentation({
     SegmentationService.toggleSegmentationVisibility(segmentationId);
   };
 
+  const setSegmentationConfiguration = useCallback(
+    (segmentationId, key, value) => {
+      SegmentationService.setConfiguration({
+        segmentationId,
+        [key]: value,
+      });
+    },
+    [SegmentationService]
+  );
+
   return (
     <div className="flex flex-col justify-between invisible-scrollbar ">
       {/* show segmentation table */}
@@ -199,26 +216,61 @@ export default function PanelSegmentation({
           onToggleSegmentVisibility={onToggleSegmentVisibility}
           onToggleSegmentationVisibility={onToggleSegmentationVisibility}
           onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+          segmentationConfig={{
+            initialConfig: initialSegmentationConfigurations,
+            usePercentage: true,
+          }}
+          setRenderOutline={value =>
+            setSegmentationConfiguration(
+              selectedSegmentationId,
+              'renderOutline',
+              value
+            )
+          }
+          setOutlineOpacityActive={value =>
+            setSegmentationConfiguration(
+              selectedSegmentationId,
+              'outlineAlpha',
+              value
+            )
+          }
+          setRenderFill={value =>
+            setSegmentationConfiguration(
+              selectedSegmentationId,
+              'renderFill',
+              value
+            )
+          }
+          setRenderInactiveSegmentations={value =>
+            setSegmentationConfiguration(
+              selectedSegmentationId,
+              'renderInactiveSegmentations',
+              value
+            )
+          }
+          setOutlineWidthActive={value =>
+            setSegmentationConfiguration(
+              selectedSegmentationId,
+              'outlineWidthActive',
+              value
+            )
+          }
+          setFillAlpha={value =>
+            setSegmentationConfiguration(
+              selectedSegmentationId,
+              'fillAlpha',
+              value
+            )
+          }
+          setFillAlphaInactive={value =>
+            setSegmentationConfiguration(
+              selectedSegmentationId,
+              'fillAlphaInactive',
+              value
+            )
+          }
         />
       ) : null}
-      {/* <div
-        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mb-4 cursor-pointer"
-        onClick={() => {
-          // navigate to a url in a new tab
-          window.open(
-            'https://github.com/OHIF/Viewers/blob/feat/segmentation-service/modes/tmtv/README.md',
-            '_blank'
-          );
-        }}
-      >
-        <Icon
-          width="15px"
-          height="15px"
-          name={'info'}
-          className={'ml-4 mr-3 text-primary-active'}
-        />
-        <span>{'User Guide'}</span>
-      </div> */}
     </div>
   );
 }

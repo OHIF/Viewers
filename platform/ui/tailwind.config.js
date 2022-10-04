@@ -2,7 +2,7 @@ module.exports = {
   // Note: in Tailwind 3.0, JIT will purge unused styles by default
   // but in development, it is often useful to disable this to see
   // and try out all the styles that are available.
-  // ...(process.env.NODE_ENV == 'development' && {
+  // ...(process.env.NODE_ENV === 'development' && {
   //   safelist: [{ pattern: /.*/ }],
   // }),
   content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],

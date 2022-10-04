@@ -88,6 +88,16 @@ class CornerstoneViewportService implements IViewportService {
     return `viewport-${viewportIndex}`;
   }
 
+  public getViewportIds(): string[] {
+    const viewportIds = [];
+
+    this.viewportsInfo.forEach(viewportInfo => {
+      viewportIds.push(viewportInfo.getViewportId());
+    });
+
+    return viewportIds;
+  }
+
   /**
    * It retrieves the renderingEngine if it does exist, or creates one otherwise
    * @returns {RenderingEngine} rendering engine
