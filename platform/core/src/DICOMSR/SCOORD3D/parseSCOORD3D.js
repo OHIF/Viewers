@@ -1,6 +1,5 @@
 import { ImageSet } from '../../classes';
 import getMeasurements from './utils/getMeasurements';
-import getReferencedImagesList from './utils/getReferencedImagesList';
 import isRehydratable from './utils/isRehydratable';
 import addMeasurement from './utils/addMeasurement';
 
@@ -27,7 +26,6 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
 
     const { ContentSequence } = firstInstance;
 
-    srDisplaySet.referencedImages = getReferencedImagesList(ContentSequence);
     srDisplaySet.measurements = getMeasurements(ContentSequence);
     const mappings = MeasurementService.getSourceMappings(
       'CornerstoneTools',
