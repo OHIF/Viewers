@@ -3,6 +3,7 @@ import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 
 const { removeAnnotation } = annotation.state;
 
@@ -252,7 +253,23 @@ const connectMeasurementServiceToTools = (
         SOPInstanceUID
       );
 
-      const imageId = dataSource.getImageIdsForInstance({ instance });
+      let frameNumber = 1;
+      if (measurement.data && measurement.data.frameNumber) {
+        frameNumber = measurement.data.frameNumber;
+      } else if (
+        measurement.metadata &&
+        measurement.metadata.referencedImageId
+      ) {
+        frameNumber = getSOPInstanceAttributes(
+          measurement.metadata.referencedImageId
+        ).frameNumber;
+      }
+
+      let imageId = dataSource.getImageIdsForInstance({
+        instance,
+        frame: frameNumber,
+      });
+
       const annotationManager = annotation.state.getDefaultAnnotationManager();
       annotationManager.addAnnotation({
         annotationUID: measurement.uid,
@@ -269,6 +286,7 @@ const connectMeasurementServiceToTools = (
           handles: { ...data.annotation.data.handles },
           cachedStats: { ...data.annotation.data.cachedStats },
           label: data.annotation.data.label,
+          frameNumber: frameNumber,
         },
       });
     }

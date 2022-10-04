@@ -44,13 +44,17 @@ export default function _hydrateStructuredReport(
   );
 
   const sopInstanceUIDToImageId = {};
-  let imageIdsForToolState = [];
+  const imageIdsForToolState = {};
 
   displaySet.measurements.forEach(measurement => {
-    const { ReferencedSOPInstanceUID, imageId } = measurement;
-    imageIdsForToolState.push(imageId);
+    const { ReferencedSOPInstanceUID, imageId, frameNumber } = measurement;
+
     if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
       sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
+      imageIdsForToolState[ReferencedSOPInstanceUID] = [];
+    }
+    if (!imageIdsForToolState[ReferencedSOPInstanceUID][frameNumber]) {
+      imageIdsForToolState[ReferencedSOPInstanceUID][frameNumber] = imageId;
     }
   });
 
@@ -88,7 +92,14 @@ export default function _hydrateStructuredReport(
 
     toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
-      const imageId = sopInstanceUIDToImageId[toolData.sopInstanceUid];
+      // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
+      // files, and looking up the imageId from sopInstanceUIDToImageId results
+      // in the wrong value.
+      const frameNumber =
+        (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+      const imageId =
+        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
+        sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
       if (!imageIds.includes(imageId)) {
         imageIds.push(imageId);
@@ -125,7 +136,14 @@ export default function _hydrateStructuredReport(
 
     toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
-      const imageId = sopInstanceUIDToImageId[toolData.sopInstanceUid];
+      // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
+      // files, and looking up the imageId from sopInstanceUIDToImageId results
+      // in the wrong value.
+      const frameNumber =
+        (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+      const imageId =
+        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
+        sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
       toolData.uid = guid();
 

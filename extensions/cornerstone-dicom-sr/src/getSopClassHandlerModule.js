@@ -221,11 +221,23 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     const image = images[i];
     const { SOPInstanceUID } = image;
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
-      const imageId = imageIdsForDisplaySet[i];
-
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
         if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
+          let imageId;
+          if (newDisplaySet.isMultiFrame) {
+            const frameNumber =
+              (measurement.coords[0].ReferencedSOPSequence &&
+                measurement.coords[0].ReferencedSOPSequence
+                  .ReferencedFrameNumber) ||
+              1;
+            imageId =
+              imageIdsForDisplaySet[frameNumber - 1] ||
+              imageIdsForDisplaySet[i];
+          } else {
+            imageId = imageIdsForDisplaySet[i];
+          }
+
           addMeasurement(
             measurement,
             imageId,
