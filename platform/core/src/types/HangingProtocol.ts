@@ -48,11 +48,21 @@ type ViewportStructure = {
   };
 };
 
-type DisplaySet = {
-  id: string;
-  imageMatchingRules: MatchingRule[];
+/**
+ * Selects the display sets to apply for a given id.
+ * This is a set of rules which match the study and display sets
+ * and then provides an id for them so that they can re-used in different
+ * viewports.
+ * The matches are done lazily, so if a stage doesn't need a given match,
+ * it won't be selected.
+ */
+type DisplaySetSelector = {
+  // The image matching rule (not currently implemented) selects which image to
+  // display initially, only for stack views.
+  imageMatchingRules?: MatchingRule[];
+  // The matching rules to choose the display sets at the series level
   seriesMatchingRules: MatchingRule[];
-  studyMatchingRules: MatchingRule[];
+  studyMatchingRules?: MatchingRule[];
 };
 
 type SyncGroup = {
@@ -75,11 +85,17 @@ type ViewportOptions = {
   viewportId?: string;
   initialImageOptions?: initialImageOptions;
   syncGroups?: SyncGroup[];
-            customViewportProps? : Record<string, unknown>;
+  customViewportProps?: Record<string, unknown>;
 };
 
 type DisplaySetOptions = {
+  // The id is used to choose which display set selector to apply here
   id: string;
+  // An offset to allow display secondary series, for example
+  // to display the second matching series (displaySetIndex==1)
+  // This cannot easily be done with the matching rules directly.
+  displaySetIndex?: number;
+  // The options to apply to the display set.
   options?: Record<string, unknown>;
 };
 
@@ -92,7 +108,6 @@ type ProtocolStage = {
   id: string;
   name: string;
   viewportStructure: ViewportStructure;
-  displaySets: DisplaySet[];
   viewports: Viewport[];
   createdDate?: string;
 };
@@ -100,6 +115,8 @@ type ProtocolStage = {
 type Protocol = {
   // Mandatory
   id: string;
+  // Selects which display sets are given a specific name.
+  displaySetSelectors: Record<string, DisplaySetSelector>;
   stages: ProtocolStage[];
   // Optional
   locked?: boolean;
@@ -129,7 +146,7 @@ export type {
   Protocol,
   ProtocolStage,
   Viewport,
-  DisplaySet,
+  DisplaySetSelector,
   ViewportStructure,
   ViewportLayoutOptions,
   DisplaySetOptions,

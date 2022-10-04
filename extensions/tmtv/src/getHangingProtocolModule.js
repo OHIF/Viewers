@@ -1,10 +1,10 @@
 const ptCT = {
-  id: 'ptCT',
+  id: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   locked: true,
   hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
-  modifiedDate: '2021-02-23T19:22:08.894Z',
+  modifiedDate: '2022-10-04T19:22:08.894Z',
   availableTo: {},
   editableBy: {},
   toolGroupIds: [
@@ -16,37 +16,79 @@ const ptCT = {
   imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
     {
-      id: 'wauZK2QNEfDPwcAQo',
-      weight: 1,
       attribute: 'ModalitiesInStudy',
       constraint: {
         contains: ['CT', 'PT'],
       },
-      required: false,
     },
     {
-      id: 'wauZK2QNEfDPwcAQo',
-      weight: 1,
       attribute: 'StudyDescription',
       constraint: {
-        contains: {
-          value: 'PETCT',
-        },
+        contains: 'PETCT',
       },
-      required: false,
     },
     {
-      id: 'wauZK2QNEfDPwcAQo',
-      weight: 1,
       attribute: 'StudyDescription',
       constraint: {
-        contains: {
-          value: 'PET/CT',
-        },
+        contains: 'PET/CT',
       },
-      required: false,
     },
   ],
+  displaySetSelectors: {
+    ctDisplaySet: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: 'CT',
+          },
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: 'CT WB',
+          },
+        },
+      ],
+    },
+    ptDisplaySet: {
+      seriesMatchingRules: [
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: 'PT',
+          },
+          required: true,
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: 'Corrected',
+          },
+        },
+        {
+          weight: 2,
+          attribute: 'SeriesDescription',
+          constraint: {
+            doesNotContain: {
+              value: 'Uncorrected',
+            },
+          },
+        },
+      ],
+    },
+  },
+
   stages: [
     {
       id: 'hYbmMy3b7pz7GLiaT',
@@ -120,99 +162,6 @@ const ptCT = {
           ],
         },
       },
-      displaySets: [
-        {
-          id: 'ctDisplaySet',
-          imageMatchingRules: [],
-          seriesMatchingRules: [
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'Modality',
-              constraint: {
-                equals: {
-                  value: 'CT',
-                },
-              },
-              required: true,
-            },
-            {
-              id: 'vSjk7NCYjtdS3XZAw',
-              weight: 1,
-              attribute: 'SeriesNumber',
-              constraint: {
-                equals: {
-                  value: '4',
-                },
-              },
-              required: false,
-            },
-            {
-              id: 'vSjk7NCYjtdS3XZAw',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: 'CT',
-                },
-              },
-              required: false,
-            },
-            {
-              id: 'vSjk7NCYjtdS3XZAw',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: 'CT WB',
-                },
-              },
-              required: false,
-            },
-          ],
-          studyMatchingRules: [],
-        },
-        {
-          id: 'ptDisplaySet',
-          imageMatchingRules: [],
-          seriesMatchingRules: [
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'Modality',
-              constraint: {
-                equals: {
-                  value: 'PT',
-                },
-              },
-              required: true,
-            },
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: 'Corrected',
-                },
-              },
-              required: false,
-            },
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 2,
-              attribute: 'SeriesDescription',
-              constraint: {
-                doesNotContain: {
-                  value: 'Uncorrected',
-                },
-              },
-              required: false,
-            },
-          ],
-          studyMatchingRules: [],
-        },
-      ],
       viewports: [
         {
           viewportOptions: {
