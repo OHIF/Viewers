@@ -3,9 +3,10 @@ import Pako from 'pako';
 import { reshape } from 'mathjs';
 import Zlib from 'react-zlib-js';
 import { flatten } from 'mathjs';
+import { radcadapi } from '../../utils/constants';
 
 export const client = axios.create({
-  baseURL: 'https://radcadapi.thetatech.ai',
+  baseURL: radcadapi,
   timeout: 900000,
   headers: {
     'Access-Control-Allow-Origin': '*',
@@ -135,20 +136,16 @@ export const getUpdatedSegments = ({
 
   console.log({ segmentsOnLabelmap });
   return segmentation.map((item, i) => {
-                                         const updatedPixelData = mergePixelData(
-                                           {
-                                             currPixelData: currPixelData[i]
-                                               ? currPixelData[i].pixelData
-                                               : false,
-                                             item,
-                                             segmentIndex,
-                                           }
-                                         );
+    const updatedPixelData = mergePixelData({
+      currPixelData: currPixelData[i] ? currPixelData[i].pixelData : false,
+      item,
+      segmentIndex,
+    });
 
-                                         // console.log({ updatedPixelData });
-                                         return {
-                                           pixelData: updatedPixelData,
-                                           segmentsOnLabelmap,
-                                         };
-                                       });
+    // console.log({ updatedPixelData });
+    return {
+      pixelData: updatedPixelData,
+      segmentsOnLabelmap,
+    };
+  });
 };
