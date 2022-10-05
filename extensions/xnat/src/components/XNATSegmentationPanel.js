@@ -20,7 +20,6 @@ import MaskRoiPropertyModal from './XNATSegmentationMenu/MaskRoiPropertyModal.js
 import showModal from './common/showModal.js';
 import refreshViewports from '../utils/refreshViewports';
 import { connect } from 'react-redux';
-import eventBus from '@ohif/viewer/src/lib/eventBus.js';
 
 // import './XNATRoiPanel.styl';
 // import {
@@ -158,12 +157,6 @@ class XNATSegmentationPanel extends React.Component {
       'finishedmaskimportusingmodalevent',
       this.cornerstoneEventListenerHandler
     );
-
-    eventBus.on('clearSegmentations', data => {
-      this.state.segments.forEach(segment => {
-        this.onDeleteClick(segment.index);
-      });
-    });
   }
 
   removeEventListeners() {
@@ -179,7 +172,6 @@ class XNATSegmentationPanel extends React.Component {
       'finishedmaskimportusingmodalevent',
       this.cornerstoneEventListenerHandler
     );
-    eventBus.remove('clearSegmentations');
   }
 
   cornerstoneEventListenerHandler() {

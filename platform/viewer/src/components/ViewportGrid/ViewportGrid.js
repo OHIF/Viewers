@@ -3,6 +3,7 @@ import cornerstoneTools from 'cornerstone-tools';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import throttle from 'lodash.throttle';
 import { utils } from '@ohif/core';
 import { useSnackbarContext, useLogger } from '@ohif/ui';
 //
@@ -75,17 +76,58 @@ const ViewportGrid = function(props) {
     location.pathname.includes('/edit') ||
       location.pathname.includes('/radionics')
   );
-  const [fetchedSegmentations, setFetchedSegmentations] = useState(false);
+  const [fetchedSegmentations, setFetchedSegmentations] = useState('idle');
+
+  const removeSegments = () => {
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+
+    const segmentationState = segmentationModule.state;
+    let firstImageId = _getFirstImageId(props.viewportData[0]);
+    const brushStackState = segmentationState.series[firstImageId];
+
+    if (!brushStackState) {
+      return [];
+    }
+
+    const labelmap3D =
+      brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
+
+    if (!labelmap3D) {
+      return [];
+    }
+
+    const metadata = labelmap3D.metadata;
+
+    if (!metadata) {
+      return [];
+    }
+
+    for (let i = 0; i < metadata.length; i++) {
+      segmentationModule.setters.deleteSegment(element, i);
+    }
+  };
 
   useEffect(() => {
+    //  storing this for series used nnunet api call, currently pass via redux series is null -- fix redux and use redux implementation
+    localStorage.setItem('isSegmentLoaded', JSON.stringify(1));
+
     eventBus.on('importSegmentations', data => {
-      setFetchedSegmentations(false);
-      onImportButtonClick();
+      console.log('importSegmentations');
+      // throttledSearch();
+      // if (!fetchedSegmentations) onImportButtonClick();
+      // setFetchedSegmentations(false);
     });
     return () => {
+      //  use localstorage to avoid duplicate segmentations issue 0 for false 1 for true
+      // localStorage.setItem('isSegmentLoaded', JSON.stringify(0));
+      removeSegments();
       eventBus.remove('importSegmentations');
     };
   }, []);
+
   useEffect(() => {
     console.log({
       activeViewportIndex,
@@ -102,6 +144,9 @@ const ViewportGrid = function(props) {
       // appContext,
       props,
     });
+    const series_uid = props.viewportData[0].SeriesInstanceUID;
+    localStorage.setItem('series_uid', JSON.stringify(series_uid));
+
     const targeDiv = ref.current;
     const view_ports = cornerstone.getEnabledElements();
     const viewports = view_ports[0];
@@ -138,15 +183,15 @@ const ViewportGrid = function(props) {
       columns,
     };
     if (
-      location.pathname.includes('/edit') ||
-      location.pathname.includes('/radionics')
+      location.pathname.includes('/edit')
+      // location.pathname.includes('/radionics')
     )
       targeDiv.addEventListener('mouseup', handleDragEnd);
 
     return () => {
       if (
-        location.pathname.includes('/edit') ||
-        location.pathname.includes('/radionics')
+        location.pathname.includes('/edit')
+        // ||location.pathname.includes('/radionics')
       )
         targeDiv.removeEventListener('mouseup', handleDragEnd);
     };
@@ -239,10 +284,10 @@ const ViewportGrid = function(props) {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
       if (
-        location.pathname.includes('/edit') ||
-        location.pathname.includes('/radionics')
+        location.pathname.includes('/edit') &&
+        fetchedSegmentations === 'idle'
       )
-        !fetchedSegmentations && onImportButtonClick();
+        onImportButtonClick();
     }
   }, [studies, viewportData, isStudyLoaded, snackbar]);
 
@@ -554,73 +599,79 @@ const ViewportGrid = function(props) {
   };
 
   const importSegmentationLayers = ({ segmentations }) => {
-    const segmentationsList = Object.keys(segmentations);
-    console.log({
-      segmentationsList,
-    });
+    try {
+      setFetchedSegmentations('inprogress');
 
-    const view_ports = cornerstone.getEnabledElements();
-    const viewports = view_ports[0];
-
-    const element = getEnabledElement(view_ports.indexOf(viewports));
-
-    const hashBucket = {};
-
-    // console.time('segmentationsList each');
-    segmentationsList.forEach(async (item, index) => {
-      // console.time('segmentationsList each' + index);
+      const segmentationsList = Object.keys(segmentations);
       console.log({
-        item,
+        segmentationsList,
       });
-      const segDetails = segmentations[item];
 
-      // const hashed = await sha256(item);
-      const hashed = crypto.SHA512(segDetails.segmentation).toString();
+      const view_ports = cornerstone.getEnabledElements();
+      const viewports = view_ports[0];
+
+      const element = getEnabledElement(view_ports.indexOf(viewports));
+
+      const hashBucket = {};
+
+      // console.time('segmentationsList each');
+      segmentationsList.forEach(async (item, index) => {
+        // console.time('segmentationsList each' + index);
+        console.log({
+          item,
+        });
+        const segDetails = segmentations[item];
+
+        // const hashed = await sha256(item);
+        const hashed = crypto.SHA512(segDetails.segmentation).toString();
+        console.log({
+          hashed,
+          segDetails,
+        });
+
+        hashBucket[item] = hashed;
+
+        const uncompressed = uncompress({
+          segmentation: segDetails.segmentation,
+          shape:
+            typeof segDetails.shape === 'string'
+              ? JSON.parse(segDetails.shape)
+              : segDetails.shape,
+        });
+        console.log({
+          uncompressed,
+        });
+
+        if (!element) {
+          return;
+        }
+
+        console.warn({
+          uncompressed,
+          item,
+        });
+
+        addSegmentationToCanvas({
+          segmentation: uncompressed,
+          label: item,
+          element,
+        });
+        // console.timeEnd('segmentationsList each' + index);
+      });
+      // console.timeEnd('segmentationsList each');
+
       console.log({
-        hashed,
-        segDetails,
+        hashBucket,
       });
-
-      hashBucket[item] = hashed;
-
-      const uncompressed = uncompress({
-        segmentation: segDetails.segmentation,
-        shape:
-          typeof segDetails.shape === 'string'
-            ? JSON.parse(segDetails.shape)
-            : segDetails.shape,
-      });
-      console.log({
-        uncompressed,
-      });
-
-      if (!element) {
-        return;
-      }
-
-      console.warn({
-        uncompressed,
-        item,
-      });
-
-      addSegmentationToCanvas({
-        segmentation: uncompressed,
-        label: item,
-        element,
-      });
-      // console.timeEnd('segmentationsList each' + index);
-    });
-    // console.timeEnd('segmentationsList each');
-
-    console.log({
-      hashBucket,
-    });
-    // const appContext = this.context;
-    editedSegmentationRef.current = hashBucket;
-    setLoadingState(false);
-    setFetchedSegmentations(true);
-    refreshViewports();
-    triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
+      // const appContext = this.context;
+      editedSegmentationRef.current = hashBucket;
+      setLoadingState(false);
+      setFetchedSegmentations('complete');
+      refreshViewports();
+      triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
+    } catch (error) {
+      setFetchedSegmentations('complete');
+    }
   };
 
   const fetchSegmentationsFromLocalStorage = () => {
@@ -672,13 +723,16 @@ const ViewportGrid = function(props) {
 
   const onImportButtonClick = async () => {
     //  const segmentations = this.fetchSegmentationsFromLocalStorage();
-    const segmentations = await fetchSegmentations();
-    console.log({ segmentations });
-    importSegmentationLayers({
-      segmentations,
-    });
-    // onIOComplete();
-    return;
+    if (location.pathname.includes('/edit')) {
+      const segmentations = await fetchSegmentations();
+      console.log({ segmentations });
+      importSegmentationLayers({
+        segmentations,
+      });
+
+      // onIOComplete();
+      return;
+    }
   };
 
   const getViewportPanes = () =>
@@ -757,7 +811,7 @@ const ViewportGrid = function(props) {
         width: '100%',
       }}
     >
-      {loadingState && <RenderLoadingModal />}
+      {/* {loadingState && <RenderLoadingModal />} */}
       {ViewportPanes}
     </div>
   );

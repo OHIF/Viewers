@@ -134,6 +134,11 @@ export const setActiveStep = step => ({
   step,
 });
 
+export const setMask = mask => ({
+  type: 'SET_SELECTION_MASK',
+  mask,
+});
+
 const actions = {
   /**
    * VIEWPORT
@@ -160,6 +165,7 @@ const actions = {
   setCollections,
   // redesign actions
   setActiveStep,
+  setMask,
 };
 
 export default actions;
