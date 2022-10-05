@@ -91,6 +91,7 @@ const MPRHangingProtocolGenerator: Types.HangingProtocol.ProtocolGenerator = ({
 
   const protocol = {
     id: 'mpr',
+    displaySetSelectors: {},
     stages: [
       {
         id: 'mprStage',
@@ -122,7 +123,6 @@ const MPRHangingProtocolGenerator: Types.HangingProtocol.ProtocolGenerator = ({
             ],
           },
         },
-        displaySets: [],
         viewports: hpViewports,
       },
     ],

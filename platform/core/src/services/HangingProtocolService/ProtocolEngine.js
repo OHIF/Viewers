@@ -131,12 +131,14 @@ export default class ProtocolEngine {
     // If no matches were found, select the default protocol if provided
     // if not select the first protocol in the list
     if (!matched.length) {
+      const protocol =
+        this.protocols.find(protocol => protocol.id === 'default') ??
+        this.protocols[0];
+      console.log('No protocol matches, defaulting to', protocol);
       return [
         {
-          score: 1,
-          protocol:
-            this.protocols.find(protocol => protocol.id === 'default') ??
-            this.protocols[0],
+          score: 0,
+          protocol,
         },
       ];
     }
