@@ -1,5 +1,6 @@
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
+import metadataProvider from '@ohif/core/src/classes/MetadataProvider';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adapters } from 'dcmjs';
@@ -212,32 +213,27 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     newDisplaySet
   );
 
-  for (let i = 0; i < images.length; i++) {
+  for (let i = 0; i < imageIdsForDisplaySet.length; i++) {
     if (!unloadedMeasurements.length) {
       // All measurements loaded.
-      break;
+      return;
     }
 
-    const image = images[i];
-    const { SOPInstanceUID } = image;
+    const imageId = imageIdsForDisplaySet[i];
+    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(
+      imageId
+    );
+
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
-        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
-          let imageId;
-          if (newDisplaySet.isMultiFrame) {
-            const frameNumber =
-              (measurement.coords[0].ReferencedSOPSequence &&
-                measurement.coords[0].ReferencedSOPSequence
-                  .ReferencedFrameNumber) ||
-              1;
-            imageId =
-              imageIdsForDisplaySet[frameNumber - 1] ||
-              imageIdsForDisplaySet[i];
-          } else {
-            imageId = imageIdsForDisplaySet[i];
-          }
-
+        if (
+          _measurementReferencesSOPInstanceUID(
+            measurement,
+            SOPInstanceUID,
+            frameNumber
+          )
+        ) {
           addMeasurement(
             measurement,
             imageId,
@@ -251,8 +247,22 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   }
 }
 
-function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
+function _measurementReferencesSOPInstanceUID(
+  measurement,
+  SOPInstanceUID,
+  frameNumber
+) {
   const { coords } = measurement;
+
+  // NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
+  //  Standard. But for now, we will support only one ReferenceFrameNumber.
+  const ReferencedFrameNumber =
+    (measurement.coords[0].ReferencedSOPSequence &&
+      measurement.coords[0].ReferencedSOPSequence.ReferencedFrameNumber) ||
+    1;
+
+  if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber))
+    return false;
 
   for (let j = 0; j < coords.length; j++) {
     const coord = coords[j];

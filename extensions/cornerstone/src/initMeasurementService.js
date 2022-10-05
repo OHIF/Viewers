@@ -253,22 +253,23 @@ const connectMeasurementServiceToTools = (
         SOPInstanceUID
       );
 
+      let imageId;
       let frameNumber = 1;
-      if (measurement.data && measurement.data.frameNumber) {
-        frameNumber = measurement.data.frameNumber;
-      } else if (
-        measurement.metadata &&
-        measurement.metadata.referencedImageId
-      ) {
+
+      if (measurement.metadata && measurement.metadata.referencedImageId) {
+        imageId = measurement.metadata.referencedImageId;
         frameNumber = getSOPInstanceAttributes(
           measurement.metadata.referencedImageId
         ).frameNumber;
+      } else if (measurement.data && measurement.data.frameNumber) {
+        frameNumber = measurement.data.frameNumber;
+        imageId = dataSource.getImageIdsForInstance({
+          instance,
+          frame: frameNumber,
+        });
+      } else {
+        imageId = dataSource.getImageIdsForInstance({ instance });
       }
-
-      let imageId = dataSource.getImageIdsForInstance({
-        instance,
-        frame: frameNumber,
-      });
 
       const annotationManager = annotation.state.getDefaultAnnotationManager();
       annotationManager.addAnnotation({

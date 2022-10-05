@@ -10,6 +10,11 @@ import CornerstoneCacheService from '../services/ViewportService/CornerstoneCach
 
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
+import {
+  IStackViewport,
+  IVolumeViewport,
+} from '@cornerstonejs/core/dist/esm/types';
+import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 
 const STACK = 'stack';
 
@@ -404,22 +409,32 @@ function _jumpToMeasurement(
     displaySetInstanceUID
   );
 
-  // For multi-frame files, finding imageID simply by SOPInstanceUID won't work,
-  // as the "referencedDisplaySet.images" will only contain the Frame 1.
-  let imageIdIndex = referencedDisplaySet.images.findIndex(
-    i => i.SOPInstanceUID === SOPInstanceUID
-  );
-  if (referencedDisplaySet.isMultiFrame && frameNumber > 1) {
-    imageIdIndex = frameNumber - 1;
-  }
-
   // Todo: setCornerstoneMeasurementActive should be handled by the toolGroupManager
   //  to set it properly
   // setCornerstoneMeasurementActive(measurement);
 
   viewportGridService.setActiveViewportIndex(viewportIndex);
 
-  if (getEnabledElement(targetElement)) {
+  const enableElement = getEnabledElement(targetElement);
+  if (enableElement) {
+    // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
+    const viewport = enableElement.viewport as IStackViewport | IVolumeViewport;
+    const { imageIds } = viewport;
+    let imageIdIndex;
+
+    for (let i = 0; i < imageIds.length; i++) {
+      const {
+        SOPInstanceUID: SOPInstanceUID1,
+        frameNumber: frameNumber1,
+      } = getSOPInstanceAttributes(imageIds[i]);
+      if (
+        SOPInstanceUID1 == SOPInstanceUID &&
+        (!frameNumber || frameNumber == frameNumber1)
+      ) {
+        imageIdIndex = i;
+      }
+    }
+
     cs3DTools.utilities.jumpToSlice(targetElement, {
       imageIndex: imageIdIndex,
     });
