@@ -52,7 +52,7 @@ class MetadataProvider {
   }
 
   _getInstance(imageId) {
-    const uids = this._getUIDsFromImageID(imageId);
+    const uids = this.getUIDsFromImageID(imageId);
 
     if (!uids) {
       return;
@@ -411,7 +411,7 @@ class MetadataProvider {
     return metadata;
   }
 
-  _getUIDsFromImageID(imageId) {
+  getUIDsFromImageID(imageId) {
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,
