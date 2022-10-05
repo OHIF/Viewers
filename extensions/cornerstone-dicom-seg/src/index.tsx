@@ -59,7 +59,7 @@ const extension = {
     return [
       {
         name: 'panelSegmentation',
-        iconName: 'dotted-circle',
+        iconName: 'tab-segmentation',
         iconLabel: 'Segmentation',
         label: 'Segmentation',
         component: wrappedPanelSegmentation,

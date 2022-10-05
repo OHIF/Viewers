@@ -294,7 +294,7 @@ const toolbarButtons = [
     id: 'MPR',
     type: 'ohif.action',
     props: {
-      icon: 'old-play',
+      icon: 'icon-mpr',
       label: 'MPR',
       type: 'action',
       commands: [
