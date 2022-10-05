@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useLogger } from '@ohif/ui';
 import { withRouter, matchPath } from 'react-router';
+import cornerstoneTools from 'cornerstone-tools';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
-import ConnectedHeader from './ConnectedHeader.js';
 import ToolbarRow from './ToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
@@ -21,10 +20,11 @@ import '../googleCloud/googleCloud.css';
 import cornerstone from 'cornerstone-core';
 
 import './Viewer.css';
-import { finished } from 'stream';
-import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 import JobsContextUtil from './JobsContextUtil.js';
 import eventBus from '../lib/eventBus.js';
+import { getEnabledElement } from '../../../../extensions/cornerstone/src/state.js';
+import { radcadapi } from '../utils/constants.js';
+
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -95,6 +95,7 @@ class Viewer extends Component {
 
   state = {
     loading: true,
+    isToolSet: false,
     inEditSegmentationMode: false,
     isLeftSidePanelOpen: true,
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
@@ -105,12 +106,34 @@ class Viewer extends Component {
   };
 
   componentWillUnmount() {
-    if (this.props.location.pathname.includes('/edit')) {
-      eventBus.dispatch('clearSegmentations', {});
-    }
+    // if (this.props.location.pathname.includes('/edit')) {
+    //   eventBus.dispatch('clearSegmentations', {});
+    // }
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
+
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    if (enabledElement) {
+      // cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
+      //   enabledElement
+      // );
+      let viewport = cornerstone.getViewport(enabledElement);
+      localStorage.setItem(
+        this.props.studyInstanceUID,
+        JSON.stringify({
+          voi: viewport.voi,
+          scale: viewport.scale,
+          x: viewport.translation.x,
+          y: viewport.translation.y,
+        })
+      );
+    }
+
+    cornerstone.events.removeEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
   }
 
   retrieveTimepoints = filter => {
@@ -222,28 +245,59 @@ class Viewer extends Component {
       });
     }
 
-    const location = this.props.location;
-
-    const inEditSegmentationMode = matchPath(location.pathname, {
-      path:
-        '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      exact: true,
-    });
-
     this.setState({
-      inEditSegmentationMode: inEditSegmentationMode ? true : false,
+      inEditSegmentationMode: matchPath(this.props.location.pathname, {
+        path:
+          '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+        exact: true,
+      })
+        ? true
+        : false,
     });
 
-    if (inEditSegmentationMode)
-      cornerstone.events.addEventListener(
-        cornerstone.EVENTS.ELEMENT_ENABLED,
-        event => {
-          setTimeout(() => {
-            this.handleSidePanelChange('right', 'xnat-segmentation-panel');
-          }, 2000);
-        }
-      );
+    cornerstone.events.addEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
   }
+
+  onCornerstageLoaded = enabledEvt => {
+    setTimeout(() => {
+      const enabledElement = enabledEvt.detail.element;
+      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      tool_data =
+        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      if (enabledElement && tool_data) {
+        try {
+          let viewport = cornerstone.getViewport(enabledElement);
+          // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
+          if (viewport.scale < 1) return;
+          if (tool_data.x && viewport.translation.x != tool_data.x)
+            viewport.translation.x = tool_data.x;
+          if (tool_data.y && viewport.translation.y != tool_data.y)
+            viewport.translation.y = tool_data.y;
+          if (tool_data.scale && viewport.scale != tool_data.scale)
+            viewport.scale = tool_data.scale;
+          if (tool_data.voi) viewport.voi = tool_data.voi;
+
+          cornerstone.setViewport(enabledElement, viewport);
+          eventBus.dispatch('importSegmentations', {});
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      if (
+        matchPath(this.props.location.pathname, {
+          path:
+            '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+          exact: true,
+        })
+      ) {
+        this.handleSidePanelChange('right', 'xnat-segmentation-panel');
+      }
+    }, 5000);
+  };
 
   async handleFetchAndSetSeries(studyInstanceUID) {
     const fetchedSeries = await (async () => {
@@ -254,7 +308,7 @@ class Viewer extends Component {
         };
 
         const response = await fetch(
-          `https://radcadapi.thetatech.ai/series?study=${studyInstanceUID}`,
+          `${radcadapi}/series?study=${studyInstanceUID}`,
           requestOptions
         );
         const result = await response.json();
@@ -305,9 +359,6 @@ class Viewer extends Component {
       // if (activeDisplaySetInstanceUID)
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
-      const view_ports = cornerstone.getEnabledElements();
-      const viewports = view_ports[0];
-
       const PatientID = studies[0] && studies[0].PatientID;
       const { currentTimepointId } = this;
 
@@ -340,38 +391,6 @@ class Viewer extends Component {
     }
 
     this.setState(updatedState);
-  };
-
-  handleGoBack = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('edit', 'view');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-
-  handleGoRadionics = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('edit', 'radionics');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
-  };
-  handleGoEdit = () => {
-    const location = this.props.location;
-    const pathname = location.pathname.replace('view', 'edit');
-
-    // const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-    //   studyInstanceUIDs: studyInstanceUID,
-    // });
-    // this.props.history.goBack();
-    this.props.history.push(pathname);
   };
 
   render() {

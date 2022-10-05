@@ -22,6 +22,7 @@ const reduceChildRoutes = ({ acc, pathname, item, depth }) => {
       href={item.href}
       key={key}
       title={item.title}
+      icon={item.icon}
     />
   );
   // }
@@ -31,12 +32,13 @@ const reduceChildRoutes = ({ acc, pathname, item, depth }) => {
 
 const renderNavItems = ({ items, pathname, depth = 0 }) => {
   return (
-    <div className="steps-container">
+    // <div className="steps-container">
+    <ul className="stepper">
       {items.reduce(
         (acc, item) => reduceChildRoutes({ acc, item, pathname, depth }),
         []
       )}
-    </div>
+    </ul>
   );
 };
 
@@ -51,19 +53,19 @@ const Header = ({ onMobileClose, openMobile }) => {
   }, [location.pathname]);
 
   const content = (
-    <div
+    <section
       style={{
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
-        alignContent: 'center',
+        // alignContent: 'center',
       }}
     >
       {renderNavItems({
         items: navConfig,
         pathname: location.pathname,
       })}
-    </div>
+    </section>
   );
 
   return (
@@ -75,7 +77,10 @@ const Header = ({ onMobileClose, openMobile }) => {
         alignItems: 'center',
         top: 0,
         left: 0,
-        padding: '16px 16px 16px 15px',
+        borderBottom: '1px  #87878780 solid',
+        background: '#1A1C21',
+        paddingRight: '6px',
+        paddingTop: '6px',
         flexDirection: 'row',
         zIndex: 9,
       }}
@@ -90,13 +95,20 @@ const Header = ({ onMobileClose, openMobile }) => {
           style={{
             fontweight: '400',
             marginLeft: '45px',
-            fontSize: '28px',
+            fontSize: '22px',
+            paddingTop: '6px',
+            paddingBottom: '6px',
+            paddingLeft: '18px',
+            paddingRight: '18px',
             display: 'flex',
+            border: '1px #878787 solid',
+            borderRadius: '4px',
             flexDirection: 'row',
+            letterSpacing: '-0.05em',
+            lineHeight: '31px',
           }}
         >
-          {/* <Icon name="ohif-logo" className="header-logo-image" /> */}
-          <h4>ThetaTech</h4>
+          <h4>Thetatech</h4>
         </div>
       </div>
 

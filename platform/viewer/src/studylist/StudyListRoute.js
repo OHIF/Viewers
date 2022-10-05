@@ -224,16 +224,16 @@ function StudyListRoute(props) {
         onSuccess={handleImportSuccessful}
       />
 
-      <div className="study-list-header">
+      <div className="study-list-header print">
         <div className="header">
-          <h1 style={{ fontWeight: 300, fontSize: '22px' }}>
+          <h1 style={{ fontWeight: 700, fontSize: '24px' }}>
             {t('StudyList')}
           </h1>
         </div>
         <div className="actions">
           <div className="form-inline btn-group pull-right">
             <button
-              className="btn btn-primary"
+              className="btn btn-outline"
               onClick={() => setShowImportIdcModal(true)}
             >
               {t('Import IDC')}
@@ -246,34 +246,42 @@ function StudyListRoute(props) {
               onImport={() => setActiveModalId('DicomFilesUploader')}
             />
           )}
-          <span className="study-count">{studies.length}</span>
+          {/* <span className="study-count">{studies.length}</span> */}
         </div>
       </div>
 
-      <div className="table-head-background" />
-      <div className="study-list-container">
-        {/* STUDY LIST OR DROP ZONE? */}
-        <StudyList
-          isLoading={searchStatus.isSearchingForStudies}
-          hasError={searchStatus.error === true}
-          // Rows
-          studies={studies}
-          onSelectItem={studyInstanceUID => {
-            // dispatch the studyId here
-            const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-              studyInstanceUIDs: studyInstanceUID,
-            });
-            history.push(viewerPath);
-          }}
-          // Table Header
-          sort={sort}
-          onSort={handleSort}
-          filterValues={filterValues}
-          onFilterChange={handleFilterChange}
-          studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
-          displaySize={displaySize}
-        />
-        {/* PAGINATION FOOTER */}
+      {/* <div className="table-head-background" /> */}
+      {/* <div className="study-list-container"> */}
+      {/* STUDY LIST OR DROP ZONE? */}
+      <StudyList
+        isLoading={searchStatus.isSearchingForStudies}
+        hasError={searchStatus.error === true}
+        // Rows
+        studies={studies}
+        onSelectItem={studyInstanceUID => {
+          // dispatch the studyId here
+          const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
+            studyInstanceUIDs: studyInstanceUID,
+          });
+          history.push(viewerPath);
+        }}
+        // Table Header
+        sort={sort}
+        onSort={handleSort}
+        filterValues={filterValues}
+        onFilterChange={handleFilterChange}
+        studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
+        displaySize={displaySize}
+      />
+      {/* PAGINATION FOOTER */}
+      <div
+        className="master-footer"
+        style={{
+          paddingRight: '2%',
+          paddingLeft: '2%',
+          width: '100%',
+        }}
+      >
         <TablePagination
           currentPage={pageNumber}
           nextPageFunc={() => setPageNumber(pageNumber + 1)}

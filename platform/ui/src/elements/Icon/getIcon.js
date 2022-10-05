@@ -89,6 +89,14 @@ import youtube from './icons/youtube.svg';
 import eye from './icons/eye.svg';
 import eyeClosed from './icons/eye-closed.svg';
 import envelopeSquare from './icons/envelope-square.svg';
+import mask from './icons/mask.svg';
+import segmentation from './icons/segmentation.svg';
+import view from './icons/view.svg';
+import radiomic from './icons/radiomic.svg';
+import nnunet from './icons/nnunet.svg';
+import studylist from './icons/studylist.svg';
+import chevronBack from './icons/chevron-back.svg';
+import chevronForward from './icons/chevron-forward.svg';
 // ICR/XNAT icons
 import { XNATICONS } from '@xnat-ohif/extension-xnat';
 
@@ -182,6 +190,14 @@ const ICONS = {
   liver,
   save: saveRegular,
   'envelope-square': envelopeSquare,
+  mask,
+  view,
+  nnunet,
+  segmentation,
+  radiomic,
+  studylist,
+  'chevron-back': chevronBack,
+  'chevron-forward': chevronForward,
   ...XNATICONS,
 };
 

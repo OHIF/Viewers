@@ -33,7 +33,7 @@
   --snackbar-zIndex: 1075;
 
   /** DatePicker Colors **/
-  --datePicker-input-background: #2c363f;
+  --datePicker-input-background: transparent;
   --datePicker-picker-background: #9ccef9;
   --datePicker-picker-disabled: #d3d3d3;
   --datePicker-picker-text: #484848;

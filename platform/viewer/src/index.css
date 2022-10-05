@@ -7,7 +7,7 @@ body {
   height: 100%;
 }
 body {
-  background: #000000;
+  background: #1a1c21;
   margin: 0px;
   padding: 0px;
   font-size: 12px;
@@ -77,8 +77,8 @@ focus {
   outline: none;
 }
 /* ==========================================================================
-       Css reset begin
-       ========================================================================== */
+          Css reset begin
+          ========================================================================== */
 
 /*========================== Commen styles ========================*/
 .set__as--bg {
@@ -118,11 +118,11 @@ span.make__bg {
   display: block;
   padding: 18px;
   position: fixed;
-  background-color: #000000;
+  background-color: #1a1c21;
   bottom: 0;
   left: 0;
   right: 0;
-  border-top: 1px solid #fff;
+  border-top: 1px solid #87878780;
   z-index: 9;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -144,7 +144,7 @@ span.make__bg {
   display: block;
   /* padding: 16px 16px 16px 15px; */
   /* position: fixed; */
-  background-color: #000000;
+  background-color: #1a1c21;
   /* top: 0; */
   flex: 5;
   /* left: 0; */
@@ -194,7 +194,7 @@ a.menu-toggle.active span.line {
   position: absolute;
   margin: auto;
   top: 0;
-  background: rgb(46, 35, 9);
+  background: #fff;
   right: 0;
   bottom: 0;
   left: 0;
@@ -238,7 +238,8 @@ a.menu-toggle.active span.line.b {
   position: relative;
   padding: 30px;
   padding-top: 80px;
-  height: 90vh;
+  height: 100%;
+  background-color: black;
 }
 .sidebar__menu::-webkit-scrollbar {
   width: 8px;
@@ -362,9 +363,9 @@ a.menu-toggle.active span.line.b {
 }
 
 .portal__wraper {
-  padding-top: 100px;
+  padding-top: 80px;
   position: relative;
-  background-color: #000000;
+  background-color: #1a1c21;
   min-height: 100vh;
   width: 100%;
   color: white;
@@ -376,7 +377,7 @@ a.menu-toggle.active span.line.b {
   /* padding: 20px; */
   /* padding-top: 200px; */
   position: relative;
-  background-color: #000000;
+  background-color: #1a1c21;
   /* min-height: 100vh; */
   display: flex;
   width: 100%;
@@ -386,78 +387,143 @@ a.menu-toggle.active span.line.b {
   /* font-size: calc(10px + 2vmin); */
   /* color: white; */
 }
+
+.nav-opacity {
+  opacity: 0.5;
+}
+
+.stepper-head-icon2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  background-color: #00c7ee;
+  cursor: pointer;
+  border-radius: 100%;
+  /* font-size: rem; */
+  font-weight: bold;
+  width: 2rem;
+  height: 2rem;
+}
+
 /* ====================== Progress arrow index ============= */
 
-.steps-container {
-  overflow: hidden;
-  padding: 8px;
-  white-space: nowrap;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  width: 80%;
-}
-.steps {
+.stepper {
   position: relative;
-  display: inline-block;
-  height: 38px;
-  flex: 1;
-  margin-right: 32px;
-  /* padding: 12px; */
-  /* margin-left: 12px; */
-  /* margin-right: 12px; */
-  cursor: pointer;
-  transition: background 1s;
-}
-
-.steps:after,
-.steps:before {
-  position: absolute;
-  content: '';
-  left: 0px;
-  height: 50%;
+  padding: 0;
+  margin: 0;
   width: 100%;
-  border-top: 2px solid grey;
-  border-bottom: 2px solid grey;
-  border-left: 2px solid grey; /* thicker border as skew makes them look thin */
-  border-right: 2px solid grey;
-}
-
-.steps:before {
-  transform: skew(45deg);
-  top: 0px;
-  border-bottom: none;
-  transform-origin: top left;
-}
-
-.steps:after {
-  transform: skew(-45deg);
-  bottom: -3px;
-  border-top: none;
-  transform-origin: bottom left;
-}
-
-.steps .title {
-  display: flex;
+  list-style: none;
   overflow: hidden;
-  text-overflow: ellipsis;
-  justify-content: flex-end;
-  align-items: center;
-  text-align: right;
+  transition: height 0.2s ease-in-out;
+}
+.stepper {
+  display: flex;
+  justify-content: space-between;
+}
+/* .stepper .stepper-content {
+  position: absolute;
   width: 100%;
-  height: 100%;
-  font-size: small;
+  padding: 0 1rem 0 1rem;
+} */
+.stepper .stepper-step {
+  flex: auto;
+  height: 4.5rem;
+}
+.stepper .stepper-step:first-child .stepper-head {
+  padding-left: 1.5rem;
+}
+.stepper .stepper-step:last-child .stepper-head {
+  padding-right: 1.5rem;
+}
+.stepper .stepper-step:not(:first-child) .stepper-head:before {
+  flex: 1;
+  height: 1px;
+  width: 100%;
+  margin-right: 0.5rem;
+  content: '';
+  background-color: #878787;
+}
+.stepper .stepper-step:not(:last-child) .stepper-head:after {
+  flex: 1;
+  height: 1px;
+  width: 100%;
+  margin-left: 0.5rem;
+  content: '';
+  background-color: #878787;
 }
 
-.steps .title:before {
+.stepper-head {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: unset;
+  line-height: 1.3;
+  cursor: pointer;
+  height: 100%;
 }
-.steps.active .title {
-  /* font-weight: bold; */
+
+.stepper-head:focus {
+  outline: none;
 }
-.steps.active:before,
-.steps.active:after {
-  border-top-color: yellow;
-  border-bottom-color: yellow;
-  border-right-color: yellow;
-  border-left-color: yellow;
+.stepper-disabled .stepper-head {
+  color: #858585;
+  cursor: default;
+}
+/* head icons */
+/* head icons asdadasd asd  */
+
+.stepper .stepper-head-icon {
+  /* margin: 1.5rem 0.5rem 1.5rem 0; */
+}
+
+/* .stepper-head:hover {
+  background-color: #dbdbdb;
+} */
+
+/* mm */
+.stepper-head-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* color: black; */
+  /* background-color: gray; */
+  border-radius: 100%;
+  font-size: 0.875rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.stepper-active .stepper-head-text {
+  font-weight: 500;
+  color: yellow;
+}
+.stepper-active .stepper-head-icon {
+  color: yellow;
+}
+
+/* ///////// */
+/* ///////// */
+.stepper-invalid .stepper-head-icon {
+  background-color: red;
+}
+.stepper-completed .stepper-head-icon {
+  background-color: yellow;
+}
+
+.stepper-disabled .stepper-head-icon {
+  background-color: #858585;
+}
+.printing {
+  visibility: hidden;
+}
+
+.printView {
+  visibility: visible;
+}
+
+.printing .printView {
+  /* You can have any CSS here to make the view better on print */
+  position: absolute;
+  top: 0;
 }

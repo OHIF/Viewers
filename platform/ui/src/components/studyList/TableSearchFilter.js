@@ -78,18 +78,14 @@ function TableSearchFilter(props) {
   return translationsAreReady
     ? meta.map((field, i) => {
         const { displayText, fieldName, inputType } = field;
-        const isSortField = sortFieldName === fieldName;
-        const sortIcon = isSortField ? sortIconForSortField : sortIcons[0];
 
         return (
-          <th key={`${fieldName}-${i}`}>
-            <label
-              htmlFor={`filter-${fieldName}`}
-              onClick={() => onSort(fieldName)}
-            >
-              {`${displayText}`}
-              <Icon name={sortIcon} style={{ fontSize: '12px' }} />
-            </label>
+          <div
+            style={{
+              flex: 1,
+            }}
+            key={`${fieldName}-${i}`}
+          >
             {inputType === 'text' && (
               <input
                 type="text"
@@ -123,7 +119,7 @@ function TableSearchFilter(props) {
                 isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
               />
             )}
-          </th>
+          </div>
         );
       })
     : null;

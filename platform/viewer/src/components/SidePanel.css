@@ -10,7 +10,8 @@
 
 .sidepanel {
   flex: 1;
-  height: 100%;
+  /* height: 100%; */
+  height: 80vh;
   transition: var(--sidepanel-transition);
   overflow-y: auto;
 }
@@ -34,7 +35,7 @@
 
 .main-content {
   flex: 1;
-  height: 70vh;
+  height: 80vh;
   overflow: hidden;
   transition: var(--sidepanel-transition);
   width: 100%;

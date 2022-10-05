@@ -21,6 +21,8 @@ import JobsContextUtil from './JobsContextUtil.js';
 import ToolbarRow from './RadiomicsToolbarRow';
 import SidePanel from '../components/SidePanel';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser';
+import { radcadapi } from '../utils/constants';
+import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
 
 class RadiomicsReport extends Component {
   static propTypes = {
@@ -101,23 +103,23 @@ class RadiomicsReport extends Component {
     isEditSelection: false,
   };
 
-  onCornerstageLoaded = event => {
+  onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
-      // const { EVENTS } = cornerstoneTools;
-      // const view_ports = cornerstone.getEnabledElements();
-      // const viewports = view_ports[0];
-
-      // const element = getEnabledElement(view_ports.indexOf(viewports));
-      // if (element) {
-      //   element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
-      //     console.log('measurement completed', event);
-      //   });
-      // }
-      console.log('event', event);
-
+      const enabledElement = enabledEvt.detail.element;
+      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      tool_data =
+        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      if (enabledElement && tool_data) {
+        let viewport = cornerstone.getViewport(enabledElement);
+        if (tool_data.x) viewport.translation.x = tool_data.x;
+        if (tool_data.y) viewport.translation.y = tool_data.y;
+        if (tool_data.scale) viewport.scale = tool_data.scale;
+        if (tool_data.voi) viewport.voi = tool_data.voi;
+        cornerstone.setViewport(enabledElement, viewport);
+      }
       this.handleSidePanelChange('right', 'lung-module-similarity-panel');
       // this.handleSidePanelChange('left', 'theta-details-panel');
-    }, 5000);
+    }, 2000);
   };
 
   componentWillUnmount() {
@@ -212,6 +214,7 @@ class RadiomicsReport extends Component {
     const currentTimepointId = 'TimepointId';
 
     this.handleFetchAndSetSeries(rest.studyInstanceUIDs[0]);
+    localStorage.setItem('radiomicsDone', JSON.stringify(0));
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -250,6 +253,8 @@ class RadiomicsReport extends Component {
       });
     }
 
+    localStorage.setItem('radiomicsDone', JSON.stringify(0));
+
     cornerstone.events.addEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
@@ -265,7 +270,7 @@ class RadiomicsReport extends Component {
         };
 
         const response = await fetch(
-          `https://radcadapi.thetatech.ai/series?study=${studyInstanceUID}`,
+          `${radcadapi}/series?study=${studyInstanceUID}`,
           requestOptions
         );
         const result = await response.json();
@@ -285,7 +290,7 @@ class RadiomicsReport extends Component {
 
   triggerReload() {
     setTimeout(() => {
-      document.getElementById('trigger').click();
+      // document.getElementById('trigger').click();
     }, 2000);
     // if (window && window.parent) {
     //   window.parent.postMessage(
@@ -423,7 +428,6 @@ class RadiomicsReport extends Component {
             <div
               style={{
                 width: '100%',
-                background: '#ffffff0d',
                 padding: '20px',
               }}
             >

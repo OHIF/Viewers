@@ -7,6 +7,7 @@ import { TablePagination, useMedia, Icon } from '@ohif/ui';
 // Contexts
 import { PatientList } from './PatientList';
 import { applyPagination, _sortCollections } from './utils';
+import { radcadapi } from '../utils/constants';
 
 function applySort(sort, data) {
   const sortFieldName = sort.fieldName || 'PatientID';
@@ -65,10 +66,7 @@ function ConfirmDialog(props) {
         body: JSON.stringify({ study_uid: StudyUID }),
       };
 
-      const response = await fetch(
-        `https://radcadapi.thetatech.ai/import-idc`,
-        requestOptions
-      );
+      const response = await fetch(`${radcadapi}/import-idc`, requestOptions);
 
       setSearchStatus({ error: null, isFetching: false });
       onComplete();
@@ -194,7 +192,7 @@ function PatientsPage(props) {
         };
 
         const response = await fetch(
-          `https://radcadapi.thetatech.ai/tcia-collection-studies?collection=${collection_api_id}`,
+          `${radcadapi}/tcia-collection-studies?collection=${collection_api_id}`,
           requestOptions
         );
         let result = await response.json();

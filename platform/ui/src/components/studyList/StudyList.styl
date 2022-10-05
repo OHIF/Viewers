@@ -1,7 +1,7 @@
 @import './../../design/styles/common/form.styl'
 @import './../../design/styles/common/global.styl'
 
-$study-list-padding = 8%;
+$study-list-padding = 2%;
 $study-list-toolbar-height = 75px;
 $body-cell-height = 40px;
 $body-cell-top-bottom-padding = 16px;
@@ -20,6 +20,10 @@ placeholder-color(c)
     color: c
   &:-ms-input-placeholder
     color: c
+
+.tb-hd
+  background-color:black;
+
 
 .study-list-header
   .addNewStudy
@@ -51,9 +55,10 @@ placeholder-color(c)
 .study-list-header
   display: flex;
   justify-content: space-between;
-  background-color: var(--ui-gray-darker)
+  background-color:transparent;
   height: $study-list-toolbar-height
   margin-bottom: 2px
+  border-bottom:1px solid #87878780
   padding: 0 $study-list-padding
   line-height: $study-list-toolbar-height
 
@@ -100,12 +105,12 @@ placeholder-color(c)
     height: 1px
     z-index: 2
 
-
-.study-list-container
-  width: 100%
+.table-body{
   padding: 0 $study-list-padding
-  position: absolute
-  z-index: 2
+
+}
+
+
 
 table.table
   width: 100%;
@@ -117,8 +122,9 @@ table.table
   font-weight: 300
 
   > tbody tr
-    padding: 5px
-    background-color: black
+    padding: 0 $study-list-padding
+    border-bottom: 1px solid #87878780;
+    background-color: #1a1c21 !important
 
   > tbody td
     padding: $body-cell-top-bottom-padding 8px;
@@ -127,7 +133,7 @@ table.table
 
   /* Striped Variant */
   &.table--striped > tbody tr:nth-child(even)
-    background-color: var(--ui-gray-darker)
+    background-color: transparent;
 
   /* Hover Variant */
   &.table--hoverable > tbody tr
@@ -140,6 +146,11 @@ table.table
   .empty-value
     color: var(--ui-gray-light)
 
+.study-list-container
+  width: 100%
+  z-index: 2
+
+
 .study-list-container > table.table > tr
   height: 20px
 
@@ -151,7 +162,6 @@ table.table
 
 .study-list-container > table.table > thead > tr > th
   padding: 0;
-  border-bottom: 1px solid var(--ui-border-color-active);
   width: 100%;
   text-align: left;
   border-top: 0;
@@ -176,6 +186,7 @@ table.table
       margin: 0 auto;
       color: var(--table-text-primary-color);
       font-weight: 400;
+      background-color:black;
       padding: 20px 8px;
       user-select: none;
       font-size: 15px;
@@ -188,13 +199,37 @@ table.table
     i
       margin: 0 5px;
 
+  .filters2
+      padding: 0 $study-list-padding
+      background-color:black
+      label
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        width: 100%;
+        min-width: 95px;
+        margin: 0 auto;
+        color: var(--table-text-primary-color);
+        font-weight: 400;
+        background-color:black;
+        padding: 20px 8px;
+        user-select: none;
+        font-size: 15px;
+
+        &:hover
+          color: var(--active-color);
+
+        &.active, &:active
+          color: var(--active-color);
+      i
+        margin: 0 5px;
   input
     height: 40px
     margin: 0 5px 20px 5px
     padding: 0 20px
     cursor: pointer
-    border: none
-    background-color: var(--input-background-color)
+    border: 1px solid #878787
+    background-color: transparent
     color: var(--input-placeholder-color)
     font-size: 10pt
     font-weight: normal

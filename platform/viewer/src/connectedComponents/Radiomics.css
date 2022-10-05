@@ -1,5 +1,5 @@
 #viewer {
-  background-color: black;
+  /* background-color: black; */
   width: 80%;
   padding-top: 120px;
 }
@@ -18,11 +18,11 @@
 .container-item {
   flex: 1;
   padding: 1rem;
-  background-color: black;
+  /* background-color: black; */
 }
 
 .container-item-extra {
   flex: 2;
   padding: 1rem;
-  background-color: black;
+  /* background-color: black; */
 }
