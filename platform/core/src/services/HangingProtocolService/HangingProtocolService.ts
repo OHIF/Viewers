@@ -11,6 +11,8 @@ const EVENTS = {
   NEW_LAYOUT: 'event::hanging_protocol_new_layout',
   CUSTOM_IMAGE_LOAD_PERFORMED:
     'event::hanging_protocol_custom_image_load_performed',
+  HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT:
+    'event::hanging_protocol_applied_for_viewport',
 };
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
@@ -207,9 +209,7 @@ class HangingProtocolService {
    * Sets the active hanging protocols to use, by name.  If the value is empty,
    * then resets the active protocols to all the named items.
    */
-  public setActiveProtocols(
-    hangingProtocol?: string[] | string
-  ): void {
+  public setActiveProtocols(hangingProtocol?: string[] | string): void {
     if (!hangingProtocol || !hangingProtocol.length) {
       this.activeProtocolIds = null;
       console.log('No active protocols, setting all to active');
@@ -291,6 +291,19 @@ class HangingProtocolService {
 
   setHangingProtocolAppliedForViewport(i, status, suppressEvent = false) {
     this.hpAlreadyApplied.set(i, status);
+
+    const numberOfViewports = this.viewportMatchDetails.length;
+    const numberOfViewportsApplied = Array.from(
+      this.hpAlreadyApplied.values()
+    ).filter(applied => applied).length;
+
+    const progress = Math.round(
+      (numberOfViewportsApplied / numberOfViewports) * 100
+    );
+
+    this._broadcastChange(this.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT, {
+      progress: progress,
+    });
   }
 
   /**
@@ -405,6 +418,35 @@ class HangingProtocolService {
     return protocol;
   }
 
+  // setDisplaySetsForViewport(
+  //   viewportIndex: number,
+  //   displaySetInstanceUIDs: string[]
+  // ) {
+  //   const activeProtocolId = this.protocol.id;
+
+  //   const matchingDisplaySets = displaySetInstanceUIDs.reduce(
+  //     (acc, displaySetInstanceUID) => {
+  //       const displaySet = this.displaySets.find(
+  //         displaySet =>
+  //           displaySet.displaySetInstanceUID === displaySetInstanceUID
+  //       );
+
+  //       if (displaySet) {
+  //         acc[displaySet.displaySetInstanceUID] = {
+  //           SeriesInstanceUID: displaySet.SeriesInstanceUID,
+  //           StudyInstanceUID: displaySet.StudyInstanceUID,
+  //           displaySetInstanceUID: displaySet.displaySetInstanceUID,
+  //         };
+  //       }
+
+  //       return acc;
+  //     },
+  //     {}
+  //   );
+
+  //   this.setProtocol(activeProtocolId, null, matchingDisplaySets);
+  // }
+
   /**
    * It applied the protocol to the current studies and display sets based on the
    * protocolId that is provided.
@@ -438,6 +480,8 @@ class HangingProtocolService {
             `HangingProtocolService::setProtocol - protocol ${protocolId} failed to execute`,
             error
           );
+
+          // Todo: fallback to default protocol?
           return;
         }
       } else {
@@ -532,8 +576,7 @@ class HangingProtocolService {
     // each time we are updating the viewports, we need to reset the
     // matching applied
     this.hpAlreadyApplied = new Map();
-
-    // reset displaySetMatchDetails
+    this.viewportMatchDetails = [];
     this.displaySetMatchDetails = new Map();
 
     if (matchingDisplaySets) {

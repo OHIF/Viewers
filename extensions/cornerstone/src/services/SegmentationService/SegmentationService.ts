@@ -871,9 +871,13 @@ class SegmentationService {
 
   public createSegmentationForDisplaySet = async (
     displaySetInstanceUID: string,
-    options?: { segmentationId: string; label: string }
+    options?: {
+      segmentationId: string;
+      label: string;
+    }
   ): Promise<string> => {
-    const volumeId = displaySetInstanceUID;
+    const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
+    const volumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`; // VolumeId with loader id + volume id
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 

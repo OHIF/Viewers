@@ -52,6 +52,7 @@ import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
 import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
 import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
 import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
+import loadingOHIFMark from './../../assets/icons/loading-ohif-mark.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -147,6 +148,7 @@ const ICONS = {
   'row-unlocked': rowUnlocked,
   'checkbox-checked': checkboxChecked,
   'checkbox-unchecked': checkboxUnchecked,
+  'loading-ohif-mark': loadingOHIFMark,
 
   /** Tools */
   'tool-zoom': toolZoom,

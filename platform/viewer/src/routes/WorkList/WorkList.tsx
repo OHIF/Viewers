@@ -25,6 +25,7 @@ import {
   useModal,
   AboutModal,
   UserPreferences,
+  LoadingIndicator,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -461,7 +462,7 @@ function WorkList({
         </>
       ) : (
         <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies isLoading={isLoadingData} />
+          {isLoadingData ? <LoadingIndicator /> : <EmptyStudies />}
         </div>
       )}
     </div>
@@ -493,7 +494,7 @@ const defaultFilterValues = {
 };
 
 function _tryParseInt(str, defaultValue) {
-  var retValue = defaultValue;
+  let retValue = defaultValue;
   if (str !== null) {
     if (str.length > 0) {
       if (!isNaN(str)) {

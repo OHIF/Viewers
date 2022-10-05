@@ -9,6 +9,7 @@ import {
   AboutModal,
   Header,
   useModal,
+  LoadingIndicator,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -101,6 +102,10 @@ function ViewerLayout({
   const { t } = useTranslation();
   const { show, hide } = useModal();
 
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(true);
+
+  const { HangingProtocolService } = servicesManager.services;
+
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
   const buildNumber = process.env.BUILD_NUM;
@@ -186,6 +191,23 @@ function ViewerLayout({
     };
   };
 
+  useEffect(() => {
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
+
+      // Todo: right now to set the loading indicator to false, we need to wait for the
+      // HangingProtocolService to finish applying the viewport matching to each viewport,
+      // however, this might not be the only approach to set the loading indicator to false. we need to explore this further.
+      ({ progress }) => {
+        setShowLoadingIndicator(progress !== 100);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [HangingProtocolService]);
+
   const getViewportComponentData = viewportComponent => {
     const entry = extensionManager.getModuleEntry(viewportComponent.namespace);
 
@@ -213,40 +235,43 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap"
+        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"
         style={{ height: 'calc(100vh - 52px' }}
       >
-        {/* LEFT SIDEPANELS */}
-        {leftPanelComponents.length ? (
-          <ErrorBoundary context="Left Panel">
-            <SidePanel
-              side="left"
-              activeTabIndex={leftPanelDefaultClosed ? null : 0}
-              tabs={leftPanelComponents}
-            />
-          </ErrorBoundary>
-        ) : null}
-        {/* TOOLBAR + GRID */}
-        <div className="flex flex-col flex-1 h-full">
-          <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black">
-            <ErrorBoundary context="Grid">
-              <ViewportGridComp
-                servicesManager={servicesManager}
-                viewportComponents={viewportComponents}
-                commandsManager={commandsManager}
+        <React.Fragment>
+          {/* LEFT SIDEPANELS */}
+          {leftPanelComponents.length ? (
+            <ErrorBoundary context="Left Panel">
+              <SidePanel
+                side="left"
+                activeTabIndex={leftPanelDefaultClosed ? null : 0}
+                tabs={leftPanelComponents}
               />
             </ErrorBoundary>
+          ) : null}
+          {/* TOOLBAR + GRID */}
+          <div className="flex flex-col flex-1 h-full">
+            <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black">
+              <ErrorBoundary context="Grid">
+                <ViewportGridComp
+                  servicesManager={servicesManager}
+                  viewportComponents={viewportComponents}
+                  commandsManager={commandsManager}
+                />
+              </ErrorBoundary>
+            </div>
           </div>
-        </div>
-        {rightPanelComponents.length ? (
-          <ErrorBoundary context="Right Panel">
-            <SidePanel
-              side="right"
-              activeTabIndex={rightPanelDefaultClosed ? null : 0}
-              tabs={rightPanelComponents}
-            />
-          </ErrorBoundary>
-        ) : null}
+          {rightPanelComponents.length ? (
+            <ErrorBoundary context="Right Panel">
+              <SidePanel
+                side="right"
+                activeTabIndex={rightPanelDefaultClosed ? null : 0}
+                tabs={rightPanelComponents}
+              />
+            </ErrorBoundary>
+          ) : null}
+        </React.Fragment>
+        {showLoadingIndicator && <LoadingIndicator />}
       </div>
     </div>
   );
@@ -271,7 +296,7 @@ ViewerLayout.defaultProps = {
   leftPanels: [],
   rightPanels: [],
   leftPanelDefaultClosed: false,
-  rightPanelDefaultClosed: false,
+  rightPanelDefaultClosed: true,
 };
 
 export default ViewerLayout;

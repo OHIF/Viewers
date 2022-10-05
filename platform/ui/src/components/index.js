@@ -67,6 +67,7 @@ import ViewportOverlay from './ViewportOverlay';
 import InputRange from './InputRange';
 import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
+import LoadingIndicator from './LoadingIndicator';
 
 export {
   AboutModal,
@@ -99,6 +100,7 @@ export {
   ImageScrollbar,
   Label,
   LayoutSelector,
+  LoadingIndicator,
   MeasurementTable,
   Modal,
   NavBar,

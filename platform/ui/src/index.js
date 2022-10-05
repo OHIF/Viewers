@@ -61,6 +61,7 @@ export {
   InputText,
   Label,
   LayoutSelector,
+  LoadingIndicator,
   MeasurementTable,
   Modal,
   NavBar,
