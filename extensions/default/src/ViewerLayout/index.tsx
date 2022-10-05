@@ -221,10 +221,8 @@ function ViewerLayout({
           <ErrorBoundary context="Left Panel">
             <SidePanel
               side="left"
-              defaultComponentOpen={
-                leftPanelDefaultClosed ? null : leftPanelComponents[0].name
-              }
-              childComponents={leftPanelComponents}
+              activeTabIndex={leftPanelDefaultClosed ? null : 0}
+              tabs={leftPanelComponents}
             />
           </ErrorBoundary>
         ) : null}
@@ -244,10 +242,8 @@ function ViewerLayout({
           <ErrorBoundary context="Right Panel">
             <SidePanel
               side="right"
-              defaultComponentOpen={
-                rightPanelDefaultClosed ? null : rightPanelComponents[0].name
-              }
-              childComponents={rightPanelComponents}
+              activeTabIndex={rightPanelDefaultClosed ? null : 0}
+              tabs={rightPanelComponents}
             />
           </ErrorBoundary>
         ) : null}

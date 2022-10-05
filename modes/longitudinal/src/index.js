@@ -152,9 +152,21 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: [
+                tracked.thumbnailList,
+                dicomSeg.panel,
+                tracked.measurements,
+              ],
               // TODO: Should be optional, or required to pass empty array for slots?
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [
+                dicomSeg.panel,
+                tracked.measurements,
+                tracked.thumbnailList,
+                dicomSeg.panel,
+                tracked.measurements,
+                dicomSeg.panel,
+                tracked.measurements,
+              ],
               viewports: [
                 {
                   namespace: tracked.viewport,

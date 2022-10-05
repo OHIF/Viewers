@@ -37,6 +37,7 @@ function getPanelModule({
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurements',
+      secondaryLabel: 'Measurements',
       component: wrappedMeasurementPanel,
     },
   ];

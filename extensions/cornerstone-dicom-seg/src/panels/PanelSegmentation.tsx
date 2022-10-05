@@ -179,7 +179,7 @@ export default function PanelSegmentation({
   };
 
   return (
-    <div className="flex flex-col justify-between h-full invisible-scrollbar">
+    <div className="flex flex-col justify-between invisible-scrollbar ">
       {/* show segmentation table */}
       {segmentations?.length ? (
         <SegmentationGroupTable
