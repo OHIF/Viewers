@@ -48,7 +48,8 @@ export default function addMeasurement(
   // Create Cornerstone3D Annotation from measurement
   const frameNumber =
     (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence.ReferencedFrameNumber) ||
+      measurement.coords[0].ReferencedSOPSequence[0] &&
+      measurement.coords[0].ReferencedSOPSequence[0].ReferencedFrameNumber) ||
     1;
 
   const SRAnnotation: Types.Annotation = {
