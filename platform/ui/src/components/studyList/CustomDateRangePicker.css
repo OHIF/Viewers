@@ -44,7 +44,7 @@ is not yet selected. Edits the dates between your mouse and said date */
 .DateRangePickerInput {
   width: calc(100% - 10px); /* Just use padding? */
   background-color: var(--datePicker-input-background);
-  border-color: var(--datePicker-input-background);
+  border-color: grey;
   color: var(--datePicker-picker-text-input);
   height: 40px;
 }

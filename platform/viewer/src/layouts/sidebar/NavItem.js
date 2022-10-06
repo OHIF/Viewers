@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { NavLink as RouterLink } from "react-router-dom";
-import PropTypes from "prop-types";
+import React, { useState } from 'react';
+import { NavLink as RouterLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const NavItem = ({ className, href, open: openProp, title, ...rest }) => {
   const [open, setOpen] = useState(openProp);
 
   const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
+    setOpen(prevOpen => !prevOpen);
   };
 
   return (
@@ -14,19 +14,19 @@ const NavItem = ({ className, href, open: openProp, title, ...rest }) => {
       <RouterLink exact to={href}>
         <div
           style={{
-            border: "2px solid #ccc",
-            padding: "8px",
-            marginBottom: "10px",
-            borderRadius: "5px",
+            borderBottom: '1px solid #ffffff41',
+            padding: '8px',
+            marginBottom: '10px',
           }}
         >
-          <h2
+          <h3
             style={{
-              color: "grey",
+              // color: 'grey',
+              fontWeight: '700',
             }}
           >
             {title}
-          </h2>
+          </h3>
         </div>
       </RouterLink>
     </div>

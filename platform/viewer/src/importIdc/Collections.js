@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { CollectionList } from './CollectionList';
 import { setCollections } from '../../../core/src/redux/actions';
 import { applyPagination, _sortCollections } from './utils';
+import { radcadapi } from '../utils/constants';
 
 function applySort(sort, collections = []) {
   const sortFieldName = sort.fieldName || 'CollectionID';
@@ -95,7 +96,7 @@ function Collections(props) {
         };
 
         const response = await fetch(
-          `https://radcadapi.thetatech.ai/tcia-collections`,
+          `${radcadapi}/tcia-collections`,
           requestOptions
         );
         let result = await response.json();

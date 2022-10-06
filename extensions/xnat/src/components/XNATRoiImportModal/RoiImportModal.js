@@ -37,14 +37,15 @@ const getVolumeImportedContourCollectionLabels = () => {
 };
 
 const ImportCollectionContainer = props => {
-  const {
-    rois,
-    type,
-    selectedRois,
-    setSelectedRois,
-  } = props;
+  const { rois, type, selectedRois, setSelectedRois } = props;
   return (
-    <div className="importCollectionContainer">
+    <div
+      className="importCollectionContainer"
+      style={{
+        background: 'black',
+        zIndex: '12321',
+      }}
+    >
       <table className="collectionTable">
         <thead>
           <tr>
@@ -133,7 +134,8 @@ const RoiImportModal = ({ rois, type, seriesInfo, onClose }) => {
         {type === 'mask' && (
           <div style={{ marginRight: 'auto', width: 230 }}>
             <p className="warningMessage" style={{ margin: 0 }}>
-              <Icon name="exclamation-triangle" /> Importing another mask-collection will overwrite existing data.
+              <Icon name="exclamation-triangle" /> Importing another
+              mask-collection will overwrite existing data.
             </p>
           </div>
         )}
@@ -166,7 +168,9 @@ const RoiImportModal = ({ rois, type, seriesInfo, onClose }) => {
                   selectedRois.includes(index)
                 );
                 setImporting(true);
-                importContourRoiCollections(collectionsToParse, {
+                importContourRoiCollections(
+                  collectionsToParse,
+                  {
                     updateImportingText: setProgressText,
                     onImportComplete: onClose,
                     updateProgress: setImportProgress,

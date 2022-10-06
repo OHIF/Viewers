@@ -13,6 +13,7 @@ import ExpandableToolMenu from '../../../../../ui/src/viewer/ExpandableToolMenu'
 import circularLoading from '../../ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import { useLottie } from 'lottie-react';
 import eventBus from '../../../lib/eventBus';
+import { radcadapi } from '../../../utils/constants';
 
 const RenderSimilarityResult = ({ data, imgDimensions }) => {
   return (
@@ -164,7 +165,7 @@ const SearchDetails = props => {
   const access_token = user.access_token;
 
   const client = axios.create({
-    baseURL: 'https://radcadapi.thetatech.ai',
+    baseURL: radcadapi,
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -201,7 +202,6 @@ const SearchDetails = props => {
     setElement(element);
 
     // retrieving rectangle tool roi data from element
-
     let tool_data = localStorage.getItem('mask');
     tool_data =
       tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
@@ -209,7 +209,7 @@ const SearchDetails = props => {
     // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     if (tool_data) {
       // if (tool_data && tool_data.data.length > 0) {
-      setToolData(tool_data);
+      // setToolData(tool_data.data[0]);
 
       let startX = parseInt(tool_data.handles.start.x.toFixed(2));
       let startY = parseInt(tool_data.handles.start.y.toFixed(2));
@@ -290,7 +290,6 @@ const SearchDetails = props => {
   const triggerJob = () => {
     // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     // const data = tool_data.data[0];
-
     let tool_data = localStorage.getItem('mask');
     tool_data =
       tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
@@ -356,6 +355,7 @@ const SearchDetails = props => {
 
         if (currJob && currJob.status === 'DONE') {
           console.log('found job');
+
           res({ currJob, jobList: response.data.results });
         } else {
           console.log('waiting to retry');
@@ -372,6 +372,10 @@ const SearchDetails = props => {
   };
 
   const sendParams = async data => {
+    const radiomicsDone = JSON.parse(
+      localStorage.getItem('radiomicsDone') || 0
+    );
+
     setLoadingState('searching', { data });
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
@@ -471,7 +475,7 @@ const SearchDetails = props => {
           <img
             src={similarityResultState.query}
             style={{
-              width: 200,
+              width: '100%',
               height: 200,
               marginBottom: 20,
               border: '2.55px solid green',

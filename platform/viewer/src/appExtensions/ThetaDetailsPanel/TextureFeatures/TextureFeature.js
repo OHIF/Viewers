@@ -6,6 +6,7 @@ import axios from 'axios';
 import { JobsContext } from '../../../context/JobsContext';
 import circularLoading from './utils/circular-loading.json';
 import { useLottie } from 'lottie-react';
+import { radcadapi } from '../../../utils/constants';
 
 const TextureFeature = props => {
   const [jobs, setJobs] = React.useState([]);
@@ -30,7 +31,7 @@ const TextureFeature = props => {
   const { View: Loader } = useLottie(options);
 
   const client = axios.create({
-    baseURL: 'https://radcadapi.thetatech.ai',
+    baseURL: radcadapi,
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -86,7 +87,7 @@ const TextureFeature = props => {
 
   return (
     <div className="component">
-      <div className="title-header">Texture Features</div>
+      {/* <div className="title-header">Texture Features</div> */}
 
       {isLoading && <div className="loader">{Loader}</div>}
 

@@ -13,11 +13,11 @@ export const navConfig = [
     href: '/studylist',
   },
   {
-    title: 'Uplouder',
+    title: 'Upload Dicom',
     href: '/uplouder',
   },
   {
-    title: 'user ',
+    title: 'User',
     href: '/profile',
   },
 ];
@@ -76,23 +76,34 @@ const Sidebar = ({ onMobileClose, onMobileNavOpen, openMobile }) => {
         display: 'flex',
         justifyContent: 'space-between',
         flexDirection: 'column',
-        height: '80%',
+        height: '100%',
       }}
     >
-      <div style={{}}>
+      <div
+        style={{
+          flex: 1,
+        }}
+      >
         <div
           style={{
             marginBottom: '2rem',
           }}
         >
           <RouterLink to="/">
-            <h2
-              style={{
-                color: 'grey',
-              }}
-            >
-              ThetaTech
-            </h2>
+            <div style={{}}>
+              <h2
+                style={{
+                  fontweight: '400',
+                  // fontSize: '24px',
+                  borderRadius: '4px',
+                  padding: '4px',
+                  // marginRight: '80px',
+                  border: '1px #878787 solid',
+                }}
+              >
+                Thetatech
+              </h2>
+            </div>
           </RouterLink>
         </div>
         <div>
@@ -104,8 +115,8 @@ const Sidebar = ({ onMobileClose, onMobileNavOpen, openMobile }) => {
       </div>
 
       <div style={{}}>
-        <button onClick={handleLogout} className="primary-btn">
-          Log out{' '}
+        <button onClick={handleLogout} className="btn btn-danger pull-right">
+          Log out
         </button>
       </div>
     </div>
@@ -116,6 +127,7 @@ const Sidebar = ({ onMobileClose, onMobileNavOpen, openMobile }) => {
       <div
         className={classNames('main__menu--bar', {
           expand: openMobile,
+          // expand: openMobile,
         })}
       >
         <a

@@ -262,19 +262,19 @@ class ToolbarRow extends Component {
             />
           </div> */}
           {buttonComponents}
-          <ConnectedLayoutButton />
+          {inEditSegmentationMode && <ConnectedLayoutButton />}
           <div
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}
           >
             {/* {this.buttonGroups.right.length && ( */}
-            {inEditSegmentationMode && this.buttonGroups.right.length && (
+            {/* {inEditSegmentationMode && this.buttonGroups.right.length && (
               <RoundedButtonGroup
                 options={this.buttonGroups.right}
                 value={this.props.selectedRightSidePanel || ''}
                 onValueChanged={onPressRight}
               />
-            )}
+            )} */}
           </div>
         </div>
       </>

@@ -7,6 +7,7 @@ import timepointManager from './timepointManager';
 import viewports from './viewports';
 import collections from './collections';
 import steps from './steps';
+import selectionMask from './selectionMask';
 
 const reducers = {
   extensions,
@@ -18,6 +19,7 @@ const reducers = {
   viewports,
   collections,
   steps,
+  selectionMask,
 };
 
 export default reducers;

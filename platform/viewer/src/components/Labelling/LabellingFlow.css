@@ -6,7 +6,8 @@
   max-height: 500px;
 }
 
-.labellingComponent .selectedLabel, .labellingComponent .selectedDescription {
+.labellingComponent .selectedLabel,
+.labellingComponent .selectedDescription {
   padding: 5px;
   background-color: white;
   width: 150px;
@@ -77,20 +78,24 @@
   border: none;
 }
 
-.labellingComponent.editDescription .locationDescriptionWrapper #descriptionInput {
+.labellingComponent.editDescription
+  .locationDescriptionWrapper
+  #descriptionInput {
   visibility: visible;
 }
 
 .labellingComponent.editDescription .location {
-  color: #337ab7;
+  color: #00c7ee;
 }
 
-.labellingComponent .commonButtons, .labellingComponent.editDescription .editDescriptionButtons {
+.labellingComponent .commonButtons,
+.labellingComponent.editDescription .editDescriptionButtons {
   display: block;
   margin-left: 55px;
 }
 
-.labellingComponent.editDescription .commonButtons, .labellingComponent .editDescriptionButtons {
+.labellingComponent.editDescription .commonButtons,
+.labellingComponent .editDescriptionButtons {
   display: none;
 }
 
@@ -109,7 +114,7 @@
 
 .labellingComponent .checkIconWrapper {
   display: inline-block;
-  background-color: #337ab7;
+  background-color: #00c7ee;
   border-radius: 46px;
   width: 46px;
   height: 46px;

@@ -23,13 +23,25 @@ import SidePanel from '../components/SidePanel';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
 import eventBus from '../lib/eventBus';
+import { Icon } from '../../../ui/src/elements/Icon';
+import { radcadapi } from '../utils/constants';
 
 const RadiomicSummary = () => {
+  const printDiv = () => {
+    // e.preventDefault();
+    // const bodyElement = document.getElementsByTagName('body')[0];
+    // bodyElement.classList.add('printing');
+    // const exporter = new html2pdf(bodyElement, { filename: 'NotaSimple.pdf' });
+    // exporter.getPdf(true);
+    // bodyElement.classList.remove('printing');
+  };
+
   return (
     <div
       style={{
         width: '100%',
-        background: '#ffffff0d',
+        background: '#000000',
+        borderRadius: '8px',
         padding: '20px',
       }}
     >
@@ -62,18 +74,33 @@ const RadiomicSummary = () => {
             justifyContent: 'flex-start',
           }}
         >
-          <h2 className="cad">Patient ID : </h2>
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Patient ID :{' '}
+          </h2>
           <h2>abc123 </h2>
         </div>
         <div
           className=""
           style={{
             display: 'flex',
+            marginTop: 12,
             flexDirection: 'row',
             justifyContent: 'flex-start',
           }}
         >
-          <h2 className="cad">Classifier: </h2>
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Classifier:{' '}
+          </h2>
           <h2>Resnet-18 </h2>
         </div>
 
@@ -81,11 +108,19 @@ const RadiomicSummary = () => {
           className=""
           style={{
             display: 'flex',
+            marginTop: 12,
             flexDirection: 'row',
             justifyContent: 'flex-start',
           }}
         >
-          <h2 className="cad">Prediction: </h2>
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Prediction:{' '}
+          </h2>
           <h2>Necrosis</h2>
         </div>
 
@@ -94,23 +129,38 @@ const RadiomicSummary = () => {
           style={{
             display: 'flex',
             flexDirection: 'row',
+            marginTop: 12,
             justifyContent: 'flex-start',
           }}
         >
-          <h2 className="cad">Confidence: </h2>
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Confidence:{' '}
+          </h2>
           <h2>81%</h2>
         </div>
 
-        <div className="" style={{}}>
+        <div
+          className=""
+          style={{
+            marginTop: 12,
+          }}
+        >
           <button
-            style={{
-              marginTop: '20px',
-              border: '1px yellow solid',
-              fontSize: '24px',
-              background: 'black',
-              color: 'white',
-              padding: '12px',
-            }}
+            onClick={printDiv}
+            // style={{
+            //   marginTop: '20px',
+            //   border: '1px yellow solid',
+            //   fontSize: '24px',
+            //   background: 'black',
+            //   color: 'white',
+            //   padding: '12px',
+            // }}
+            className="btn btn-primary btn-large"
           >
             Print To PDF
           </button>
@@ -134,7 +184,8 @@ const Morphology = () => {
         width: '100%',
         height: '100%',
         padding: '20px',
-        background: '#ffffff0d',
+        borderRadius: '8px',
+        background: '#000000',
       }}
     >
       <div className="">
@@ -232,46 +283,46 @@ class Radiomics extends Component {
     isEditSelection: true,
   };
 
-  onCornerstageLoaded = event => {
+  onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
-      // const { EVENTS } = cornerstoneTools;
-      // const view_ports = cornerstone.getEnabledElements();
-      // const viewports = view_ports[0];
+      const enabledElement = enabledEvt.detail.element;
 
-      // const element = getEnabledElement(view_ports.indexOf(viewports));
-      // if (element) {
-      //   element.addEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
-      //     console.log('measurement completed', event);
-      //   });
-      // }
+      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      tool_data =
+        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      if (enabledElement && tool_data) {
+        let viewport = cornerstone.getViewport(enabledElement);
+        if (tool_data.x) viewport.translation.x = tool_data.x;
+        if (tool_data.y) viewport.translation.y = tool_data.y;
+        if (tool_data.scale) viewport.scale = tool_data.scale;
+        if (tool_data.voi) viewport.voi = tool_data.voi;
+        cornerstone.setViewport(enabledElement, viewport);
+      }
 
       this.handleSidePanelChange('right', 'theta-details-panel');
       this.handleSidePanelChange('left', 'lung-module-similarity-panel');
+
+      //  handle radiomicsDone
+      const radiomicsDone = JSON.parse(
+        localStorage.getItem('radiomicsDone') || 0
+      );
+      this.setState({
+        isComplete: radiomicsDone == 1 ? true : false,
+      });
       this.triggerReload();
-    }, 5000);
+    }, 2000);
   };
 
   componentWillUnmount() {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
-    try {
-      const view_ports = cornerstone.getEnabledElements();
-      const viewports = view_ports[0];
-      const element = getEnabledElement(view_ports.indexOf(viewports));
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    if (element)
       cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
-    } catch (error) {}
 
-    // const { EVENTS } = cornerstoneTools;
-    // const view_ports = cornerstone.getEnabledElements();
-    // const viewports = view_ports[0];
-
-    // const element = getEnabledElement(view_ports.indexOf(viewports));
-    // if (element) {
-    //   element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
-    //     console.log('measurement completed', event);
-    //   });
-    // }
     cornerstone.events.removeEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
@@ -402,7 +453,7 @@ class Radiomics extends Component {
         };
 
         const response = await fetch(
-          `https://radcadapi.thetatech.ai/series?study=${studyInstanceUID}`,
+          `${radcadapi}/series?study=${studyInstanceUID}`,
           requestOptions
         );
         const result = await response.json();
@@ -422,8 +473,10 @@ class Radiomics extends Component {
 
   triggerReload() {
     setTimeout(() => {
-      document.getElementById('trigger').click();
-    }, 2000);
+      try {
+        document.getElementById('trigger').click();
+      } catch (error) {}
+    }, 5000);
     // if (window && window.parent) {
     //   window.parent.postMessage(
     //     {
@@ -564,7 +617,7 @@ class Radiomics extends Component {
 
     const text = '';
     return (
-      <>
+      <div style={{}}>
         <JobsContextUtil
           series={
             this.props.studies && this.props.studies.length > 0
@@ -574,14 +627,33 @@ class Radiomics extends Component {
           overlay={false}
           instance={text}
         />
+        {/* {false && ( */}
+        {!this.state.isComplete && (
+          <div
+            style={{
+              width: '100%',
+              height: '70vh',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {/* <div className="loading-image"> */}
+            <Icon name="circle-notch" className="icon-spin" />
+            {/* </div> */}
+          </div>
+        )}
 
         <div
+          className="printView"
           style={{
             paddingBottom: 140,
+            display: this.state.isComplete ? 'block' : 'none',
           }}
         >
-          {/* <div className="container">
-            <div className="container-item">
+          <div className="container">
+            {/* <div className="container-item">
               <button className="btn btn-danger" onClick={this.handleBack}>
                 Edit Mask Selection
               </button>
@@ -591,18 +663,68 @@ class Radiomics extends Component {
               >
                 toggleSegmentations
               </button>
-            </div>
-          </div> */}
+            </div> */}
+          </div>
           <div className="container">
             <div className="container-item">
-              <RadiomicSummary />
+              <RadiomicSummary
+                generatePdf={() => {
+                  console.log('replace radiomics here');
+                }}
+              />
+              {/* RIGHT */}
+              <div
+                style={{
+                  marginTop: '20px',
+                  width: '100%',
+                  borderRadius: '8px',
+                  background: '#000000',
+                  padding: '20px',
+                }}
+              >
+                <div>
+                  <h1
+                    style={{
+                      textAlign: 'left',
+                      margin: 0,
+                    }}
+                  >
+                    Similarity Looking Scans
+                  </h1>
+
+                  {/* <button
+                    className="btn btn-primary"
+                    onClick={() => document.getElementById('trigger').click()}
+                  >
+                    reload
+                  </button> */}
+                </div>
+
+                <ErrorBoundaryDialog context="RightSidePanel">
+                  <div>
+                    {SimilarScans && (
+                      <SimilarScans
+                        isOpen={true}
+                        viewports={this.props.viewports}
+                        studies={this.props.studies}
+                        activeIndex={this.props.activeViewportIndex}
+                        activeViewport={
+                          this.props.viewports[this.props.activeViewportIndex]
+                        }
+                        getActiveViewport={this._getActiveViewport}
+                      />
+                    )}
+                  </div>
+                </ErrorBoundaryDialog>
+              </div>
             </div>
             <div className="container-item-extra">
               {/* VIEWPORTS + SIDEPANELS */}
               <div
                 style={{
                   width: '100%',
-                  background: '#ffffff0d',
+                  background: '#000000',
+                  borderRadius: '8px',
                   padding: '20px',
                 }}
               >
@@ -660,51 +782,9 @@ class Radiomics extends Component {
             </div>
           </div>
           <div className="container">
-            <div className="container-item">
-              {/* RIGHT */}
-              <div
-                style={{
-                  width: '100%',
-                  background: '#ffffff0d',
-                  padding: '20px',
-                }}
-              >
-                <div>
-                  <h1
-                    style={{
-                      textAlign: 'left',
-                      margin: 0,
-                    }}
-                  >
-                    Similarity Looking Scans
-                  </h1>
+            {/* <div className="container-item">
 
-                  {/* <button
-                    className="btn btn-primary"
-                    onClick={() => document.getElementById('trigger').click()}
-                  >
-                    reload
-                  </button> */}
-                </div>
-
-                <ErrorBoundaryDialog context="RightSidePanel">
-                  <div>
-                    {SimilarScans && (
-                      <SimilarScans
-                        isOpen={true}
-                        viewports={this.props.viewports}
-                        studies={this.props.studies}
-                        activeIndex={this.props.activeViewportIndex}
-                        activeViewport={
-                          this.props.viewports[this.props.activeViewportIndex]
-                        }
-                        getActiveViewport={this._getActiveViewport}
-                      />
-                    )}
-                  </div>
-                </ErrorBoundaryDialog>
-              </div>
-            </div>
+            </div> */}
             <div className="container-item">
               <Morphology />
             </div>
@@ -716,7 +796,7 @@ class Radiomics extends Component {
 
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">{/* LEFT */}</div>
-      </>
+      </div>
     );
   }
 }

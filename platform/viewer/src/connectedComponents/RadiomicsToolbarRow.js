@@ -222,10 +222,7 @@ class RadiomicsToolbarRow extends Component {
 
     return (
       <>
-        <div className="ToolbarRow">
-          {buttonComponents}
-          <ConnectedLayoutButton />
-        </div>
+        <div className="ToolbarRow">{buttonComponents}</div>
       </>
     );
   }

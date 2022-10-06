@@ -53,60 +53,69 @@ function LoginPage({}) {
     <div
       className="App"
       style={{
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--ui-gray-darker)',
         minHeight: '100vh',
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#000',
+        // flexDirection: 'column',
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        color: '#fff',
         width: '100%',
       }}
     >
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
+          width: '100%',
+          position: 'fixed',
           alignItems: 'center',
-          justifyContent: 'space-around',
-          minHeight: '80vh',
-          color: '#000',
+          top: 0,
+          left: 0,
+          padding: '16px 16px 16px 15px',
+          flexDirection: 'row',
+          zIndex: 9,
         }}
       >
-        <div>
-          <div>
-            <h1
-              style={{
-                color: '#000',
-                fontSize: '4.4rem',
-              }}
-            >
-              RadCad
-            </h1>
-          </div>
-          <div style={{}}>
-            <h4
-              style={{
-                color: '#000',
-                textAlign: 'center',
-              }}
-            >
-              By CCIPD
-            </h4>
-          </div>
-          <div>
-            <h3
-              style={{
-                color: '#000',
-                textAlign: 'center',
-              }}
-            >
-              https://radcad.thetatech.ai{' '}
-            </h3>
+        <div
+          style={{
+            color: '#fff',
+            // flex: 1,
+          }}
+        >
+          <div
+            style={{
+              fontweight: '400',
+              marginLeft: '45px',
+              fontSize: '22px',
+              paddingTop: '6px',
+              paddingBottom: '6px',
+              paddingLeft: '18px',
+              paddingRight: '18px',
+              display: 'flex',
+              border: '1px #878787 solid',
+              borderRadius: '4px',
+              flexDirection: 'row',
+              letterSpacing: '-0.05em',
+              lineHeight: '31px',
+            }}
+          >
+            <h4>Thetatech</h4>
           </div>
         </div>
+      </div>
 
-        <div
+      <div
+        style={{
+          flex: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          // margin: '20px',
+          // minHeight: '80vh',
+        }}
+      >
+        {/* <div
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -131,6 +140,58 @@ function LoginPage({}) {
             login
           </button>
         </div>
+
+        <div>
+          <div>
+            <h1
+              style={{
+                fontSize: '4.4rem',
+              }}
+            >
+              RadCad
+            </h1>
+          </div>
+        </div> */}
+      </div>
+
+      <div
+        style={{
+          flex: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          // minHeight: '100vh',
+          backgroundColor: 'black',
+          borderRadius: '10px',
+          // padding: '80px',
+          margin: '20px',
+          color: '#fff',
+        }}
+      >
+        <div>
+          <div>
+            <h1
+              style={{
+                color: '#fff',
+                fontSize: '4.4rem',
+              }}
+            >
+              Login
+            </h1>
+          </div>
+        </div>
+
+        <button
+          onClick={handleLoginComponent}
+          className="btn btn-primary"
+          style={{
+            width: '80%',
+            fontweight: 'bold',
+          }}
+        >
+          login
+        </button>
       </div>
     </div>
   );

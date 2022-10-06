@@ -12,6 +12,7 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
+import { radcadapi } from '../../../utils/constants';
 
 const Jobs = ({
   data,
@@ -54,7 +55,7 @@ const Jobs = ({
 
   // setting up client for API requests (centralize this client)
   const client = axios.create({
-    baseURL: 'https://radcadapi.thetatech.ai',
+    baseURL: radcadapi,
     timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -76,6 +77,7 @@ const Jobs = ({
 
     if (statusRef.current === 'RUNNING' && data.status === 'DONE') {
       cornerstone.imageCache.purgeCache();
+      localStorage.setItem('radiomicsDone', JSON.stringify(1));
       window.location.reload();
     }
   }, [data.status]);
