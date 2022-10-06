@@ -42,7 +42,7 @@ const RadionicRouting = asyncComponent(() =>
 const SelectMaskRouting = asyncComponent(() =>
   retryImport(() =>
     import(
-      /* webpackChunkName: "ViewerRouting" */ './routes/RadiomicsReportRouting.js'
+      /* webpackChunkName: "ViewerRouting" */ './routes/SelectMaskRouting.js'
     )
   )
 );
@@ -256,26 +256,6 @@ class OHIFStandaloneViewer extends Component {
           '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
         component: RadionicRouting,
       },
-
-      // {
-      //   path: '/radionics',
-      //   layout: DashboardLayout,
-      //   routes: [
-      //     {
-      //       exact: false,
-      //       path:
-      //         '/radionics/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      //       component: SelectMaskRouting,
-      //     },
-      //     {
-      //       exact: false,
-      //       path:
-      //         '/radionics/report/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-
-      //       component: RadionicRouting,
-      //     },
-      //   ],
-      // },
 
       {
         exact: true,
