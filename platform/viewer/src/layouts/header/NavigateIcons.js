@@ -20,13 +20,20 @@ const NavigateIcons = () => {
     else if (activeStep === 4)
       pathname = location.pathname.replace('edit', 'selectmask');
     else if (activeStep === 5) {
-      pathname = location.pathname.replace('selectmask', 'radionics');
+      let tool_data = localStorage.getItem('mask');
+      tool_data =
+        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      if (tool_data)
+        pathname = location.pathname.replace('selectmask', 'radionics');
+      else {
+        // notify user here
+      }
     }
     if (pathname) history.push(pathname);
   };
 
   const handleBack = () => {
-    let pathname = null;
+    let pathname = '';
     if (activeStep === 2) pathname = '/studylist';
     else if (activeStep === 3)
       pathname = location.pathname.replace('nnunet', 'view');
@@ -35,14 +42,7 @@ const NavigateIcons = () => {
     else if (activeStep === 5)
       pathname = location.pathname.replace('selectmask', 'edit');
     else if (activeStep === 6) {
-      let tool_data = localStorage.getItem('mask');
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      if (tool_data)
-        pathname = location.pathname.replace('radionics', 'selectmask');
-      else {
-        // notifiy user here
-      }
+      pathname = location.pathname.replace('radionics', 'selectmask');
     }
     if (pathname) history.push(pathname);
   };
