@@ -212,13 +212,12 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     newDisplaySet
   );
 
-  for (let i = 0; i < imageIdsForDisplaySet.length; i++) {
+  for (const imageId of imageIdsForDisplaySet) {
     if (!unloadedMeasurements.length) {
       // All measurements loaded.
       return;
     }
 
-    const imageId = imageIdsForDisplaySet[i];
     const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(
       imageId
     );
