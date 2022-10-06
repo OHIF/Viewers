@@ -28,13 +28,12 @@ import { radcadapi } from '../utils/constants';
 
 const RadiomicSummary = () => {
   const printDiv = () => {
-    e.preventDefault();
-    const bodyElement = document.getElementsByTagName('body')[0];
-
-    bodyElement.classList.add('printing');
-    const exporter = new html2pdf(bodyElement, { filename: 'NotaSimple.pdf' });
-    exporter.getPdf(true);
-    bodyElement.classList.remove('printing');
+    // e.preventDefault();
+    // const bodyElement = document.getElementsByTagName('body')[0];
+    // bodyElement.classList.add('printing');
+    // const exporter = new html2pdf(bodyElement, { filename: 'NotaSimple.pdf' });
+    // exporter.getPdf(true);
+    // bodyElement.classList.remove('printing');
   };
 
   return (
