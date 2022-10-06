@@ -420,20 +420,17 @@ function _jumpToMeasurement(
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
     const viewport = enableElement.viewport as IStackViewport | IVolumeViewport;
     const { imageIds } = viewport;
-    let imageIdIndex;
 
-    for (let i = 0; i < imageIds.length; i++) {
+    const imageIdIndex = imageIds.findIndex(imageId => {
       const {
         SOPInstanceUID: SOPInstanceUID1,
         frameNumber: frameNumber1,
-      } = getSOPInstanceAttributes(imageIds[i]);
-      if (
-        SOPInstanceUID1 == SOPInstanceUID &&
+      } = getSOPInstanceAttributes(imageId);
+      return (
+        SOPInstanceUID1 === SOPInstanceUID &&
         (!frameNumber || frameNumber == frameNumber1)
-      ) {
-        imageIdIndex = i;
-      }
-    }
+      );
+    });
 
     cs3DTools.utilities.jumpToSlice(targetElement, {
       imageIndex: imageIdIndex,
