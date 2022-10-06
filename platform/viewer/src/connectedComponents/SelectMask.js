@@ -22,6 +22,7 @@ import ToolbarRow from './RadiomicsToolbarRow';
 import SidePanel from '../components/SidePanel';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 import { radcadapi } from '../utils/constants';
+import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
 
 class SelectMask extends Component {
   static propTypes = {
@@ -135,6 +136,11 @@ class SelectMask extends Component {
     //     console.log('measurement completed', event);
     //   });
     // }
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    if (enabledElement)
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
+        enabledElement
+      );
 
     cornerstone.events.removeEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
@@ -214,6 +220,7 @@ class SelectMask extends Component {
 
     this.handleFetchAndSetSeries(rest.studyInstanceUIDs[0]);
     localStorage.setItem('radiomicsDone', JSON.stringify(0));
+    localStorage.setItem('mask', null);
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,

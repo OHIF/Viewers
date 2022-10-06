@@ -184,6 +184,7 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
         );
       }
     } catch (error) {
+      handleOnSuccess();
       console.log(error);
     }
   };
