@@ -112,7 +112,8 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
-      SeriesInstanceUID
+      SeriesInstanceUID,
+      frameNumber
     );
 
     const { SeriesNumber } = displaySet;
