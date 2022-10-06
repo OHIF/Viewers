@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Viewer from './RadiomicsReport';
+import Viewer from './SelectMask';
 import OHIF from '@ohif/core';
 
 const { setTimepoints, setMeasurements } = OHIF.redux.actions;
@@ -30,9 +30,9 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedViewer = connect(
+const ConnectedSelectMask = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Viewer);
 
-export default ConnectedViewer;
+export default ConnectedSelectMask;

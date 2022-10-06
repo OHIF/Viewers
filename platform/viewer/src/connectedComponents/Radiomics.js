@@ -16,6 +16,7 @@ import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
 // import * as html2pdf from 'html2pdf.js';
+import Pdf from 'react-to-pdf';
 
 import './Viewer.css';
 import JobsContextUtil from './JobsContextUtil.js';
@@ -27,7 +28,7 @@ import eventBus from '../lib/eventBus';
 import { Icon } from '../../../ui/src/elements/Icon';
 import { radcadapi } from '../utils/constants';
 
-const RadiomicSummary = () => {
+const RadiomicSummary = ({ generatePdf }) => {
   const printDiv = () => {
     // e.preventDefault();
     const bodyElement = document.getElementsByTagName('body')[0];
@@ -153,7 +154,7 @@ const RadiomicSummary = () => {
           }}
         >
           <button
-            onClick={printDiv}
+            onClick={generatePdf}
             // style={{
             //   marginTop: '20px',
             //   border: '1px yellow solid',
@@ -619,43 +620,45 @@ class Radiomics extends Component {
 
     const text = '';
     return (
-      <div style={{}}>
-        <JobsContextUtil
-          series={
-            this.props.studies && this.props.studies.length > 0
-              ? this.props.studies[0].series
-              : []
-          }
-          overlay={false}
-          instance={text}
-        />
-        {/* {false && ( */}
-        {!this.state.isComplete && (
-          <div
-            style={{
-              width: '100%',
-              height: '70vh',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {/* <div className="loading-image"> */}
-            <Icon name="circle-notch" className="icon-spin" />
-            {/* </div> */}
-          </div>
-        )}
+      <ReactToPdf>
+        {({ toPdf, targetRef }) => (
+          <div style={{}} ref={targetRef}>
+            <JobsContextUtil
+              series={
+                this.props.studies && this.props.studies.length > 0
+                  ? this.props.studies[0].series
+                  : []
+              }
+              overlay={false}
+              instance={text}
+            />
+            {/* {false && ( */}
+            {!this.state.isComplete && (
+              <div
+                style={{
+                  width: '100%',
+                  height: '70vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {/* <div className="loading-image"> */}
+                <Icon name="circle-notch" className="icon-spin" />
+                {/* </div> */}
+              </div>
+            )}
 
-        <div
-          className="printView"
-          style={{
-            paddingBottom: 140,
-            display: this.state.isComplete ? 'block' : 'none',
-          }}
-        >
-          <div className="container">
-            {/* <div className="container-item">
+            <div
+              className="printView"
+              style={{
+                paddingBottom: 140,
+                display: this.state.isComplete ? 'block' : 'none',
+              }}
+            >
+              <div className="container">
+                {/* <div className="container-item">
               <button className="btn btn-danger" onClick={this.handleBack}>
                 Edit Mask Selection
               </button>
@@ -666,100 +669,42 @@ class Radiomics extends Component {
                 toggleSegmentations
               </button>
             </div> */}
-          </div>
-          <div className="container">
-            <div className="container-item">
-              <RadiomicSummary />
-              {/* RIGHT */}
-              <div
-                style={{
-                  marginTop: '20px',
-                  width: '100%',
-                  borderRadius: '8px',
-                  background: '#000000',
-                  padding: '20px',
-                }}
-              >
-                <div>
-                  <h1
+              </div>
+              <div className="container">
+                <div className="container-item">
+                  <RadiomicSummary generatePdf={toPdf} />
+                  {/* RIGHT */}
+                  <div
                     style={{
-                      textAlign: 'left',
-                      margin: 0,
+                      marginTop: '20px',
+                      width: '100%',
+                      borderRadius: '8px',
+                      background: '#000000',
+                      padding: '20px',
                     }}
                   >
-                    Similarity Looking Scans
-                  </h1>
+                    <div>
+                      <h1
+                        style={{
+                          textAlign: 'left',
+                          margin: 0,
+                        }}
+                      >
+                        Similarity Looking Scans
+                      </h1>
 
-                  {/* <button
+                      {/* <button
                     className="btn btn-primary"
                     onClick={() => document.getElementById('trigger').click()}
                   >
                     reload
                   </button> */}
-                </div>
-
-                <ErrorBoundaryDialog context="RightSidePanel">
-                  <div>
-                    {SimilarScans && (
-                      <SimilarScans
-                        isOpen={true}
-                        viewports={this.props.viewports}
-                        studies={this.props.studies}
-                        activeIndex={this.props.activeViewportIndex}
-                        activeViewport={
-                          this.props.viewports[this.props.activeViewportIndex]
-                        }
-                        getActiveViewport={this._getActiveViewport}
-                      />
-                    )}
-                  </div>
-                </ErrorBoundaryDialog>
-              </div>
-            </div>
-            <div className="container-item-extra">
-              {/* VIEWPORTS + SIDEPANELS */}
-              <div
-                style={{
-                  width: '100%',
-                  background: '#000000',
-                  borderRadius: '8px',
-                  padding: '20px',
-                }}
-              >
-                <div>
-                  <h1
-                    style={{
-                      textAlign: 'left',
-                      margin: 0,
-                    }}
-                  >
-                    Collage
-                  </h1>
-                </div>
-
-                {/* MAIN */}
-                <div className="container">
-                  <div className="container-item-extra">
-                    <div className={classNames('main-content')}>
-                      <ErrorBoundaryDialog context="ViewerMain">
-                        <ConnectedViewerMain
-                          studies={_removeUnwantedSeries(
-                            this.props.studies,
-                            this.source_series_ref
-                          )}
-                          isStudyLoaded={this.props.isStudyLoaded}
-                        />
-                      </ErrorBoundaryDialog>
-
-                      <div></div>
                     </div>
-                  </div>
 
-                  <div className="container-item">
                     <ErrorBoundaryDialog context="RightSidePanel">
                       <div>
-                        {CollageView && (
-                          <CollageView
+                        {SimilarScans && (
+                          <SimilarScans
                             isOpen={true}
                             viewports={this.props.viewports}
                             studies={this.props.studies}
@@ -773,28 +718,90 @@ class Radiomics extends Component {
                           />
                         )}
                       </div>
-                    </ErrorBoundaryDialog>{' '}
+                    </ErrorBoundaryDialog>
+                  </div>
+                </div>
+                <div className="container-item-extra">
+                  {/* VIEWPORTS + SIDEPANELS */}
+                  <div
+                    style={{
+                      width: '100%',
+                      background: '#000000',
+                      borderRadius: '8px',
+                      padding: '20px',
+                    }}
+                  >
+                    <div>
+                      <h1
+                        style={{
+                          textAlign: 'left',
+                          margin: 0,
+                        }}
+                      >
+                        Collage
+                      </h1>
+                    </div>
+
+                    {/* MAIN */}
+                    <div className="container">
+                      <div className="container-item-extra">
+                        <div className={classNames('main-content')}>
+                          <ErrorBoundaryDialog context="ViewerMain">
+                            <ConnectedViewerMain
+                              studies={_removeUnwantedSeries(
+                                this.props.studies,
+                                this.source_series_ref
+                              )}
+                              isStudyLoaded={this.props.isStudyLoaded}
+                            />
+                          </ErrorBoundaryDialog>
+
+                          <div></div>
+                        </div>
+                      </div>
+
+                      <div className="container-item">
+                        <ErrorBoundaryDialog context="RightSidePanel">
+                          <div>
+                            {CollageView && (
+                              <CollageView
+                                isOpen={true}
+                                viewports={this.props.viewports}
+                                studies={this.props.studies}
+                                activeIndex={this.props.activeViewportIndex}
+                                activeViewport={
+                                  this.props.viewports[
+                                    this.props.activeViewportIndex
+                                  ]
+                                }
+                                getActiveViewport={this._getActiveViewport}
+                              />
+                            )}
+                          </div>
+                        </ErrorBoundaryDialog>{' '}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="container">
-            {/* <div className="container-item">
+              <div className="container">
+                {/* <div className="container-item">
 
             </div> */}
-            <div className="container-item">
-              <Morphology />
+                <div className="container-item">
+                  <Morphology />
+                </div>
+              </div>
             </div>
+
+            {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
+            {/*<StudyPrefetcher studies={this.props.studies} />*/}
+
+            {/* VIEWPORTS + SIDEPANELS */}
+            <div className="FlexboxLayout">{/* LEFT */}</div>
           </div>
-        </div>
-
-        {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
-        {/*<StudyPrefetcher studies={this.props.studies} />*/}
-
-        {/* VIEWPORTS + SIDEPANELS */}
-        <div className="FlexboxLayout">{/* LEFT */}</div>
-      </div>
+        )}
+      </ReactToPdf>
     );
   }
 }

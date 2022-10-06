@@ -9,9 +9,9 @@ import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { extensionManager } from './../App.js';
-import { ReconstructionIssues } from './../../../core/src/enums.js';
+import ErrorBoundaryDialog from '../components/ErrorBoundaryDialog';
+import { extensionManager } from '../App.js';
+import { ReconstructionIssues } from '../../../core/src/enums.js';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
@@ -22,9 +22,8 @@ import ToolbarRow from './RadiomicsToolbarRow';
 import SidePanel from '../components/SidePanel';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 import { radcadapi } from '../utils/constants';
-import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
 
-class RadiomicsReport extends Component {
+class SelectMask extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
       PropTypes.shape({
@@ -526,7 +525,7 @@ class RadiomicsReport extends Component {
     );
   }
 }
-export default withRouter(withDialog(RadiomicsReport));
+export default withRouter(withDialog(SelectMask));
 
 /**
  * Async function to check if there are any inconsistences in the series.
