@@ -1,13 +1,12 @@
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
-import metadataProvider from '@ohif/core/src/classes/MetadataProvider';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adapters } from 'dcmjs';
 
 const { CodeScheme: Cornerstone3DCodeScheme } = adapters.Cornerstone3D;
 
-const { ImageSet } = classes;
+const { ImageSet, MetadataProvider: metadataProvider } = classes;
 // TODO ->
 // Add SR thumbnail
 // Make viewport
