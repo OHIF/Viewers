@@ -28,6 +28,7 @@ import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
 import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
 import pencil from './../../assets/icons/pencil.svg';
+import powerOff from './../../assets/icons/power-off.svg';
 import profile from './../../assets/icons/profile.svg';
 import pushLeft from './../../assets/icons/push-left.svg';
 import pushRight from './../../assets/icons/push-right.svg';
@@ -97,6 +98,7 @@ const ICONS = {
   exclamation: exclamation,
   'notificationwarning-diamond': notificationwarningDiamond,
   pencil: pencil,
+  'power-off': powerOff,
   profile: profile,
   'push-left': pushLeft,
   'push-right': pushRight,

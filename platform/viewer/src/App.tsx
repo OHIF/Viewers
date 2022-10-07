@@ -28,7 +28,6 @@ let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
 function App({ config, defaultExtensions, defaultModes }) {
   const [init, setInit] = useState(null);
-
   useEffect(() => {
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes)
