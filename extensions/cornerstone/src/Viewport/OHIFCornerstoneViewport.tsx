@@ -423,12 +423,12 @@ function _jumpToMeasurement(
 
     const imageIdIndex = imageIds.findIndex(imageId => {
       const {
-        SOPInstanceUID: SOPInstanceUID1,
-        frameNumber: frameNumber1,
+        SOPInstanceUID: aSOPInstanceUID,
+        frameNumber: aFrameNumber,
       } = getSOPInstanceAttributes(imageId);
       return (
-        SOPInstanceUID1 === SOPInstanceUID &&
-        (!frameNumber || frameNumber == frameNumber1)
+        aSOPInstanceUID === SOPInstanceUID &&
+        (!frameNumber || frameNumber === aFrameNumber)
       );
     });
 
