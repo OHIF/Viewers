@@ -256,8 +256,7 @@ function _measurementReferencesSOPInstanceUID(
   //  Standard. But for now, we will support only one ReferenceFrameNumber.
   const ReferencedFrameNumber =
     (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence[0] &&
-      measurement.coords[0].ReferencedSOPSequence[0].ReferencedFrameNumber) ||
+      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
     1;
 
   if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber))

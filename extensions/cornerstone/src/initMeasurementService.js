@@ -256,7 +256,7 @@ const connectMeasurementServiceToTools = (
       let imageId;
       let frameNumber = 1;
 
-      if (measurement.metadata && measurement.metadata.referencedImageId) {
+      if (measurement?.metadata?.referencedImageId) {
         imageId = measurement.metadata.referencedImageId;
         frameNumber = getSOPInstanceAttributes(
           measurement.metadata.referencedImageId
