@@ -92,8 +92,15 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
+  // unmount cleanup
   useEffect(() => {
-    if (!cines || !cines[viewportIndex]) {
+    return () => {
+      cineService.setCine({ id: viewportIndex, isPlaying: false });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!cines || !cines[viewportIndex] || !element) {
       return;
     }
 
@@ -110,6 +117,10 @@ function TrackedCornerstoneViewport(props) {
     } else {
       cineService.stopClip(element);
     }
+
+    return () => {
+      cineService.stopClip(element);
+    };
   }, [cines, viewportIndex, cineService, element, displaySet]);
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
