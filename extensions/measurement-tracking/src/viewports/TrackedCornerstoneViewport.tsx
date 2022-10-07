@@ -10,6 +10,7 @@ import {
   useViewportDialog,
 } from '@ohif/ui';
 
+import { eventTarget, Enums } from '@cornerstonejs/core';
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 
@@ -64,6 +65,26 @@ function TrackedCornerstoneViewport(props) {
     ManufacturerModelName,
   } = displaySet.images[0];
 
+  const cineHandler = () => {
+    if (!cines || !cines[viewportIndex] || !element) {
+      return;
+    }
+
+    const cine = cines[viewportIndex];
+    const isPlaying = cine.isPlaying || false;
+    const frameRate = cine.frameRate || 24;
+
+    const validFrameRate = Math.max(frameRate, 1);
+
+    if (isPlaying) {
+      cineService.playClip(element, {
+        framesPerSecond: validFrameRate,
+      });
+    } else {
+      cineService.stopClip(element);
+    }
+  };
+
   useEffect(() => {
     if (isTracked) {
       annotation.config.style.setViewportToolStyles(viewportId, {
@@ -94,34 +115,31 @@ function TrackedCornerstoneViewport(props) {
 
   // unmount cleanup
   useEffect(() => {
+    eventTarget.addEventListener(
+      Enums.Events.STACK_VIEWPORT_NEW_STACK,
+      cineHandler
+    );
+
     return () => {
       cineService.setCine({ id: viewportIndex, isPlaying: false });
+      eventTarget.removeEventListener(
+        Enums.Events.STACK_VIEWPORT_NEW_STACK,
+        cineHandler
+      );
     };
-  }, []);
+  }, [element]);
 
   useEffect(() => {
     if (!cines || !cines[viewportIndex] || !element) {
       return;
     }
 
-    const cine = cines[viewportIndex];
-    const isPlaying = (cine && cine.isPlaying) || false;
-    const frameRate = (cine && cine.frameRate) || 24;
-
-    const validFrameRate = Math.max(frameRate, 1);
-
-    if (isPlaying) {
-      cineService.playClip(element, {
-        framesPerSecond: validFrameRate,
-      });
-    } else {
-      cineService.stopClip(element);
-    }
+    cineHandler();
 
     return () => {
       cineService.stopClip(element);
     };
-  }, [cines, viewportIndex, cineService, element, displaySet]);
+  }, [cines, viewportIndex, cineService, element]);
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
