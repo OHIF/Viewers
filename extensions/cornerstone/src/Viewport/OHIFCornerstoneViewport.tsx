@@ -3,7 +3,12 @@ import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { useViewportGrid } from '@ohif/ui';
 import * as cs3DTools from '@cornerstonejs/tools';
-import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
+import {
+  Enums,
+  eventTarget,
+  getEnabledElement,
+  StackViewport,
+} from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
 import CornerstoneCacheService from '../services/ViewportService/CornerstoneCacheService';
@@ -419,18 +424,26 @@ function _jumpToMeasurement(
   if (enableElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
     const viewport = enableElement.viewport as IStackViewport | IVolumeViewport;
-    const { imageIds } = viewport;
 
-    const imageIdIndex = imageIds.findIndex(imageId => {
-      const {
-        SOPInstanceUID: aSOPInstanceUID,
-        frameNumber: aFrameNumber,
-      } = getSOPInstanceAttributes(imageId);
-      return (
-        aSOPInstanceUID === SOPInstanceUID &&
-        (!frameNumber || frameNumber === aFrameNumber)
+    let imageIdIndex = 0;
+
+    if (viewport instanceof StackViewport) {
+      const imageIds = viewport.getImageIds();
+      imageIdIndex = imageIds.findIndex(imageId => {
+        const {
+          SOPInstanceUID: aSOPInstanceUID,
+          frameNumber: aFrameNumber,
+        } = getSOPInstanceAttributes(imageId);
+        return (
+          aSOPInstanceUID === SOPInstanceUID &&
+          (!frameNumber || frameNumber === aFrameNumber)
+        );
+      });
+    } else {
+      imageIdIndex = referencedDisplaySet.images.findIndex(
+        i => i.SOPInstanceUID === SOPInstanceUID
       );
-    });
+    }
 
     cs3DTools.utilities.jumpToSlice(targetElement, {
       imageIndex: imageIdIndex,
