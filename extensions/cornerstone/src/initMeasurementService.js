@@ -261,12 +261,6 @@ const connectMeasurementServiceToTools = (
         frameNumber = getSOPInstanceAttributes(
           measurement.metadata.referencedImageId
         ).frameNumber;
-      } else if (measurement.data && measurement.data.frameNumber) {
-        frameNumber = measurement.data.frameNumber;
-        imageId = dataSource.getImageIdsForInstance({
-          instance,
-          frame: frameNumber,
-        });
       } else {
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
