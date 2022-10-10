@@ -5,7 +5,11 @@
     "packages": [
       "platform/*",
       "extensions/*",
-      "modes/*"
+      "modes/*",
+      "nl-pacs",
+      "nl-ohif-modules/extensions/*",
+      "nl-ohif-modules/modes/*",
+      "nl-ohif-modules/viewer"
     ],
     "nohoist": [
       "**/html-minifier-terser"
@@ -27,6 +31,7 @@
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "dev": "lerna run dev:viewer --stream",
+    "dev:lantern": "lerna run dev:lantern --stream",
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",

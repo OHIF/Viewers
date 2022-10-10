@@ -1,6 +1,14 @@
 {
   "version": "independent",
-  "packages": ["extensions/*", "platform/*", "modes/*"],
+  "packages": [
+    "extensions/*",
+    "platform/*",
+    "modes/*",
+    "nl-pacs",
+    "nl-ohif-modules/extensions/*",
+    "nl-ohif-modules/modes/*",
+    "nl-ohif-modules/viewer"
+  ],
   "npmClient": "yarn",
   "useWorkspaces": true,
   "command": {
