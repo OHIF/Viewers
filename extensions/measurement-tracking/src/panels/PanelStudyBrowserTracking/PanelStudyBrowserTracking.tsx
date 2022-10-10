@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
+import { HangingProtocolService, utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
@@ -47,7 +47,7 @@ function PanelStudyBrowserTracking({
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    viewportGridService.setDisplaySetsForViewport({
+    HangingProtocolService.setDisplaySetsForViewport({
       viewportIndex: activeViewportIndex,
       displaySetInstanceUIDs: [displaySetInstanceUID],
     });

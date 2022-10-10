@@ -22,7 +22,7 @@ function PanelStudyBrowser({
   const { StudyInstanceUIDs } = useImageViewer();
   const [
     { activeViewportIndex, viewports },
-    viewportGridService,
+    HangingProtocolService,
   ] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
@@ -34,7 +34,7 @@ function PanelStudyBrowser({
   const isMounted = useRef(true);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    viewportGridService.setDisplaySetsForViewport({
+    HangingProtocolService.setDisplaySetsForViewport({
       viewportIndex: activeViewportIndex,
       displaySetInstanceUIDs: [displaySetInstanceUID],
     });

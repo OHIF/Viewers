@@ -170,25 +170,6 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
-  const setDisplaySetsForViewport = useCallback(
-    ({
-      viewportIndex,
-      displaySetInstanceUIDs,
-      viewportOptions,
-      displaySetOptions,
-    }) =>
-      dispatch({
-        type: 'SET_DISPLAYSET_FOR_VIEWPORT',
-        payload: {
-          viewportIndex,
-          displaySetInstanceUIDs,
-          viewportOptions,
-          displaySetOptions,
-        },
-      }),
-    [dispatch]
-  );
-
   const setLayout = useCallback(
     ({ layoutType, numRows, numCols, layoutOptions = [] }) =>
       dispatch({
@@ -240,7 +221,6 @@ export function ViewportGridProvider({ children, service }) {
       service.setServiceImplementation({
         getState,
         setActiveViewportIndex,
-        setDisplaySetsForViewport,
         setLayout,
         reset,
         setCachedLayout,
@@ -251,7 +231,6 @@ export function ViewportGridProvider({ children, service }) {
     getState,
     service,
     setActiveViewportIndex,
-    setDisplaySetsForViewport,
     setLayout,
     reset,
     setCachedLayout,
@@ -261,7 +240,6 @@ export function ViewportGridProvider({ children, service }) {
   const api = {
     getState,
     setActiveViewportIndex,
-    setDisplaySetsForViewport,
     setLayout,
     setCachedLayout,
     reset,

@@ -1,4 +1,4 @@
-import { hotkeys } from '@ohif/core';
+import { HangingProtocolService, hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
@@ -111,6 +111,7 @@ function modeFactory() {
         'Capture',
         'Layout',
         'MPR',
+        'Crosshairs',
         'MoreTools',
       ]);
     },
@@ -121,6 +122,7 @@ function modeFactory() {
         MeasurementService,
         ToolBarService,
         SegmentationService,
+        CornerstoneViewportService,
       } = servicesManager.services;
 
       ToolBarService.reset();
@@ -128,6 +130,7 @@ function modeFactory() {
       ToolGroupService.destroy();
       SyncGroupService.destroy();
       SegmentationService.destroy();
+      CornerstoneViewportService.destroy();
     },
     validationTags: {
       study: [],

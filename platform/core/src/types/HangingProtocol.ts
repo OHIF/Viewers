@@ -18,9 +18,20 @@ type DisplaySetMatchDetails = {
   sortingInfo?: any;
 };
 
+type ViewportSpecificProtocolSetOptions = {
+  [viewportIndex: string]: DisplaySetMatchDetails[];
+}
+
+type GlobalProtocolSetOptions = DisplaySetMatchDetails[]
+
+
+type ProtocolSetOptions =
+  ViewportSpecificProtocolSetOptions | GlobalProtocolSetOptions;
+
+
 type HangingProtocolMatchDetails = {
   displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
-  viewportMatchDetails: ViewportMatchDetails[];
+  viewportMatchDetails: Map<number, ViewportMatchDetails>;
   hpAlreadyApplied: Map<number, boolean>;
 };
 
@@ -132,13 +143,9 @@ type Protocol = {
   numberOfPriorsReferenced?: number;
 };
 
-type ProtocolGenerator = ({servicesManager: any, commandsManager: any}) => {
-  protocol: Protocol;
-  matchingDisplaySets: any;
-};
 
 export type {
-  ProtocolGenerator,
+  ProtocolSetOptions,
   ViewportOptions,
   ViewportMatchDetails,
   DisplaySetMatchDetails,

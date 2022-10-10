@@ -45,7 +45,8 @@ const commandsModule = ({
   function _getMatchedViewportsToolGroupIds() {
     const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
-    viewportMatchDetails.forEach(({ viewportOptions }) => {
+    viewportMatchDetails.forEach((value, key) => {
+      const { viewportOptions } = value;
       const { toolGroupId } = viewportOptions;
       if (toolGroupIds.indexOf(toolGroupId) === -1) {
         toolGroupIds.push(toolGroupId);
@@ -63,8 +64,8 @@ const commandsModule = ({
       // corrected PT vs the non-attenuation correct PT)
 
       let ptDisplaySet = null;
-      for (const matched of viewportMatchDetails) {
-        const { displaySetsInfo } = matched;
+      for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
+        const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
         );

@@ -15,7 +15,7 @@ const EVENTS = {
     'event::hanging_protocol_applied_for_viewport',
 };
 
-type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
+type Protocol = HangingProtocol.Protocol;
 
 class HangingProtocolService {
   studies: StudyMetadata[];
@@ -29,7 +29,6 @@ class HangingProtocolService {
   _commandsManager: Record<string, unknown>;
   _servicesManager: Record<string, unknown>;
   protocolEngine: ProtocolEngine;
-  hpAlreadyApplied: Map<number, boolean> = new Map();
   customViewportSettings = [];
   displaySets: IDisplaySet[] = [];
   activeStudy: Record<string, unknown>;
@@ -56,6 +55,11 @@ class HangingProtocolService {
           return prev;
         }, []),
     },
+    isReconstructable: {
+      name: 'Checks if the display set is reconstructable',
+      // we can add more advanced checking here
+      callback: displaySet => displaySet.isReconstructable ?? false,
+    },
   };
   listeners = {};
   registeredImageLoadStrategies = {};
@@ -63,12 +67,18 @@ class HangingProtocolService {
   customImageLoadPerformed = false;
 
   /**
+   * Whether the hanging protocol is applied for the given viewport index,
+   * applying means that the displayset(s) is set for the viewport to be shown
+   */
+  hpAlreadyApplied: Map<number, boolean> = new Map();
+
+  /**
    * displaySetMatchDetails = <displaySetId, match>
    * DisplaySetId is the id defined in the hangingProtocol object itself
    * and match is an object that contains information about
    */
   displaySetMatchDetails: Map<
-    string,
+    string, // protocol displaySetId in the displayset selector
     HangingProtocol.DisplaySetMatchDetails
   > = new Map();
 
@@ -76,7 +86,10 @@ class HangingProtocolService {
    * An array that contains for each viewport (viewportIndex) specified in the
    * hanging protocol, an object of the form
    */
-  viewportMatchDetails = [] as HangingProtocol.ViewportMatchDetails[];
+  viewportMatchDetails: Map<
+    number, // viewportIndex
+    HangingProtocol.ViewportMatchDetails
+  > = new Map();
 
   constructor(commandsManager, servicesManager) {
     this._commandsManager = commandsManager;
@@ -100,8 +113,7 @@ class HangingProtocolService {
     this.studies = [];
     this.protocols = new Map();
     this.hpAlreadyApplied = new Map();
-    this.viewportMatchDetails = [];
-    // this.ProtocolEngine.reset()
+    this.viewportMatchDetails = new Map();
   }
 
   public getDefaultProtocol(): HangingProtocol.Protocol {
@@ -292,7 +304,7 @@ class HangingProtocolService {
   setHangingProtocolAppliedForViewport(i, status, suppressEvent = false) {
     this.hpAlreadyApplied.set(i, status);
 
-    const numberOfViewports = this.viewportMatchDetails.length;
+    const numberOfViewports = this.viewportMatchDetails.size;
     const numberOfViewportsApplied = Array.from(
       this.hpAlreadyApplied.values()
     ).filter(applied => applied).length;
@@ -418,86 +430,103 @@ class HangingProtocolService {
     return protocol;
   }
 
-  // setDisplaySetsForViewport(
-  //   viewportIndex: number,
-  //   displaySetInstanceUIDs: string[]
-  // ) {
-  //   const activeProtocolId = this.protocol.id;
+  setDisplaySetsForViewport({ viewportIndex, displaySetInstanceUIDs }) {
+    const activeProtocolId = this.protocol.id;
 
-  //   const matchingDisplaySets = displaySetInstanceUIDs.reduce(
-  //     (acc, displaySetInstanceUID) => {
-  //       const displaySet = this.displaySets.find(
-  //         displaySet =>
-  //           displaySet.displaySetInstanceUID === displaySetInstanceUID
-  //       );
+    const matchingDisplaySets = displaySetInstanceUIDs.reduce(
+      (acc, displaySetInstanceUID) => {
+        const displaySet = this.displaySets.find(
+          displaySet =>
+            displaySet.displaySetInstanceUID === displaySetInstanceUID
+        );
 
-  //       if (displaySet) {
-  //         acc[displaySet.displaySetInstanceUID] = {
-  //           SeriesInstanceUID: displaySet.SeriesInstanceUID,
-  //           StudyInstanceUID: displaySet.StudyInstanceUID,
-  //           displaySetInstanceUID: displaySet.displaySetInstanceUID,
-  //         };
-  //       }
+        if (!acc[viewportIndex]) {
+          acc[viewportIndex] = [];
+        }
 
-  //       return acc;
-  //     },
-  //     {}
-  //   );
+        if (displaySet) {
+          acc[viewportIndex].push({
+            StudyInstanceUID: displaySet.StudyInstanceUID,
+            SeriesInstanceUID: displaySet.SeriesInstanceUID,
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+          });
+        }
+        return acc;
+      },
+      {}
+    );
 
-  //   this.setProtocol(activeProtocolId, null, matchingDisplaySets);
-  // }
+    const errorCallback = () => {
+      // Todo: this should be registered from outside
+      this._servicesManager.services.UINotificationService.show({
+        title: 'Drag and Drop',
+        message:
+          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+        type: 'info',
+        duration: 300000,
+      });
+    };
+
+    this.setProtocol(activeProtocolId, matchingDisplaySets, errorCallback);
+  }
 
   /**
    * It applied the protocol to the current studies and display sets based on the
    * protocolId that is provided.
-   * @param protocolId - name of the protocol to be set
-   * @param protocol - protocol object (optional), if not provided, the protocol
-   * will be retrieved from the list of protocols by its name
-   * @param matchingDisplaySets - predefined display sets to be used for the protocol
+   * @param protocolId - name of the registered protocol to be set
+   * @param options - options to be passed to the protocol, this is either an array
+   * of the displaySetInstanceUIDs to be set on ALL VIEWPORTS OF THE PROTOCOL or an object
+   * that contains viewportIndex as the key and displaySetInstanceUIDs as the value
+   * for each viewport that needs to be set.
+   * @param errorCallback - callback to be called if there is an error
+   * during the protocol application
    */
   public setProtocol(
     protocolId: string,
-    protocol?: HangingProtocol.Protocol,
-    matchingDisplaySets?: Record<string, HangingProtocol.DisplaySetMatchDetails>
-  ): void {
-    if (!protocol) {
-      const foundProtocol = this.protocols.get(protocolId);
+    options = null as HangingProtocol.ProtocolSetOptions,
+    errorCallback = null
+  ): boolean {
+    const foundProtocol = this.protocols.get(protocolId);
 
-      if (!foundProtocol) {
-        console.warn(
-          `HangingProtocolService::setProtocol - protocol ${protocolId} not found`
-        );
-        return;
-      }
+    if (!foundProtocol) {
+      console.warn(
+        `ProtocolEngine::setProtocol - Protocol with id ${protocolId} not found`
+      );
 
-      if (foundProtocol instanceof Function) {
-        try {
-          ({ protocol, matchingDisplaySets } = this._getProtocolFromGenerator(
-            foundProtocol
-          ));
-        } catch (error) {
-          console.warn(
-            `HangingProtocolService::setProtocol - protocol ${protocolId} failed to execute`,
-            error
-          );
-
-          // Todo: fallback to default protocol?
-          return;
-        }
-      } else {
-        protocol = foundProtocol;
-      }
+      return false;
     }
 
-    this._setProtocol(protocol, matchingDisplaySets);
+    if (options) {
+      this._validateOptions(options);
+    }
+
+    const protocol = this._validateProtocol(foundProtocol);
+
+    try {
+      this._setProtocol(protocol, options);
+    } catch (error) {
+      console.warn(
+        `ProtocolEngine::setProtocol - Error setting protocol ${protocolId}`,
+        error
+      );
+
+      if (errorCallback) {
+        errorCallback(error);
+      }
+
+      return false;
+    }
+
+    return true;
   }
 
   private _setProtocol(
     protocol: HangingProtocol.Protocol,
-    matchingDisplaySets?: Record<string, HangingProtocol.DisplaySetMatchDetails>
+    options = null as HangingProtocol.ProtocolSetOptions
   ): void {
     this.stage = 0;
     this.protocol = protocol;
+
     const { imageLoadStrategy } = protocol;
     if (imageLoadStrategy) {
       // check if the imageLoadStrategy is a valid strategy
@@ -508,7 +537,8 @@ class HangingProtocolService {
         this.activeImageLoadStrategyName = imageLoadStrategy;
       }
     }
-    this._updateViewports(matchingDisplaySets);
+
+    this._updateViewports(options);
 
     this._broadcastChange(this.EVENTS.PROTOCOL_CHANGED, {
       viewportMatchDetails: this.viewportMatchDetails,
@@ -564,25 +594,36 @@ class HangingProtocolService {
   /**
    * Updates the viewports with the selected protocol stage.
    */
-  _updateViewports(
-    matchingDisplaySets?: Record<string, HangingProtocol.DisplaySetMatchDetails>
-  ): void {
+  _updateViewports(options = null as HangingProtocol.ProtocolSetOptions): void {
     // Make sure we have an active protocol with a non-empty array of display sets
     if (!this._getNumProtocolStages()) {
-      console.log('No protocol stages - nothing to display');
-      return;
+      throw new Error('No protocol or stages found');
     }
 
     // each time we are updating the viewports, we need to reset the
     // matching applied
     this.hpAlreadyApplied = new Map();
-    this.viewportMatchDetails = [];
+    this.viewportMatchDetails = new Map();
     this.displaySetMatchDetails = new Map();
+    this.customImageLoadPerformed = false;
 
-    if (matchingDisplaySets) {
-      this.displaySetMatchDetails = new Map(
-        Object.entries(matchingDisplaySets)
-      );
+    if (options) {
+      // if the options are defined, we can fill in the displaySetMatchDetails
+      // but we need to also check that any displaySetInstanceUIDs that are
+      // provided either at viewport level or at the protocol level SATISFIES
+      // the required seriesMatching criteria species in the protocol. Otherwise
+      // we need to throw an error. This way protocols become more strict and
+      // for instance don't allow drag and drop of displaySets that don't match
+      // (in MPR protocol we specify in the displaysetSelector that the displaySet
+      // to be used should be reconstructable. Or you can specify that the displaySet
+      // should be a localizer only for a protocol)
+
+      // options can be either a global array of displaySetInstanceUIDs or
+      // a map of viewportIndex to displaySetInstanceUIDs which specifies
+      // the displaySets to be set on each viewport (so we need to check each
+      // viewport individually for the required seriesMatching criteria)
+
+      this._getMatchByOptions(this.protocol, options);
     }
 
     const { displaySetSelectors = {} } = this.protocol;
@@ -602,7 +643,6 @@ class HangingProtocolService {
       return;
     }
 
-    this.customImageLoadPerformed = false;
     const { layoutType } = stageModel.viewportStructure;
 
     // Retrieve the properties associated with the current display set's viewport structure template
@@ -688,11 +728,246 @@ class HangingProtocolService {
         }
       );
 
-      this.viewportMatchDetails[viewportIndex] = {
+      this.viewportMatchDetails.set(viewportIndex, {
         viewportOptions,
         displaySetsInfo,
-      };
+      });
     });
+  }
+
+  _getMatchByOptions(
+    protocol: Protocol,
+    options: HangingProtocol.ProtocolSetOptions
+  ) {
+    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetSelectors = {} } = protocol;
+    if (Array.isArray(options)) {
+      const numberOfDisplaySetsToSet = options.length;
+
+      // if options is an array, we need to check that each displaySetInstanceUID
+      // in the array satisfies the required seriesMatching criteria for all the viewports
+      // in the protocol (since we are going to use the same displaySetInstanceUIDs for all)
+      options.forEach(displaySetInstanceUID => {
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+
+        // match against all the displaySetSelectors
+        for (const displaySetId in displaySetSelectors) {
+          const displaySetSelector = displaySetSelectors[displaySetId];
+          const { seriesMatchingRules } = displaySetSelector;
+
+          if (seriesMatchingRules.length) {
+            const requiredRules = seriesMatchingRules.filter(
+              rule => rule.required
+            );
+
+            const matched = this.protocolEngine.findMatch(
+              displaySet,
+              requiredRules
+            );
+
+            if (!matched || matched.score === 0) {
+              throw new Error(
+                `The displaySetInstanceUID ${displaySetInstanceUID} does not satisfy the required seriesMatching criteria for the protocol`
+              );
+            }
+          }
+        }
+      });
+
+      // if we get here, we can fill in the displaySetMatchDetails
+      // however, there might be a case where we are asked to
+      // render multiple displaySets for a single viewport
+      // so we need to go back to viewports and start from there
+
+      const newDisplaySetIds: Set<string> = new Set();
+      // Todo: this currently work for current stage only
+      protocol.stages[this.stage].viewports.forEach(viewport => {
+        viewport.displaySets.forEach(displaySetInfo => {
+          const { id: displaySetId } = displaySetInfo;
+          if (!this.displaySetMatchDetails.has(displaySetId)) {
+            newDisplaySetIds.add(displaySetId);
+          }
+        });
+      });
+
+      // we set the displaySetMatchDetails for the displaySetIds specified
+      // in each viewport
+
+      Array.from(newDisplaySetIds).forEach((displaySetId, index) => {
+        const displaySetInstanceUID = options[index];
+
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+
+        this.displaySetMatchDetails.set(displaySetId, {
+          SeriesInstanceUID: displaySet.SeriesInstanceUID,
+          StudyInstanceUID: displaySet.StudyInstanceUID,
+          displaySetInstanceUID: displaySet.displaySetInstanceUID,
+          matchDetails: {},
+          matchingScores: [],
+          sortingInfo: {},
+        });
+      });
+
+      // if still the number of displaySets to set is not equal to the number of displaySets
+      // in the protocol, we can modify the protocol to have the same number of displaySets
+      // for each viewport
+
+      if (newDisplaySetIds.size !== numberOfDisplaySetsToSet) {
+        // the remaining ones to set
+        const remainingDisplaySetMatches = options.slice(
+          newDisplaySetIds.size,
+          numberOfDisplaySetsToSet
+        );
+
+        protocol[this.stage].viewports.forEach(viewport => {
+          const { displaySets } = viewport;
+
+          // push the displaySetsToSet to the end of the displaySets array
+
+          remainingDisplaySetMatches.forEach(({ displaySetInstanceUID }) => {
+            displaySets.push({
+              id: displaySetInstanceUID,
+            });
+          });
+        });
+
+        remainingDisplaySetMatches.forEach(({ displaySetInstanceUID }) => {
+          const displaySet = DisplaySetService.getDisplaySetByUID(
+            displaySetInstanceUID
+          );
+
+          this.displaySetMatchDetails.set(displaySetInstanceUID, {
+            SeriesInstanceUID: displaySet.SeriesInstanceUID,
+            StudyInstanceUID: displaySet.StudyInstanceUID,
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+            matchDetails: {},
+            matchingScores: [],
+            sortingInfo: {},
+          });
+        });
+      }
+
+      // Todo: this has a bug where if the protocol defines only one displaySet,
+      // but renders a fusion, it cannot go back to one displaySet since its
+      // viewport.displaySets.length is 2 and it should remove the second one
+      // later
+
+      return;
+    }
+
+    // if options is a map, we need to check that each displaySetInstanceUID
+    // in the map satisfies the required seriesMatching criteria for its specified
+    // viewport
+    for (const viewportIndex in options) {
+      const displayMatchDetailsArray = options[viewportIndex];
+
+      displayMatchDetailsArray.forEach(({ displaySetInstanceUID }) => {
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+
+        const { displaySets: displaySetsInfo } = protocol.stages[
+          this.stage
+        ].viewports[viewportIndex];
+
+        for (const displaySetInfo of displaySetsInfo) {
+          const { seriesMatchingRules } = displaySetSelectors[
+            displaySetInfo.id
+          ];
+
+          if (seriesMatchingRules.length) {
+            const requiredRules = seriesMatchingRules.filter(
+              rule => rule.required
+            );
+
+            const matched = this.protocolEngine.findMatch(
+              displaySet,
+              requiredRules
+            );
+
+            if (!matched || matched.score === 0) {
+              throw new Error(
+                `The displaySetInstanceUID ${displaySetInstanceUID} does not satisfy the required seriesMatching criteria for the protocol`
+              );
+            }
+          }
+        }
+      });
+    }
+
+    // if we get here, we can fill in the displaySetMatchDetails
+
+    for (const viewportIndex in options) {
+      const displayMatchDetailsArray = options[viewportIndex];
+
+      const numDisplaySetsToSet = displayMatchDetailsArray.length;
+      const viewportDisplaySets =
+        protocol.stages[this.stage].viewports[viewportIndex].displaySets.length;
+
+      if (numDisplaySetsToSet !== viewportDisplaySets) {
+        throw new Error(
+          `The number of displaySets to set ${numDisplaySetsToSet} does not match the number of displaySets in the protocol ${viewportDisplaySets} - not currently implemented`
+        );
+      }
+
+      displayMatchDetailsArray.forEach(({ displaySetInstanceUID }, index) => {
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+
+        const displaySetId =
+          protocol.stages[this.stage].viewports[viewportIndex].displaySets[
+            index
+          ].id;
+
+        this.displaySetMatchDetails.set(displaySetId, {
+          SeriesInstanceUID: displaySet.SeriesInstanceUID,
+          StudyInstanceUID: displaySet.StudyInstanceUID,
+          displaySetInstanceUID: displaySet.displaySetInstanceUID,
+          matchDetails: {},
+          matchingScores: [],
+          sortingInfo: {},
+        });
+      });
+    }
+  }
+
+  _validateOptions(options: HangingProtocol.ProtocolSetOptions) {
+    const { DisplaySetService } = this._servicesManager.services;
+
+    if (Array.isArray(options)) {
+      options.forEach(displaySetInstanceUID => {
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+
+        if (!displaySet) {
+          throw new Error(
+            `The displaySetInstanceUID ${displaySetInstanceUID} is not found in the displaySetService`
+          );
+        }
+      });
+    } else {
+      for (const viewportIndex in options) {
+        const displayMatchDetailsArray = options[viewportIndex];
+
+        displayMatchDetailsArray.forEach(({ displaySetInstanceUID }) => {
+          const displaySet = DisplaySetService.getDisplaySetByUID(
+            displaySetInstanceUID
+          );
+
+          if (!displaySet) {
+            throw new Error(
+              `The displaySetInstanceUID ${displaySetInstanceUID} is not found in the displaySetService`
+            );
+          }
+        });
+      }
+    }
   }
 
   // Match images given a list of Studies and a Viewport's image matching reqs

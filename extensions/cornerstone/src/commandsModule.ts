@@ -28,6 +28,7 @@ const commandsModule = ({ servicesManager }) => {
     UIDialogService,
     CornerstoneViewportService,
     HangingProtocolService,
+    UINotificationService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
@@ -132,17 +133,27 @@ const commandsModule = ({ servicesManager }) => {
     },
     toggleCrosshairs({ toolGroupId, toggledState }) {
       const toolName = 'Crosshairs';
+
+      const activeViewportToolGroup = _getToolGroup(null);
+
+      if (!activeViewportToolGroup._toolInstances.Crosshairs) {
+        UINotificationService.show({
+          title: 'Crosshairs',
+          message:
+            'You need to be in a MPR hanging protocol to use Crosshairs. Click on MPR button in the toolbar to activate it.',
+          type: 'info',
+          duration: 3000,
+        });
+        return;
+      }
+
       // If it is Enabled
       if (toggledState) {
         actions.setToolActive({ toolName, toolGroupId });
-        return;
+        return true;
       }
+
       const toolGroup = _getToolGroup(toolGroupId);
-
-      if (!toolGroup) {
-        return;
-      }
-
       toolGroup.setToolDisabled(toolName);
 
       // Get the primary toolId from the ToolBarService and set it to active
@@ -156,6 +167,8 @@ const commandsModule = ({ servicesManager }) => {
           bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
         });
       }
+
+      return true;
     },
     setToolActive: ({ toolName, toolGroupId = null }) => {
       const toolGroup = _getToolGroup(toolGroupId);
@@ -368,6 +381,29 @@ const commandsModule = ({ servicesManager }) => {
     setHangingProtocol: ({ protocolId }) => {
       HangingProtocolService.setProtocol(protocolId);
     },
+    toggleMPR: ({ toggledState }) => {
+      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const viewportDisplaySetInstanceUIDs =
+        viewports[activeViewportIndex].displaySetInstanceUIDs;
+
+      const errorCallback = error => {
+        UINotificationService.show({
+          title: 'Multiplanar reconstruction (MPR) ',
+          message:
+            'Cannot create MPR for this series since it is not reconstructable.',
+          type: 'warning',
+          duration: 3000,
+        });
+      };
+
+      if (toggledState) {
+        return HangingProtocolService.setProtocol(
+          'mpr',
+          viewportDisplaySetInstanceUIDs,
+          errorCallback
+        );
+      }
+    },
   };
 
   const definitions = {
@@ -476,6 +512,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
+      storeContexts: [],
+      options: {},
+    },
+    toggleMPR: {
+      commandFn: actions.toggleMPR,
       storeContexts: [],
       options: {},
     },

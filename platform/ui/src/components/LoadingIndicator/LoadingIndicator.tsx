@@ -4,11 +4,12 @@ import { Icon } from '@ohif/ui';
 
 import './LoadingIndicator.css';
 
-function LoadingIndicator({}) {
+function LoadingIndicator({ className }) {
   return (
     <div
       className={classNames(
-        'absolute w-full h-full bg-primary-dark z-50 top-0 left-0 flex flex-col items-center justify-center'
+        'absolute z-50 top-0 left-0 flex flex-col items-center justify-center',
+        className
       )}
     >
       <Icon name="loading-ohif-mark" className="text-white w-12 h-12" />

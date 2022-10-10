@@ -79,12 +79,14 @@ export default class ToolBarService {
         break;
       }
       case 'toggle': {
+        const { commands } = interaction;
+        let commandExecuted = false;
+
+        // only toggle if a command was executed
         this.state.toggles[itemId] =
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
-
-        const { commands } = interaction;
 
         commands.forEach(({ commandName, commandOptions, context }) => {
           if (!commandOptions) {
@@ -93,9 +95,19 @@ export default class ToolBarService {
 
           if (commandName) {
             commandOptions.toggledState = this.state.toggles[itemId];
-            commandsManager.runCommand(commandName, commandOptions, context);
+            commandExecuted = commandsManager.runCommand(
+              commandName,
+              commandOptions,
+              context
+            );
           }
         });
+
+        if (!commandExecuted) {
+          // If no command was executed, we need to toggle the state back
+          this.state.toggles[itemId] = !this.state.toggles[itemId];
+        }
+
         break;
       }
       default:

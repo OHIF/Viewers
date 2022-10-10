@@ -51,7 +51,7 @@ export default function interleaveCenterLoader({
    * listen to it and as the other viewports are created we can set the volumes for them
    * since volumes are already started loading.
    */
-  if (matchDetails.length !== viewportIdVolumeInputArrayMap.size) {
+  if (matchDetails.size !== viewportIdVolumeInputArrayMap.size) {
     return;
   }
 

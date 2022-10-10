@@ -137,8 +137,10 @@ class CornerstoneViewportService implements IViewportService {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
     this.renderingEngine.destroy();
+    this.viewportsDisplaySets.clear();
     this.renderingEngine = null;
-    cache.purgeVolumeCache();
+    // cache.purgeVolumeCache();
+    cache.purgeCache();
   }
 
   /**
@@ -153,12 +155,9 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     const viewportId = viewportInfo.getViewportId();
-    this.renderingEngine.disableElement(viewportId);
-    this.viewportsInfo.delete(viewportIndex);
 
-    // if (this.viewportsInfo.size === 0) {
-    //   this.destroy();
-    // }
+    this.renderingEngine && this.renderingEngine.disableElement(viewportId);
+    this.viewportsInfo.delete(viewportIndex);
   }
 
   /**

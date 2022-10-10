@@ -11,6 +11,9 @@ const ohif = {
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
+const tracking = {
+  thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
+};
 
 const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
@@ -27,6 +30,7 @@ const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-tmtv': '^3.0.0',
+  '@ohif/extension-measurement-tracking': '^3.0.0',
 };
 
 let unsubscriptions = [];
@@ -141,6 +145,7 @@ function modeFactory({ modeConfiguration }) {
         MeasurementService,
         ToolBarService,
         SegmentationService,
+        CornerstoneViewportService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
@@ -149,6 +154,7 @@ function modeFactory({ modeConfiguration }) {
       ToolGroupService.destroy();
       SyncGroupService.destroy();
       SegmentationService.destroy();
+      CornerstoneViewportService.destroy();
     },
     validationTags: {
       study: [],
@@ -175,7 +181,7 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [],
+              leftPanels: [tracking.thumbnailList],
               rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {

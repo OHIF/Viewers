@@ -4,7 +4,11 @@ async function _hydrateSEGDisplaySet({
   toolGroupId,
   servicesManager,
 }) {
-  const { SegmentationService, ViewportGridService } = servicesManager.services;
+  const {
+    SegmentationService,
+    ViewportGridService,
+    HangingProtocolService,
+  } = servicesManager.services;
 
   const displaySetInstanceUIDs = [
     segDisplaySet.referencedDisplaySetInstanceUID,
@@ -25,7 +29,7 @@ async function _hydrateSEGDisplaySet({
 
   const { viewports } = ViewportGridService.getState();
 
-  ViewportGridService.setDisplaySetsForViewport({
+  HangingProtocolService.setDisplaySetsForViewport({
     viewportIndex,
     displaySetInstanceUIDs: displaySetInstanceUIDs,
     viewportOptions: {
@@ -54,7 +58,7 @@ async function _hydrateSEGDisplaySet({
     );
 
     if (shouldDisplaySeg) {
-      ViewportGridService.setDisplaySetsForViewport({
+      HangingProtocolService.setDisplaySetsForViewport({
         viewportIndex: index,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {

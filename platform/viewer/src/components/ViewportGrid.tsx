@@ -32,23 +32,29 @@ function ViewerViewportGrid(props) {
         hpAlreadyApplied,
       } = HangingProtocolService.getMatchDetails();
 
-      if (!viewportMatchDetails.length) {
+      if (!viewportMatchDetails.size) {
         return;
       }
 
       // Match each viewport individually
       const numViewports = viewportGrid.numRows * viewportGrid.numCols;
-      for (let i = 0; i < numViewports; i++) {
-        if (hpAlreadyApplied.get(i)) {
+      for (
+        let viewportIndex = 0;
+        viewportIndex < numViewports;
+        viewportIndex++
+      ) {
+        if (hpAlreadyApplied.get(viewportIndex)) {
           continue;
         }
 
         // if current viewport doesn't have a match
-        if (viewportMatchDetails[i] === undefined) {
+        if (viewportMatchDetails.get(viewportIndex) === undefined) {
           return;
         }
 
-        const { displaySetsInfo, viewportOptions } = viewportMatchDetails[i];
+        const { displaySetsInfo, viewportOptions } = viewportMatchDetails.get(
+          viewportIndex
+        );
 
         const displaySetUIDsToHang = [];
         const displaySetUIDsToHangOptions = [];
@@ -67,8 +73,8 @@ function ViewerViewportGrid(props) {
           continue;
         }
 
-        viewportGridService.setDisplaySetsForViewport({
-          viewportIndex: i,
+        HangingProtocolService.setDisplaySetsForViewport({
+          viewportIndex: viewportIndex,
           displaySetInstanceUIDs: displaySetUIDsToHang,
           viewportOptions,
           displaySetOptions: displaySetUIDsToHangOptions,
@@ -85,7 +91,7 @@ function ViewerViewportGrid(props) {
           const suppressEvent = true;
           const applied = true;
           HangingProtocolService.setHangingProtocolAppliedForViewport(
-            i,
+            viewportIndex,
             applied,
             suppressEvent
           );
@@ -165,7 +171,7 @@ function ViewerViewportGrid(props) {
         }
 
         // If not in any of the viewports, hang it inside the active viewport
-        viewportGridService.setDisplaySetsForViewport({
+        HangingProtocolService.setDisplaySetsForViewport({
           viewportIndex,
           displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
           viewportOptions: {
@@ -250,7 +256,7 @@ function ViewerViewportGrid(props) {
   */
 
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
-    viewportGridService.setDisplaySetsForViewport({
+    HangingProtocolService.setDisplaySetsForViewport({
       viewportIndex,
       displaySetInstanceUIDs: [displaySetInstanceUID],
     });

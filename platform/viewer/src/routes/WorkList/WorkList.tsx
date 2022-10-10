@@ -462,7 +462,11 @@ function WorkList({
         </>
       ) : (
         <div className="flex flex-col items-center justify-center pt-48">
-          {isLoadingData ? <LoadingIndicator /> : <EmptyStudies />}
+          {isLoadingData ? (
+            <LoadingIndicator className={'w-full h-full bg-primary-dark'} />
+          ) : (
+            <EmptyStudies />
+          )}
         </div>
       )}
     </div>

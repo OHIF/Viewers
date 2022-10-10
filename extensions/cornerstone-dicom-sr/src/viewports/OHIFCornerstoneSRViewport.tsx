@@ -33,6 +33,7 @@ function OHIFCornerstoneSRViewport(props) {
   const {
     DisplaySetService,
     CornerstoneViewportService,
+    HangingProtocolService,
   } = servicesManager.services;
 
   // SR viewport will always have a single display set
@@ -244,7 +245,7 @@ function OHIFCornerstoneSRViewport(props) {
         if (
           displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
         ) {
-          viewportGridService.setDisplaySetsForViewport({
+          HangingProtocolService.setDisplaySetsForViewport({
             viewportIndex: activeViewportIndex,
             displaySetInstanceUIDs: [],
           });

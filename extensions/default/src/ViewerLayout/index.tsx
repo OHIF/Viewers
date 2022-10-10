@@ -235,7 +235,7 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"
+        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap"
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
@@ -251,8 +251,11 @@ function ViewerLayout({
           ) : null}
           {/* TOOLBAR + GRID */}
           <div className="flex flex-col flex-1 h-full">
-            <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black">
+            <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black relative">
               <ErrorBoundary context="Grid">
+                {showLoadingIndicator && (
+                  <LoadingIndicator className="h-full w-full bg-black" />
+                )}
                 <ViewportGridComp
                   servicesManager={servicesManager}
                   viewportComponents={viewportComponents}
@@ -271,7 +274,6 @@ function ViewerLayout({
             </ErrorBoundary>
           ) : null}
         </React.Fragment>
-        {showLoadingIndicator && <LoadingIndicator />}
       </div>
     </div>
   );

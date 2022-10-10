@@ -26,6 +26,18 @@ function _createButton(type, id, icon, label, commands, tooltip) {
   };
 }
 
+function _createCommands(commandName, toolName, toolGroupIds) {
+  return toolGroupIds.map(toolGroupId => ({
+    /* It's a command that is being run when the button is clicked. */
+    commandName,
+    commandOptions: {
+      toolName,
+      toolGroupId,
+    },
+    context: 'CORNERSTONE',
+  }));
+}
+
 const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
@@ -294,16 +306,26 @@ const toolbarButtons = [
     id: 'MPR',
     type: 'ohif.action',
     props: {
+      type: 'toggle',
       icon: 'icon-mpr',
       label: 'MPR',
-      type: 'action',
       commands: [
         {
-          commandName: 'setHangingProtocol',
-          commandOptions: { protocolId: 'mpr' },
+          commandName: 'toggleMPR',
+          commandOptions: {},
           context: 'CORNERSTONE',
         },
       ],
+    },
+  },
+  {
+    id: 'Crosshairs',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'toggle',
+      icon: 'tool-crosshair',
+      label: 'Crosshairs',
+      commands: [..._createCommands('toggleCrosshairs', 'Crosshairs', ['mpr'])],
     },
   },
   // More...

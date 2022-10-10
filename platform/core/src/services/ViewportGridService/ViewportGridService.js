@@ -4,7 +4,6 @@ const publicAPI = {
   name,
   getState: _getState,
   setActiveViewportIndex: _setActiveViewportIndex,
-  setDisplaySetsForViewport: _setDisplaySetsForViewport,
   setLayout: _setLayout,
   setCachedLayout: _setCachedLayout,
   setServiceImplementation,
@@ -16,8 +15,6 @@ const serviceImplementation = {
   _getState: () => console.warn('getState() NOT IMPLEMENTED'),
   _setActiveViewportIndex: () =>
     console.warn('setActiveViewportIndex() NOT IMPLEMENTED'),
-  _setDisplaySetsForViewport: () =>
-    console.warn('setDisplaySetsForViewport() NOT IMPLEMENTED'),
   _setLayout: () => console.warn('setLayout() NOT IMPLEMENTED'),
   _reset: () => console.warn('reset() NOT IMPLEMENTED'),
   _setCachedLayout: () => console.warn('setCachedLayout() NOT IMPLEMENTED'),
@@ -30,20 +27,6 @@ function _getState() {
 
 function _setActiveViewportIndex(index) {
   return serviceImplementation._setActiveViewportIndex(index);
-}
-
-function _setDisplaySetsForViewport({
-  viewportIndex,
-  displaySetInstanceUIDs,
-  viewportOptions,
-  displaySetOptions,
-}) {
-  return serviceImplementation._setDisplaySetsForViewport({
-    viewportIndex,
-    displaySetInstanceUIDs,
-    viewportOptions,
-    displaySetOptions,
-  });
 }
 
 function _setLayout({ numCols, numRows }) {
@@ -65,7 +48,6 @@ function _setCachedLayout({ numCols, numRows, viewports }) {
 function setServiceImplementation({
   getState: getStateImplementation,
   setActiveViewportIndex: setActiveViewportIndexImplementation,
-  setDisplaySetsForViewport: setDisplaySetsForViewportImplementation,
   setCachedLayout: setCachedLayoutImplementation,
   setLayout: setLayoutImplementation,
   reset: resetImplementation,
@@ -76,9 +58,6 @@ function setServiceImplementation({
   }
   if (setActiveViewportIndexImplementation) {
     serviceImplementation._setActiveViewportIndex = setActiveViewportIndexImplementation;
-  }
-  if (setDisplaySetsForViewportImplementation) {
-    serviceImplementation._setDisplaySetsForViewport = setDisplaySetsForViewportImplementation;
   }
   if (setLayoutImplementation) {
     serviceImplementation._setLayout = setLayoutImplementation;

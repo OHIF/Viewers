@@ -125,8 +125,8 @@ describe('HangingProtocolService', () => {
       hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
       const { hpAlreadyApplied, viewportMatchDetails } = hps.getMatchDetails();
       expect(hpAlreadyApplied).toMatchObject([false]);
-      expect(viewportMatchDetails.length).toBe(1);
-      expect(viewportMatchDetails[0]).toMatchObject({
+      expect(viewportMatchDetails.size).toBe(1);
+      expect(viewportMatchDetails.get(0)).toMatchObject({
         viewportOptions: {
           viewportId: 'ctAXIAL',
           viewportType: 'volume',
