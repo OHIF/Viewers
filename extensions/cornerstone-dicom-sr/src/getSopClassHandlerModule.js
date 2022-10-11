@@ -16,6 +16,7 @@ const sopClassUids = [
   '1.2.840.10008.5.1.4.1.1.88.11', //BASIC_TEXT_SR:
   '1.2.840.10008.5.1.4.1.1.88.22', //ENHANCED_SR:
   '1.2.840.10008.5.1.4.1.1.88.33', //COMPREHENSIVE_SR:
+  '1.2.840.10008.5.1.4.1.1.88.34', //COMPREHENSIVE_3D_SR:
 ];
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
@@ -44,6 +45,7 @@ const CodingSchemeDesignators = {
 
 const RELATIONSHIP_TYPE = {
   INFERRED_FROM: 'INFERRED FROM',
+  CONTAINS: 'CONTAINS',
 };
 
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
@@ -376,7 +378,6 @@ function _processMeasurement(mergedContentSequence) {
 function _processTID1410Measurement(mergedContentSequence) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
-  // TODO -> Look at RelationshipType => Contains means
 
   const graphicItem = mergedContentSequence.find(
     group => group.ValueType === 'SCOORD'
@@ -536,9 +537,14 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 function _getCoordsFromSCOORDOrSCOORD3D(item) {
   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
 
-  if (RelationshipType !== RELATIONSHIP_TYPE.INFERRED_FROM) {
+  if (
+    !(
+      RelationshipType == RELATIONSHIP_TYPE.INFERRED_FROM ||
+      RelationshipType == RELATIONSHIP_TYPE.CONTAINS
+    )
+  ) {
     console.warn(
-      `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM."`
+      `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM" or "CONTAINS"`
     );
 
     return;
@@ -597,12 +603,18 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
 
   _getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;
-    const {
-      ReferencedSOPClassUID,
-      ReferencedSOPInstanceUID,
-    } = ReferencedSOPSequence;
 
-    referencedImages.push({ ReferencedSOPClassUID, ReferencedSOPInstanceUID });
+    if (item.hasOwnProperty('ReferencedSOPClassUID')) {
+      const {
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
+      } = ReferencedSOPSequence;
+
+      referencedImages.push({
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
+      });
+    }
   });
 
   return referencedImages;
