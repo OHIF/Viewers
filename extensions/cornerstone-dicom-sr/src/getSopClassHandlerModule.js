@@ -378,7 +378,6 @@ function _processMeasurement(mergedContentSequence) {
 function _processTID1410Measurement(mergedContentSequence) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
-  // TODO -> Look at RelationshipType => Contains means
 
   const graphicItem = mergedContentSequence.find(
     group => group.ValueType === 'SCOORD'
@@ -539,9 +538,11 @@ function _getCoordsFromSCOORDOrSCOORD3D(item) {
   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
 
   if (
-    !(RelationshipType == RELATIONSHIP_TYPE.INFERRED_FROM ||
-      RelationshipType == RELATIONSHIP_TYPE.CONTAINS )
-    ) {
+    !(
+      RelationshipType == RELATIONSHIP_TYPE.INFERRED_FROM ||
+      RelationshipType == RELATIONSHIP_TYPE.CONTAINS
+    )
+  ) {
     console.warn(
       `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM" or "CONTAINS"`
     );
@@ -602,21 +603,16 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
 
   _getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;
-    // const {
-    //   ReferencedSOPClassUID,
-    //   ReferencedSOPInstanceUID,
-    // } = ReferencedSOPSequence;
 
-    // referencedImages.push({ ReferencedSOPClassUID, ReferencedSOPInstanceUID });
     if (item.hasOwnProperty('ReferencedSOPClassUID')) {
-    const {
-      ReferencedSOPClassUID,
-      ReferencedSOPInstanceUID,
+      const {
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
       } = ReferencedSOPSequence;
 
-    referencedImages.push({
-      ReferencedSOPClassUID,
-      ReferencedSOPInstanceUID,
+      referencedImages.push({
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
       });
     }
   });
