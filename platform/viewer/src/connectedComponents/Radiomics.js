@@ -310,7 +310,7 @@ class Radiomics extends Component {
         isComplete: radiomicsDone == 1 ? true : false,
       });
       this.triggerReload();
-    }, 2000);
+    }, 5000);
   };
 
   componentWillUnmount() {
@@ -667,11 +667,7 @@ class Radiomics extends Component {
           </div>
           <div className="container">
             <div className="container-item">
-              <RadiomicSummary
-                generatePdf={() => {
-                  console.log('replace radiomics here');
-                }}
-              />
+              <RadiomicSummary />
               {/* RIGHT */}
               <div
                 style={{
