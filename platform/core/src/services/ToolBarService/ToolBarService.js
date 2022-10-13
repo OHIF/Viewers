@@ -80,7 +80,7 @@ export default class ToolBarService {
       }
       case 'toggle': {
         const { commands } = interaction;
-        let commandExecuted = false;
+        let commandExecuted;
 
         // only toggle if a command was executed
         this.state.toggles[itemId] =
@@ -95,11 +95,13 @@ export default class ToolBarService {
 
           if (commandName) {
             commandOptions.toggledState = this.state.toggles[itemId];
-            commandExecuted = commandsManager.runCommand(
-              commandName,
-              commandOptions,
-              context
-            );
+
+            try {
+              commandsManager.runCommand(commandName, commandOptions, context);
+              commandExecuted = true;
+            } catch (error) {
+              console.warn(error);
+            }
           }
         });
 

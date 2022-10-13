@@ -252,7 +252,6 @@ function ViewerViewportGrid(props) {
       },
     });
   };
-
   */
 
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {

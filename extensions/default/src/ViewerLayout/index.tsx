@@ -71,6 +71,7 @@ function Toolbar({ servicesManager }) {
             bState={buttonState}
             isActive={isActive}
             onInteraction={args => ToolBarService.recordInteraction(args)}
+            servicesManager={servicesManager}
           />
         );
       })}

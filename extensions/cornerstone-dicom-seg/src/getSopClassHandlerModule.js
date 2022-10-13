@@ -1,7 +1,6 @@
 import vtkMath from '@kitware/vtk.js/Common/Core/Math';
 
 import { utils } from '@ohif/core';
-import { cache } from '@cornerstonejs/core';
 
 import { SOPClassHandlerId } from './id';
 import dcmjs from 'dcmjs';
@@ -32,6 +31,7 @@ function _getDisplaySetsFromSeries(
 
   const displaySet = {
     Modality: 'SEG',
+    isReconstructable: true, // by default for now since it is a volumetric SEG currently
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,

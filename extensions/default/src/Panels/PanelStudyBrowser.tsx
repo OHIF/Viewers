@@ -19,6 +19,7 @@ function PanelStudyBrowser({
   const {
     HangingProtocolService,
     DisplaySetService,
+    UINotificationService,
   } = servicesManager.services;
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -38,10 +39,25 @@ function PanelStudyBrowser({
   const isMounted = useRef(true);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    HangingProtocolService.setDisplaySetsForViewport({
-      viewportIndex: activeViewportIndex,
-      displaySetInstanceUIDs: [displaySetInstanceUID],
-    });
+    let updatedViewports = [];
+    const viewportIndex = activeViewportIndex;
+    try {
+      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+        viewportIndex,
+        displaySetInstanceUID
+      );
+    } catch (error) {
+      console.warn(error);
+      UINotificationService.show({
+        title: 'Thumbnail Double Click',
+        message:
+          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+        type: 'info',
+        duration: 3000,
+      });
+    }
+
+    viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
   // ~~ studyDisplayList

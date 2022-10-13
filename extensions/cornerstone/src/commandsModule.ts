@@ -1,23 +1,20 @@
 import {
   getEnabledElement,
   StackViewport,
-  volumeLoader,
-  cache,
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
   Enums,
-  segmentation,
   utilities as csToolsUtils,
 } from '@cornerstonejs/tools';
 
-import { Types } from '@ohif/core';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
 import { getEnabledElement as OHIFgetEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
+import getProtocolViewportStructureFromGridViewports from './utils/getProtocolViewportStructureFromGridViewports';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -399,17 +396,75 @@ const commandsModule = ({ servicesManager }) => {
         });
       };
 
+      const cacheId = 'beforeMPR';
       if (toggledState) {
-        return HangingProtocolService.setProtocol(
-          'mpr',
-          {
-            displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
-          },
-          errorCallback
-        );
+        ViewportGridService.setCachedLayout({
+          cacheId,
+          cachedLayout: ViewportGridService.getState(),
+        });
+
+        const matchDetails = {
+          displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
+        };
+
+        HangingProtocolService.setProtocol('mpr', matchDetails, errorCallback);
+        return;
       }
 
-      HangingProtocolService.setProtocol('default');
+      const { cachedLayout } = ViewportGridService.getState();
+
+      if (!cachedLayout || !cachedLayout[cacheId]) {
+        return;
+      }
+
+      const { viewports: cachedViewports, numRows, numCols } = cachedLayout[
+        cacheId
+      ];
+
+      const viewportStructure = getProtocolViewportStructureFromGridViewports({
+        viewports: cachedViewports,
+        numRows,
+        numCols,
+      });
+
+      const viewportSpecificMatch = cachedViewports.reduce(
+        (acc, viewport, index) => {
+          const {
+            displaySetInstanceUIDs,
+            viewportOptions,
+            displaySetOptions,
+          } = viewport;
+
+          acc[index] = {
+            displaySetInstanceUIDs,
+            viewportOptions,
+            displaySetOptions,
+          };
+
+          return acc;
+        },
+        {}
+      );
+
+      const defaultProtocol = HangingProtocolService.getProtocolById('default');
+
+      // Todo: this assumes there is only one stage in the default protocol
+      const defaultProtocolStage = defaultProtocol.stages[0];
+      defaultProtocolStage.viewportStructure = viewportStructure;
+
+      HangingProtocolService.setProtocol(
+        'default',
+        viewportSpecificMatch,
+        error => {
+          UINotificationService.show({
+            title: 'Multiplanar reconstruction (MPR) ',
+            message:
+              'Something went wrong while trying to restore the previous layout.',
+            type: 'warning',
+            duration: 3000,
+          });
+        }
+      );
     },
   };
 

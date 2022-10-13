@@ -26,6 +26,7 @@ const DEFAULT_STATE = {
     },
   ],
   activeViewportIndex: 0,
+  cachedLayout: {},
 };
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
@@ -73,10 +74,15 @@ export function ViewportGridProvider({ children, service }) {
           viewportLabel: viewportLabels[viewportIndex],
         };
 
-        return { ...state, ...{ viewports }, cachedLayout: null };
+        return { ...state, ...{ viewports } };
       }
       case 'SET_LAYOUT': {
-        const { numCols, numRows, layoutType, layoutOptions } = action.payload;
+        const {
+          numCols,
+          numRows,
+          layoutOptions,
+          layoutType = 'grid',
+        } = action.payload;
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
         const numPanes = layoutOptions.length || numRows * numCols;
@@ -119,7 +125,6 @@ export function ViewportGridProvider({ children, service }) {
             layoutType,
             viewports,
           },
-          cachedLayout: null,
         };
       }
       case 'RESET': {
@@ -139,13 +144,37 @@ export function ViewportGridProvider({ children, service }) {
               height: 100,
             },
           ],
-          cachedLayout: null,
+          cachedLayout: {},
         };
       }
 
       case 'SET_CACHED_LAYOUT': {
-        return { ...state, cachedLayout: action.payload };
+        const { cacheId, cachedLayout } = action.payload;
+
+        // deep copy the cachedLayout into the state
+        return {
+          ...state,
+          cachedLayout: {
+            ...state.cachedLayout,
+            [cacheId]: JSON.parse(JSON.stringify(cachedLayout)),
+          },
+        };
       }
+
+      case 'RESTORE_CACHED_LAYOUT': {
+        const cacheId = action.payload;
+
+        if (!state.cachedLayout[cacheId]) {
+          console.warn(
+            `No cached layout found for cacheId: ${cacheId}. Ignoring...`
+          );
+          return state;
+        }
+
+        const cachedLayout = state.cachedLayout;
+        return { ...state.cachedLayout[cacheId], cachedLayout };
+      }
+
       case 'SET': {
         return {
           ...state,
@@ -163,7 +192,9 @@ export function ViewportGridProvider({ children, service }) {
     DEFAULT_STATE
   );
 
-  const getState = useCallback(() => viewportGridState, [viewportGridState]);
+  const getState = useCallback(() => {
+    return viewportGridState;
+  }, [viewportGridState]);
 
   const setActiveViewportIndex = useCallback(
     index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index }),
@@ -230,6 +261,16 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const restoreCachedLayout = useCallback(
+    cacheId => {
+      dispatch({
+        type: 'RESTORE_CACHED_LAYOUT',
+        payload: cacheId,
+      });
+    },
+    [dispatch]
+  );
+
   const set = useCallback(
     payload =>
       dispatch({
@@ -254,6 +295,7 @@ export function ViewportGridProvider({ children, service }) {
         setLayout,
         reset,
         setCachedLayout,
+        restoreCachedLayout,
         set,
       });
     }
@@ -266,6 +308,7 @@ export function ViewportGridProvider({ children, service }) {
     setLayout,
     reset,
     setCachedLayout,
+    restoreCachedLayout,
     set,
   ]);
 
@@ -276,6 +319,7 @@ export function ViewportGridProvider({ children, service }) {
     setDisplaySetsForViewports,
     setLayout,
     setCachedLayout,
+    restoreCachedLayout,
     reset,
     set,
   };

@@ -233,12 +233,21 @@ class ViewportInfo {
     const displaySetOptions: Array<DisplaySetOptions> = [];
 
     publicDisplaySetOptions.forEach(option => {
+      if (!option) {
+        option = {
+          blendMode: undefined,
+          slabThickness: undefined,
+          colormap: undefined,
+          voi: {},
+          voiInverted: false,
+        };
+      }
       const blendMode = getCornerstoneBlendMode(option.blendMode);
 
       displaySetOptions.push({
-        voi: option.voi || ({} as VOI),
-        voiInverted: option.voiInverted || false,
-        colormap: option.colormap || undefined,
+        voi: option.voi,
+        voiInverted: option.voiInverted,
+        colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
       });

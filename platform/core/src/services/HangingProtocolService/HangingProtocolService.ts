@@ -425,15 +425,17 @@ class HangingProtocolService {
     const protocolViewports = protocolStage.viewports;
     const protocolViewport = protocolViewports[viewportIndex];
 
+    const defaultReturn = [
+      {
+        viewportIndex,
+        displaySetInstanceUIDs: [newDisplaySetInstanceUID],
+      },
+    ];
+
     // if no viewport, then we can assume there is no predefined set of
     // rules that should be applied to this viewport while matching
     if (!protocolViewport) {
-      return [
-        {
-          viewportIndex,
-          displaySetInstanceUIDs: [newDisplaySetInstanceUID],
-        },
-      ];
+      return defaultReturn;
     }
 
     // no support for drag and drop into fusion viewports yet
@@ -441,6 +443,12 @@ class HangingProtocolService {
     // replace the same modality type, but later
     if (protocolViewport.displaySets.length > 1) {
       throw new Error('Cannot update viewport with multiple displaySets yet');
+    }
+
+    // If there is no displaySet, then we can assume that the viewport
+    // is empty and we can just add the new displaySet to it
+    if (protocolViewport.displaySets.length === 0) {
+      return defaultReturn;
     }
 
     // if the viewport is not empty, then we check the displaySets it is showing
@@ -451,12 +459,7 @@ class HangingProtocolService {
       protocol.displaySetSelectors[displaySetSelectorId];
 
     if (!displaySetSelector) {
-      return [
-        {
-          viewportIndex,
-          displaySetInstanceUIDs: [newDisplaySetInstanceUID],
-        },
-      ];
+      return defaultReturn;
     }
 
     // if we reach here, it means there are some rules that should be applied
@@ -468,12 +471,15 @@ class HangingProtocolService {
         displaySetOptions: [],
       },
       protocolViewport,
-      [displaySetSelector]
+      protocol.displaySetSelectors
     );
 
-    const {
-      displaySetInstanceUID: oldDisplaySetInstanceUIDs,
-    } = this.displaySetMatchDetails.get(displaySetSelectorId);
+    // if we don't have any match details for the displaySetSelector the viewport
+    // is currently showing, then we can assume that the new displaySetInstanceUID
+    // does not
+    if (!this.displaySetMatchDetails.get(displaySetSelectorId)) {
+      return defaultReturn;
+    }
 
     // if we reach here, it means that the displaySetInstanceUIDs to be dropped
     // in the viewportIndex are valid, and we can proceed with the update. However
@@ -550,15 +556,14 @@ class HangingProtocolService {
     protocolId: string,
     options = null as HangingProtocol.SetProtocolOptions,
     errorCallback = null
-  ): boolean {
+  ): void {
     const foundProtocol = this.protocols.get(protocolId);
 
     if (!foundProtocol) {
       console.warn(
         `ProtocolEngine::setProtocol - Protocol with id ${protocolId} not found - you should register it first via ,addProtocol`
       );
-
-      return false;
+      return;
     }
 
     const protocol = this._validateProtocol(foundProtocol);
@@ -567,17 +572,25 @@ class HangingProtocolService {
       this._validateOptions(options);
     }
 
-    this._setProtocol(protocol, options, errorCallback);
+    try {
+      this._setProtocol(protocol, options);
+    } catch (error) {
+      console.error(error);
 
-    return true;
+      if (errorCallback) {
+        errorCallback(error);
+      }
+
+      throw new Error(error);
+    }
   }
 
   private _setProtocol(
     protocol: HangingProtocol.Protocol,
-    options = null as HangingProtocol.SetProtocolOptions,
-    errorCallback = null
-  ): boolean {
+    options = null as HangingProtocol.SetProtocolOptions
+  ): void {
     this.stage = 0;
+    const oldProtocol = this.protocol;
     this.protocol = this._copyProtocol(protocol);
 
     const { imageLoadStrategy } = protocol;
@@ -594,22 +607,15 @@ class HangingProtocolService {
     try {
       this._updateViewports(options);
     } catch (error) {
-      console.warn(
-        `ProtocolEngine::setProtocol - Error setting protocol ${protocol.id}`,
-        error
-      );
-
-      if (errorCallback) {
-        errorCallback(error);
-      }
-
-      return false;
+      this.protocol = oldProtocol;
+      throw new Error(error);
     }
 
     this._broadcastChange(this.EVENTS.PROTOCOL_CHANGED, {
       viewportMatchDetails: this.viewportMatchDetails,
       displaySetMatchDetails: this.displaySetMatchDetails,
       hpAlreadyApplied: this.hpAlreadyApplied,
+      protocol: this.protocol,
     });
   }
 
@@ -694,7 +700,6 @@ class HangingProtocolService {
     }
 
     const { layoutType } = stageModel.viewportStructure;
-
     // Retrieve the properties associated with the current display set's viewport structure template
     // If no such layout properties exist, stop here.
     const layoutProps = stageModel.viewportStructure.properties;
@@ -724,6 +729,7 @@ class HangingProtocolService {
       }
 
       const viewport = stageModel.viewports[viewportIndex];
+
       for (const displaySet of viewport.displaySets) {
         const { id: displaySetId } = displaySet;
         // skip matching if already matched (e.g. by options above)
@@ -749,7 +755,7 @@ class HangingProtocolService {
 
     // Loop through each viewport
     stageModel.viewports.forEach((viewport, viewportIndex) => {
-      const { viewportOptions } = viewport;
+      const { viewportOptions = {} } = viewport;
       this.hpAlreadyApplied.set(viewportIndex, false);
       // DisplaySets for the viewport, Note: this is not the actual displaySet,
       // but it is a info to locate the displaySet from the displaySetService
@@ -817,11 +823,11 @@ class HangingProtocolService {
     // options at viewport level. if there are the following code will need to be
     // uncommented and tested.
 
-    // this._updateViewportSpecificMatchByOptions(
-    //   options as HangingProtocol.ViewportSpecificSetProtocolOptions,
-    //   protocol,
-    //   DisplaySetService
-    // );
+    this._updateViewportSpecificMatchByOptions(
+      options as HangingProtocol.ViewportSpecificSetProtocolOptions,
+      protocol,
+      DisplaySetService
+    );
   }
 
   private _updateViewportSpecificMatchByOptions(
@@ -837,7 +843,6 @@ class HangingProtocolService {
       const displaySetAndViewportOptions = options[viewportIndex];
 
       const protocolViewport = protocolViewports[viewportIndex];
-
       // if the protocol already has the viewport
       if (protocolViewport) {
         // if the protocol has a viewport with specific displaySets, we need to check if the
@@ -895,8 +900,37 @@ class HangingProtocolService {
             }
           }
         );
+      } else {
+        // if the protocol does not have the viewport, we need to create it
+        const newViewport = {
+          displaySets: [],
+          viewportOptions: {},
+        };
 
-        return;
+        displaySetAndViewportOptions?.displaySetInstanceUIDs?.forEach(
+          (displaySetInstanceUID, index) => {
+            const displaySet = DisplaySetService.getDisplaySetByUID(
+              displaySetInstanceUID
+            );
+
+            const displaySetId = `viewport_${viewportIndex}_displaySet_${index}`;
+
+            newViewport.displaySets.push({
+              id: displaySetId,
+            });
+
+            this.displaySetMatchDetails.set(displaySetId, {
+              SeriesInstanceUID: displaySet.SeriesInstanceUID,
+              StudyInstanceUID: displaySet.StudyInstanceUID,
+              displaySetInstanceUID: displaySet.displaySetInstanceUID,
+              matchDetails: {},
+              matchingScores: [],
+              sortingInfo: {},
+            });
+          }
+        );
+
+        protocolViewports[viewportIndex] = newViewport;
       }
     }
   }
@@ -1081,26 +1115,6 @@ class HangingProtocolService {
           );
         }
       });
-    } else {
-      options = options as HangingProtocol.ViewportSpecificSetProtocolOptions;
-
-      for (const viewportIndex in options) {
-        const displaySetAndViewportOptions = options[viewportIndex];
-
-        displaySetAndViewportOptions.displaySetInstanceUIDs.forEach(
-          displaySetInstanceUID => {
-            const displaySet = DisplaySetService.getDisplaySetByUID(
-              displaySetInstanceUID
-            );
-
-            if (!displaySet) {
-              throw new Error(
-                `The displaySetInstanceUID ${displaySetInstanceUID} is not found in the displaySetService`
-              );
-            }
-          }
-        );
-      }
     }
   }
 

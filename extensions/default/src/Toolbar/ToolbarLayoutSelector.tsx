@@ -6,15 +6,37 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
-function LayoutSelector({ rows, columns, onLayoutChange }) {
+function LayoutSelector({ rows, columns, servicesManager }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [disableSelector, setDisableSelector] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
+
+  const { HangingProtocolService } = servicesManager.services;
 
   const closeOnOutsideClick = () => {
     if (isOpen) {
       setIsOpen(false);
     }
   };
+
+  useEffect(() => {
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+      evt => {
+        const { protocol } = evt;
+
+        if (protocol.id === 'mpr') {
+          setDisableSelector(true);
+        } else {
+          setDisableSelector(false);
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [HangingProtocolService]);
 
   useEffect(() => {
     window.addEventListener('click', closeOnOutsideClick);
@@ -50,7 +72,7 @@ function LayoutSelector({ rows, columns, onLayoutChange }) {
           />
         )
       }
-      isActive={isOpen}
+      isActive={disableSelector ? false : isOpen}
       type="toggle"
     />
   );

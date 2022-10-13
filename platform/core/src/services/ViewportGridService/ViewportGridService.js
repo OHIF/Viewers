@@ -8,6 +8,7 @@ const publicAPI = {
   setDisplaySetsForViewports: _setDisplaySetsForViewports,
   setLayout: _setLayout,
   setCachedLayout: _setCachedLayout,
+  restoreCachedLayout: _restoreCachedLayout,
   setServiceImplementation,
   reset: _reset,
   set: _set,
@@ -24,6 +25,8 @@ const serviceImplementation = {
   _setLayout: () => console.warn('setLayout() NOT IMPLEMENTED'),
   _reset: () => console.warn('reset() NOT IMPLEMENTED'),
   _setCachedLayout: () => console.warn('setCachedLayout() NOT IMPLEMENTED'),
+  _restoreCachedLayout: () =>
+    console.warn('_restoreCachedLayout() NOT IMPLEMENTED'),
   _set: () => console.warn('set() NOT IMPLEMENTED'),
 };
 
@@ -67,8 +70,15 @@ function _reset() {
   return serviceImplementation._reset({});
 }
 
-function _setCachedLayout({ numCols, numRows, viewports }) {
-  return serviceImplementation._setLayout({ numCols, numRows, viewports });
+function _setCachedLayout({ cacheId, cachedLayout }) {
+  return serviceImplementation._setCachedLayout({
+    cacheId,
+    cachedLayout,
+  });
+}
+
+function _restoreCachedLayout(cacheId) {
+  return serviceImplementation._restoreCachedLayout(cacheId);
 }
 
 function setServiceImplementation({
@@ -77,6 +87,7 @@ function setServiceImplementation({
   setDisplaySetsForViewport: setDisplaySetsForViewportImplementation,
   setDisplaySetsForViewports: setDisplaySetsForViewportsImplementation,
   setCachedLayout: setCachedLayoutImplementation,
+  restoreCachedLayout: restoreCachedLayoutImplementation,
   setLayout: setLayoutImplementation,
   reset: resetImplementation,
   set: setImplementation,
@@ -101,6 +112,9 @@ function setServiceImplementation({
   }
   if (setCachedLayoutImplementation) {
     serviceImplementation._setCachedLayout = setCachedLayoutImplementation;
+  }
+  if (restoreCachedLayoutImplementation) {
+    serviceImplementation._restoreCachedLayout = restoreCachedLayoutImplementation;
   }
   if (setImplementation) {
     serviceImplementation._set = setImplementation;
