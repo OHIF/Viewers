@@ -75,7 +75,11 @@ export default class DisplaySetService {
     );
   };
 
-  getDisplaySetForSOPInstanceUID(SOPInstanceUID, SeriesInstanceUID) {
+  getDisplaySetForSOPInstanceUID(
+    SOPInstanceUID,
+    SeriesInstanceUID,
+    frameNumber
+  ) {
     const displaySets = SeriesInstanceUID
       ? this.getDisplaySetsForSeries(SeriesInstanceUID)
       : this.getDisplaySetCache();

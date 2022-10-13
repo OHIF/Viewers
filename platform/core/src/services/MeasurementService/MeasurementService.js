@@ -38,6 +38,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'FrameOfReferenceUID',
   'referenceStudyUID',
   'referenceSeriesUID',
+  'frameNumber',
   'displaySetInstanceUID',
   'label',
   'description',

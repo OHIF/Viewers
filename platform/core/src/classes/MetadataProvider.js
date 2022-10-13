@@ -52,7 +52,7 @@ class MetadataProvider {
   }
 
   _getInstance(imageId) {
-    const uids = this._getUIDsFromImageID(imageId);
+    const uids = this.getUIDsFromImageID(imageId);
 
     if (!uids) {
       return;
@@ -191,14 +191,16 @@ class MetadataProvider {
           rows: toNumber(instance.Rows),
           columns: toNumber(instance.Columns),
           imageOrientationPatient: toNumber(ImageOrientationPatient),
-          rowCosines: toNumber(rowCosines),
-          columnCosines: toNumber(columnCosines),
-          imagePositionPatient: toNumber(instance.ImagePositionPatient),
+          rowCosines: toNumber(rowCosines || [0, 1, 0]),
+          columnCosines: toNumber(columnCosines || [0, 0, -1]),
+          imagePositionPatient: toNumber(
+            instance.ImagePositionPatient || [0, 0, 0]
+          ),
           sliceThickness: toNumber(instance.SliceThickness),
           sliceLocation: toNumber(instance.SliceLocation),
-          pixelSpacing: toNumber(PixelSpacing),
-          rowPixelSpacing: toNumber(rowPixelSpacing),
-          columnPixelSpacing: toNumber(columnPixelSpacing),
+          pixelSpacing: toNumber(PixelSpacing || 1),
+          rowPixelSpacing: toNumber(rowPixelSpacing || 1),
+          columnPixelSpacing: toNumber(columnPixelSpacing || 1),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
@@ -409,7 +411,7 @@ class MetadataProvider {
     return metadata;
   }
 
-  _getUIDsFromImageID(imageId) {
+  getUIDsFromImageID(imageId) {
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,
