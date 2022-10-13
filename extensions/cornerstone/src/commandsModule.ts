@@ -73,6 +73,7 @@ const commandsModule = ({ servicesManager }) => {
   // and update its UI
   function _disableToggleButton(toolGroupId, toolName) {
     const toolGroup = _getToolGroup(toolGroupId);
+
     toolGroup.setToolDisabled(toolName);
 
     // Get the primary toolId from the ToolBarService and set it to active
@@ -463,8 +464,14 @@ const commandsModule = ({ servicesManager }) => {
       const defaultProtocolStage = defaultProtocol.stages[0];
       defaultProtocolStage.viewportStructure = viewportStructure;
 
-      // turn off crossharis, todo: i hate this
-      _disableToggleButton('mpr', 'Crosshairs');
+      // turn off crosshairs if it is on, todo: i hate this
+      const mprToolGroup = _getToolGroup('mpr');
+      if (
+        mprToolGroup.getToolInstance('Crosshairs')?.mode ===
+        Enums.ToolModes.Acitve
+      ) {
+        _disableToggleButton('mpr', 'Crosshairs');
+      }
 
       HangingProtocolService.setProtocol(
         'default',
