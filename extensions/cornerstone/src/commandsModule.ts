@@ -69,6 +69,30 @@ const commandsModule = ({ servicesManager }) => {
     return toolGroup;
   }
 
+  // Todo: this should be part of ToolBarService to disable a toggled button
+  // and update its UI
+  function _disableToggleButton(toolGroupId, toolName) {
+    const toolGroup = _getToolGroup(toolGroupId);
+    toolGroup.setToolDisabled(toolName);
+
+    // Get the primary toolId from the ToolBarService and set it to active
+    // Since it was set to passive if not already active
+    const primaryActiveTool = ToolBarService.state.primaryToolId;
+    if (
+      toolGroup?.toolOptions[primaryActiveTool]?.mode ===
+      Enums.ToolModes.Passive
+    ) {
+      toolGroup.setToolActive(primaryActiveTool, {
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      });
+    }
+
+    ToolBarService.recordInteraction({
+      itemId: 'Crosshairs',
+      interactionType: 'toggle',
+    });
+  }
+
   const actions = {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
@@ -141,31 +165,18 @@ const commandsModule = ({ servicesManager }) => {
           type: 'info',
           duration: 3000,
         });
-        return;
+
+        throw new Error('Crosshairs tool is not available in this viewport');
       }
 
       // If it is Enabled
       if (toggledState) {
         actions.setToolActive({ toolName, toolGroupId });
-        return true;
+        return;
       }
 
-      const toolGroup = _getToolGroup(toolGroupId);
-      toolGroup.setToolDisabled(toolName);
-
-      // Get the primary toolId from the ToolBarService and set it to active
-      // Since it was set to passive if not already active
-      const primaryActiveTool = ToolBarService.state.primaryToolId;
-      if (
-        toolGroup?.toolOptions[primaryActiveTool]?.mode ===
-        Enums.ToolModes.Passive
-      ) {
-        toolGroup.setToolActive(primaryActiveTool, {
-          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-        });
-      }
-
-      return true;
+      // turn off crosshairs
+      _disableToggleButton(toolGroupId, toolName);
     },
     setToolActive: ({ toolName, toolGroupId = null }) => {
       const toolGroup = _getToolGroup(toolGroupId);
@@ -391,7 +402,7 @@ const commandsModule = ({ servicesManager }) => {
           title: 'Multiplanar reconstruction (MPR) ',
           message:
             'Cannot create MPR for this series since it is not reconstructable.',
-          type: 'warning',
+          type: 'info',
           duration: 3000,
         });
       };
@@ -452,6 +463,9 @@ const commandsModule = ({ servicesManager }) => {
       const defaultProtocolStage = defaultProtocol.stages[0];
       defaultProtocolStage.viewportStructure = viewportStructure;
 
+      // turn off crossharis, todo: i hate this
+      _disableToggleButton('mpr', 'Crosshairs');
+
       HangingProtocolService.setProtocol(
         'default',
         viewportSpecificMatch,
@@ -460,7 +474,7 @@ const commandsModule = ({ servicesManager }) => {
             title: 'Multiplanar reconstruction (MPR) ',
             message:
               'Something went wrong while trying to restore the previous layout.',
-            type: 'warning',
+            type: 'info',
             duration: 3000,
           });
         }

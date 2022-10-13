@@ -88,6 +88,10 @@ export default class ToolBarService {
             ? true
             : !this.state.toggles[itemId];
 
+        if (!commands) {
+          break;
+        }
+
         commands.forEach(({ commandName, commandOptions, context }) => {
           if (!commandOptions) {
             commandOptions = {};
