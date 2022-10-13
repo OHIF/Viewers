@@ -37,12 +37,21 @@ function OHIFCornerstoneSEGViewport(props) {
     SegmentationService,
   } = servicesManager.services;
 
-  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
+  const toolGroupId =
+    viewportOptions.toolGroupId ??
+    `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
 
   // SEG viewport will always have a single display set
   if (displaySets.length > 1) {
     throw new Error('SEG viewport should only have a single display set');
   }
+
+  console.debug(
+    "i'm in the budy of viewport",
+    viewportIndex,
+    'and have toolGroupId',
+    toolGroupId
+  );
 
   const segDisplaySet = displaySets[0];
 
@@ -84,6 +93,12 @@ function OHIFCornerstoneSEGViewport(props) {
     } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
+    console.debug(
+      'toolGroupId of ',
+      toolGroupId,
+      'for viewport',
+      viewportIndex
+    );
 
     return (
       <Component
@@ -99,7 +114,7 @@ function OHIFCornerstoneSEGViewport(props) {
         // initialImageIndex={initialImageIndex}
       ></Component>
     );
-  }, [viewportIndex, segDisplaySet]);
+  }, [viewportIndex, segDisplaySet, toolGroupId]);
 
   const onSegmentChange = useCallback(
     direction => {
