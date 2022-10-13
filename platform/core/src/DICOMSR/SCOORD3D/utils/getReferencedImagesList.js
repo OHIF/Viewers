@@ -7,10 +7,12 @@ const getReferencedImagesList = ImagingMeasurementReportContentSequence => {
   const ImageLibrary = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.ImageLibrary
+        CodeNameCodeSequenceValues.ImageLibrary ||
+      item.ConceptNameCodeSequence.CodeValue ===
+        CodeNameCodeSequenceValues.ImagingMeasurements
   );
 
-  if (!ImageLibrary.ContentSequence) {
+  if (!ImageLibrary || !ImageLibrary.ContentSequence) {
     return referencedImages;
   }
 
@@ -19,8 +21,14 @@ const getReferencedImagesList = ImagingMeasurementReportContentSequence => {
   ).find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.ImageLibraryGroup
+        CodeNameCodeSequenceValues.ImageLibraryGroup ||
+      item.ConceptNameCodeSequence.CodeValue ===
+        CodeNameCodeSequenceValues.MeasurementGroup
   );
+
+  if (!ImageLibraryGroup || !ImageLibraryGroup.ContentSequence) {
+    return referencedImages;
+  }
 
   getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;

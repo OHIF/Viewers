@@ -150,7 +150,7 @@ class ViewerMain extends Component {
             title: 'DICOM Segmentation Loader',
             message: error.message,
             type: 'error',
-            autoClose: true,
+            autoClose: false,
           });
         };
 
@@ -173,7 +173,7 @@ class ViewerMain extends Component {
           );
           document.dispatchEvent(selectionFired);
         });
-      } else {
+      } else if (Modality !== 'SR') {
         displaySet = displaySet.getSourceDisplaySet(this.props.studies);
       }
 

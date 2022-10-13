@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.12.14...@ohif/extension-cornerstone@2.12.15) (2022-09-20)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.12.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.12.13...@ohif/extension-cornerstone@2.12.14) (2022-09-01)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.12.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.12.12...@ohif/extension-cornerstone@2.12.13) (2022-06-30)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.12.12](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.12.11...@ohif/extension-cornerstone@2.12.12) (2022-06-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.12.11](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.12.10...@ohif/extension-cornerstone@2.12.11) (2022-06-14)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 ## [2.12.10](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.12.9...@ohif/extension-cornerstone@2.12.10) (2022-04-05)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

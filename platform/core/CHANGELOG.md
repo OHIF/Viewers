@@ -3,6 +3,97 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.29](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.28...@ohif/core@2.16.29) (2022-09-20)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.28](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.27...@ohif/core@2.16.28) (2022-09-19)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.27](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.26...@ohif/core@2.16.27) (2022-09-12)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.26](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.25...@ohif/core@2.16.26) (2022-09-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.25](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.24...@ohif/core@2.16.25) (2022-09-01)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.24](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.23...@ohif/core@2.16.24) (2022-08-31)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.23](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.22...@ohif/core@2.16.23) (2022-08-24)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.22](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.21...@ohif/core@2.16.22) (2022-06-30)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.21](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.20...@ohif/core@2.16.21) (2022-06-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.20](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.19...@ohif/core@2.16.20) (2022-06-28)
+
+
+### Bug Fixes
+
+* Re IDC2797, fix double parsing of SR qualitative annotations ([#2830](https://github.com/OHIF/Viewers/issues/2830)) ([9f813e0](https://github.com/OHIF/Viewers/commit/9f813e0ea08f0aada8efab9ef6228ad90dd1758d))
+
+
+
+
+
+## [2.16.19](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.18...@ohif/core@2.16.19) (2022-06-14)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 ## [2.16.18](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.17...@ohif/core@2.16.18) (2022-04-22)
 
 **Note:** Version bump only for package @ohif/core

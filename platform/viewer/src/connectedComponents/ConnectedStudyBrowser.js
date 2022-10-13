@@ -25,7 +25,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
               title: 'DICOM Segmentation Loader',
               message: error.message,
               type: 'error',
-              autoClose: true,
+              autoClose: false,
             });
           };
 
@@ -48,7 +48,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             );
             document.dispatchEvent(selectionFired);
           });
-        } else {
+        } else if (Modality !== 'SR') {
           displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
         }
 
