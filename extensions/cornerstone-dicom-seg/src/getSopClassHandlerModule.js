@@ -90,13 +90,18 @@ function _getDisplaySetsFromSeries(
     return referencedDisplaySet;
   };
 
-  displaySet.load = async () =>
-    await _load(displaySet, servicesManager, extensionManager);
+  displaySet.load = async ({ headers }) =>
+    await _load(displaySet, servicesManager, extensionManager, headers);
 
   return [displaySet];
 }
 
-async function _load(segDisplaySet, servicesManager, extensionManager) {
+async function _load(
+  segDisplaySet,
+  servicesManager,
+  extensionManager,
+  headers
+) {
   const { SegmentationService } = servicesManager.services;
 
   if (_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
@@ -107,7 +112,11 @@ async function _load(segDisplaySet, servicesManager, extensionManager) {
     !segDisplaySet.segments ||
     Object.keys(segDisplaySet.segments).length === 0
   ) {
-    const segments = await _loadSegments(extensionManager, segDisplaySet);
+    const segments = await _loadSegments(
+      extensionManager,
+      segDisplaySet,
+      headers
+    );
 
     segDisplaySet.segments = segments;
   }
@@ -122,14 +131,16 @@ async function _load(segDisplaySet, servicesManager, extensionManager) {
   segDisplaySet.isLoaded = true;
 }
 
-async function _loadSegments(extensionManager, segDisplaySet) {
+async function _loadSegments(extensionManager, segDisplaySet, headers) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
 
   const { dicomLoaderService } = utilityModule.exports;
   const segArrayBuffer = await dicomLoaderService.findDicomDataPromise(
-    segDisplaySet
+    segDisplaySet,
+    null,
+    headers
   );
 
   const dicomData = DicomMessage.readFile(segArrayBuffer);

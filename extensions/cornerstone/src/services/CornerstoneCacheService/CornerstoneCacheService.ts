@@ -146,8 +146,11 @@ class CornerstoneCacheService {
       // function (e.g., SEG, RT, since they rely on the reference volumes
       // and they take care of their own loading after they are created in their
       // getSOPClassHandler method
+
       if (displaySet.load && displaySet.load instanceof Function) {
-        await displaySet.load();
+        const { UserAuthenticationService } = this.servicesManager.services;
+        const headers = UserAuthenticationService.getAuthorizationHeader();
+        await displaySet.load({ headers });
 
         volumeData.push({
           studyInstanceUID: displaySet.StudyInstanceUID,

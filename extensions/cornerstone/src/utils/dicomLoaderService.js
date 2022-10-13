@@ -182,13 +182,14 @@ class DicomLoaderService {
     }
   }
 
-  *getLoaderIterator(dataset, studies) {
+  *getLoaderIterator(dataset, studies, headers) {
     yield this.getLocalData(dataset, studies);
     yield this.getDataByImageType(dataset);
     yield this.getDataByDatasetType(dataset);
   }
 
-  findDicomDataPromise(dataset, studies) {
+  findDicomDataPromise(dataset, studies, headers) {
+    dataset.authorizationHeaders = headers;
     const loaderIterator = this.getLoaderIterator(dataset, studies);
     // it returns first valid retriever method.
     for (const loader of loaderIterator) {
