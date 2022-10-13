@@ -16,15 +16,20 @@ const { formatDate } = utils;
  * @param {*} param0
  */
 function PanelStudyBrowserTracking({
-  MeasurementService,
-  DisplaySetService,
-  UIDialogService,
-  UINotificationService,
+  servicesManager,
   getImageSrc,
   getStudiesForPatientByStudyInstanceUID,
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
+  const {
+    MeasurementService,
+    DisplaySetService,
+    UIDialogService,
+    HangingProtocolService,
+    UINotificationService,
+  } = servicesManager.services;
+
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails

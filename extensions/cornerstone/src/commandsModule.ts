@@ -307,9 +307,12 @@ const commandsModule = ({ servicesManager }) => {
 
       if (viewport instanceof StackViewport) {
         viewport.resetProperties();
+      } else {
+        // Todo: add reset properties for volume viewport
         viewport.resetCamera();
-        viewport.render();
       }
+
+      viewport.render();
     },
     scaleViewport: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -399,10 +402,14 @@ const commandsModule = ({ servicesManager }) => {
       if (toggledState) {
         return HangingProtocolService.setProtocol(
           'mpr',
-          viewportDisplaySetInstanceUIDs,
+          {
+            displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
+          },
           errorCallback
         );
       }
+
+      HangingProtocolService.setProtocol('default');
     },
   };
 

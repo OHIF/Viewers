@@ -34,7 +34,6 @@ function OHIFCornerstoneSEGViewport(props) {
   const {
     DisplaySetService,
     ToolGroupService,
-    HangingProtocolService,
     SegmentationService,
   } = servicesManager.services;
 
@@ -153,7 +152,7 @@ function OHIFCornerstoneSEGViewport(props) {
         if (
           displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
         ) {
-          HangingProtocolService.setDisplaySetsForViewport({
+          viewportGridService.setDisplaySetsForViewport({
             viewportIndex: activeViewportIndex,
             displaySetInstanceUIDs: [],
           });

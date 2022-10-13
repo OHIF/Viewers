@@ -69,11 +69,11 @@ function ViewerViewportGrid(props) {
           }
         );
 
-        if (!displaySetUIDsToHang.length) {
-          continue;
-        }
+        // if (!displaySetUIDsToHang.length) {
+        //   continue;
+        // }
 
-        HangingProtocolService.setDisplaySetsForViewport({
+        viewportGridService.setDisplaySetsForViewport({
           viewportIndex: viewportIndex,
           displaySetInstanceUIDs: displaySetUIDsToHang,
           viewportOptions,
@@ -123,7 +123,7 @@ function ViewerViewportGrid(props) {
     return () => {
       unsubscribe();
     };
-  }, [viewports]);
+  }, []);
 
   // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
@@ -171,7 +171,7 @@ function ViewerViewportGrid(props) {
         }
 
         // If not in any of the viewports, hang it inside the active viewport
-        HangingProtocolService.setDisplaySetsForViewport({
+        viewportGridService.setDisplaySetsForViewport({
           viewportIndex,
           displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
           viewportOptions: {
@@ -256,10 +256,24 @@ function ViewerViewportGrid(props) {
   */
 
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
-    HangingProtocolService.setDisplaySetsForViewport({
-      viewportIndex,
-      displaySetInstanceUIDs: [displaySetInstanceUID],
-    });
+    let updatedViewports = [];
+    try {
+      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+        viewportIndex,
+        displaySetInstanceUID
+      );
+    } catch (error) {
+      console.warn(error);
+      UINotificationService.show({
+        title: 'Drag and Drop',
+        message:
+          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+        type: 'info',
+        duration: 3000,
+      });
+    }
+
+    viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
   const getViewportPanes = useCallback(() => {

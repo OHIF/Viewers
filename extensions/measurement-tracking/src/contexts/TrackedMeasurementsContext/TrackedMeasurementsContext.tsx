@@ -30,7 +30,6 @@ function TrackedMeasurementsContextProvider(
 ) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportIndex, viewports } = viewportGrid;
-  const { HangingProtocolService } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
@@ -57,7 +56,7 @@ function TrackedMeasurementsContextProvider(
         const StructuredReportDisplaySetInstanceUID =
           evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
 
-        HangingProtocolService.setDisplaySetsForViewport({
+        viewportGridService.setDisplaySetsForViewport({
           viewportIndex: evt.data.viewportIndex,
           displaySetInstanceUIDs: [StructuredReportDisplaySetInstanceUID],
         });

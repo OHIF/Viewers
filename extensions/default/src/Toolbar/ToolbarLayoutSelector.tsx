@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   LayoutSelector as OHIFLayoutSelector,
   ToolbarButton,
   useViewportGrid,
 } from '@ohif/ui';
 
-function LayoutSelector({rows, columns}) {
+function LayoutSelector({ rows, columns, onLayoutChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
@@ -44,7 +45,7 @@ function LayoutSelector({rows, columns}) {
             rows={rows}
             columns={columns}
             onSelection={({ numRows, numCols }) => {
-              viewportGridService.setLayout({ numCols, numRows });
+              viewportGridService.setLayout({ numRows, numCols });
             }}
           />
         )
@@ -54,5 +55,17 @@ function LayoutSelector({rows, columns}) {
     />
   );
 }
+
+LayoutSelector.propTypes = {
+  rows: PropTypes.number,
+  columns: PropTypes.number,
+  onLayoutChange: PropTypes.func,
+};
+
+LayoutSelector.defaultProps = {
+  rows: 3,
+  columns: 3,
+  onLayoutChange: () => {},
+};
 
 export default LayoutSelector;
