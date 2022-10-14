@@ -6,7 +6,7 @@ import { adapters } from 'dcmjs';
 
 const { CodeScheme: Cornerstone3DCodeScheme } = adapters.Cornerstone3D;
 
-const { ImageSet } = classes;
+const { ImageSet, MetadataProvider: metadataProvider } = classes;
 // TODO ->
 // Add SR thumbnail
 // Make viewport
@@ -214,20 +214,26 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     newDisplaySet
   );
 
-  for (let i = 0; i < images.length; i++) {
+  for (const imageId of imageIdsForDisplaySet) {
     if (!unloadedMeasurements.length) {
       // All measurements loaded.
-      break;
+      return;
     }
 
-    const image = images[i];
-    const { SOPInstanceUID } = image;
-    if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
-      const imageId = imageIdsForDisplaySet[i];
+    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(
+      imageId
+    );
 
+    if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
-        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
+        if (
+          _measurementReferencesSOPInstanceUID(
+            measurement,
+            SOPInstanceUID,
+            frameNumber
+          )
+        ) {
           addMeasurement(
             measurement,
             imageId,
@@ -241,8 +247,22 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   }
 }
 
-function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
+function _measurementReferencesSOPInstanceUID(
+  measurement,
+  SOPInstanceUID,
+  frameNumber
+) {
   const { coords } = measurement;
+
+  // NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
+  //  Standard. But for now, we will support only one ReferenceFrameNumber.
+  const ReferencedFrameNumber =
+    (measurement.coords[0].ReferencedSOPSequence &&
+      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
+    1;
+
+  if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber))
+    return false;
 
   for (let j = 0; j < coords.length; j++) {
     const coord = coords[j];

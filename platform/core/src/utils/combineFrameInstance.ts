@@ -12,22 +12,33 @@ const combineFrameInstance = (frame, instance) => {
   const {
     PerFrameFunctionalGroupsSequence,
     SharedFunctionalGroupsSequence,
+    NumberOfFrames,
   } = instance;
-  if (!PerFrameFunctionalGroupsSequence) return instance;
-  const shared = Object.values(SharedFunctionalGroupsSequence[0])
-    .map(it => it[0])
-    .filter(it => it !== undefined && typeof it === 'object');
-  const perFrame = Object.values(
-    PerFrameFunctionalGroupsSequence[(frame || 1) - 1]
-  )
-    .map(it => it[0])
-    .filter(it => it !== undefined && typeof it === 'object');
-  return Object.assign(
-    {},
-    instance,
-    ...Object.values(shared),
-    ...Object.values(perFrame)
-  );
+
+  if (PerFrameFunctionalGroupsSequence || NumberOfFrames > 1) {
+    const frameNumber = Number.parseInt(frame || 1);
+    const shared = (SharedFunctionalGroupsSequence
+      ? Object.values(SharedFunctionalGroupsSequence[0])
+      : []
+    )
+      .map(it => it[0])
+      .filter(it => it !== undefined && typeof it === 'object');
+    const perFrame = (PerFrameFunctionalGroupsSequence
+      ? Object.values(PerFrameFunctionalGroupsSequence[frameNumber - 1])
+      : []
+    )
+      .map(it => it[0])
+      .filter(it => it !== undefined && typeof it === 'object');
+
+    return Object.assign(
+      { frameNumber: frameNumber },
+      instance,
+      ...Object.values(shared),
+      ...Object.values(perFrame)
+    );
+  } else {
+    return instance;
+  }
 };
 
 export default combineFrameInstance;

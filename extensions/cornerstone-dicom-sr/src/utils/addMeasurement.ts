@@ -45,6 +45,12 @@ export default function addMeasurement(
 
   const annotationManager = annotation.state.getDefaultAnnotationManager();
 
+  // Create Cornerstone3D Annotation from measurement
+  const frameNumber =
+    (measurement.coords[0].ReferencedSOPSequence &&
+      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
+    1;
+
   const SRAnnotation: Types.Annotation = {
     annotationUID: measurement.TrackingUniqueIdentifier,
     metadata: {
@@ -61,6 +67,7 @@ export default function addMeasurement(
         TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
         renderableData: measurementData.renderableData,
       },
+      frameNumber: frameNumber,
     },
   };
 
@@ -75,6 +82,7 @@ export default function addMeasurement(
   // It'd be super weird if it didn't anyway as a SCOORD.
   measurement.ReferencedSOPInstanceUID =
     measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
+  measurement.frameNumber = frameNumber;
   delete measurement.coords;
 }
 

@@ -52,9 +52,9 @@ const MeasurementItem = ({
       </div>
       <div className="relative flex flex-col flex-1 px-2 py-1">
         <span className="mb-1 text-base text-primary-light">{label}</span>
-        {displayText.map(line => (
+        {displayText.map((line, i) => (
           <span
-            key={line}
+            key={i}
             className="pl-2 text-base text-white border-l border-primary-light"
             dangerouslySetInnerHTML={{ __html: line }}
           ></span>

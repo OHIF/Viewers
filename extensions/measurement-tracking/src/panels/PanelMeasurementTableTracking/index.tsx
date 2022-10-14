@@ -17,9 +17,9 @@ const { formatDate } = utils;
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
-  date: undefined, // '07-Sep-2010',
-  modality: undefined, // 'CT',
-  description: undefined, // 'CHEST/ABD/PELVIS W CONTRAST',
+  date: '', // '07-Sep-2010',
+  modality: '', // 'CT',
+  description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
