@@ -118,11 +118,20 @@ async function loadAndCacheDerivedDisplaySets(
           typeof recentDisplaySet.getSourceDisplaySet === 'function'
         ) {
           if (recentDisplaySet.Modality === 'SEG' && logger) {
+            console.log('GC here');
             const onDisplaySetLoadFailureHandler = error => {
-              logger.error({ error, message: error.message });
+              const message =
+                error.message.includes('orthogonal') ||
+                error.message.includes('oblique')
+                  ? 'The segmentation has been detected as not planar,\
+          If you really think it is planar,\
+          please adjust the tolerance in the segmentation panel settings (at your own peril!)'
+                  : error.message;
+
+              logger.error({ error, message });
               snackbar.show({
                 title: 'DICOM Segmentation Loader',
-                message: error.message,
+                message,
                 type: 'error',
                 autoClose: false,
               });
