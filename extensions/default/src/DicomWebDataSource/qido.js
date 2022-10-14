@@ -108,7 +108,6 @@ async function search(
   seriesInstanceUid,
   queryParameters
 ) {
-  console.log('THOMAS - STEP 6', { queryParameters });
   let searchResult = await dicomWebClient.searchForStudies({
     studyInstanceUid: undefined,
     queryParams: queryParameters,

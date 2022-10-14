@@ -45,7 +45,6 @@ export default class RetrieveMetadataLoader {
     for (const loader of loaders) {
       try {
         result = await loader();
-        console.log('THOMAS', { result });
         if (result && result.length) {
           break; // closes iterator in case data is retrieved successfully
         }

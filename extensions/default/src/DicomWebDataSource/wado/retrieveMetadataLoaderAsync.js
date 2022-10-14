@@ -39,7 +39,6 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
    * @returns {Array} Array of preLoaders. To be consumed as queue
    */
   *getPreLoaders() {
-    console.log('THOMAS', { this: this });
     const preLoaders = [];
     const {
       studyInstanceUID,
