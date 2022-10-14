@@ -39,6 +39,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
    * @returns {Array} Array of preLoaders. To be consumed as queue
    */
   *getPreLoaders() {
+    console.log('THOMAS', { this: this });
     const preLoaders = [];
     const {
       studyInstanceUID,
@@ -51,8 +52,10 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
         studyInstanceUID,
         queryParams: { SeriesInstanceUID: seriesInstanceUID },
       };
+
       preLoaders.push(client.searchForSeries.bind(client, options));
     }
+
     // Fallback preloader
     preLoaders.push(client.searchForSeries.bind(client, { studyInstanceUID }));
 

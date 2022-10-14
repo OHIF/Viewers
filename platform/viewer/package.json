@@ -21,6 +21,7 @@
     "build:viewer": "cross-env NODE_ENV=production yarn run build",
     "build:dev": "cross-env NODE_ENV=development yarn run build",
     "build:aws": "cross-env NODE_ENV=development APP_CONFIG=config/aws_static.js yarn run build && gzip -9 -r dist",
+    "build:static": "cross-env NODE_ENV=development APP_CONFIG=config/local_static.js yarn run build",
     "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/ APP_CONFIG=config/netlify.js QUICK_BUILD=true yarn run build",
     "build:viewer:qa": "cross-env NODE_ENV=production APP_CONFIG=config/google.js yarn run build",
     "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html QUICK_BUILD=true yarn run build",

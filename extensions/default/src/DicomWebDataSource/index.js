@@ -49,6 +49,8 @@ const metadataProvider = classes.MetadataProvider;
  * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
 function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
+  console.log('THOMAS', { dicomWebConfig });
+
   const {
     qidoRoot,
     wadoRoot,
@@ -70,6 +72,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   const wadoConfig = {
     url: wadoRoot,
+    staticWado,
     singlepart,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
@@ -80,12 +83,18 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   const qidoDicomWebClient = staticWado
     ? new StaticWadoClient(qidoConfig)
     : new api.DICOMwebClient(qidoConfig);
-  const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
+
+  // const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
+  const wadoDicomWebClient = staticWado
+    ? new StaticWadoClient(wadoConfig)
+    : new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
       const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
+
+      console.log('THOMAS - STEP 2', { queryStudyInstanceUIDs });
 
       const StudyInstanceUIDs =
         queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
@@ -109,6 +118,12 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
               supportsFuzzyMatching,
               supportsWildcard,
             }) || {};
+
+          console.log('THOMAS - STEP 5', {
+            studyInstanceUid,
+            seriesInstanceUid,
+            mappedParams,
+          });
 
           const results = await qidoSearch(
             qidoDicomWebClient,

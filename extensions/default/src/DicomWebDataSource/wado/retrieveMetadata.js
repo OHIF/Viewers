@@ -32,7 +32,7 @@ async function RetrieveMetadata(
     sortFunction
   );
   const data = await retrieveMetadataLoader.execLoad();
-
+  console.log('THOMAS', { data });
   return data;
 }
 

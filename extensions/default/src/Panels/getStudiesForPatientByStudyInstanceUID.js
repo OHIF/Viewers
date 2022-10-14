@@ -10,9 +10,13 @@ async function getStudiesForPatientByStudyInstanceUID(
   // We could also force this to "await" these values being available in the DICOMStore?
   // Kind of like promise fulfillment in cornerstone-wado-image-loader when there are multiple
   // outgoing requests for the same data
+  console.log('THOMAS - STEP 4', { StudyInstanceUID });
+
   const getStudyResult = await dataSource.query.studies.search({
     studyInstanceUid: StudyInstanceUID,
   });
+
+  console.log('THOMAS - STEP 9', { getStudyResult });
 
   // TODO: To Erik's point, the data source likely shouldn't deviate from
   // Naturalized DICOM JSON when returning. It makes things like this awkward (mrn)
