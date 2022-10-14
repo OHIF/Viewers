@@ -15,10 +15,11 @@ import Compose from './Compose';
  * @param props.servicesManager to read services from
  * @param props.studyInstanceUIDs for a list of studies to read
  * @param props.dataSource to read the data from
+ * @param props.seriesInstanceUID query param to read the data from
  * @returns array of subscriptions to cancel
  */
 function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource },
+  { servicesManager, studyInstanceUIDs, dataSource, seriesInstanceUID },
   hangingProtocol
 ) {
   const {
@@ -44,7 +45,12 @@ function defaultRouteInit(
   unsubscriptions.push(instanceAddedUnsubscribe);
 
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
-    dataSource.retrieve.series.metadata({ StudyInstanceUID })
+    dataSource.retrieve.series.metadata({
+      StudyInstanceUID,
+      filters: {
+        seriesInstanceUID,
+      },
+    })
   );
 
   // The hanging protocol matching service is fairly expensive to run multiple
@@ -101,7 +107,7 @@ export default function ModeRoute({
   const location = useLocation();
   const query = useQuery();
   const params = useParams();
-
+  // console.log('\n\n\n\n\n\n', { params, query }, '\n\n\n\n\n\n');
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
@@ -230,6 +236,7 @@ export default function ModeRoute({
     if (!layoutTemplateData.current) {
       return;
     }
+
     // TODO: For some reason this is running before the Providers
     // are calling setServiceImplementation
     // TODO -> iterate through services.
@@ -250,8 +257,9 @@ export default function ModeRoute({
     hangingProtocolService.setActiveProtocols(hangingProtocol);
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
-
     const setupRouteInit = async () => {
+      const seriesInstanceUID = query.get('SeriesInstaceUID');
+
       if (route.init) {
         return await route.init(
           {
@@ -270,6 +278,7 @@ export default function ModeRoute({
           servicesManager,
           studyInstanceUIDs,
           dataSource,
+          seriesInstanceUID,
         },
         hangingProtocol
       );

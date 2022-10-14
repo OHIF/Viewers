@@ -51,8 +51,10 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
         studyInstanceUID,
         queryParams: { SeriesInstanceUID: seriesInstanceUID },
       };
+
       preLoaders.push(client.searchForSeries.bind(client, options));
     }
+
     // Fallback preloader
     preLoaders.push(client.searchForSeries.bind(client, { studyInstanceUID }));
 

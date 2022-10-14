@@ -32,7 +32,6 @@ async function RetrieveMetadata(
     sortFunction
   );
   const data = await retrieveMetadataLoader.execLoad();
-
   return data;
 }
 
