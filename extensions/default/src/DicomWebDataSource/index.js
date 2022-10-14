@@ -49,6 +49,8 @@ const metadataProvider = classes.MetadataProvider;
  * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
 function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
+  console.log('THOMAS', { dicomWebConfig });
+
   const {
     qidoRoot,
     wadoRoot,
@@ -92,6 +94,8 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
       const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
 
+      console.log('THOMAS - STEP 2', { queryStudyInstanceUIDs });
+
       const StudyInstanceUIDs =
         queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
@@ -114,6 +118,12 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
               supportsFuzzyMatching,
               supportsWildcard,
             }) || {};
+
+          console.log('THOMAS - STEP 5', {
+            studyInstanceUid,
+            seriesInstanceUid,
+            mappedParams,
+          });
 
           const results = await qidoSearch(
             qidoDicomWebClient,

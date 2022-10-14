@@ -176,6 +176,7 @@ export default function ModeRoute({
 
   useEffect(() => {
     // Todo: this should not be here, data source should not care about params
+    console.log('THOMAS - STEP 1');
     const initializeDataSource = async (params, query) => {
       const studyInstanceUIDs = await dataSource.initialize({
         params,
@@ -191,6 +192,7 @@ export default function ModeRoute({
   }, [location]);
 
   useEffect(() => {
+    console.log('THOMAS - STEP 3', { studyInstanceUIDs });
     const retrieveLayoutData = async () => {
       const layoutData = await route.layoutTemplate({
         location,
@@ -272,6 +274,8 @@ export default function ModeRoute({
           hangingProtocol
         );
       }
+
+      console.log('THOMAS - STEP 8', { seriesInstanceUID });
 
       return defaultRouteInit(
         {
