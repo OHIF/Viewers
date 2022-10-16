@@ -2772,6 +2772,14 @@
     detect-gpu "^4.0.7"
     lodash.clonedeep "4.5.0"
 
+"@cornerstonejs/core@^0.16.8":
+  version "0.16.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.16.8.tgz#084f24a3736b6b562eba6f6b4934b327cec06e13"
+  integrity sha512-V5h0VrynBmjQzviXt12bmtudj8eLv37Ycj7vgDHCi4U0xUezDHzV8FP8CEoesYdAvSXJOMLFG4iZn/cSftMEQg==
+  dependencies:
+    detect-gpu "^4.0.7"
+    lodash.clonedeep "4.5.0"
+
 "@cornerstonejs/streaming-image-volume-loader@^0.4.23":
   version "0.4.23"
   resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.4.23.tgz#77d8d0de03ea7343ff73af7b98ec2035212c1215"
@@ -12005,10 +12013,10 @@ dayjs@^1.10.4:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.2.tgz#fa0f5223ef0d6724b3d8327134890cfe3d72fbe5"
   integrity sha512-F4LXf1OeU9hrSYRPTTj/6FbO4HTjPKXvEIC1P2kcnFurViINCVk3ZV0xAS3XVx9MkMsXbbqlK6hjseaYbgKEHw==
 
-dcmjs@^0.28.1:
-  version "0.28.1"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.28.1.tgz#e9b20dddef41fbdbf87c96d0e31531dd6ac93087"
-  integrity sha512-PzlxfdZazOkv9OCFYtp9jWzMt2GnfSvBOQ2SCqnFlDbzZWAiT6kvrfVHx5ux65Lct0P0IGLGoqRdQChtsjzL5A==
+dcmjs@^0.28.3:
+  version "0.28.3"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.28.3.tgz#a756ab4b02363d12545c9830b8f97b5141723727"
+  integrity sha512-GZOu+CtNvdWsPv8ga9Ywm/1YadEqT/+FhwcpgsbDAmKDUKe+6uNH+8KbEsRcaN1V5WFQEMwRbF9IRTl2qOoZvA==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     gl-matrix "^3.1.0"
@@ -12016,11 +12024,6 @@ dcmjs@^0.28.1:
     loglevelnext "^3.0.1"
     ndarray "^1.0.19"
     pako "^2.0.4"
-
-debounce@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/debounce/-/debounce-1.2.0.tgz#44a540abc0ea9943018dc0eaa95cce87f65cd131"
-  integrity sha512-mYtLl1xfZLi1m4RtQYlZgJUNQjl4ZxVnHzIR8nLLgi4q1YT8o/WM+MK/f8yfcc9s5Ir5zRaPZyZU6xs1Syoocg==
 
 debug-log@^1.0.0:
   version "1.0.1"
