@@ -105,7 +105,7 @@ export default function ModeRoute({
   const location = useLocation();
   const query = useQuery();
   const params = useParams();
-  // console.log('\n\n\n\n\n\n', { params, query }, '\n\n\n\n\n\n');
+
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);

@@ -20,6 +20,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
 
   static seriesFilterKeys = {
     SeriesInstanceUID: '0020000E',
+    SeriesNumber: '00200011',
   };
 
   constructor(qidoConfig) {
