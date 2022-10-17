@@ -1,11 +1,11 @@
 ---
 sidebar_position: 7
-sidebar_label: Continuos Integration
+sidebar_label: Continuous Integration
 ---
 
-# Continuos Integration (CI)
+# Continuous Integration (CI)
 
-This repository uses `CircleCI` and `Netlify` for Continuos integration.
+This repository uses `CircleCI` and `Netlify` for Continuous integration.
 
 ## Deploy Previews
 
