@@ -129,8 +129,9 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     if (!testValue) return true;
     const valueElem = study[key] || study[altKey];
     if (!valueElem) return false;
-    if (valueElem.vr == 'DA')
+    if (valueElem.vr == 'DA') {
       return this.compareDateRange(testValue, valueElem.Value[0]);
+    }
     const value = valueElem.Value;
     return this.compareValues(testValue, value) && true;
   }

@@ -82,10 +82,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     ? new StaticWadoClient(qidoConfig)
     : new api.DICOMwebClient(qidoConfig);
 
-  // const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
-  const wadoDicomWebClient = staticWado
-    ? new StaticWadoClient(wadoConfig)
-    : new api.DICOMwebClient(wadoConfig);
+  const wadoDicomWebClient = new StaticWadoClient(wadoConfig);
 
   const implementation = {
     initialize: ({ params, query }) => {

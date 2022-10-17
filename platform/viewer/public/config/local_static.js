@@ -13,9 +13,9 @@ window.config = {
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
-        wadoUriRoot: 'http://localhost:5001/dicomweb',
-        qidoRoot: 'http://localhost:5001/dicomweb',
-        wadoRoot: 'http://localhost:5001/dicomweb',
+        wadoUriRoot: 'http://localhost:5000/dicomweb',
+        qidoRoot: 'http://localhost:5000/dicomweb',
+        wadoRoot: 'http://localhost:5000/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',

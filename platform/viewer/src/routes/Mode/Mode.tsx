@@ -15,11 +15,11 @@ import Compose from './Compose';
  * @param props.servicesManager to read services from
  * @param props.studyInstanceUIDs for a list of studies to read
  * @param props.dataSource to read the data from
- * @param props.seriesInstanceUID query param to read the data from
+ * @param props.filters filters from query params to read the data from
  * @returns array of subscriptions to cancel
  */
 function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource, seriesInstanceUID },
+  { servicesManager, studyInstanceUIDs, dataSource, filters },
   hangingProtocol
 ) {
   const {
@@ -47,9 +47,7 @@ function defaultRouteInit(
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
-      filters: {
-        seriesInstanceUID,
-      },
+      filters,
     })
   );
 
@@ -258,7 +256,14 @@ export default function ModeRoute({
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
     const setupRouteInit = async () => {
-      const seriesInstanceUID = query.get('SeriesInstaceUID');
+      const filters = Array.from(query.keys()).reduce(
+        (acc: Record<string, string>, val: string) => {
+          if (val !== 'StudyInstanceUIDs') {
+            return { ...acc, [val]: query.get(val) };
+          }
+        },
+        {}
+      );
 
       if (route.init) {
         return await route.init(
@@ -278,7 +283,7 @@ export default function ModeRoute({
           servicesManager,
           studyInstanceUIDs,
           dataSource,
-          seriesInstanceUID,
+          filters,
         },
         hangingProtocol
       );
