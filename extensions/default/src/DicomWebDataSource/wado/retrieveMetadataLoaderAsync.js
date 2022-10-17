@@ -66,7 +66,9 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const sortFunction = this.sortFunction;
 
     const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
+    console.time('naturalize');
     const naturalized = result.map(naturalizeDataset);
+    console.timeEnd('naturalize');
 
     return sortStudySeries(
       naturalized,

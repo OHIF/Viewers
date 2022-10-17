@@ -309,6 +309,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       const enableStudyLazyLoad = false;
 
       // data is all SOPInstanceUIDs
+      console.time('RetrieveMetadata');
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
         StudyInstanceUID,
@@ -319,7 +320,10 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       );
 
       // first naturalize the data
+      console.time('naturalize');
       const naturalizedInstancesMetadata = data.map(naturalizeDataset);
+      console.timeEnd('naturalize');
+      console.timeEnd('RetrieveMetadata');
 
       const seriesSummaryMetadata = {};
       const instancesPerSeries = {};
@@ -379,6 +383,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     ) => {
       const enableStudyLazyLoad = true;
       // Get Series
+      console.time('retrieveMetadata');
       const {
         preLoadData: seriesSummaryMetadata,
         promises: seriesPromises,
@@ -431,7 +436,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
       // Async load series, store as retrieved
       function storeInstances(instances) {
+        console.time('naturalize');
         const naturalizedInstances = instances.map(addRetrieveBulkData);
+        console.timeEnd('naturalize');
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach((instance, index) => {
@@ -479,9 +486,15 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         })
       );
       await Promise.all(seriesDeliveredPromises);
+      console.timeEnd('retrieveMetadata');
       setSuccessFlag();
     },
     deleteStudyMetadataPromise,
+
+    /**
+     * Generates a list of image ids.
+     * @returns string[] containing the image ids
+     */
     getImageIdsForDisplaySet(displaySet) {
       const images = displaySet.images;
       const imageIds = [];

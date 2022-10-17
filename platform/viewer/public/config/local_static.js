@@ -24,7 +24,8 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
+        // Add image to fetch single part
+        singlepart: 'bulkdata,video,pdf,image/jphc',
       },
     },
     {

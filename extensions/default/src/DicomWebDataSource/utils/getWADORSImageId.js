@@ -1,14 +1,32 @@
+import singlePartAccept from "./singlePartAccept";
+
 function buildInstanceWadoRsUri(instance, config) {
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
   return `${config.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}`;
 }
+
+/**
+ *
+ * @returns query parameters for request
+ */
+const buildQueryParams = (instance, config) => {
+  const { singlepart = '' } = config;
+  let ret = '';
+  const tsuid = instance.AvailableTransferSyntaxUID || instance.TransferSyntaxUID;
+  const accept = singlePartAccept[tsuid];
+  if (accept && singlepart.indexOf(accept) !== -1) {
+    ret = `?accept=${accept}`;
+  }
+  return ret;
+};
 
 function buildInstanceFrameWadoRsUri(instance, config, frame) {
   const baseWadoRsUri = buildInstanceWadoRsUri(instance, config);
 
   frame = frame || 1;
 
-  return `${baseWadoRsUri}/frames/${frame}`;
+  const queryParams = buildQueryParams(instance, config);
+  return `${baseWadoRsUri}/frames/${frame}${queryParams}`;
 }
 
 // function getWADORSImageUrl(instance, frame) {
