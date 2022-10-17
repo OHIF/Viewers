@@ -2,7 +2,7 @@ import React from 'react';
 import Lottie from 'lottie-react';
 import classNames from 'classnames';
 
-const LoadingIndicator = React.memo(({ className }) => {
+const LoadingIndicator = ({ className }) => {
   return (
     <div
       className={classNames(
@@ -13,13 +13,13 @@ const LoadingIndicator = React.memo(({ className }) => {
       <Lottie animationData={LoadingAnimation} />;
     </div>
   );
-}, false);
+};
 
 const LoadingAnimation = {
   v: '5.9.6',
   fr: 60,
   ip: 0,
-  op: 130,
+  op: 106,
   w: 215,
   h: 215,
   nm: 'ohif-progress',
@@ -211,7 +211,7 @@ const LoadingAnimation = {
         },
       ],
       ip: 0,
-      op: 1800,
+      op: 106,
       st: 0,
       ct: 1,
       bm: 0,
@@ -401,7 +401,7 @@ const LoadingAnimation = {
         },
       ],
       ip: 0,
-      op: 1800,
+      op: 106,
       st: 0,
       ct: 1,
       bm: 0,
@@ -591,7 +591,7 @@ const LoadingAnimation = {
         },
       ],
       ip: 0,
-      op: 1800,
+      op: 106,
       st: 0,
       ct: 1,
       bm: 0,
@@ -781,7 +781,7 @@ const LoadingAnimation = {
         },
       ],
       ip: 0,
-      op: 1800,
+      op: 106,
       st: 0,
       ct: 1,
       bm: 0,

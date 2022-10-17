@@ -22,6 +22,21 @@ import isEqual from 'lodash.isequal';
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 
+const EVENTS = {
+  // fired when the segmentation is updated (e.g. when a segment is added, removed, or modified, locked, visibility changed etc.)
+  SEGMENTATION_UPDATED: 'event::segmentation_updated',
+  // fired when the segmentation data (e.g., labelmap pixels) is modified
+  SEGMENTATION_DATA_MODIFIED: 'event::segmentation_data_modified',
+  // fired when the segmentation is added to the cornerstone
+  SEGMENTATION_ADDED: 'event::segmentation_added',
+  // fired when the segmentation is removed
+  SEGMENTATION_REMOVED: 'event::segmentation_removed',
+  // fired when the configuration for the segmentation is changed (e.g., brush size, render fill, outline thickness, etc.)
+  SEGMENTATION_CONFIGURATION_CHANGED:
+    'event::segmentation_configuration_changed',
+  SEGMENTATION_PIXEL_DATA_CREATED: 'event::segmentation_pixel_data_created',
+};
+
 type SegmentationConfig = cstTypes.LabelmapTypes.LabelmapConfig & {
   renderInactiveSegmentations: boolean;
   brushSize: number;
@@ -104,20 +119,6 @@ type SegmentationSchema = {
   segmentCount: number;
   // the array of segments with their details
   segments: Array<Segment>;
-};
-
-const EVENTS = {
-  // fired when the segmentation is updated (e.g. when a segment is added, removed, or modified, locked, visibility changed etc.)
-  SEGMENTATION_UPDATED: 'event::segmentation_updated',
-  // fired when the segmentation data (e.g., labelmap pixels) is modified
-  SEGMENTATION_DATA_MODIFIED: 'event::segmentation_data_modified',
-  // fired when the segmentation is added to the cornerstone
-  SEGMENTATION_ADDED: 'event::segmentation_added',
-  // fired when the segmentation is removed
-  SEGMENTATION_REMOVED: 'event::segmentation_removed',
-  // fired when the configuration for the segmentation is changed (e.g., brush size, render fill, outline thickness, etc.)
-  SEGMENTATION_CONFIGURATION_CHANGED:
-    'event::segmentation_configuration_changed',
 };
 
 const VALUE_TYPES = {};
@@ -758,6 +759,11 @@ class SegmentationService {
         isVisible: true,
         isLocked: false,
       };
+    });
+
+    this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
+      segmentationId,
+      segDisplaySet,
     });
 
     return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);

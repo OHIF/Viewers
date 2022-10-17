@@ -1,4 +1,5 @@
 import toNumber from './toNumber';
+import sortInstances from './sortInstances';
 
 // TODO: Is 10% a reasonable spacingTolerance for spacing?
 const spacingTolerance = 0.2;
@@ -28,10 +29,14 @@ export default function isDisplaySetReconstructable(instances) {
     return { value: false };
   }
 
+  const sortedInstances = sortInstances(instances);
+
+  debugger;
+
   if (isMultiframe) {
-    return processMultiframe(instances[0]);
+    return processMultiframe(sortedInstances[0]);
   } else {
-    return processSingleframe(instances);
+    return processSingleframe(sortedInstances);
   }
 }
 

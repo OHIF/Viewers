@@ -52,10 +52,8 @@ function _setDisplaySetsForViewport({
   });
 }
 
-function _setDisplaySetsForViewports({ viewports }) {
-  return serviceImplementation._setDisplaySetsForViewports({
-    viewports,
-  });
+function _setDisplaySetsForViewports(viewports) {
+  return serviceImplementation._setDisplaySetsForViewports(viewports);
 }
 
 function _setLayout({ numCols, numRows }) {

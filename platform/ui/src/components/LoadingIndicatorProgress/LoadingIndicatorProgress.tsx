@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { Icon } from '@ohif/ui';
 
-import './LoadingIndicator.css';
+import './LoadingIndicatorProgress.css';
 
 function LoadingIndicator({ className }) {
   return (

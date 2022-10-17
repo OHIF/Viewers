@@ -25,7 +25,7 @@ import {
   useModal,
   AboutModal,
   UserPreferences,
-  LoadingIndicator,
+  LoadingIndicatorProgress,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -463,7 +463,9 @@ function WorkList({
       ) : (
         <div className="flex flex-col items-center justify-center pt-48">
           {isLoadingData ? (
-            <LoadingIndicator className={'w-full h-full bg-primary-dark'} />
+            <LoadingIndicatorProgress
+              className={'w-full h-full bg-primary-dark'}
+            />
           ) : (
             <EmptyStudies />
           )}

@@ -12746,7 +12746,7 @@ gitignore@^0.7.0:
   resolved "https://registry.yarnpkg.com/gitignore/-/gitignore-0.7.0.tgz#062173df62344a572dfd76d98b59c45108562739"
   integrity sha512-6iE891OyeYQYVvdoWI/hcxDWJ0sOngSpIRadxLoYbsnZdqWIUsEfx+IrOpW3d/zWBA/eKYvs6ZZx6ogz2wEGoQ==
 
-gl-matrix@3.4.3, gl-matrix@^3.1.0:
+gl-matrix@3.4.3, gl-matrix@^3.1.0, gl-matrix@^3.4.3:
   version "3.4.3"
   resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-3.4.3.tgz#fc1191e8320009fd4d20e9339595c6041ddc22c9"
   integrity sha512-wcCp8vu8FT22BnvKVPjXa/ICBWRq/zjFfdofZy1WSpQZpphblv12/bOQLBC1rMM7SGOFS9ltVmKOHil5+Ml7gA==

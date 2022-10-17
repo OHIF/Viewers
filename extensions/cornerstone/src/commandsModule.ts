@@ -162,7 +162,7 @@ const commandsModule = ({ servicesManager }) => {
         UINotificationService.show({
           title: 'Crosshairs',
           message:
-            'You need to be in a MPR hanging protocol to use Crosshairs. Click on MPR button in the toolbar to activate it.',
+            'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
           type: 'info',
           duration: 3000,
         });
@@ -402,7 +402,7 @@ const commandsModule = ({ servicesManager }) => {
         UINotificationService.show({
           title: 'Multiplanar reconstruction (MPR) ',
           message:
-            'Cannot create MPR for this series since it is not reconstructable.',
+            'Cannot create MPR for this DisplaySet since it is not reconstructable.',
           type: 'info',
           duration: 3000,
         });
@@ -468,7 +468,7 @@ const commandsModule = ({ servicesManager }) => {
       const mprToolGroup = _getToolGroup('mpr');
       if (
         mprToolGroup.getToolInstance('Crosshairs')?.mode ===
-        Enums.ToolModes.Acitve
+        Enums.ToolModes.Active
       ) {
         _disableToggleButton('mpr', 'Crosshairs');
       }

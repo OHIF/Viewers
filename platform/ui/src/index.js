@@ -62,6 +62,7 @@ export {
   Label,
   LayoutSelector,
   LoadingIndicator,
+  LoadingIndicatorProgress,
   MeasurementTable,
   Modal,
   NavBar,

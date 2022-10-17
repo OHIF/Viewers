@@ -4,11 +4,13 @@ async function _hydrateSEGDisplaySet({
   toolGroupId,
   servicesManager,
 }) {
-  const { SegmentationService, ViewportGridService } = servicesManager.services;
+  const {
+    SegmentationService,
+    HangingProtocolService,
+    ViewportGridService,
+  } = servicesManager.services;
 
-  const displaySetInstanceUIDs = [
-    segDisplaySet.referencedDisplaySetInstanceUID,
-  ];
+  const displaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
 
   let segmentationId = null;
 
@@ -25,17 +27,24 @@ async function _hydrateSEGDisplaySet({
 
   const { viewports } = ViewportGridService.getState();
 
-  ViewportGridService.setDisplaySetsForViewport({
+  const updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
     viewportIndex,
-    displaySetInstanceUIDs: displaySetInstanceUIDs,
-    viewportOptions: {
-      viewportType: 'volume',
-      toolGroupId,
-      initialImageOptions: {
-        preset: 'middle',
-      },
-    },
-  });
+    displaySetInstanceUID
+  );
+
+  ViewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+  // ViewportGridService.setDisplaySetsForViewport({
+  //   viewportIndex,
+  //   displaySetInstanceUIDs: displaySetInstanceUIDs,
+  //   viewportOptions: {
+  //     viewportType: 'volume',
+  //     toolGroupId,
+  //     initialImageOptions: {
+  //       preset: 'middle',
+  //     },
+  //   },
+  // });
 
   // Todo: fix this after we have a better way for stack viewport segmentations
 

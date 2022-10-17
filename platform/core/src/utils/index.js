@@ -20,6 +20,7 @@ import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 import { isImage } from './isImage';
 import isDisplaySetReconstructable from './isDisplaySetReconstructable';
+import sortInstances from './sortInstances';
 import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
@@ -78,6 +79,7 @@ export {
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
+  sortInstances,
   imageIdToURI,
   debounce,
   roundNumber,

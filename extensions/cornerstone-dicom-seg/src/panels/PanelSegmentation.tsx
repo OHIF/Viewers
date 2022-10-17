@@ -11,7 +11,13 @@ export default function PanelSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const { SegmentationService, UIDialogService } = servicesManager.services;
+  const {
+    SegmentationService,
+    UIDialogService,
+    ViewportGridService,
+    ToolGroupService,
+    CornerstoneViewportService,
+  } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
@@ -83,8 +89,24 @@ export default function PanelSegmentation({
       segmentIndex
     );
 
-    SegmentationService.setActiveSegmentationForToolGroup(segmentationId);
-    SegmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
+    const { activeViewportIndex } = ViewportGridService.getState();
+
+    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+      activeViewportIndex
+    );
+    const viewportId = viewportInfo.getViewportId();
+    const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+
+    // const toolGroupId =
+    SegmentationService.setActiveSegmentationForToolGroup(
+      segmentationId,
+      toolGroup.id
+    );
+    SegmentationService.jumpToSegmentCenter(
+      segmentationId,
+      segmentIndex,
+      toolGroup.id
+    );
   };
 
   const onSegmentEdit = (segmentationId, segmentIndex) => {

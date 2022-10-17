@@ -9,7 +9,7 @@ import {
   AboutModal,
   Header,
   useModal,
-  LoadingIndicator,
+  LoadingIndicatorProgress,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -185,7 +185,7 @@ function ViewerLayout({
       >
         <React.Fragment>
           {showLoadingIndicator && (
-            <LoadingIndicator className="h-full w-full bg-black" />
+            <LoadingIndicatorProgress className="h-full w-full bg-black" />
           )}
           {/* LEFT SIDEPANELS */}
           {leftPanelComponents.length ? (
@@ -201,9 +201,6 @@ function ViewerLayout({
           <div className="flex flex-col flex-1 h-full">
             <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black relative">
               <ErrorBoundary context="Grid">
-                {/* {showLoadingIndicator && (
-                  <LoadingIndicator className="h-full w-full bg-black" />
-                )} */}
                 <ViewportGridComp
                   servicesManager={servicesManager}
                   viewportComponents={viewportComponents}

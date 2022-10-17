@@ -67,6 +67,7 @@ import ViewportOverlay from './ViewportOverlay';
 import InputRange from './InputRange';
 import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
+import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicator from './LoadingIndicator';
 
 export {
@@ -101,6 +102,7 @@ export {
   Label,
   LayoutSelector,
   LoadingIndicator,
+  LoadingIndicatorProgress,
   MeasurementTable,
   Modal,
   NavBar,
