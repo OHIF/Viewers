@@ -1293,6 +1293,13 @@ class SegmentationService {
         'fillAlphaInactive',
         fillAlphaInactive / 100
       );
+
+      // we assume that if the user changes the inactive fill alpha, they
+      // want the inactive outline to be also changed
+      this._setLabelmapConfigValue(
+        'outlineOpacityInactive',
+        Math.max(0.75, fillAlphaInactive / 100) // don't go below 0.7 for outline
+      );
     }
 
     if (brushSize !== undefined) {
