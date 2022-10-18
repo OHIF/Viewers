@@ -34,6 +34,8 @@ const EVENTS = {
   // fired when the configuration for the segmentation is changed (e.g., brush size, render fill, outline thickness, etc.)
   SEGMENTATION_CONFIGURATION_CHANGED:
     'event::segmentation_configuration_changed',
+  SEGMENT_PIXEL_DATA_CREATED: 'event::segment_pixel_data_created',
+  // for all segments
   SEGMENTATION_PIXEL_DATA_CREATED: 'event::segmentation_pixel_data_created',
 };
 
@@ -655,11 +657,12 @@ class SegmentationService {
       return acc;
     }, {} as { [sopUID: string]: number });
 
+    const numSegments = Object.keys(segments).length;
     // Note: ideally we could use the TypedArray set method, but since each
     // slice can have multiple segments, we need to loop over each slice and
     // set the segment value for each segment.
-    for (const segmentIndex in segments) {
-      const segmentInfo = segments[segmentIndex];
+
+    const _segmentInfoUpdate = (segmentInfo, segmentIndex) => {
       const { pixelData: segPixelData } = segmentInfo;
 
       let segmentX = 0;
@@ -739,6 +742,27 @@ class SegmentationService {
           },
         },
       };
+
+      this._broadcastEvent(EVENTS.SEGMENT_PIXEL_DATA_CREATED, {
+        segmentIndex: Number(segmentIndex),
+        numSegments,
+      });
+    };
+
+    for (const segmentIndex in segments) {
+      const segmentInfo = segments[segmentIndex];
+
+      // Important: we need a non-blocking way to update the segmentation
+      // state, otherwise the UI will freeze and the user will not be able
+      // to interact with the app or progress bars will not be updated.
+      const promise = new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          _segmentInfoUpdate(segmentInfo, segmentIndex);
+          resolve();
+        }, 0);
+      });
+
+      await promise;
     }
 
     segmentationSchema.segmentCount = Object.keys(segments).length;

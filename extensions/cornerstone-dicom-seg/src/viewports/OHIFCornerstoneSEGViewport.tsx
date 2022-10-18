@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 import classNames from 'classnames';
-import { eventTarget, cache, Enums } from '@cornerstonejs/core';
-import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import {
   Notification,
   ViewportActionBar,
@@ -58,6 +56,7 @@ function OHIFCornerstoneSEGViewport(props) {
   const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
   const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
+  const [loadingProgressText, setLoadingProgressText] = useState('Loading ...');
 
   // refs
   const referencedDisplaySetRef = useRef(null);
@@ -168,6 +167,21 @@ function OHIFCornerstoneSEGViewport(props) {
         ) {
           setSegIsLoading(false);
         }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [segDisplaySet]);
+
+  useEffect(() => {
+    const { unsubscribe } = SegmentationService.subscribe(
+      SegmentationService.EVENTS.SEGMENT_PIXEL_DATA_CREATED,
+      ({ segmentIndex, numSegments }) => {
+        setLoadingProgressText(
+          `Loading segment ${segmentIndex} of ${numSegments}`
+        );
       }
     );
 
@@ -323,7 +337,12 @@ function OHIFCornerstoneSEGViewport(props) {
       />
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {segIsLoading && <LoadingIndicatorProgress className="w-full h-full" />}
+        {segIsLoading && (
+          <LoadingIndicatorProgress
+            className="w-full h-full"
+            text={loadingProgressText}
+          />
+        )}
         {getCornerstoneViewport()}
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (

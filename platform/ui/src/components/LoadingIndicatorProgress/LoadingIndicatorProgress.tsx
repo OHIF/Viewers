@@ -4,7 +4,7 @@ import { Icon } from '@ohif/ui';
 
 import './LoadingIndicatorProgress.css';
 
-function LoadingIndicator({ className }) {
+function LoadingIndicatorProgress({ className, text }) {
   return (
     <div
       className={classNames(
@@ -20,8 +20,9 @@ function LoadingIndicator({ className }) {
           height: '8px',
         }}
       ></div>
+      <div className="mt-4 text-white text-sm">{text}</div>
     </div>
   );
 }
 
-export default LoadingIndicator;
+export default LoadingIndicatorProgress;
