@@ -6,6 +6,7 @@ import {
   getEnabledElement,
   getOrCreateCanvas,
   StackViewport,
+  VolumeViewport,
 } from '@cornerstonejs/core';
 import { ToolGroupManager } from '@cornerstonejs/tools';
 import PropTypes from 'prop-types';
@@ -29,12 +30,18 @@ const CornerstoneViewportDownloadForm = ({
 
   const enableViewport = viewportElement => {
     if (viewportElement) {
+      const csEnabledElement = getEnabledElement(activeViewportElement);
       const renderingEngine = CornerstoneViewportService.getRenderingEngine();
+      const viewport = renderingEngine.getViewport(csEnabledElement.viewportId);
 
       const viewportInput = {
         viewportId: VIEWPORT_ID,
         element: viewportElement,
-        type: Enums.ViewportType.STACK,
+        type: viewport.type,
+        defaultOptions: {
+          background: viewport.defaultOptions.background,
+          orientation: viewport.defaultOptions.orientation,
+        },
       };
 
       renderingEngine.enableElement(viewportInput);
@@ -115,26 +122,34 @@ const CornerstoneViewportDownloadForm = ({
 
         const { viewport } = activeViewportEnabledElement;
 
-        if (!(viewport instanceof StackViewport)) {
-          throw new Error('Viewport is not a StackViewport');
-        }
-
-        const imageId = viewport.getCurrentImageId();
-
         const renderingEngine = CornerstoneViewportService.getRenderingEngine();
-        const downloadViewport = renderingEngine.getViewport(
-          VIEWPORT_ID
-        ) as StackViewport;
+        const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
-        downloadViewport.setStack([imageId]).then(() => {
+        if (downloadViewport instanceof StackViewport) {
+          const imageId = viewport.getCurrentImageId();
           const properties = viewport.getProperties();
-          downloadViewport.setProperties(properties);
+
+          downloadViewport.setStack([imageId]).then(() => {
+            downloadViewport.setProperties(properties);
+
+            const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
+            const newHeight = Math.min(
+              height || image.height,
+              MAX_TEXTURE_SIZE
+            );
+
+            resolve({ width: newWidth, height: newHeight });
+          });
+        } else if (downloadViewport instanceof VolumeViewport) {
+          const actors = viewport.getActors();
+
+          downloadViewport.setActors(actors);
 
           const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
           const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
 
           resolve({ width: newWidth, height: newHeight });
-        });
+        }
       }
     });
 
@@ -186,7 +201,13 @@ const CornerstoneViewportDownloadForm = ({
     Object.values(downloadToolGroup._toolInstances).forEach(tool => {
       const toolName = tool.getToolName();
       if (toggle) {
-        downloadToolGroup.setToolEnabled(toolName);
+        // some tools such as crosshairs require more than one viewport,
+        // and they will not be enabled if there is only one viewport
+        try {
+          downloadToolGroup.setToolEnabled(toolName);
+        } catch (e) {
+          console.log(e);
+        }
       } else {
         downloadToolGroup.setToolDisabled(toolName);
       }
