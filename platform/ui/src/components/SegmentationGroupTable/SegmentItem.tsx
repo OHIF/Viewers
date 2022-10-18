@@ -10,6 +10,7 @@ const SegmentItem = ({
   isActive,
   isVisible,
   color,
+  showSegmentDelete,
   isLocked = false,
   onClick,
   onEdit,
@@ -54,7 +55,7 @@ const SegmentItem = ({
       >
         <div
           className={classnames(
-            'w-[27px] h-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
+            'w-[27px] h-full flex items-center justify-center border-r border-r-black text-[12px]',
             {
               'bg-primary-light text-black border-l border-l-primary-light rounded-l-sm': isActive,
               'bg-primary-dark text-aqua-pale': !isActive && isVisible,
@@ -62,7 +63,7 @@ const SegmentItem = ({
             }
           )}
         >
-          {isSegmentIndexHovering ? (
+          {isSegmentIndexHovering && showSegmentDelete ? (
             <Icon
               name="close"
               className={classnames('w-5 h-5 pr-2')}

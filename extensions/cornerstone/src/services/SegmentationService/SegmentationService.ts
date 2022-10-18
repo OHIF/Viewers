@@ -1035,7 +1035,8 @@ class SegmentationService {
   public setSegmentRGBAColorForSegmentation = (
     segmentationId: string,
     segmentIndex: number,
-    rgbaColor
+    rgbaColor,
+    toolGroupId?: string
   ) => {
     const segmentation = this.getSegmentation(segmentationId);
 
@@ -1047,20 +1048,27 @@ class SegmentationService {
       segmentationId,
       segmentIndex,
       rgbaColor[3],
-      null, // toolGroupId
+      toolGroupId, // toolGroupId
       true
     );
     this._setSegmentColor(
       segmentationId,
       segmentIndex,
       [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
-      null, // toolGroupId
+      toolGroupId, // toolGroupId
       true
     );
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
       segmentation,
     });
+  };
+
+  public getToolGroupsWithSegmentation = (segmentationId: string): string[] => {
+    const toolGroupIds = cstSegmentation.state.getToolGroupsWithSegmentation(
+      segmentationId
+    );
+    return toolGroupIds;
   };
 
   public hydrateSegmentation = (

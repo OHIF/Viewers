@@ -106,7 +106,7 @@ const SegmentationGroupTable = ({
                     onToggleSegmentationVisibility
                   }
                   onSegmentAdd={onSegmentAdd}
-                  onSegmentDelete={onSegmentDelete}
+                  showSegmentDelete={false}
                 />
                 <div className="h-2 bg-black"></div>
               </>
@@ -149,6 +149,26 @@ SegmentationGroupTable.defaultProps = {
   onToggleVisibility: () => {},
   onToggleVisibilityAll: () => {},
   onSegmentationClick: () => {},
+  segmentationConfig: {
+    initialConfig: {
+      fillAlpha: 0.5,
+      fillAlphaInactive: 0.5,
+      outlineWidthActive: 1,
+      outlineOpacity: 1,
+      outlineOpacityInactive: 0.5,
+      renderFill: true,
+      renderInactiveSegmentations: true,
+      renderOutline: true,
+    },
+    usePercentage: true,
+  },
+  setFillAlpha: () => {},
+  setFillAlphaInactive: () => {},
+  setOutlineWidthActive: () => {},
+  setOutlineOpacityActive: () => {},
+  setRenderFill: () => {},
+  setRenderInactiveSegmentations: () => {},
+  setRenderOutline: () => {},
 };
 
 export default SegmentationGroupTable;

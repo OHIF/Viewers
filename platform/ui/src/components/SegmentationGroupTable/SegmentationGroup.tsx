@@ -142,6 +142,7 @@ const SegmentationGroup = ({
   onToggleSegmentVisibility,
   onToggleSegmentationVisibility,
   onSegmentDelete,
+  showSegmentDelete,
   onToggleMinimizeSegmentation,
   onSegmentationConfigChange,
   onSegmentationDelete,
@@ -161,7 +162,7 @@ const SegmentationGroup = ({
         onSegmentationDelete={onSegmentationDelete}
       />
       {!isMinimized && (
-        <div className="max-h-104 ohif-scrollbar overflow-hidden">
+        <div className="">
           <AddNewSegmentRow
             onConfigChange={onSegmentationConfigChange}
             onSegmentAdd={onSegmentAdd}
@@ -170,37 +171,43 @@ const SegmentationGroup = ({
             id={id}
             showAddSegment={showAddSegment}
           />
-          {!!segments.length &&
-            segments.map(segment => {
-              if (segment === undefined || segment === null) {
-                return null;
-              }
+          <div
+            className="ohif-scrollbar overflow-y-auto"
+            style={{ maxHeight: '40rem' }}
+          >
+            {!!segments.length &&
+              segments.map(segment => {
+                if (segment === undefined || segment === null) {
+                  return null;
+                }
 
-              const {
-                segmentIndex,
-                color,
-                label,
-                isVisible,
-                isLocked,
-              } = segment;
-              return (
-                <SegmentItem
-                  key={segmentIndex}
-                  segmentationId={id}
-                  segmentIndex={segmentIndex}
-                  label={label}
-                  color={color}
-                  isActive={activeSegmentIndex === segmentIndex}
-                  isLocked={isLocked}
-                  isVisible={isVisible}
-                  onClick={onSegmentClick}
-                  onEdit={onSegmentEdit}
-                  onDelete={onSegmentDelete}
-                  onColor={onSegmentColorClick}
-                  onToggleVisibility={onToggleSegmentVisibility}
-                />
-              );
-            })}
+                const {
+                  segmentIndex,
+                  color,
+                  label,
+                  isVisible,
+                  isLocked,
+                } = segment;
+                return (
+                  <SegmentItem
+                    key={segmentIndex}
+                    segmentationId={id}
+                    segmentIndex={segmentIndex}
+                    label={label}
+                    color={color}
+                    isActive={activeSegmentIndex === segmentIndex}
+                    isLocked={isLocked}
+                    isVisible={isVisible}
+                    onClick={onSegmentClick}
+                    onEdit={onSegmentEdit}
+                    onDelete={onSegmentDelete}
+                    showSegmentDelete={showSegmentDelete}
+                    onColor={onSegmentColorClick}
+                    onToggleVisibility={onToggleSegmentVisibility}
+                  />
+                );
+              })}
+          </div>
         </div>
       )}
     </div>

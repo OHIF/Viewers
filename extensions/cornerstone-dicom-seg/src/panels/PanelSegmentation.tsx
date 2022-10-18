@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useCallback, useReducer } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable, Button, Icon } from '@ohif/ui';
-import classnames from 'classnames';
+import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
 
 import { useTranslation } from 'react-i18next';
@@ -83,12 +82,7 @@ export default function PanelSegmentation({
     SegmentationService.remove(segmentationId);
   };
 
-  const onSegmentClick = (segmentationId, segmentIndex) => {
-    SegmentationService.setActiveSegmentForSegmentation(
-      segmentationId,
-      segmentIndex
-    );
-
+  const getToolGroupId = () => {
     const { activeViewportIndex } = ViewportGridService.getState();
 
     const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
@@ -96,16 +90,25 @@ export default function PanelSegmentation({
     );
     const viewportId = viewportInfo.getViewportId();
     const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+    return toolGroup.id;
+  };
 
+  const onSegmentClick = (segmentationId, segmentIndex) => {
+    SegmentationService.setActiveSegmentForSegmentation(
+      segmentationId,
+      segmentIndex
+    );
+
+    const toolGroupId = getToolGroupId();
     // const toolGroupId =
     SegmentationService.setActiveSegmentationForToolGroup(
       segmentationId,
-      toolGroup.id
+      toolGroupId
     );
     SegmentationService.jumpToSegmentCenter(
       segmentationId,
       segmentIndex,
-      toolGroup.id
+      toolGroupId
     );
   };
 
@@ -162,6 +165,13 @@ export default function PanelSegmentation({
       a: opacity / 255.0,
     };
 
+    const toolGroupIds = SegmentationService.getToolGroupsWithSegmentation(
+      segmentationId
+    );
+
+    // todo: pick the first one
+    const toolGroupId = toolGroupIds[0];
+
     callColorPickerDialog(
       UIDialogService,
       rgbaColor,
@@ -177,18 +187,20 @@ export default function PanelSegmentation({
             newRgbaColor.r,
             newRgbaColor.g,
             newRgbaColor.b,
-            newRgbaColor.a * 255.0,
-          ]
+            newRgbaColor.a * 255,
+          ],
+          toolGroupId
         );
       }
     );
   };
 
   const onSegmentDelete = (segmentationId, segmentIndex) => {
-    SegmentationService.removeSegmentFromSegmentation(
-      segmentationId,
-      segmentIndex
-    );
+    // SegmentationService.removeSegmentFromSegmentation(
+    //   segmentationId,
+    //   segmentIndex
+    // );
+    console.warn('not implemented yet');
   };
 
   const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
@@ -218,7 +230,7 @@ export default function PanelSegmentation({
   );
 
   return (
-    <div className="flex flex-col justify-between invisible-scrollbar ">
+    <div className="flex flex-col justify-between">
       {/* show segmentation table */}
       {segmentations?.length ? (
         <SegmentationGroupTable
