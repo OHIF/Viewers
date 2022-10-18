@@ -778,9 +778,9 @@ class SegmentationService {
     toolGroupId?: string,
     highlightAlpha = 0.9,
     highlightSegment = true,
-    highlightTimeout = 750,
+    animationLength = 1000,
     highlightHideOthers = false,
-    highlightFunctionType: 'ease-in-out'
+    highlightFunctionType: 'ease-in-out' // todo: make animation functions configurable from outside
   ): void {
     const { ToolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
@@ -819,7 +819,7 @@ class SegmentationService {
           segmentIndex,
           toolGroup.id,
           highlightAlpha,
-          highlightTimeout,
+          animationLength,
           highlightHideOthers,
           highlightFunctionType
         );
@@ -832,7 +832,7 @@ class SegmentationService {
     segmentIndex: number,
     toolGroupId?: string,
     alpha = 0.9,
-    timeout = 750,
+    animationLength = 1000,
     hideOthers = true,
     highlightFunctionType: 'ease-in-out'
   ): void {
@@ -866,25 +866,26 @@ class SegmentationService {
       }
     }
 
-    function easeInOutSine(x: number): number {
-      return -(Math.cos(Math.PI * x) - 1) / 2;
+    const currentFillAlpha = 0.3;
+
+    function easeInOut(x: number): number {
+      // prettier-ignore
+      return -4 * ((1- currentFillAlpha) / Math.pow(animationLength, 2)) * x * (x - animationLength) + currentFillAlpha;
     }
 
-    // write a ease in out function that will set
-    // the alpha value to 0.9 after the timeout
-
     let count = 0;
-    const intervalTime = 16;
-    const numberOfAnimations = Math.ceil(2000 / 100);
+    const intervalTime = 30;
+    const numberOfFrames = Math.ceil(animationLength / intervalTime);
 
     const myInterval = setInterval(() => {
+      const newFillAlpha = easeInOut(count * intervalTime);
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
         segmentationRepresentation.segmentationRepresentationUID,
         {
           [segmentIndex]: {
             LABELMAP: {
-              fillAlpha: alpha * easeInOutSine(count / numberOfAnimations),
+              fillAlpha: newFillAlpha,
             },
           },
         }
@@ -892,18 +893,15 @@ class SegmentationService {
 
       count++;
 
-      if (count === numberOfAnimations) {
+      if (count === numberOfFrames) {
         clearInterval(myInterval);
+        cstSegmentation.config.setSegmentSpecificConfig(
+          toolGroupId,
+          segmentationRepresentation.segmentationRepresentationUID,
+          {}
+        );
       }
     }, intervalTime);
-
-    // setTimeout(() => {
-    //   cstSegmentation.config.setSegmentSpecificConfig(
-    //     toolGroupId,
-    //     segmentationRepresentation.segmentationRepresentationUID,
-    //     {}
-    //   );
-    // }, timeout);
   }
 
   public createSegmentationForDisplaySet = async (

@@ -97,7 +97,10 @@ class DicomLoaderService {
     const imageInstance = getImageInstance(dataset);
     const nonImageInstance = getNonImageInstance(dataset);
 
-    if (!imageInstance && !nonImageInstance) {
+    if (
+      (!imageInstance && !nonImageInstance) ||
+      !nonImageInstance.imageId.startsWith('dicomfile')
+    ) {
       return;
     }
 
