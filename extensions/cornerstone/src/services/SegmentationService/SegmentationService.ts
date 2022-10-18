@@ -667,56 +667,57 @@ class SegmentationService {
       let segmentZ = 0;
       let count = 0;
 
-      segmentInfo.functionalGroups.forEach(
-        (functionalGroup, functionalGroupIndex) => {
-          const {
-            ReferencedSOPInstanceUID,
-          } = functionalGroup.DerivationImageSequence.SourceImageSequence;
+      for (const [
+        functionalGroupIndex,
+        functionalGroup,
+      ] of segmentInfo.functionalGroups.entries()) {
+        const {
+          ReferencedSOPInstanceUID,
+        } = functionalGroup.DerivationImageSequence.SourceImageSequence;
 
-          const imageIdIndex = sopUIDImageIdIndexMap[ReferencedSOPInstanceUID];
+        const imageIdIndex = sopUIDImageIdIndexMap[ReferencedSOPInstanceUID];
 
-          if (imageIdIndex === -1) {
-            return;
-          }
+        if (imageIdIndex === -1) {
+          return;
+        }
 
-          const step = rows * columns;
+        const step = rows * columns;
 
-          // we need a faster way to get the pixel data for the current
-          // functional group, which we use typed array view
+        // we need a faster way to get the pixel data for the current
+        // functional group, which we use typed array view
 
-          const functionGroupPixelData = new Uint8Array(
-            segPixelData.buffer,
-            functionalGroupIndex * step,
-            step
-          );
+        const functionGroupPixelData = new Uint8Array(
+          segPixelData.buffer,
+          functionalGroupIndex * step,
+          step
+        );
 
-          const functionalGroupStartIndex = imageIdIndex * step;
-          const functionalGroupEndIndex = (imageIdIndex + 1) * step;
+        const functionalGroupStartIndex = imageIdIndex * step;
+        const functionalGroupEndIndex = (imageIdIndex + 1) * step;
 
-          // Note: this for loop is not optimized, since DICOM SEG stores
-          // each segment as a separate labelmap so if there is a slice
-          // that has multiple segments, we will have to loop over each
-          // segment and we cannot use the TypedArray set method.
-          for (
-            let i = functionalGroupStartIndex, j = 0;
-            i < functionalGroupEndIndex;
-            i++, j++
+        // Note: this for loop is not optimized, since DICOM SEG stores
+        // each segment as a separate labelmap so if there is a slice
+        // that has multiple segments, we will have to loop over each
+        // segment and we cannot use the TypedArray set method.
+        for (
+          let i = functionalGroupStartIndex, j = 0;
+          i < functionalGroupEndIndex;
+          i++, j++
+        ) {
+          if (
+            functionGroupPixelData[j] !== 0 &&
+            derivedVolumeScalarData[i] === 0
           ) {
-            if (
-              functionGroupPixelData[j] !== 0 &&
-              derivedVolumeScalarData[i] === 0
-            ) {
-              derivedVolumeScalarData[i] = segmentIndex;
+            derivedVolumeScalarData[i] = segmentIndex;
 
-              // centroid calculations
-              segmentX += i % columns;
-              segmentY += Math.floor(i / columns) % rows;
-              segmentZ += Math.floor(i / (columns * rows));
-              count++;
-            }
+            // centroid calculations
+            segmentX += i % columns;
+            segmentY += Math.floor(i / columns) % rows;
+            segmentZ += Math.floor(i / (columns * rows));
+            count++;
           }
         }
-      );
+      }
 
       // centroid calculations
       const x = Math.floor(segmentX / count);
@@ -778,7 +779,8 @@ class SegmentationService {
     highlightAlpha = 0.9,
     highlightSegment = true,
     highlightTimeout = 750,
-    highlightHideOthers = false
+    highlightHideOthers = false,
+    highlightFunctionType: 'ease-in-out'
   ): void {
     const { ToolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
@@ -818,7 +820,8 @@ class SegmentationService {
           toolGroup.id,
           highlightAlpha,
           highlightTimeout,
-          highlightHideOthers
+          highlightHideOthers,
+          highlightFunctionType
         );
       }
     });
@@ -830,7 +833,8 @@ class SegmentationService {
     toolGroupId?: string,
     alpha = 0.9,
     timeout = 750,
-    hideOthers = true
+    hideOthers = true,
+    highlightFunctionType: 'ease-in-out'
   ): void {
     const segmentation = this.getSegmentation(segmentationId);
     toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
@@ -862,19 +866,44 @@ class SegmentationService {
       }
     }
 
-    cstSegmentation.config.setSegmentSpecificConfig(
-      toolGroupId,
-      segmentationRepresentation.segmentationRepresentationUID,
-      newSegmentSpecificConfig
-    );
+    function easeInOutSine(x: number): number {
+      return -(Math.cos(Math.PI * x) - 1) / 2;
+    }
 
-    setTimeout(() => {
+    // write a ease in out function that will set
+    // the alpha value to 0.9 after the timeout
+
+    let count = 0;
+    const intervalTime = 16;
+    const numberOfAnimations = Math.ceil(2000 / 100);
+
+    const myInterval = setInterval(() => {
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
         segmentationRepresentation.segmentationRepresentationUID,
-        {}
+        {
+          [segmentIndex]: {
+            LABELMAP: {
+              fillAlpha: alpha * easeInOutSine(count / numberOfAnimations),
+            },
+          },
+        }
       );
-    }, timeout);
+
+      count++;
+
+      if (count === numberOfAnimations) {
+        clearInterval(myInterval);
+      }
+    }, intervalTime);
+
+    // setTimeout(() => {
+    //   cstSegmentation.config.setSegmentSpecificConfig(
+    //     toolGroupId,
+    //     segmentationRepresentation.segmentationRepresentationUID,
+    //     {}
+    //   );
+    // }, timeout);
   }
 
   public createSegmentationForDisplaySet = async (

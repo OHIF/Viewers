@@ -238,6 +238,10 @@ class CornerstoneCacheService {
       dataSource
     );
 
+    if (stackImageIds[0].startsWith('dicomfile')) {
+      return stackImageIds;
+    }
+
     return stackImageIds.map(imageId => {
       const imageURI = utils.imageIdToURI(imageId);
       return `${VOLUME_IMAGE_LOADER_SCHEME}:${imageURI}`;

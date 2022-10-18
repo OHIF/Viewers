@@ -38,6 +38,10 @@ const getImageInstance = dataset => {
   return dataset && dataset.images && dataset.images[0];
 };
 
+const getNonImageInstance = dataset => {
+  return dataset && dataset.instance;
+};
+
 const getImageInstanceId = imageInstance => {
   return getImageId(imageInstance);
 };
@@ -89,19 +93,25 @@ const getImageLoaderType = imageId => {
 
 class DicomLoaderService {
   getLocalData(dataset, studies) {
-    if (dataset && dataset.localFile) {
-      // Use referenced imageInstance
-      const imageInstance = getImageInstance(dataset);
-      let imageId = getImageInstanceId(imageInstance);
+    // Use referenced imageInstance
+    const imageInstance = getImageInstance(dataset);
+    const nonImageInstance = getNonImageInstance(dataset);
 
-      // or Try to get it from studies
-      if (someInvalidStrings(imageId)) {
-        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
-      }
+    if (!imageInstance && !nonImageInstance) {
+      return;
+    }
 
-      if (!someInvalidStrings(imageId)) {
-        return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
-      }
+    const instance = imageInstance || nonImageInstance;
+
+    let imageId = getImageInstanceId(instance);
+
+    // or Try to get it from studies
+    if (someInvalidStrings(imageId)) {
+      imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
+    }
+
+    if (!someInvalidStrings(imageId)) {
+      return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
     }
   }
 
