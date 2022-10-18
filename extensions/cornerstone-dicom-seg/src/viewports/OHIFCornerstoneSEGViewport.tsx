@@ -1,20 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
-import classNames from 'classnames';
 import {
   Notification,
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
-  Icon,
-  Tooltip,
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import _hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
+import _getStatusComponent from './_getStatusComponent';
 
 const { formatDate } = utils;
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
@@ -56,7 +54,10 @@ function OHIFCornerstoneSEGViewport(props) {
   const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
   const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
-  const [loadingProgressText, setLoadingProgressText] = useState('Loading ...');
+  const [progress, setProgress] = useState({
+    segmentIndex: 1,
+    totalSegments: null,
+  });
 
   // refs
   const referencedDisplaySetRef = useRef(null);
@@ -179,9 +180,10 @@ function OHIFCornerstoneSEGViewport(props) {
     const { unsubscribe } = SegmentationService.subscribe(
       SegmentationService.EVENTS.SEGMENT_PIXEL_DATA_CREATED,
       ({ segmentIndex, numSegments }) => {
-        setLoadingProgressText(
-          `Loading segment ${segmentIndex} of ${numSegments}`
-        );
+        setProgress({
+          segmentIndex,
+          totalSegments: numSegments,
+        });
       }
     );
 
@@ -340,7 +342,18 @@ function OHIFCornerstoneSEGViewport(props) {
         {segIsLoading && (
           <LoadingIndicatorProgress
             className="w-full h-full"
-            text={loadingProgressText}
+            textBlock={
+              !progress.totalSegments ? (
+                <span className="mt-4 text-white text-sm">Loading SEG ...</span>
+              ) : (
+                <span className="mt-4 text-white text-sm flex items-baseline space-x-2">
+                  <div>Loading Segment</div>
+                  <div className="w-3">{`${progress.segmentIndex}`}</div>
+                  <div>/</div>
+                  <div>{`${progress.totalSegments}`}</div>
+                </span>
+              )
+            }
           />
         )}
         {getCornerstoneViewport()}
@@ -373,93 +386,6 @@ OHIFCornerstoneSEGViewport.propTypes = {
 OHIFCornerstoneSEGViewport.defaultProps = {
   customProps: {},
 };
-
-function _getStatusComponent({ isHydrated, onPillClick }) {
-  let ToolTipMessage = null;
-  let StatusIcon = null;
-
-  switch (isHydrated) {
-    case true:
-      StatusIcon = () => (
-        <div
-          className="flex items-center justify-center -mr-1 rounded-full"
-          style={{
-            width: '18px',
-            height: '18px',
-            backgroundColor: '#98e5c1',
-            border: 'solid 1.5px #000000',
-          }}
-        >
-          <Icon
-            name="exclamation"
-            style={{ color: '#000', width: '12px', height: '12px' }}
-          />
-        </div>
-      );
-
-      ToolTipMessage = () => (
-        <div>This Segmentation is loaded in the segmentation panel</div>
-      );
-      break;
-    case false:
-      StatusIcon = () => (
-        <div
-          className="flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200"
-          style={{
-            width: '18px',
-            height: '18px',
-            border: 'solid 1.5px #000000',
-          }}
-        >
-          <Icon
-            name="arrow-left"
-            style={{ color: '#000', width: '14px', height: '14px' }}
-          />
-        </div>
-      );
-
-      ToolTipMessage = () => <div>Click to load segmentation.</div>;
-  }
-
-  const StatusPill = () => (
-    <div
-      className={classNames(
-        'group relative flex items-center justify-center px-8 rounded-full cursor-default bg-customgreen-100',
-        {
-          'hover:bg-customblue-100': !isHydrated,
-          'cursor-pointer': !isHydrated,
-        }
-      )}
-      style={{
-        height: '24px',
-        width: '55px',
-      }}
-      onClick={() => {
-        if (!isHydrated) {
-          if (onPillClick) {
-            onPillClick();
-          }
-        }
-      }}
-    >
-      <div className="pr-1 text-base font-medium leading-none text-black">
-        SEG
-      </div>
-      <StatusIcon />
-    </div>
-  );
-
-  return (
-    <>
-      {ToolTipMessage && (
-        <Tooltip content={<ToolTipMessage />} position="bottom-left">
-          <StatusPill />
-        </Tooltip>
-      )}
-      {!ToolTipMessage && <StatusPill />}
-    </>
-  );
-}
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   const image0 = referencedDisplaySet.images[0];
