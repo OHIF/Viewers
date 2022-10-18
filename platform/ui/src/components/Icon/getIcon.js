@@ -91,6 +91,8 @@ import rowShowAll from './../../assets/icons/row-show-all.svg';
 import rowUnhide from './../../assets/icons/row-unhide.svg';
 import rowUnlocked from './../../assets/icons/row-unlocked.svg';
 import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
+import checkboxDefault from './../../assets/icons/checkbox-default.svg';
+import checkboxActive from './../../assets/icons/checkbox-active.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -188,6 +190,8 @@ const ICONS = {
   'tab-segmentation': tabSegmentation,
   'ui-arrow-down': uiArrowDown,
   'ui-arrow-up': uiArrowUp,
+  'checkbox-default': checkboxDefault,
+  'checkbox-active': checkboxActive,
 
   /** Old OHIF */
   'old-trash': oldTrash,
