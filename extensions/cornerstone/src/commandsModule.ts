@@ -87,11 +87,6 @@ const commandsModule = ({ servicesManager }) => {
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       });
     }
-
-    ToolBarService.recordInteraction({
-      itemId: 'Crosshairs',
-      interactionType: 'toggle',
-    });
   }
 
   const actions = {
@@ -471,6 +466,10 @@ const commandsModule = ({ servicesManager }) => {
         Enums.ToolModes.Active
       ) {
         _disableToggleButton('mpr', 'Crosshairs');
+        ToolBarService.recordInteraction({
+          itemId: 'Crosshairs',
+          interactionType: 'toggle',
+        });
       }
 
       HangingProtocolService.setProtocol(

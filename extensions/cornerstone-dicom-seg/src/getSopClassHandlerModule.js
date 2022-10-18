@@ -127,8 +127,6 @@ async function _load(
     null,
     suppressEvents
   );
-
-  segDisplaySet.isLoaded = true;
 }
 
 async function _loadSegments(extensionManager, segDisplaySet, headers) {

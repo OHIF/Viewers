@@ -11,6 +11,7 @@ import {
   useViewportDialog,
   Icon,
   Tooltip,
+  LoadingIndicatorProgress,
 } from '@ohif/ui';
 
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
@@ -46,13 +47,6 @@ function OHIFCornerstoneSEGViewport(props) {
     throw new Error('SEG viewport should only have a single display set');
   }
 
-  console.debug(
-    "i'm in the budy of viewport",
-    viewportIndex,
-    'and have toolGroupId',
-    toolGroupId
-  );
-
   const segDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -63,12 +57,22 @@ function OHIFCornerstoneSEGViewport(props) {
   const [selectedSegment, setSelectedSegment] = useState(1);
   const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
+  const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
 
   // refs
   const referencedDisplaySetRef = useRef(null);
 
   const { viewports, activeViewportIndex } = viewportGrid;
 
+  const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
+  const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
+    referencedDisplaySet
+  );
+
+  referencedDisplaySetRef.current = {
+    displaySet: referencedDisplaySet,
+    metadata: referencedDisplaySetMetadata,
+  };
   /**
    * OnElementEnabled callback which is called after the cornerstoneExtension
    * has enabled the element. Note: we delegate all the image rendering to
@@ -93,12 +97,6 @@ function OHIFCornerstoneSEGViewport(props) {
     } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
-    console.debug(
-      'toolGroupId of ',
-      toolGroupId,
-      'for viewport',
-      viewportIndex
-    );
 
     return (
       <Component
@@ -145,6 +143,10 @@ function OHIFCornerstoneSEGViewport(props) {
   );
 
   useEffect(() => {
+    if (segIsLoading) {
+      return;
+    }
+
     promptHydrateSEG({
       servicesManager,
       viewportIndex,
@@ -154,7 +156,25 @@ function OHIFCornerstoneSEGViewport(props) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportIndex, segDisplaySet]);
+  }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
+
+  useEffect(() => {
+    const { unsubscribe } = SegmentationService.subscribe(
+      SegmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+      evt => {
+        if (
+          evt.segDisplaySet.displaySetInstanceUID ===
+          segDisplaySet.displaySetInstanceUID
+        ) {
+          setSegIsLoading(false);
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [segDisplaySet]);
 
   /**
    Cleanup the SEG viewport when the viewport is destroyed
@@ -206,16 +226,6 @@ function OHIFCornerstoneSEGViewport(props) {
   }, []);
 
   useEffect(() => {
-    const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
-
-    const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
-      referencedDisplaySet
-    );
-
-    referencedDisplaySetRef.current = {
-      displaySet: referencedDisplaySet,
-      metadata: referencedDisplaySetMetadata,
-    };
     setIsHydrated(segDisplaySet.isHydrated);
 
     return () => {
@@ -229,8 +239,6 @@ function OHIFCornerstoneSEGViewport(props) {
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
-
-  const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
 
   if (
     !referencedDisplaySetRef.current ||
@@ -315,6 +323,7 @@ function OHIFCornerstoneSEGViewport(props) {
       />
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
+        {segIsLoading && <LoadingIndicatorProgress className="w-full h-full" />}
         {getCornerstoneViewport()}
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
@@ -396,7 +405,7 @@ function _getStatusComponent({ isHydrated, onPillClick }) {
   const StatusPill = () => (
     <div
       className={classNames(
-        'group relative flex items-center justify-center px-2 rounded-full cursor-default bg-customgreen-100',
+        'group relative flex items-center justify-center px-8 rounded-full cursor-default bg-customgreen-100',
         {
           'hover:bg-customblue-100': !isHydrated,
           'cursor-pointer': !isHydrated,
@@ -414,7 +423,7 @@ function _getStatusComponent({ isHydrated, onPillClick }) {
         }
       }}
     >
-      <div className="pr-1 text-base font-bold leading-none text-black">
+      <div className="pr-1 text-base font-medium leading-none text-black">
         SEG
       </div>
       <StatusIcon />

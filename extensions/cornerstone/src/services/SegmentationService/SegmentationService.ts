@@ -761,6 +761,8 @@ class SegmentationService {
       };
     });
 
+    segDisplaySet.isLoaded = true;
+
     this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
       segmentationId,
       segDisplaySet,
