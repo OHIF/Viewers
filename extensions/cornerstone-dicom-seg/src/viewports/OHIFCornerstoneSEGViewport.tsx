@@ -342,11 +342,16 @@ function OHIFCornerstoneSEGViewport(props) {
         {segIsLoading && (
           <LoadingIndicatorProgress
             className="w-full h-full"
+            progress={
+              progress.totalSegments !== null
+                ? ((progress.segmentIndex + 1) / progress.totalSegments) * 100
+                : null
+            }
             textBlock={
               !progress.totalSegments ? (
-                <span className="mt-4 text-white text-sm">Loading SEG ...</span>
+                <span className="text-white text-sm">Loading SEG ...</span>
               ) : (
-                <span className="mt-4 text-white text-sm flex items-baseline space-x-2">
+                <span className="text-white text-sm flex items-baseline space-x-2">
                   <div>Loading Segment</div>
                   <div className="w-3">{`${progress.segmentIndex}`}</div>
                   <div>/</div>

@@ -1,28 +1,32 @@
-.shim-red {
-  position: relative;
+.loading {
+  background-color: lightgrey;
+  height: 4px;
+  border-radius: 2px;
   overflow: hidden;
-  background-color: rgb(90, 204, 230, 0.7);
-}
-.shim-red::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    rgba(233, 233, 233, 1) 0,
-    rgba(233, 233, 233, 0.9) 50%,
-    rgba(233, 233, 233, 0.8) 100%
-  );
-  animation: shimmer 3s ease-out;
-  content: '';
+  position: relative;
+  width: 12em;
 }
 
-@keyframes shimmer {
+.infinite-loading-bar {
+  animation: side2side 2s ease-in-out infinite;
+  height: 100%;
+  position: absolute;
+  width: 50%;
+}
+
+.loading-bar {
+  animation: side2side 2s ease-in-out infinite;
+  height: 100%;
+  position: absolute;
+  width: 50%;
+}
+
+@keyframes side2side {
+  0%,
   100% {
-    transform: translateX(0%);
-    opacity: 0;
+    transform: translateX(-50%);
+  }
+  50% {
+    transform: translateX(150%);
   }
 }
