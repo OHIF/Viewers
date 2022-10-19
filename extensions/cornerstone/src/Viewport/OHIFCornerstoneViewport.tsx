@@ -321,8 +321,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       <ReactResizeDetector
         handleWidth
         handleHeight
-        skipOnMount={true} // Todo: make these configurable
-        refreshMode={'debounce'}
+        skipOnMount={false} // Todo: make these configurable
+        refreshMode={'throttle'}
         refreshRate={100}
         onResize={onResize}
         targetRef={elementRef.current}
