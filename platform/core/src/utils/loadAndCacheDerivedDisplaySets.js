@@ -124,7 +124,7 @@ async function loadAndCacheDerivedDisplaySets(
                 title: 'DICOM Segmentation Loader',
                 message: error.message,
                 type: 'error',
-                autoClose: true,
+                autoClose: false,
               });
             };
 
