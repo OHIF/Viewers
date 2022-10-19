@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { classes } from '@ohif/core';
 import Range from './Range';
+import DicomTagTable from './DicomTagTable';
 import dcmjs from 'dcmjs';
-import DicomBrowserSelect from './DicomBrowserSelect';
 import moment from 'moment';
 import './DicomTagBrowser.css';
-import DicomBrowserSelectItem from './DicomBrowserSelectItem';
-import { connectMeasurementServiceToTools } from 'extensions/cornerstone/src/initMeasurementService';
+import { Select, Typography } from '@ohif/ui';
 
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
 const { nameMap } = DicomMetaDictionary;
 
-const metadataProvider = classes.MetadataProvider;
 
 let instanceSelectList = null;
+let instanceSelectTitle = null;
 
 const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   const [
@@ -27,6 +26,14 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   const [instanceList, setInstanceList] = useState([]);
   const [displaySetList, setDisplaySetList] = useState([]);
   const [isImageStack, setIsImageStack] = useState(false);
+  const [selectedDisplaySetValue, setSelectedDisplaySetValue] = useState({}
+  );
+  const onSeriesSelect = value => {
+    console.log(value);
+    setActiveDisplaySetInstanceUID(value.value);
+    setActiveInstance(1);
+    setSelectedDisplaySetValue(value);
+  };
 
   useEffect(() => {
     var activeDisplaySet = displaySets.find(
@@ -51,11 +58,12 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
       const displayDate = date.format('ddd, MMM Do YYYY');
       return {
         value: displaySetInstanceUID,
-        title: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
+        label: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
         description: displayDate,
         onClick: () => {
           setActiveDisplaySetInstanceUID(displaySetInstanceUID);
           setActiveInstance(1);
+
           //instanceSelectList.props.children.props.value = 1;
         },
       };
@@ -68,8 +76,14 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
       } else {
         activeDisplaySet = displaySets[0];
         setActiveDisplaySetInstanceUID(displaySets[0].displaySetInstanceUID);
+        setSelectedDisplaySetValue(newDisplaySetList[0]);
       }
 
+    } else {
+
+      setSelectedDisplaySetValue(newDisplaySetList.find(
+        ds => ds.value === activeDisplaySetInstanceUID
+      ));
     }
     const isImageStack =
       activeDisplaySet instanceof ImageSet; /*&&
@@ -98,18 +112,22 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
       metadata = activeDisplaySet;
     }
 
-    var instanceSlide;
 
     if (isImageStack) {
+      instanceSelectTitle = (
+        <Typography variant="subtitle" className="mr-5 text-right h-full">
+          Instance Number
+        </Typography>
+      )
       instanceSelectList = (
-        <div className="dicom-tag-browser-instance-range">
+        <div className="dicom-tag-browser-instance-range ml-auto">
           <Range
             showValue
             step={1}
             min={1}
             max={instanceList.length}
             value={activeInstance}
-            valueRenderer={value => <p>Instance Number: {value}</p>}
+            valueRenderer={value => <p>{value}</p>}
             onChange={({ target }) => {
               const instanceIndex = parseInt(target.value);
               setActiveInstance(instanceIndex);
@@ -127,60 +145,32 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     setIsImageStack(isImageStack);
   }, [activeDisplaySetInstanceUID, activeInstance, displaySets]);
 
-  const selectedDisplaySetValue = displaySetList.find(
-    ds => ds.value === activeDisplaySetInstanceUID
-  );
-
-
-
-
   return (
     <div className="dicom-tag-browser-content">
-      <header>
-        <DicomBrowserSelect
-          value={selectedDisplaySetValue}
-          formatOptionLabel={DicomBrowserSelectItem}
-          options={displaySetList}
-        />
+      <div className="flex flex-row items-center justify-between">
+        <Typography variant="subtitle" className="mr-5 text-right h-full">
+          Series
+        </Typography>
+        {instanceSelectTitle}</div>
+      <div className="flex flex-row items-center">
+
+        <div className="w-72">
+          <Select
+            isClearable={false}
+            onChange={onSeriesSelect}
+            options={displaySetList}
+            value={selectedDisplaySetValue}
+          /></div>
         {instanceSelectList}
-      </header>
+      </div>
+
       <div className="dicom-tag-browser-table-wrapper">
-        <DicomTagTable tags={tags} meta={meta}></DicomTagTable>
+        <DicomTagTable rows={getFormattedRowsFromTags(tags, meta)}></DicomTagTable>
       </div>
     </div>
   );
 };
 
-
-
-function DicomTagTable({ tags, meta }) {
-  const rows = getFormattedRowsFromTags(tags, meta);
-
-  return (
-    <table className="dicom-tag-browser-table">
-      <tbody>
-        <tr>
-          <th className="dicom-tag-browser-table-left">Tag</th>
-          <th className="dicom-tag-browser-table-left">Value Representation</th>
-          <th className="dicom-tag-browser-table-left">Keyword</th>
-          <th className="dicom-tag-browser-table-left">Value</th>
-        </tr>
-        {rows.map((row, index) => {
-          const className = row.className ? row.className : null;
-
-          return (
-            <tr className={className} key={`DICOMTagRow-${index}`}>
-              <td>{row[0]}</td>
-              <td className="dicom-tag-browser-table-center">{row[1]}</td>
-              <td>{row[2]}</td>
-              <td>{row[3]}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
-}
 
 function getFormattedRowsFromTags(tags, meta) {
   const rows = [];

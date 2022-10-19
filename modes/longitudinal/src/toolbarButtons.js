@@ -355,7 +355,7 @@ const toolbarButtons = [
             {
               commandName: 'openDICOMTagViewer',
               commandOptions: {},
-              context: 'TAGBROWSER',
+              context: 'DEFAULT',
           },
           ],
           'Dicom Tag Browser'
