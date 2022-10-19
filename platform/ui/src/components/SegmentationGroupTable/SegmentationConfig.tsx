@@ -57,7 +57,7 @@ const ActiveSegmentationConfig = ({
           minValue={0}
           maxValue={usePercentage ? 100 : 1}
           value={
-            usePercentage ? config.outlineAlpha * 100 : config.outlineAlpha
+            usePercentage ? config.outlineOpacity * 100 : config.outlineOpacity
           }
           onChange={value => {
             dispatch({

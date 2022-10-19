@@ -252,7 +252,7 @@ export default function PanelSegmentation({
           setOutlineOpacityActive={value =>
             setSegmentationConfiguration(
               selectedSegmentationId,
-              'outlineAlpha',
+              'outlineOpacity',
               value
             )
           }

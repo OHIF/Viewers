@@ -773,9 +773,9 @@ class SegmentationService {
     segmentationId: string,
     segmentIndex: number,
     toolGroupId?: string,
-    highlightAlpha = 0.9999999999999,
+    highlightAlpha = 0.9,
     highlightSegment = true,
-    highlightTimeout = 1000,
+    highlightTimeout = 750,
     highlightHideOthers = false
   ): void {
     const { ToolGroupService } = this.servicesManager.services;
@@ -826,8 +826,8 @@ class SegmentationService {
     segmentationId: string,
     segmentIndex: number,
     toolGroupId?: string,
-    alpha = 0.9999999999999,
-    timeout = 1000,
+    alpha = 0.9,
+    timeout = 750,
     hideOthers = true
   ): void {
     const segmentation = this.getSegmentation(segmentationId);
@@ -1168,7 +1168,8 @@ class SegmentationService {
       renderFill,
       fillAlpha,
       fillAlphaInactive,
-      outlineAlpha,
+      outlineOpacity,
+      outlineOpacityInactive,
     } = labelmapRepresentationConfig;
 
     return {
@@ -1180,7 +1181,8 @@ class SegmentationService {
       renderFill,
       renderInactiveSegmentations,
       renderOutline,
-      outlineAlpha,
+      outlineOpacity,
+      outlineOpacityInactive,
     };
   };
 
@@ -1191,7 +1193,7 @@ class SegmentationService {
       fillAlpha,
       fillAlphaInactive,
       outlineWidthActive,
-      outlineAlpha,
+      outlineOpacity,
       renderFill,
       renderInactiveSegmentations,
       renderOutline,
@@ -1206,8 +1208,8 @@ class SegmentationService {
       // this._setLabelmapConfigValue('outlineWidthInactive', outlineWidthActive);
     }
 
-    if (outlineAlpha !== undefined) {
-      this._setLabelmapConfigValue('outlineAlpha', outlineAlpha / 100);
+    if (outlineOpacity !== undefined) {
+      this._setLabelmapConfigValue('outlineOpacity', outlineOpacity / 100);
     }
 
     if (fillAlpha !== undefined) {

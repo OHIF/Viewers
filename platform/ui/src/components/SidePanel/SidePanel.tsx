@@ -255,7 +255,7 @@ const SidePanel = ({
                           }}
                         />
                       </span>
-                      <span className="text-[10px] whitespace-nowrap mt-2">
+                      <span className="text-[10px] font-medium whitespace-nowrap mt-2">
                         {obj.label}
                       </span>
                     </div>

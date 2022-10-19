@@ -31,8 +31,6 @@ export default function isDisplaySetReconstructable(instances) {
 
   const sortedInstances = sortInstances(instances);
 
-  debugger;
-
   if (isMultiframe) {
     return processMultiframe(sortedInstances[0]);
   } else {
