@@ -129,6 +129,7 @@ class SegmentationService {
   listeners = {};
   segmentations: Record<string, Segmentation>;
   servicesManager = null;
+  highlightIntervalId = null;
   _broadcastEvent: (eventName: string, callbackProps: any) => void;
   readonly EVENTS = EVENTS;
 
@@ -866,6 +867,10 @@ class SegmentationService {
     hideOthers = true,
     highlightFunctionType: 'ease-in-out'
   ): void {
+    if (this.highlightIntervalId) {
+      clearInterval(this.highlightIntervalId);
+    }
+
     const segmentation = this.getSegmentation(segmentationId);
     toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
 
@@ -906,7 +911,7 @@ class SegmentationService {
     const intervalTime = 30;
     const numberOfFrames = Math.ceil(animationLength / intervalTime);
 
-    const myInterval = setInterval(() => {
+    this.highlightIntervalId = setInterval(() => {
       const newf = easeInOut(count * intervalTime);
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
@@ -923,12 +928,14 @@ class SegmentationService {
       count++;
 
       if (count === numberOfFrames) {
-        clearInterval(myInterval);
+        clearInterval(this.highlightIntervalId);
         cstSegmentation.config.setSegmentSpecificConfig(
           toolGroupId,
           segmentationRepresentation.segmentationRepresentationUID,
           {}
         );
+
+        this.highlightIntervalId = null;
       }
     }, intervalTime);
   }
