@@ -152,47 +152,49 @@ export default function PanelSegmentation({
   };
 
   const onSegmentColorClick = (segmentationId, segmentIndex) => {
-    const segmentation = SegmentationService.getSegmentation(segmentationId);
+    return;
+    // Tdodo: Implement color picker later, alsmot there
+    // const segmentation = SegmentationService.getSegmentation(segmentationId);
 
-    const segment = segmentation.segments[segmentIndex];
-    const { color, opacity } = segment;
+    // const segment = segmentation.segments[segmentIndex];
+    // const { color, opacity } = segment;
 
-    // react-color expects rgb 0-255 and a 0-1.
-    const rgbaColor = {
-      r: color[0],
-      g: color[1],
-      b: color[2],
-      a: opacity / 255.0,
-    };
+    // // react-color expects rgb 0-255 and a 0-1.
+    // const rgbaColor = {
+    //   r: color[0],
+    //   g: color[1],
+    //   b: color[2],
+    //   a: opacity / 255.0,
+    // };
 
-    const toolGroupIds = SegmentationService.getToolGroupsWithSegmentation(
-      segmentationId
-    );
+    // const toolGroupIds = SegmentationService.getToolGroupsWithSegmentation(
+    //   segmentationId
+    // );
 
-    // todo: pick the first one
-    const toolGroupId = toolGroupIds[0];
+    // // todo: pick the first one
+    // const toolGroupId = toolGroupIds[0];
 
-    callColorPickerDialog(
-      UIDialogService,
-      rgbaColor,
-      (newRgbaColor, actionId) => {
-        if (actionId === 'cancel') {
-          return;
-        }
+    // callColorPickerDialog(
+    //   UIDialogService,
+    //   rgbaColor,
+    //   (newRgbaColor, actionId) => {
+    //     if (actionId === 'cancel') {
+    //       return;
+    //     }
 
-        SegmentationService.setSegmentRGBAColorForSegmentation(
-          segmentationId,
-          segmentIndex,
-          [
-            newRgbaColor.r,
-            newRgbaColor.g,
-            newRgbaColor.b,
-            newRgbaColor.a * 255,
-          ],
-          toolGroupId
-        );
-      }
-    );
+    //     SegmentationService.setSegmentRGBAColorForSegmentation(
+    //       segmentationId,
+    //       segmentIndex,
+    //       [
+    //         newRgbaColor.r,
+    //         newRgbaColor.g,
+    //         newRgbaColor.b,
+    //         newRgbaColor.a * 255,
+    //       ],
+    //       toolGroupId
+    //     );
+    //   }
+    // );
   };
 
   const onSegmentDelete = (segmentationId, segmentIndex) => {

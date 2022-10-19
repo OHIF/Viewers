@@ -139,9 +139,11 @@ function TrackedCornerstoneViewport(props) {
     cineHandler();
 
     return () => {
-      cineService.stopClip(element);
+      if (element && cines?.[viewportIndex]?.isPlaying) {
+        cineService.stopClip(element);
+      }
     };
-  }, [cines, viewportIndex, cineService, element]);
+  }, [cines, viewportIndex, cineService, element, cineHandler]);
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
@@ -195,7 +197,7 @@ function TrackedCornerstoneViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        useAltStyling = {isTracked}
+        useAltStyling={isTracked}
         onSeriesChange={direction => switchMeasurement(direction)}
         getStatusComponent={() => _getStatusComponent(isTracked)}
         studyData={{

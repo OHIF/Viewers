@@ -132,8 +132,6 @@ class SegmentationService {
   _broadcastEvent: (eventName: string, callbackProps: any) => void;
   readonly EVENTS = EVENTS;
 
-  private _suppressSegmentationModified = false;
-
   constructor({ servicesManager }) {
     this.segmentations = {};
     this.listeners = {};
@@ -154,6 +152,14 @@ class SegmentationService {
       csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
       this._onSegmentationDataModified
     );
+
+    // remove the segmentations from the cornerstone
+    Object.keys(this.segmentations).forEach(segmentationId => {
+      this._removeSegmentationFromCornerstone(segmentationId);
+    });
+
+    this.segmentations = {};
+    this.listeners = {};
   };
 
   /**
@@ -889,7 +895,6 @@ class SegmentationService {
         }
       }
     }
-
     const currentFillAlpha = 0.3;
 
     function easeInOut(x: number): number {
@@ -902,14 +907,14 @@ class SegmentationService {
     const numberOfFrames = Math.ceil(animationLength / intervalTime);
 
     const myInterval = setInterval(() => {
-      const newFillAlpha = easeInOut(count * intervalTime);
+      const newf = easeInOut(count * intervalTime);
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
         segmentationRepresentation.segmentationRepresentationUID,
         {
           [segmentIndex]: {
             LABELMAP: {
-              fillAlpha: newFillAlpha,
+              fillAlpha: newf,
             },
           },
         }
