@@ -47,6 +47,8 @@
     "crypto-js": "^4.1.1",
     "mathjs": "^10.6.3",
     "pako": "^2.0.4",
+    "plotly.js": "^2.15.1",
+    "react-plotly.js": "^2.6.0",
     "react-zlib-js": "^1.0.5",
     "styled-components": "^5.3.5"
   },
