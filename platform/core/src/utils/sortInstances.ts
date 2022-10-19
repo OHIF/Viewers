@@ -10,6 +10,11 @@ import { vec3 } from 'gl-matrix';
  * @returns The sortedImageIds, zSpacing, and origin of the first image in the series.
  */
 export default function sortInstances(instances: Array<any>) {
+  // Return if only one instance e.g., multiframe
+  if (instances.length === 1) {
+    return instances;
+  }
+
   const referenceImagePositionPatient = instances[0].ImagePositionPatient;
   const ImageOrientationPatient = instances[0].ImageOrientationPatient;
 
