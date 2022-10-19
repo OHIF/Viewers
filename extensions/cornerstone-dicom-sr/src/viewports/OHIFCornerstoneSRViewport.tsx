@@ -1,7 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
+
 import {
   Notification,
   ViewportActionBar,
@@ -29,6 +31,8 @@ function OHIFCornerstoneSRViewport(props) {
     servicesManager,
     extensionManager,
   } = props;
+
+  const { t } = useTranslation('SRViewport');
 
   const {
     DisplaySetService,
@@ -321,8 +325,6 @@ function OHIFCornerstoneSRViewport(props) {
     });
   }
 
-  const { Modality } = srDisplaySet;
-
   const {
     PatientID,
     PatientName,
@@ -344,7 +346,7 @@ function OHIFCornerstoneSRViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        onSeriesChange={onMeasurementChange}
+        onArrowsClick={onMeasurementChange}
         getStatusComponent={() =>
           _getStatusComponent({
             srDisplaySet,

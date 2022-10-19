@@ -12,7 +12,7 @@ const ViewportActionBar = ({
   showCine,
   cineProps,
   showPatientInfo: patientInfoVisibility,
-  onSeriesChange,
+  onArrowsClick,
   onDoubleClick,
   getStatusComponent,
 }) => {
@@ -104,7 +104,7 @@ const ViewportActionBar = ({
               size="initial"
               className="px-2 py-1 bg-black"
               border="light"
-              onClick={() => onSeriesChange('left')}
+              onClick={() => onArrowsClick('left')}
             >
               <Icon name="chevron-left" className="w-4 text-white" />
             </Button>
@@ -112,7 +112,7 @@ const ViewportActionBar = ({
               size="initial"
               border="light"
               className="px-2 py-1 bg-black"
-              onClick={() => onSeriesChange('right')}
+              onClick={() => onArrowsClick('right')}
             >
               <Icon name="chevron-right" className="w-4 text-white" />
             </Button>
@@ -142,7 +142,7 @@ const ViewportActionBar = ({
 };
 
 ViewportActionBar.propTypes = {
-  onSeriesChange: PropTypes.func.isRequired,
+  onArrowsClick: PropTypes.func.isRequired,
   showNavArrows: PropTypes.bool,
   showCine: PropTypes.bool,
   cineProps: PropTypes.object,

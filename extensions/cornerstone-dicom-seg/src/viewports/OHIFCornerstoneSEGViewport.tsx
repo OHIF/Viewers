@@ -9,6 +9,8 @@ import {
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 
+import { useTranslation } from 'react-i18next';
+
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import _hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
@@ -27,6 +29,8 @@ function OHIFCornerstoneSEGViewport(props) {
     servicesManager,
     extensionManager,
   } = props;
+
+  const { t } = useTranslation('SEGViewport');
 
   const {
     DisplaySetService,
@@ -306,7 +310,7 @@ function OHIFCornerstoneSEGViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        onSeriesChange={onSegmentChange}
+        onArrowsClick={onSegmentChange}
         getStatusComponent={() => {
           return _getStatusComponent({
             isHydrated,

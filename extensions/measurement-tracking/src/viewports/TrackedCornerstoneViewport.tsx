@@ -12,6 +12,8 @@ import {
   Icon,
 } from '@ohif/ui';
 
+import { useTranslation } from 'react-i18next';
+
 import { eventTarget, Enums } from '@cornerstonejs/core';
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -28,6 +30,8 @@ function TrackedCornerstoneViewport(props) {
     extensionManager,
     commandsManager,
   } = props;
+
+  const { t } = useTranslation('TrackedViewport');
 
   const {
     MeasurementService,
@@ -198,7 +202,7 @@ function TrackedCornerstoneViewport(props) {
           evt.preventDefault();
         }}
         useAltStyling={isTracked}
-        onSeriesChange={direction => switchMeasurement(direction)}
+        onArrowsClick={direction => switchMeasurement(direction)}
         getStatusComponent={() => _getStatusComponent(isTracked)}
         studyData={{
           label: viewportLabel,
