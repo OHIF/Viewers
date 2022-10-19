@@ -289,3 +289,14 @@ can take a look at what this file contains by going to
 `platform/viewer/PluginConfig.json` in your project's root directory. In short,
 this file tracks and stores all the extensions/modes and the their version that
 are currently being used by the viewer.
+
+## Private NPM Repos
+
+For the `yarn cli` to view private NPM repos, create a read-only token with the 
+following steps and export it as an environmental variable. You may also export
+an existing npm token.
+```
+npm login
+npm token create --read-only
+export NPM_TOKEN=<your readonly token>
+```
