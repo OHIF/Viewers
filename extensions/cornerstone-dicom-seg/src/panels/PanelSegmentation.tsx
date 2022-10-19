@@ -82,15 +82,12 @@ export default function PanelSegmentation({
     SegmentationService.remove(segmentationId);
   };
 
-  const getToolGroupId = () => {
-    const { activeViewportIndex } = ViewportGridService.getState();
-
-    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-      activeViewportIndex
+  const getToolGroupIds = segmentationId => {
+    const toolGroupIds = SegmentationService.getToolGroupIdsWithSegmentation(
+      segmentationId
     );
-    const viewportId = viewportInfo.getViewportId();
-    const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
-    return toolGroup.id;
+
+    return toolGroupIds;
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
@@ -99,17 +96,20 @@ export default function PanelSegmentation({
       segmentIndex
     );
 
-    const toolGroupId = getToolGroupId();
-    // const toolGroupId =
-    SegmentationService.setActiveSegmentationForToolGroup(
-      segmentationId,
-      toolGroupId
-    );
-    SegmentationService.jumpToSegmentCenter(
-      segmentationId,
-      segmentIndex,
-      toolGroupId
-    );
+    const toolGroupIds = getToolGroupIds(segmentationId);
+
+    toolGroupIds.forEach(toolGroupId => {
+      // const toolGroupId =
+      SegmentationService.setActiveSegmentationForToolGroup(
+        segmentationId,
+        toolGroupId
+      );
+      SegmentationService.jumpToSegmentCenter(
+        segmentationId,
+        segmentIndex,
+        toolGroupId
+      );
+    });
   };
 
   const onSegmentEdit = (segmentationId, segmentIndex) => {
@@ -167,7 +167,7 @@ export default function PanelSegmentation({
     //   a: opacity / 255.0,
     // };
 
-    // const toolGroupIds = SegmentationService.getToolGroupsWithSegmentation(
+    // const toolGroupIds = SegmentationService.getToolGroupIdsWithSegmentation(
     //   segmentationId
     // );
 

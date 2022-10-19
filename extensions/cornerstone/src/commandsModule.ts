@@ -6,7 +6,8 @@ import {
 import {
   ToolGroupManager,
   Enums,
-  utilities as csToolsUtils,
+  utilities as cstUtils,
+  segmentation as cstSegmentation,
 } from '@cornerstonejs/tools';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
@@ -15,6 +16,9 @@ import { getEnabledElement as OHIFgetEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import getProtocolViewportStructureFromGridViewports from './utils/getProtocolViewportStructureFromGridViewports';
+import removeToolGroupSegmentationRepresentations from './utils/removeToolGroupSegmentationRepresentations';
+
+const MPR_TOOLGROUP_ID = 'mpr';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -348,7 +352,7 @@ const commandsModule = ({ servicesManager }) => {
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      csToolsUtils.scroll(viewport, options);
+      cstUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
       viewportIndex,
@@ -414,7 +418,11 @@ const commandsModule = ({ servicesManager }) => {
           displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
         };
 
-        HangingProtocolService.setProtocol('mpr', matchDetails, errorCallback);
+        HangingProtocolService.setProtocol(
+          MPR_TOOLGROUP_ID,
+          matchDetails,
+          errorCallback
+        );
         return;
       }
 
@@ -460,17 +468,20 @@ const commandsModule = ({ servicesManager }) => {
       defaultProtocolStage.viewportStructure = viewportStructure;
 
       // turn off crosshairs if it is on, todo: i hate this
-      const mprToolGroup = _getToolGroup('mpr');
+      const mprToolGroup = _getToolGroup(MPR_TOOLGROUP_ID);
       if (
         mprToolGroup.getToolInstance('Crosshairs')?.mode ===
         Enums.ToolModes.Active
       ) {
-        _disableToggleButton('mpr', 'Crosshairs');
+        _disableToggleButton(MPR_TOOLGROUP_ID, 'Crosshairs');
         ToolBarService.recordInteraction({
           itemId: 'Crosshairs',
           interactionType: 'toggle',
         });
       }
+
+      // clear segmentations if they exist
+      removeToolGroupSegmentationRepresentations(MPR_TOOLGROUP_ID);
 
       HangingProtocolService.setProtocol(
         'default',

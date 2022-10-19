@@ -1120,8 +1120,10 @@ class SegmentationService {
     });
   };
 
-  public getToolGroupsWithSegmentation = (segmentationId: string): string[] => {
-    const toolGroupIds = cstSegmentation.state.getToolGroupsWithSegmentation(
+  public getToolGroupIdsWithSegmentation = (
+    segmentationId: string
+  ): string[] => {
+    const toolGroupIds = cstSegmentation.state.getToolGroupIdsWithSegmentation(
       segmentationId
     );
     return toolGroupIds;
@@ -1908,7 +1910,7 @@ class SegmentationService {
       return;
     }
 
-    const toolGroupIds = segmentationState.getToolGroupsWithSegmentation(
+    const toolGroupIds = segmentationState.getToolGroupIdsWithSegmentation(
       segmentationId
     );
 
@@ -1966,7 +1968,7 @@ class SegmentationService {
 
   private _updateCornerstoneSegmentationVisibility = segmentationId => {
     const segmentationState = cstSegmentation.state;
-    const toolGroupIds = segmentationState.getToolGroupsWithSegmentation(
+    const toolGroupIds = segmentationState.getToolGroupIdsWithSegmentation(
       segmentationId
     );
 
@@ -2013,7 +2015,7 @@ class SegmentationService {
 
   private _getToolGroupIdsWithSegmentation(segmentationId: string) {
     const segmentationState = cstSegmentation.state;
-    const toolGroupIds = segmentationState.getToolGroupsWithSegmentation(
+    const toolGroupIds = segmentationState.getToolGroupIdsWithSegmentation(
       segmentationId
     );
 

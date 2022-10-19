@@ -34,9 +34,7 @@ function OHIFCornerstoneSEGViewport(props) {
     SegmentationService,
   } = servicesManager.services;
 
-  const toolGroupId =
-    viewportOptions.toolGroupId ??
-    `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
+  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
 
   // SEG viewport will always have a single display set
   if (displaySets.length > 1) {

@@ -99,8 +99,10 @@ function ViewerLayout({
       title: t('Header:Logout'),
       icon: 'power-off',
       onClick: async () => {
-        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
-      }
+        navigate(
+          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
+        );
+      },
     });
   }
 
@@ -141,9 +143,7 @@ function ViewerLayout({
       // however, this might not be the only approach to set the loading indicator to false. we need to explore this further.
       ({ progress }) => {
         if (progress === 100) {
-          setTimeout(() => {
-            setShowLoadingIndicator(false);
-          }, 1000);
+          setShowLoadingIndicator(false);
         }
       }
     );
