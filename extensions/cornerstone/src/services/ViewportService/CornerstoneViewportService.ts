@@ -2,7 +2,6 @@ import { pubSubServiceInterface } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
-  Enums,
   Types,
   getRenderingEngine,
   utilities as csUtils,
@@ -19,8 +18,8 @@ import ViewportInfo, {
   PublicViewportOptions,
 } from './Viewport';
 import {
-  ViewportStackData,
-  ViewportVolumeData,
+  StackViewportData,
+  VolumeViewportData,
 } from './CornerstoneCacheService';
 import {
   setColormap,
@@ -30,8 +29,8 @@ import {
 import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
-  VIEWPORT_INFO_CREATED:
-    'event::cornerstone::viewportservice:viewportinfocreated',
+  VIEWPORT_DATA_CHANGED:
+    'event::cornerstoneViewportService:viewportDataChanged',
 };
 
 /**
@@ -72,7 +71,7 @@ class CornerstoneViewportService implements IViewportService {
    * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  public enableElement(
+  public enableViewport(
     viewportIndex: number,
     viewportOptions: PublicViewportOptions,
     elementRef: HTMLDivElement
@@ -159,9 +158,9 @@ class CornerstoneViewportService implements IViewportService {
    * @param {*} dataSource
    * @returns
    */
-  public setViewportDisplaySets(
+  public setViewportData(
     viewportIndex: number,
-    viewportData: ViewportStackData | ViewportVolumeData,
+    viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[]
   ): void {
@@ -178,8 +177,12 @@ class CornerstoneViewportService implements IViewportService {
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
+    viewportInfo.setViewportData(viewportData);
 
-    this._broadcastEvent(EVENTS.VIEWPORT_INFO_CREATED, viewportInfo);
+    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+      viewportData,
+      viewportIndex,
+    });
 
     const viewportId = viewportInfo.getViewportId();
     const element = viewportInfo.getElement();
@@ -202,6 +205,7 @@ class CornerstoneViewportService implements IViewportService {
     // renderingEngine is designed to be used like this. This will trigger
     // ENABLED_ELEMENT again and again, which will run onEnableElement callbacks
     renderingEngine.enableElement(viewportInput);
+
     this._setDisplaySets(viewportId, viewportData, viewportInfo);
   }
 
@@ -264,7 +268,7 @@ class CornerstoneViewportService implements IViewportService {
 
   _setStackViewport(
     viewport: Types.IStackViewport,
-    viewportData: ViewportStackData,
+    viewportData: StackViewportData,
     viewportInfo: ViewportInfo
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
@@ -339,7 +343,7 @@ class CornerstoneViewportService implements IViewportService {
 
   async _setVolumeViewport(
     viewport: Types.IVolumeViewport,
-    viewportData: ViewportVolumeData,
+    viewportData: VolumeViewportData,
     viewportInfo: ViewportInfo
   ): Promise<void> {
     // TODO: We need to overhaul the way data sources work so requests can be made
@@ -484,7 +488,7 @@ class CornerstoneViewportService implements IViewportService {
 
   _setDisplaySets(
     viewportId: string,
-    viewportData: ViewportStackData | ViewportVolumeData,
+    viewportData: StackViewportData | VolumeViewportData,
     viewportInfo: ViewportInfo
   ): void {
     const viewport = this.getCornerstoneViewport(viewportId);
@@ -492,13 +496,13 @@ class CornerstoneViewportService implements IViewportService {
     if (viewport instanceof StackViewport) {
       this._setStackViewport(
         viewport,
-        viewportData as ViewportStackData,
+        viewportData as StackViewportData,
         viewportInfo
       );
     } else if (viewport instanceof VolumeViewport) {
       this._setVolumeViewport(
         viewport,
-        viewportData as ViewportVolumeData,
+        viewportData as VolumeViewportData,
         viewportInfo
       );
     } else {

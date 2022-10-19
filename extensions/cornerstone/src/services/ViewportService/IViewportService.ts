@@ -31,7 +31,7 @@ export interface IViewportService {
    * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  enableElement(
+  enableViewport(
     viewportIndex: number,
     viewportOptions: ViewportOptions,
     elementRef: HTMLDivElement
@@ -65,7 +65,7 @@ export interface IViewportService {
    * @param {*} dataSource
    * @returns
    */
-  setViewportDisplaySets(
+  setViewportData(
     viewportIndex: number,
     viewportData: StackData | VolumeData,
     publicViewportOptions: PublicViewportOptions,

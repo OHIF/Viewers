@@ -77,7 +77,7 @@ export default class ToolGroupService {
     this.toolGroupIds.delete(toolGroupId);
   }
 
-  public disable(
+  public removeViewportFromToolGroup(
     viewportId: string,
     renderingEngineId: string,
     deleteToolGroupIfEmpty?: boolean
@@ -120,7 +120,10 @@ export default class ToolGroupService {
       toolGroup.addViewport(viewportId, renderingEngineId);
     }
 
-    this._broadcastEvent(EVENTS.VIEWPORT_ADDED, { viewportId, toolGroupId });
+    this._broadcastEvent(EVENTS.VIEWPORT_ADDED, {
+      viewportId,
+      toolGroupId,
+    });
   }
 
   public createToolGroup(toolGroupId: string): Types.IToolGroup {
@@ -132,7 +135,9 @@ export default class ToolGroupService {
     const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
     this.toolGroupIds.add(toolGroupId);
 
-    this._broadcastEvent(EVENTS.TOOLGROUP_CREATED, { toolGroupId });
+    this._broadcastEvent(EVENTS.TOOLGROUP_CREATED, {
+      toolGroupId,
+    });
 
     return toolGroup;
   }

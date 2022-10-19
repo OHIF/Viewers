@@ -85,7 +85,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = props;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
-  const [viewportData, setViewportData] = useState(null);
   const [_, viewportGridService] = useViewportGrid();
 
   const elementRef = useRef();
@@ -153,7 +152,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   // disable the element upon unmounting
   useEffect(() => {
-    CornerstoneViewportService.enableElement(
+    CornerstoneViewportService.enableViewport(
       viewportIndex,
       viewportOptions,
       elementRef.current
@@ -175,7 +174,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
       const renderingEngineId = viewportInfo.getRenderingEngineId();
       const syncGroups = viewportInfo.getSyncGroups();
 
-      ToolGroupService.disable(viewportId, renderingEngineId);
+      ToolGroupService.removeViewportFromToolGroup(
+        viewportId,
+        renderingEngineId
+      );
+
       SyncGroupService.removeViewportFromSyncGroup(
         viewportId,
         renderingEngineId,
@@ -184,14 +187,14 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       CornerstoneViewportService.disableElement(viewportIndex);
 
+      if (onElementDisabled) {
+        onElementDisabled(viewportInfo);
+      }
+
       eventTarget.removeEventListener(
         Enums.Events.ELEMENT_ENABLED,
         elementEnabledHandler
       );
-
-      if (onElementDisabled) {
-        onElementDisabled(viewportInfo);
-      }
     };
   }, []);
 
@@ -207,11 +210,12 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       async invalidatedDisplaySetInstanceUID => {
-        if (
-          viewportData.displaySetInstanceUIDs.includes(
-            invalidatedDisplaySetInstanceUID
-          )
-        ) {
+        const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+          viewportIndex
+        );
+
+        if (viewportInfo.hasDisplaySet(invalidatedDisplaySetInstanceUID)) {
+          const viewportData = viewportInfo.getViewportData();
           const newViewportData = await CornerstoneCacheService.invalidateViewportData(
             viewportData,
             invalidatedDisplaySetInstanceUID,
@@ -225,15 +229,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
             newViewportData,
             keepCamera
           );
-
-          setViewportData(newViewportData);
         }
       }
     );
     return () => {
       unsubscribe();
     };
-  }, [viewportData, viewportIndex]);
+  }, [viewportIndex]);
 
   useEffect(() => {
     // handle the default viewportType to be stack
@@ -242,21 +244,18 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
 
     const loadViewportData = async () => {
-      await CornerstoneCacheService.getViewportData(
-        viewportIndex,
+      const viewportData = await CornerstoneCacheService.createViewportData(
         displaySets,
-        viewportOptions.viewportType,
+        viewportOptions,
         dataSource,
-        viewportDataLoaded => {
-          CornerstoneViewportService.setViewportDisplaySets(
-            viewportIndex,
-            viewportDataLoaded,
-            viewportOptions,
-            displaySetOptions
-          );
-          setViewportData(viewportDataLoaded);
-        },
         initialImageIndex
+      );
+
+      CornerstoneViewportService.setViewportData(
+        viewportIndex,
+        viewportData,
+        viewportOptions,
+        displaySetOptions
       );
     };
 
@@ -295,7 +294,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
     };
-  }, [displaySets, elementRef, viewportIndex, viewportData]);
+  }, [displaySets, elementRef, viewportIndex]);
 
   return (
     <div className="viewport-wrapper">

@@ -278,12 +278,7 @@ export default async function init({
   }
 
   function elementDisabledHandler(evt) {
-    const { viewportId, element } = evt.detail;
-
-    const viewportInfo = CornerstoneViewportService.getViewportInfo(viewportId);
-    const renderingEngineId = viewportInfo.getRenderingEngineId();
-
-    ToolGroupService.disable(viewportId, renderingEngineId);
+    const { element } = evt.detail;
 
     element.removeEventListener(
       cs3DToolsEvents.MOUSE_CLICK,
