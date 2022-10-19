@@ -28,20 +28,17 @@ class Morphology3DComponent extends React.Component {
   }
 
   async componentDidMount() {
-    console.log('Getting series data');
     this.setState({ loadingApp: true });
     const series_uid = JSON.parse(localStorage.getItem('series_uid'));
     this.setState({ series_uid });
-    console.log({ series_uid });
-    console.log('FETCHING SEGMENTATIONS');
     await this.loadSegmentations(series_uid);
     this.setState({ loadingApp: false });
     /**
-     * 1. is label from segmentation?
-     * 2. How to select segmentation label
-     * 3. Drop down to select the label
-     * 4. The background of plotly
-     * 5. An error boundary for the 3D
+     * 1. is label from segmentation?  ^^
+     * 2. How to select segmentation label   ^^
+     * 3. Drop down to select the label ^^
+     * 4. The background of plotly ^^
+     * 5. An error boundary for the 3D ^^
      * 6. Cache the response for the label
      * 7. Cache implement for response
      */
@@ -52,14 +49,10 @@ class Morphology3DComponent extends React.Component {
       state.currentSegmentationLabel !== this.state.currentSegmentationLabel
     ) {
       const { currentSegmentationLabel, series_uid } = this.state;
-      console.log(currentSegmentationLabel);
-      console.log(series_uid);
       if (currentSegmentationLabel && series_uid) {
         const { currentSegmentationLabel, series_uid } = this.state;
-        console.log('ReLoading 3D data when segmentation label changes');
         this.setState({ loadingGraph: true });
         await this.load3DData(currentSegmentationLabel, series_uid);
-        console.log('Done loading segmentation data when 3D data changes');
       }
     }
     if (state.currentProperty !== this.state.currentProperty) {
@@ -76,11 +69,10 @@ class Morphology3DComponent extends React.Component {
 
   loadSegmentations = async series_uid => {
     try {
-      console.log('loading segmentation labels');
+      // Implement Caching
       const segmentationLabels = await _3DSegmentationApiClass.get3DLabels(
         series_uid
       );
-      console.log('Segmentation labels:  ', segmentationLabels);
       this.setState({ segmentationLabels });
       this.setState({ currentSegmentationLabel: segmentationLabels[0] });
     } catch (error) {
@@ -90,6 +82,7 @@ class Morphology3DComponent extends React.Component {
 
   load3DData = async (label, series_uid) => {
     try {
+      // Implement Caching
       const segmentationData = await _3DSegmentationApiClass.get3DSegmentationData(
         {
           series_uid,
@@ -97,8 +90,8 @@ class Morphology3DComponent extends React.Component {
         }
       );
       const segmentationProperties = Object.keys(segmentationData);
-      this.setState({ currentProperty: segmentationProperties[0] }); // view first property
       this.setState({ properties: segmentationProperties });
+      this.setState({ currentProperty: segmentationProperties[0] }); // view first property
       this.setState({ segmentationData });
     } catch (error) {
       this.setState({ segmentationError: error.message });
@@ -124,7 +117,6 @@ class Morphology3DComponent extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     const tabs = this.state.properties;
     const { segmentationLabels } = this.state;
     const TextContainer = ({ title }) => (
@@ -258,7 +250,16 @@ class Morphology3DComponent extends React.Component {
                     width: '100%',
                     height: '100%',
                   }}
-                  data={[{ ...this.state.graph, responsive: true }]}
+                  data={[
+                    {
+                      ...this.state.graph,
+                    },
+                  ]}
+                  layout={{
+                    paper_bgcolor: '#000',
+                    font: { color: '#ffffff', size: '14px' },
+                  }}
+                  config={{ displaylogo: false, responsive: true }}
                   ref={this.graphRef}
                 />
               )}
