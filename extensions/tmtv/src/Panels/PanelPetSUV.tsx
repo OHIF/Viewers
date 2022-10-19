@@ -143,9 +143,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       ptDisplaySet.displaySetInstanceUID
     );
   }
-
   return (
-    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar h-full">
       {
         <div className="flex flex-col">
           <div className="flex flex-col p-4 space-y-4 bg-primary-dark">

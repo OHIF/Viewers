@@ -171,7 +171,7 @@ export default function PanelRoiThresholdSegmentation({
   }, [segmentations, selectedSegmentationId]);
 
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col h-full">
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         <div className="flex mx-4 my-4 mb-4 space-x-4">
           <Button
@@ -185,17 +185,10 @@ export default function PanelRoiThresholdSegmentation({
                 });
               });
             }}
-            className={classnames(
-              'text-xs text-white border-b border-transparent'
-            )}
           >
             {labelmapLoading ? 'loading ...' : 'New Label'}
           </Button>
-          <Button
-            color="primary"
-            onClick={handleROIThresholding}
-            className="text-xs text-white border-b border-transparent "
-          >
+          <Button color="primary" onClick={handleROIThresholding}>
             Run
           </Button>
         </div>
@@ -266,11 +259,11 @@ export default function PanelRoiThresholdSegmentation({
         />
       </div>
       <div
-        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mb-4 cursor-pointer"
+        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mt-auto cursor-pointer mb-4"
         onClick={() => {
           // navigate to a url in a new tab
           window.open(
-            'https://github.com/OHIF/Viewers/blob/feat/segmentation-service/modes/tmtv/README.md',
+            'https://github.com/OHIF/Viewers/blob/v3-stable/modes/tmtv/README.md',
             '_blank'
           );
         }}
