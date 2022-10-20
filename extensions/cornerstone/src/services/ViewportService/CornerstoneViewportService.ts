@@ -353,7 +353,15 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     if (preset === JumpPresets.Middle) {
-      return Math.floor(lastSliceIndex / 2);
+      // Note: this is a simple but yet very important formula.
+      // since viewport reset works with the middle slice
+      // if the below formula is not correct, on a viewport reset
+      // it will jump to a different slice than the middle one which
+      // was the initial slice, and we have some tools such as Crosshairs
+      // which rely on a relative camera modifications and those will break.
+      return lastSliceIndex % 2 === 0
+        ? lastSliceIndex / 2
+        : (lastSliceIndex + 1) / 2;
     }
 
     return 0;
