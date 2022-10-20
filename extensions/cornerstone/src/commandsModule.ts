@@ -291,6 +291,11 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       viewport.render();
+
+      // Todo: there is a bug in cs3d, where the camera is not reset and parameters
+      // are reset too, but we need to get and set it again? cs3d demo works fine
+      // it is OHIF specific
+      viewport.setCamera(viewport.getCamera());
     },
     scaleViewport: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -337,7 +342,7 @@ const commandsModule = ({ servicesManager }) => {
       const actorEntries = viewport.getActors();
 
       const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid === displaySetInstanceUID;
+        return actorEntry.uid.includes(displaySetInstanceUID);
       });
 
       const { actor: volumeActor } = actorEntry;
