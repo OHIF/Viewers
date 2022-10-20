@@ -149,7 +149,7 @@ export default async function init({
       );
 
       let menuItems = [];
-      if (nearbyToolData) {
+      if (nearbyToolData && nearbyToolData.metadata.toolName !== 'Crosshairs') {
         defaultMenuItems.forEach(item => {
           item.value = nearbyToolData;
           item.element = element;
@@ -277,6 +277,32 @@ export default async function init({
     utilities.stackPrefetch.enable(element);
   };
 
+  const resetCrosshairs = evt => {
+    const { element } = evt.detail;
+    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(
+      element
+    );
+
+    const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
+      viewportId,
+      renderingEngineId
+    );
+
+    if (!toolGroup._toolInstances?.['Crosshairs']) {
+      return;
+    }
+
+    const mode = toolGroup._toolInstances['Crosshairs'].mode;
+
+    if (mode === Enums.ToolModes.Active) {
+      toolGroup.setToolActive('Crosshairs');
+    } else if (mode === Enums.ToolModes.Passive) {
+      toolGroup.setToolPassive('Crosshairs');
+    } else if (mode === Enums.ToolModes.Enabled) {
+      toolGroup.setToolEnabled('Crosshairs');
+    }
+  };
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
 
@@ -284,6 +310,8 @@ export default async function init({
       cs3DToolsEvents.MOUSE_CLICK,
       contextMenuHandleClick
     );
+
+    element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     eventTarget.addEventListener(
       EVENTS.STACK_VIEWPORT_NEW_STACK,
@@ -298,6 +326,8 @@ export default async function init({
       cs3DToolsEvents.MOUSE_CLICK,
       contextMenuHandleClick
     );
+
+    element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     // TODO - consider removing the callback when all elements are gone
     // eventTarget.removeEventListener(
