@@ -73,26 +73,6 @@ const commandsModule = ({ servicesManager }) => {
     return toolGroup;
   }
 
-  // Todo: this should be part of ToolBarService to disable a toggled button
-  // and update its UI
-  function _disableToggleButton(toolGroupId, toolName) {
-    const toolGroup = _getToolGroup(toolGroupId);
-
-    toolGroup.setToolDisabled(toolName);
-
-    // Get the primary toolId from the ToolBarService and set it to active
-    // Since it was set to passive if not already active
-    const primaryActiveTool = ToolBarService.state.primaryToolId;
-    if (
-      toolGroup?.toolOptions[primaryActiveTool]?.mode ===
-      Enums.ToolModes.Passive
-    ) {
-      toolGroup.setToolActive(primaryActiveTool, {
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-      });
-    }
-  }
-
   const actions = {
     getActiveViewportEnabledElement: () => {
       return _getActiveViewportEnabledElement();
@@ -152,33 +132,23 @@ const commandsModule = ({ servicesManager }) => {
       });
       viewport.render();
     },
-    toggleCrosshairs({ toolGroupId, toggledState }) {
-      const toolName = 'Crosshairs';
-
-      const activeViewportToolGroup = _getToolGroup(null);
-
-      if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-        UINotificationService.show({
-          title: 'Crosshairs',
-          message:
-            'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error('Crosshairs tool is not available in this viewport');
-      }
-
-      // If it is Enabled
-      if (toggledState) {
-        actions.setToolActive({ toolName, toolGroupId });
-        return;
-      }
-
-      // turn off crosshairs
-      _disableToggleButton(toolGroupId, toolName);
-    },
     setToolActive: ({ toolName, toolGroupId = null }) => {
+      if (toolName === 'Crosshairs') {
+        const activeViewportToolGroup = _getToolGroup(null);
+
+        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
+          UINotificationService.show({
+            title: 'Crosshairs',
+            message:
+              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
+            type: 'info',
+            duration: 3000,
+          });
+
+          throw new Error('Crosshairs tool is not available in this viewport');
+        }
+      }
+
       const toolGroup = _getToolGroup(toolGroupId);
 
       if (!toolGroup) {
@@ -467,16 +437,29 @@ const commandsModule = ({ servicesManager }) => {
       const defaultProtocolStage = defaultProtocol.stages[0];
       defaultProtocolStage.viewportStructure = viewportStructure;
 
-      // turn off crosshairs if it is on, todo: i hate this
+      const { primaryToolId } = ToolBarService.state;
       const mprToolGroup = _getToolGroup(MPR_TOOLGROUP_ID);
+      // turn off crosshairs if it is on
       if (
+        primaryToolId === 'Crosshairs' ||
         mprToolGroup.getToolInstance('Crosshairs')?.mode ===
-        Enums.ToolModes.Active
+          Enums.ToolModes.Active
       ) {
-        _disableToggleButton(MPR_TOOLGROUP_ID, 'Crosshairs');
+        const toolGroup = _getToolGroup(MPR_TOOLGROUP_ID);
+        toolGroup.setToolDisabled('Crosshairs');
         ToolBarService.recordInteraction({
-          itemId: 'Crosshairs',
-          interactionType: 'toggle',
+          groupId: 'WindowLevel',
+          itemId: 'WindowLevel',
+          interactionType: 'tool',
+          commands: [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
         });
       }
 

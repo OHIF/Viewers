@@ -70,12 +70,19 @@ export default class ToolBarService {
         break;
       }
       case 'tool': {
-        this.state.primaryToolId = itemId;
-        commands.forEach(
-          ({ commandName = 'setToolActive', commandOptions, context }) => {
-            commandsManager.runCommand(commandName, commandOptions, context);
-          }
-        );
+        try {
+          commands.forEach(
+            ({ commandName = 'setToolActive', commandOptions, context }) => {
+              commandsManager.runCommand(commandName, commandOptions, context);
+            }
+          );
+
+          // only set the primary tool if no error was thrown
+          this.state.primaryToolId = itemId;
+        } catch (error) {
+          console.warn(error);
+        }
+
         break;
       }
       case 'toggle': {

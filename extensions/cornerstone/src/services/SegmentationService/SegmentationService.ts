@@ -18,6 +18,7 @@ import {
   getEnabledElementByIds,
 } from '@cornerstonejs/core';
 import isEqual from 'lodash.isequal';
+import { easInOutBell } from '../../utils/transitions';
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -809,7 +810,7 @@ class SegmentationService {
     toolGroupId?: string,
     highlightAlpha = 0.9,
     highlightSegment = true,
-    animationLength = 1000,
+    animationLength = 750,
     highlightHideOthers = false,
     highlightFunctionType: 'ease-in-out' // todo: make animation functions configurable from outside
   ): void {
@@ -863,7 +864,7 @@ class SegmentationService {
     segmentIndex: number,
     toolGroupId?: string,
     alpha = 0.9,
-    animationLength = 1000,
+    animationLength = 750,
     hideOthers = true,
     highlightFunctionType: 'ease-in-out'
   ): void {
@@ -900,26 +901,22 @@ class SegmentationService {
         }
       }
     }
-    const currentFillAlpha = 0.3;
 
-    function easeInOut(x: number): number {
-      // prettier-ignore
-      return -4 * ((1- currentFillAlpha) / Math.pow(animationLength, 2)) * x * (x - animationLength) + currentFillAlpha;
-    }
+    const { fillAlpha } = this.getConfiguration(toolGroupId);
 
     let count = 0;
-    const intervalTime = 30;
+    const intervalTime = 16;
     const numberOfFrames = Math.ceil(animationLength / intervalTime);
 
     this.highlightIntervalId = setInterval(() => {
-      const newf = easeInOut(count * intervalTime);
+      const x = (count * intervalTime) / animationLength;
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
         segmentationRepresentation.segmentationRepresentationUID,
         {
           [segmentIndex]: {
             LABELMAP: {
-              fillAlpha: newf,
+              fillAlpha: easInOutBell(x, fillAlpha),
             },
           },
         }

@@ -322,10 +322,19 @@ const toolbarButtons = [
     id: 'Crosshairs',
     type: 'ohif.radioGroup',
     props: {
-      type: 'toggle',
+      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: [..._createCommands('toggleCrosshairs', 'Crosshairs', ['mpr'])],
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolGroupId: 'mpr',
+            toolName: 'Crosshairs',
+          },
+          context: 'CORNERSTONE',
+        },
+      ],
     },
   },
   // More...
