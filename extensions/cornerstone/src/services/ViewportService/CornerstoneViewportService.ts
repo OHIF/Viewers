@@ -531,7 +531,6 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     const viewportInfo = this.getViewportInfo(viewport.id);
-    const viewportIndex = viewportInfo.getViewportIndex();
 
     const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);

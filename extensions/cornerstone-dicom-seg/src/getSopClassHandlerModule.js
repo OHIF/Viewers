@@ -9,6 +9,8 @@ const { DicomMessage, DicomMetaDictionary } = dcmjs.data;
 
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
 
+let loadPromises = {};
+
 function _getDisplaySetsFromSeries(
   instances,
   servicesManager,
@@ -31,6 +33,7 @@ function _getDisplaySetsFromSeries(
 
   const displaySet = {
     Modality: 'SEG',
+    loading: false,
     isReconstructable: true, // by default for now since it is a volumetric SEG currently
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
@@ -102,31 +105,48 @@ async function _load(
   extensionManager,
   headers
 ) {
-  const { SegmentationService } = servicesManager.services;
-
-  if (_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
+  const { displaySetInstanceUID } = segDisplaySet;
+  if (segDisplaySet.loading && loadPromises[displaySetInstanceUID]) {
+    await loadPromises[displaySetInstanceUID];
     return;
   }
 
-  if (
-    !segDisplaySet.segments ||
-    Object.keys(segDisplaySet.segments).length === 0
-  ) {
-    const segments = await _loadSegments(
-      extensionManager,
+  segDisplaySet.loading = true;
+
+  // We don't want to fire multiple loads, so we'll wait for the first to finish
+  // and also return the same promise to any other callers.
+  loadPromises[displaySetInstanceUID] = new Promise(async (resolve, reject) => {
+    const { SegmentationService } = servicesManager.services;
+
+    if (_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
+      return;
+    }
+
+    if (
+      !segDisplaySet.segments ||
+      Object.keys(segDisplaySet.segments).length === 0
+    ) {
+      const segments = await _loadSegments(
+        extensionManager,
+        segDisplaySet,
+        headers
+      );
+
+      segDisplaySet.segments = segments;
+    }
+
+    const suppressEvents = true;
+    await SegmentationService.createSegmentationForSEGDisplaySet(
       segDisplaySet,
-      headers
+      null,
+      suppressEvents
     );
 
-    segDisplaySet.segments = segments;
-  }
+    segDisplaySet.loading = false;
+    resolve();
+  });
 
-  const suppressEvents = true;
-  await SegmentationService.createSegmentationForSEGDisplaySet(
-    segDisplaySet,
-    null,
-    suppressEvents
-  );
+  await loadPromises[displaySetInstanceUID];
 }
 
 async function _loadSegments(extensionManager, segDisplaySet, headers) {
