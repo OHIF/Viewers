@@ -282,7 +282,13 @@ const SidePanel = ({
               </button>
             </div>
           )}
-          <ActiveComponent />
+          <div
+            style={{
+              marginTop: '1px',
+            }}
+          >
+            <ActiveComponent />
+          </div>
         </React.Fragment>
       ) : (
         <React.Fragment>{getPanelButtons()}</React.Fragment>
