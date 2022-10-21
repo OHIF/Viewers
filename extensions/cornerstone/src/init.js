@@ -288,7 +288,7 @@ export default async function init({
       renderingEngineId
     );
 
-    if (!toolGroup._toolInstances?.['Crosshairs']) {
+    if (!toolGroup || !toolGroup._toolInstances?.['Crosshairs']) {
       return;
     }
 

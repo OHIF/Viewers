@@ -387,7 +387,7 @@ const ViewportDownloadForm = ({
           <Typography variant="h5">{t('Image preview')}</Typography>
           {activeViewportElement && (
             <div
-              className="mx-auto my-0"
+              className="mx-auto my-2"
               style={{
                 height: viewportElementDimensions.height,
                 width: viewportElementDimensions.width,

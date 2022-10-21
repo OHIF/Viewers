@@ -1,6 +1,5 @@
 import React from 'react';
-import domtoimage from 'dom-to-image';
-
+import html2canvas from 'html2canvas';
 import {
   Enums,
   getEnabledElement,
@@ -186,16 +185,20 @@ const CornerstoneViewportDownloadForm = ({
 
     if (downloadToolGroup === undefined) {
       downloadToolGroup = ToolGroupManager.createToolGroup(TOOLGROUP_ID);
-
+      // add the viewport to the toolGroup
+      downloadToolGroup.addViewport(downloadViewportId);
       // what tools were in the active viewport?
       // make them all enabled instances so that they can not be interacted
       // with in the download viewport
       Object.values(toolGroup._toolInstances).forEach(tool => {
-        downloadToolGroup.addTool(tool.getToolName());
-      });
+        const toolName = tool.getToolName();
 
-      // add the viewport to the toolGroup
-      downloadToolGroup.addViewport(downloadViewportId);
+        if (toolName === 'Crosshairs') {
+          return;
+        }
+
+        downloadToolGroup.addTool(toolName);
+      });
     }
 
     Object.values(downloadToolGroup._toolInstances).forEach(tool => {
@@ -220,10 +223,10 @@ const CornerstoneViewportDownloadForm = ({
       `div[data-viewport-uid="${VIEWPORT_ID}"]`
     );
 
-    domtoimage.toPng(divForDownloadViewport).then(dataUrl => {
+    html2canvas(divForDownloadViewport).then(canvas => {
       const link = document.createElement('a');
       link.download = file;
-      link.href = dataUrl;
+      link.href = canvas.toDataURL(fileType, 1.0);
       link.click();
     });
   };
