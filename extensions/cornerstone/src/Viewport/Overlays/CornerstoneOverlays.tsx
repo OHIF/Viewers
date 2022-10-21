@@ -68,6 +68,7 @@ function CornerstoneOverlays(props) {
         imageSliceData={imageSliceData}
         element={element}
         viewportData={viewportData}
+        servicesManager={servicesManager}
         viewportIndex={viewportIndex}
       />
     </div>
