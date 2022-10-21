@@ -56,7 +56,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     const { queryParams } = options;
     if (!queryParams) return searchResult;
     const filtered = searchResult.filter(study => {
-      for (const key of Object.keys(StaticWadoClient.seriesFilterKeys)) {
+      for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
         if (!this.filterItem(key, queryParams, study)) return false;
       }
       return true;
