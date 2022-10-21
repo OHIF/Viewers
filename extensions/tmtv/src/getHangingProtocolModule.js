@@ -7,7 +7,7 @@ const ptCT = {
   modifiedDate: '2022-10-04T19:22:08.894Z',
   availableTo: {},
   editableBy: {},
-  imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
     {
       attribute: 'ModalitiesInStudy',
