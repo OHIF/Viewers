@@ -115,17 +115,10 @@ class DicomLoaderService {
       const imageInstance = getImageInstance(dataset);
       let imageId = getImageInstanceId(imageInstance);
 
-      console.log(imageId);
-      console.log('foo');
-      console.log(dataset);
-
       // or Try to get it from studies
       if (someInvalidStrings(imageId)) {
         imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
       }
-
-      console.log(imageId);
-      console.log(studies);
 
       if (!someInvalidStrings(imageId)) {
         return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
@@ -216,8 +209,6 @@ class DicomLoaderService {
     const loaderIterator = this.getLoaderIterator(dataset, studies);
     // it returns first valid retriever method.
     for (const loader of loaderIterator) {
-      console.log(loader);
-
       if (loader) {
         return loader;
       }
