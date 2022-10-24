@@ -25,6 +25,7 @@ import { getEnabledElement } from '../../../../extensions/cornerstone/src/state'
 import eventBus from '../lib/eventBus';
 import { Icon } from '../../../ui/src/elements/Icon';
 import { radcadapi } from '../utils/constants';
+import { Morphology3DComponent } from '../components/3DSegmentation/3D';
 
 const RadiomicSummary = () => {
   const printDiv = () => {
@@ -172,32 +173,6 @@ const RadiomicSummary = () => {
           flex: 1,
         }}
       ></div>
-    </div>
-  );
-};
-
-const Morphology = () => {
-  return (
-    <div
-      className=""
-      style={{
-        width: '100%',
-        height: '100%',
-        padding: '20px',
-        borderRadius: '8px',
-        background: '#000000',
-      }}
-    >
-      <div className="">
-        <h1
-          style={{
-            textAlign: 'left',
-            margin: 0,
-          }}
-        >
-          3D Morphology{' '}
-        </h1>
-      </div>
     </div>
   );
 };
@@ -782,7 +757,7 @@ class Radiomics extends Component {
 
             </div> */}
             <div className="container-item">
-              <Morphology />
+              {this.state.isComplete && <Morphology3DComponent />}
             </div>
           </div>
         </div>
