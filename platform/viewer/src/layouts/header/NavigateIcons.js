@@ -14,7 +14,7 @@ const NavigateIcons = () => {
     let pathname = null;
     if (activeStep === 1) pathname = location.pathname.replace('view', 'edit');
     else if (activeStep === 2)
-      pathname = location.pathname.replace('view', 'nnunet');
+      pathname = location.pathname.replace('view', 'selectmask');
     else if (activeStep === 3)
       pathname = location.pathname.replace('nnunet', 'edit');
     else if (activeStep === 4)
@@ -40,7 +40,7 @@ const NavigateIcons = () => {
     else if (activeStep === 4)
       pathname = location.pathname.replace('edit', 'nnunet');
     else if (activeStep === 5)
-      pathname = location.pathname.replace('selectmask', 'edit');
+      pathname = location.pathname.replace('selectmask', 'view');
     else if (activeStep === 6) {
       pathname = location.pathname.replace('radionics', 'selectmask');
     }
