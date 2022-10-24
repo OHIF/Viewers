@@ -39,7 +39,7 @@ const styleMap = {
 };
 
 const baseClasses =
-  'transition-all duration-300 ease-in-out h-100 bg-black border-black flex flex-col justify-start box-content mt-1.5';
+  'transition-all duration-300 ease-in-out h-100 bg-black border-black flex flex-col justify-start box-content';
 
 const classesMap = {
   open: {
@@ -78,6 +78,7 @@ const SidePanel = ({
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp || 0);
   const swiperRef = useRef() as any;
   const [swiper, setSwiper] = useState<any>();
+
   const prevRef = React.useRef();
   const nextRef = React.useRef();
 
@@ -101,10 +102,6 @@ const SidePanel = ({
     }
   }, [swiper]);
 
-  // const slideToActivePanel = useCallback(() => {
-  //   swiper.slideTo(activeTabIndex, 500);
-  // }, [swiper, activeTabIndex]);
-
   const getPanelButtons = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
     return (
@@ -116,7 +113,6 @@ const SidePanel = ({
           )}
           onClick={() => {
             setPanelOpen(prev => !prev);
-            // slideToActivePanel();
           }}
         >
           <Icon
@@ -152,7 +148,6 @@ const SidePanel = ({
                 onClick={() => {
                   setActiveTabIndex(index);
                   setPanelOpen(true);
-                  // slideToActivePanel();
                 }}
               >
                 <Icon
@@ -184,7 +179,10 @@ const SidePanel = ({
         <React.Fragment>
           {/** Panel Header with Arrow and Close Actions */}
           <div
-            className="px-[10px] bg-primary-dark h-9 cursor-pointer"
+            className={classnames(
+              'px-[10px] bg-primary-dark h-9 cursor-pointer flex',
+              tabs.length === 1 && 'mb-1'
+            )}
             onClick={() => {
               setPanelOpen(prev => !prev);
               // slideToActivePanel();
@@ -207,63 +205,22 @@ const SidePanel = ({
                 style={{ ...position[side] }}
               />
               {/* Todo: ass secondary label here */}
-              <span className="flex-1 text-primary-active">{t('')}</span>
+              <span className="text-primary-active">
+                {tabs.length === 1 && tabs[activeTabIndex].label}
+              </span>
             </Button>
           </div>
-          <div className="collapse-sidebar relative">
-            <div className="w-full">
-              <Swiper
-                onInit={(core: SwiperCore) => {
-                  swiperRef.current = core.el;
-                }}
-                simulateTouch={false}
-                modules={[Navigation, Pagination, Scrollbar, A11y, Controller]}
-                slidesPerView={3}
-                spaceBetween={5}
-                onSwiper={swiper => setSwiper(swiper)}
-                navigation={{
-                  prevEl: prevRef?.current,
-                  nextEl: nextRef?.current,
-                }}
-              >
-                {tabs.map((obj, index) => (
-                  <SwiperSlide key={index}>
-                    <div
-                      className={classnames(
-                        index === activeTabIndex
-                          ? 'bg-secondary-main text-white'
-                          : 'text-aqua-pale',
-                        'flex cursor-pointer px-4 py-2 rounded-md  flex-col justify-center items-center text-center'
-                      )}
-                      key={index}
-                      onClick={() => {
-                        setActiveTabIndex(index);
-                        setPanelOpen(true);
-                      }}
-                    >
-                      <span>
-                        <Icon
-                          name={obj.iconName}
-                          className={classnames(
-                            index === activeTabIndex
-                              ? 'text-white'
-                              : 'text-primary-active'
-                          )}
-                          style={{
-                            width: '22px',
-                            height: '22px',
-                          }}
-                        />
-                      </span>
-                      <span className="text-[10px] font-medium whitespace-nowrap mt-2">
-                        {obj.label}
-                      </span>
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          </div>
+          {tabs.length > 1 &&
+            _getMoreThanOneTabLayout(
+              swiperRef,
+              setSwiper,
+              prevRef,
+              nextRef,
+              tabs,
+              activeTabIndex,
+              setActiveTabIndex,
+              setPanelOpen
+            )}
           {/** carousel navigation with the arrows */}
           {/** only show carousel nav if tabs are more than 3 tabs */}
           {tabs.length > 3 && (
@@ -317,5 +274,93 @@ SidePanel.propTypes = {
     ),
   ]),
 };
+
+function _getOneTabLayout(
+  tabs: any,
+  activeTabIndex: any,
+  setActiveTabIndex: React.Dispatch<any>,
+  setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  return (
+    <div>
+      <div className="flex flex-row items-center justify-between px-2 bg-primary-dark h-9">
+        <span className="text-primary-active">{'label'}</span>
+      </div>
+    </div>
+  );
+}
+
+function _getMoreThanOneTabLayout(
+  swiperRef: any,
+  setSwiper: React.Dispatch<any>,
+  prevRef: React.MutableRefObject<undefined>,
+  nextRef: React.MutableRefObject<undefined>,
+  tabs: any,
+  activeTabIndex: any,
+  setActiveTabIndex: React.Dispatch<any>,
+  setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  return (
+    <div
+      className="collapse-sidebar relative"
+      style={{
+        backgroundColor: '#06081f',
+      }}
+    >
+      <div className="w-full">
+        <Swiper
+          onInit={(core: SwiperCore) => {
+            swiperRef.current = core.el;
+          }}
+          simulateTouch={false}
+          modules={[Navigation, Pagination, Scrollbar, A11y, Controller]}
+          slidesPerView={3}
+          spaceBetween={5}
+          onSwiper={swiper => setSwiper(swiper)}
+          navigation={{
+            prevEl: prevRef?.current,
+            nextEl: nextRef?.current,
+          }}
+        >
+          {tabs.map((obj, index) => (
+            <SwiperSlide key={index}>
+              <div
+                className={classnames(
+                  index === activeTabIndex
+                    ? 'bg-secondary-main text-white'
+                    : 'text-aqua-pale',
+                  'flex cursor-pointer px-4 py-1 rounded-[4px]  flex-col justify-center items-center text-center'
+                )}
+                key={index}
+                onClick={() => {
+                  setActiveTabIndex(index);
+                  setPanelOpen(true);
+                }}
+              >
+                <span>
+                  <Icon
+                    name={obj.iconName}
+                    className={classnames(
+                      index === activeTabIndex
+                        ? 'text-white'
+                        : 'text-primary-active'
+                    )}
+                    style={{
+                      width: '22px',
+                      height: '22px',
+                    }}
+                  />
+                </span>
+                <span className="text-[10px] select-none font-medium whitespace-nowrap mt-[5px]">
+                  {obj.label}
+                </span>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+    </div>
+  );
+}
 
 export default SidePanel;
