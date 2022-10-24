@@ -139,7 +139,6 @@ class CornerstoneViewportService implements IViewportService {
     this.renderingEngine.destroy();
     this.viewportsDisplaySets.clear();
     this.renderingEngine = null;
-    // cache.purgeVolumeCache();
     cache.purgeCache();
   }
 
@@ -157,6 +156,8 @@ class CornerstoneViewportService implements IViewportService {
     const viewportId = viewportInfo.getViewportId();
 
     this.renderingEngine && this.renderingEngine.disableElement(viewportId);
+
+    this.viewportsInfo.get(viewportIndex).destroy();
     this.viewportsInfo.delete(viewportIndex);
   }
 

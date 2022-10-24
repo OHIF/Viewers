@@ -1,7 +1,9 @@
 import * as cornerstone from '@cornerstonejs/core';
 import { volumeLoader } from '@cornerstonejs/core';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import cornerstoneWADOImageLoader, {
+  webWorkerManager,
+} from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler } from '@ohif/core';
 
@@ -79,4 +81,8 @@ export default function initWADOImageLoader(
   });
 
   initWebWorkers(appConfig);
+}
+
+export function destroy() {
+  webWorkerManager.terminate();
 }

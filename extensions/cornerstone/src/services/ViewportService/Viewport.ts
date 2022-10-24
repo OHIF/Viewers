@@ -81,6 +81,13 @@ class ViewportInfo {
     this.setPublicDisplaySetOptions([{}]);
   }
 
+  public destroy = (): void => {
+    this.element = null;
+    this.viewportData = null;
+    this.viewportOptions = null;
+    this.displaySetOptions = null;
+  };
+
   public setRenderingEngineId(renderingEngineId: string): void {
     this.renderingEngineId = renderingEngineId;
   }
