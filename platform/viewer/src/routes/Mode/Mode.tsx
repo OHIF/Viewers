@@ -256,14 +256,19 @@ export default function ModeRoute({
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
     const setupRouteInit = async () => {
-      const filters = Array.from(query.keys()).reduce(
-        (acc: Record<string, string>, val: string) => {
-          if (val !== 'StudyInstanceUIDs') {
-            return { ...acc, [val]: query.get(val) };
-          }
-        },
-        {}
-      );
+      const filters =
+        Array.from(query.keys()).reduce(
+          (acc: Record<string, string>, val: string) => {
+            if (val !== 'StudyInstanceUIDs') {
+              if (['seriesInstanceUID', 'SeriesInstanceUID'].includes(val)) {
+                return { ...acc, SeriesInstanceUID: query.get(val) };
+              }
+
+              return { ...acc, [val]: query.get(val) };
+            }
+          },
+          {}
+        ) ?? {};
 
       if (route.init) {
         return await route.init(
