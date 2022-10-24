@@ -261,7 +261,7 @@ export default function ModeRoute({
           (acc: Record<string, string>, val: string) => {
             if (val !== 'StudyInstanceUIDs') {
               if (['seriesInstanceUID', 'SeriesInstanceUID'].includes(val)) {
-                return { ...acc, SeriesInstanceUID: query.get(val) };
+                return { ...acc, seriesInstanceUID: query.get(val) };
               }
 
               return { ...acc, [val]: query.get(val) };
