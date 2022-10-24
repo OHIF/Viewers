@@ -1,7 +1,7 @@
 .loading {
-  background-color: lightgrey;
-  height: 4px;
-  border-radius: 2px;
+  background-color: #091731;
+  height: 8px;
+  border-radius: 4px;
   overflow: hidden;
   position: relative;
   width: 12em;
@@ -11,6 +11,7 @@
   animation: side2side 2s ease-in-out infinite;
   height: 100%;
   position: absolute;
+  border-radius: 4px;
   width: 50%;
 }
 
