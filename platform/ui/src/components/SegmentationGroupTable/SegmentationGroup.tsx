@@ -172,7 +172,7 @@ const SegmentationGroup = ({
             showAddSegment={showAddSegment}
           />
           <div
-            className="ohif-scrollbar overflow-y-auto"
+            className="ohif-scrollbar overflow-y-hidden"
             style={{ maxHeight: '40rem' }}
           >
             {!!segments.length &&
@@ -233,7 +233,6 @@ SegmentationGroup.propTypes = {
   onSegmentClick: PropTypes.func.isRequired,
   showAddSegment: PropTypes.bool.isRequired,
   onSegmentAdd: PropTypes.func.isRequired,
-
   onSegmentationClick: PropTypes.func.isRequired,
   onClickSegmentColor: PropTypes.func.isRequired,
   onSegmentationEdit: PropTypes.func.isRequired,
@@ -248,6 +247,26 @@ SegmentationGroup.defaultProps = {
   label: '',
   segmentCount: 0,
   segments: [],
+  isVisible: true,
+  isMinimized: false,
+  onClickNewSegment: () => {},
+  onClickSegment: () => {},
+  onClickSegmentEdit: () => {},
+  onClickSegmentDelete: () => {},
+  onToggleSegmentLocked: () => {},
+  onToggleSegmentVisibility: () => {},
+  onToggleSegmentationVisibility: () => {},
+  onSegmentClick: () => {},
+  showAddSegment: false,
+  onSegmentAdd: () => {},
+  onSegmentationClick: () => {},
+  onClickSegmentColor: () => {},
+  onSegmentationEdit: () => {},
+  onSegmentDelete: () => {},
+  onToggleMinimizeSegmentation: () => {},
+  onSegmentationConfigChange: () => {},
+  onSegmentationDelete: () => {},
+  onSegmentEdit: () => {},
 };
 
 export default SegmentationGroup;

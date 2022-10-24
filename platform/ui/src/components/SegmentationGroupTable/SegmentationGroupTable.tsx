@@ -68,9 +68,9 @@ const SegmentationGroupTable = ({
         setRenderInactiveSegmentations={setRenderInactiveSegmentations}
         setRenderOutline={setRenderOutline}
       />
-      <div className="flex flex-col pr-[1px]">
+      <div className="flex flex-col pr-[1px] mt-1">
         {!!segmentations.length &&
-          segmentations.map(segmentation => {
+          segmentations.map((segmentation, index) => {
             const {
               id,
               label,
@@ -84,7 +84,6 @@ const SegmentationGroupTable = ({
             return (
               <>
                 <SegmentationGroup
-                  key={id}
                   id={id}
                   label={label}
                   isMinimized={isMinimized[id]}
@@ -137,6 +136,7 @@ SegmentationGroupTable.propTypes = {
   onToggleLocked: PropTypes.func,
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleVisibilityAll: PropTypes.func.isRequired,
+  segmentationConfig: PropTypes.object,
 };
 
 SegmentationGroupTable.defaultProps = {
@@ -146,9 +146,10 @@ SegmentationGroupTable.defaultProps = {
   activeSegmentationId: '',
   onClick: () => {},
   onEdit: () => {},
+  onDelete: () => {},
+  onToggleLocked: () => {},
   onToggleVisibility: () => {},
   onToggleVisibilityAll: () => {},
-  onSegmentationClick: () => {},
   segmentationConfig: {
     initialConfig: {
       fillAlpha: 0.5,

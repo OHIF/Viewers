@@ -14,7 +14,7 @@ const ActiveSegmentationConfig = ({
   usePercentage,
 }) => {
   return (
-    <div className="grid grid-cols-4 text-[12px] pt-[13px] gap-4 px-2">
+    <div className="flex justify-between text-[12px] pt-[13px] px-2">
       <div className="flex flex-col items-start">
         <div className="text-white mb-[12px]">Active</div>
         <CheckBox
@@ -126,7 +126,7 @@ const InactiveSegmentationConfig = ({
   usePercentage,
 }) => {
   return (
-    <div className="pl-2 mt-1">
+    <div className="pl-2">
       <CheckBox
         label="Display Inactive Segmentations"
         checked={config.renderInactiveSegmentations}

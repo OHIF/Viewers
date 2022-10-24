@@ -18,6 +18,7 @@
 .loading-bar {
   animation: side2side 2s ease-in-out infinite;
   height: 100%;
+  border-radius: 4px;
   position: absolute;
   width: 50%;
 }

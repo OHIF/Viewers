@@ -13,7 +13,7 @@ import './InputNumber.css';
  */
 
 const sizesClasses = {
-  sm: 'w-[38px] h-[28px]',
+  sm: 'w-[45px] h-[28px]',
 };
 
 const InputNumber: React.FC<{
@@ -65,26 +65,27 @@ const InputNumber: React.FC<{
           onChange={handleChange}
           className={`bg-black text-white text-[12px] w-full text-center`}
         />
-        <div className="flex flex-col space-y-2 justify-center items-baseline">
+
+        <div className="up-arrowsize flex flex-col items-center justify-around">
           <IconButton
-            id={'number-chevron-up-icon'}
+            id={'down-arrow-icon'}
             variant="text"
             color="inherit"
             size="initial"
-            className="text-[#726f7e] transform rotate-180 grow"
+            className="text-[#726f7e] transform rotate-180"
             onClick={handleIncrement}
           >
-            <Icon name="arrow-down" />
+            <Icon name="ui-arrow-down" />
           </IconButton>
           <IconButton
-            id={'number-chevron-down-icon'}
+            id={'down-arrow-icon'}
             variant="text"
             color="inherit"
             size="initial"
-            className="text-[#726f7e] grow"
+            className="text-[#726f7e]"
             onClick={handleDecrement}
           >
-            <Icon name="arrow-down" />
+            <Icon name="ui-arrow-down" />
           </IconButton>
         </div>
       </div>

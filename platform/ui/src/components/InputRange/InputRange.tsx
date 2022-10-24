@@ -60,7 +60,7 @@ const InputRange: React.FC<{
         min={minValue}
         max={maxValue}
         value={rangeValue}
-        className={`appearance-none h-[3px] rounded-lg ${
+        className={`appearance-none h-[3px] rounded-lg input-range-thumb-design ${
           inputClassName ? inputClassName : ''
         }`}
         style={{
