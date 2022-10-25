@@ -84,5 +84,11 @@ export default function initWADOImageLoader(
 }
 
 export function destroy() {
-  webWorkerManager.terminate();
+  // Note: we don't want to call .terminate on the webWorkerManager since
+  // that resets the config
+  const webWorkers = webWorkerManager.webWorkers;
+  for (let i = 0; i < webWorkers.length; i++) {
+    webWorkers[i].worker.terminate();
+  }
+  webWorkers.length = 0;
 }
