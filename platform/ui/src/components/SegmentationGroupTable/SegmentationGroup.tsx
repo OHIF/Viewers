@@ -189,22 +189,23 @@ const SegmentationGroup = ({
                   isLocked,
                 } = segment;
                 return (
-                  <SegmentItem
-                    key={segmentIndex}
-                    segmentationId={id}
-                    segmentIndex={segmentIndex}
-                    label={label}
-                    color={color}
-                    isActive={activeSegmentIndex === segmentIndex}
-                    isLocked={isLocked}
-                    isVisible={isVisible}
-                    onClick={onSegmentClick}
-                    onEdit={onSegmentEdit}
-                    onDelete={onSegmentDelete}
-                    showSegmentDelete={showSegmentDelete}
-                    onColor={onSegmentColorClick}
-                    onToggleVisibility={onToggleSegmentVisibility}
-                  />
+                  <div className="mb-[1px]" key={segmentIndex}>
+                    <SegmentItem
+                      segmentationId={id}
+                      segmentIndex={segmentIndex}
+                      label={label}
+                      color={color}
+                      isActive={activeSegmentIndex === segmentIndex}
+                      isLocked={isLocked}
+                      isVisible={isVisible}
+                      onClick={onSegmentClick}
+                      onEdit={onSegmentEdit}
+                      onDelete={onSegmentDelete}
+                      showSegmentDelete={showSegmentDelete}
+                      onColor={onSegmentColorClick}
+                      onToggleVisibility={onToggleSegmentVisibility}
+                    />
+                  </div>
                 );
               })}
           </div>

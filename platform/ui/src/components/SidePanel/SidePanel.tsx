@@ -43,12 +43,12 @@ const baseClasses =
 
 const classesMap = {
   open: {
-    left: `border-r-4`,
-    right: `border-l-4`,
+    left: `mr-1`,
+    right: `ml-1`,
   },
   closed: {
-    left: `border-r-4 items-end`,
-    right: `border-l-4 items-start`,
+    left: `mr-2 items-end`,
+    right: `ml-2 items-start`,
   },
 };
 
@@ -102,7 +102,7 @@ const SidePanel = ({
     }
   }, [swiper]);
 
-  const getPanelButtons = () => {
+  const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
     return (
       <>
@@ -123,12 +123,7 @@ const SidePanel = ({
             )}
           />
         </div>
-        <div
-          className={classnames(
-            'flex flex-col space-y-3 mt-2',
-            side === 'left' ? 'mr-1' : 'ml-1'
-          )}
-        >
+        <div className={classnames('flex flex-col space-y-3 mt-3')}>
           {_childComponents.map((childComponent, index) => (
             <Tooltip
               position={side === 'left' ? 'right' : 'left'}
@@ -154,8 +149,8 @@ const SidePanel = ({
                   name={childComponent.iconName}
                   className="text-primary-active"
                   style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '22px',
+                    height: '22px',
                   }}
                 />
               </IconButton>
@@ -248,7 +243,7 @@ const SidePanel = ({
           </div>
         </React.Fragment>
       ) : (
-        <React.Fragment>{getPanelButtons()}</React.Fragment>
+        <React.Fragment>{getCloseStateComponent()}</React.Fragment>
       )}
     </div>
   );
@@ -274,21 +269,6 @@ SidePanel.propTypes = {
     ),
   ]),
 };
-
-function _getOneTabLayout(
-  tabs: any,
-  activeTabIndex: any,
-  setActiveTabIndex: React.Dispatch<any>,
-  setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
-) {
-  return (
-    <div>
-      <div className="flex flex-row items-center justify-between px-2 bg-primary-dark h-9">
-        <span className="text-primary-active">{'label'}</span>
-      </div>
-    </div>
-  );
-}
 
 function _getMoreThanOneTabLayout(
   swiperRef: any,

@@ -464,9 +464,7 @@ function WorkList({
       ) : (
         <div className="flex flex-col items-center justify-center pt-48">
           {isLoadingData ? (
-            <LoadingIndicatorProgress
-              className={'w-full h-full bg-primary-dark'}
-            />
+            <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
           ) : (
             <EmptyStudies />
           )}
