@@ -234,13 +234,7 @@ const SidePanel = ({
               </button>
             </div>
           )}
-          <div
-            style={{
-              marginTop: '1px',
-            }}
-          >
-            <ActiveComponent />
-          </div>
+          <ActiveComponent />
         </React.Fragment>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>
