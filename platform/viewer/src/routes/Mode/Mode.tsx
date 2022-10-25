@@ -256,6 +256,17 @@ export default function ModeRoute({
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
     const setupRouteInit = async () => {
+      /**
+       * The next line should get all the query parameters provided by the URL
+       * - except the StudyInstaceUIDs - and create an object called filters
+       * used to filtering the study as the user wants otherwise it will return
+       * a empty object.
+       *
+       * Example:
+       * const filters = {
+       *   seriesInstaceUID: 1.2.276.0.7230010.3.1.3.1791068887.5412.1620253993.114611
+       * }
+       */
       const filters =
         Array.from(query.keys()).reduce(
           (acc: Record<string, string>, val: string) => {
@@ -278,6 +289,7 @@ export default function ModeRoute({
             hotkeysManager,
             studyInstanceUIDs,
             dataSource,
+            filters,
           },
           hangingProtocol
         );
