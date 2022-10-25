@@ -144,7 +144,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     );
   }
   return (
-    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar h-full">
+    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
       {
         <div className="flex flex-col">
           <div className="flex flex-col p-4 space-y-4 bg-primary-dark">

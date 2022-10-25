@@ -232,7 +232,7 @@ export default function PanelSegmentation({
   );
 
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col justify-between">
       {/* show segmentation table */}
       {segmentations?.length ? (
         <SegmentationGroupTable

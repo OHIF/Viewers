@@ -150,7 +150,7 @@ export default function PanelMeasurementTable({
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto invisible-scrollbar h-full"
+        className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable

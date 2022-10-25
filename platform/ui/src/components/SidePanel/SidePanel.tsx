@@ -39,7 +39,7 @@ const styleMap = {
 };
 
 const baseClasses =
-  'transition-all duration-300 ease-in-out h-100 bg-black border-black flex flex-col justify-start box-content';
+  'transition-all duration-300 ease-in-out h-100 bg-black border-black justify-start box-content';
 
 const classesMap = {
   open: {

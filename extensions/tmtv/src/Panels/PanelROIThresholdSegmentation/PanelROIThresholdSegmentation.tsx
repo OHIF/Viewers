@@ -171,7 +171,7 @@ export default function PanelRoiThresholdSegmentation({
   }, [segmentations, selectedSegmentationId]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col">
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         <div className="flex mx-4 my-4 mb-4 space-x-4">
           <Button
