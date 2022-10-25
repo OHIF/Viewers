@@ -30,13 +30,12 @@ const SegmentItem = ({
   return (
     <div
       className={classnames(
-        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px] overflow-hidden',
+        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px] overflow-hidden border',
         {
-          'border border-primary-light rounded-[3px]':
-            isHovering || isSegmentIndexHovering,
+          'border-primary-light rounded-[3px]': isActive,
         },
         {
-          'border border-transparent': !isHovering && !isSegmentIndexHovering,
+          'border-transparent': !isActive,
         }
       )}
       onMouseEnter={onMouseEnter}
@@ -50,42 +49,42 @@ const SegmentItem = ({
       data-cy={'segment-item'}
     >
       <div
+        className={classnames(
+          'w-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
+          {
+            'bg-primary-light text-black border-l border-l-primary-light rounded-l-sm': isActive,
+            'bg-[#1d3c58]  border-l border-l-[#1d3c58] rounded-l-sm':
+              !isActive && isHovering,
+            'bg-primary-dark text-aqua-pale':
+              !isActive && !isHovering && isVisible,
+            'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
+          }
+        )}
         onMouseEnter={() => setIsSegmentIndexHovering(true)}
         onMouseLeave={() => setIsSegmentIndexHovering(false)}
       >
-        <div
-          className={classnames(
-            'w-[27px] h-full flex items-center justify-center border-r border-r-black text-[12px]',
-            {
-              'bg-primary-light text-black border-l border-l-primary-light rounded-l-sm': isActive,
-              'bg-primary-dark text-aqua-pale': !isActive && isVisible,
-              'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
-            }
-          )}
-        >
-          {isSegmentIndexHovering && showSegmentDelete ? (
-            <Icon
-              name="close"
-              className={classnames('w-5 h-5 pr-2')}
-              onClick={e => {
-                e.stopPropagation();
-                onDelete(segmentationId, segmentIndex);
-              }}
-            />
-          ) : (
-            <div className={classnames('flex items-center pr-2 ')}>
-              {segmentIndex}
-            </div>
-          )}
-        </div>
+        {isSegmentIndexHovering && showSegmentDelete ? (
+          <Icon
+            name="close"
+            className={classnames('w-5 h-5 pr-2')}
+            onClick={e => {
+              e.stopPropagation();
+              onDelete(segmentationId, segmentIndex);
+            }}
+          />
+        ) : (
+          <div className={classnames('flex items-center pr-2 ')}>
+            {segmentIndex}
+          </div>
+        )}
       </div>
       <div
         className={classnames(
           'flex items-center justify-between w-full pl-2 py-1 text-white border-r border-r-black relative ',
           {
-            'bg-secondary-dark text-primary-light': isActive,
+            'bg-primary-dark text-primary-light': isActive,
             'bg-primary-dark text-aqua-pale': !isActive && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#537594]': !isVisible,
+            'bg-[#140e2e] opacity-60 text-[#3d5871]': !isVisible,
           }
         )}
       >

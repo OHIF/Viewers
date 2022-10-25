@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import SegmentItem from './SegmentItem';
+import SegmentationGroupSegment from './SegmentationGroupSegment';
 import Dropdown from '../Dropdown';
 import classnames from 'classnames';
 import Icon from '../Icon';
@@ -58,7 +58,7 @@ const SegmentGroupHeader = ({
   return (
     <div
       className={classnames(
-        'flex items-center pr-2 pl-[4px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
+        'flex items-center pr-2 pl-[3px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
         {
           'bg-secondary-main': isActive,
           'bg-secondary-dark': !isActive,
@@ -190,7 +190,7 @@ const SegmentationGroup = ({
                 } = segment;
                 return (
                   <div className="mb-[1px]" key={segmentIndex}>
-                    <SegmentItem
+                    <SegmentationGroupSegment
                       segmentationId={id}
                       segmentIndex={segmentIndex}
                       label={label}
