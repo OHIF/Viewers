@@ -20,7 +20,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
           <Select
             label={t('Strategy')}
             closeMenuOnSelect={true}
-            className="mr-2 bg-black border-primary-main "
+            className="mr-2 bg-black border-primary-main text-white "
             options={options}
             placeholder={
               options.find(option => option.value === config.strategy)

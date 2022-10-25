@@ -349,7 +349,7 @@ const ViewportDownloadForm = ({
                 onLabelClick={() => {}}
               >
                 <Select
-                  className="mt-2"
+                  className="mt-2 text-white"
                   isClearable={false}
                   value={fileType}
                   data-cy="file-type"
@@ -404,7 +404,15 @@ const ViewportDownloadForm = ({
       </div>
 
       <div className="flex justify-end mt-4">
-        <Button data-cy="cancel-btn" variant="outlined" onClick={onClose}>
+        <Button
+          data-cy="cancel-btn"
+          variant="outlined"
+          size="initial"
+          color="black"
+          border="secondary"
+          onClick={onClose}
+          className="p-2"
+        >
           {t('Cancel')}
         </Button>
         <Button
