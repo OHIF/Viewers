@@ -39,7 +39,7 @@ const styleMap = {
 };
 
 const baseClasses =
-  'transition-all duration-300 ease-in-out h-100 bg-black border-black justify-start box-content';
+  'transition-all duration-300 ease-in-out h-100 bg-black border-black justify-start box-content flex flex-col';
 
 const classesMap = {
   open: {
@@ -108,7 +108,7 @@ const SidePanel = ({
       <>
         <div
           className={classnames(
-            'bg-secondary-dark h-[28px] flex items-center w-full rounded-md  cursor-pointer',
+            'bg-secondary-dark h-[28px] flex items-center w-full rounded-md cursor-pointer',
             side === 'left' ? 'pr-2 justify-end' : 'pl-2 justify-start'
           )}
           onClick={() => {
@@ -175,7 +175,7 @@ const SidePanel = ({
           {/** Panel Header with Arrow and Close Actions */}
           <div
             className={classnames(
-              'px-[10px] bg-primary-dark h-9 cursor-pointer flex',
+              'px-[10px] bg-primary-dark h-9 cursor-pointer flex shrink-0',
               tabs.length === 1 && 'mb-1'
             )}
             onClick={() => {
