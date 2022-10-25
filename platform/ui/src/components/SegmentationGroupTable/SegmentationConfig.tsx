@@ -126,11 +126,11 @@ const InactiveSegmentationConfig = ({
   usePercentage,
 }) => {
   return (
-    <div className="pl-2">
+    <div className="px-2">
       <CheckBox
         label="Display Inactive Segmentations"
         checked={config.renderInactiveSegmentations}
-        labelClassName="text-[12px] pl-1 pt-1"
+        labelClassName="text-[12px] pt-1"
         className="mb-[9px]"
         onChange={value => {
           dispatch({
@@ -192,33 +192,16 @@ const SegmentationConfig = ({
 
   const [isMinimized, setIsMinimized] = useState(true);
   return (
-    <>
-      {/* active segmentation */}
-      <ActiveSegmentationConfig
-        config={config}
-        dispatch={dispatch}
-        setFillAlpha={setFillAlpha}
-        setOutlineWidthActive={setOutlineWidthActive}
-        setOutlineOpacityActive={setOutlineOpacityActive}
-        setRenderFill={setRenderFill}
-        setRenderOutline={setRenderOutline}
-        usePercentage={segmentationConfig.usePercentage}
-      />
-
-      {/* A small line  */}
-      <div className="h-[1px] bg-[#212456] mb-[8px] mx-3"></div>
-
-      {/* inactive segmentation */}
+    <div className="bg-primary-dark">
       <div
-        onClick={() => setIsMinimized(!isMinimized)}
-        className="flex items-center cursor-pointer pl-[4px] pb-[9px]"
+        className="flex cursor-pointer items-center"
+        onClick={evt => {
+          evt.stopPropagation();
+          setIsMinimized(!isMinimized);
+        }}
       >
         <Icon
           name="panel-group-open-close"
-          onClick={evt => {
-            evt.stopPropagation();
-            setIsMinimized(!isMinimized);
-          }}
           className={classNames(
             'w-5 h-5 text-white transition duration-300 cursor-pointer',
             {
@@ -227,20 +210,44 @@ const SegmentationConfig = ({
           )}
         />
         <span className="text-[#d8d8d8] text-[12px] font-[300]">
-          {'Inactive Segmentations'}
+          {'Segmentations Appearance'}
         </span>
       </div>
+      {/* active segmentation */}
       {!isMinimized && (
-        <InactiveSegmentationConfig
-          config={config}
-          dispatch={dispatch}
-          setRenderInactiveSegmentations={setRenderInactiveSegmentations}
-          setFillAlphaInactive={setFillAlphaInactive}
-          usePercentage={segmentationConfig.usePercentage}
-        />
+        <div>
+          <ActiveSegmentationConfig
+            config={config}
+            dispatch={dispatch}
+            setFillAlpha={setFillAlpha}
+            setOutlineWidthActive={setOutlineWidthActive}
+            setOutlineOpacityActive={setOutlineOpacityActive}
+            setRenderFill={setRenderFill}
+            setRenderOutline={setRenderOutline}
+            usePercentage={segmentationConfig.usePercentage}
+          />
+          {/* A small line  */}
+          <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
+          {/* inactive segmentation */}
+          <div
+            onClick={() => setIsMinimized(!isMinimized)}
+            className="flex items-center cursor-pointer pl-2 pb-[9px]"
+          >
+            <span className="text-[#d8d8d8] text-[12px] font-[300]">
+              {'Inactive Segmentations'}
+            </span>
+          </div>
+          <InactiveSegmentationConfig
+            config={config}
+            dispatch={dispatch}
+            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+            setFillAlphaInactive={setFillAlphaInactive}
+            usePercentage={segmentationConfig.usePercentage}
+          />
+        </div>
       )}
       <div className="h-[6px] bg-black "></div>
-    </>
+    </div>
   );
 };
 
