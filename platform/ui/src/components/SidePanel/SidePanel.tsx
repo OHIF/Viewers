@@ -303,7 +303,7 @@ function _getMoreThanOneTabLayout(
                   index === activeTabIndex
                     ? 'bg-secondary-main text-white'
                     : 'text-aqua-pale',
-                  'flex cursor-pointer px-4 py-1 rounded-[4px]  flex-col justify-center items-center text-center'
+                  'flex cursor-pointer px-4 py-1 rounded-[4px]  flex-col justify-center items-center text-center hover:text-white'
                 )}
                 key={index}
                 onClick={() => {
