@@ -70,6 +70,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   const wadoConfig = {
     url: wadoRoot,
+    staticWado,
     singlepart,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
@@ -80,7 +81,10 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   const qidoDicomWebClient = staticWado
     ? new StaticWadoClient(qidoConfig)
     : new api.DICOMwebClient(qidoConfig);
-  const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
+
+  const wadoDicomWebClient = staticWado
+    ? new StaticWadoClient(wadoConfig)
+    : new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
     initialize: ({ params, query }) => {
