@@ -77,7 +77,7 @@ function modeFactory() {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [],
+    hangingProtocol: [],
     sopClassHandlers: [],
     hotkeys: [],
   };
@@ -272,7 +272,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: ['@ohif/extension-default.hangingProtocolModule.petCT'],
+    hangingProtocol: ['@ohif/extension-default.hangingProtocolModule.petCT'],
     sopClassHandlers: ['@ohif/extension-default.sopClassHandlerModule.stack'],
     // ...
   };

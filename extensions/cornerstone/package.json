@@ -30,7 +30,7 @@
     "@ohif/core": "^3.0.0",
     "@ohif/ui": "^2.0.0",
     "cornerstone-wado-image-loader": "^4.2.1",
-    "dcmjs": "^0.24.5",
+    "dcmjs": "^0.28.3",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
     "prop-types": "^15.6.2",
@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.17.9",
-    "@cornerstonejs/core": "^0.16.1",
+    "@cornerstonejs/core": "^0.16.8",
     "@cornerstonejs/streaming-image-volume-loader": "^0.4.23",
     "@cornerstonejs/tools": "^0.24.1",
     "@kitware/vtk.js": "^24.18.7",

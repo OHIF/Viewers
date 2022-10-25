@@ -148,6 +148,16 @@ function ViewerLayout({
     },
   ];
 
+  if (appConfig.oidc) {
+    menuOptions.push({
+      title: t('Header:Logout'),
+      icon: 'power-off',
+      onClick: async () => {
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
+      }
+    });
+  }
+
   /**
    * Set body classes (tailwindcss) that don't allow vertical
    * or horizontal overflow (no scrolling). Also guarantee window

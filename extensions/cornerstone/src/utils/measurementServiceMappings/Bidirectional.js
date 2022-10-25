@@ -67,6 +67,7 @@ const Bidirectional = {
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
@@ -92,30 +93,33 @@ function getMappedAnnotations(annotation, DisplaySetService) {
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
-    let displaySet;
-
-    if (referencedImageId) {
-      const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
-        referencedImageId
-      );
-
-      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-        SOPInstanceUID,
-        SeriesInstanceUID
-      );
-    } else {
+    if (!referencedImageId) {
       throw new Error(
         'Non-acquisition plane measurement mapping not supported'
       );
     }
 
-    const { SeriesNumber, SeriesInstanceUID } = displaySet;
+    const {
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      frameNumber,
+    } = getSOPInstanceAttributes(referencedImageId);
+
+    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      frameNumber
+    );
+
+    const { SeriesNumber } = displaySet;
     const { length, width } = targetStats;
     const unit = 'mm';
 
     annotations.push({
       SeriesInstanceUID,
+      SOPInstanceUID,
       SeriesNumber,
+      frameNumber,
       unit,
       length,
       width,
@@ -171,7 +175,13 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { length, width, SeriesNumber, SOPInstanceUID } = mappedAnnotations[0];
+  const {
+    length,
+    width,
+    SeriesNumber,
+    SOPInstanceUID,
+    frameNumber,
+  } = mappedAnnotations[0];
   const roundedLength = utils.roundNumber(length, 2);
   const roundedWidth = utils.roundNumber(width, 2);
 
@@ -184,10 +194,11 @@ function getDisplayText(mappedAnnotations, displaySet) {
     InstanceNumber = instance.InstanceNumber;
   }
 
+  const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
+  const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
+
   displayText.push(
-    InstanceNumber
-      ? `L: ${roundedLength} mm (S: ${SeriesNumber} I: ${InstanceNumber})`
-      : `L: ${roundedLength} mm (S: ${SeriesNumber})`
+    `L: ${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`
   );
   displayText.push(`W: ${roundedWidth} mm`);
 

@@ -11,7 +11,7 @@ import validate from './lib/validator';
  */
 const match = (
   metadataInstance,
-  rules,
+  rules = [],
   customAttributeRetrievalCallbacks,
   options
 ) => {

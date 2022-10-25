@@ -110,8 +110,13 @@ function validate(packageName, version, keyword) {
 
     // Gets the registry of the package. Scoped packages may not be using the global default.
     const registryUrlOfPackage = registryUrl(scope);
-
-    const response = await fetch(`${registryUrlOfPackage}${packageName}`);
+    let options = {}
+    if (process.env.NPM_TOKEN){
+      options['headers'] = {
+        'Authorization': `Bearer ${process.env.NPM_TOKEN}`,
+      }
+    }
+    const response = await fetch(`${registryUrlOfPackage}${packageName}`, options);
     const json = await response.json();
 
     if (json.error && json.error === NOT_FOUND) {

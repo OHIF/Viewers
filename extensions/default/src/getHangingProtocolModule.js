@@ -9,6 +9,15 @@ const defaultProtocol = {
   editableBy: {},
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
+  displaySetSelectors: {
+    defaultDisplaySetId: {
+      // Unused currently
+      imageMatchingRules: [],
+      // Matches displaysets, NOT series
+      seriesMatchingRules: [],
+      studyMatchingRules: [],
+    },
+  },
   stages: [
     {
       id: 'hYbmMy3b7pz7GLiaT',
@@ -20,16 +29,6 @@ const defaultProtocol = {
           columns: 1,
         },
       },
-      displaySets: [
-        {
-          id: 'displaySet',
-          // Unused currently
-          imageMatchingRules: [],
-          // Matches displaysets, NOT series
-          seriesMatchingRules: [],
-          studyMatchingRules: [],
-        },
-      ],
       viewports: [
         {
           viewportOptions: {
@@ -42,7 +41,7 @@ const defaultProtocol = {
           displaySets: [
             {
               options: [],
-              id: 'displaySet',
+              id: 'defaultDisplaySetId',
             },
           ],
         },

@@ -32,10 +32,10 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "classnames": "^2.2.6",
-    "@cornerstonejs/core": "^0.16.1",
+    "@cornerstonejs/core": "^0.16.8",
     "@cornerstonejs/tools": "^0.24.1",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
-    "dcmjs": "^0.24.5",
+    "dcmjs": "^0.28.3",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

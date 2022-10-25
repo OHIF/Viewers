@@ -235,6 +235,7 @@ Button.propTypes = {
   ]),
   border: PropTypes.oneOf([
     'none',
+    'light',
     'default',
     'primary',
     'secondary',

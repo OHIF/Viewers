@@ -19,6 +19,8 @@ class HangingProtocolService {
   studies: StudyMetadata[];
   // stores all the protocols (object or function that returns an object) in a map
   protocols: Map<string, Protocol>;
+  // Contains the list of currently active keys
+  activeProtocolIds: string[];
   // the current protocol that is being applied to the viewports in object format
   protocol: HangingProtocol.Protocol;
   stage: number;
@@ -123,8 +125,9 @@ class HangingProtocolService {
     // this.protocols is a map of protocols with the protocol id as the key
     // and the protocol or a function that returns a protocol as the value
     const protocols = [];
+    const keys = this.activeProtocolIds || this.protocols.keys();
     // @ts-ignore
-    for (const protocolId of this.protocols.keys()) {
+    for (const protocolId of keys) {
       const protocol = this.getProtocolById(protocolId);
       if (protocol) {
         protocols.push(protocol);
@@ -164,7 +167,8 @@ class HangingProtocolService {
 
   /**
    * It adds a protocol to the protocols map object. If a protocol with the given
-   * id already exists, warn the user and overwrite it.
+   * id already exists, warn the user and overwrite it.  This can be used to
+   * set a new "default" protocol.
    *
    * @param {string} protocolId - The id of the protocol.
    * @param {Protocol} protocol - Protocol - This is the protocol that you want to
@@ -182,6 +186,40 @@ class HangingProtocolService {
     }
 
     this.protocols.set(protocolId, protocol);
+  }
+
+  /**
+   * Add a given protocol object as active.
+   * If active protocols ids is null right now, then the specified
+   * protocol will become the only active protocol.
+   */
+  public addActiveProtocol(id: string): void {
+    if (!id) {
+      return;
+    }
+    if (!this.activeProtocolIds) {
+      this.activeProtocolIds = [];
+    }
+    this.activeProtocolIds.push(id);
+  }
+
+  /**
+   * Sets the active hanging protocols to use, by name.  If the value is empty,
+   * then resets the active protocols to all the named items.
+   */
+  public setActiveProtocols(
+    hangingProtocol?: string[] | string
+  ): void {
+    if (!hangingProtocol || !hangingProtocol.length) {
+      this.activeProtocolIds = null;
+      console.log('No active protocols, setting all to active');
+      return;
+    }
+    if (typeof hangingProtocol === 'string') {
+      this.setActiveProtocols([hangingProtocol]);
+      return;
+    }
+    this.activeProtocolIds = [...hangingProtocol];
   }
 
   /**
@@ -208,7 +246,7 @@ class HangingProtocolService {
       this.customAttributeRetrievalCallbacks
     );
 
-    if (protocolId) {
+    if (protocolId && typeof protocolId === 'string') {
       const protocol = this.getProtocolById(protocolId);
       this._setProtocol(protocol);
       return;
@@ -504,6 +542,8 @@ class HangingProtocolService {
       );
     }
 
+    const { displaySetSelectors = {} } = this.protocol;
+
     // Retrieve the current stage
     const stageModel = this._getCurrentStageModel();
 
@@ -513,7 +553,6 @@ class HangingProtocolService {
       !stageModel ||
       !stageModel.viewportStructure ||
       !stageModel.viewports ||
-      !stageModel.displaySets ||
       !stageModel.viewports.length
     ) {
       console.log('Stage cannot be applied', stageModel);
@@ -541,17 +580,27 @@ class HangingProtocolService {
     });
 
     // Matching the displaySets
-    for (const displaySet of stageModel.displaySets) {
-      // skip matching if already matched
-      if (this.displaySetMatchDetails.has(displaySet.id)) {
-        continue;
-      }
+    for (const viewport of stageModel.viewports) {
+      for (const displaySet of viewport.displaySets) {
+        const { id: displaySetId } = displaySet;
+        // skip matching if already matched
+        if (this.displaySetMatchDetails.has(displaySetId)) {
+          continue;
+        }
+        const displaySetSelector = displaySetSelectors[displaySetId];
 
-      const { bestMatch, matchingScores } = this._matchImages(displaySet);
-      this.displaySetMatchDetails.set(displaySet.id, bestMatch);
+        if (!displaySetSelector) {
+          console.warn('No display set selector for', displaySetId);
+          continue;
+        }
+        const { bestMatch, matchingScores } = this._matchImages(
+          displaySetSelector
+        );
+        this.displaySetMatchDetails.set(displaySetId, bestMatch);
 
-      if (bestMatch) {
-        bestMatch.matchingScores = matchingScores;
+        if (bestMatch) {
+          bestMatch.matchingScores = matchingScores;
+        }
       }
     }
 
@@ -564,8 +613,6 @@ class HangingProtocolService {
       // but it is a info to locate the displaySet from the displaySetService
       const displaySetsInfo = [];
       viewport.displaySets.forEach(
-        // Todo: why do we have displaySetIndex here? It is not used in the protocol
-        // definition
         ({ id, displaySetIndex = 0, options: displaySetOptions }) => {
           const viewportDisplaySetMain = this.displaySetMatchDetails.get(id);
           // Use the display set index to allow getting the "next" match, eg
@@ -612,11 +659,7 @@ class HangingProtocolService {
     // level matching needs to be added in future
 
     // Todo: handle fusion viewports by not taking the first displaySet rule for the viewport
-    const {
-      studyMatchingRules = [],
-      seriesMatchingRules,
-      findAll = false,
-    } = displaySetRules;
+    const { studyMatchingRules = [], seriesMatchingRules } = displaySetRules;
 
     const matchingScores = [];
     let highestStudyMatchingScore = 0;

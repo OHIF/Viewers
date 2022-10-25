@@ -45,6 +45,7 @@ function _getUIDFromImageID(imageId) {
     SOPInstanceUID: instance.SOPInstanceUID,
     SeriesInstanceUID: instance.SeriesInstanceUID,
     StudyInstanceUID: instance.StudyInstanceUID,
+    frameNumber: instance.frameNumber || 1,
   };
 }
 

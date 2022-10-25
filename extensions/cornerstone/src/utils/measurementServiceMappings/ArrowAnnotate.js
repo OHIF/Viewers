@@ -69,6 +69,7 @@ const Length = {
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.text,
@@ -90,13 +91,16 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
   const annotations = [];
 
-  const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
-    referencedImageId
-  );
+  const {
+    SOPInstanceUID,
+    SeriesInstanceUID,
+    frameNumber,
+  } = getSOPInstanceAttributes(referencedImageId);
 
   const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
     SOPInstanceUID,
-    SeriesInstanceUID
+    SeriesInstanceUID,
+    frameNumber
   );
 
   const { SeriesNumber } = displaySet;
@@ -105,6 +109,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
     SeriesInstanceUID,
     SOPInstanceUID,
     SeriesNumber,
+    frameNumber,
     text,
   });
 
@@ -119,7 +124,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { SeriesNumber, SOPInstanceUID } = mappedAnnotations[0];
+  const { SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID
@@ -130,11 +135,10 @@ function getDisplayText(mappedAnnotations, displaySet) {
     InstanceNumber = instance.InstanceNumber;
   }
 
-  displayText.push(
-    InstanceNumber
-      ? `(S: ${SeriesNumber} I: ${InstanceNumber})`
-      : `(S: ${SeriesNumber})`
-  );
+  const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
+  const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
+
+  displayText.push(`(S: ${SeriesNumber}${instanceText}${frameText})`);
 
   return displayText;
 }
