@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import {
   Enums,
@@ -17,7 +17,6 @@ const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
 const VIEWPORT_ID = 'cornerstone-viewport-download-form';
-const TOOLGROUP_ID = 'cornerstone-viewport-download-form-toolgroup';
 
 const CornerstoneViewportDownloadForm = ({
   onClose,
@@ -26,12 +25,48 @@ const CornerstoneViewportDownloadForm = ({
 }) => {
   const enabledElement = OHIFgetEnabledElement(activeViewportIndex);
   const activeViewportElement = enabledElement?.element;
+  const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
+
+  const {
+    viewportId: activeViewportId,
+    renderingEngineId,
+  } = activeViewportEnabledElement;
+
+  const toolGroup = ToolGroupManager.getToolGroupForViewport(
+    activeViewportId,
+    renderingEngineId
+  );
+
+  const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce(
+    (acc, toolName) => {
+      const tool = toolGroup.toolOptions[toolName];
+      const { mode, bindings } = tool;
+
+      return {
+        ...acc,
+        [toolName]: {
+          mode,
+          bindings,
+        },
+      };
+    },
+    {}
+  );
+
+  useEffect(() => {
+    return () => {
+      Object.keys(toolModeAndBindings).forEach(toolName => {
+        const { mode, bindings } = toolModeAndBindings[toolName];
+        toolGroup.setToolMode(toolName, mode, { bindings });
+      });
+    };
+  }, []);
 
   const enableViewport = viewportElement => {
     if (viewportElement) {
-      const csEnabledElement = getEnabledElement(activeViewportElement);
-      const renderingEngine = CornerstoneViewportService.getRenderingEngine();
-      const viewport = renderingEngine.getViewport(csEnabledElement.viewportId);
+      const { renderingEngine, viewport } = getEnabledElement(
+        activeViewportElement
+      );
 
       const viewportInput = {
         viewportId: VIEWPORT_ID,
@@ -49,11 +84,9 @@ const CornerstoneViewportDownloadForm = ({
 
   const disableViewport = viewportElement => {
     if (viewportElement) {
-      const renderingEngine = CornerstoneViewportService.getRenderingEngine();
-
+      const { renderingEngine } = getEnabledElement(viewportElement);
       return new Promise(resolve => {
         renderingEngine.disableElement(VIEWPORT_ID);
-        ToolGroupManager.destroyToolGroup(TOOLGROUP_ID);
       });
     }
   };
@@ -141,8 +174,13 @@ const CornerstoneViewportDownloadForm = ({
           });
         } else if (downloadViewport instanceof VolumeViewport) {
           const actors = viewport.getActors();
+          // downloadViewport.setActors(actors);
+          actors.forEach(actor => {
+            downloadViewport.addActor(actor);
+          });
 
-          downloadViewport.setActors(actors);
+          downloadViewport.setCamera(viewport.getCamera());
+          downloadViewport.render();
 
           const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
           const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
@@ -178,41 +216,20 @@ const CornerstoneViewportDownloadForm = ({
       renderingEngineId
     );
 
-    let downloadToolGroup = ToolGroupManager.getToolGroupForViewport(
-      downloadViewportId,
-      renderingEngineId
-    );
+    // add the viewport to the toolGroup
+    toolGroup.addViewport(downloadViewportId);
 
-    if (downloadToolGroup === undefined) {
-      downloadToolGroup = ToolGroupManager.createToolGroup(TOOLGROUP_ID);
-      // add the viewport to the toolGroup
-      downloadToolGroup.addViewport(downloadViewportId);
-      // what tools were in the active viewport?
-      // make them all enabled instances so that they can not be interacted
-      // with in the download viewport
-      Object.values(toolGroup._toolInstances).forEach(tool => {
-        const toolName = tool.getToolName();
-
-        if (toolName === 'Crosshairs') {
-          return;
-        }
-
-        downloadToolGroup.addTool(toolName);
-      });
-    }
-
-    Object.values(downloadToolGroup._toolInstances).forEach(tool => {
-      const toolName = tool.getToolName();
-      if (toggle) {
-        // some tools such as crosshairs require more than one viewport,
-        // and they will not be enabled if there is only one viewport
+    Object.keys(toolGroup._toolInstances).forEach(toolName => {
+      // make all tools Enabled so that they can not be interacted with
+      // in the download viewport
+      if (toggle && toolName !== 'Crosshairs') {
         try {
-          downloadToolGroup.setToolEnabled(toolName);
+          toolGroup.setToolEnabled(toolName);
         } catch (e) {
           console.log(e);
         }
       } else {
-        downloadToolGroup.setToolDisabled(toolName);
+        toolGroup.setToolDisabled(toolName);
       }
     });
   };

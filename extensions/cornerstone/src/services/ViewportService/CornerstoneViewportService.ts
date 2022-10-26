@@ -123,10 +123,9 @@ class CornerstoneViewportService implements IViewportService {
    */
   public resize() {
     const immediate = true;
-    const resetPan = false;
-    const resetZoom = false;
+    const keepCamera = true;
 
-    this.renderingEngine.resize(immediate, resetPan, resetZoom);
+    this.renderingEngine.resize(immediate, keepCamera);
     this.renderingEngine.render();
   }
 
