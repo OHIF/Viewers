@@ -209,12 +209,17 @@ export default function PanelSegmentation({
     const segmentation = SegmentationService.getSegmentation(segmentationId);
     const segmentInfo = segmentation.segments[segmentIndex];
     const isVisible = !segmentInfo.isVisible;
+    const toolGroupIds = getToolGroupIds(segmentationId);
 
-    SegmentationService.setSegmentVisibility(
-      segmentationId,
-      segmentIndex,
-      isVisible
-    );
+    // Todo: right now we apply the visibility to all tool groups
+    toolGroupIds.forEach(toolGroupId => {
+      SegmentationService.setSegmentVisibility(
+        segmentationId,
+        segmentIndex,
+        isVisible,
+        toolGroupId
+      );
+    });
   };
 
   const onToggleSegmentationVisibility = segmentationId => {
