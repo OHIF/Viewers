@@ -106,7 +106,10 @@ async function _load(
   headers
 ) {
   const { displaySetInstanceUID } = segDisplaySet;
-  if (segDisplaySet.loading && loadPromises[displaySetInstanceUID]) {
+  if (
+    (segDisplaySet.loading || segDisplaySet.isLoaded) &&
+    loadPromises[displaySetInstanceUID]
+  ) {
     await loadPromises[displaySetInstanceUID];
     return;
   }
