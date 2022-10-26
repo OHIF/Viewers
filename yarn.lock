@@ -3575,6 +3575,16 @@
     url-loader "^4.1.1"
     webpack "^5.73.0"
 
+"@emoji-mart/data@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@emoji-mart/data/-/data-1.0.6.tgz#68f71be5e023653a3f9f73f4beadfd50848e2131"
+  integrity sha512-8wu3ec/kLCB0Y3K+pOKyY6Ob+xtQu3XhZvntdrpOTUQZ/PO6FW5PpFw7RE1kQ/up1fsVSJBl5mZ8Gs4SPwTYeg==
+
+"@emoji-mart/react@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@emoji-mart/react/-/react-1.0.1.tgz#46b6a2e92faf16fa9b7f9471f137fa2e3d1e8ac3"
+  integrity sha512-ALhLD96BOL5w+a4NI5NpmfqfF1aVjjj2qJE0dLst/OhjBfVmpteWNgn/h8LZy9ulU6AnbeS+13KnPFzDjCvRRw==
+
 "@emotion/cache@^10.0.27", "@emotion/cache@^10.0.9":
   version "10.0.29"
   resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-10.0.29.tgz#87e7e64f412c060102d589fe7c6dc042e6f9d1e0"
@@ -5499,10 +5509,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@pubnub/react-chat-components@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@pubnub/react-chat-components/-/react-chat-components-0.8.0.tgz#e6d63ed50c843e6d571cf722bcc5572eedd04830"
-  integrity sha512-q4Itz+JFrrw4cgSN/hhHqV1yzN9AxXaaTTYveu7CLeLD5g61atrxMcnnQOuetMsAUCWr3uq4l8xOwYUYT8PJnA==
+"@pubnub/react-chat-components@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@pubnub/react-chat-components/-/react-chat-components-0.13.0.tgz#59618735bb903d0e88aa7ce3fe7eab43dbe7f8ad"
+  integrity sha512-OsTV0NVQ7bm0hM+LezX453Wo3i8E0wrhNL/vATJdY/m3ptAVM0oRnct0/IoAptyid6d2pz1kt5W0zcauyGULlw==
   dependencies:
     jotai "^1.3.0"
     lodash.clonedeep "^4.5.0"
@@ -5510,6 +5520,7 @@
     lodash.merge "^4.6.2"
     lodash.mergewith "^4.6.2"
     lodash.set "^4.3.2"
+    uuid "^8.3.2"
 
 "@reach/router@^1.3.4":
   version "1.3.4"
@@ -12848,13 +12859,10 @@ emittery@^0.8.1:
   resolved "https://registry.yarnpkg.com/emittery/-/emittery-0.8.1.tgz#bb23cc86d03b30aa75a7f734819dee2e1ba70860"
   integrity sha512-uDfvUjVrfGJJhymx/kz6prltenw1u7WrCg1oa94zYY8xxVpLLUu045LAT0dhDZdXG58/EpPL/5kA180fQ/qudg==
 
-emoji-mart@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-3.0.1.tgz#9ce86706e02aea0506345f98464814a662ca54c6"
-  integrity sha512-sxpmMKxqLvcscu6mFn9ITHeZNkGzIvD0BSNFE/LJESPbCA8s1jM6bCDPjWbV31xHq7JXaxgpHxLB54RCbBZSlg==
-  dependencies:
-    "@babel/runtime" "^7.0.0"
-    prop-types "^15.6.0"
+emoji-mart@^5.2.1:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-5.2.2.tgz#1c093ffc19554dd6edfcfeec9aca43ff38bcc16e"
+  integrity sha512-BvcrX+Ps9MxSVEjnvxupclU3MBD6WVC4WZOY26csfC6oFdaWpFhdrzeVNVBmCLPOmzY1SE0aAsqZJRNVbZ1yhQ==
 
 emoji-regex@^7.0.1:
   version "7.0.3"
