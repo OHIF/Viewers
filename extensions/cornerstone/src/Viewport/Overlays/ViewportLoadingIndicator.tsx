@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
 
-function ViewportLoadingIndicator({ viewportData, element }) {
+function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -89,15 +89,15 @@ function ViewportLoadingIndicator({ viewportData, element }) {
   return null;
 }
 
-ViewportLoadingIndicator.propTypes = {
+ViewportImageSliceLoadingIndicator.propTypes = {
   percentComplete: PropTypes.number,
   error: PropTypes.object,
   element: PropTypes.object,
 };
 
-ViewportLoadingIndicator.defaultProps = {
+ViewportImageSliceLoadingIndicator.defaultProps = {
   percentComplete: 0,
   error: null,
 };
 
-export default ViewportLoadingIndicator;
+export default ViewportImageSliceLoadingIndicator;

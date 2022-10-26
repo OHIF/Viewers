@@ -210,9 +210,11 @@ export default class ToolGroupService {
 
   private _getToolNames(toolGroupTools: Tools): string[] {
     const toolNames = [];
-    toolGroupTools.active.forEach(tool => {
-      toolNames.push(tool.toolName);
-    });
+    if (toolGroupTools.active) {
+      toolGroupTools.active.forEach(tool => {
+        toolNames.push(tool.toolName);
+      });
+    }
     if (toolGroupTools.passive) {
       toolGroupTools.passive.forEach(tool => {
         toolNames.push(tool.toolName);
@@ -236,9 +238,12 @@ export default class ToolGroupService {
 
   private _setToolsMode(toolGroup, tools) {
     const { active, passive, enabled, disabled } = tools;
-    active.forEach(({ toolName, bindings }) => {
-      toolGroup.setToolActive(toolName, { bindings });
-    });
+
+    if (active) {
+      active.forEach(({ toolName, bindings }) => {
+        toolGroup.setToolActive(toolName, { bindings });
+      });
+    }
 
     if (passive) {
       passive.forEach(({ toolName }) => {

@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { metaData, Enums, Types, getEnabledElement } from '@cornerstonejs/core';
+import {
+  metaData,
+  Enums,
+  Types,
+  getEnabledElement,
+  utilities as csUtils,
+} from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 import PropTypes from 'prop-types';
 import { vec3 } from 'gl-matrix';
@@ -23,6 +29,7 @@ function ViewportOrientationMarkers({
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
+  const { CornerstoneViewportService } = servicesManager.services;
 
   useEffect(() => {
     const cameraModifiedListener = (
@@ -106,6 +113,16 @@ function ViewportOrientationMarkers({
       flipVertical,
       flipHorizontal
     );
+
+    const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+      viewportIndex
+    );
+
+    const backgroundColor = ohifViewport.getViewportOptions().background;
+
+    const isLight = backgroundColor
+      ? csUtils.isEqual(backgroundColor, [1, 1, 1])
+      : false;
 
     return orientationMarkers.map((m, index) => (
       <div
