@@ -15,10 +15,11 @@ import Compose from './Compose';
  * @param props.servicesManager to read services from
  * @param props.studyInstanceUIDs for a list of studies to read
  * @param props.dataSource to read the data from
+ * @param props.filters filters from query params to read the data from
  * @returns array of subscriptions to cancel
  */
 function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource },
+  { servicesManager, studyInstanceUIDs, dataSource, filters },
   hangingProtocol
 ) {
   const {
@@ -44,7 +45,10 @@ function defaultRouteInit(
   unsubscriptions.push(instanceAddedUnsubscribe);
 
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
-    dataSource.retrieve.series.metadata({ StudyInstanceUID })
+    dataSource.retrieve.series.metadata({
+      StudyInstanceUID,
+      filters,
+    })
   );
 
   // The hanging protocol matching service is fairly expensive to run multiple
@@ -230,6 +234,7 @@ export default function ModeRoute({
     if (!layoutTemplateData.current) {
       return;
     }
+
     // TODO: For some reason this is running before the Providers
     // are calling setServiceImplementation
     // TODO -> iterate through services.
@@ -250,8 +255,32 @@ export default function ModeRoute({
     hangingProtocolService.setActiveProtocols(hangingProtocol);
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
-
     const setupRouteInit = async () => {
+      /**
+       * The next line should get all the query parameters provided by the URL
+       * - except the StudyInstaceUIDs - and create an object called filters
+       * used to filtering the study as the user wants otherwise it will return
+       * a empty object.
+       *
+       * Example:
+       * const filters = {
+       *   seriesInstaceUID: 1.2.276.0.7230010.3.1.3.1791068887.5412.1620253993.114611
+       * }
+       */
+      const filters =
+        Array.from(query.keys()).reduce(
+          (acc: Record<string, string>, val: string) => {
+            if (val !== 'StudyInstanceUIDs') {
+              if (['seriesInstanceUID', 'SeriesInstanceUID'].includes(val)) {
+                return { ...acc, seriesInstanceUID: query.get(val) };
+              }
+
+              return { ...acc, [val]: query.get(val) };
+            }
+          },
+          {}
+        ) ?? {};
+
       if (route.init) {
         return await route.init(
           {
@@ -260,6 +289,7 @@ export default function ModeRoute({
             hotkeysManager,
             studyInstanceUIDs,
             dataSource,
+            filters,
           },
           hangingProtocol
         );
@@ -270,6 +300,7 @@ export default function ModeRoute({
           servicesManager,
           studyInstanceUIDs,
           dataSource,
+          filters,
         },
         hangingProtocol
       );
