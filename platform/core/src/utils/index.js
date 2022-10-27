@@ -25,6 +25,7 @@ import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
+import isEqual from './isEqual';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -47,6 +48,7 @@ const utils = {
   hotkeys,
   Queue,
   isDicomUid,
+  isEqual,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
@@ -73,6 +75,7 @@ export {
   hotkeys,
   Queue,
   isDicomUid,
+  isEqual,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
