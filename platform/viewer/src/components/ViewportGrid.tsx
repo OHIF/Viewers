@@ -1,8 +1,26 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
+import { utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
+
+const { isEqual } = utils;
+
+const ORIENTATION_MAP = {
+  axial: {
+    viewPlaneNormal: [0, 0, -1],
+    viewUp: [0, -1, 0],
+  },
+  sagittal: {
+    viewPlaneNormal: [1, 0, 0],
+    viewUp: [0, 0, 1],
+  },
+  coronal: {
+    viewPlaneNormal: [0, 1, 0],
+    viewUp: [0, 0, 1],
+  },
+};
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
@@ -101,6 +119,30 @@ function ViewerViewportGrid(props) {
     [viewportGrid, numRows, numCols]
   );
 
+  const _getUpdatedViewports = useCallback(
+    (viewportIndex, displaySetInstanceUID) => {
+      let updatedViewports = [];
+      try {
+        updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+          viewportIndex,
+          displaySetInstanceUID
+        );
+      } catch (error) {
+        console.warn(error);
+        UINotificationService.show({
+          title: 'Drag and Drop',
+          message:
+            'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          type: 'info',
+          duration: 3000,
+        });
+      }
+
+      return updatedViewports;
+    },
+    [HangingProtocolService, UINotificationService]
+  );
+
   useEffect(() => {
     const displaySets = DisplaySetService.getActiveDisplaySets();
     updateDisplaySetsForViewports(displaySets);
@@ -144,8 +186,10 @@ function ViewerViewportGrid(props) {
     const { unsubscribe } = MeasurementService.subscribe(
       MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
       ({ viewportIndex, measurement }) => {
-        const referencedDisplaySetInstanceUID =
-          measurement.displaySetInstanceUID;
+        const {
+          displaySetInstanceUID: referencedDisplaySetInstanceUID,
+          metadata: { viewPlaneNormal },
+        } = measurement;
 
         // if we already have the displaySet in one of the viewports
         // Todo: handle fusion display sets?
@@ -170,16 +214,45 @@ function ViewerViewportGrid(props) {
           );
         }
 
-        // If not in any of the viewports, hang it inside the active viewport
-        viewportGridService.setDisplaySetsForViewport({
+        const updatedViewports = _getUpdatedViewports(
           viewportIndex,
-          displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
-          viewportOptions: {
-            initialImageOptions: {
+          referencedDisplaySetInstanceUID
+        );
+
+        if (!updatedViewports || !updatedViewports.length) {
+          return;
+        }
+
+        updatedViewports.forEach(vp => {
+          const { orientation, viewportType } = vp.viewportOptions;
+          let initialImageOptions;
+
+          // For initial imageIndex to hang be careful for the volume viewport
+          if (viewportType === 'stack') {
+            initialImageOptions = {
               index: imageIndex,
-            },
-          },
+            };
+          } else if (viewportType === 'volume') {
+            // For the volume viewports, be careful to not jump in the viewports
+            // that are not in the same orientation
+            if (
+              orientation &&
+              viewPlaneNormal &&
+              isEqual(
+                ORIENTATION_MAP[orientation]?.viewPlaneNormal,
+                viewPlaneNormal
+              )
+            ) {
+              initialImageOptions = {
+                index: imageIndex,
+              };
+            }
+          }
+
+          vp.viewportOptions['initialImageOptions'] = initialImageOptions;
         });
+
+        viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
     );
 
@@ -189,28 +262,6 @@ function ViewerViewportGrid(props) {
   }, [viewports]);
 
   /**
-  //Changing the Hanging protocol while viewing
-  useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
-    updateDisplaySetsForViewports(displaySets);
-  }, [viewports]);
-
-
-  // subscribe to displayset metadata changes
-  useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_METADATA_UPDATED,
-      displaySets => {
-        // Todo: properly refresh the viewportGrid to use the new displaySet
-        // with the new metadata.
-        setState({});
-      }
-    );
-    return () => {
-      unsubscribe();
-    };
-  }, [viewports]);
-
   const onDoubleClick = viewportIndex => {
     // TODO -> Disabled for now.
     // onNewImage on a cornerstone viewport is firing setDisplaySetsForViewport.
@@ -255,23 +306,10 @@ function ViewerViewportGrid(props) {
   */
 
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
-    let updatedViewports = [];
-    try {
-      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
-        viewportIndex,
-        displaySetInstanceUID
-      );
-    } catch (error) {
-      console.warn(error);
-      UINotificationService.show({
-        title: 'Drag and Drop',
-        message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-        type: 'info',
-        duration: 3000,
-      });
-    }
-
+    const updatedViewports = _getUpdatedViewports(
+      viewportIndex,
+      displaySetInstanceUID
+    );
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 

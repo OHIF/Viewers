@@ -285,6 +285,7 @@ const commandsModule = ({ servicesManager }) => {
 
       if (viewport instanceof StackViewport) {
         viewport.resetProperties();
+        viewport.resetCamera();
       } else {
         // Todo: add reset properties for volume viewport
         viewport.resetCamera();

@@ -8,6 +8,8 @@ import {
   eventTarget,
   getEnabledElement,
   StackViewport,
+  utilities as csUtils,
+  CONSTANTS,
 } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
@@ -299,7 +301,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       elementRef,
       viewportIndex,
       displaySets,
-      viewportGridService
+      viewportGridService,
+      CornerstoneViewportService
     );
 
     _checkForCachedJumpToMeasurementEvents(
@@ -308,7 +311,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       elementRef,
       viewportIndex,
       displaySets,
-      viewportGridService
+      viewportGridService,
+      CornerstoneViewportService
     );
 
     return () => {
@@ -351,7 +355,8 @@ function _subscribeToJumpToMeasurementEvents(
   elementRef,
   viewportIndex,
   displaySets,
-  viewportGridService
+  viewportGridService,
+  CornerstoneViewportService
 ) {
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
@@ -369,7 +374,8 @@ function _subscribeToJumpToMeasurementEvents(
           viewportIndex,
           MeasurementService,
           DisplaySetService,
-          viewportGridService
+          viewportGridService,
+          CornerstoneViewportService
         );
       }
     }
@@ -385,7 +391,8 @@ function _checkForCachedJumpToMeasurementEvents(
   elementRef,
   viewportIndex,
   displaySets,
-  viewportGridService
+  viewportGridService,
+  CornerstoneViewportService
 ) {
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
@@ -408,7 +415,8 @@ function _checkForCachedJumpToMeasurementEvents(
         viewportIndex,
         MeasurementService,
         DisplaySetService,
-        viewportGridService
+        viewportGridService,
+        CornerstoneViewportService
       );
     }
   }
@@ -420,7 +428,8 @@ function _jumpToMeasurement(
   viewportIndex,
   MeasurementService,
   DisplaySetService,
-  viewportGridService
+  viewportGridService,
+  CornerstoneViewportService
 ) {
   const targetElement = targetElementRef.current;
   const { displaySetInstanceUID, SOPInstanceUID, frameNumber } = measurement;
@@ -440,11 +449,17 @@ function _jumpToMeasurement(
   viewportGridService.setActiveViewportIndex(viewportIndex);
 
   const enableElement = getEnabledElement(targetElement);
+
+  const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+    viewportIndex
+  );
+
   if (enableElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
     const viewport = enableElement.viewport as IStackViewport | IVolumeViewport;
 
     let imageIdIndex = 0;
+    let viewportCameraDirectionMatch = true;
 
     if (viewport instanceof StackViewport) {
       const imageIds = viewport.getImageIds();
@@ -459,9 +474,29 @@ function _jumpToMeasurement(
         );
       });
     } else {
+      // for volume viewport we can't rely on the imageIdIndex since it can be
+      // a reconstructed view that doesn't match the original slice numbers etc.
+      const { viewPlaneNormal } = measurement.metadata;
       imageIdIndex = referencedDisplaySet.images.findIndex(
         i => i.SOPInstanceUID === SOPInstanceUID
       );
+
+      const { orientation } = viewportInfo.getViewportOptions();
+
+      if (
+        orientation &&
+        viewPlaneNormal &&
+        !csUtils.isEqual(
+          CONSTANTS.MPR_CAMERA_VALUES[orientation]?.viewPlaneNormal,
+          viewPlaneNormal
+        )
+      ) {
+        viewportCameraDirectionMatch = false;
+      }
+    }
+
+    if (!viewportCameraDirectionMatch || imageIdIndex === -1) {
+      return;
     }
 
     cs3DTools.utilities.jumpToSlice(targetElement, {
