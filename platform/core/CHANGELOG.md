@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.31](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.30...@ohif/core@2.16.31) (2022-10-28)
+
+
+### Bug Fixes
+
+* [#2964](https://github.com/OHIF/Viewers/issues/2964) Update message for segmentation error loading due to orientation tolerance ([#2982](https://github.com/OHIF/Viewers/issues/2982)) ([545161d](https://github.com/OHIF/Viewers/commit/545161d5e8d92bb6652f17dc24a36dac8aa7b3a4))
+
+
+
+
+
 ## [2.16.30](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.29...@ohif/core@2.16.30) (2022-10-25)
 
 
