@@ -42,7 +42,16 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     if (!queryParams) return searchResult;
     const filtered = searchResult.filter(study => {
       for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
-        if (!this.filterItem(key, queryParams, study)) return false;
+        if (
+          !this.filterItem(
+            key,
+            queryParams,
+            study,
+            StaticWadoClient.studyFilterKeys
+          )
+        ) {
+          return false;
+        }
       }
       return true;
     });
@@ -56,8 +65,17 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     const { queryParams } = options;
     if (!queryParams) return searchResult;
     const filtered = searchResult.filter(study => {
-      for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
-        if (!this.filterItem(key, queryParams, study)) return false;
+      for (const key of Object.keys(StaticWadoClient.seriesFilterKeys)) {
+        if (
+          !this.filterItem(
+            key,
+            queryParams,
+            study,
+            StaticWadoClient.seriesFilterKeys
+          )
+        ) {
+          return false;
+        }
       }
       return true;
     });
@@ -121,10 +139,11 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    * @param {*} key
    * @param {*} queryParams
    * @param {*} study
+   * @param {*} sourceFilterMap
    * @returns
    */
-  filterItem(key, queryParams, study) {
-    const altKey = StaticWadoClient.studyFilterKeys[key] || key;
+  filterItem(key, queryParams, study, sourceFilterMap) {
+    const altKey = sourceFilterMap[key] || key;
     if (!queryParams) return true;
     const testValue = queryParams[key] || queryParams[altKey];
     if (!testValue) return true;
