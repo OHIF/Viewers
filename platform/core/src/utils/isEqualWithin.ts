@@ -8,7 +8,7 @@
  *
  * @returns True if the two values are within the tolerance levels.
  */
-export default function isEqual(
+export default function isEqualWithin(
   v1: number[] | Float32Array,
   v2: number[] | Float32Array,
   tolerance = 1e-5

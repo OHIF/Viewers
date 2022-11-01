@@ -68,6 +68,7 @@ const orientationClasses = {
 const baseDisplayClass = 'inline-flex';
 const fullWidthDisplayClass = 'flex';
 
+// css class that are applied for buttons that not the first or last
 const nonFirstLastClasses = {
   vertical: 'border-t-0 border-b-0',
   horizontal: 'border-l-0 last:border-r-0',

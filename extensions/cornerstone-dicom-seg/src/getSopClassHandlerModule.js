@@ -99,26 +99,20 @@ function _getDisplaySetsFromSeries(
   return [displaySet];
 }
 
-async function _load(
-  segDisplaySet,
-  servicesManager,
-  extensionManager,
-  headers
-) {
-  const { displaySetInstanceUID } = segDisplaySet;
+function _load(segDisplaySet, servicesManager, extensionManager, headers) {
+  const { SOPInstanceUID } = segDisplaySet;
   if (
     (segDisplaySet.loading || segDisplaySet.isLoaded) &&
-    loadPromises[displaySetInstanceUID]
+    loadPromises[SOPInstanceUID]
   ) {
-    await loadPromises[displaySetInstanceUID];
-    return;
+    return loadPromises[SOPInstanceUID];
   }
 
   segDisplaySet.loading = true;
 
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
-  loadPromises[displaySetInstanceUID] = new Promise(async (resolve, reject) => {
+  loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
     const { SegmentationService } = servicesManager.services;
 
     if (_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
@@ -139,17 +133,17 @@ async function _load(
     }
 
     const suppressEvents = true;
-    await SegmentationService.createSegmentationForSEGDisplaySet(
+    SegmentationService.createSegmentationForSEGDisplaySet(
       segDisplaySet,
       null,
       suppressEvents
-    );
-
-    segDisplaySet.loading = false;
-    resolve();
+    ).then(() => {
+      segDisplaySet.loading = false;
+      resolve();
+    });
   });
 
-  await loadPromises[displaySetInstanceUID];
+  return loadPromises[SOPInstanceUID];
 }
 
 async function _loadSegments(extensionManager, segDisplaySet, headers) {

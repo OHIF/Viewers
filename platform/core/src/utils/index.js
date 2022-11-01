@@ -20,12 +20,12 @@ import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 import { isImage } from './isImage';
 import isDisplaySetReconstructable from './isDisplaySetReconstructable';
-import sortInstances from './sortInstances';
+import sortInstancesByPosition from './sortInstancesByPosition';
 import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
-import isEqual from './isEqual';
+import isEqualWithin from './isEqualWithin';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -48,7 +48,7 @@ const utils = {
   hotkeys,
   Queue,
   isDicomUid,
-  isEqual,
+  isEqualWithin,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
@@ -75,14 +75,14 @@ export {
   hotkeys,
   Queue,
   isDicomUid,
-  isEqual,
+  isEqualWithin,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
-  sortInstances,
+  sortInstancesByPosition,
   imageIdToURI,
   debounce,
   roundNumber,

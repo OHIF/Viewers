@@ -2,19 +2,6 @@ import React from 'react';
 import Lottie from 'lottie-react';
 import classNames from 'classnames';
 
-const LoadingIndicator = ({ className }) => {
-  return (
-    <div
-      className={classNames(
-        'absolute z-50 top-0 left-0 flex flex-col items-center justify-center',
-        className
-      )}
-    >
-      <Lottie animationData={LoadingAnimation} />;
-    </div>
-  );
-};
-
 const LoadingAnimation = {
   v: '5.9.6',
   fr: 60,
@@ -788,6 +775,19 @@ const LoadingAnimation = {
     },
   ],
   markers: [],
+};
+
+const LoadingIndicator = ({ className }) => {
+  return (
+    <div
+      className={classNames(
+        'absolute z-50 top-0 left-0 flex flex-col items-center justify-center',
+        className
+      )}
+    >
+      <Lottie animationData={LoadingAnimation} />;
+    </div>
+  );
 };
 
 export default LoadingIndicator;

@@ -11,12 +11,14 @@ import { vec3 } from 'gl-matrix';
  */
 export default function sortInstances(instances: Array<any>) {
   // Return if only one instance e.g., multiframe
-  if (instances.length === 1) {
+  if (instances.length <= 1) {
     return instances;
   }
 
-  const referenceImagePositionPatient = instances[0].ImagePositionPatient;
-  const ImageOrientationPatient = instances[0].ImageOrientationPatient;
+  const {
+    ImagePositionPatient: referenceImagePositionPatient,
+    ImageOrientationPatient,
+  } = instances[Math.floor(instances.length / 2)]; // this prevents getting scout image as test image
 
   const rowCosineVec = vec3.fromValues(
     ImageOrientationPatient[0],
@@ -29,14 +31,10 @@ export default function sortInstances(instances: Array<any>) {
     ImageOrientationPatient[5]
   );
 
-  const scanAxisNormal = vec3.create();
+  const scanAxisNormal = vec3.cross(vec3.create(), rowCosineVec, colCosineVec);
 
-  vec3.cross(scanAxisNormal, rowCosineVec, colCosineVec);
-
-  const refIppVec = vec3.create();
-
-  vec3.set(
-    refIppVec,
+  const refIppVec = vec3.set(
+    vec3.create(),
     referenceImagePositionPatient[0],
     referenceImagePositionPatient[1],
     referenceImagePositionPatient[2]

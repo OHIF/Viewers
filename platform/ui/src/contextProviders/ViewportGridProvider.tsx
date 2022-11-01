@@ -148,6 +148,10 @@ export function ViewportGridProvider({ children, service }) {
         };
       }
 
+      // The SET_CACHE_LAYOUT action can be used for caching a layout
+      // for instance double clicking a viewport to maximize it.
+      // and then restoring the previous layout when the viewport is
+      // double clicked again.
       case 'SET_CACHED_LAYOUT': {
         const { cacheId, cachedLayout } = action.payload;
 

@@ -5,7 +5,7 @@ import { utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
-const { isEqual } = utils;
+const { isEqualWithin } = utils;
 
 const ORIENTATION_MAP = {
   axial: {
@@ -234,11 +234,13 @@ function ViewerViewportGrid(props) {
             };
           } else if (viewportType === 'volume') {
             // For the volume viewports, be careful to not jump in the viewports
-            // that are not in the same orientation
+            // that are not in the same orientation.
+            // Todo: this doesn't work for viewports that have custom orientation
+            // vectors specified
             if (
               orientation &&
               viewPlaneNormal &&
-              isEqual(
+              isEqualWithin(
                 ORIENTATION_MAP[orientation]?.viewPlaneNormal,
                 viewPlaneNormal
               )
