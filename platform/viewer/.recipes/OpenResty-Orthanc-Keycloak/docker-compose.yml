@@ -67,7 +67,8 @@ services:
       # Keycloak
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
-      KEYCLOAK_IMPORT: /tmp/ohif-keycloak-realm.json
+      # Key cloak upload from scriptsis DISABLED by default now,.must force active else wont import from file
+      KEYCLOAK_IMPORT: /tmp/ohif-keycloak-realm.json  -Dkeycloak.profile.feature.upload_scripts=enabled
       # KEYCLOAK_WELCOME_THEME: <theme-name>
       # KEYCLOAK_DEFAULT_THEME: <theme-name>
       # KEYCLOAK_HOSTNAME: (recommended in prod)
@@ -83,6 +84,7 @@ services:
     hostname: postgres
     container_name: postgres
     volumes:
+       # Remember one can point the posgres db data to a mount on host machine also
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak

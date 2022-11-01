@@ -25,7 +25,9 @@
 # Stage 1: Build the application
 
 # Needs to be pinned at 16.x for now because of https://github.com/webpack/webpack/issues/14532
-FROM node:lts-slim as builder
+# Force the pin to 16.x as higher level gives build errors when used (https://github.com/webpack/webpack/issues/14532) 
+# If still have build issues, consider removing all cypress entries as per - https://github.com/OHIF/Viewers/issues/2655
+FROM node:16-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
@@ -59,7 +61,8 @@ RUN luarocks install lua-resty-session
 RUN luarocks install lua-resty-http
 # !!!
 RUN luarocks install lua-resty-openidc
-RUN luarocks install luacrypto
+# Remove due to build errors when trying to install crypto, add if really need, works standard without it
+# RUN luarocks install luacrypto
 
 # Copy build output to image
 COPY --from=builder /usr/src/app/platform/viewer/dist /var/www/html
