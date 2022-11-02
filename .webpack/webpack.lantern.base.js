@@ -113,7 +113,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
-      extensions: ['.js', '.jsx', '.json', '*'],
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
       fallback: { fs: false, path: false },

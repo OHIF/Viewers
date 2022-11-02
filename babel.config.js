@@ -1,6 +1,3 @@
-const aliases = require('./aliases.config');
-const path = require('path');
-
 // https://babeljs.io/docs/en/options#babelrcroots
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
@@ -24,6 +21,7 @@ module.exports = {
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-regenerator',
         '@babel/plugin-transform-runtime',
+        '@babel/plugin-transform-typescript',
       ],
     },
     production: {
@@ -31,6 +29,7 @@ module.exports = {
         // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         '@babel/preset-react',
+        '@babel/preset-typescript',
       ],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
     },
@@ -39,6 +38,7 @@ module.exports = {
         // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         '@babel/preset-react',
+        '@babel/preset-typescript',
       ],
       plugins: ['react-hot-loader/babel'],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
