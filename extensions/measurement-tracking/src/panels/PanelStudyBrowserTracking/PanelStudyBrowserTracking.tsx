@@ -109,7 +109,19 @@ function PanelStudyBrowserTracking({
         };
       });
 
-      setStudyDisplayList(actuallyMappedStudies);
+      setStudyDisplayList(prevArray => {
+        const ret = [...prevArray];
+        for (const study of actuallyMappedStudies) {
+          if (
+            !prevArray.find(
+              it => it.studyInstanceUid === study.studyInstanceUid
+            )
+          ) {
+            ret.push(study);
+          }
+        }
+        return ret;
+      });
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
