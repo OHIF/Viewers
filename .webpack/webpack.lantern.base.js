@@ -10,8 +10,6 @@ const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.lantern.js');
 // ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -67,7 +65,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         },
         {
           test: /\.png$/,
-          use: 'file-loader'
+          use: 'file-loader',
         },
         cssToJavaScript,
       ],
@@ -115,7 +113,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
-      extensions: ['.js', '.jsx', '.json', '*'],
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
       fallback: { fs: false, path: false },
@@ -143,8 +141,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           process.env.REACT_APP_I18N_DEBUG || ''
         ),
       }),
-      // Uncomment to generate bundle analyzer
-      // new BundleAnalyzerPlugin(),
     ],
   };
 

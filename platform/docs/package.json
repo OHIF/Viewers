@@ -58,6 +58,6 @@
   },
   "devDependencies": {
     "postcss-import": "^14.0.2",
-    "postcss-preset-env": "^6.7.0"
+    "postcss-preset-env": "^7.8.2"
   }
 }
