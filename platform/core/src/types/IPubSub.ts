@@ -1,4 +1,4 @@
-import { Consumer } from './Consumer';
+import Consumer from './Consumer';
 
 
 export default interface IPubSub {
