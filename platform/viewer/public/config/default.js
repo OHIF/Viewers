@@ -5,6 +5,8 @@ window.config = {
   modes: [],
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
