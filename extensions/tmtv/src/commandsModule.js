@@ -343,7 +343,8 @@ const commandsModule = ({
 
       const tlg = actions.getTotalLesionGlycolysis({ segmentations });
       const additionalReportRows = [
-        { key: 'Total Metabolic Tumor Volume', value: { tmtv } },
+        // { key: 'Total Metabolic Tumor Volume', value: { tmtv } },
+        { key: 'Segmentator', value: { tmtv } },
         { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
         { key: 'Threshold Configuration', value: { ...config } },
       ];

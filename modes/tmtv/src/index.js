@@ -36,7 +36,8 @@ function modeFactory({ modeConfiguration }) {
     // We should not be.
     id,
     routeName: 'tmtv',
-    displayName: 'Total Metabolic Tumor Volume',
+    // displayName: 'Total Metabolic Tumor Volume',
+    displayName: 'Segmentator',
     /**
      * Lifecycle hooks
      */
