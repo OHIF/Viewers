@@ -412,6 +412,11 @@ const commandsModule = ({ servicesManager }) => {
         cacheId
       ];
 
+      // Todo: The following assumes that when turning off MPR we are applying the default
+      //  protocol which might not be the one that was used before MPR was turned on
+      // In order to properly implement this logic, we should modify the hanging protocol
+      // upon layout change with layout selector, and cache and restore it when turning
+      // MPR on and off
       const viewportStructure = getProtocolViewportStructureFromGridViewports({
         viewports: cachedViewports,
         numRows,

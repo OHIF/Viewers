@@ -70,6 +70,7 @@ const ViewportActionBar = ({
         backgroundColor: backgroundColor,
       }}
       onDoubleClick={onDoubleClick}
+      onContextMenu={e => e.preventDefault()}
     >
       <div className="flex flex-1 grow mt-2 min-w-48">
         <div className="flex items-center">

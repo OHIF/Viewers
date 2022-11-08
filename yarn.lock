@@ -2363,10 +2363,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/calculate-suv@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/calculate-suv/-/calculate-suv-1.0.2.tgz#c97ddba5ce3c0ee85798bb40df025b7d07075aea"
-  integrity sha512-xkd+NN+pbpz6bKT/lCRu/SRQd4R3GIDPx+QHMhngm9TN2JCRPjV7jigUC8csJb1mqhFbtW1kmBBoQE2CRX5IhA==
+"@cornerstonejs/calculate-suv@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@cornerstonejs/calculate-suv/-/calculate-suv-1.0.3.tgz#6d99a72032c0f90cebf44dc6f0b12a5f1102e884"
+  integrity sha512-2SwVJKzC1DzyxdxJtCht9dhTND2GFjLwhhkDyyC7vJq5tIgbhxgPk1CSwovO1pxmoybAXzjOxnaubllxLgoT+w==
 
 "@cornerstonejs/codec-charls@^0.1.1":
   version "0.1.1"

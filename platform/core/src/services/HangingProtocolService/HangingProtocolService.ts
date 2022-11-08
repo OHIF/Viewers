@@ -110,9 +110,13 @@ class HangingProtocolService {
     Object.assign(this, pubSubServiceInterface);
   }
 
+  public destroy() {
+    this.reset();
+    this.protocols = new Map();
+  }
+
   public reset() {
     this.studies = [];
-    this.protocols = new Map();
     this.hpAlreadyApplied = new Map();
     this.viewportMatchDetails = new Map();
     this.displaySetMatchDetails = new Map();

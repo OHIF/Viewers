@@ -123,6 +123,7 @@ function modeFactory() {
         ToolBarService,
         SegmentationService,
         CornerstoneViewportService,
+        HangingProtocolService,
       } = servicesManager.services;
 
       ToolBarService.reset();
@@ -131,6 +132,7 @@ function modeFactory() {
       SyncGroupService.destroy();
       SegmentationService.destroy();
       CornerstoneViewportService.destroy();
+      HangingProtocolService.reset();
     },
     validationTags: {
       study: [],
