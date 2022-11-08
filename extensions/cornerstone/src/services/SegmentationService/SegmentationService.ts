@@ -590,7 +590,6 @@ class SegmentationService {
     // Note: ideally we could use the TypedArray set method, but since each
     // slice can have multiple segments, we need to loop over each slice and
     // set the segment value for each segment.
-
     const _segmentInfoUpdate = (segmentInfo, segmentIndex) => {
       const { pixelData: segPixelData } = segmentInfo;
 
@@ -636,10 +635,7 @@ class SegmentationService {
           i < functionalGroupEndIndex;
           i++, j++
         ) {
-          if (
-            functionGroupPixelData[j] !== 0 &&
-            derivedVolumeScalarData[i] === 0
-          ) {
+          if (functionGroupPixelData[j] !== 0) {
             derivedVolumeScalarData[i] = segmentIndex;
 
             // centroid calculations

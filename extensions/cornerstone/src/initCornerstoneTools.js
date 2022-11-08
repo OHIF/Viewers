@@ -12,6 +12,7 @@ import {
   BidirectionalTool,
   ArrowAnnotateTool,
   DragProbeTool,
+  ProbeTool,
   AngleTool,
   MagnifyTool,
   CrosshairsTool,
@@ -28,6 +29,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(StackScrollMouseWheelTool);
   addTool(StackScrollTool);
   addTool(ZoomTool);
+  addTool(ProbeTool);
   addTool(VolumeRotateMouseWheelTool);
   addTool(MIPJumpToClickTool);
   addTool(LengthTool);
@@ -67,6 +69,7 @@ const toolNames = {
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,
   DragProbe: DragProbeTool.toolName,
+  Probe: ProbeTool.toolName,
   RectangleROI: RectangleROITool.toolName,
   EllipticalROI: EllipticalROITool.toolName,
   Bidirectional: BidirectionalTool.toolName,

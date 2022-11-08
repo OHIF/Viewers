@@ -28,6 +28,7 @@ function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
