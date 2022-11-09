@@ -1138,13 +1138,15 @@ class SegmentationService {
   public getConfiguration = (toolGroupId?: string): SegmentationConfig => {
     toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
 
-    const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(
-      toolGroupId
-    );
+    const brushSize = 1;
+    // const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(
+    //   toolGroupId
+    // );
 
-    const brushThresholdGate = cstUtils.segmentation.getBrushThresholdForToolGroup(
-      toolGroupId
-    );
+    const brushThresholdGate = 1;
+    // const brushThresholdGate = cstUtils.segmentation.getBrushThresholdForToolGroup(
+    //   toolGroupId
+    // );
 
     const config = cstSegmentation.config.getGlobalConfig();
     const { renderInactiveSegmentations } = config;

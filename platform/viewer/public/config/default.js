@@ -21,14 +21,14 @@ window.config = {
       configuration: {
         name: 'DCM4CHEE',
         // old server
-        // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
 
         // new server
-        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        // wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        // qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        // wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
