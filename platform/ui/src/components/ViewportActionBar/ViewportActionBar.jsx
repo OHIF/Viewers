@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip, CinePlayer } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { useTranslation } from 'react-i18next';
-import { useStudyInstanceUIDs } from '@state';
+import { useLanternAppConfig } from '@state';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -25,7 +25,7 @@ const ViewportActionBar = ({
   //
   onPillClick,
 }) => {
-  const [studyInstanceUIDs] = useStudyInstanceUIDs();
+  const { studyInstanceUIDs } = useLanternAppConfig();
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
   // TODO -> Remake this component with a bunch of generic slots that can be filled,
   // Its not generic at all, isTracked etc shouldn't be parts of this component.

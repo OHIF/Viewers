@@ -1,15 +1,12 @@
 import { AppConfigProvider, useAppConfig } from './appConfig.js';
-import { AccessTokenProvider, useAccessToken } from './accessToken';
 import {
-  StudyInstanceUIDsProvider,
-  useStudyInstanceUIDs,
-} from './studyInstanceUIDs';
+  LanternAppConfigProvider,
+  useLanternAppConfig,
+} from './lanternAppConfig';
 
 export {
   AppConfigProvider,
   useAppConfig,
-  AccessTokenProvider,
-  useAccessToken,
-  StudyInstanceUIDsProvider,
-  useStudyInstanceUIDs,
+  LanternAppConfigProvider,
+  useLanternAppConfig,
 };

@@ -15,7 +15,7 @@ import {
   CineService,
   ViewerToolsetService,
   UserAuthenticationService,
-  errorHandler
+  errorHandler,
   // utils,
 } from '@ohif/core';
 
