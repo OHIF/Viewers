@@ -1,4 +1,5 @@
 import OHIF from '@ohif/core';
+import React from 'react';
 import { ContextMenuMeasurements } from '@ohif/ui';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -58,13 +59,17 @@ export default async function init({
 
   initCornerstoneTools();
 
-  Settings.getRuntimeSettings().set('useCursors', Boolean(appConfig.useCursors));
+  Settings.getRuntimeSettings().set(
+    'useCursors',
+    Boolean(appConfig.useCursors)
+  );
 
   const {
     UserAuthenticationService,
     MeasurementService,
     DisplaySetService,
     UIDialogService,
+    UIModalService,
     CineService,
     CornerstoneViewportService,
     HangingProtocolService,
@@ -74,7 +79,10 @@ export default async function init({
   window.SegmentationService = SegmentationService;
   window.DisplaySetService = DisplaySetService;
   window.services = servicesManager.services;
-  window.hp = HangingProtocolService;
+
+  if (cornerstone.getShouldUseCPURendering()) {
+    _showCPURenderingModal(UIModalService, HangingProtocolService);
+  }
 
   const labelmapRepresentation =
     cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
@@ -148,7 +156,7 @@ export default async function init({
         currentPoints.canvas
       );
 
-      let menuItems = [];
+      const menuItems = [];
       if (nearbyToolData && nearbyToolData.metadata.toolName !== 'Crosshairs') {
         defaultMenuItems.forEach(item => {
           item.value = nearbyToolData;
@@ -344,5 +352,42 @@ export default async function init({
   eventTarget.addEventListener(
     EVENTS.ELEMENT_DISABLED,
     elementDisabledHandler.bind(null)
+  );
+}
+
+function CPUModal() {
+  return (
+    <div>
+      <p>
+        Your computer does not have enough GPU power to support the default GPU
+        rendering mode. OHIF has switched to CPU rendering mode. Please note
+        that CPU rendering does not support all features such as Volume
+        Rendering, Multiplanar Reconstruction, and Segmentation Overlays.
+      </p>
+    </div>
+  );
+}
+
+function _showCPURenderingModal(UIModalService, HangingProtocolService) {
+  const callback = progress => {
+    if (progress === 100) {
+      UIModalService.show({
+        content: CPUModal,
+        title: 'OHIF Fell Back to CPU Rendering',
+      });
+
+      return true;
+    }
+  };
+
+  const { unsubscribe } = HangingProtocolService.subscribe(
+    HangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
+    ({ progress }) => {
+      const done = callback(progress);
+
+      if (done) {
+        unsubscribe();
+      }
+    }
   );
 }

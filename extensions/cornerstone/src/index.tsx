@@ -7,7 +7,7 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import init from './init.js';
+import init from './init';
 import commandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import ToolGroupService from './services/ToolGroupService';
