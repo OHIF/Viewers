@@ -19,11 +19,7 @@ import {
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
-import {
-  AppConfigProvider,
-  AccessTokenProvider,
-  StudyInstanceUIDsProvider,
-} from '@state';
+import { AppConfigProvider, LanternAppConfigProvider } from '@state';
 import ModeRoute from '@routes/Mode';
 
 // import createRoutes from './routes';
@@ -35,7 +31,7 @@ import '@ohif/mode-longitudinal';
 
 let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
-function App({ config, defaultExtensions, accessToken, studyUID }) {
+function App({ config, defaultExtensions, accessToken, studyUID, user }) {
   const init = appInit(config, defaultExtensions);
 
   // Set above for named export
@@ -63,8 +59,14 @@ function App({ config, defaultExtensions, accessToken, studyUID }) {
 
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
-    [AccessTokenProvider, { value: accessToken }],
-    [StudyInstanceUIDsProvider, { value: studyUID }],
+    [
+      LanternAppConfigProvider,
+      {
+        accessTokenValue: accessToken,
+        studyUIDValue: studyUID,
+        userValue: user,
+      },
+    ],
     [UserAuthenticationProvider, { service: UserAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapper],
@@ -109,6 +111,7 @@ App.propTypes = {
   defaultExtensions: PropTypes.array,
   accessToken: PropTypes.string,
   studyUID: PropTypes.string,
+  user: PropTypes.object,
 };
 
 App.defaultProps = {
@@ -129,6 +132,9 @@ App.defaultProps = {
     extensions: [],
   },
   defaultExtensions: [],
+  accessToken: '',
+  studyUID: '',
+  user: {},
 };
 
 export default App;

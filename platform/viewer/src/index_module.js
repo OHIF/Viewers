@@ -8,7 +8,7 @@ import OHIFDICOMSRExtension from '@ohif/extension-dicom-sr';
 import App from './App.jsx';
 import defaultConfig from '../public/config/default';
 
-const LanternViewer = ({ accessToken, studyUID, gcpDicomURL }) => {
+const LanternViewer = ({ accessToken, studyUID, gcpDicomURL, user }) => {
   const appConfig = {
     ...defaultConfig,
     whiteLabeling: {
@@ -33,6 +33,7 @@ const LanternViewer = ({ accessToken, studyUID, gcpDicomURL }) => {
         },
       },
     ],
+    user,
   };
 
   const appProps = {
@@ -45,7 +46,14 @@ const LanternViewer = ({ accessToken, studyUID, gcpDicomURL }) => {
     ],
   };
 
-  return <App {...appProps} accessToken={accessToken} studyUID={studyUID} />;
+  return (
+    <App
+      {...appProps}
+      accessToken={accessToken}
+      studyUID={studyUID}
+      user={user}
+    />
+  );
 };
 
 export default LanternViewer;

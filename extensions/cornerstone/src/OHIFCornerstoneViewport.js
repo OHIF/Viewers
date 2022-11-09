@@ -10,7 +10,7 @@ import ViewportOverlay from './ViewportOverlay';
 
 import { useCine, useViewportGrid, useViewerToolset } from '@ohif/ui';
 
-import { useStudyInstanceUIDs } from '@state';
+import { useLanternAppConfig } from '@state';
 
 const scrollToIndex = csTools.importInternal('util/scrollToIndex');
 
@@ -45,7 +45,7 @@ function OHIFCornerstoneViewport({
   const [isParamViewLoaded, setIsParamViewLoaded] = useState(false);
   const isMounted = useRef(false);
   const stageChangedRef = useRef(false);
-  const [studyInstanceUIDs] = useStudyInstanceUIDs();
+  const { studyInstanceUIDs } = useLanternAppConfig();
 
   const onNewImage = (element, callback) => {
     const handler = evt => {

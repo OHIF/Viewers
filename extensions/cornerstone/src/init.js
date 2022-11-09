@@ -102,6 +102,7 @@ const _createInternalToolsConfig = UIDialogService => {
 export default function init({
   servicesManager,
   commandsManager,
+  appConfig,
   configuration,
 }) {
   const {
@@ -118,7 +119,8 @@ export default function init({
   const measurementServiceSource = _connectToolsToMeasurementService(
     MeasurementService,
     DisplaySetService,
-    UINotificationService
+    UINotificationService,
+    appConfig
   );
 
   initReferenceLines({ servicesManager, commandsManager });
@@ -451,8 +453,10 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
 const _connectToolsToMeasurementService = (
   MeasurementService,
   DisplaySetService,
-  UINotificationService
+  UINotificationService,
+  appConfig
 ) => {
+  const { user } = appConfig;
   const csToolsVer4MeasurementSource = _initMeasurementService(
     MeasurementService,
     DisplaySetService
@@ -467,7 +471,6 @@ const _connectToolsToMeasurementService = (
   const elementEnabledEvt = cs.EVENTS.ELEMENT_ENABLED;
 
   /* Measurement Service Events */
-  const author = JSON.parse(window.localStorage.getItem('newlantern_user'));
   cs.events.addEventListener(elementEnabledEvt, evt => {
     // TODO: Debounced update of measurements that are modified
     const addMeasurement = debounce(function(csToolsEvent) {
@@ -492,7 +495,7 @@ const _connectToolsToMeasurementService = (
             const measurementId = addOrUpdate(csToolName, {
               ...evtDetail,
               id,
-              author,
+              author: user,
               createdAt: new Date().toString(),
             });
             if (measurementId) {

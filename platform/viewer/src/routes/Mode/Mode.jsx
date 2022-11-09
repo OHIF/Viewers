@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
-import { useAccessToken, useStudyInstanceUIDs } from '@state';
+import { useLanternAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
@@ -13,6 +13,7 @@ async function defaultRouteInit({
   servicesManager,
   studyInstanceUIDs,
   dataSource,
+  user,
 }) {
   const { DisplaySetService } = servicesManager.services;
 
@@ -54,8 +55,8 @@ async function defaultRouteInit({
 
       await setupHangingProtocols({
         servicesManager,
-        dataSource,
         study,
+        user,
       });
     }
   );
@@ -68,7 +69,7 @@ async function defaultRouteInit({
   return unsubscriptions;
 }
 
-async function setupHangingProtocols({ servicesManager, dataSource, study }) {
+async function setupHangingProtocols({ servicesManager, user, study }) {
   const { HangingProtocolService } = servicesManager.services;
   const { StudyInstanceUID } = study;
 
@@ -105,7 +106,6 @@ async function setupHangingProtocols({ servicesManager, dataSource, study }) {
     study => study.StudyInstanceUID === StudyInstanceUID
   );
 
-  const user = JSON.parse(window.localStorage.getItem('newlantern_user'));
   const { data } = await nlApi.get(`/api/hanging-protocol/?user=${user.id}`);
 
   const viewportSettings = criteria => {
@@ -281,8 +281,7 @@ export default function ModeRoute({
   const layoutTemplateData = useRef(false);
   const isMounted = useRef(false);
 
-  const [accessToken] = useAccessToken();
-  const [studyInstanceUIDs] = useStudyInstanceUIDs();
+  const { accessToken, studyInstanceUIDs, user } = useLanternAppConfig();
 
   const {
     DisplaySetService,
@@ -448,6 +447,7 @@ export default function ModeRoute({
         hotkeysManager,
         studyInstanceUIDs,
         dataSource,
+        user,
       });
     };
 
