@@ -52,8 +52,12 @@ module.exports = (env, argv) => {
       ],
     },
     externals: {
+      history: 'history',
+      'query-string': 'query-string',
       react: 'react',
       'react-dom': 'react-dom',
+      'react-router': 'react-router',
+      'react-router-dom': 'react-router-dom',
     },
   });
 };
