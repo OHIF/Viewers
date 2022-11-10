@@ -139,11 +139,11 @@ PatientInfo.propTypes = {
   patientSex: PropTypes.string,
   patientAge: PropTypes.string,
   MRN: PropTypes.string,
-  thickness: PropTypes.number,
-  spacing: PropTypes.number,
+  thickness: PropTypes.string,
+  spacing: PropTypes.string,
   scanner: PropTypes.string,
   isOpen: PropTypes.bool,
-  showPatientInfoRef: PropTypes.func,
+  showPatientInfoRef: PropTypes.object,
 };
 
 export default PatientInfo;

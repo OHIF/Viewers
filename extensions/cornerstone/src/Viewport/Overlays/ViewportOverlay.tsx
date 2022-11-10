@@ -28,6 +28,25 @@ function CornerstoneViewportOverlay({
     setActiveTools(ToolBarService.getActiveTools());
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+    const { unsubscribe } = ToolBarService.subscribe(
+      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
+      () => {
+        if (!isMounted) {
+          return;
+        }
+
+        setActiveTools(ToolBarService.getActiveTools());
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
   /**
    * Updating the VOI when the viewport changes its voi
    */
@@ -99,23 +118,6 @@ function CornerstoneViewportOverlay({
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
     };
   }, [viewportIndex, viewportData]);
-
-  /**
-   * Updating the active tools when the toolbar changes
-   */
-  // Todo: this should act on the toolGroups instead of the toolbar state
-  useEffect(() => {
-    const { unsubscribe } = ToolBarService.subscribe(
-      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => {
-        setActiveTools(ToolBarService.getActiveTools());
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [ToolBarService]);
 
   const getTopLeftContent = useCallback(() => {
     const { windowWidth, windowCenter } = voi;

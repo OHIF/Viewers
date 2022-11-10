@@ -373,16 +373,7 @@ function PanelStudyBrowserTracking({
 }
 
 PanelStudyBrowserTracking.propTypes = {
-  MeasurementService: PropTypes.shape({
-    subscribe: PropTypes.func.isRequired,
-    EVENTS: PropTypes.object.isRequired,
-  }).isRequired,
-  DisplaySetService: PropTypes.shape({
-    EVENTS: PropTypes.object.isRequired,
-    activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-    getDisplaySetByUID: PropTypes.func.isRequired,
-    subscribe: PropTypes.func.isRequired,
-  }).isRequired,
+  servicesManager: PropTypes.object.isRequired,
   dataSource: PropTypes.shape({
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,

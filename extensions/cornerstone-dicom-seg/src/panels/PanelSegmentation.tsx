@@ -328,7 +328,6 @@ PanelSegmentation.propTypes = {
         toggleSegmentationVisibility: PropTypes.func.isRequired,
         subscribe: PropTypes.func.isRequired,
         EVENTS: PropTypes.object.isRequired,
-        VALUE_TYPES: PropTypes.object.isRequired,
       }).isRequired,
     }).isRequired,
   }).isRequired,
