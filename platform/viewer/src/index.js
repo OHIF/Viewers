@@ -2,7 +2,7 @@
  * Entry point for development and production PWA builds.
  */
 import 'regenerator-runtime/runtime';
-import App from './App.tsx';
+import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
