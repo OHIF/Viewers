@@ -74,7 +74,7 @@ const SidePanel = ({
 }) => {
   const { t } = useTranslation('SidePanel');
 
-  const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== undefined);
+  const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp || 0);
   const swiperRef = useRef() as any;
   const [swiper, setSwiper] = useState<any>();

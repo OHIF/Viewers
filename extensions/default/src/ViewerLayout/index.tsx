@@ -243,7 +243,7 @@ ViewerLayout.defaultProps = {
   leftPanels: [],
   rightPanels: [],
   leftPanelDefaultClosed: false,
-  rightPanelDefaultClosed: true,
+  rightPanelDefaultClosed: false,
 };
 
 export default ViewerLayout;
