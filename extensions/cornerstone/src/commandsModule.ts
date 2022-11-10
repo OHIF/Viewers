@@ -32,6 +32,7 @@ const commandsModule = ({ servicesManager }) => {
   const {
     ViewportGridService,
     ToolGroupService,
+    DisplaySetService,
     SyncGroupService,
     CineService,
     ToolBarService,
@@ -520,7 +521,24 @@ const commandsModule = ({ servicesManager }) => {
       STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
       // create synchronization groups and add viewports
-      const { viewports } = ViewportGridService.getState();
+      let { viewports } = ViewportGridService.getState();
+
+      // filter reconstructable viewports
+      viewports = viewports.filter(viewport => {
+        const { displaySetInstanceUIDs } = viewport;
+
+        for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+          const displaySet = DisplaySetService.getDisplaySetByUID(
+            displaySetInstanceUID
+          );
+
+          if (displaySet && displaySet.isReconstructable) {
+            return true;
+          }
+
+          return false;
+        }
+      });
 
       const viewportsByOrientation = viewports.reduce((acc, viewport) => {
         const { viewportId, viewportType } = viewport.viewportOptions;

@@ -403,6 +403,13 @@ const toolbarButtons = [
           ],
           'Flip Horizontal'
         ),
+        _createToggleButton('StackImageSync', 'link', 'Stack Image Sync', [
+          {
+            commandName: 'toggleStackImageSync',
+            commandOptions: {},
+            context: 'CORNERSTONE',
+          },
+        ]),
         _createToolButton(
           'StackScroll',
           'tool-stack-scroll',

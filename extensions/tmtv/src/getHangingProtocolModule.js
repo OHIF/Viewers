@@ -8,6 +8,7 @@ const ptCT = {
   availableTo: {},
   editableBy: {},
   imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  validateDisplaySetSelectorsForNewDisplaySets: true, // make sure that the display set selector is valid for drag and drop
   protocolMatchingRules: [
     {
       attribute: 'ModalitiesInStudy',

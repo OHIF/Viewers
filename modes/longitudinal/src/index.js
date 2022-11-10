@@ -159,13 +159,13 @@ function modeFactory() {
             props: {
               // leftPanels: [tracked.thumbnailList],
               leftPanels: [tracked.thumbnailList],
-              // TODO: Should be optional, or required to pass empty array for slots?
               rightPanels: [
                 dicomSeg.panel,
                 tracked.measurements,
                 dicomSeg.panel,
                 tracked.measurements,
               ],
+              // rightPanelDefaultClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {
                   namespace: tracked.viewport,

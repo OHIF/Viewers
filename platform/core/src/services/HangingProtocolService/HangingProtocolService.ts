@@ -466,7 +466,7 @@ class HangingProtocolService {
       return defaultReturn;
     }
 
-    if (protocol.validateDisplaySetSelectorsForDragAndDrop) {
+    if (protocol.validateDisplaySetSelectorsForNewDisplaySets) {
       // so let's check if the new displaySetInstanceUIDs follow the same rules
       this._validateViewportSpecificMatch(
         {
