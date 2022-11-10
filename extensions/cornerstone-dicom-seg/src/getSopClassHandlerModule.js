@@ -76,7 +76,7 @@ function _getDisplaySetsFromSeries(
       displaySet.referencedSeriesInstanceUID
     );
 
-    if (!referencedDisplaySets) {
+    if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
       throw new Error('Referenced DisplaySet is missing for the SEG');
     }
 

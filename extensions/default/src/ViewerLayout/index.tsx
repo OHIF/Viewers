@@ -26,12 +26,12 @@ function ViewerLayout({
   hotkeysManager,
   commandsManager,
   // From Modes
-  leftPanels,
-  rightPanels,
-  leftPanelDefaultClosed,
-  rightPanelDefaultClosed,
   viewports,
   ViewportGridComp,
+  leftPanels = [],
+  rightPanels = [],
+  leftPanelDefaultClosed = false,
+  rightPanelDefaultClosed = false,
 }) {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
@@ -237,13 +237,6 @@ ViewerLayout.propTypes = {
   rightPanelDefaultClosed: PropTypes.bool.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-};
-
-ViewerLayout.defaultProps = {
-  leftPanels: [],
-  rightPanels: [],
-  leftPanelDefaultClosed: false,
-  rightPanelDefaultClosed: false,
 };
 
 export default ViewerLayout;

@@ -11,9 +11,6 @@ const ohif = {
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
-const tracking = {
-  thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-};
 
 const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
@@ -183,7 +180,7 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [],
+              // leftPanels: [ohif.thumbnailList],
               rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {

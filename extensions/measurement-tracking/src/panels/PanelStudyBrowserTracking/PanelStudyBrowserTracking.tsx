@@ -553,8 +553,6 @@ function _getComponentType(Modality) {
   return 'thumbnailTracked';
 }
 
-const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
-
 /**
  *
  * @param {string[]} primaryStudyInstanceUIDs

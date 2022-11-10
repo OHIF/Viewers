@@ -1,4 +1,4 @@
-import { HangingProtocolService, hotkeys } from '@ohif/core';
+import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
@@ -10,6 +10,7 @@ const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
 const tracked = {
@@ -157,14 +158,8 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              // leftPanels: [tracked.thumbnailList],
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [
-                dicomSeg.panel,
-                tracked.measurements,
-                dicomSeg.panel,
-                tracked.measurements,
-              ],
+              rightPanels: [dicomSeg.panel, tracked.measurements],
               // rightPanelDefaultClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {

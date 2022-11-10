@@ -286,7 +286,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
 
   displaySets.forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-    const componentType = _getComponentTyspe(ds.Modality);
+    const componentType = _getComponentType(ds.Modality);
 
     const array =
       componentType === 'thumbnail'
