@@ -15,7 +15,7 @@ module.exports = (env, argv) => {
     entry: {
       app: `${SRC_DIR}/index_module.js`,
     },
-    devtool: 'source-map',
+    // devtool: 'source-map',
     stats: {
       colors: true,
       hash: true,
@@ -53,6 +53,8 @@ module.exports = (env, argv) => {
     },
     externals: {
       history: 'history',
+      moment: 'moment',
+      classnames: 'classnames',
       'query-string': 'query-string',
       react: 'react',
       'react-dom': 'react-dom',
