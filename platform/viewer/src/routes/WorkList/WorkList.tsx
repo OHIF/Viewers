@@ -463,7 +463,7 @@ function WorkList({
         </>
       ) : (
         <div className="flex flex-col items-center justify-center pt-48">
-          {isLoadingData ? (
+          {appConfig.showLoadingIndicator && isLoadingData ? (
             <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
           ) : (
             <EmptyStudies />

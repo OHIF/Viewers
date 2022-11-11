@@ -1,9 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: Overview
+sidebar_label: Configuration Files
 ---
 
-# Overview
+# Config files
 
 After following the steps outlined in
 [Getting Started](./../development/getting-started.md), you'll notice that the
@@ -104,6 +104,20 @@ window.config = ({ servicesManager } = {}) => {
   };
 };
 ```
+
+## Configuration Options
+
+Here are a list of some options available:
+
+- `maxNumberOfWebWorkers`: The maximum number of web workers to use for
+  decoding. Defaults to minimum of `navigator.hardwareConcurrency` and
+  what is specified by `maxNumberOfWebWorkers`. Some windows machines require smaller values.
+- `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server don't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests)
+- `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
+
+
+
 
 <!-- **Embedded Use Note:**
 

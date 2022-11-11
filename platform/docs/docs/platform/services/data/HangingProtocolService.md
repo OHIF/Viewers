@@ -7,22 +7,18 @@ sidebar_label: Hanging Protocol Service
 
 ## Overview
 
-`HangingProtocolService` is a migration of the `OHIF-v1` hanging protocol
-engine along with various improvements and fixes.
+
 This service handles the arrangement of the images in the viewport. In
 short, the registered protocols will get matched with the DisplaySets that are
 available. Each protocol gets a score, and they are ranked. The
-winning protocol gets applied and its settings run for the viewports.
+winning protocol (highest score) gets applied and its settings run for the viewports
+to be arranged.
 
-You can read more about hanging protocols
-[here](http://dicom.nema.org/dicom/Conf-2005/Day-2_Selected_Papers/B305_Morgan_HangProto_v1.pdf).
-In `OHIF-v3` hanging protocols you can:
+You can read more about a HangingProtocol Structure and its properties in the
+[HangingProtocol Module](../../extensions/modules/hpModule.md).
 
-- Define what layout of the viewport should the viewer starts with (2x2 layout)
-- Specify the type of the viewport and its orientation
-- Define which displaySets gets displayed in which viewport of the layout
-- Apply certain initial viewport settings; e.g., inverting the contrast, jumping to a specific slice, etc.
-- Add specific synchronization rules for the viewports
+The rest of this page is dedicated on how the Hanging Protocol Service works and
+what you can do with it.
 
 ## Protocols
 

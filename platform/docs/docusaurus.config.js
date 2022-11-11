@@ -233,7 +233,7 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: 'Version 3.2 - Cornerstone3D Volume API 🚧',
+              label: 'Version 3.3 - Segmentation Support 🚧',
             },
             '2.0': {
               label: 'Version 2.0 - Master branch',

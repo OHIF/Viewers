@@ -94,8 +94,7 @@ function ViewportOrientationMarkers({
       const { viewport } = getEnabledElement(element);
       const { viewUp, viewPlaneNormal } = viewport.getCamera();
 
-      // Move the camera in plane by some random number
-      const viewRight = vec3.create(); // Get the X direction of the viewport
+      const viewRight = vec3.create();
       vec3.cross(viewRight, viewUp, viewPlaneNormal);
 
       columnCosines = [-viewUp[0], -viewUp[1], -viewUp[2]];

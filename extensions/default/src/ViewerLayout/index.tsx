@@ -184,7 +184,7 @@ function ViewerLayout({
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
-          {showLoadingIndicator && (
+          {appConfig.showLoadingIndicator && showLoadingIndicator && (
             <LoadingIndicatorProgress className="h-full w-full bg-black" />
           )}
           {/* LEFT SIDEPANELS */}
