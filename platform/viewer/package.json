@@ -19,7 +19,7 @@
   "proxy": "http://localhost:8042",
   "scripts": {
     "prepare": "cross-env NODE_ENV=production yarn run build",
-    "build:viewer": "cross-env NODE_ENV=production yarn run build",
+    "build:viewer": "cross-env NODE_ENV=production GENERATE_SOURCEMAP=false yarn run build",
     "build:dev": "cross-env NODE_ENV=development yarn run build",
     "build:aws": "cross-env NODE_ENV=development APP_CONFIG=config/aws_static.js yarn run build && gzip -9 -r dist",
     "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/ APP_CONFIG=config/netlify.js QUICK_BUILD=true yarn run build",

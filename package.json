@@ -20,7 +20,7 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
-    "build:lantern": "lerna run build:lantern-viewer --stream",
+    "build:viewer": "lerna run build:viewer --stream",
     "build:dev": "lerna run build:dev --stream",
     "build:dev-lantern": "lerna run build:dev-lantern --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
