@@ -4113,6 +4113,18 @@
     lodash.set "^4.3.2"
     uuid "^8.3.2"
 
+"@pubnub/react-chat-components@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@pubnub/react-chat-components/-/react-chat-components-0.8.0.tgz#e6d63ed50c843e6d571cf722bcc5572eedd04830"
+  integrity sha512-q4Itz+JFrrw4cgSN/hhHqV1yzN9AxXaaTTYveu7CLeLD5g61atrxMcnnQOuetMsAUCWr3uq4l8xOwYUYT8PJnA==
+  dependencies:
+    jotai "^1.3.0"
+    lodash.clonedeep "^4.5.0"
+    lodash.isequal "^4.5.0"
+    lodash.merge "^4.6.2"
+    lodash.mergewith "^4.6.2"
+    lodash.set "^4.3.2"
+
 "@react-dnd/asap@^4.0.0":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@react-dnd/asap/-/asap-4.0.1.tgz#5291850a6b58ce6f2da25352a64f1b0674871aab"
