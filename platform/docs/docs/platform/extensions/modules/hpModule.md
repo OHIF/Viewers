@@ -43,7 +43,6 @@ const oneByThreeProtocol = {
   availableTo: {},
   editableBy: {},
   imageLoadStrategy: 'interleaveTopToBottom',
-  validateDisplaySetSelectorsForNewDisplaySets: true,
   protocolMatchingRules: [
     {
       attribute: 'ModalitiesInStudy',

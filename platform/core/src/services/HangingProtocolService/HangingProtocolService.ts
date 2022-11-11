@@ -466,18 +466,16 @@ class HangingProtocolService {
       return defaultReturn;
     }
 
-    if (protocol.validateDisplaySetSelectorsForNewDisplaySets) {
-      // so let's check if the new displaySetInstanceUIDs follow the same rules
-      this._validateViewportSpecificMatch(
-        {
-          displaySetInstanceUIDs: [newDisplaySetInstanceUID],
-          viewportOptions: {},
-          displaySetOptions: [],
-        },
-        protocolViewport,
-        protocol.displaySetSelectors
-      );
-    }
+    // so let's check if the new displaySetInstanceUIDs follow the same rules
+    this._validateViewportSpecificMatch(
+      {
+        displaySetInstanceUIDs: [newDisplaySetInstanceUID],
+        viewportOptions: {},
+        displaySetOptions: [],
+      },
+      protocolViewport,
+      protocol.displaySetSelectors
+    );
     // if we reach here, it means there are some rules that should be applied
 
     // if we don't have any match details for the displaySetSelector the viewport

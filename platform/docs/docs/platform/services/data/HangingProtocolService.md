@@ -22,14 +22,10 @@ what you can do with it.
 
 ## Protocols
 
-A protocol can be an object or a function that returns an object (protocol generator).
-Each protocol can get added to the `HangingProtocolService` by using the `addProtocol` method given
-an `id` and the protocol itself. As an example, the `default` protocol is an object, while
-the 'mpr' protocol is a function that returns the protocol (the reason for this is that the
-`mpr` protocol needs to be generated based on the active viewport).
+Protocols are provided by each extension's HangingProtocolModule and are
+registered automatically to the HangingProtocolService.
 
-All protocols are stored in the `HangingProtocolService` using their `id` as the key, and
-the protocol itself as the value.
+All protocols are stored in the `HangingProtocolService` using their `id` as the key, and the protocol itself as the value.
 
 ## Events
 
@@ -40,14 +36,15 @@ There are two events that get publish in `HangingProtocolService`:
 | NEW_LAYOUT   | Fires when a new layout is requested by the `HangingProtocolService` |
 | STAGE_CHANGE | Fires when the the stage is changed in the hanging protocols         |
 | PROTOCOL_CHANGED | Fires when the the protocol is changed in the hanging protocols         |
+| HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT | Fires when the hanging protocol applies for a viewport (sets its displaySets) |
 
 
 
 ## API
 
 - `getMatchDetails`: returns an object which contains the details of the
-  matching for the viewports, displaysets and whether the protocol is
-  applied to the viewport or not
+  matching for the viewports, displaySets and whether the protocol is
+  applied to the viewport or not yet.
 
 - `addProtocol`: adds provided protocol to the list of registered protocols
   for matching
@@ -63,6 +60,14 @@ init.
   based on the constraints.
 
 - `addCustomAttribute`: adding a custom attribute for matching. (see below)
+
+- `setProtocol`: applies a protocol to the current studies, it can be used for instance to apply a
+  hanging protocol when pressing a button in the toolbar. We use this for applying 'mpr'
+  hanging protocol when pressing the MPR button in the toolbar. `setProtocol` will
+  accept a set of options that can be used to define the displaySets that will be
+  used for the protocol. If no options are provided, all displaySets will
+  be used to match the protocol.
+
 
 Default initialization of the modes handles running the `HangingProtocolService`
 
