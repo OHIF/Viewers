@@ -1232,28 +1232,28 @@ class SegmentationService {
       );
     }
 
-    if (brushSize !== undefined) {
-      const { ToolGroupService } = this.servicesManager.services;
+    // if (brushSize !== undefined) {
+    //   const { ToolGroupService } = this.servicesManager.services;
 
-      const toolGroupIds = ToolGroupService.getToolGroupIds();
+    //   const toolGroupIds = ToolGroupService.getToolGroupIds();
 
-      toolGroupIds.forEach(toolGroupId => {
-        cstUtils.segmentation.setBrushSizeForToolGroup(toolGroupId, brushSize);
-      });
-    }
+    //   toolGroupIds.forEach(toolGroupId => {
+    //     cstUtils.segmentation.setBrushSizeForToolGroup(toolGroupId, brushSize);
+    //   });
+    // }
 
-    if (brushThresholdGate !== undefined) {
-      const { ToolGroupService } = this.servicesManager.services;
+    // if (brushThresholdGate !== undefined) {
+    //   const { ToolGroupService } = this.servicesManager.services;
 
-      const toolGroupIds = ToolGroupService.getFirstToolGroupIds();
+    //   const toolGroupIds = ToolGroupService.getFirstToolGroupIds();
 
-      toolGroupIds.forEach(toolGroupId => {
-        cstUtils.segmentation.setBrushThresholdForToolGroup(
-          toolGroupId,
-          brushThresholdGate
-        );
-      });
-    }
+    //   toolGroupIds.forEach(toolGroupId => {
+    //     cstUtils.segmentation.setBrushThresholdForToolGroup(
+    //       toolGroupId,
+    //       brushThresholdGate
+    //     );
+    //   });
+    // }
 
     this._broadcastEvent(
       this.EVENTS.SEGMENTATION_CONFIGURATION_CHANGED,
