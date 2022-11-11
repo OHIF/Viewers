@@ -37,20 +37,24 @@ const Dialog = ({
 
   return (
     <div className={classNames(theme, flex, border, outline, position, width)}>
-      <HeaderComponent
-        title={title}
-        noCloseButton={noCloseButton}
-        onClose={onClose}
-        value={value}
-        setValue={setValue}
-      />
-      <BodyComponent text={text} value={value} setValue={setValue} />
-      <FooterComponent
-        actions={actions}
-        onSubmit={onSubmit}
-        value={value}
-        setValue={setValue}
-      />
+      {HeaderComponent && (
+        <HeaderComponent
+          title={title}
+          noCloseButton={noCloseButton}
+          onClose={onClose}
+          value={value}
+          setValue={setValue}
+        />
+      )}
+      <BodyComponent text={text} value={value} setValue={setValue} />{' '}
+      {FooterComponent && (
+        <FooterComponent
+          actions={actions}
+          onSubmit={onSubmit}
+          value={value}
+          setValue={setValue}
+        />
+      )}
     </div>
   );
 };
