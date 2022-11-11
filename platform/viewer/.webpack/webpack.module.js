@@ -15,7 +15,7 @@ module.exports = (env, argv) => {
     entry: {
       app: `${SRC_DIR}/index_module.js`,
     },
-    // devtool: 'source-map',
+    devtool: 'source-map',
     stats: {
       colors: true,
       hash: true,
@@ -60,6 +60,7 @@ module.exports = (env, argv) => {
       'react-dom': 'react-dom',
       'react-router': 'react-router',
       'react-router-dom': 'react-router-dom',
+      '@pubnub/react-chat-components': '@pubnub/react-chat-components',
     },
   });
 };

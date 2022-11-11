@@ -64,6 +64,7 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
+    "@pubnub/react-chat-components": "^0.8.0",
     "oidc-client": "1.11.5",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.1",
