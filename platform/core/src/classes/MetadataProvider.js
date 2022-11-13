@@ -443,17 +443,7 @@ class MetadataProvider {
       };
     }
 
-    // Maybe its a non-standard imageId
-    // check if the imageId starts with http:// or https:// using regex
-    // Todo: handle non http imageIds
-    let imageURI;
-    const urlRegex = /^(http|https):\/\//;
-    if (urlRegex.test(imageId)) {
-      imageURI = imageId;
-    } else {
-      imageURI = imageIdToURI(imageId);
-    }
-
+    const imageURI = imageIdToURI(imageId);
     const uids = this.imageURIToUIDs.get(imageURI);
     const frameNumber = imageId.split(/\/frames\//)[1];
 
