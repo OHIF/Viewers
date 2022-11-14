@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 const Dialog = ({
   title,
-  text,
+  text = '',
   onClose,
   noCloseButton,
   actions,
@@ -20,7 +20,7 @@ const Dialog = ({
   footer: FooterComponent,
   value: defaultValue,
 }) => {
-  const [value, setValue] = useState(defaultValue);
+  const [valueData, setValueData] = useState(defaultValue);
 
   const theme = 'bg-secondary-light';
   const flex = 'flex flex-col';
@@ -37,24 +37,20 @@ const Dialog = ({
 
   return (
     <div className={classNames(theme, flex, border, outline, position, width)}>
-      {HeaderComponent && (
-        <HeaderComponent
-          title={title}
-          noCloseButton={noCloseButton}
-          onClose={onClose}
-          value={value}
-          setValue={setValue}
-        />
-      )}
-      <BodyComponent text={text} value={value} setValue={setValue} />{' '}
-      {FooterComponent && (
-        <FooterComponent
-          actions={actions}
-          onSubmit={onSubmit}
-          value={value}
-          setValue={setValue}
-        />
-      )}
+      <HeaderComponent
+        title={title}
+        noCloseButton={noCloseButton}
+        onClose={onClose}
+        value={valueData}
+        setValue={setValueData}
+      />
+      <BodyComponent text={text} value={valueData} setValue={setValueData} />
+      <FooterComponent
+        actions={actions}
+        onSubmit={onSubmit}
+        value={valueData}
+        setValue={setValueData}
+      />
     </div>
   );
 };
