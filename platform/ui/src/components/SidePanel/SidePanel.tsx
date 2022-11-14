@@ -114,6 +114,7 @@ const SidePanel = ({
           onClick={() => {
             setPanelOpen(prev => !prev);
           }}
+          data-cy={`side-panel-header-${side}`}
         >
           <Icon
             name={'navigation-panel-right-reveal'}
@@ -135,7 +136,7 @@ const SidePanel = ({
               )}
             >
               <IconButton
-                id={''}
+                id={`${childComponent.name}-btn`}
                 variant="text"
                 color="inherit"
                 size="initial"
@@ -182,14 +183,15 @@ const SidePanel = ({
               setPanelOpen(prev => !prev);
               // slideToActivePanel();
             }}
+            data-cy={`side-panel-header-${side}`}
           >
             <Button
               variant="text"
               color="inherit"
               border="none"
               rounded="none"
-              name={'name'}
               className="flex flex-row items-center px-3 relative w-full"
+              name={tabs.length === 1 ? `${tabs[activeTabIndex].name}` : ''}
             >
               <Icon
                 name={openStateIconName[side]}
@@ -310,6 +312,7 @@ function _getMoreThanOneTabLayout(
                   setActiveTabIndex(index);
                   setPanelOpen(true);
                 }}
+                data-cy={`${obj.name}-btn`}
               >
                 <span>
                   <Icon
