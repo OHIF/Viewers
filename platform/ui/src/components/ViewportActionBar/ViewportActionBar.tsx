@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Icon, ButtonGroup, Button, CinePlayer } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import PatientInfo from '../PatientInfo';
-import { StringNumber } from '../../Types';
+import { StringNumber } from '../../types';
 
 const ViewportActionBar = ({
   studyData,
