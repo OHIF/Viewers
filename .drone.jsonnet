@@ -52,6 +52,7 @@ local deployProduction = pipelineCommon {
       commands: [
         'cd platform/viewer',
         'yarn',
+        'rm dist -r',
         'yarn prepare',
         'sh package_gen.sh',
         'cd dist',
