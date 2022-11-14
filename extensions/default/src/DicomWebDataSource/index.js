@@ -37,11 +37,10 @@ const metadataProvider = classes.MetadataProvider;
 
 /**
  *
- * @param {string} name - Data source name
  * @param {string} baseUrl - The root URL for DICOMWeb calls
- * @param {string} wadoUrlPrefix - The URL prefix for WADO DICOMWeb calls
- * @param {string} qidoUrlPrefix - The URL prefix for QIDO DICOMWeb calls
- * @param {string} stowUrlPrefix - The URL prefix for STOW DICOMWeb calls
+ * @param {string} wadoURLPrefix - The URL prefix for WADO DICOMWeb calls
+ * @param {string} qidoURLPrefix - The URL prefix for QIDO DICOMWeb calls
+ * @param {string} stowURLPrefix - The URL prefix for STOW DICOMWeb calls
  * @param {bool} qidoSupportsIncludeField - Whether QIDO supports the "Include" option to request additional fields in response
  * @param {bool} enableStudyLazyLoad - Request series meta async instead of blocking
  * @param {bool} supportsWildcard - Whether the server supports wildcards calls (i.e. DCM4CHEE)
@@ -52,9 +51,9 @@ const metadataProvider = classes.MetadataProvider;
 function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   const {
     baseUrl,
-    wadoUrlPrefix,
-    qidoUrlPrefix,
-    stowUrlPrefix,
+    wadoURLPrefix,
+    qidoURLPrefix,
+    stowURLPrefix,
     enableStudyLazyLoad,
     supportsFuzzyMatching,
     supportsWildcard,
@@ -65,9 +64,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   const dicomWebClientConfig = {
     url: baseUrl,
-    wadoUrlPrefix: wadoUrlPrefix,
-    qidoUrlPrefix: qidoUrlPrefix,
-    stowUrlPrefix: stowUrlPrefix,
+    wadoURLPrefix: wadoURLPrefix,
+    qidoURLPrefix: qidoURLPrefix,
+    stowURLPrefix: stowURLPrefix,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
@@ -125,10 +124,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
             dicomWebClient.headers = headers;
           }
 
-          const results = await seriesInStudy(
-            dicomWebClient,
-            studyInstanceUid
-          );
+          const results = await seriesInStudy(dicomWebClient, studyInstanceUid);
 
           return processSeriesResults(results);
         },
@@ -211,16 +207,16 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
           (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
         if (BulkDataURI.indexOf('http') === 0) return acceptUri;
         if (BulkDataURI.indexOf('/') === 0) {
-          return wadoRoot + acceptUri;
+          return `${baseUrl}/${wadoURLPrefix}/${acceptUri}`;
         }
         if (BulkDataURI.indexOf('series/') == 0) {
-          return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
+          return `${baseUrl}/${wadoURLPrefix}/studies/${StudyInstanceUID}/${acceptUri}`;
         }
         if (BulkDataURI.indexOf('instances/') === 0) {
-          return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${acceptUri}`;
+          return `${baseUrl}/${wadoURLPrefix}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${acceptUri}`;
         }
         if (BulkDataURI.indexOf('bulkdata/') === 0) {
-          return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
+          return `${baseUrl}/${wadoURLPrefix}/studies/${StudyInstanceUID}/${acceptUri}`;
         }
         throw new Error('BulkDataURI in unknown format:' + BulkDataURI);
       },
@@ -306,7 +302,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
-        wadoDicomWebClient,
+        dicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad,
         filters,
@@ -379,7 +375,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         preLoadData: seriesSummaryMetadata,
         promises: seriesPromises,
       } = await retrieveStudyMetadata(
-        wadoDicomWebClient,
+        dicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad,
         filters,
@@ -414,7 +410,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
                 // any implementation that stores static copies of the metadata
                 StudyInstanceUID: naturalized.StudyInstanceUID,
               };
-              return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+              return dicomWebClient.retrieveBulkData(options).then(val => {
                 const ret = (val && val[0]) || undefined;
                 value.Value = ret;
                 return ret;
@@ -516,7 +512,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   };
 
   if (supportsReject) {
-    implementation.reject = dcm4cheeReject(`${baseUrl}/${wadoUrlPrefix}`);
+    implementation.reject = dcm4cheeReject(`${baseUrl}/${wadoURLPrefix}`);
   }
 
   return IWebApiDataSource.create(implementation);
