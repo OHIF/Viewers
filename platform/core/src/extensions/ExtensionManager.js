@@ -365,5 +365,5 @@ export default class ExtensionManager {
  * @param {string} lower
  */
 function _capitalizeFirstCharacter(lower) {
-  return lower.charAt(0).toUpperCase() + lower.substr(1);
+  return lower.charAt(0).toUpperCase() + lower.substring(1);
 }
