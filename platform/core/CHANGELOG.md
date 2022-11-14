@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.33](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.32...@ohif/core@2.16.33) (2022-11-12)
+
+
+### Bug Fixes
+
+* handle missing ReferencedInstanceSequence attribute ([#2786](https://github.com/OHIF/Viewers/issues/2786)) ([4473807](https://github.com/OHIF/Viewers/commit/44738078dbd8dc6b27d2d669e25417e37371f48d))
+
+
+
+
+
 ## [2.16.32](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.31...@ohif/core@2.16.32) (2022-11-02)
 
 **Note:** Version bump only for package @ohif/core
