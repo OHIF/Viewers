@@ -3,17 +3,22 @@ const dotenv = require('dotenv');
 //
 const path = require('path');
 const webpack = require('webpack');
-const PACKAGE = require('../platform/viewer/package.json');
-// ~~ RULES
-const loadShadersRule = require('./rules/loadShaders.js');
-const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
-const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
-const cssToJavaScript = require('./rules/cssToJavaScript.js');
+
 // ~~ PLUGINS
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+
+// ~~ PackageJSON
+const PACKAGE = require('../platform/viewer/package.json');
+// const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
+//   .rules;
+// ~~ RULES
+const loadShadersRule = require('./rules/loadShaders.js');
+const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
+const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
+const cssToJavaScript = require('./rules/cssToJavaScript.js');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -39,16 +44,16 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       app: `${SRC_DIR}/index.js`,
     },
     optimization: {
-      splitChunks: {
-        // include all types of chunks
-        chunks: 'all',
-      },
+      // splitChunks: {
+      //   // include all types of chunks
+      //   chunks: 'all',
+      // },
       //runtimeChunk: 'single',
       minimize: isProdBuild,
       sideEffects: true,
     },
     output: {
-      clean: true,
+      // clean: true,
       publicPath: '/',
     },
     context: SRC_DIR,
@@ -63,11 +68,20 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       children: false,
       warnings: true,
     },
+    devServer: {
+      open: true,
+      port: 3000,
+      historyApiFallback: true,
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
+    },
     module: {
       rules: [
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
-        loadShadersRule,
+        // loadShadersRule,
         {
           test: /\.m?js/,
           resolve: {
@@ -75,7 +89,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           },
         },
         cssToJavaScript,
-      ],
+      ], //.concat(vtkRules),
     },
     resolve: {
       mainFields: ['module', 'browser', 'main'],
@@ -98,10 +112,12 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         path.resolve(__dirname, '../node_modules'),
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
+        path.resolve(__dirname, '../platform/viewer/node_modules'),
+        path.resolve(__dirname, '../platform/ui/node_modules'),
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
-      extensions: ['.js', '.jsx', '.json', '*'],
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
       fallback: { fs: false, path: false, zlib: false },
@@ -131,15 +147,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       }),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
-      new CopyPlugin({
-        patterns: [
-          {
-            from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
-        ],
-      }),
     ],
   };
 

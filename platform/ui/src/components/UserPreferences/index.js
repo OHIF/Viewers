@@ -1,3 +1,3 @@
-import UserPreferences from './UserPreferences.jsx';
+import UserPreferences from './UserPreferences.tsx';
 
 export default UserPreferences;

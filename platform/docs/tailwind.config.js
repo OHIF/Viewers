@@ -1,16 +1,12 @@
 module.exports = {
   prefix: '',
-  important: false,
   separator: ':',
-  purge: {
-    enabled: true,
-    content: [
-      './docs/**/*.jsx',
-      './docs/**/*.mdx',
-      './node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
-      '../../node_modules/@ohif/ui/src/**/*.{js,jsx,css}',
-    ],
-  },
+  content: [
+    './docs/**/*.jsx',
+    './docs/**/*.mdx',
+    './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
+    '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
+  ],
   theme: {
     screens: {
       sm: '640px',

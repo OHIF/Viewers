@@ -7,26 +7,32 @@
 
 const path = require('path');
 const versions = require('./versions.json');
+const VersionsArchived = require('./versionsArchived.json');
+
+const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(
+  0,
+  5
+);
 
 // This probably only makes sense for the beta phase, temporary
-function getNextBetaVersionName() {
-  const expectedPrefix = '';
+// function getNextBetaVersionName() {
+//   const expectedPrefix = '';
 
-  const lastReleasedVersion = versions[0];
-  if (!lastReleasedVersion.includes(expectedPrefix)) {
-    throw new Error(
-      'this code is only meant to be used during the 2.0 beta phase.'
-    );
-  }
-  const version = parseInt(lastReleasedVersion.replace(expectedPrefix, ''), 10);
-  return `${expectedPrefix}${version + 1}`;
-}
+//   const lastReleasedVersion = versions[0];
+//   if (!lastReleasedVersion.includes(expectedPrefix)) {
+//     throw new Error(
+//       'this code is only meant to be used during the 2.0 beta phase.'
+//     );
+//   }
+//   const version = parseInt(lastReleasedVersion.replace(expectedPrefix, ''), 10);
+//   return `${expectedPrefix}${version + 1}`;
+// }
 
-const allDocHomesPaths = [
-  '/docs/',
-  '/docs/next/',
-  ...versions.slice(1).map(version => `/docs/${version}/`),
-];
+// const allDocHomesPaths = [
+//   '/docs/',
+//   '/docs/next/',
+//   ...versions.slice(1).map(version => `/docs/${version}/`),
+// ];
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -44,7 +50,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
 // const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
-(module.exports = {
+module.exports = {
   title: 'OHIF',
   tagline: 'Open-source web-based medical imaging platform',
   organizationName: 'Open Health Imaging Foundation',
@@ -56,11 +62,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     defaultLocale: 'en',
     locales: isDeployPreview
       ? // Deploy preview: keep it fast!
-      ['en']
-      : isI18nStaging
-        ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
         ['en']
-        : // Production locales
+      : isI18nStaging
+      ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
+        ['en']
+      : // Production locales
         ['en'],
   },
   onBrokenLinks: 'warn',
@@ -74,6 +80,12 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   plugins: [
     path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     'plugin-image-zoom', // 3rd party plugin for image click to pop
+    [
+      '@docusaurus/plugin-google-gtag',
+      {
+        trackingID: 'UA-110573590-2',
+      },
+    ],
     [
       '@docusaurus/plugin-client-redirects',
       {
@@ -191,8 +203,9 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
   ],
   presets: [
     [
-      "@docusaurus/preset-classic",
-      {
+      'classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
         debug: true, // force debug plugin usage
         docs: {
           routeBasePath: '/',
@@ -205,8 +218,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
 
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
-            const nextVersionDocsDirPath = 'docs';
-            return `https://github.com/OHIF/Viewers/edit/master/website/${nextVersionDocsDirPath}/${docPath}`;
+            return `https://github.com/OHIF/Viewers/edit/v3-stable/platform/docs/docs/${docPath}`;
           },
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
@@ -221,185 +233,205 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           //     : undefined,
           versions: {
             current: {
-              label: 'Version 3.0 🚧',
+              label: 'Version 3.2 - Cornerstone3D Volume API 🚧',
             },
             '2.0': {
-              label: 'Version 2.0',
-              //path: `2.0`,
-            },
-            '1.0': {
-              label: 'Version 1.0',
-              //path: `1.0`,
+              label: 'Version 2.0 - Master branch',
             },
           },
         },
         theme: {
           customCss: [require.resolve('./src/css/custom.css')],
         },
-      },
+      }),
     ],
   ],
-  themeConfig: {
-    liveCodeBlock: {
-      playgroundPosition: 'bottom',
-    },
-    hideableSidebar: false,
-    colorMode: {
-      defaultMode: 'dark',
-      disableSwitch: false,
-      // respectPrefersColorScheme: true,
-    },
-    /*
+  themeConfig:
+    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    ({
+      liveCodeBlock: {
+        playgroundPosition: 'bottom',
+      },
+      docs: {
+        sidebar: {
+          hideable: true,
+          autoCollapseCategories: true,
+        },
+      },
+      colorMode: {
+        defaultMode: 'dark',
+        disableSwitch: false,
+        // respectPrefersColorScheme: true,
+      },
+      /*
     announcementBar: {
       id: 'supportus',
       content:
         '⭐️ If you like Docusaurus, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/OHIF/Viewers">GitHub</a>! ⭐️',
     },
      */
-    prism: {
-      theme: require('prism-react-renderer/themes/github'),
-      darkTheme: require('prism-react-renderer/themes/dracula'),
-    },
-    // metadatas: [{name: 'twitter:card', content: 'summary'}],
-    gtag: {
-      trackingID: 'UA-110573590-2',
-    },
-    algolia: {
-      apiKey: '1960250e38c7655d2bfe0ce8fdaed987',
-      indexName: 'ohif',
-      contextualSearch: true,
-    },
-    navbar: {
-      hideOnScroll: false,
-      logo: {
-        alt: 'OHIF Logo',
-        src: 'img/ohif-logo-light.svg',
-        srcDark: 'img/ohif-logo.svg',
+      prism: {
+        theme: require('prism-react-renderer/themes/github'),
+        darkTheme: require('prism-react-renderer/themes/dracula'),
       },
-      items: [
-        {
-          to: 'https://ohif.org/get-started',
-          label: 'Get Started',
-          target: '_self',
-          position: 'left',
+      algolia: {
+        appId: 'EFLT6YIHHZ',
+        apiKey: 'c220dd24fe4f86248eea3b1238a1fb60',
+        indexName: 'ohif',
+      },
+      navbar: {
+        hideOnScroll: false,
+        logo: {
+          alt: 'OHIF Logo',
+          src: 'img/ohif-logo-light.svg',
+          srcDark: 'img/ohif-logo.svg',
         },
-        {
-          to: 'https://ohif.org/examples',
-          label: 'Examples',
-          target: '_self',
-          position: 'left',
-        },
-        {
-          position: 'left',
-          to: '/',
-          activeBaseRegex: '^(/next/|/)$',
-          docId: 'Introduction',
-          label: 'Docs',
-        },
-        {
-          to: 'https://ohif.org/community',
-          label: 'Community',
-          target: '_self',
-          position: 'left',
-        },
-        {
-          to: '/help',
-          //activeBaseRegex: '(^/help$)|(/help)',
-          label: 'Help',
-          position: 'right',
-        },
-        // { to: 'https://react.ohif.org/', label: 'UI Component Library', position: 'left' },
-        // {to: 'showcase', label: 'Showcase', position: 'left'},
-        // right
-        {
-          type: 'docsVersionDropdown',
-          position: 'right',
-          dropdownActiveClassDisabled: true,
-        },
-        {
-          type: 'localeDropdown',
-          position: 'right',
-          dropdownItemsAfter: [
-            {
-              to: '/platform/internationalization',
-              label: 'Help Us Translate',
-            },
-          ],
-        },
-        {
-          to: 'https://github.com/OHIF/Viewers',
-          position: 'right',
-          className: 'header-github-link',
-          'aria-label': 'GitHub Repository',
-        },
-      ],
-    },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: ' ',
-          items: [
-            {
-              // This doesn't show up on dev for some reason, but displays in build
-              html: `
+        items: [
+          {
+            to: 'https://ohif.org/get-started',
+            label: 'Get Started',
+            target: '_self',
+            position: 'left',
+          },
+          {
+            to: 'https://ohif.org/examples',
+            label: 'Examples',
+            target: '_self',
+            position: 'left',
+          },
+          {
+            position: 'left',
+            to: '/',
+            activeBaseRegex: '^(/next/|/)$',
+            docId: 'Introduction',
+            label: 'Docs',
+          },
+          {
+            to: 'https://ohif.org/community',
+            label: 'Community',
+            target: '_self',
+            position: 'left',
+          },
+          {
+            to: '/help',
+            //activeBaseRegex: '(^/help$)|(/help)',
+            label: 'Help',
+            position: 'right',
+          },
+          {
+            type: 'docsVersionDropdown',
+            position: 'right',
+            dropdownActiveClassDisabled: true,
+            dropdownItemsAfter: [
+              {
+                type: 'html',
+                value: '<hr class="dropdown-separator">',
+              },
+              {
+                type: 'html',
+                className: 'dropdown-archived-versions',
+                value: '<b>Archived versions</b>',
+              },
+              ...ArchivedVersionsDropdownItems.map(
+                ([versionName, versionUrl]) => ({
+                  label: versionName,
+                  href: versionUrl,
+                })
+              ),
+              {
+                type: 'html',
+                value: '<hr class="dropdown-separator">',
+              },
+              {
+                to: '/versions',
+                label: 'All versions',
+              },
+            ],
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
+            dropdownItemsAfter: [
+              {
+                to: '/platform/internationalization',
+                label: 'Help Us Translate',
+              },
+            ],
+          },
+          {
+            to: 'https://github.com/OHIF/Viewers',
+            position: 'right',
+            className: 'header-github-link',
+            'aria-label': 'GitHub Repository',
+          },
+        ],
+      },
+      footer: {
+        style: 'dark',
+        links: [
+          {
+            title: ' ',
+            items: [
+              {
+                // This doesn't show up on dev for some reason, but displays in build
+                html: `
                 <a href="https://www.massgeneral.org/" target="_blank" rel="noreferrer noopener">
                   <img src="/img/mgh-logo.png" id="mgh-logo" alt="MGH" />
                 </a>
               `,
-            },
-          ],
+              },
+            ],
+          },
+          {
+            title: 'Learn',
+            items: [
+              {
+                label: 'Introduction',
+                to: '/',
+              },
+              {
+                label: 'Installation',
+                to: 'development/getting-started',
+              },
+            ],
+          },
+          {
+            title: 'Community',
+            items: [
+              {
+                label: 'Discussion board',
+                to: 'https://community.ohif.org/',
+              },
+              {
+                label: 'Help',
+                to: '/help',
+              },
+            ],
+          },
+          {
+            title: 'More',
+            items: [
+              {
+                label: 'Donate',
+                to: 'https://giving.massgeneral.org/ohif',
+              },
+              {
+                label: 'GitHub',
+                to: 'https://github.com/OHIF/Viewers',
+              },
+              {
+                label: 'Twitter',
+                to: 'https://twitter.com/OHIFviewer',
+              },
+            ],
+          },
+        ],
+        logo: {
+          alt: 'OHIF ',
+          src: 'img/netlify-color-accent.svg',
+          href: 'https://v3-demo.ohif.org/',
         },
-        {
-          title: 'Learn',
-          items: [
-            {
-              label: 'Introduction',
-              to: '/',
-            },
-            {
-              label: 'Installation',
-              to: 'development/getting-started',
-            },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'Discussion board',
-              to: 'https://community.ohif.org/',
-            },
-            {
-              label: 'Help',
-              to: '/help',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Donate',
-              to: 'https://giving.massgeneral.org/ohif',
-            },
-            {
-              label: 'GitHub',
-              to: 'https://github.com/OHIF/Viewers',
-            },
-            {
-              label: 'Twitter',
-              to: 'https://twitter.com/OHIFviewer',
-            },
-          ],
-        },
-      ],
-      logo: {
-        alt: 'OHIF ',
-        src: 'img/netlify-color-accent.svg',
-        href: 'https://v3-demo.ohif.org/',
+        copyright: `OHIF is open source software released under the MIT license.`,
       },
-      copyright: `OHIF is open source software released under the MIT license.`,
-    },
-  },
-});
+    }),
+};

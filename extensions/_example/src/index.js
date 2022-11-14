@@ -5,7 +5,7 @@ import { IWebApiDataSource } from '@ohif/core';
  *
  */
 export default {
-  id: 'org.ohif.*',
+  id: '@ohif/extension-*',
 
   /**
    * LIFECYCLE HOOKS

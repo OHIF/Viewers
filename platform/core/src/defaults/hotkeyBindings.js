@@ -3,21 +3,52 @@ import windowLevelPresets from './windowLevelPresets';
 /*
  * Supported Keys: https://craig.is/killing/mice
  */
-export default [
-  { commandName: 'setToolActive', commandOptions: { toolName: 'Zoom' }, label: 'Zoom', keys: ['z'], isEditable: true },
-  { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'], isEditable: true },
-  { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'], isEditable: true },
-  { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='], isEditable: true },
-  { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'], isEditable: true },
-  { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'], isEditable: true },
+const bindings = [
   {
-    commandName: 'flipViewportVertical',
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Zoom' },
+    label: 'Zoom',
+    keys: ['z'],
+    isEditable: true,
+  },
+  {
+    commandName: 'scaleUpViewport',
+    label: 'Zoom In',
+    keys: ['+'],
+    isEditable: true,
+  },
+  {
+    commandName: 'scaleDownViewport',
+    label: 'Zoom Out',
+    keys: ['-'],
+    isEditable: true,
+  },
+  {
+    commandName: 'fitViewportToWindow',
+    label: 'Zoom to Fit',
+    keys: ['='],
+    isEditable: true,
+  },
+  {
+    commandName: 'rotateViewportCW',
+    label: 'Rotate Right',
+    keys: ['r'],
+    isEditable: true,
+  },
+  {
+    commandName: 'rotateViewportCCW',
+    label: 'Rotate Left',
+    keys: ['l'],
+    isEditable: true,
+  },
+  {
+    commandName: 'flipViewportHorizontal',
     label: 'Flip Horizontally',
     keys: ['h'],
     isEditable: true,
   },
   {
-    commandName: 'flipViewportHorizontal',
+    commandName: 'flipViewportVertical',
     label: 'Flip Vertically',
     keys: ['v'],
     isEditable: true,
@@ -45,23 +76,48 @@ export default [
     keys: ['left'],
     isEditable: true,
   },
+  // {
+  //   commandName: 'nextViewportDisplaySet',
+  //   label: 'Next Series',
+  //   keys: ['pageup'],
+  //   isEditable: true,
+  // },
+  // {
+  //   commandName: 'previousViewportDisplaySet',
+  //   label: 'Previous Series',
+  //   keys: ['pagedown'],
+  //   isEditable: true,
+  // },
   {
-    commandName: 'nextViewportDisplaySet',
-    label: 'Next Series',
-    keys: ['pageup'],
+    commandName: 'nextImage',
+    label: 'Next Image',
+    keys: ['down'],
     isEditable: true,
   },
   {
-    commandName: 'previousViewportDisplaySet',
-    label: 'Previous Series',
-    keys: ['pagedown'],
+    commandName: 'previousImage',
+    label: 'Previous Image',
+    keys: ['up'],
     isEditable: true,
   },
-  { commandName: 'nextImage', label: 'Next Image', keys: ['down'], isEditable: true },
-  { commandName: 'previousImage', label: 'Previous Image', keys: ['up'], isEditable: true },
-  { commandName: 'firstImage', label: 'First Image', keys: ['home'], isEditable: true },
-  { commandName: 'lastImage', label: 'Last Image', keys: ['end'], isEditable: true },
-  { commandName: 'resetViewport', label: 'Reset', keys: ['space'], isEditable: true },
+  {
+    commandName: 'firstImage',
+    label: 'First Image',
+    keys: ['home'],
+    isEditable: true,
+  },
+  {
+    commandName: 'lastImage',
+    label: 'Last Image',
+    keys: ['end'],
+    isEditable: true,
+  },
+  {
+    commandName: 'resetViewport',
+    label: 'Reset',
+    keys: ['space'],
+    isEditable: true,
+  },
   {
     commandName: 'cancelMeasurement',
     label: 'Cancel Cornerstone Measurement',
@@ -122,3 +178,5 @@ export default [
     keys: ['9'],
   },
 ];
+
+export default bindings;

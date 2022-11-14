@@ -1,11 +1,5 @@
 module.exports = {
-  prefix: '',
-  important: false,
-  separator: ':',
-  purge: {
-    content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
-    safelist: [],
-  },
+  content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
   theme: {
     screens: {
       sm: '640px',

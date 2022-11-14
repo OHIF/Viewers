@@ -42,31 +42,37 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mousedown', 'center', { buttons: 1 })
+      .trigger('mousemove', 'top', { buttons: 1 })
       .trigger('mouseup');
     const expectedText =
       'Ser: 1Img: 1 1/26256 x 256Loc: -30.00 mm Thick: 5.00 mm';
     cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });*/
 
-  it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
-    //Click on button and verify if icon is active on toolbar
-    cy.get('@zoomBtn')
-      .click()
-      .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
-      });
+  // it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
+  //   //Click on button and verify if icon is active on toolbar
+  //   cy.get('@zoomBtn')
+  //     .click()
+  //     .then($zoomBtn => {
+  //       cy.wrap($zoomBtn).should('have.class', 'active');
+  //     });
 
-    //drags the mouse inside the viewport to be able to interact with series
-    cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mouseup');
+  //   // IMPORTANT: Cypress sends out a mouseEvent which doesn't have the buttons
+  //   // property. This is a workaround to simulate a mouseEvent with the buttons property
+  //   // which is consumed by cornerstone
+  //   cy.get('@viewport')
+  //     .trigger('mousedown', 'center', { buttons: 1 })
+  //     .trigger('mousemove', 'top', {
+  //       buttons: 1,
+  //     })
+  //     .trigger('mouseup', {
+  //       buttons: 1,
+  //     });
 
-    const expectedText = 'Zoom:0.45x';
-    cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
-  });
+  //   const expectedText = 'Zoom:0.96x';
+  //   cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
+  // });
 
   it('checks if Levels tool will change the window width and center of an image', () => {
     //Click on button and verify if icon is active on toolbar
@@ -78,14 +84,14 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mouseup')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'left', { which: 1 })
-      .trigger('mouseup');
+      .click({ force: true })
+      .trigger('mousedown', 'center', { buttons: 1 })
+      // Since we have scrollbar on the right side of the viewport, we need to
+      // force the mousemove since it goes to another element
+      .trigger('mousemove', 'right', { buttons: 1, force: true })
+      .trigger('mouseup', { buttons: 1 });
 
-    const expectedText = 'W:731L:226';
+    const expectedText = 'W:1930L:479';
     cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
   });
 
@@ -98,8 +104,8 @@ describe('OHIF Cornerstone Toolbar', () => {
       });
 
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'bottom', { which: 1 })
+      .trigger('mousedown', 'center', { buttons: 1 })
+      .trigger('mousemove', 'bottom', { buttons: 1 })
       .trigger('mouseup', 'bottom');
   });
 
@@ -222,6 +228,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       });
   });*/
 
+  /**
   it('checks if More button will prompt a modal with secondary tools', () => {
     //Click on More button
     cy.get('@moreBtnSecondary').click();
@@ -244,6 +251,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // Verify if overlay is hidden
     cy.get('@toolbarOverlay').should('not.be.visible');
   });
+   */
 
   /*it('checks if Layout tool will multiply the number of viewports displayed', () => {
     //Click on Layout button and verify if overlay is displayed

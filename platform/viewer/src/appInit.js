@@ -12,18 +12,18 @@ import {
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,
+  SegmentationService,
   CineService,
   UserAuthenticationService,
-  errorHandler
+  errorHandler,
   // utils,
 } from '@ohif/core';
-import ConfigPoint from 'config-point';
 
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
-function appInit(appConfigOrFunc, defaultExtensions) {
+async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
       ? appConfigOrFunc({ servicesManager })
@@ -32,12 +32,6 @@ function appInit(appConfigOrFunc, defaultExtensions) {
 
   const commandsManagerConfig = {
     getAppState: () => {},
-    /** Used by commands to determine active context */
-    getActiveContexts: () => [
-      'VIEWER',
-      'DEFAULT',
-      'ACTIVE_VIEWPORT::CORNERSTONE',
-    ],
   };
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -50,10 +44,6 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     appConfig,
   });
 
-  // Load the default theme settings
-  const defaultTheme = config && config.defaultTheme || 'theme';
-  ConfigPoint.load(defaultTheme, '/theme', 'theme');
-
   servicesManager.registerServices([
     UINotificationService,
     UIModalService,
@@ -64,6 +54,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     ToolBarService,
     ViewportGridService,
     HangingProtocolService,
+    SegmentationService,
     CineService,
     UserAuthenticationService,
   ]);
@@ -78,7 +69,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  extensionManager.registerExtensions(
+  await extensionManager.registerExtensions(
     [...defaultExtensions, ...appConfig.extensions],
     appConfig.dataSources
   );
@@ -91,10 +82,18 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     throw new Error('No modes are defined! Check your app-config.js');
   }
 
-  // TODO: Remove this
-  if (!appConfig.modes.length) {
-    appConfig.modes.push(window.longitudinalMode);
-    // appConfig.modes.push(window.segmentationMode);
+  for (let i = 0; i < defaultModes.length; i++) {
+    const { modeFactory, id } = defaultModes[i];
+
+    // If the appConfig contains configuration for this mode, use it.
+    const modeConfig =
+      appConfig.modeConfig && appConfig.modeConfig[i]
+        ? appConfig.modeConfig[id]
+        : {};
+
+    const mode = modeFactory(modeConfig);
+
+    appConfig.modes.push(mode);
   }
 
   return {

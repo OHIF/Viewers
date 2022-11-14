@@ -125,7 +125,6 @@ describe('OHIF Study Viewer Page', function() {
   });
    */
 
-
   /*it('checks if measurement item can be deleted through the context menu on the viewport', function() {
     cy.addLengthMeasurement([100, 100], [200, 100]); //Adding measurement in the viewport
 
@@ -267,33 +266,32 @@ describe('OHIF Study Viewer Page', function() {
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
   });
 
-  it('performs right click to zoom', function() {
-    // This is not used to activate the tool, it is used to ensure the
-    // top left viewport info shows the zoom values (it only shows up
-    // when the zoom tool is active)
-    cy.get('@zoomBtn')
-      .click()
-      .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
-      });
+  // it('performs right click to zoom', function() {
+  //   // This is not used to activate the tool, it is used to ensure the
+  //   // top left viewport info shows the zoom values (it only shows up
+  //   // when the zoom tool is active)
+  //   cy.get('@zoomBtn')
+  //     .click()
+  //     .then($zoomBtn => {
+  //       cy.wrap($zoomBtn).should('have.class', 'active');
+  //     });
 
-    //Right click on viewport
-    cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 3 })
-      .trigger('mousemove', 'center', { which: 3 })
-      .trigger('mouseup');
+  //   //Right click on viewport
+  //   cy.get('@viewport')
+  //     .trigger('mousedown', 'top', { buttons: 2 })
+  //     .trigger('mousemove', 'center', { buttons: 2 })
+  //     .trigger('mouseup');
 
+  //   const expectedText = 'Zoom:6.65x';
+  //   cy.get('@viewportInfoTopLeft').should('contains.text', expectedText);
+  // });
 
-    const expectedText = 'Zoom:3.98x';
-    cy.get('@viewportInfoTopLeft').should('contains.text', expectedText);
-  });
-
-  it('performs middle click to pan', function() {
+  /*it('performs middle click to pan', function() {
     //Get image position from cornerstone and check if y axis was modified
     let cornerstone;
     let currentPan;
 
-    // TO DO: Replace the cornerstone pan check by Percy snapshop comparison
+    // TO DO: Replace the cornerstone pan check by Percy snapshot comparison
     cy.window()
       .its('cornerstone')
       .then(c => {
@@ -304,13 +302,13 @@ describe('OHIF Study Viewer Page', function() {
 
     //pan image with middle click
     cy.get('@viewport')
-      .trigger('mousedown', 'center', { which: 2 })
-      .trigger('mousemove', 'bottom', { which: 2 })
+      .trigger('mousedown', 'center', { buttons: 3 })
+      .trigger('mousemove', 'bottom', { buttons: 3 })
       .trigger('mouseup', 'bottom')
       .then(() => {
         expect(currentPan().y > 0).to.eq(true);
       });
-  });
+  });*/
 
   /*it('opens About modal and verify the displayed information', function() {
     cy.get('[data-cy="options-dropdown"]')

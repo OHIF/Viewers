@@ -4,11 +4,13 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
   // filterQueryParam: false,
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',

@@ -40,16 +40,16 @@ Practical examples of extensions include:
 
 ## Extension Skeleton
 
-An extension is a plain JavaScript object that has an `id` property, and one or
+An extension is a plain JavaScript object that has `id` and `version` properties, and one or
 more [modules](#modules) and/or [lifecycle hooks](#lifecycle-hooks).
 
 ```js
 // prettier-ignore
 export default {
   /**
-   * Only required property. Should be a unique value across all extensions.
+   * Required properties. Should be a unique value across all extensions.
    */
-  id: 'example-extension',
+  id,
 
   // Lifecyle
   preRegistration() { /* */ },
@@ -65,6 +65,7 @@ export default {
   getContextModule() { /* */ },
   getToolbarModule() { /* */ },
   getHangingProtocolModule() { /* */ },
+  getUtilityModule() { /* */ },
 }
 ```
 
@@ -86,7 +87,7 @@ the top level [`extensions/`][ext-source] directory.
         <tr>
             <td>
                 <a href="">
-                    Default
+                    default
                 </a>
             </td>
             <td>
@@ -97,18 +98,18 @@ the top level [`extensions/`][ext-source] directory.
         </tr>
         <tr>
             <td>
-                <a href="https://www.npmjs.com/package/@ohif/extension-cornerstone">
-                    Cornerstone
+                <a href="">
+                    cornerstone
                 </a>
             </td>
             <td>
-                Provides rendering functionalities for 2D images.
+                Provides 2d and 3d rendering functionalities
             </td>
-            <td>ViewportModule, CommandsModule</td>
+            <td>ViewportModule, CommandsModule, UtilityModule</td>
         </tr>
         <tr>
             <td>
-                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-pdf">DICOM PDF</a>
+                <a href="">dicom-pdf</a>
             </td>
             <td>
                 Renders PDFs for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-pdf/src/OHIFDicomPDFSopClassHandler.js#L4-L6">specific SopClassUID</a>.
@@ -117,7 +118,16 @@ the top level [`extensions/`][ext-source] directory.
         </tr>
         <tr>
             <td>
-                <a href="">DICOM SR</a>
+                <a href="">dicom-video</a>
+            </td>
+            <td>
+                Renders DICOM Video files.
+            </td>
+            <td>Viewport, SopClassHandler</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="">cornerstone-dicom-sr</a>
             </td>
             <td>
                 Maintained extensions for cornerstone and visualization of DICOM Structured Reports
@@ -126,7 +136,7 @@ the top level [`extensions/`][ext-source] directory.
         </tr>
         <tr>
             <td>
-                <a href="">Measurement tracking</a>
+                <a href="">measurement-tracking</a>
             </td>
             <td>
                 Tracking measurements in the measurement panel
@@ -136,84 +146,46 @@ the top level [`extensions/`][ext-source] directory.
     </tbody>
 </table>
 
-## Registering an Extension
+## Registering of Extensions
 
-Extensions are building blocks that need to be registered. There are two
-different ways to register and configure extensions: At
-[runtime](#registering-at-runtime) and at
-[build time](#registering-at-build-time). You can leverage one or both
-strategies. Which one(s) you choose depends on your application's requirements.
+`viewer` starts by registering all the extensions specified inside the
+`pluginConfig.json`, by default we register all extensions in the repo.
 
-Each [module](#modules) defined by the extension becomes available to the modes
+
+```js title=platform/viewer/pluginConfig.json
+// Simplified version of the `pluginConfig.json` file
+{
+  "extensions": [
+    {
+      "packageName": "@ohif/extension-cornerstone",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-measurement-tracking",
+      "version": "3.0.0"
+    },
+    // ...
+  ],
+  "modes": [
+    {
+      "packageName": "@ohif/mode-longitudinal",
+      "version": "0.0.1"
+    }
+  ]
+}
+```
+
+:::note Important
+You SHOULD NOT directly register extensions in the `pluginConfig.json` file.
+Use the provided `cli` to add/remove/install/uninstall extensions. Read more [here](../../development/ohif-cli.md)
+:::
+
+The final registration and import of the extensions happen inside a non-tracked file `pluginImport.js` (this file is also for internal use only).
+
+After an extension gets registered withing the `viewer`,
+each [module](#modules) defined by the extension becomes available to the modes
 via the `ExtensionManager` by requesting it via its id.
 [Read more about Extension Manager](#extension-manager)
-
-### Registering at Runtime
-
-The `@ohif/viewer` uses a [configuration file](../../configuration/index.md) at
-startup. The schema for that file includes an `extensions` key that supports an
-array of extensions to register.
-
-```js
-import MyFirstExtension from '@ohif/extension-first';
-import MySecondExtension from '@ohif/extension-second';
-
-const extensionConfig = {
-  /* extension configuration */
-};
-
-const config = {
-  routerBasename: '/',
-  extensions: [MyFirstExtension, [MySecondExtension, extensionConfig]],
-  modes: [
-    /* modes */
-  ],
-  showStudyList: true,
-  dataSources: [
-    /* data source config */
-  ],
-};
-```
-
-Then, behind the scene, the runtime-added extensions will get merged with the
-default app extensions (note: default app extensions include:
-`OHIFDefaultExtension`, `OHIFCornerstoneExtension`, `OHIFDICOMSRExtension`,
-`OHIFMeasurementTrackingExtension`)
-
-### Registering at Build Time
-
-The `@ohif/viewer` works best when built as a "Progressive Web Application"
-(PWA). If you know the extensions your application will need, you can specify
-them at "build time" to leverage advantages afforded to us by modern tooling:
-
-- Code Splitting (dynamic imports)
-- Tree Shaking
-- Dependency deduplication
-
-You can update the list of bundled extensions by:
-
-1. Having your `@ohif/viewer` project depend on the extension
-2. Importing and adding it to the list of extensions in the entrypoint:
-
-```js title="<repo-root>/platform/src/index.js"
-import OHIFDefaultExtension from '@ohif/extension-default';
-import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-import OHIFMeasurementTrackingExtension from '@ohif/extension-measurement-tracking';
-import OHIFDICOMSRExtension from '@ohif/extension-dicom-sr';
-import MyFirstExtension from '@ohif/extension-first';
-
-/** Combine our appConfiguration and "baked-in" extensions */
-const appProps = {
-  config: window ? window.config : {},
-  defaultExtensions: [
-    OHIFDefaultExtension,
-    OHIFCornerstoneExtension,
-    OHIFMeasurementTrackingExtension,
-    OHIFDICOMSRExtension,
-    MyFirstExtension,
-  ],
-};
-```
 
 ## Lifecycle Hooks
 
@@ -327,6 +299,14 @@ differently.
         </a>
       </td>
       <td align="left">Adds hanging protocol rules</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/hpModule">
+          Utility
+        </a>
+      </td>
+      <td align="left">Expose utility functions to the outside of extensions</td>
     </tr>
   </tbody>
 </table>

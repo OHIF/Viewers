@@ -26,7 +26,7 @@ const findInstance = (instance, displaySets) => {
     if (findInSet(instance, displayset.others)) return true;
   }
   return false;
-}
+};
 
 export default class DisplaySetService {
   constructor() {
@@ -75,7 +75,11 @@ export default class DisplaySetService {
     );
   };
 
-  getDisplaySetForSOPInstanceUID(SOPInstanceUID, SeriesInstanceUID) {
+  getDisplaySetForSOPInstanceUID(
+    SOPInstanceUID,
+    SeriesInstanceUID,
+    frameNumber
+  ) {
     const displaySets = SeriesInstanceUID
       ? this.getDisplaySetsForSeries(SeriesInstanceUID)
       : this.getDisplaySetCache();
@@ -87,6 +91,20 @@ export default class DisplaySetService {
     });
 
     return displaySet;
+  }
+
+  setDisplaySetMetadataInvalidated(displaySetInstanceUID) {
+    const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
+
+    if (!displaySet) {
+      return;
+    }
+
+    // broadcast event to update listeners with the new displaySets
+    this._broadcastEvent(
+      EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      displaySetInstanceUID
+    );
   }
 
   deleteDisplaySet(displaySetInstanceUID) {
@@ -164,7 +182,7 @@ export default class DisplaySetService {
     }
 
     // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
-    // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent uneccessary broadcasts?
+    // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent unnecessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
@@ -213,10 +231,14 @@ export default class DisplaySetService {
           this._addDisplaySetsToCache(displaySets);
           this._addActiveDisplaySets(displaySets);
 
-          instances = instances.filter(instance => !findInstance(instance, displaySets))
+          instances = instances.filter(
+            instance => !findInstance(instance, displaySets)
+          );
         }
 
-        allDisplaySets = allDisplaySets ? [...allDisplaySets, ...displaySets] : displaySets;
+        allDisplaySets = allDisplaySets
+          ? [...allDisplaySets, ...displaySets]
+          : displaySets;
 
         if (!instances.length) return allDisplaySets;
       }

@@ -89,7 +89,7 @@ Cypress.Commands.add('openStudyModality', Modality => {
 /**
  * Command to wait and check if a new page was loaded
  *
- * @param {string} url - part of the expected url. Default value is /viewer/
+ * @param {string} url - part of the expected url. Default value is /viewer
  */
 Cypress.Commands.add('isPageLoaded', (url = '/viewer') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
@@ -139,9 +139,11 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
 
     // TODO: Added a wait which appears necessary in Cornerstone Tools >4?
     cy.wrap($viewport)
-      .click(x1, y1).wait(100)
+      .click(x1, y1)
+      .wait(100)
       .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2).wait(100);
+      .click(x2, y2)
+      .wait(100);
   });
 });
 
@@ -173,9 +175,11 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should($itemList => {
-    expect($itemList.length >= seriesToWait).to.be.true;
-  });
+  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should(
+    $itemList => {
+      expect($itemList.length >= seriesToWait).to.be.true;
+    }
+  );
 });
 
 //Command to wait DICOM image to load into the viewport
@@ -190,9 +194,12 @@ Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
           const onEvent = renderedEvt => {
             const element = renderedEvt.detail.element;
 
-            element.removeEventListener('cornerstoneimagerendered', onEvent);
-            $cornerstone.events.removeEventListener(
-              'cornerstoneimagerendered',
+            element.removeEventListener(
+              $cornerstone.Enums.Events.IMAGE_RENDERED,
+              onEvent
+            );
+            $cornerstone.eventTarget.removeEventListener(
+              $cornerstone.Enums.Events.IMAGE_RENDERED,
               onEvent
             );
             resolve();
@@ -200,16 +207,24 @@ Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
           const onEnabled = enabledEvt => {
             const element = enabledEvt.detail.element;
 
-            element.addEventListener('cornerstoneimagerendered', onEvent);
+            element.addEventListener(
+              $cornerstone.Enums.Events.IMAGE_RENDERED,
+              onEvent
+            );
+
+            $cornerstone.eventTarget.removeEventListener(
+              $cornerstone.Enums.Events.ELEMENT_ENABLED,
+              onEnabled
+            );
           };
           const enabledElements = $cornerstone.getEnabledElements();
-          if (enabledElements && enabledElements.length && !enabledElements[0].invalid) {
+          if (enabledElements && enabledElements.length) {
             // Sometimes the page finishes rendering before this gets run,
             // if so, just resolve immediately.
             resolve();
           } else {
-            $cornerstone.events.addEventListener(
-              'cornerstoneelementenabled',
+            $cornerstone.eventTarget.addEventListener(
+              $cornerstone.Enums.Events.ELEMENT_ENABLED,
               onEnabled
             );
           }
@@ -224,8 +239,7 @@ Cypress.Commands.add('resetViewport', () => {
   cy.get('[data-cy="MoreTools-split-button-primary"]')
     .should('have.attr', 'data-tool', 'Reset')
     .as('moreBtn')
-    .click()
-  ;
+    .click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -234,8 +248,8 @@ Cypress.Commands.add('imageZoomIn', () => {
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
-    .trigger('mousedown', 'top', { which: 1 })
-    .trigger('mousemove', 'center', { which: 1 })
+    .trigger('mousedown', 'top', { buttons: 1 })
+    .trigger('mousemove', 'center', { buttons: 1 })
     .trigger('mouseup');
 });
 
@@ -245,8 +259,8 @@ Cypress.Commands.add('imageContrast', () => {
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
-    .trigger('mousedown', 'center', { which: 1 })
-    .trigger('mousemove', 'top', { which: 1 })
+    .trigger('mousedown', 'center', { buttons: 1 })
+    .trigger('mousemove', 'top', { buttons: 1 })
     .trigger('mouseup');
 });
 
@@ -509,13 +523,12 @@ Cypress.Commands.add(
   (function_label, shortcut) => {
     // Within scopes all `.get` and `.contains` to within the matched elements
     // dom instead of checking from document
-    cy.get('.HotkeysPreferences')
-      .within(() => {
-        cy.contains(function_label) // label we're looking for
-          .parent()
-          .find('input') // closest input to that label
-          .type(shortcut, { force: true }); // Set new shortcut for that function
-      });
+    cy.get('.HotkeysPreferences').within(() => {
+      cy.contains(function_label) // label we're looking for
+        .parent()
+        .find('input') // closest input to that label
+        .type(shortcut, { force: true }); // Set new shortcut for that function
+    });
   }
 );
 

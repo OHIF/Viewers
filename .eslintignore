@@ -1,0 +1,4 @@
+config/**
+docs/**
+img/**
+node_modules

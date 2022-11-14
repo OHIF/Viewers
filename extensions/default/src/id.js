@@ -1,3 +1,5 @@
-const id = 'org.ohif.default';
+import packageJson from '../package.json';
 
-export default id;
+const id = packageJson.name;
+
+export { id };

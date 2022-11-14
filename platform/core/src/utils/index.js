@@ -1,11 +1,9 @@
 import ObjectPath from './objectPath';
-import StackManager from './StackManager.js';
 import absoluteUrl from './absoluteUrl';
 import guid from './guid';
 import sortBy from './sortBy.js';
 import sortBySeriesDate from './sortBySeriesDate.js';
 import writeScript from './writeScript.js';
-import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
 //import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import urlUtil from './urlUtil';
@@ -20,9 +18,15 @@ import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
 import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
+import { isImage } from './isImage';
+import isDisplaySetReconstructable from './isDisplaySetReconstructable';
+import imageIdToURI from './imageIdToURI';
+import debounce from './debounce';
+import roundNumber from './roundNumber';
+import downloadCSVReport from './downloadCSVReport';
 
 // Commented out unused functionality.
-// Need to implement new mechanism for dervived displaySets using the displaySetManager.
+// Need to implement new mechanism for derived displaySets using the displaySetManager.
 
 const utils = {
   guid,
@@ -34,9 +38,8 @@ const utils = {
   formatDate,
   formatPN,
   b64toBlob,
-  StackManager,
-  DicomLoaderService,
   urlUtil,
+  imageIdToURI,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
@@ -47,6 +50,11 @@ const utils = {
   hierarchicalListUtils,
   progressTrackingUtils,
   isLowPriorityModality,
+  isImage,
+  isDisplaySetReconstructable,
+  debounce,
+  roundNumber,
+  downloadCSVReport,
 };
 
 export {
@@ -57,8 +65,6 @@ export {
   formatDate,
   writeScript,
   b64toBlob,
-  StackManager,
-  DicomLoaderService,
   urlUtil,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
@@ -70,6 +76,12 @@ export {
   hierarchicalListUtils,
   progressTrackingUtils,
   isLowPriorityModality,
+  isImage,
+  isDisplaySetReconstructable,
+  imageIdToURI,
+  debounce,
+  roundNumber,
+  downloadCSVReport,
 };
 
 export default utils;

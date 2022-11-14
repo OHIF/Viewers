@@ -1,23 +1,25 @@
 {
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "eslint-plugin-tsdoc",
+    "prettier"
+  ],
   "extends": [
     "react-app",
     "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "env": {
     "jest": true
   },
   "settings": {
     "react": {
       "version": "detect"
-
-  },
-  "rules": {
-    "react/jsx-props-no-spreading": "error",
-    "react-hooks/exhaustive-deps": "false",
-    "import/no-unused-modules": [1, {"unusedExports": true}]
+    }
   },
   "globals": {
     "cy": true,

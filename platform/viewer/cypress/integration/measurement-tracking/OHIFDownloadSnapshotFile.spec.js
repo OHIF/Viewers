@@ -10,10 +10,11 @@ describe('OHIF Download Snapshot File', () => {
     cy.openDownloadImageModal();
   });
 
-  /*afterEach(() => {
+  /**
+  afterEach(() => {
     // Close modal
 
-    // TODO: Modal.jsx currently uses Icon instead of IconButton, so
+    // TODO: Modal.tsx currently uses Icon instead of IconButton, so
     // it's not as easy to give it the cypress data attribute.
     // We should fix that first
     cy.get('[data-cy="close-button"]')
@@ -21,7 +22,7 @@ describe('OHIF Download Snapshot File', () => {
       .click();
   });*/
 
-  it('checks displayed information for Desktop experience', function() {
+  /*it('checks displayed information for Desktop experience', function() {
     // Set Desktop resolution
     cy.viewport(1750, 720);
     // Visual comparison
@@ -29,26 +30,25 @@ describe('OHIF Download Snapshot File', () => {
     //Check if all elements are displayed
 
     // TODO: need to add this attribute to the modal
-    /*cy.get('[data-cy=modal-header]')
+    cy.get('[data-cy=modal-header]')
       .as('downloadImageModal')
-      .should('contain.text', 'Download High Quality Image');*/
+      .should('contain.text', 'Download High Quality Image');
 
     // Check input fields
     // TODO: select2
-    /*cy.get('[data-cy="file-type"]')
+    cy.get('[data-cy="file-type"]')
       .select('png')
       .should('have.value', 'png')
       .select('jpg')
-      .should('have.value', 'jpg');*/
+      .should('have.value', 'jpg');
 
     // Check image preview
     cy.get('[data-cy="image-preview"]').should('contain.text', 'Image preview');
 
-
-    /* TODO: This is a canvas now, not an img with src
+    TODO: This is a canvas now, not an img with src
     cy.get('[data-cy="viewport-preview-img"]')
       .should('have.attr', 'src')
-      .and('include', 'data:image');*/
+      .and('include', 'data:image');
 
     // Check buttons
     cy.get('[data-cy="cancel-btn"]')
@@ -58,6 +58,7 @@ describe('OHIF Download Snapshot File', () => {
       .scrollIntoView()
       .should('be.visible');
   });
+  */
 
   /*it('cancel changes on download modal', function() {
     //Change Image Width, Filename and File Type

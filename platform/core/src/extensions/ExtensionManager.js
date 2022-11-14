@@ -43,12 +43,10 @@ export default class ExtensionManager {
     const {
       MeasurementService,
       ViewportGridService,
-      HangingProtocolService,
     } = _servicesManager.services;
 
     MeasurementService.clearMeasurements();
     ViewportGridService.reset();
-    HangingProtocolService.reset();
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
@@ -74,12 +72,10 @@ export default class ExtensionManager {
     const {
       MeasurementService,
       ViewportGridService,
-      HangingProtocolService,
     } = _servicesManager.services;
 
     MeasurementService.clearMeasurements();
     ViewportGridService.reset();
-    HangingProtocolService.reset();
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
@@ -99,17 +95,28 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions = (extensions, dataSources = []) => {
-    extensions.forEach(extension => {
+  registerExtensions = async (extensions, dataSources = []) => {
+    // Todo: we ideally should be able to run registrations in parallel
+    // but currently since some extensions need to be registered before
+    // others, we need to run them sequentially. We need a postInit hook
+    // to avoid this sequential async registration
+    for (const extension of extensions) {
       const hasConfiguration = Array.isArray(extension);
-
-      if (hasConfiguration) {
-        const [ohifExtension, configuration] = extension;
-        this.registerExtension(ohifExtension, configuration, dataSources);
-      } else {
-        this.registerExtension(extension, {}, dataSources);
+      try {
+        if (hasConfiguration) {
+          const [ohifExtension, configuration] = extension;
+          await this.registerExtension(
+            ohifExtension,
+            configuration,
+            dataSources
+          );
+        } else {
+          await this.registerExtension(extension, {}, dataSources);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    });
+    }
   };
 
   /**
@@ -118,7 +125,11 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {Object} configuration
    */
-  registerExtension = (extension, configuration = {}, dataSources = []) => {
+  registerExtension = async (
+    extension,
+    configuration = {},
+    dataSources = []
+  ) => {
     if (!extension) {
       throw new Error('Attempting to register a null/undefined extension.');
     }
@@ -140,10 +151,11 @@ export default class ExtensionManager {
 
     // preRegistrationHook
     if (extension.preRegistration) {
-      extension.preRegistration({
+      await extension.preRegistration({
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
         hotkeysManager: this._hotkeysManager,
+        extensionManager: this,
         appConfig: this._appConfig,
         configuration,
       });
@@ -180,13 +192,15 @@ export default class ExtensionManager {
               dataSources
             );
             break;
+          case MODULE_TYPES.HANGING_PROTOCOL:
+            this._initHangingProtocolsModule(extensionModule, extensionId);
           case MODULE_TYPES.TOOLBAR:
           case MODULE_TYPES.VIEWPORT:
           case MODULE_TYPES.PANEL:
           case MODULE_TYPES.SOP_CLASS_HANDLER:
           case MODULE_TYPES.CONTEXT:
           case MODULE_TYPES.LAYOUT_TEMPLATE:
-          case MODULE_TYPES.HANGING_PROTOCOL:
+          case MODULE_TYPES.UTILITY:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
             extensionModule.forEach(element => {
@@ -270,6 +284,16 @@ export default class ExtensionManager {
     }
   };
 
+  _initHangingProtocolsModule = (extensionModule, extensionId) => {
+    const { HangingProtocolService } = this._servicesManager.services;
+    extensionModule.forEach(({ id, protocol }) => {
+      if (protocol) {
+        // Only auto-register if protocol specified, otherwise let mode register
+        HangingProtocolService.addProtocol(id, protocol);
+      }
+    });
+  };
+
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
     const { UserAuthenticationService } = this._servicesManager.services;
 
@@ -295,14 +319,6 @@ export default class ExtensionManager {
     extensionModule.forEach(element => {
       this.modulesMap[
         `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
-      ] = element;
-    });
-  }
-
-  _initHangingProtocolModule(extensionModule, extensionId) {
-    extensionModule.forEach(element => {
-      this.modulesMap[
-        `${extensionId}.${MODULE_TYPES.HANGING_PROTOCOL}.${element.name}`
       ] = element;
     });
   }
@@ -349,5 +365,5 @@ export default class ExtensionManager {
  * @param {string} lower
  */
 function _capitalizeFirstCharacter(lower) {
-  return lower.charAt(0).toUpperCase() + lower.substr(1);
+  return lower.charAt(0).toUpperCase() + lower.substring(1);
 }

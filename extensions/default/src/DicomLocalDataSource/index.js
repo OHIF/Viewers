@@ -25,7 +25,7 @@ function createDicomLocalApi(dicomLocalConfig) {
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
+      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
 
       const StudyInstanceUIDs =
         queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
@@ -127,6 +127,8 @@ function createDicomLocalApi(dicomLocalConfig) {
                 SeriesInstanceUID,
                 SOPInstanceUID,
               } = instance;
+
+              instance.imageId = imageId;
 
               // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
               metadataProvider.addImageIdToUIDs(imageId, {

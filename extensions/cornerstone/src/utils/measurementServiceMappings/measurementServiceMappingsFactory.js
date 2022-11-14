@@ -1,11 +1,12 @@
 import Length from './Length';
 import Bidirectional from './Bidirectional';
+import EllipticalROI from './EllipticalROI';
 import ArrowAnnotate from './ArrowAnnotate';
-import EllipticalRoi from './EllipticalRoi';
 
 const measurementServiceMappingsFactory = (
   MeasurementService,
-  DisplaySetService
+  DisplaySetService,
+  CornerstoneViewportService
 ) => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
@@ -19,16 +20,18 @@ const measurementServiceMappingsFactory = (
     const {
       POLYLINE,
       ELLIPSE,
-      POINT,
+      RECTANGLE,
       BIDIRECTIONAL,
+      POINT,
     } = MeasurementService.VALUE_TYPES;
 
-    // TODO -> I get why this was attemped, but its not nearly flexible enough.
+    // TODO -> I get why this was attempted, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.
     // You can't define a bidirectional tool as a single type..
     const TOOL_TYPE_TO_VALUE_TYPE = {
       Length: POLYLINE,
-      EllipticalRoi: ELLIPSE,
+      EllipticalROI: ELLIPSE,
+      RectangleROI: RECTANGLE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
     };
@@ -43,6 +46,7 @@ const measurementServiceMappingsFactory = (
         Length.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
+          CornerstoneViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
@@ -58,6 +62,7 @@ const measurementServiceMappingsFactory = (
         Bidirectional.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
+          CornerstoneViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
@@ -73,32 +78,34 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+    EllipticalROI: {
+      toAnnotation: EllipticalROI.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        EllipticalROI.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          CornerstoneViewportService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.ELLIPSE,
+        },
+      ],
+    },
     ArrowAnnotate: {
       toAnnotation: ArrowAnnotate.toAnnotation,
       toMeasurement: csToolsAnnotation =>
         ArrowAnnotate.toMeasurement(
           csToolsAnnotation,
           DisplaySetService,
+          CornerstoneViewportService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
         {
           valueType: MeasurementService.VALUE_TYPES.POINT,
           points: 1,
-        },
-      ],
-    },
-    EllipticalRoi: {
-      toAnnotation: EllipticalRoi.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
-        EllipticalRoi.toMeasurement(
-          csToolsAnnotation,
-          DisplaySetService,
-          _getValueTypeFromToolType
-        ),
-      matchingCriteria: [
-        {
-          valueType: MeasurementService.VALUE_TYPES.ELLIPSE,
         },
       ],
     },

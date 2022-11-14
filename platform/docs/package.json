@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "workspaces": {
     "nohoist": [
@@ -9,7 +9,8 @@
       "@docusaurus/preset-classic",
       "@docusaurus/preset-classic/**",
       "**/react-router-dom",
-      "**/react-router"
+      "**/react-router",
+      "**/history"
     ]
   },
   "scripts": {
@@ -26,13 +27,14 @@
     "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-beta.3",
-    "@docusaurus/plugin-client-redirects": "2.0.0-beta.3",
-    "@docusaurus/plugin-ideal-image": "2.0.0-beta.3",
-    "@docusaurus/plugin-pwa": "2.0.0-beta.3",
-    "@docusaurus/preset-classic": "2.0.0-beta.3",
-    "@docusaurus/remark-plugin-npm2yarn": "2.0.0-beta.3",
-    "@docusaurus/theme-live-codeblock": "2.0.0-beta.3",
+    "@docusaurus/core": "2.0.1",
+    "@docusaurus/plugin-client-redirects": "2.0.1",
+    "@docusaurus/plugin-ideal-image": "2.0.1",
+    "@docusaurus/plugin-pwa": "2.0.1",
+    "@docusaurus/preset-classic": "2.0.1",
+    "@docusaurus/remark-plugin-npm2yarn": "2.0.1",
+    "@docusaurus/theme-live-codeblock": "2.0.1",
+    "@docusaurus/plugin-google-gtag": "2.0.1",
     "@mdx-js/react": "^1.6.21",
     "@svgr/webpack": "^5.5.0",
     "classnames": "^2.3.1",
@@ -59,6 +61,6 @@
   },
   "devDependencies": {
     "postcss-import": "^14.0.2",
-    "postcss-preset-env": "^6.7.0"
+    "postcss-preset-env": "^7.4.3"
   }
 }
