@@ -4,10 +4,10 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
-  maxNumberOfWebWorkers: 3,
+  // maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
-  showLoadingIndicator: true, // default to true
+  showLoadingIndicator: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,

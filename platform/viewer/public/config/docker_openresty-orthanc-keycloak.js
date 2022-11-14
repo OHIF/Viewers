@@ -3,6 +3,7 @@ window.config = {
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
+  showLoadingIndicator: true,
   servers: {
     // This is an array, but we'll only use the first entry for now
     dicomWeb: [

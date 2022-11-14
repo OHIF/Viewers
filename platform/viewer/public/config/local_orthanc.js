@@ -5,6 +5,7 @@ window.config = {
   modes: [],
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
+  showLoadingIndicator: true,
   // filterQueryParam: false,
   dataSources: [
     {
