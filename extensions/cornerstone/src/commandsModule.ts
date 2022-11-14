@@ -8,6 +8,7 @@ import {
   Enums,
   utilities as cstUtils,
   segmentation as cstSegmentation,
+  ReferenceLinesTool,
   synchronizers as cstSynchronizers,
 } from '@cornerstonejs/tools';
 
@@ -302,11 +303,6 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       viewport.render();
-
-      // Todo: there is a bug in cs3d, where the camera is not reset and parameters
-      // are reset too, but we need to get and set it again? cs3d demo works fine
-      // it is OHIF specific
-      viewport.setCamera(viewport.getCamera());
     },
     scaleViewport: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -523,6 +519,13 @@ const commandsModule = ({ servicesManager }) => {
       // create synchronization groups and add viewports
       let { viewports } = ViewportGridService.getState();
 
+      // filter empty viewports
+      viewports = viewports.filter(
+        viewport =>
+          viewport.displaySetInstanceUIDs &&
+          viewport.displaySetInstanceUIDs.length
+      );
+
       // filter reconstructable viewports
       viewports = viewports.filter(viewport => {
         const { displaySetInstanceUIDs } = viewport;
@@ -596,6 +599,28 @@ const commandsModule = ({ servicesManager }) => {
           viewports,
         });
       });
+    },
+    toggleReferenceLines: ({ toggledState }) => {
+      const { activeViewportIndex } = ViewportGridService.getState();
+      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+        activeViewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+
+      if (!toggledState) {
+        toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
+      }
+
+      toolGroup.setToolConfiguration(
+        ReferenceLinesTool.toolName,
+        {
+          sourceViewportId: viewportId,
+        },
+        true // overwrite
+      );
+      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
   };
 
@@ -715,6 +740,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     toggleStackImageSync: {
       commandFn: actions.toggleStackImageSync,
+      storeContexts: [],
+      options: {},
+    },
+    toggleReferenceLines: {
+      commandFn: actions.toggleReferenceLines,
       storeContexts: [],
       options: {},
     },

@@ -87,10 +87,6 @@ function ViewerViewportGrid(props) {
           }
         );
 
-        // if (!displaySetUIDsToHang.length) {
-        //   continue;
-        // }
-
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex: viewportIndex,
           displaySetInstanceUIDs: displaySetUIDsToHang,

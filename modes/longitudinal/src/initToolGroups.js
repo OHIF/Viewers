@@ -40,6 +40,7 @@ function initDefaultToolGroup(
     ],
     // enabled
     // disabled
+    disabled: [{ toolName: toolNames.ReferenceLines }],
   };
 
   const toolsConfig = {

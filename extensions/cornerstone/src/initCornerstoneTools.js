@@ -20,6 +20,7 @@ import {
   init,
   addTool,
   annotation,
+  ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 
 export default function initCornerstoneTools(configuration = {}) {
@@ -42,6 +43,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(MagnifyTool);
   addTool(CrosshairsTool);
   addTool(SegmentationDisplayTool);
+  addTool(ReferenceLinesTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -77,6 +79,7 @@ const toolNames = {
   Magnify: MagnifyTool.toolName,
   Crosshairs: CrosshairsTool.toolName,
   SegmentationDisplay: SegmentationDisplayTool.toolName,
+  ReferenceLines: ReferenceLinesTool.toolName,
 };
 
 export { toolNames };

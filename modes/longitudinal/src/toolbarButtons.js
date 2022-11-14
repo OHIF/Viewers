@@ -410,6 +410,18 @@ const toolbarButtons = [
             context: 'CORNERSTONE',
           },
         ]),
+        _createToggleButton(
+          'ReferenceLines',
+          'launch-info', // change this with the new icon
+          'Reference Lines',
+          [
+            {
+              commandName: 'toggleReferenceLines',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ]
+        ),
         _createToolButton(
           'StackScroll',
           'tool-stack-scroll',

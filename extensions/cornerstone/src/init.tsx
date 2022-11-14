@@ -14,7 +14,7 @@ import {
   imageLoadPoolManager,
   Settings,
 } from '@cornerstonejs/core';
-import { Enums, utilities } from '@cornerstonejs/tools';
+import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
 import {
   cornerstoneStreamingImageVolumeLoader,
   sharedArrayBufferImageLoader,
@@ -73,7 +73,9 @@ export default async function init({
     CineService,
     CornerstoneViewportService,
     HangingProtocolService,
+    ToolGroupService,
     SegmentationService,
+    ViewportGridService,
   } = servicesManager.services;
 
   window.SegmentationService = SegmentationService;
@@ -352,6 +354,39 @@ export default async function init({
   eventTarget.addEventListener(
     EVENTS.ELEMENT_DISABLED,
     elementDisabledHandler.bind(null)
+  );
+
+  ViewportGridService.subscribe(
+    ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
+    ({ viewportIndex }) => {
+      const viewportId = `viewport-${viewportIndex}`;
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+
+      if (!toolGroup) {
+        return;
+      }
+
+      // check if reference lines are active
+      const referenceLinesEnabled =
+        toolGroup._toolInstances?.['ReferenceLines'].mode ===
+        Enums.ToolModes.Enabled;
+
+      if (!referenceLinesEnabled) {
+        return;
+      }
+
+      toolGroup.setToolConfiguration(
+        ReferenceLinesTool.toolName,
+        {
+          sourceViewportId: viewportId,
+        },
+        true // overwrite
+      );
+
+      // make sure to set it to enabled again since we want to recalculate
+      // the source-target lines
+      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
+    }
   );
 }
 

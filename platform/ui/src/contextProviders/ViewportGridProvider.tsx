@@ -285,7 +285,7 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   /**
-   * Sets the implementation of a modal service that can be used by extensions.
+   * Sets the implementation of ViewportGridService that can be used by extensions.
    *
    * @returns void
    */
@@ -318,7 +318,7 @@ export function ViewportGridProvider({ children, service }) {
 
   const api = {
     getState,
-    setActiveViewportIndex,
+    setActiveViewportIndex: index => service.setActiveViewportIndex(index), // run it through the service itself since we want to publish events
     setDisplaySetsForViewport,
     setDisplaySetsForViewports,
     setLayout,
