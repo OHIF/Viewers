@@ -5,7 +5,7 @@ local pipelineCommon = {
 
 
 local jsStepCommon = {
-  image: 'node:14',
+  image: 'node:16',
 };
 
 local slackDeployMessage = {
