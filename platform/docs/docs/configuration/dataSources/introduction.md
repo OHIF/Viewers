@@ -16,4 +16,4 @@ and OHIF has provided the implementation for them.
 Do you have a custom data source? or a custom data that you want to use in OHIF?
 You can easily write a data source to map your data to OHIF’s native format.
 
-You can read mor in the [Data Source Module](../../platform/extensions/modules/data-source.md)
+You can read more in the [Data Source Module](../../platform/extensions/modules/data-source.md)

@@ -35,7 +35,7 @@ function promptHydrateSEG({
 
 function _askHydrate(UIViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
-    const message = 'Do you want to load the Segmentation into OHIF?';
+    const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
         type: 'secondary',

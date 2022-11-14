@@ -43,7 +43,9 @@ function ViewerLayout({
   const { t } = useTranslation();
   const { show, hide } = useModal();
 
-  const [showLoadingIndicator, setShowLoadingIndicator] = useState(true);
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(
+    appConfig.showLoadingIndicator
+  );
 
   const { HangingProtocolService } = servicesManager.services;
 
@@ -184,7 +186,7 @@ function ViewerLayout({
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
-          {appConfig.showLoadingIndicator && showLoadingIndicator && (
+          {showLoadingIndicator && (
             <LoadingIndicatorProgress className="h-full w-full bg-black" />
           )}
           {/* LEFT SIDEPANELS */}

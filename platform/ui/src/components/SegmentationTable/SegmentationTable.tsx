@@ -5,7 +5,6 @@ import SegmentationItem from './SegmentationItem';
 
 const SegmentationTable = ({
   title,
-  amount,
   segmentations,
   activeSegmentationId,
   onClick,
@@ -15,6 +14,7 @@ const SegmentationTable = ({
   onToggleVisibilityAll,
 }) => {
   const [hiddenSegmentationIds, setHiddenSegmentationIds] = useState([]);
+  const amount = segmentations.length;
 
   const handleToggleAll = () => {
     // filter segmentation ids that are hidden
@@ -106,7 +106,6 @@ const SegmentationTable = ({
 
 SegmentationTable.propTypes = {
   title: PropTypes.string.isRequired,
-  amount: PropTypes.number.isRequired,
   segmentations: PropTypes.array.isRequired,
   activeSegmentationId: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
@@ -118,7 +117,6 @@ SegmentationTable.propTypes = {
 
 SegmentationTable.defaultProps = {
   title: '',
-  amount: 0,
   segmentations: [],
   activeSegmentationId: '',
   onClick: () => {},

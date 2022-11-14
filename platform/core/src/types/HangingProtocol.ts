@@ -25,15 +25,15 @@ type DisplaySetAndViewportOptions = {
   displaySetOptions: DisplaySetOptions;
 }
 
-type ViewportSpecificSetProtocolOptions = {
+type ViewportSpecificProtocolOptions = {
   [viewportIndex: string]: DisplaySetAndViewportOptions
 }
 
-type GlobalSetProtocolOptions = DisplaySetAndViewportOptions
+type GlobalProtocolOptions = DisplaySetAndViewportOptions
 
 
 type SetProtocolOptions =
-  ViewportSpecificSetProtocolOptions | GlobalSetProtocolOptions;
+  ViewportSpecificProtocolOptions | GlobalProtocolOptions;
 
 
 type HangingProtocolMatchDetails = {
@@ -169,8 +169,8 @@ export type {
   SyncGroup,
   initialImageOptions,
   DisplaySetInfo,
-  GlobalSetProtocolOptions,
-  ViewportSpecificSetProtocolOptions,
+  GlobalProtocolOptions,
+  ViewportSpecificProtocolOptions,
   DisplaySetAndViewportOptions
 
 };

@@ -155,7 +155,6 @@ export default function PanelMeasurementTable({
       >
         <MeasurementTable
           title="Measurements"
-          amount={displayMeasurements.length}
           data={displayMeasurements}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}

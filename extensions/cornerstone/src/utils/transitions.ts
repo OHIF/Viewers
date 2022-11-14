@@ -6,7 +6,7 @@
  * @param {number} baseline - The baseline value to start from and return to.
  * @returns the value of the transition at time x.
  */
-export function easInOutBell(x: number, baseline: number): number {
+export function easeInOutBell(x: number, baseline: number): number {
   const alpha = 1 - baseline;
 
   // prettier-ignore

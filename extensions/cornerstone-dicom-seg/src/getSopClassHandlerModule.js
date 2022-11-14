@@ -137,10 +137,15 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
       segDisplaySet,
       null,
       suppressEvents
-    ).then(() => {
-      segDisplaySet.loading = false;
-      resolve();
-    });
+    )
+      .then(() => {
+        segDisplaySet.loading = false;
+        resolve();
+      })
+      .catch(error => {
+        segDisplaySet.loading = false;
+        reject(error);
+      });
   });
 
   return loadPromises[SOPInstanceUID];

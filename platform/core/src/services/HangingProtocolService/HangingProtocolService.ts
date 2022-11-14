@@ -558,14 +558,14 @@ class HangingProtocolService {
    */
   public setProtocol(
     protocolId: string,
-    options = null as HangingProtocol.SetProtocolOptions,
+    options = {} as HangingProtocol.SetProtocolOptions,
     errorCallback = null
   ): void {
     const foundProtocol = this.protocols.get(protocolId);
 
     if (!foundProtocol) {
       console.warn(
-        `ProtocolEngine::setProtocol - Protocol with id ${protocolId} not found - you should register it first via ,addProtocol`
+        `ProtocolEngine::setProtocol - Protocol with id ${protocolId} not found - you should register it first via addProtocol`
       );
       return;
     }
@@ -813,7 +813,7 @@ class HangingProtocolService {
 
     if (options.displaySetInstanceUIDs) {
       this._updateGlobalMatchByOptions(
-        options as HangingProtocol.GlobalSetProtocolOptions,
+        options as HangingProtocol.GlobalProtocolOptions,
         protocol,
         DisplaySetService
       );
@@ -826,19 +826,17 @@ class HangingProtocolService {
     // other than drag and drop and thumbnails double click that will specify
     // options at viewport level. if there are the following code will need to be
     // uncommented and tested.
-
     this._updateViewportSpecificMatchByOptions(
-      options as HangingProtocol.ViewportSpecificSetProtocolOptions,
-      protocol,
-      DisplaySetService
+      options as HangingProtocol.ViewportSpecificProtocolOptions,
+      protocol
     );
   }
 
   private _updateViewportSpecificMatchByOptions(
-    options: HangingProtocol.ViewportSpecificSetProtocolOptions,
-    protocol: HangingProtocol.Protocol,
-    DisplaySetService: any
+    options: HangingProtocol.ViewportSpecificProtocolOptions,
+    protocol: HangingProtocol.Protocol
   ) {
+    const { DisplaySetService } = this._servicesManager.services;
     const { displaySetSelectors = {} } = protocol;
     const protocolViewports = protocol.stages[this.stage].viewports;
 
@@ -979,14 +977,14 @@ class HangingProtocolService {
   }
 
   private _updateGlobalMatchByOptions(
-    options: HangingProtocol.GlobalSetProtocolOptions,
+    options: HangingProtocol.GlobalProtocolOptions,
     protocol: Protocol,
     DisplaySetService: any
   ) {
     const { displaySetSelectors = {} } = protocol;
     const protocolViewports = protocol.stages[this.stage].viewports;
 
-    options = options as HangingProtocol.GlobalSetProtocolOptions;
+    options = options as HangingProtocol.GlobalProtocolOptions;
     // we need to check each displaySetInstanceUIDs to see if it satisfies the
     // seriesMatching criteria
     options.displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
@@ -1106,7 +1104,7 @@ class HangingProtocolService {
     const { DisplaySetService } = this._servicesManager.services;
 
     if (options.displaySetInstanceUIDs) {
-      options = options as HangingProtocol.GlobalSetProtocolOptions;
+      options = options as HangingProtocol.GlobalProtocolOptions;
 
       options.displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
         const displaySet = DisplaySetService.getDisplaySetByUID(
@@ -1290,11 +1288,11 @@ class HangingProtocolService {
    * Changes the current stage to a new stage index in the display set sequence.
    * It checks if the next stage exists.
    *
-   * @param {Integer} stageAction An integer value specifying wheater next (1) or previous (-1) stage
+   * @param {Integer} stageAction An integer value specifying whether next (1) or previous (-1) stage
    * @return {Boolean} True if new stage has set or false, otherwise
    */
   _setCurrentProtocolStage(stageAction): boolean {
-    //resseting the applied protocols
+    //resetting the applied protocols
     this.hpAlreadyApplied = new Map();
     // Check if previous or next stage is available
     if (stageAction === -1 && !this._isPreviousStageAvailable()) {

@@ -214,7 +214,6 @@ export default function PanelRoiThresholdSegmentation({
           {segmentations?.length ? (
             <SegmentationTable
               title={t('Segmentations')}
-              amount={segmentations.length}
               segmentations={segmentations}
               activeSegmentationId={selectedSegmentationId}
               onClick={id => {

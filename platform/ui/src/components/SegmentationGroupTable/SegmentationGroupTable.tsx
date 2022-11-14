@@ -127,7 +127,6 @@ const SegmentationGroupTable = ({
 
 SegmentationGroupTable.propTypes = {
   title: PropTypes.string.isRequired,
-  amount: PropTypes.number.isRequired,
   segmentations: PropTypes.array.isRequired,
   activeSegmentationId: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
@@ -141,7 +140,6 @@ SegmentationGroupTable.propTypes = {
 
 SegmentationGroupTable.defaultProps = {
   title: '',
-  amount: 0,
   segmentations: [],
   activeSegmentationId: '',
   onClick: () => {},

@@ -53,10 +53,16 @@ function OHIFCornerstoneSEGViewport(props) {
   // States
   const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(1);
+
+  // Hydration means that the SEG is opened and segments are loaded into the
+  // segmentation panel, and SEG is also rendered on any viewport that is in the
+  // same frameOfReferenceUID as the referencedSeriesUID of the SEG. However,
+  // loading basically means SEG loading over network and bit unpacking of the
+  // SEG data.
   const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
-  const [element, setElement] = useState(null);
   const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
-  const [progress, setProgress] = useState({
+  const [element, setElement] = useState(null);
+  const [processingProgress, setProcessingProgress] = useState({
     segmentIndex: 1,
     totalSegments: null,
   });
@@ -182,7 +188,7 @@ function OHIFCornerstoneSEGViewport(props) {
     const { unsubscribe } = SegmentationService.subscribe(
       SegmentationService.EVENTS.SEGMENT_PIXEL_DATA_CREATED,
       ({ segmentIndex, numSegments }) => {
-        setProgress({
+        setProcessingProgress({
           segmentIndex,
           totalSegments: numSegments,
         });
@@ -345,19 +351,21 @@ function OHIFCornerstoneSEGViewport(props) {
           <LoadingIndicatorProgress
             className="w-full h-full"
             progress={
-              progress.totalSegments !== null
-                ? ((progress.segmentIndex + 1) / progress.totalSegments) * 100
+              processingProgress.totalSegments !== null
+                ? ((processingProgress.segmentIndex + 1) /
+                    processingProgress.totalSegments) *
+                  100
                 : null
             }
             textBlock={
-              !progress.totalSegments ? (
+              !processingProgress.totalSegments ? (
                 <span className="text-white text-sm">Loading SEG ...</span>
               ) : (
                 <span className="text-white text-sm flex items-baseline space-x-2">
                   <div>Loading Segment</div>
-                  <div className="w-3">{`${progress.segmentIndex}`}</div>
+                  <div className="w-3">{`${processingProgress.segmentIndex}`}</div>
                   <div>/</div>
-                  <div>{`${progress.totalSegments}`}</div>
+                  <div>{`${processingProgress.totalSegments}`}</div>
                 </span>
               )
             }

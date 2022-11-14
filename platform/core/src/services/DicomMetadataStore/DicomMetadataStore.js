@@ -271,6 +271,5 @@ const DicomMetadataStore = Object.assign(
   pubSubServiceInterface
 );
 
-window.model = _model;
 export { DicomMetadataStore };
 export default DicomMetadataStore;

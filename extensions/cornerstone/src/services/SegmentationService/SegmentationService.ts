@@ -18,7 +18,7 @@ import {
   getEnabledElementByIds,
 } from '@cornerstonejs/core';
 import isEqual from 'lodash.isequal';
-import { easInOutBell } from '../../utils/transitions';
+import { easeInOutBell } from '../../utils/transitions';
 import {
   Segmentation,
   SegmentationConfig,
@@ -833,7 +833,7 @@ class SegmentationService {
         {
           [segmentIndex]: {
             LABELMAP: {
-              fillAlpha: easInOutBell(x, fillAlpha),
+              fillAlpha: easeInOutBell(x, fillAlpha),
             },
           },
         }
@@ -1472,7 +1472,7 @@ class SegmentationService {
 
     if (!segmentationRepresentation) {
       throw new Error(
-        'Must add representation to toolgroup before setting segments, currently'
+        'Must add representation to toolgroup before setting segments'
       );
     }
     const { segmentationRepresentationUID } = segmentationRepresentation;
@@ -1630,7 +1630,7 @@ class SegmentationService {
 
     if (!segmentationRepresentation) {
       throw new Error(
-        'Must add representation to toolgroup before setting segments, currently'
+        'Must add representation to toolgroup before setting segments'
       );
     }
     const { segmentationRepresentationUID } = segmentationRepresentation;
@@ -1816,7 +1816,7 @@ class SegmentationService {
 
     if (!segmentationRepresentation) {
       throw new Error(
-        'Must add representation to toolgroup before setting segments, currently'
+        'Must add representation to toolgroup before setting segments'
       );
     }
 

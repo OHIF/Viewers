@@ -34,18 +34,6 @@ async function _hydrateSEGDisplaySet({
 
   ViewportGridService.setDisplaySetsForViewports(updatedViewports);
 
-  // ViewportGridService.setDisplaySetsForViewport({
-  //   viewportIndex,
-  //   displaySetInstanceUIDs: displaySetInstanceUIDs,
-  //   viewportOptions: {
-  //     viewportType: 'volume',
-  //     toolGroupId,
-  //     initialImageOptions: {
-  //       preset: 'middle',
-  //     },
-  //   },
-  // });
-
   // Todo: fix this after we have a better way for stack viewport segmentations
 
   // check every viewport in the viewports to see if the displaySetInstanceUID

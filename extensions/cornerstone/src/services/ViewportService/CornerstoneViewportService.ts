@@ -458,8 +458,6 @@ class CornerstoneViewportService implements IViewportService {
       .find(displaySet => displaySet && displaySet.Modality === 'SEG');
 
     if (segDisplaySet) {
-      // If the displaySet is a SEG displaySet we assume it is a secondary displaySet
-      // and load it as non hydrated segmentation
       const { referencedVolumeId } = segDisplaySet;
       const referencedVolume = cache.getVolume(referencedVolumeId);
       const segmentationId = segDisplaySet.displaySetInstanceUID;
@@ -689,6 +687,10 @@ class CornerstoneViewportService implements IViewportService {
     displaySetOptions: DisplaySetOptions[];
   } {
     const viewportIndex = viewportInfo.getViewportIndex();
+
+    if (!publicViewportOptions.viewportId) {
+      publicViewportOptions.viewportId = this.getViewportId(viewportIndex);
+    }
 
     // Creating a temporary viewportInfo to handle defaults
     const newViewportInfo = new ViewportInfo(

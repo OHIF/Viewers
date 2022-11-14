@@ -210,7 +210,7 @@ const SegmentationConfig = ({
           )}
         />
         <span className="text-[#d8d8d8] text-[12px] font-[300]">
-          {'Segmentations Appearance'}
+          {'Segmentation Appearance'}
         </span>
       </div>
       {/* active segmentation */}
