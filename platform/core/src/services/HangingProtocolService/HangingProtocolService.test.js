@@ -124,7 +124,7 @@ describe('HangingProtocolService', () => {
     it('matches best image match', () => {
       hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
       const { hpAlreadyApplied, viewportMatchDetails } = hps.getMatchDetails();
-      expect(hpAlreadyApplied).toMatchObject([false]);
+      expect(hpAlreadyApplied).toMatchObject(new Map([[0, false]]));
       expect(viewportMatchDetails.size).toBe(1);
       expect(viewportMatchDetails.get(0)).toMatchObject({
         viewportOptions: {

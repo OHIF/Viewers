@@ -33,7 +33,6 @@ describe('Top level exports', () => {
       'ToolBarService',
       'Types',
       'ViewportGridService',
-      'SegmentationService',
       'HangingProtocolService',
       'UserAuthenticationService',
       'IWebApiDataSource',

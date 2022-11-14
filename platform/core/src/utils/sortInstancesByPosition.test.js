@@ -1,4 +1,4 @@
-import sortInstances from './sortInstances';
+import sortInstances from './sortInstancesByPosition';
 
 describe('sortInstances', () => {
   it('should sort instances based on their imagePositionPatient', () => {
