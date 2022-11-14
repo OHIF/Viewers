@@ -93,6 +93,7 @@ import rowUnlocked from './../../assets/icons/row-unlocked.svg';
 import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
 import checkboxDefault from './../../assets/icons/checkbox-default.svg';
 import checkboxActive from './../../assets/icons/checkbox-active.svg';
+import referenceLines from './../../assets/icons/reference-lines.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -192,6 +193,7 @@ const ICONS = {
   'ui-arrow-up': uiArrowUp,
   'checkbox-default': checkboxDefault,
   'checkbox-active': checkboxActive,
+  'tool-referenceLines': referenceLines,
 
   /** Old OHIF */
   'old-trash': oldTrash,

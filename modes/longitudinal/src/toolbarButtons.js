@@ -412,7 +412,7 @@ const toolbarButtons = [
         ]),
         _createToggleButton(
           'ReferenceLines',
-          'launch-info', // change this with the new icon
+          'tool-referenceLines', // change this with the new icon
           'Reference Lines',
           [
             {
