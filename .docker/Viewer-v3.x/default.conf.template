@@ -1,5 +1,6 @@
 server {
-  listen 80;
+  listen ${PORT};
+  # listen 3000;
   location / {
     root   /usr/share/nginx/html;
     index  index.html index.htm;
