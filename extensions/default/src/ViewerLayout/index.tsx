@@ -122,10 +122,29 @@ function ViewerLayout({
     };
   }, []);
 
-  const getPanelData = id => {
+  const getComponent = id => {
     const entry = extensionManager.getModuleEntry(id);
-    // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
-    const content = entry.component;
+
+    if (!entry) {
+      throw new Error(
+        `${id} is not a valid entry for an extension module, please check your configuration or make sure the extension is registered.`
+      );
+    }
+
+    let content;
+    if (entry && entry.component) {
+      content = entry.component;
+    } else {
+      throw new Error(
+        `No component found from extension ${id}. Check the reference string to the extension in your Mode configuration`
+      );
+    }
+
+    return { entry, content };
+  };
+
+  const getPanelData = id => {
+    const { content, entry } = getComponent(id);
 
     return {
       iconName: entry.iconName,
@@ -156,7 +175,7 @@ function ViewerLayout({
   }, [HangingProtocolService]);
 
   const getViewportComponentData = viewportComponent => {
-    const entry = extensionManager.getModuleEntry(viewportComponent.namespace);
+    const { entry } = getComponent(viewportComponent.namespace);
 
     return {
       component: entry.component,

@@ -498,8 +498,7 @@ class MeasurementService {
       measurement.source = source;
     } catch (error) {
       throw new Error(
-        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
-        error.message
+        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
       );
     }
 
