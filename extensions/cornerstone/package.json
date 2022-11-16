@@ -45,7 +45,7 @@
     "@babel/runtime": "7.17.9",
     "@cornerstonejs/core": "^0.21.0",
     "@cornerstonejs/streaming-image-volume-loader": "^0.6.1",
-    "@cornerstonejs/tools": "^0.29.1",
+    "@cornerstonejs/tools": "^0.29.2",
     "@kitware/vtk.js": "25.9.0",
     "html2canvas": "^1.4.1",
     "lodash.debounce": "4.0.8",
