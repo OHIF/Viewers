@@ -24,6 +24,7 @@ class ViewportGridService {
     restoreCachedLayout: restoreCachedLayoutImplementation,
     setLayout: setLayoutImplementation,
     reset: resetImplementation,
+    onModeExit: onModeExitImplementation,
     set: setImplementation,
   }) {
     if (getStateImplementation) {
@@ -49,6 +50,9 @@ class ViewportGridService {
     }
     if (restoreCachedLayoutImplementation) {
       this.serviceImplementation._restoreCachedLayout = restoreCachedLayoutImplementation;
+    }
+    if (onModeExitImplementation) {
+      this.serviceImplementation._onModeExit = onModeExitImplementation;
     }
     if (setImplementation) {
       this.serviceImplementation._set = setImplementation;

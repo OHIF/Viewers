@@ -349,6 +349,7 @@ function PanelStudyBrowserTracking({
   return (
     <StudyBrowser
       tabs={tabs}
+      servicesManager={servicesManager}
       activeTabName={activeTabName}
       expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
       onClickStudy={_handleStudyClick}

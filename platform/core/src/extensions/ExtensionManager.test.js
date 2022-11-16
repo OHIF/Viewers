@@ -235,6 +235,9 @@ describe('ExtensionManager.js', () => {
         getUtilityModule: () => {
           return [{}];
         },
+        getCustomizationModule: () => {
+          return [{}];
+        },
       };
 
       await extensionManager.registerExtension(extension);

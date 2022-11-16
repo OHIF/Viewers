@@ -51,6 +51,7 @@ By default, `OHIF-v3` registers the following services in the `appInit`.
 
 ```js title="platform/viewer/src/appInit.js"
 servicesManager.registerServices([
+  CustomizationService,
   UINotificationService,
   UIModalService,
   UIDialogService,
@@ -86,8 +87,15 @@ export default {
 and the implementation of `ToolBarService` lies in the same folder at
 `./ToolbarSerivce.js`.
 
-> Note, the create method is critical for any custom service that you write and
+> Note: The create method is critical for any custom service that you write and
 > want to add to the list of services
+
+> Note: For typescript definitions, the service type should be exported
+> as part of the Types export on the module.  This is recommended going forward
+> and existing services will be migrated.  As well, the capitalization of the
+> name should be lower camel case, with the type being upper camel case.  In
+> the above example, the service instance should be `toolBarService` with the
+> class being `ToolBarService`.
 
 ## Accessing Services
 
@@ -135,13 +143,15 @@ export default {
 and the logic for your service shall be
 
 ```js title="extensions/customExtension/src/services/backEndService/index.js"
-import backEndService from './backEndService';
+// Canonical name of upper camel case BackEndService for the class
+import BackEndService from './BackEndService';
 
 export default function WrappedBackEndService(serviceManager) {
   return {
-    name: 'myService',
+    // Note the canonical name of lower camel case backEndService
+    name: 'backEndService',
     create: ({ configuration = {} }) => {
-      return new backEndService(serviceManager);
+      return new BackEndService(serviceManager);
     },
   };
 }
@@ -149,8 +159,8 @@ export default function WrappedBackEndService(serviceManager) {
 
 with implementation of
 
-```js
-export default class backEndService {
+```ts
+export default class BackEndService {
   constructor(serviceManager) {
     this.serviceManager = serviceManager;
   }
@@ -159,4 +169,12 @@ export default class backEndService {
     return post(/*...*/);
   }
 }
+```
+
+with a registration of
+
+```ts title="types/index.ts"
+import BackEndService from "../services/BackEndService/BackEndService";
+
+export { BackEndService };
 ```

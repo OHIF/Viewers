@@ -1,10 +1,12 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
+  customizationService: [
+    '@ohif/extension-default.customizationModule.helloPage',
+  ],
   extensions: [],
   modes: [],
   showStudyList: true,
-  maxNumberOfWebWorkers: 3,
+  maxNumberOfWebWorkers: 4,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
   showLoadingIndicator: true,
@@ -51,25 +53,6 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
-  // whiteLabeling: {
-  //   /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
-  //   createLogoComponentFn: function (React) {
-  //     return React.createElement(
-  //       'a',
-  //       {
-  //         target: '_self',
-  //         rel: 'noopener noreferrer',
-  //         className: 'text-purple-600 line-through',
-  //         href: '/',
-  //       },
-  //       React.createElement('img',
-  //         {
-  //           src: './customLogo.svg',
-  //           className: 'w-8 h-8',
-  //         }
-  //       ))
-  //   },
-  // },
   defaultDataSourceName: 'dicomweb',
   hotkeys: [
     {
