@@ -45,10 +45,7 @@ function WrappedPanelStudyBrowserTracking({
 
   return (
     <PanelStudyBrowserTracking
-      MeasurementService={servicesManager.services.MeasurementService}
-      DisplaySetService={servicesManager.services.DisplaySetService}
-      UIDialogService={servicesManager.services.UIDialogService}
-      UINotificationService={servicesManager.services.UINotificationService}
+      servicesManager={servicesManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByStudyInstanceUID={

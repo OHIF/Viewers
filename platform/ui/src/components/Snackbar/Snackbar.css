@@ -38,43 +38,8 @@
   margin: 0 0 10px;
 }
 
-.sb-closeBtn {
-  text-shadow: none;
-  width: 20px;
-  height: 20px;
-  right: 5px;
-  top: 5px;
-  @apply overflow-hidden opacity-100 rounded-full p-1 bg-white cursor-pointer absolute text-center duration-300 transition-all ease-in-out;
-}
-
 .sb-closeBtn:hover {
   background: #fff;
-}
-
-.sb-closeIcon {
-  @apply w-full relative overflow-hidden h-full block leading-none;
-}
-
-.sb-closeIcon:after,
-.sb-closeIcon:before {
-  content: ' ';
-  height: 2px;
-  width: 12px;
-  @apply duration-300 transition-all ease-in-out block bg-black opacity-100 absolute;
-}
-
-.sb-closeIcon:before {
-  left: 4px;
-  top: 3px;
-  transform: rotate(45deg);
-  transform-origin: 0px 50%;
-}
-
-.sb-closeIcon:after {
-  right: 3px;
-  top: 5px;
-  transform: rotate(-45deg);
-  transform-origin: calc(100% - 3px) 50%;
 }
 
 .sb-title {

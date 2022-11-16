@@ -25,6 +25,7 @@ import {
   useModal,
   AboutModal,
   UserPreferences,
+  LoadingIndicatorProgress,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -322,13 +323,13 @@ function WorkList({
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                return {
-                  description: s.description || '(empty)',
-                  seriesNumber: s.seriesNumber || '',
-                  modality: s.modality || '',
-                  instances: s.numSeriesInstances || '',
-                };
-              })
+                  return {
+                    description: s.description || '(empty)',
+                    seriesNumber: s.seriesNumber ?? '',
+                    modality: s.modality || '',
+                    instances: s.numSeriesInstances || '',
+                  };
+                })
               : []
           }
         >
@@ -346,15 +347,15 @@ function WorkList({
               <Link
                 key={i}
                 to={`${mode.routeName}?StudyInstanceUIDs=${studyInstanceUid}`}
-              // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+                // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
                   variant={isValidMode ? 'contained' : 'disabled'}
                   disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                  className={classnames('font-bold', { 'ml-2': !isFirst })}
-                  onClick={() => { }}
+                  className={classnames('font-medium	', { 'ml-2': !isFirst })}
+                  onClick={() => {}}
                 >
                   {t(`Modes:${mode.displayName}`)}
                 </Button>
@@ -419,9 +420,10 @@ function WorkList({
       icon: 'power-off',
       title: t('Header:Logout'),
       onClick: () => {
-        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
-
-      }
+        navigate(
+          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
+        );
+      },
     });
   }
 
@@ -461,7 +463,11 @@ function WorkList({
         </>
       ) : (
         <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies isLoading={isLoadingData} />
+          {appConfig.showLoadingIndicator && isLoadingData ? (
+            <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+          ) : (
+            <EmptyStudies />
+          )}
         </div>
       )}
     </div>
@@ -493,7 +499,7 @@ const defaultFilterValues = {
 };
 
 function _tryParseInt(str, defaultValue) {
-  var retValue = defaultValue;
+  let retValue = defaultValue;
   if (str !== null) {
     if (str.length > 0) {
       if (!isNaN(str)) {

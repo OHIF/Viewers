@@ -251,7 +251,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         )}
         <MeasurementTable
           title="Measurements"
-          amount={displayMeasurementsWithoutFindings.length}
           data={displayMeasurementsWithoutFindings}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
@@ -259,7 +258,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         {additionalFindings.length !== 0 && (
           <MeasurementTable
             title="Additional Findings"
-            amount={additionalFindings.length}
             data={additionalFindings}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}

@@ -139,6 +139,7 @@ App.defaultProps = {
     /**
      *
      */
+    showLoadingIndicator: true,
     showStudyList: true,
     oidc: [],
     extensions: [],

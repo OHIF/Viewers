@@ -140,6 +140,9 @@ function modeFactory({ modeConfiguration }) {
         SyncGroupService,
         MeasurementService,
         ToolBarService,
+        SegmentationService,
+        CornerstoneViewportService,
+        HangingProtocolService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
@@ -147,6 +150,9 @@ function modeFactory({ modeConfiguration }) {
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
+      SegmentationService.destroy();
+      CornerstoneViewportService.destroy();
+      HangingProtocolService.reset();
     },
     validationTags: {
       study: [],
@@ -173,8 +179,8 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [],
-              rightPanels: [tmtv.petSUV, tmtv.ROIThresholdPanel],
+              // leftPanels: [ohif.thumbnailList],
+              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

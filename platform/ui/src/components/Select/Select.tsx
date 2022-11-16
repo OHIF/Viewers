@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ReactSelect, { components } from 'react-select';
+import { Icon } from '@ohif/ui';
 
 import './Select.css';
 
@@ -18,17 +19,20 @@ const MultiValue = props => {
 
 const Option = props => {
   return (
-    <div>
-      <components.Option {...props}>
-        <input
-          type="checkbox"
-          checked={props.isSelected}
-          className="w-6 h-6 mr-2"
-          onChange={e => null}
-        />
-        <label>{props.value} </label>
-      </components.Option>
-    </div>
+    <components.Option {...props}>
+      <div className="flex items-center">
+        <div className="w-2 h-2">
+          {props.isSelected ? (
+            <Icon name={'checkbox-active'} />
+          ) : (
+            <Icon name={'checkbox-default'} />
+          )}
+        </div>
+        <label id={props.data.value} className="ml-3 mt-1">
+          <span>{props.value}</span>
+        </label>
+      </div>
+    </components.Option>
   );
 };
 

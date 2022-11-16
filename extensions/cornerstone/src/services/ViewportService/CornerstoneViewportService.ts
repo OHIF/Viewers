@@ -2,7 +2,6 @@ import { pubSubServiceInterface } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
-  Enums,
   Types,
   getRenderingEngine,
   utilities as csUtils,
@@ -18,7 +17,10 @@ import ViewportInfo, {
   DisplaySetOptions,
   PublicViewportOptions,
 } from './Viewport';
-import { StackData, VolumeData } from './CornerstoneCacheService';
+import {
+  StackViewportData,
+  VolumeViewportData,
+} from '../../types/CornerstoneCacheService';
 import {
   setColormap,
   setLowerUpperColorTransferFunction,
@@ -27,8 +29,8 @@ import {
 import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
-  VIEWPORT_INFO_CREATED:
-    'event::cornerstone::viewportservice:viewportinfocreated',
+  VIEWPORT_DATA_CHANGED:
+    'event::cornerstoneViewportService:viewportDataChanged',
 };
 
 /**
@@ -39,8 +41,7 @@ class CornerstoneViewportService implements IViewportService {
   renderingEngine: Types.IRenderingEngine | null;
   viewportsInfo: Map<number, ViewportInfo>;
   viewportGridResizeObserver: ResizeObserver | null;
-  // TODO - get the right type here.
-  hangingProtocolService: object;
+  viewportsDisplaySets: Map<string, string[]> = new Map();
 
   /**
    * Service-specific
@@ -52,6 +53,7 @@ class CornerstoneViewportService implements IViewportService {
   enableResizeDetector: true;
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
+  servicesManager = null;
 
   constructor(servicesManager) {
     this.renderingEngine = null;
@@ -60,8 +62,7 @@ class CornerstoneViewportService implements IViewportService {
     //
     this.listeners = {};
     this.EVENTS = EVENTS;
-    const { HangingProtocolService } = servicesManager.services;
-    this.hangingProtocolService = HangingProtocolService;
+    this.servicesManager = servicesManager;
     Object.assign(this, pubSubServiceInterface);
     //
   }
@@ -71,7 +72,7 @@ class CornerstoneViewportService implements IViewportService {
    * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  public enableElement(
+  public enableViewport(
     viewportIndex: number,
     viewportOptions: PublicViewportOptions,
     elementRef: HTMLDivElement
@@ -85,6 +86,16 @@ class CornerstoneViewportService implements IViewportService {
 
   public getViewportId(viewportIndex: number): string {
     return `viewport-${viewportIndex}`;
+  }
+
+  public getViewportIds(): string[] {
+    const viewportIds = [];
+
+    this.viewportsInfo.forEach(viewportInfo => {
+      viewportIds.push(viewportInfo.getViewportId());
+    });
+
+    return viewportIds;
   }
 
   /**
@@ -112,10 +123,9 @@ class CornerstoneViewportService implements IViewportService {
    */
   public resize() {
     const immediate = true;
-    const resetPan = false;
-    const resetZoom = false;
+    const keepCamera = true;
 
-    this.renderingEngine.resize(immediate, resetPan, resetZoom);
+    this.renderingEngine.resize(immediate, keepCamera);
     this.renderingEngine.render();
   }
 
@@ -126,8 +136,9 @@ class CornerstoneViewportService implements IViewportService {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
     this.renderingEngine.destroy();
+    this.viewportsDisplaySets.clear();
     this.renderingEngine = null;
-    cache.purgeVolumeCache();
+    cache.purgeCache();
   }
 
   /**
@@ -142,12 +153,11 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     const viewportId = viewportInfo.getViewportId();
-    this.renderingEngine.disableElement(viewportId);
-    this.viewportsInfo.delete(viewportIndex);
 
-    if (this.viewportsInfo.size === 0) {
-      this.destroy();
-    }
+    this.renderingEngine && this.renderingEngine.disableElement(viewportId);
+
+    this.viewportsInfo.get(viewportIndex).destroy();
+    this.viewportsInfo.delete(viewportIndex);
   }
 
   /**
@@ -158,9 +168,9 @@ class CornerstoneViewportService implements IViewportService {
    * @param {*} dataSource
    * @returns
    */
-  public setViewportDisplaySets(
+  public setViewportData(
     viewportIndex: number,
-    viewportData: StackData | VolumeData,
+    viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[]
   ): void {
@@ -179,8 +189,12 @@ class CornerstoneViewportService implements IViewportService {
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
+    viewportInfo.setViewportData(viewportData);
 
-    this._broadcastEvent(EVENTS.VIEWPORT_INFO_CREATED, viewportInfo);
+    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+      viewportData,
+      viewportIndex,
+    });
 
     const viewportId = viewportInfo.getViewportId();
     const element = viewportInfo.getElement();
@@ -203,6 +217,7 @@ class CornerstoneViewportService implements IViewportService {
     // renderingEngine is designed to be used like this. This will trigger
     // ENABLED_ELEMENT again and again, which will run onEnableElement callbacks
     renderingEngine.enableElement(viewportInput);
+
     this._setDisplaySets(viewportId, viewportData, viewportInfo);
   }
 
@@ -265,11 +280,18 @@ class CornerstoneViewportService implements IViewportService {
 
   _setStackViewport(
     viewport: Types.IStackViewport,
-    viewportData: StackData,
+    viewportData: StackViewportData,
     viewportInfo: ViewportInfo
   ) {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
-    const { imageIds, initialImageIndex } = viewportData;
+
+    const {
+      imageIds,
+      initialImageIndex,
+      displaySetInstanceUID,
+    } = viewportData.data;
+
+    this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
     let initialImageIndexToUse = initialImageIndex;
 
@@ -331,7 +353,15 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     if (preset === JumpPresets.Middle) {
-      return Math.floor(lastSliceIndex / 2);
+      // Note: this is a simple but yet very important formula.
+      // since viewport reset works with the middle slice
+      // if the below formula is not correct, on a viewport reset
+      // it will jump to a different slice than the middle one which
+      // was the initial slice, and we have some tools such as Crosshairs
+      // which rely on a relative camera modifications and those will break.
+      return lastSliceIndex % 2 === 0
+        ? lastSliceIndex / 2
+        : (lastSliceIndex + 1) / 2;
     }
 
     return 0;
@@ -339,7 +369,7 @@ class CornerstoneViewportService implements IViewportService {
 
   async _setVolumeViewport(
     viewport: Types.IVolumeViewport,
-    viewportData: VolumeData,
+    viewportData: VolumeViewportData,
     viewportInfo: ViewportInfo
   ): Promise<void> {
     // TODO: We need to overhaul the way data sources work so requests can be made
@@ -355,21 +385,24 @@ class CornerstoneViewportService implements IViewportService {
     // (This call may or may not create sub-requests for series metadata)
     const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
-    const { hangingProtocolService } = this;
+    const { HangingProtocolService } = this.servicesManager.services;
 
-    for (let i = 0; i < viewportData.imageIds.length; i++) {
-      const imageIds = viewportData.imageIds[i];
-      const displaySetInstanceUID = viewportData.displaySetInstanceUIDs[i];
-      const displaySetOptions = displaySetOptionsArray[i];
+    const volumeToLoad = [];
+    const displaySetInstanceUIDs = [];
 
-      const volumeId = displaySetInstanceUID;
+    for (const [index, data] of viewportData.data.entries()) {
+      const { volume, imageIds, displaySetInstanceUID } = data;
 
-      // if (displaySet.needsRerendering) {
-      //   console.warn('Removing volume from cache', volumeId);
-      //   cache.removeVolumeLoadObject(volumeId);
-      //   displaySet.needsRerendering = false;
-      //   this.displaySetsNeedRerendering.add(displaySet.displaySetInstanceUID);
-      // }
+      displaySetInstanceUIDs.push(displaySetInstanceUID);
+
+      if (!volume) {
+        continue;
+      }
+
+      volumeToLoad.push(volume);
+
+      const displaySetOptions = displaySetOptionsArray[index];
+      const { volumeId } = volume;
 
       const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
 
@@ -386,18 +419,20 @@ class CornerstoneViewportService implements IViewportService {
       });
     }
 
+    this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
+
     if (
-      hangingProtocolService.hasCustomImageLoadStrategy() &&
-      !hangingProtocolService.customImageLoadPerformed
+      HangingProtocolService.hasCustomImageLoadStrategy() &&
+      !HangingProtocolService.customImageLoadPerformed
     ) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      return hangingProtocolService.runImageLoadStrategy({
+      return HangingProtocolService.runImageLoadStrategy({
         viewportId: viewport.id,
         volumeInputArray,
       });
     }
 
-    viewportData.volumes.forEach(volume => {
+    volumeToLoad.forEach(volume => {
       volume.load();
     });
 
@@ -406,9 +441,98 @@ class CornerstoneViewportService implements IViewportService {
   }
 
   public async setVolumesForViewport(viewport, volumeInputArray) {
+    const {
+      DisplaySetService,
+      SegmentationService,
+      ToolGroupService,
+    } = this.servicesManager.services;
+
     await viewport.setVolumes(volumeInputArray);
 
+    // load any secondary displaySets
+    const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
+
+    const segDisplaySet = displaySetInstanceUIDs
+      .map(DisplaySetService.getDisplaySetByUID)
+      .find(displaySet => displaySet && displaySet.Modality === 'SEG');
+
+    if (segDisplaySet) {
+      const { referencedVolumeId } = segDisplaySet;
+      const referencedVolume = cache.getVolume(referencedVolumeId);
+      const segmentationId = segDisplaySet.displaySetInstanceUID;
+
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+
+      if (referencedVolume) {
+        SegmentationService.addSegmentationRepresentationToToolGroup(
+          toolGroup.id,
+          segmentationId
+        );
+      }
+    } else {
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+      const toolGroupSegmentationRepresentations =
+        SegmentationService.getSegmentationRepresentationsForToolGroup(
+          toolGroup.id
+        ) || [];
+
+      // csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
+      // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
+      // and we can look into hydrated segmentations to check if any of them are
+      // associated with the primary displaySet
+      // get segmentations only returns the hydrated segmentations
+      const segmentations = SegmentationService.getSegmentations();
+
+      for (const segmentation of segmentations) {
+        // if there is already a segmentation representation for this segmentation
+        // for this toolGroup, don't bother at all
+        if (
+          toolGroupSegmentationRepresentations.find(
+            representation => representation.segmentationId === segmentation.id
+          )
+        ) {
+          continue;
+        }
+
+        // otherwise, check if the hydrated segmentations are in the same FOR
+        // as the primary displaySet, if so add the representation (since it was not there)
+        const { id: segDisplaySetInstanceUID } = segmentation;
+
+        const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
+          segDisplaySetInstanceUID
+        );
+
+        let shouldDisplaySeg = false;
+
+        for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+          const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(
+            displaySetInstanceUID
+          );
+
+          if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
+            shouldDisplaySeg = true;
+            break;
+          }
+        }
+
+        if (shouldDisplaySeg) {
+          const toolGroup = ToolGroupService.getToolGroupForViewport(
+            viewport.id
+          );
+
+          SegmentationService.addSegmentationRepresentationToToolGroup(
+            toolGroup.id,
+            segmentation.id
+          );
+        }
+      }
+    }
+
     const viewportInfo = this.getViewportInfo(viewport.id);
+
+    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
+
     const initialImageOptions = viewportInfo.getInitialImageOptions();
 
     if (
@@ -493,17 +617,21 @@ class CornerstoneViewportService implements IViewportService {
 
   _setDisplaySets(
     viewportId: string,
-    viewportData: StackData | VolumeData,
+    viewportData: StackViewportData | VolumeViewportData,
     viewportInfo: ViewportInfo
   ): void {
     const viewport = this.getCornerstoneViewport(viewportId);
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData as StackData, viewportInfo);
+      this._setStackViewport(
+        viewport,
+        viewportData as StackViewportData,
+        viewportInfo
+      );
     } else if (viewport instanceof VolumeViewport) {
       this._setVolumeViewport(
         viewport,
-        viewportData as VolumeData,
+        viewportData as VolumeViewportData,
         viewportInfo
       );
     } else {
@@ -559,6 +687,10 @@ class CornerstoneViewportService implements IViewportService {
   } {
     const viewportIndex = viewportInfo.getViewportIndex();
 
+    if (!publicViewportOptions.viewportId) {
+      publicViewportOptions.viewportId = this.getViewportId(viewportIndex);
+    }
+
     // Creating a temporary viewportInfo to handle defaults
     const newViewportInfo = new ViewportInfo(
       viewportIndex,
@@ -577,6 +709,31 @@ class CornerstoneViewportService implements IViewportService {
       viewportOptions: newViewportOptions,
       displaySetOptions: newDisplaySetOptions,
     };
+  }
+
+  _getFrameOfReferenceUID(displaySetInstanceUID) {
+    const { DisplaySetService } = this.servicesManager.services;
+    const displaySet = DisplaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+
+    if (!displaySet) {
+      return;
+    }
+
+    if (displaySet.frameOfReferenceUID) {
+      return displaySet.frameOfReferenceUID;
+    }
+
+    if (displaySet.Modality === 'SEG') {
+      const { instance } = displaySet;
+      return instance.FrameOfReferenceUID;
+    }
+
+    const { images } = displaySet;
+    if (images && images.length) {
+      return images[0].FrameOfReferenceUID;
+    }
   }
 }
 

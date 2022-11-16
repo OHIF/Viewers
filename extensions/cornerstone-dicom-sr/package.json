@@ -33,19 +33,19 @@
   },
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
+    "@ohif/extension-cornerstone": "^3.0.0",
+    "@ohif/extension-measurement-tracking": "^3.0.0",
     "@ohif/ui": "^2.0.0",
     "dcmjs": "^0.28.3",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
     "prop-types": "^15.6.2",
-    "react": "^17.0.2",
-    "@ohif/extension-cornerstone": "^3.0.0",
-    "@ohif/extension-measurement-tracking": "^3.0.0"
+    "react": "^17.0.2"
   },
   "dependencies": {
     "@babel/runtime": "7.16.3",
     "classnames": "^2.2.6",
-    "@cornerstonejs/core": "^0.16.8",
-    "@cornerstonejs/tools": "^0.24.1"
+    "@cornerstonejs/core": "^0.21.0",
+    "@cornerstonejs/tools": "^0.29.2"
   }
 }

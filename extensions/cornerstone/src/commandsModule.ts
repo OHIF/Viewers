@@ -1,34 +1,44 @@
 import {
   getEnabledElement,
   StackViewport,
-  volumeLoader,
-  cache,
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
   Enums,
-  segmentation,
-  utilities as csToolsUtils,
+  utilities as cstUtils,
+  segmentation as cstSegmentation,
+  ReferenceLinesTool,
+  synchronizers as cstSynchronizers,
 } from '@cornerstonejs/tools';
 
-import { Types } from '@ohif/core';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 
 import { getEnabledElement as OHIFgetEnabledElement } from './state';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
+import getProtocolViewportStructureFromGridViewports from './utils/getProtocolViewportStructureFromGridViewports';
+import removeToolGroupSegmentationRepresentations from './utils/removeToolGroupSegmentationRepresentations';
+import calculateViewportRegistrations from './utils/calculateViewportRegistrations';
+
+const MPR_TOOLGROUP_ID = 'mpr';
+
+// [ {
+//   synchronizerId: string,
+//   viewports: [ { viewportId: number, renderingEngineId: string, index: number } , ...]
+// ]}
+let STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
 const commandsModule = ({ servicesManager }) => {
   const {
     ViewportGridService,
     ToolGroupService,
+    DisplaySetService,
+    SyncGroupService,
     CineService,
     ToolBarService,
     UIDialogService,
     CornerstoneViewportService,
-    SegmentationService,
-    DisplaySetService,
     HangingProtocolService,
     UINotificationService,
   } = servicesManager.services;
@@ -133,34 +143,23 @@ const commandsModule = ({ servicesManager }) => {
       });
       viewport.render();
     },
-    toggleCrosshairs({ toolGroupId, toggledState }) {
-      const toolName = 'Crosshairs';
-      // If it is Enabled
-      if (toggledState) {
-        actions.setToolActive({ toolName, toolGroupId });
-        return;
-      }
-      const toolGroup = _getToolGroup(toolGroupId);
-
-      if (!toolGroup) {
-        return;
-      }
-
-      toolGroup.setToolDisabled(toolName);
-
-      // Get the primary toolId from the ToolBarService and set it to active
-      // Since it was set to passive if not already active
-      const primaryActiveTool = ToolBarService.state.primaryToolId;
-      if (
-        toolGroup?.toolOptions[primaryActiveTool]?.mode ===
-        Enums.ToolModes.Passive
-      ) {
-        toolGroup.setToolActive(primaryActiveTool, {
-          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-        });
-      }
-    },
     setToolActive: ({ toolName, toolGroupId = null }) => {
+      if (toolName === 'Crosshairs') {
+        const activeViewportToolGroup = _getToolGroup(null);
+
+        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
+          UINotificationService.show({
+            title: 'Crosshairs',
+            message:
+              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
+            type: 'info',
+            duration: 3000,
+          });
+
+          throw new Error('Crosshairs tool is not available in this viewport');
+        }
+      }
+
       const toolGroup = _getToolGroup(toolGroupId);
 
       if (!toolGroup) {
@@ -298,8 +297,12 @@ const commandsModule = ({ servicesManager }) => {
       if (viewport instanceof StackViewport) {
         viewport.resetProperties();
         viewport.resetCamera();
-        viewport.render();
+      } else {
+        // Todo: add reset properties for volume viewport
+        viewport.resetCamera();
       }
+
+      viewport.render();
     },
     scaleViewport: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -331,59 +334,7 @@ const commandsModule = ({ servicesManager }) => {
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      csToolsUtils.scroll(viewport, options);
-    },
-    async createSegmentationForDisplaySet({ displaySetInstanceUID }) {
-      const volumeId = displaySetInstanceUID;
-
-      const segmentationUID = csUtils.uuidv4();
-      const segmentationId = `${volumeId}::${segmentationUID}`;
-
-      await volumeLoader.createAndCacheDerivedVolume(volumeId, {
-        volumeId: segmentationId,
-      });
-
-      // Add the segmentations to state
-      segmentation.addSegmentations([
-        {
-          segmentationId,
-          representation: {
-            // The type of segmentation
-            type: Enums.SegmentationRepresentations.Labelmap,
-            // The actual segmentation data, in the case of labelmap this is a
-            // reference to the source volume of the segmentation.
-            data: {
-              volumeId: segmentationId,
-            },
-          },
-        },
-      ]);
-
-      return segmentationId;
-    },
-    async addSegmentationRepresentationToToolGroup({
-      segmentationId,
-      toolGroupId,
-      representationType,
-    }) {
-      // // Add the segmentation representation to the toolgroup
-      await segmentation.addSegmentationRepresentations(toolGroupId, [
-        {
-          segmentationId,
-          type: representationType,
-        },
-      ]);
-    },
-    getLabelmapVolumes: ({ segmentations }) => {
-      if (!segmentations || !segmentations.length) {
-        segmentations = SegmentationService.getSegmentations();
-      }
-
-      const labelmapVolumes = segmentations.map(segmentation => {
-        return cache.getVolume(segmentation.id);
-      });
-
-      return labelmapVolumes;
+      cstUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
       viewportIndex,
@@ -398,7 +349,7 @@ const commandsModule = ({ servicesManager }) => {
       const actorEntries = viewport.getActors();
 
       const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid === displaySetInstanceUID;
+        return actorEntry.uid.includes(displaySetInstanceUID);
       });
 
       const { actor: volumeActor } = actorEntry;
@@ -422,6 +373,254 @@ const commandsModule = ({ servicesManager }) => {
     },
     setHangingProtocol: ({ protocolId }) => {
       HangingProtocolService.setProtocol(protocolId);
+    },
+    toggleMPR: ({ toggledState }) => {
+      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const viewportDisplaySetInstanceUIDs =
+        viewports[activeViewportIndex].displaySetInstanceUIDs;
+
+      const errorCallback = error => {
+        UINotificationService.show({
+          title: 'Multiplanar reconstruction (MPR) ',
+          message:
+            'Cannot create MPR for this DisplaySet since it is not reconstructable.',
+          type: 'info',
+          duration: 3000,
+        });
+      };
+
+      const cacheId = 'beforeMPR';
+      if (toggledState) {
+        ViewportGridService.setCachedLayout({
+          cacheId,
+          cachedLayout: ViewportGridService.getState(),
+        });
+
+        const matchDetails = {
+          displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
+        };
+
+        HangingProtocolService.setProtocol(
+          MPR_TOOLGROUP_ID,
+          matchDetails,
+          errorCallback
+        );
+        return;
+      }
+
+      const { cachedLayout } = ViewportGridService.getState();
+
+      if (!cachedLayout || !cachedLayout[cacheId]) {
+        return;
+      }
+
+      const { viewports: cachedViewports, numRows, numCols } = cachedLayout[
+        cacheId
+      ];
+
+      // Todo: The following assumes that when turning off MPR we are applying the default
+      //  protocol which might not be the one that was used before MPR was turned on
+      // In order to properly implement this logic, we should modify the hanging protocol
+      // upon layout change with layout selector, and cache and restore it when turning
+      // MPR on and off
+      const viewportStructure = getProtocolViewportStructureFromGridViewports({
+        viewports: cachedViewports,
+        numRows,
+        numCols,
+      });
+
+      const viewportSpecificMatch = cachedViewports.reduce(
+        (acc, viewport, index) => {
+          const {
+            displaySetInstanceUIDs,
+            viewportOptions,
+            displaySetOptions,
+          } = viewport;
+
+          acc[index] = {
+            displaySetInstanceUIDs,
+            viewportOptions,
+            displaySetOptions,
+          };
+
+          return acc;
+        },
+        {}
+      );
+
+      const defaultProtocol = HangingProtocolService.getProtocolById('default');
+
+      // Todo: this assumes there is only one stage in the default protocol
+      const defaultProtocolStage = defaultProtocol.stages[0];
+      defaultProtocolStage.viewportStructure = viewportStructure;
+
+      const { primaryToolId } = ToolBarService.state;
+      const mprToolGroup = _getToolGroup(MPR_TOOLGROUP_ID);
+      // turn off crosshairs if it is on
+      if (
+        primaryToolId === 'Crosshairs' ||
+        mprToolGroup.getToolInstance('Crosshairs')?.mode ===
+          Enums.ToolModes.Active
+      ) {
+        const toolGroup = _getToolGroup(MPR_TOOLGROUP_ID);
+        toolGroup.setToolDisabled('Crosshairs');
+        ToolBarService.recordInteraction({
+          groupId: 'WindowLevel',
+          itemId: 'WindowLevel',
+          interactionType: 'tool',
+          commands: [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+        });
+      }
+
+      // clear segmentations if they exist
+      removeToolGroupSegmentationRepresentations(MPR_TOOLGROUP_ID);
+
+      HangingProtocolService.setProtocol(
+        'default',
+        viewportSpecificMatch,
+        error => {
+          UINotificationService.show({
+            title: 'Multiplanar reconstruction (MPR) ',
+            message:
+              'Something went wrong while trying to restore the previous layout.',
+            type: 'info',
+            duration: 3000,
+          });
+        }
+      );
+    },
+    toggleStackImageSync: ({ toggledState }) => {
+      if (!toggledState) {
+        STACK_IMAGE_SYNC_GROUPS_INFO.forEach(syncGroupInfo => {
+          const { viewports, synchronizerId } = syncGroupInfo;
+
+          viewports.forEach(({ viewportId, renderingEngineId }) => {
+            SyncGroupService.removeViewportFromSyncGroup(
+              viewportId,
+              renderingEngineId,
+              synchronizerId
+            );
+          });
+        });
+
+        return;
+      }
+
+      STACK_IMAGE_SYNC_GROUPS_INFO = [];
+
+      // create synchronization groups and add viewports
+      let { viewports } = ViewportGridService.getState();
+
+      // filter empty viewports
+      viewports = viewports.filter(
+        viewport =>
+          viewport.displaySetInstanceUIDs &&
+          viewport.displaySetInstanceUIDs.length
+      );
+
+      // filter reconstructable viewports
+      viewports = viewports.filter(viewport => {
+        const { displaySetInstanceUIDs } = viewport;
+
+        for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+          const displaySet = DisplaySetService.getDisplaySetByUID(
+            displaySetInstanceUID
+          );
+
+          if (displaySet && displaySet.isReconstructable) {
+            return true;
+          }
+
+          return false;
+        }
+      });
+
+      const viewportsByOrientation = viewports.reduce((acc, viewport) => {
+        const { viewportId, viewportType } = viewport.viewportOptions;
+
+        if (viewportType !== 'stack') {
+          console.warn('Viewport is not a stack, cannot sync images yet');
+          return acc;
+        }
+
+        const { element } = CornerstoneViewportService.getViewportInfo(
+          viewportId
+        );
+        const { viewport: csViewport, renderingEngineId } = getEnabledElement(
+          element
+        );
+        const { viewPlaneNormal } = csViewport.getCamera();
+
+        // Should we round here? I guess so, but not sure how much precision we need
+        const orientation = viewPlaneNormal.map(v => Math.round(v)).join(',');
+
+        if (!acc[orientation]) {
+          acc[orientation] = [];
+        }
+
+        acc[orientation].push({ viewportId, renderingEngineId });
+
+        return acc;
+      }, {});
+
+      // create synchronizer for each group
+      Object.values(viewportsByOrientation).map(viewports => {
+        let synchronizerId = viewports
+          .map(({ viewportId }) => viewportId)
+          .join(',');
+
+        synchronizerId = `imageSync_${synchronizerId}`;
+
+        calculateViewportRegistrations(viewports);
+
+        viewports.forEach(({ viewportId, renderingEngineId }) => {
+          SyncGroupService.addViewportToSyncGroup(
+            viewportId,
+            renderingEngineId,
+            {
+              type: 'stackimage',
+              id: synchronizerId,
+              source: true,
+              target: true,
+            }
+          );
+        });
+
+        STACK_IMAGE_SYNC_GROUPS_INFO.push({
+          synchronizerId,
+          viewports,
+        });
+      });
+    },
+    toggleReferenceLines: ({ toggledState }) => {
+      const { activeViewportIndex } = ViewportGridService.getState();
+      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+        activeViewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+
+      if (!toggledState) {
+        toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
+      }
+
+      toolGroup.setToolConfiguration(
+        ReferenceLinesTool.toolName,
+        {
+          sourceViewportId: viewportId,
+        },
+        true // overwrite
+      );
+      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
   };
 
@@ -524,22 +723,6 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    createSegmentationForDisplaySet: {
-      commandFn: actions.createSegmentationForDisplaySet,
-      storeContexts: [],
-      options: {},
-    },
-    addSegmentationRepresentationToToolGroup: {
-      commandFn: actions.addSegmentationRepresentationToToolGroup,
-      storeContexts: [],
-      options: {},
-    },
-
-    getLabelmapVolumes: {
-      commandFn: actions.getLabelmapVolumes,
-      storeContexts: [],
-      options: {},
-    },
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
       storeContexts: [],
@@ -547,6 +730,21 @@ const commandsModule = ({ servicesManager }) => {
     },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
+      storeContexts: [],
+      options: {},
+    },
+    toggleMPR: {
+      commandFn: actions.toggleMPR,
+      storeContexts: [],
+      options: {},
+    },
+    toggleStackImageSync: {
+      commandFn: actions.toggleStackImageSync,
+      storeContexts: [],
+      options: {},
+    },
+    toggleReferenceLines: {
+      commandFn: actions.toggleReferenceLines,
       storeContexts: [],
       options: {},
     },

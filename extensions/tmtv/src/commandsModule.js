@@ -12,6 +12,7 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
+const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
 const commandsModule = ({
   servicesManager,
@@ -25,6 +26,7 @@ const commandsModule = ({
     HangingProtocolService,
     ToolGroupService,
     CornerstoneViewportService,
+    SegmentationService,
   } = servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
@@ -43,7 +45,8 @@ const commandsModule = ({
   function _getMatchedViewportsToolGroupIds() {
     const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
-    viewportMatchDetails.forEach(({ viewportOptions }) => {
+    viewportMatchDetails.forEach((value, key) => {
+      const { viewportOptions } = value;
       const { toolGroupId } = viewportOptions;
       if (toolGroupIds.indexOf(toolGroupId) === -1) {
         toolGroupIds.push(toolGroupId);
@@ -61,8 +64,8 @@ const commandsModule = ({
       // corrected PT vs the non-attenuation correct PT)
 
       let ptDisplaySet = null;
-      for (const matched of viewportMatchDetails) {
-        const { displaySetsInfo } = matched;
+      for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
+        const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
         );
@@ -128,22 +131,27 @@ const commandsModule = ({
         return;
       }
 
-      const segmentationId = await commandsManager.runCommand(
-        'createSegmentationForDisplaySet',
-        {
-          displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
-        }
+      const segmentationId = await SegmentationService.createSegmentationForDisplaySet(
+        ptDisplaySet.displaySetInstanceUID
       );
 
+      // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
-      const representationType =
-        csTools.Enums.SegmentationRepresentations.Labelmap;
+      const representationType = LABELMAP;
 
       for (const toolGroupId of toolGroupIds) {
-        await commandsManager.runCommand(
-          'addSegmentationRepresentationToToolGroup',
-          { segmentationId, toolGroupId: toolGroupId, representationType }
+        const hydrateSegmentation = true;
+        await SegmentationService.addSegmentationRepresentationToToolGroup(
+          toolGroupId,
+          segmentationId,
+          hydrateSegmentation,
+          representationType
+        );
+
+        SegmentationService.setActiveSegmentationForToolGroup(
+          segmentationId,
+          toolGroupId
         );
       }
 
@@ -153,23 +161,9 @@ const commandsModule = ({
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
       toolGroupIds.forEach(toolGroupId => {
-        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
+        SegmentationService.setActiveSegmentationForToolGroup(
+          segmentationId,
           toolGroupId
-        );
-
-        if (segmentationRepresentations.length === 0) {
-          return;
-        }
-
-        // Todo: this finds the first segmentation representation that matches the segmentationId
-        // If there are two labelmap representations from the same segmentation, this will not work
-        const representation = segmentationRepresentations.find(
-          representation => representation.segmentationId === segmentationId
-        );
-
-        csTools.segmentation.activeSegmentation.setActiveSegmentationRepresentation(
-          toolGroupId,
-          representation.segmentationRepresentationUID
         );
       });
     },
@@ -179,9 +173,7 @@ const commandsModule = ({
       );
 
       const { representationData } = segmentation;
-      const { volumeId: segVolumeId } = representationData[
-        csTools.Enums.SegmentationRepresentations.Labelmap
-      ];
+      const { volumeId: segVolumeId } = representationData[LABELMAP];
 
       const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
 
@@ -227,36 +219,6 @@ const commandsModule = ({
         [referencedVolume],
         configToUse
       );
-    },
-    toggleSegmentationVisibility: ({ segmentationId }) => {
-      const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
-      toolGroupIds.forEach(toolGroupId => {
-        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
-          toolGroupId
-        );
-
-        if (segmentationRepresentations.length === 0) {
-          return;
-        }
-
-        // Todo: this finds the first segmentation representation that matches the segmentationId
-        // If there are two labelmap representations from the same segmentation, this will not work
-        const representation = segmentationRepresentations.find(
-          representation => representation.segmentationId === segmentationId
-        );
-
-        const visibility = csTools.segmentation.config.visibility.getSegmentationVisibility(
-          toolGroupId,
-          representation.segmentationRepresentationUID
-        );
-
-        csTools.segmentation.config.visibility.setSegmentationVisibility(
-          toolGroupId,
-          representation.segmentationRepresentationUID,
-          !visibility
-        );
-      });
     },
     calculateSuvPeak: ({ labelmap }) => {
       const { referencedVolumeId } = labelmap;
@@ -326,9 +288,9 @@ const commandsModule = ({
       };
     },
     calculateTMTV: ({ segmentations }) => {
-      const labelmaps = commandsManager.runCommand('getLabelmapVolumes', {
-        segmentations,
-      });
+      const labelmaps = segmentations.map(s =>
+        SegmentationService.getLabelmapVolume(s.id)
+      );
 
       if (!labelmaps.length) {
         return;
@@ -351,9 +313,9 @@ const commandsModule = ({
       createAndDownloadTMTVReport(segReport, additionalReportRows);
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
-      const labelmapVolumes = commandsManager.runCommand('getLabelmapVolumes', {
-        segmentations,
-      });
+      const labelmapVolumes = segmentations.map(s =>
+        SegmentationService.getLabelmapVolume(s.id)
+      );
 
       let mergedLabelmap;
       // merge labelmap will through an error if labels maps are not the same size
@@ -408,7 +370,6 @@ const commandsModule = ({
         1e-3
       );
     },
-
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
@@ -493,7 +454,7 @@ const commandsModule = ({
       let report = {};
 
       for (const segmentation of segmentations) {
-        const { id, label, data } = segmentation;
+        const { id, label, cachedStats: data } = segmentation;
 
         const segReport = { id, label };
 
@@ -513,7 +474,7 @@ const commandsModule = ({
           }
         });
 
-        const labelmapVolume = cornerstone.cache.getVolume(id);
+        const labelmapVolume = SegmentationService.getLabelmapVolume(id);
 
         if (!labelmapVolume) {
           report[id] = segReport;
@@ -523,7 +484,7 @@ const commandsModule = ({
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume = cornerstone.cache.getVolume(
+        const referencedVolume = SegmentationService.getLabelmapVolume(
           referencedVolumeId
         );
 
@@ -634,11 +595,6 @@ const commandsModule = ({
     },
     thresholdSegmentationByRectangleROITool: {
       commandFn: actions.thresholdSegmentationByRectangleROITool,
-      storeContexts: [],
-      options: {},
-    },
-    toggleSegmentationVisibility: {
-      commandFn: actions.toggleSegmentationVisibility,
       storeContexts: [],
       options: {},
     },

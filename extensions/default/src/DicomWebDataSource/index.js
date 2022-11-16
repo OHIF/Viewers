@@ -423,6 +423,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
                 // any implementation that stores static copies of the metadata
                 StudyInstanceUID: naturalized.StudyInstanceUID,
               };
+              // Todo: this needs to be from wado dicom web client
               return qidoDicomWebClient.retrieveBulkData(options).then(val => {
                 const ret = (val && val[0]) || undefined;
                 value.Value = ret;
@@ -440,6 +441,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach((instance, index) => {
+          instance.wadoRoot = dicomWebConfig.wadoRoot;
+          instance.wadoUri = dicomWebConfig.wadoUri;
+
           const imageId = implementation.getImageIdsForInstance({
             instance,
           });

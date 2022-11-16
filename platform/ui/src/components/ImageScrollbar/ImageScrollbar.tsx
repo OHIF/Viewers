@@ -8,6 +8,7 @@ class ImageScrollbar extends PureComponent {
     max: PropTypes.number.isRequired,
     height: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
+    onContextMenu: PropTypes.func,
   };
 
   render() {
@@ -20,7 +21,7 @@ class ImageScrollbar extends PureComponent {
     };
 
     return (
-      <div className="scroll">
+      <div className="scroll" onContextMenu={this.props.onContextMenu}>
         <div className="scroll-holder">
           <input
             // adding mousetrap let the mousetrap know about the scrollbar otherwise,
@@ -65,5 +66,9 @@ class ImageScrollbar extends PureComponent {
     }
   };
 }
+
+ImageScrollbar.defaultProps = {
+  onContextMenu: e => e.preventDefault(),
+};
 
 export default ImageScrollbar;

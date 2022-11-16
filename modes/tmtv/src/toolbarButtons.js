@@ -228,11 +228,11 @@ const toolbarButtons = [
     id: 'Crosshairs',
     type: 'ohif.radioGroup',
     props: {
-      type: 'toggle',
+      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
       commands: [
-        ..._createCommands('toggleCrosshairs', 'Crosshairs', [
+        ..._createCommands('setToolActive', 'Crosshairs', [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
@@ -272,7 +272,8 @@ const toolbarButtons = [
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text:
+              'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },

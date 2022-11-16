@@ -31,6 +31,7 @@ export type SyncGroup = {
 const POSITION = 'cameraposition';
 const VOI = 'voi';
 const ZOOMPAN = 'zoompan';
+const STACKIMAGE = 'stackimage';
 
 const asSyncGroup = (syncGroup: string | SyncGroup): SyncGroup =>
   typeof syncGroup === 'string' ? { type: syncGroup } : syncGroup;
@@ -43,6 +44,7 @@ export default class SyncGroupService {
     [POSITION]: synchronizers.createCameraPositionSynchronizer,
     [VOI]: synchronizers.createVOISynchronizer,
     [ZOOMPAN]: synchronizers.createZoomPanSynchronizer,
+    [STACKIMAGE]: synchronizers.createStackImageSynchronizer,
   };
 
   constructor(serviceManager) {
@@ -72,7 +74,7 @@ export default class SyncGroupService {
    * @param creator
    */
   public setSynchronizer(type: string, creator: SyncCreator): void {
-    this.synchronizerCreators[type] = creator;
+    this.synchronizerCreators[type.toLowerCase()] = creator;
   }
 
   protected _getOrCreateSynchronizer(
@@ -91,20 +93,29 @@ export default class SyncGroupService {
   public addViewportToSyncGroup(
     viewportId: string,
     renderingEngineId: string,
-    syncGroups?: (SyncGroup | string)[]
+    syncGroups?: SyncGroup | string | SyncGroup[] | string[]
   ): void {
-    if (!syncGroups || !syncGroups.length) {
+    if (!syncGroups) {
       return;
     }
 
-    syncGroups.forEach(syncGroup => {
+    const syncGroupsArray = Array.isArray(syncGroups)
+      ? syncGroups
+      : [syncGroups];
+
+    syncGroupsArray.forEach(syncGroup => {
       const syncGroupObj = asSyncGroup(syncGroup);
-      const { type, target = true, source = true, options = {} } = syncGroupObj;
-      const { id = type } = syncGroupObj;
+      const {
+        type,
+        target = true,
+        source = true,
+        options = {},
+        id = type,
+      } = syncGroupObj;
 
       const synchronizer = this._getOrCreateSynchronizer(type, id, options);
-
       synchronizer.setOptions(viewportId, options);
+
       const viewportInfo = { viewportId, renderingEngineId };
       if (target && source) {
         synchronizer.add(viewportInfo);
@@ -123,11 +134,16 @@ export default class SyncGroupService {
 
   public removeViewportFromSyncGroup(
     viewportId: string,
-    renderingEngineId: string
+    renderingEngineId: string,
+    syncGroupId?: string
   ): void {
     const synchronizers = SynchronizerManager.getAllSynchronizers();
 
-    synchronizers.forEach(synchronizer => {
+    const filteredSynchronizers = syncGroupId
+      ? synchronizers.filter(s => s.id === syncGroupId)
+      : synchronizers;
+
+    filteredSynchronizers.forEach(synchronizer => {
       if (!synchronizer) {
         return;
       }

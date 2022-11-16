@@ -1,9 +1,16 @@
 // Todo: we probably should add external installed extensions/modes here as well.
 
 module.exports = {
+  // Note: in Tailwind 3.0, JIT will purge unused styles by default
+  // but in development, it is often useful to disable this to see
+  // and try out all the styles that are available.
+  // ...(process.env.NODE_ENV === 'development' && {
+  //   safelist: [{ pattern: /.*/ }],
+  // }),
   content: [
     './src/**/*.{jsx,js,ts,tsx, css}',
     '../../extensions/**/*.{jsx,js,ts,tsx, css}',
+    '../ui/src/**/*.{jsx,js,ts,tsx, css}',
     '../../modes/**/*.{jsx,js,ts,tsx, css}',
     './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx, css}',
     '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
@@ -174,36 +181,6 @@ module.exports = {
         900: '#702459',
       },
     },
-    spacing: {
-      px: '1px',
-      '0': '0',
-      '1': '0.15rem',
-      '2': '0.5rem',
-      '3': '0.75rem',
-      '4': '1rem',
-      '5': '1.25rem',
-      '6': '1.5rem',
-      '8': '2rem',
-      '10': '2.5rem',
-      '12': '3rem',
-      '14': '3.5rem',
-      '16': '4rem',
-      '18': '4.5rem',
-      '20': '5rem',
-      '24': '6rem',
-      '32': '8rem',
-      '40': '10rem',
-      '48': '12rem',
-      '56': '14rem',
-      '64': '16rem',
-      '72': '18rem',
-      '80': '20rem',
-      '88': '22rem',
-      '96': '24rem',
-      '104': '26rem',
-      '112': '28rem',
-      '250px': '250px',
-    },
     backgroundColor: theme => theme('colors'),
     backgroundPosition: {
       bottom: 'bottom',
@@ -225,21 +202,6 @@ module.exports = {
       ...theme('colors'),
       DEFAULT: theme('colors.gray.300', 'currentColor'),
     }),
-    borderRadius: {
-      none: '0',
-      sm: '0.125rem',
-      DEFAULT: '0.25rem',
-      md: '0.375rem',
-      lg: '0.5rem',
-      full: '9999px',
-    },
-    borderWidth: {
-      DEFAULT: '1px',
-      '0': '0',
-      '2': '2px',
-      '4': '4px',
-      '8': '8px',
-    },
     boxShadow: {
       xs: '0 0 0 1px rgba(0, 0, 0, 0.05)',
       sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -287,7 +249,7 @@ module.exports = {
     },
     fontFamily: {
       sans: [
-        'Lato',
+        'Inter',
         'system-ui',
         '-apple-system',
         'BlinkMacSystemFont',
@@ -315,8 +277,8 @@ module.exports = {
     fontSize: {
       xs: '0.65rem',
       sm: '0.75rem',
-      base: '0.875rem',
-      lg: '1rem',
+      base: '0.8125rem',
+      lg: '0.9275rem',
       xl: '1.25rem',
       '2xl': '1.5rem',
       '3xl': '1.875rem',
@@ -328,7 +290,7 @@ module.exports = {
       hairline: '100',
       thin: '200',
       light: '300',
-      normal: '400',
+      normal: '300',
       medium: '500',
       semibold: '600',
       bold: '700',

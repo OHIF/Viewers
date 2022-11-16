@@ -1,3 +1,23 @@
+# This dockerfile is used to publish the `ohif/viewer` image on dockerhub.
+#
+# It's a good example of how to build our static application and package it
+# with a web server capable of hosting it as static content.
+#
+# docker build
+# --------------
+# If you would like to use this dockerfile to build and tag an image, make sure
+# you set the context to the project's root directory:
+# https://docs.docker.com/engine/reference/commandline/build/
+#
+#
+# SUMMARY
+# --------------
+# This dockerfile has two stages:
+#
+# 1. Building the React application for production
+# 2. Setting up our Nginx (Alpine Linux) image w/ step one's output
+#
+
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
@@ -34,10 +54,21 @@ RUN yarn install --frozen-lockfile --verbose
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
+# ENV GENERATE_SOURCEMAP=false
+# ENV REACT_APP_CONFIG=config/default.js
+
+RUN yarn run build
 
 # Stage 3: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginx:1.15.5-alpine as final
-RUN apk add --no-cache bash
-RUN rm -rf /etc/nginx/conf.d
-COPY .docker/Viewer-v2.x /etc/nginx/conf.d
+FROM nginxinc/nginx-unprivileged:1.23.1-alpine as final
+#RUN apk add --no-cache bash
+ENV PORT=3000
+RUN rm /etc/nginx/conf.d/default.conf
+USER nginx
+COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
+RUN envsubst `${PORT}` < /usr/src/default.conf.template > /etc/nginx/conf.d/default.conf
+RUN chmod 777 /usr/src/entrypoint.sh
+COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
+ENTRYPOINT ["/usr/src/entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]

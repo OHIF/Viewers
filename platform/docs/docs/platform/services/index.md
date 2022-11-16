@@ -61,6 +61,17 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
+                <a href="./data/SegmentationService">
+                    SegmentationService (NEW)
+                </a>
+            </td>
+            <td>Segmentation Service</td>
+            <td>
+                SegmentationService
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./data/HangingProtocolService">
                     HangingProtocolService (NEW)
                 </a>
