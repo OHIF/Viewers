@@ -8,7 +8,7 @@ import Dialog from './Dialog';
 import Dropdown from './Dropdown';
 import EmptyStudies from './EmptyStudies';
 import ErrorBoundary from './ErrorBoundary';
-import Icon, { addIcon } from './Icon';
+import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
 import InputDateRange from './InputDateRange';
@@ -89,7 +89,6 @@ export {
   ExpandableToolbarButton,
   ListMenu,
   Icon,
-  addIcon,
   IconButton,
   Input,
   InputDateRange,
