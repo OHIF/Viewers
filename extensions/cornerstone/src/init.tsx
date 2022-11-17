@@ -362,13 +362,13 @@ export default async function init({
       const viewportId = `viewport-${viewportIndex}`;
       const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
 
-      if (!toolGroup) {
+      if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
         return;
       }
 
       // check if reference lines are active
       const referenceLinesEnabled =
-        toolGroup._toolInstances?.['ReferenceLines'].mode ===
+        toolGroup._toolInstances['ReferenceLines'].mode ===
         Enums.ToolModes.Enabled;
 
       if (!referenceLinesEnabled) {

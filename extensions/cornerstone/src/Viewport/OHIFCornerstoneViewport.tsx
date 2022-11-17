@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import { useViewportGrid } from '@ohif/ui';
 import * as cs3DTools from '@cornerstonejs/tools';
 import {
   Enums,
@@ -119,6 +118,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     CornerstoneCacheService,
     ViewportGridService,
   } = servicesManager.services;
+  debugger;
 
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
@@ -355,7 +355,7 @@ function _subscribeToJumpToMeasurementEvents(
   elementRef,
   viewportIndex,
   displaySets,
-  viewportGridService,
+  ViewportGridService,
   CornerstoneViewportService
 ) {
   const displaysUIDs = displaySets.map(
