@@ -378,6 +378,19 @@ const toolbarButtons = [
           'Reset'
         ),
         _createActionButton(
+          'TagBrowser',
+          'list-bullets',
+          'Dicom Tag Browser',
+          [
+            {
+              commandName: 'openDICOMTagViewer',
+              commandOptions: {},
+              context: 'DEFAULT',
+          },
+          ],
+          'Dicom Tag Browser'
+        ),
+        _createActionButton(
           'rotate-right',
           'tool-rotate-right',
           'Rotate Right',
