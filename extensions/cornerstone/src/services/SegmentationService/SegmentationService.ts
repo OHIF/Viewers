@@ -590,6 +590,8 @@ class SegmentationService {
     // Note: ideally we could use the TypedArray set method, but since each
     // slice can have multiple segments, we need to loop over each slice and
     // set the segment value for each segment.
+    let overlappingSegments = false;
+
     const _segmentInfoUpdate = (segmentInfo, segmentIndex) => {
       const { pixelData: segPixelData } = segmentInfo;
 
@@ -636,6 +638,10 @@ class SegmentationService {
           i++, j++
         ) {
           if (functionGroupPixelData[j] !== 0) {
+            if (derivedVolumeScalarData[i] !== 0) {
+              overlappingSegments = true;
+            }
+
             derivedVolumeScalarData[i] = segmentIndex;
 
             // centroid calculations
@@ -716,6 +722,7 @@ class SegmentationService {
     this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
       segmentationId,
       segDisplaySet,
+      overlappingSegments,
     });
 
     return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);

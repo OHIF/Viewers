@@ -36,6 +36,7 @@ function OHIFCornerstoneSEGViewport(props) {
     DisplaySetService,
     ToolGroupService,
     SegmentationService,
+    UINotificationService,
   } = servicesManager.services;
 
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
@@ -175,6 +176,15 @@ function OHIFCornerstoneSEGViewport(props) {
           segDisplaySet.displaySetInstanceUID
         ) {
           setSegIsLoading(false);
+        }
+
+        if (evt.overlappingSegments) {
+          UINotificationService.show({
+            title: 'Overlapping Segments',
+            message:
+              'Overlapping segments detected which is not currently supported',
+            type: 'warning',
+          });
         }
       }
     );
