@@ -1,48 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { classes } from '@ohif/core';
-import Range from './Range';
-import DicomTagTable from './DicomTagTable';
 import dcmjs from 'dcmjs';
 import moment from 'moment';
+import React, { useState, useMemo } from 'react';
+import { classes } from '@ohif/core';
+import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
-import { Select, Typography } from '@ohif/ui';
+import { InputRange, Select, Typography } from '@ohif/ui';
 
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
 const { nameMap } = DicomMetaDictionary;
 
-
-let instanceSelectList = null;
-let instanceSelectTitle = null;
-
 const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   const [
-    activeDisplaySetInstanceUID,
-    setActiveDisplaySetInstanceUID,
+    selectedDisplaySetInstanceUID,
+    setSelectedDisplaySetInstanceUID,
   ] = useState(displaySetInstanceUID);
-  const [activeInstance, setActiveInstance] = useState(1);
-  const [tags, setTags] = useState([]);
-  const [meta, setMeta] = useState('');
-  const [instanceList, setInstanceList] = useState([]);
-  const [displaySetList, setDisplaySetList] = useState([]);
-  const [isImageStack, setIsImageStack] = useState(false);
-  const [selectedDisplaySetValue, setSelectedDisplaySetValue] = useState({}
-  );
-  const onSeriesSelect = value => {
-    console.log(value);
-    setActiveDisplaySetInstanceUID(value.value);
-    setActiveInstance(1);
-    setSelectedDisplaySetValue(value);
+  const [instanceNumber, setInstanceNumber] = useState(1);
+
+  const onSelectChange = value => {
+    setSelectedDisplaySetInstanceUID(value.value);
+    setInstanceNumber(1);
   };
 
-  useEffect(() => {
-    var activeDisplaySet = displaySets.find(
-      ds => ds.displaySetInstanceUID === activeDisplaySetInstanceUID
-    );
+  const activeDisplaySet = displaySets.find(
+    ds => ds.displaySetInstanceUID === selectedDisplaySetInstanceUID
+  );
 
+  const isImageStack = _isImageStack(activeDisplaySet);
+  const showInstanceList = isImageStack && activeDisplaySet.images.length > 1;
+
+  const displaySetList = useMemo(() => {
     displaySets.sort((a, b) => a.SeriesNumber - b.SeriesNumber);
-
-    const newDisplaySetList = displaySets.map(displaySet => {
+    return displaySets.map(displaySet => {
       const {
         displaySetInstanceUID,
         SeriesDate,
@@ -56,123 +45,72 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
       const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
       const date = moment(dateStr, 'YYYYMMDD:HHmmss');
       const displayDate = date.format('ddd, MMM Do YYYY');
+
       return {
         value: displaySetInstanceUID,
         label: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
         description: displayDate,
-        onClick: () => {
-          setActiveDisplaySetInstanceUID(displaySetInstanceUID);
-          setActiveInstance(1);
-
-          //instanceSelectList.props.children.props.value = 1;
-        },
       };
     });
-
-    let metadata;
-    if (!activeDisplaySet) {
-      if (!displaySets || displaySets.length == 0) {
-        return;
-      } else {
-        activeDisplaySet = displaySets[0];
-        setActiveDisplaySetInstanceUID(displaySets[0].displaySetInstanceUID);
-        setSelectedDisplaySetValue(newDisplaySetList[0]);
-      }
-
-    } else {
-
-      setSelectedDisplaySetValue(newDisplaySetList.find(
-        ds => ds.value === activeDisplaySetInstanceUID
-      ));
-    }
-    const isImageStack =
-      activeDisplaySet instanceof ImageSet; /*&&
-      activeDisplaySet.isSOPClassUIDSupported === true*/;
-
-    let instanceList;
-    if (isImageStack) {
-      const { images } = activeDisplaySet;
-      const image = images[activeInstance - 1];
-      instanceList = images.map((image, index) => {
-        // const metadata = image.getData().metadata;
-
-        const { InstanceNumber } = image;
-
-        return {
-          value: index,
-          title: `Instance Number: ${InstanceNumber}`,
-          description: '',
-          onClick: () => {
-            setActiveInstance(index);
-          },
-        };
-      });
-      metadata = image;
-    } else {
-      metadata = activeDisplaySet;
-    }
-
-
-    if (isImageStack) {
-      instanceSelectTitle = (
-        <Typography variant="subtitle" className="mr-5 text-right h-full">
-          Instance Number
-        </Typography>
-      )
-      instanceSelectList = (
-        <div className="dicom-tag-browser-instance-range ml-auto">
-          <Range
-            showValue
-            step={1}
-            min={1}
-            max={instanceList.length}
-            value={activeInstance}
-            valueRenderer={value => <p>{value}</p>}
-            onChange={({ target }) => {
-              const instanceIndex = parseInt(target.value);
-              setActiveInstance(instanceIndex);
-            }}
-          />
-        </div>
-      );
-    } else {
-      instanceSelectList = null;
-    }
-    setTags(getSortedTags(metadata));
-    setMeta(metadata);
-    setInstanceList(instanceList);
-    setDisplaySetList(newDisplaySetList);
-    setIsImageStack(isImageStack);
-  }, [activeDisplaySetInstanceUID, activeInstance, displaySets]);
+  }, [displaySets]);
 
   return (
     <div className="dicom-tag-browser-content">
-      <div className="flex flex-row items-center justify-between">
-        <Typography variant="subtitle" className="mr-5 text-right h-full">
+      <div className="flex flex-row items-center mb-2">
+        <Typography variant="subtitle" className="w-1/2 mr-8">
           Series
         </Typography>
-        {instanceSelectTitle}</div>
-      <div className="flex flex-row items-center">
-
-        <div className="w-72">
+        {showInstanceList && (
+          <Typography variant="subtitle" className="w-1/2">
+            Instance Number
+          </Typography>
+        )}
+      </div>
+      <div className="flex flex-row items-center mb-6">
+        <div className="w-1/2 mr-8">
           <Select
             isClearable={false}
-            onChange={onSeriesSelect}
+            onChange={onSelectChange}
             options={displaySetList}
-            value={selectedDisplaySetValue}
-          /></div>
-        {instanceSelectList}
+            value={displaySetList.find(
+              ds => ds.value === selectedDisplaySetInstanceUID
+            )}
+            className="text-white"
+          />
+        </div>
+        {showInstanceList ? (
+          <div className="w-1/2">
+            <InputRange
+              value={instanceNumber}
+              onChange={value => {
+                setInstanceNumber(parseInt(value));
+              }}
+              minValue={1}
+              maxValue={activeDisplaySet.images.length}
+              step={1}
+            />
+          </div>
+        ) : null}
       </div>
-
-      <div className="dicom-tag-browser-table-wrapper">
-        <DicomTagTable rows={getFormattedRowsFromTags(tags, meta)}></DicomTagTable>
-      </div>
+      <DicomTagTable
+        rows={getFormattedRowsFromTags(activeDisplaySet, instanceNumber)}
+      ></DicomTagTable>
     </div>
   );
 };
 
+function getFormattedRowsFromTags(displaySet, instanceNumber) {
+  const isImageStack = _isImageStack(displaySet);
 
-function getFormattedRowsFromTags(tags, meta) {
+  let metadata;
+
+  if (isImageStack) {
+    metadata = displaySet.images[instanceNumber - 1];
+  } else {
+    metadata = displaySet;
+  }
+
+  const tags = getSortedTags(metadata);
   const rows = [];
 
   tags.forEach(tagInfo => {
@@ -205,7 +143,6 @@ function getFormattedRowsFromTags(tags, meta) {
               meta.StudyInstanceUID
             );*/
           //  console.log(dataset);
-
           //  const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
           // const originalTagInfo = dataset[tag];
           //  tagInfo.vr = originalTagInfo.vr;
@@ -220,10 +157,9 @@ function getFormattedRowsFromTags(tags, meta) {
           `${tagInfo.tagIndent}${tagInfo.tag}`,
           tagInfo.vr,
           tagInfo.keyword,
-          tagInfo.value
+          tagInfo.value,
         ]);
       } else {
-
         rows.push([
           `${tagInfo.tagIndent}${tagInfo.tag}`,
           tagInfo.vr,
@@ -353,7 +289,7 @@ function getRows(metadata, depth = 0) {
       });
     } else {
       // skip properties without hex tag numbers
-      var regex = /[0-9A-Fa-f]{6}/g;
+      const regex = /[0-9A-Fa-f]{6}/g;
       if (keyword.match(regex)) {
         const tag = `(${keyword.substring(0, 4)},${keyword.substring(4, 8)})`;
         rows.push({
@@ -368,6 +304,10 @@ function getRows(metadata, depth = 0) {
   }
 
   return rows;
+}
+
+function _isImageStack(displaySet) {
+  return displaySet instanceof ImageSet;
 }
 
 function toArray(objectOrArray) {
