@@ -89,7 +89,6 @@ export {
   ExpandableToolbarButton,
   ListMenu,
   Icon,
-  addIcon,
   IconButton,
   Input,
   InputDateRange,
