@@ -201,6 +201,14 @@ const ICONS = {
   'old-stop': oldStop,
 };
 
+function addIcon(iconName, iconSVG) {
+  if (ICONS[iconName]) {
+    console.warn(`Icon ${iconName} already exists.`);
+  }
+
+  ICONS[iconName] = iconSVG;
+}
+
 /**
  * Return the matching SVG Icon as a React Component.
  * Results in an inlined SVG Element. If there's no match,
@@ -214,4 +222,4 @@ export default function getIcon(key, props) {
   return React.createElement(ICONS[key], props);
 }
 
-export { getIcon, ICONS };
+export { getIcon, ICONS, addIcon };
