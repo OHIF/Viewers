@@ -128,6 +128,7 @@ function modeFactory({ modeConfiguration }) {
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
+        'MPR',
         'Crosshairs',
         'Pan',
         'RectangleROIStartEndThreshold',

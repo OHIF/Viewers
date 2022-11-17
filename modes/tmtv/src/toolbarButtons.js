@@ -188,6 +188,22 @@ const toolbarButtons = [
       ],
     },
   },
+  {
+    id: 'MPR',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleMPR',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  },
   // Window Level + Presets...
   {
     id: 'WindowLevel',

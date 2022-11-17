@@ -6,7 +6,7 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
+function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
   const tools = {
     active: [
       {
@@ -120,6 +120,72 @@ function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
     mipTools,
     mipToolsConfig
   );
+}
+
+function initMPRToolGroup(toolNames, Enums, ToolGroupService, commandsManager) {
+  const tools = {
+    active: [
+      {
+        toolName: toolNames.WindowLevel,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
+      {
+        toolName: toolNames.Pan,
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+      },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+      },
+      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+    ],
+    passive: [
+      { toolName: toolNames.Length },
+      { toolName: toolNames.ArrowAnnotate },
+      { toolName: toolNames.Bidirectional },
+      { toolName: toolNames.DragProbe },
+      { toolName: toolNames.EllipticalROI },
+      { toolName: toolNames.RectangleROI },
+      { toolName: toolNames.StackScroll },
+      { toolName: toolNames.Angle },
+      { toolName: toolNames.SegmentationDisplay },
+    ],
+    disabled: [{ toolName: toolNames.Crosshairs }],
+
+    // enabled
+    // disabled
+  };
+
+  const toolsConfig = {
+    [toolNames.Crosshairs]: {
+      viewportIndicators: false,
+      autoPan: {
+        enabled: false,
+        panSize: 10,
+      },
+    },
+    [toolNames.ArrowAnnotate]: {
+      getTextCallback: (callback, eventDetails) =>
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          eventDetails,
+        }),
+
+      changeTextCallback: (data, eventDetails, callback) =>
+        commandsManager.runCommand('arrowTextCallback', {
+          callback,
+          data,
+          eventDetails,
+        }),
+    },
+  };
+
+  ToolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
+}
+
+function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
+  _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager);
+  initMPRToolGroup(toolNames, Enums, ToolGroupService, commandsManager);
 }
 
 export default initToolGroups;

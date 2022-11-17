@@ -7,34 +7,20 @@ import {
   ToolGroupManager,
   Enums,
   utilities as cstUtils,
-  segmentation as cstSegmentation,
   ReferenceLinesTool,
-  synchronizers as cstSynchronizers,
 } from '@cornerstonejs/tools';
 
-import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-
 import { getEnabledElement as OHIFgetEnabledElement } from './state';
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
-import getProtocolViewportStructureFromGridViewports from './utils/getProtocolViewportStructureFromGridViewports';
-import removeToolGroupSegmentationRepresentations from './utils/removeToolGroupSegmentationRepresentations';
-import calculateViewportRegistrations from './utils/calculateViewportRegistrations';
-
-const MPR_TOOLGROUP_ID = 'mpr';
-
-// [ {
-//   synchronizerId: string,
-//   viewports: [ { viewportId: number, renderingEngineId: string, index: number } , ...]
-// ]}
-let STACK_IMAGE_SYNC_GROUPS_INFO = [];
+import toggleMPRHangingProtocol from './utils/mpr/toggleMPRHangingProtocol';
+import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 
 const commandsModule = ({ servicesManager }) => {
   const {
     ViewportGridService,
     ToolGroupService,
-    DisplaySetService,
-    SyncGroupService,
     CineService,
     ToolBarService,
     UIDialogService,
@@ -375,229 +361,17 @@ const commandsModule = ({ servicesManager }) => {
       HangingProtocolService.setProtocol(protocolId);
     },
     toggleMPR: ({ toggledState }) => {
-      const { activeViewportIndex, viewports } = ViewportGridService.getState();
-      const viewportDisplaySetInstanceUIDs =
-        viewports[activeViewportIndex].displaySetInstanceUIDs;
-
-      const errorCallback = error => {
-        UINotificationService.show({
-          title: 'Multiplanar reconstruction (MPR) ',
-          message:
-            'Cannot create MPR for this DisplaySet since it is not reconstructable.',
-          type: 'info',
-          duration: 3000,
-        });
-      };
-
-      const cacheId = 'beforeMPR';
-      if (toggledState) {
-        ViewportGridService.setCachedLayout({
-          cacheId,
-          cachedLayout: ViewportGridService.getState(),
-        });
-
-        const matchDetails = {
-          displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
-        };
-
-        HangingProtocolService.setProtocol(
-          MPR_TOOLGROUP_ID,
-          matchDetails,
-          errorCallback
-        );
-        return;
-      }
-
-      const { cachedLayout } = ViewportGridService.getState();
-
-      if (!cachedLayout || !cachedLayout[cacheId]) {
-        return;
-      }
-
-      const { viewports: cachedViewports, numRows, numCols } = cachedLayout[
-        cacheId
-      ];
-
-      // Todo: The following assumes that when turning off MPR we are applying the default
-      //  protocol which might not be the one that was used before MPR was turned on
-      // In order to properly implement this logic, we should modify the hanging protocol
-      // upon layout change with layout selector, and cache and restore it when turning
-      // MPR on and off
-      const viewportStructure = getProtocolViewportStructureFromGridViewports({
-        viewports: cachedViewports,
-        numRows,
-        numCols,
+      toggleMPRHangingProtocol({
+        toggledState,
+        servicesManager,
+        getToolGroup: _getToolGroup,
       });
-
-      const viewportSpecificMatch = cachedViewports.reduce(
-        (acc, viewport, index) => {
-          const {
-            displaySetInstanceUIDs,
-            viewportOptions,
-            displaySetOptions,
-          } = viewport;
-
-          acc[index] = {
-            displaySetInstanceUIDs,
-            viewportOptions,
-            displaySetOptions,
-          };
-
-          return acc;
-        },
-        {}
-      );
-
-      const defaultProtocol = HangingProtocolService.getProtocolById('default');
-
-      // Todo: this assumes there is only one stage in the default protocol
-      const defaultProtocolStage = defaultProtocol.stages[0];
-      defaultProtocolStage.viewportStructure = viewportStructure;
-
-      const { primaryToolId } = ToolBarService.state;
-      const mprToolGroup = _getToolGroup(MPR_TOOLGROUP_ID);
-      // turn off crosshairs if it is on
-      if (
-        primaryToolId === 'Crosshairs' ||
-        mprToolGroup.getToolInstance('Crosshairs')?.mode ===
-          Enums.ToolModes.Active
-      ) {
-        const toolGroup = _getToolGroup(MPR_TOOLGROUP_ID);
-        toolGroup.setToolDisabled('Crosshairs');
-        ToolBarService.recordInteraction({
-          groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-      }
-
-      // clear segmentations if they exist
-      removeToolGroupSegmentationRepresentations(MPR_TOOLGROUP_ID);
-
-      HangingProtocolService.setProtocol(
-        'default',
-        viewportSpecificMatch,
-        error => {
-          UINotificationService.show({
-            title: 'Multiplanar reconstruction (MPR) ',
-            message:
-              'Something went wrong while trying to restore the previous layout.',
-            type: 'info',
-            duration: 3000,
-          });
-        }
-      );
     },
     toggleStackImageSync: ({ toggledState }) => {
-      if (!toggledState) {
-        STACK_IMAGE_SYNC_GROUPS_INFO.forEach(syncGroupInfo => {
-          const { viewports, synchronizerId } = syncGroupInfo;
-
-          viewports.forEach(({ viewportId, renderingEngineId }) => {
-            SyncGroupService.removeViewportFromSyncGroup(
-              viewportId,
-              renderingEngineId,
-              synchronizerId
-            );
-          });
-        });
-
-        return;
-      }
-
-      STACK_IMAGE_SYNC_GROUPS_INFO = [];
-
-      // create synchronization groups and add viewports
-      let { viewports } = ViewportGridService.getState();
-
-      // filter empty viewports
-      viewports = viewports.filter(
-        viewport =>
-          viewport.displaySetInstanceUIDs &&
-          viewport.displaySetInstanceUIDs.length
-      );
-
-      // filter reconstructable viewports
-      viewports = viewports.filter(viewport => {
-        const { displaySetInstanceUIDs } = viewport;
-
-        for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-          const displaySet = DisplaySetService.getDisplaySetByUID(
-            displaySetInstanceUID
-          );
-
-          if (displaySet && displaySet.isReconstructable) {
-            return true;
-          }
-
-          return false;
-        }
-      });
-
-      const viewportsByOrientation = viewports.reduce((acc, viewport) => {
-        const { viewportId, viewportType } = viewport.viewportOptions;
-
-        if (viewportType !== 'stack') {
-          console.warn('Viewport is not a stack, cannot sync images yet');
-          return acc;
-        }
-
-        const { element } = CornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
-        const { viewport: csViewport, renderingEngineId } = getEnabledElement(
-          element
-        );
-        const { viewPlaneNormal } = csViewport.getCamera();
-
-        // Should we round here? I guess so, but not sure how much precision we need
-        const orientation = viewPlaneNormal.map(v => Math.round(v)).join(',');
-
-        if (!acc[orientation]) {
-          acc[orientation] = [];
-        }
-
-        acc[orientation].push({ viewportId, renderingEngineId });
-
-        return acc;
-      }, {});
-
-      // create synchronizer for each group
-      Object.values(viewportsByOrientation).map(viewports => {
-        let synchronizerId = viewports
-          .map(({ viewportId }) => viewportId)
-          .join(',');
-
-        synchronizerId = `imageSync_${synchronizerId}`;
-
-        calculateViewportRegistrations(viewports);
-
-        viewports.forEach(({ viewportId, renderingEngineId }) => {
-          SyncGroupService.addViewportToSyncGroup(
-            viewportId,
-            renderingEngineId,
-            {
-              type: 'stackimage',
-              id: synchronizerId,
-              source: true,
-              target: true,
-            }
-          );
-        });
-
-        STACK_IMAGE_SYNC_GROUPS_INFO.push({
-          synchronizerId,
-          viewports,
-        });
+      toggleStackImageSync({
+        getEnabledElement,
+        servicesManager,
+        toggledState,
       });
     },
     toggleReferenceLines: ({ toggledState }) => {

@@ -118,7 +118,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     CornerstoneCacheService,
     ViewportGridService,
   } = servicesManager.services;
-  debugger;
 
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
