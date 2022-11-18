@@ -40,6 +40,13 @@ function areEqual(prevProps, nextProps) {
   }
 
   if (
+    prevProps.viewportOptions.toolGroupId !==
+    nextProps.viewportOptions.toolGroupId
+  ) {
+    return false;
+  }
+
+  if (
     prevProps.viewportOptions.viewportType !==
     nextProps.viewportOptions.viewportType
   ) {
@@ -133,6 +140,28 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
   }, [elementRef]);
 
+  const cleanUpServices = useCallback(() => {
+    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+      viewportIndex
+    );
+
+    if (!viewportInfo) {
+      return;
+    }
+
+    const viewportId = viewportInfo.getViewportId();
+    const renderingEngineId = viewportInfo.getRenderingEngineId();
+    const syncGroups = viewportInfo.getSyncGroups();
+
+    ToolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
+
+    SyncGroupService.removeViewportFromSyncGroup(
+      viewportId,
+      renderingEngineId,
+      syncGroups
+    );
+  }, [viewportIndex, viewportOptions.viewportId]);
+
   const elementEnabledHandler = useCallback(
     evt => {
       // check this is this element reference and return early if doesn't match
@@ -187,28 +216,15 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
-      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
-
-      const viewportId = viewportInfo.getViewportId();
-      const renderingEngineId = viewportInfo.getRenderingEngineId();
-      const syncGroups = viewportInfo.getSyncGroups();
-
-      ToolGroupService.removeViewportFromToolGroup(
-        viewportId,
-        renderingEngineId
-      );
-
-      SyncGroupService.removeViewportFromSyncGroup(
-        viewportId,
-        renderingEngineId,
-        syncGroups
-      );
+      cleanUpServices();
 
       CornerstoneViewportService.disableElement(viewportIndex);
 
       if (onElementDisabled) {
+        const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+          viewportIndex
+        );
+
         onElementDisabled(viewportInfo);
       }
 
@@ -265,6 +281,31 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
 
     const loadViewportData = async () => {
+      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+        viewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+
+      // This happens if the viewportId has been changed, we need to remove
+      // the old viewport's services (e.g., MPR changes the viewportId)
+      if (viewportId !== viewportOptions.viewportId) {
+        const renderingEngineId = viewportInfo.getRenderingEngineId();
+        const syncGroups = viewportInfo.getSyncGroups();
+
+        console.debug('removeing servives from ', viewportId);
+        ToolGroupService.removeViewportFromToolGroup(
+          viewportId,
+          renderingEngineId
+        );
+
+        SyncGroupService.removeViewportFromSyncGroup(
+          viewportId,
+          renderingEngineId,
+          syncGroups
+        );
+      }
+
       const viewportData = await CornerstoneCacheService.createViewportData(
         displaySets,
         viewportOptions,
@@ -325,8 +366,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
         handleWidth
         handleHeight
         skipOnMount={true} // Todo: make these configurable
-        refreshMode={'throttle'}
-        refreshRate={100}
+        refreshMode={'debounce'}
+        refreshRate={200} // transition amount in side panel
         onResize={onResize}
         targetRef={elementRef.current}
       />

@@ -187,6 +187,11 @@ class CornerstoneViewportService implements IViewportService {
       viewportInfo
     );
 
+    // resolve any discrepancies between Ids for viewport
+    if (publicViewportOptions.viewportId !== viewportInfo.getViewportId()) {
+      viewportInfo.setViewportId(publicViewportOptions.viewportId);
+    }
+
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
     viewportInfo.setViewportData(viewportData);
@@ -686,16 +691,15 @@ class CornerstoneViewportService implements IViewportService {
     displaySetOptions: DisplaySetOptions[];
   } {
     const viewportIndex = viewportInfo.getViewportIndex();
+    let viewportId = viewportInfo.getViewportId();
 
     if (!publicViewportOptions.viewportId) {
-      publicViewportOptions.viewportId = this.getViewportId(viewportIndex);
+      viewportId = this.getViewportId(viewportIndex);
+      publicViewportOptions.viewportId = viewportId;
     }
 
     // Creating a temporary viewportInfo to handle defaults
-    const newViewportInfo = new ViewportInfo(
-      viewportIndex,
-      viewportInfo.getViewportId()
-    );
+    const newViewportInfo = new ViewportInfo(viewportIndex, viewportId);
 
     // To handle setting the default values if missing for the viewportOptions and
     // displaySetOptions

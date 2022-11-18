@@ -252,6 +252,7 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          toolGroupIds.MPR,
         ]),
       ],
     },
