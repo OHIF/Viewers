@@ -4,6 +4,7 @@ export const toolGroupIds = {
   Fusion: 'fusionToolGroup',
   MIP: 'mipToolGroup',
   default: 'default',
+  MPR: 'mpr',
 };
 
 function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
@@ -43,7 +44,7 @@ function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
     [toolNames.Crosshairs]: {
       viewportIndicators: false,
       autoPan: {
-        enabled: true,
+        enabled: false,
         panSize: 10,
       },
     },
