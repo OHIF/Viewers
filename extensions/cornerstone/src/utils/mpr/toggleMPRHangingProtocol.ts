@@ -2,32 +2,32 @@ import { Enums } from '@cornerstonejs/tools';
 
 const MPR_TOOLGROUP_ID = 'mpr';
 
-const cachedHangingProtocol = {
+const cachedState = {
   protocol: null,
   stage: null,
   viewportMatchDetails: null,
   viewportStructure: null,
 };
 
-window.cachedHangingProtocol = cachedHangingProtocol;
+window.cachedState = cachedState;
 
-const setCachedHangingProtocol = (
+const setCachedState = (
   protocol,
   stage,
   viewportMatchDetails,
   viewportStructure
 ) => {
-  cachedHangingProtocol.protocol = protocol;
-  cachedHangingProtocol.stage = stage;
-  cachedHangingProtocol.viewportMatchDetails = viewportMatchDetails;
-  cachedHangingProtocol.viewportStructure = viewportStructure;
+  cachedState.protocol = protocol;
+  cachedState.stage = stage;
+  cachedState.viewportMatchDetails = viewportMatchDetails;
+  cachedState.viewportStructure = viewportStructure;
 };
 
-const resetCachedHangingProtocol = () => {
-  cachedHangingProtocol.protocol = null;
-  cachedHangingProtocol.stage = null;
-  cachedHangingProtocol.viewportMatchDetails = null;
-  cachedHangingProtocol.viewportStructure = null;
+const resetCachedState = () => {
+  cachedState.protocol = null;
+  cachedState.stage = null;
+  cachedState.viewportMatchDetails = null;
+  cachedState.viewportStructure = null;
 };
 
 export default function toggleMPRHangingProtocol({
@@ -64,7 +64,7 @@ export default function toggleMPRHangingProtocol({
   const { protocol, stage } = HangingProtocolService.getActiveProtocol();
 
   if (toggledState) {
-    resetCachedHangingProtocol();
+    resetCachedState();
 
     const { viewportMatchDetails, viewportStructure } = getGoodStuff({
       protocol,
@@ -73,12 +73,7 @@ export default function toggleMPRHangingProtocol({
       servicesManager,
     });
 
-    setCachedHangingProtocol(
-      protocol,
-      stage,
-      viewportMatchDetails,
-      viewportStructure
-    );
+    setCachedState(protocol, stage, viewportMatchDetails, viewportStructure);
 
     const matchDetails = {
       displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
@@ -102,12 +97,12 @@ export default function toggleMPRHangingProtocol({
     });
   };
 
-  const { layoutType, properties } = cachedHangingProtocol.viewportStructure;
-  const { viewportMatchDetails } = cachedHangingProtocol;
+  const { layoutType, properties } = cachedState.viewportStructure;
+  const { viewportMatchDetails } = cachedState;
 
-  if (cachedHangingProtocol.protocol.id !== 'default') {
+  if (cachedState.protocol.id !== 'default') {
     HangingProtocolService.setProtocol(
-      cachedHangingProtocol.protocol.id,
+      cachedState.protocol.id,
       viewportMatchDetails,
       restoreErrorCallback
     );

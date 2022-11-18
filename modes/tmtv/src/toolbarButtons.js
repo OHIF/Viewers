@@ -105,6 +105,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            toolGroupIds.MPR,
           ]),
         ],
         'Length'
@@ -125,6 +126,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              toolGroupIds.MPR,
             ]),
           ],
           'Length Tool'
@@ -138,6 +140,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              toolGroupIds.MPR,
             ]),
           ],
           'Bidirectional Tool'
@@ -151,6 +154,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              toolGroupIds.MPR,
             ]),
           ],
           'Arrow Annotate'
@@ -164,6 +168,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              toolGroupIds.MPR,
             ]),
           ],
           'Ellipse Tool'
@@ -184,6 +189,7 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          toolGroupIds.MPR,
         ]),
       ],
     },
@@ -219,6 +225,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            toolGroupIds.MPR,
           ]),
         ],
         'Window Level'
@@ -270,6 +277,7 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          toolGroupIds.MPR,
         ]),
       ],
     },

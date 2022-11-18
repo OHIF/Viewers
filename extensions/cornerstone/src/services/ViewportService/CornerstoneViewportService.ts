@@ -77,15 +77,12 @@ class CornerstoneViewportService implements IViewportService {
     viewportOptions: PublicViewportOptions,
     elementRef: HTMLDivElement
   ) {
-    const viewportId =
-      viewportOptions.viewportId || this.getViewportId(viewportIndex);
-    const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
+    const viewportInfo = new ViewportInfo(
+      viewportIndex,
+      viewportOptions.viewportId
+    );
     viewportInfo.setElement(elementRef);
     this.viewportsInfo.set(viewportIndex, viewportInfo);
-  }
-
-  public getViewportId(viewportIndex: number): string {
-    return `viewport-${viewportIndex}`;
   }
 
   public getViewportIds(): string[] {
@@ -186,11 +183,6 @@ class CornerstoneViewportService implements IViewportService {
       publicDisplaySetOptions,
       viewportInfo
     );
-
-    // resolve any discrepancies between Ids for viewport
-    if (publicViewportOptions.viewportId !== viewportInfo.getViewportId()) {
-      viewportInfo.setViewportId(publicViewportOptions.viewportId);
-    }
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -691,15 +683,12 @@ class CornerstoneViewportService implements IViewportService {
     displaySetOptions: DisplaySetOptions[];
   } {
     const viewportIndex = viewportInfo.getViewportIndex();
-    let viewportId = viewportInfo.getViewportId();
-
-    if (!publicViewportOptions.viewportId) {
-      viewportId = this.getViewportId(viewportIndex);
-      publicViewportOptions.viewportId = viewportId;
-    }
 
     // Creating a temporary viewportInfo to handle defaults
-    const newViewportInfo = new ViewportInfo(viewportIndex, viewportId);
+    const newViewportInfo = new ViewportInfo(
+      viewportIndex,
+      viewportInfo.getViewportId()
+    );
 
     // To handle setting the default values if missing for the viewportOptions and
     // displaySetOptions

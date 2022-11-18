@@ -146,48 +146,51 @@ const commandsModule = ({ servicesManager }) => {
         }
       }
 
-      const toolGroup = _getToolGroup(toolGroupId);
-
-      if (!toolGroup) {
-        console.warn('No tool group found for toolGroupId:', toolGroupId);
-        return;
-      }
-      // Todo: we need to check if the viewports of the toolGroup is actually
-      // parts of the ViewportGrid's viewports, if not we return
-
       const { viewports } = ViewportGridService.getState() || {
         viewports: [],
       };
 
-      // iterate over all viewports and set the tool active for the
-      // viewports that belong to the toolGroup
-      for (let index = 0; index < viewports.length; index++) {
-        const ohifEnabledElement = OHIFgetEnabledElement(index);
+      const toolGroup = _getToolGroup(toolGroupId);
+      const toolGroupViewportIds = toolGroup.getViewportIds();
 
-        if (!ohifEnabledElement) {
-          continue;
-        }
-
-        const viewport = getEnabledElement(ohifEnabledElement.element);
-
-        if (!viewport) {
-          continue;
-        }
-
-        // Find the current active tool and set it to be passive
-        const activeTool = toolGroup.getActivePrimaryMouseButtonTool();
-
-        if (activeTool) {
-          toolGroup.setToolPassive(activeTool);
-        }
-
-        // Set the new toolName to be active
-        toolGroup.setToolActive(toolName, {
-          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-        });
-
+      // if toolGroup has been destroyed, or its viewports have been removed
+      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
         return;
       }
+
+      const filteredViewports = viewports.filter(viewport => {
+        if (!viewport.viewportOptions) {
+          return false;
+        }
+
+        return toolGroupViewportIds.includes(
+          viewport.viewportOptions.viewportId
+        );
+      });
+
+      if (!filteredViewports.length) {
+        return;
+      }
+
+      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
+
+      if (activeToolName) {
+        // Todo: this is a hack to prevent the crosshairs to stick around
+        // after another tool is selected. We should find a better way to do this
+        if (activeToolName === 'Crosshairs') {
+          toolGroup.setToolDisabled(activeToolName);
+        } else {
+          toolGroup.setToolPassive(activeToolName);
+        }
+      }
+      // Set the new toolName to be active
+      toolGroup.setToolActive(toolName, {
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+          },
+        ],
+      });
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = ViewportGridService.getState();
@@ -406,11 +409,6 @@ const commandsModule = ({ servicesManager }) => {
     },
     setToolActive: {
       commandFn: actions.setToolActive,
-      storeContexts: [],
-      options: {},
-    },
-    toggleCrosshairs: {
-      commandFn: actions.toggleCrosshairs,
       storeContexts: [],
       options: {},
     },

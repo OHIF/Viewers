@@ -64,6 +64,10 @@ export function ViewportGridProvider({ children, service }) {
 
         const viewports = state.viewports.slice();
 
+        if (!viewportOptions.viewportId) {
+          viewportOptions.viewportId = `viewport-${viewportIndex}`;
+        }
+
         // merge the displaySetOptions and viewportOptions and displaySetInstanceUIDs
         // into the viewport object at the given index
         viewports[viewportIndex] = {
