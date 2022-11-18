@@ -135,11 +135,21 @@ customizationService: {
     items: [
       {
         id: 'PatientNameOverlay',
-        // Note the ohif.overlayItem is a prototype instance for this object
-        // The ohif.overlayItem is defined up above
+        // Note the overlayItem as a parent type - this provides the
+        // rendering functionality to read the attribute and use the label.
         customizationType: 'ohif.overlayItem',
         attribute: 'PatientName',
         label: 'PN:',
+        title: 'Patient Name',
+        color: 'yellow',
+        condition: ({ instance }) =>
+          instance &&
+          instance.PatientName &&
+          instance.PatientName.Alphabetic,
+        contentF: ({ instance, formatters: { formatPN } }) =>
+          formatPN(instance.PatientName.Alphabetic) +
+          ' ' +
+          (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
       },
     ],
   },

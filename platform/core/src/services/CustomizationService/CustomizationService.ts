@@ -161,6 +161,13 @@ export default class CustomizationService extends PubSubService {
     return this.applyType(customization);
   }
 
+  public hasModeCustomization(customizationId: string) {
+    return (
+      this.globalCustomizations[customizationId] ||
+      this.modeCustomizations[customizationId]
+    );
+  }
+
   /** Applies any inheritance due to UI Type customization */
   public applyType(customization: Customization): Customization {
     if (!customization) return customization;
