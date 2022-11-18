@@ -87,7 +87,7 @@ module.exports = (env, argv) => {
             globOptions: {
               // Ignore our HtmlWebpackPlugin template file
               // Ignore our configuration files
-              ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+              ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
           // Short term solution to make sure GCloud config is available in output
