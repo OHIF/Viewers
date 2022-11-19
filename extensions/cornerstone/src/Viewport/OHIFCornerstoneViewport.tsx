@@ -281,31 +281,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
 
     const loadViewportData = async () => {
-      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-        viewportIndex
-      );
-
-      const viewportId = viewportInfo.getViewportId();
-
-      // This happens if the viewportId has been changed, we need to remove
-      // the old viewport's services (e.g., MPR changes the viewportId)
-      if (viewportId !== viewportOptions.viewportId) {
-        const renderingEngineId = viewportInfo.getRenderingEngineId();
-        const syncGroups = viewportInfo.getSyncGroups();
-
-        console.debug('removeing servives from ', viewportId);
-        ToolGroupService.removeViewportFromToolGroup(
-          viewportId,
-          renderingEngineId
-        );
-
-        SyncGroupService.removeViewportFromSyncGroup(
-          viewportId,
-          renderingEngineId,
-          syncGroups
-        );
-      }
-
       const viewportData = await CornerstoneCacheService.createViewportData(
         displaySets,
         viewportOptions,

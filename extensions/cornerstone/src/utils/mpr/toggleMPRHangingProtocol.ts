@@ -1,4 +1,5 @@
 import { Enums } from '@cornerstonejs/tools';
+import removeToolGroupSegmentationRepresentations from '../removeToolGroupSegmentationRepresentations';
 
 const MPR_TOOLGROUP_ID = 'mpr';
 
@@ -7,20 +8,21 @@ const cachedState = {
   stage: null,
   viewportMatchDetails: null,
   viewportStructure: null,
+  toolOptions: null,
 };
-
-window.cachedState = cachedState;
 
 const setCachedState = (
   protocol,
   stage,
   viewportMatchDetails,
-  viewportStructure
+  viewportStructure,
+  toolOptions
 ) => {
   cachedState.protocol = protocol;
   cachedState.stage = stage;
   cachedState.viewportMatchDetails = viewportMatchDetails;
   cachedState.viewportStructure = viewportStructure;
+  cachedState.toolOptions = JSON.parse(JSON.stringify(toolOptions));
 };
 
 const resetCachedState = () => {
@@ -28,17 +30,19 @@ const resetCachedState = () => {
   cachedState.stage = null;
   cachedState.viewportMatchDetails = null;
   cachedState.viewportStructure = null;
+  cachedState.toolOptions = null;
 };
 
 export default function toggleMPRHangingProtocol({
   toggledState,
-  getToolGroup,
   servicesManager,
+  getToolGroup,
 }) {
   const {
     UINotificationService,
     HangingProtocolService,
     ViewportGridService,
+    ToolBarService,
   } = servicesManager.services;
 
   const {
@@ -66,18 +70,33 @@ export default function toggleMPRHangingProtocol({
   if (toggledState) {
     resetCachedState();
 
-    const { viewportMatchDetails, viewportStructure } = getGoodStuff({
+    const {
+      viewportMatchDetails,
+      viewportStructure,
+      toolOptions,
+    } = _getViewportsInfo({
       protocol,
       stage,
       viewports,
       servicesManager,
     });
 
-    setCachedState(protocol, stage, viewportMatchDetails, viewportStructure);
+    setCachedState(
+      protocol,
+      stage,
+      viewportMatchDetails,
+      viewportStructure,
+      toolOptions
+    );
 
     const matchDetails = {
       displaySetInstanceUIDs: viewportDisplaySetInstanceUIDs,
     };
+
+    _disableCrosshairs(
+      toolOptions.map(({ toolGroupId }) => toolGroupId),
+      getToolGroup
+    );
 
     HangingProtocolService.setProtocol(
       MPR_TOOLGROUP_ID,
@@ -97,9 +116,15 @@ export default function toggleMPRHangingProtocol({
     });
   };
 
+  _disableCrosshairs([MPR_TOOLGROUP_ID], getToolGroup);
+
   const { layoutType, properties } = cachedState.viewportStructure;
   const { viewportMatchDetails } = cachedState;
 
+  // The reason we split the flow here is that we don't allow viewport grid
+  // change in the non default hanging protocol, so we can just apply the
+  // cached protocol and stage. However, for the default protocol, we need
+  // to also apply the layout type and properties.
   if (cachedState.protocol.id !== 'default') {
     HangingProtocolService.setProtocol(
       cachedState.protocol.id,
@@ -156,42 +181,44 @@ export default function toggleMPRHangingProtocol({
     }
   });
 
-  // const { primaryToolId } = ToolBarService.state;
-  // const mprToolGroup = getToolGroup(MPR_TOOLGROUP_ID);
-  // // turn off crosshairs if it is on
-  // if (
-  //   primaryToolId === 'Crosshairs' ||
-  //   mprToolGroup.getToolInstance('Crosshairs')?.mode === Enums.ToolModes.Active
-  // ) {
-  //   const toolGroup = getToolGroup(MPR_TOOLGROUP_ID);
-  //   toolGroup.setToolDisabled('Crosshairs');
-  //   ToolBarService.recordInteraction({
-  //     groupId: 'WindowLevel',
-  //     itemId: 'WindowLevel',
-  //     interactionType: 'tool',
-  //     commands: [
-  //       {
-  //         commandName: 'setToolActive',
-  //         commandOptions: {
-  //           toolName: 'WindowLevel',
-  //         },
-  //         context: 'CORNERSTONE',
-  //       },
-  //     ],
-  //   });
-  // }
+  ToolBarService.recordInteraction({
+    groupId: 'WindowLevel',
+    itemId: 'WindowLevel',
+    interactionType: 'tool',
+    commands: [
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'WindowLevel',
+        },
+        context: 'CORNERSTONE',
+      },
+    ],
+  });
 
-  // // clear segmentations if they exist
-  // removeToolGroupSegmentationRepresentations(MPR_TOOLGROUP_ID);
+  //clear segmentations if they exist
+  removeToolGroupSegmentationRepresentations(MPR_TOOLGROUP_ID);
 }
 
-function getGoodStuff({ protocol, stage, viewports, servicesManager }) {
+function _disableCrosshairs(toolGroupIds, getToolGroup) {
+  toolGroupIds.forEach(toolGroupId => {
+    const toolGroup = getToolGroup(toolGroupId);
+    if (
+      toolGroup.getToolInstance('Crosshairs')?.mode === Enums.ToolModes.Active
+    ) {
+      toolGroup.setToolDisabled('Crosshairs');
+    }
+  });
+}
+
+function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
   // here we need to use the viewports and try to map it into the
   // viewportMatchDetails and displaySetMatch that HangingProtocolService
   // expects
   const {
     ViewportGridService,
     HangingProtocolService,
+    ToolGroupService,
   } = servicesManager.services;
 
   const { numRows, numCols } = ViewportGridService.getState();
@@ -233,5 +260,26 @@ function getGoodStuff({ protocol, stage, viewports, servicesManager }) {
     ({ viewportMatchDetails } = HangingProtocolService.getMatchDetails());
   }
 
-  return { viewportMatchDetails, viewportStructure };
+  // get the toolGroup state for viewports
+  let toolOptions = [];
+  const viewportIds = viewports
+    .map(
+      viewport =>
+        viewport.displaySetInstanceUIDs &&
+        viewport.displaySetInstanceUIDs.length > 0 &&
+        viewport.viewportOptions?.viewportId
+    )
+    .filter(Boolean);
+
+  if (viewportIds.length) {
+    toolOptions = viewportIds.map(viewportId => {
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      return {
+        toolGroupId: toolGroup.id,
+        toolOptions: toolGroup.toolOptions,
+      };
+    });
+  }
+
+  return { viewportMatchDetails, viewportStructure, toolOptions };
 }

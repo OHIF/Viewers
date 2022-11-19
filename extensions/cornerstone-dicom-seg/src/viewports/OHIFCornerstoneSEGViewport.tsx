@@ -106,7 +106,7 @@ function OHIFCornerstoneSEGViewport(props) {
     } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
-
+    debugger;
     return (
       <Component
         {...props}
@@ -115,6 +115,7 @@ function OHIFCornerstoneSEGViewport(props) {
           viewportType: 'volume',
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
+          viewportId: viewportOptions.viewportId,
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}
