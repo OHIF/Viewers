@@ -106,7 +106,6 @@ function OHIFCornerstoneSEGViewport(props) {
     } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
-    debugger;
     return (
       <Component
         {...props}
