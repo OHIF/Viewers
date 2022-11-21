@@ -23,6 +23,7 @@ import {
   deleteStudyMetadataPromise,
 } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient.js';
+import getDirectURL from '../utils/getDirectURL.js';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -103,7 +104,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -128,7 +129,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           const headers = UserAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -173,65 +174,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
       directURL: params => {
-        const {
-          instance,
-          tag = 'PixelData',
-          defaultPath = '/pixeldata',
-          defaultType = 'video/mp4',
-          singlepart: fetchPart = 'video',
-        } = params;
-        const value = instance[tag];
-        if (!value) return undefined;
-
-        if (value.DirectRetrieveURL) return value.DirectRetrieveURL;
-        if (value.InlineBinary) {
-          const blob = utils.b64toBlob(value.InlineBinary, defaultType);
-          value.DirectRetrieveURL = URL.createObjectURL(blob);
-          return value.DirectRetrieveURL;
-        }
-        if (
-          !singlepart ||
-          (singlepart !== true && singlepart.indexOf(fetchPart) === -1)
-        ) {
-          if (value.retrieveBulkData) {
-            return value.retrieveBulkData().then(arr => {
-              value.DirectRetrieveURL = URL.createObjectURL(
-                new Blob([arr], { type: defaultType })
-              );
-              return value.DirectRetrieveURL;
-            });
-          }
-          console.warn('Unable to retrieve', tag, 'from', instance);
-          return undefined;
-        }
-
-        const {
-          StudyInstanceUID,
-          SeriesInstanceUID,
-          SOPInstanceUID,
-        } = instance;
-        const BulkDataURI =
-          (value && value.BulkDataURI) ||
-          `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
-        const hasQuery = BulkDataURI.indexOf('?') != -1;
-        const hasAccept = BulkDataURI.indexOf('accept=') != -1;
-        const acceptUri =
-          BulkDataURI +
-          (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
-        if (BulkDataURI.indexOf('http') === 0) return acceptUri;
-        if (BulkDataURI.indexOf('/') === 0) {
-          return wadoRoot + acceptUri;
-        }
-        if (BulkDataURI.indexOf('series/') == 0) {
-          return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
-        }
-        if (BulkDataURI.indexOf('instances/') === 0) {
-          return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${acceptUri}`;
-        }
-        if (BulkDataURI.indexOf('bulkdata/') === 0) {
-          return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
-        }
-        throw new Error('BulkDataURI in unknown format:' + BulkDataURI);
+        return getDirectURL(wadoRoot, params);
       },
       series: {
         metadata: async ({
