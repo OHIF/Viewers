@@ -4,8 +4,9 @@ import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
+import IDisplaySet from '@ohif/core';
 
-const { isEqualWithin } = utils;
+const { isEqualWithin, getNumViewportPanes } = utils;
 
 const ORIENTATION_MAP = {
   axial: {
@@ -54,20 +55,35 @@ function ViewerViewportGrid(props) {
         return;
       }
 
-      // Match each viewport individually
-      const numViewports = viewportGrid.numRows * viewportGrid.numCols;
+      const displaySetsInGrid = [];
+      const blankViewportIndices = [];
+
+      // Match each viewport individually.
+      const numViewports = getNumViewportPanes(viewportGridService);
+
       for (
         let viewportIndex = 0;
         viewportIndex < numViewports;
         viewportIndex++
       ) {
+        const displaySetsInViewport =
+          viewports[viewportIndex]?.displaySetInstanceUIDs ?? [];
+
         if (hpAlreadyApplied.get(viewportIndex)) {
+          displaySetsInGrid.push(...displaySetsInViewport);
           continue;
         }
 
         // if current viewport doesn't have a match
         if (viewportMatchDetails.get(viewportIndex) === undefined) {
-          return;
+          // if the current viewport is empty/blank
+          if (displaySetsInViewport.length === 0) {
+            blankViewportIndices.push(viewportIndex);
+          } else {
+            displaySetsInGrid.push(...displaySetsInViewport);
+          }
+
+          continue;
         }
 
         const { displaySetsInfo, viewportOptions } = viewportMatchDetails.get(
@@ -86,6 +102,8 @@ function ViewerViewportGrid(props) {
             displaySetUIDsToHangOptions.push(displaySetOptions);
           }
         );
+
+        displaySetsInGrid.push(...displaySetUIDsToHang);
 
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex: viewportIndex,
@@ -111,6 +129,25 @@ function ViewerViewportGrid(props) {
           );
         }
       }
+
+      blankViewportIndices.forEach((blankVPIndex: number) => {
+        // try to fill the empty viewport with a display set not already in the grid
+        const displaySetsNotInGrid = availableDisplaySets.filter(
+          (displaySet: IDisplaySet) =>
+            displaySetsInGrid.indexOf(displaySet.displaySetInstanceUID) === -1
+        );
+
+        if (displaySetsNotInGrid.length > 0) {
+          const displaySetUIDToAdd =
+            displaySetsNotInGrid[0].displaySetInstanceUID;
+          displaySetsInGrid.push(displaySetUIDToAdd);
+
+          viewportGridService.setDisplaySetsForViewport({
+            viewportIndex: blankVPIndex,
+            displaySetInstanceUIDs: [displaySetUIDToAdd],
+          });
+        }
+      });
     },
     [viewportGrid, numRows, numCols]
   );
@@ -167,6 +204,20 @@ function ViewerViewportGrid(props) {
   useEffect(() => {
     const { unsubscribe } = HangingProtocolService.subscribe(
       HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+      () => {
+        const displaySets = DisplaySetService.getActiveDisplaySets();
+        updateDisplaySetsForViewports(displaySets);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [viewports]);
+
+  useEffect(() => {
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.STAGE_CHANGE,
       () => {
         const displaySets = DisplaySetService.getActiveDisplaySets();
         updateDisplaySetsForViewports(displaySets);
@@ -314,7 +365,8 @@ function ViewerViewportGrid(props) {
   const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
 
-    for (let i = 0; i < viewports.length; i++) {
+    const numViewports = getNumViewportPanes(viewportGridService);
+    for (let i = 0; i < numViewports; i++) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
@@ -388,7 +440,7 @@ function ViewerViewportGrid(props) {
             <ViewportComponent
               displaySets={displaySets}
               viewportIndex={viewportIndex}
-              viewportLabel={viewports.length > 1 ? viewportLabel : ''}
+              viewportLabel={numViewports > 1 ? viewportLabel : ''}
               dataSource={dataSource}
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}

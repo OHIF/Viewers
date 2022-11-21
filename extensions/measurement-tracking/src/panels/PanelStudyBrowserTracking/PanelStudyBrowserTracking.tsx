@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { HangingProtocolService, utils } from '@ohif/core';
+import { HangingProtocolService, utils, ViewportGridService } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
@@ -9,7 +9,7 @@ import {
 } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
-const { formatDate } = utils;
+const { formatDate, getNumViewportPanes } = utils;
 
 /**
  *
@@ -182,7 +182,7 @@ function PanelStudyBrowserTracking({
       thumbnailImageSrcMap,
       trackedSeries,
       viewports,
-      isSingleViewport,
+      viewportGridService,
       dataSource,
       DisplaySetService,
       UIDialogService,
@@ -245,7 +245,7 @@ function PanelStudyBrowserTracking({
           thumbnailImageSrcMap,
           trackedSeries,
           viewports,
-          isSingleViewport,
+          viewportGridService,
           dataSource,
           DisplaySetService,
           UIDialogService,
@@ -412,7 +412,7 @@ function _mapDisplaySets(
   thumbnailImageSrcMap,
   trackedSeriesInstanceUIDs,
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
-  isSingleViewport,
+  viewportGridService,
   dataSource,
   DisplaySetService,
   UIDialogService,
@@ -423,18 +423,21 @@ function _mapDisplaySets(
   displaySets.forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     const componentType = _getComponentType(ds.Modality);
-    const viewportIdentificator = isSingleViewport
-      ? []
-      : viewports.reduce((acc, viewportData, index) => {
-          if (
-            viewportData?.displaySetInstanceUIDs?.includes(
-              ds.displaySetInstanceUID
-            )
-          ) {
-            acc.push(viewportData.viewportLabel);
-          }
-          return acc;
-        }, []);
+    const numPanes = getNumViewportPanes(viewportGridService);
+    const viewportIdentificator =
+      numPanes === 1
+        ? []
+        : viewports.reduce((acc, viewportData, index) => {
+            if (
+              index < numPanes &&
+              viewportData?.displaySetInstanceUIDs?.includes(
+                ds.displaySetInstanceUID
+              )
+            ) {
+              acc.push(viewportData.viewportLabel);
+            }
+            return acc;
+          }, []);
 
     const array =
       componentType === 'thumbnailTracked'

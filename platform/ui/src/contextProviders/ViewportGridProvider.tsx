@@ -86,6 +86,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           layoutOptions,
           layoutType = 'grid',
+          keepExtraViewports = false,
         } = action.payload;
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
@@ -97,8 +98,11 @@ export function ViewportGridProvider({ children, service }) {
         while (viewports.length < numPanes) {
           viewports.push({});
         }
-        while (viewports.length > numPanes) {
-          viewports.pop();
+
+        if (!keepExtraViewports) {
+          while (viewports.length > numPanes) {
+            viewports.pop();
+          }
         }
 
         for (let i = 0; i < numPanes; i++) {
@@ -238,7 +242,13 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const setLayout = useCallback(
-    ({ layoutType, numRows, numCols, layoutOptions = [] }) =>
+    ({
+      layoutType,
+      numRows,
+      numCols,
+      layoutOptions = [],
+      keepExtraViewports = false,
+    }) =>
       dispatch({
         type: 'SET_LAYOUT',
         payload: {
@@ -246,6 +256,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           numCols,
           layoutOptions,
+          keepExtraViewports,
         },
       }),
     [dispatch]
