@@ -36,6 +36,7 @@ function OHIFCornerstoneSEGViewport(props) {
     DisplaySetService,
     ToolGroupService,
     SegmentationService,
+    UINotificationService,
   } = servicesManager.services;
 
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
@@ -105,7 +106,6 @@ function OHIFCornerstoneSEGViewport(props) {
     } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
-
     return (
       <Component
         {...props}
@@ -114,6 +114,7 @@ function OHIFCornerstoneSEGViewport(props) {
           viewportType: 'volume',
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
+          viewportId: viewportOptions.viewportId,
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}
@@ -175,6 +176,15 @@ function OHIFCornerstoneSEGViewport(props) {
           segDisplaySet.displaySetInstanceUID
         ) {
           setSegIsLoading(false);
+        }
+
+        if (evt.overlappingSegments) {
+          UINotificationService.show({
+            title: 'Overlapping Segments',
+            message:
+              'Overlapping segments detected which is not currently supported',
+            type: 'warning',
+          });
         }
       }
     );

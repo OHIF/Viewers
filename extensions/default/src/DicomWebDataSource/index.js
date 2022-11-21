@@ -92,7 +92,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
 
       const StudyInstanceUIDs =
-        queryStudyInstanceUIDs.length && queryStudyInstanceUIDs ||
+        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||
         paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)

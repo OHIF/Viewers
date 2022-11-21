@@ -29,6 +29,7 @@ function TrackedCornerstoneViewport(props) {
     servicesManager,
     extensionManager,
     commandsManager,
+    viewportOptions,
   } = props;
 
   const { t } = useTranslation('TrackedViewport');
@@ -50,8 +51,7 @@ function TrackedCornerstoneViewport(props) {
   const [element, setElement] = useState(null);
 
   const { trackedSeries } = trackedMeasurements.context;
-
-  const viewportId = CornerstoneViewportService.getViewportId(viewportIndex);
+  const viewportId = viewportOptions.viewportId;
 
   const {
     Modality,
@@ -86,8 +86,6 @@ function TrackedCornerstoneViewport(props) {
       cineService.playClip(element, {
         framesPerSecond: validFrameRate,
       });
-    } else {
-      cineService.stopClip(element);
     }
   };
 

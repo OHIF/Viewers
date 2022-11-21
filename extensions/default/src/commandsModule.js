@@ -7,7 +7,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     HangingProtocolService,
     UINotificationService,
     ViewportGridService,
-    DisplaySetService
+    DisplaySetService,
   } = servicesManager.services;
 
   const actions = {
@@ -30,16 +30,13 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     openDICOMTagViewer() {
       const { activeViewportIndex, viewports } = ViewportGridService.getState();
-      const activeViewportSpecificData =
-        viewports[activeViewportIndex];
-      const {
-        displaySetInstanceUIDs,
-      } = activeViewportSpecificData;
+      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
       const displaySets = DisplaySetService.activeDisplaySets;
       const { UIModalService } = servicesManager.services;
 
-      const displaySetInstanceUID = displaySetInstanceUIDs[0]
+      const displaySetInstanceUID = displaySetInstanceUIDs[0];
       UIModalService.show({
         content: DicomTagBrowser,
         contentProps: {
@@ -47,9 +44,9 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
           displaySetInstanceUID,
           onClose: UIModalService.hide,
         },
-        title: 'DICOM Tag Browser'
+        title: 'DICOM Tag Browser',
       });
-    }
+    },
   };
 
   const definitions = {
@@ -75,7 +72,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
-    }
+    },
   };
 
   return {

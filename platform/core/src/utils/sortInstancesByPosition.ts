@@ -20,6 +20,10 @@ export default function sortInstances(instances: Array<any>) {
     ImageOrientationPatient,
   } = instances[Math.floor(instances.length / 2)]; // this prevents getting scout image as test image
 
+  if (!referenceImagePositionPatient || !ImageOrientationPatient) {
+    return instances;
+  }
+
   const rowCosineVec = vec3.fromValues(
     ImageOrientationPatient[0],
     ImageOrientationPatient[1],

@@ -77,15 +77,12 @@ class CornerstoneViewportService implements IViewportService {
     viewportOptions: PublicViewportOptions,
     elementRef: HTMLDivElement
   ) {
-    const viewportId =
-      viewportOptions.viewportId || this.getViewportId(viewportIndex);
-    const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
+    const viewportInfo = new ViewportInfo(
+      viewportIndex,
+      viewportOptions.viewportId
+    );
     viewportInfo.setElement(elementRef);
     this.viewportsInfo.set(viewportIndex, viewportInfo);
-  }
-
-  public getViewportId(viewportIndex: number): string {
-    return `viewport-${viewportIndex}`;
   }
 
   public getViewportIds(): string[] {
@@ -176,6 +173,22 @@ class CornerstoneViewportService implements IViewportService {
   ): void {
     const renderingEngine = this.getRenderingEngine();
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
+    let viewportId = viewportInfo.getViewportId();
+
+    // if currently there is a viewport with the viewportId, but it is not the same
+    // as the one we are trying to set, we need to disable the old one
+    // and enable the new one, we could ideally change the name of the viewportId
+    // but the viewportId is an integral part in renderers map, tools svg cache
+    // etc. which would require a lot of refactoring, for now we will just disable
+    // the old one and enable the new one at the end of this function
+    let newViewportId = null;
+    if (publicViewportOptions?.viewportId !== viewportId) {
+      newViewportId = publicViewportOptions.viewportId;
+      viewportInfo.setViewportId(newViewportId);
+
+      renderingEngine.disableElement(viewportId);
+    }
+
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
     const {
@@ -196,7 +209,7 @@ class CornerstoneViewportService implements IViewportService {
       viewportIndex,
     });
 
-    const viewportId = viewportInfo.getViewportId();
+    viewportId = viewportInfo.getViewportId();
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
     const background = viewportInfo.getBackground();
@@ -218,7 +231,8 @@ class CornerstoneViewportService implements IViewportService {
     // ENABLED_ELEMENT again and again, which will run onEnableElement callbacks
     renderingEngine.enableElement(viewportInput);
 
-    this._setDisplaySets(viewportId, viewportData, viewportInfo);
+    const viewport = renderingEngine.getViewport(viewportId);
+    this._setDisplaySets(viewport, viewportData, viewportInfo);
   }
 
   public getCornerstoneViewport(
@@ -616,12 +630,10 @@ class CornerstoneViewportService implements IViewportService {
   }
 
   _setDisplaySets(
-    viewportId: string,
+    viewport: StackViewport | VolumeViewport,
     viewportData: StackViewportData | VolumeViewportData,
     viewportInfo: ViewportInfo
   ): void {
-    const viewport = this.getCornerstoneViewport(viewportId);
-
     if (viewport instanceof StackViewport) {
       this._setStackViewport(
         viewport,
@@ -686,10 +698,6 @@ class CornerstoneViewportService implements IViewportService {
     displaySetOptions: DisplaySetOptions[];
   } {
     const viewportIndex = viewportInfo.getViewportIndex();
-
-    if (!publicViewportOptions.viewportId) {
-      publicViewportOptions.viewportId = this.getViewportId(viewportIndex);
-    }
 
     // Creating a temporary viewportInfo to handle defaults
     const newViewportInfo = new ViewportInfo(

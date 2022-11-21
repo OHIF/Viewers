@@ -122,6 +122,13 @@ class HangingProtocolService {
     this.displaySetMatchDetails = new Map();
   }
 
+  public getActiveProtocol(): {
+    protocol: HangingProtocol.Protocol;
+    stage: number;
+  } {
+    return { protocol: this.protocol, stage: this.stage };
+  }
+
   public getDefaultProtocol(): HangingProtocol.Protocol {
     return this.getProtocolById('default');
   }

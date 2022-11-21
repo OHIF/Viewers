@@ -105,6 +105,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            // toolGroupIds.MPR,
           ]),
         ],
         'Length'
@@ -125,6 +126,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Length Tool'
@@ -138,6 +140,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Bidirectional Tool'
@@ -151,6 +154,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Arrow Annotate'
@@ -164,6 +168,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Ellipse Tool'
@@ -184,7 +189,24 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
+      ],
+    },
+  },
+  {
+    id: 'MPR',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleMPR',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
       ],
     },
   },
@@ -203,6 +225,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            // toolGroupIds.MPR,
           ]),
         ],
         'Window Level'
@@ -236,6 +259,7 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
       ],
     },
@@ -253,6 +277,7 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
       ],
     },
