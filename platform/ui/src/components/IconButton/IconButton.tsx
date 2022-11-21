@@ -33,27 +33,47 @@ const variantClasses = {
   },
   outlined: {
     default:
-      'border bg-trasparent border-primary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border border-primary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
-      'border bg-transparent border-primary-main text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border border-primary-main text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'border bg-transparent border-secondary-light text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border border-secondary-light text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
     white:
-      'border bg-transparent border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     black:
-      'border bg-black border-primary-main text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
+      'border border-primary-main text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
   },
   contained: {
-    default:
-      'bg-primary-light text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
-    primary:
-      'bg-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    default: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+    primary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'bg-secondary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white:
-      'bg-white text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
-    black:
-      'bg-black text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    white: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+    black: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+  },
+};
+
+const backgroundClasses = {
+  text: {
+    default: '',
+    primary: '',
+    secondary: '',
+    white: '',
+    black: '',
+  },
+  outlined: {
+    default: 'bg-transparent',
+    primary: 'bg-transparent',
+    secondary: 'bg-transparent',
+    white: 'bg-transparent',
+    black: 'bg-black',
+  },
+  contained: {
+    default: 'bg-primary-light',
+    primary: 'bg-primary-main',
+    secondary: 'bg-secondary-light',
+    white: 'bg-white',
+    black: 'bg-black',
   },
 };
 
@@ -90,6 +110,7 @@ const IconButton = ({
   className,
   name,
   id,
+  bgColor,
   ...rest
 }) => {
   const buttonElement = useRef(null);
@@ -98,6 +119,9 @@ const IconButton = ({
     buttonElement.current.blur();
     onClick(e);
   };
+
+  const bgColorToUse = bgColor ? bgColor : backgroundClasses[variant][color];
+
   return (
     <button
       className={classnames(
@@ -107,6 +131,7 @@ const IconButton = ({
         sizeClasses[size],
         fullWidthClasses[fullWidth],
         disabledClasses[disabled],
+        bgColorToUse,
         className
       )}
       style={{
