@@ -81,9 +81,13 @@ export default function interleaveCenterLoader({
       return;
     }
 
-    const requestImageIds = requests.map(request => {
-      return request.imageId;
-    });
+    const requestImageIds = requests
+      .filter(request => {
+        return request?.imageId;
+      })
+      .map(request => {
+        return request.imageId;
+      });
 
     const imageIds = getInterleavedFrames(requestImageIds);
 

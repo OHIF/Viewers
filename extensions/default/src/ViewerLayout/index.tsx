@@ -33,6 +33,8 @@ function ViewerLayout({
   rightPanels = [],
   leftPanelDefaultClosed = false,
   rightPanelDefaultClosed = false,
+  disableHeader = false,
+  viewerLayoutHeight = 'calc(100vh - 52px)',
 }) {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
@@ -200,21 +202,23 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header
-        menuOptions={menuOptions}
-        isReturnEnabled={!!appConfig.showStudyList}
-        onClickReturnButton={onClickReturnButton}
-        WhiteLabeling={appConfig.whiteLabeling}
-      >
-        <ErrorBoundary context="Primary Toolbar">
-          <div className="relative flex justify-center">
-            <Toolbar servicesManager={servicesManager} />
-          </div>
-        </ErrorBoundary>
-      </Header>
+      {!disableHeader && (
+        <Header
+          menuOptions={menuOptions}
+          isReturnEnabled={!!appConfig.showStudyList}
+          onClickReturnButton={onClickReturnButton}
+          WhiteLabeling={appConfig.whiteLabeling}
+        >
+          <ErrorBoundary context="Primary Toolbar">
+            <div className="relative flex justify-center">
+              <Toolbar servicesManager={servicesManager} />
+            </div>
+          </ErrorBoundary>
+        </Header>
+      )}
       <div
         className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"
-        style={{ height: 'calc(100vh - 52px' }}
+        style={{ height: viewerLayoutHeight }}
       >
         <React.Fragment>
           {showLoadingIndicator && (
@@ -270,6 +274,8 @@ ViewerLayout.propTypes = {
   rightPanelDefaultClosed: PropTypes.bool.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+  disableHeader: PropTypes.bool.isRequired,
+  viewerLayoutHeight: PropTypes.string.isRequired,
 };
 
 export default ViewerLayout;

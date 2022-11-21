@@ -242,7 +242,7 @@ function _getInstanceNumberFromVolume(
   viewportIndex,
   CornerstoneViewportService
 ) {
-  const volumes = viewportData.volumes;
+  const volumes = viewportData.data.map(d => d.volume);
 
   // Todo: support fusion of acquisition plane which has instanceNumber
   if (!volumes || volumes.length > 1) {

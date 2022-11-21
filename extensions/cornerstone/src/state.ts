@@ -27,7 +27,9 @@ const setEnabledElement = (
  *
  * @return {HTMLElement} Active viewport element.
  */
-const getEnabledElement = viewportIndex => {
+const getEnabledElement = (
+  viewportIndex: number
+): { element: HTMLElement; context: string } => {
   return state.enabledElements[viewportIndex];
 };
 

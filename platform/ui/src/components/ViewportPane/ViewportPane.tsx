@@ -66,8 +66,10 @@ function ViewportPane({
       className={classnames(
         'w-full h-full rounded-md overflow-hidden hover:border-primary-light transition duration-300 group',
         {
-          'border-2 border-primary-light': isActive,
-          'border-2 border-transparent': !isActive,
+          'border-2 border-primary-light':
+            isActive && !customStyle?.ohifDisableBorder,
+          'border-2 border-transparent':
+            !isActive && !customStyle?.ohifDisableBorder,
         },
         className
       )}
@@ -79,8 +81,10 @@ function ViewportPane({
         className={classnames(
           'rounded-md w-full h-full overflow-hidden group-hover:border-transparent',
           {
-            'border border-transparent': isActive,
-            'border border-secondary-light': !isActive,
+            'border border-transparent':
+              isActive && !customStyle?.ohifDisableBorder,
+            'border border-secondary-light':
+              !isActive && !customStyle?.ohifDisableBorder,
           },
           className
         )}

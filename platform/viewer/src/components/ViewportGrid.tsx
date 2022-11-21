@@ -23,7 +23,12 @@ const ORIENTATION_MAP = {
 };
 
 function ViewerViewportGrid(props) {
-  const { servicesManager, viewportComponents, dataSource } = props;
+  const {
+    servicesManager,
+    viewportComponents,
+    dataSource,
+    modeViewportPaneStyles = {},
+  } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   const { numCols, numRows, activeViewportIndex, viewports } = viewportGrid;
@@ -377,6 +382,7 @@ function ViewerViewportGrid(props) {
             left: viewportX * 100 + 0.2 + '%',
             width: viewportWidth * 100 - 0.3 + '%',
             height: viewportHeight * 100 - 0.3 + '%',
+            ...modeViewportPaneStyles,
           }}
           isActive={isActive}
         >

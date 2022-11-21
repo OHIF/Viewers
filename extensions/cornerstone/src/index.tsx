@@ -16,8 +16,13 @@ import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
 
 import { toolNames } from './initCornerstoneTools';
-import { getEnabledElement, reset as enabledElementReset } from './state';
+import {
+  getEnabledElement,
+  setEnabledElement,
+  reset as enabledElementReset,
+} from './state';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
+
 import dicomLoaderService from './utils/dicomLoaderService';
 import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
@@ -30,13 +35,14 @@ const Component = React.lazy(() => {
   );
 });
 
-const OHIFCornerstoneViewport = props => {
+const OHIFCornerstoneViewport = React.forwardRef((props, ref) => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <Component {...props} />
+      <Component ref={ref} {...props} />
     </React.Suspense>
   );
-};
+});
+OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
 
 /**
  *
@@ -83,7 +89,7 @@ const cornerstoneExtension = {
   },
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
-    const ExtendedOHIFCornerstoneViewport = props => {
+    const ExtendedOHIFCornerstoneViewport = React.forwardRef((props, ref) => {
       // const onNewImageHandler = jumpData => {
       //   commandsManager.runCommand('jumpToImage', jumpData);
       // };
@@ -91,13 +97,14 @@ const cornerstoneExtension = {
 
       return (
         <OHIFCornerstoneViewport
+          ref={ref}
           {...props}
           ToolBarService={ToolBarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />
       );
-    };
+    });
 
     return [
       {
@@ -122,6 +129,7 @@ const cornerstoneExtension = {
             return { cornerstone, cornerstoneTools };
           },
           getEnabledElement,
+          setEnabledElement,
           dicomLoaderService,
           registerColormap,
         },

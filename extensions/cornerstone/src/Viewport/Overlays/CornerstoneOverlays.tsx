@@ -7,7 +7,13 @@ import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndic
 
 function CornerstoneOverlays(props) {
   const { viewportIndex, element, scrollbarHeight, servicesManager } = props;
-  const { CornerstoneViewportService } = servicesManager.services;
+  const { 
+    disableViewportImageScrollbar,
+    disableViewportOverlay,
+    disableViewportImageSliceLoadingIndicator,
+    disableViewportOrientationMarkers,
+  } = props;
+  const { CornerstoneViewportService, CornerstoneCacheService} = servicesManager.services;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
     numberOfSlices: 0,
@@ -47,33 +53,41 @@ function CornerstoneOverlays(props) {
 
   return (
     <div className="noselect">
-      <ViewportImageScrollbar
-        viewportIndex={viewportIndex}
-        viewportData={viewportData}
-        element={element}
-        imageSliceData={imageSliceData}
-        setImageSliceData={setImageSliceData}
-        scrollbarHeight={scrollbarHeight}
-        servicesManager={servicesManager}
-      />
-      <ViewportOverlay
-        imageSliceData={imageSliceData}
-        viewportData={viewportData}
-        viewportIndex={viewportIndex}
-        servicesManager={servicesManager}
-        element={element}
-      />
-      <ViewportImageSliceLoadingIndicator
-        viewportData={viewportData}
-        element={element}
-      />
-      <ViewportOrientationMarkers
-        imageSliceData={imageSliceData}
-        element={element}
-        viewportData={viewportData}
-        servicesManager={servicesManager}
-        viewportIndex={viewportIndex}
-      />
+      {!disableViewportImageScrollbar && (
+        <ViewportImageScrollbar
+          viewportIndex={viewportIndex}
+          viewportData={viewportData}
+          element={element}
+          imageSliceData={imageSliceData}
+          setImageSliceData={setImageSliceData}
+          scrollbarHeight={scrollbarHeight}
+          servicesManager={servicesManager}
+        />
+      )}
+      {!disableViewportOverlay && (
+        <ViewportOverlay
+          imageSliceData={imageSliceData}
+          viewportData={viewportData}
+          viewportIndex={viewportIndex}
+          servicesManager={servicesManager}
+          element={element}
+        />
+      )}
+      {!disableViewportImageSliceLoadingIndicator && (
+        <ViewportImageSliceLoadingIndicator
+          viewportData={viewportData}
+          element={element}
+        />
+      )}
+      {!disableViewportOrientationMarkers && (
+        <ViewportOrientationMarkers
+          imageSliceData={imageSliceData}
+          element={element}
+          viewportData={viewportData}
+          servicesManager={servicesManager}
+          viewportIndex={viewportIndex}
+        />
+      )}
     </div>
   );
 }
