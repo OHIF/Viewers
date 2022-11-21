@@ -145,10 +145,17 @@ class ViewerMain extends Component {
       const { Modality } = displaySet;
       if (Modality === 'SEG' && servicesManager) {
         const onDisplaySetLoadFailureHandler = error => {
-          LoggerService.error({ error, message: error.message });
+          const message =
+            error.message.includes('orthogonal') ||
+            error.message.includes('oblique')
+              ? 'The segmentation has been detected as not planar,\
+      If you really think it is planar,\
+      please adjust the tolerance in the segmentation panel settings (at your own peril!)'
+              : error.message;
+          LoggerService.error({ error, message });
           UINotificationService.show({
             title: 'DICOM Segmentation Loader',
-            message: error.message,
+            message,
             type: 'error',
             autoClose: false,
           });
