@@ -2,6 +2,9 @@
 # Use Nginx Alpine image
 FROM nginx:stable-alpine
 
+# Update packages
+RUN apk -U upgrade
+
 # Add bash to container
 RUN apk add --no-cache bash
 
