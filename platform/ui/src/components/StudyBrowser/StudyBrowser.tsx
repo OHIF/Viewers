@@ -84,8 +84,10 @@ const StudyBrowser = ({
             return (
               <Button
                 key={name}
+                name={name}
                 className={'text-white text-base p-2 min-w-18'}
                 size="initial"
+                color={isActive ? 'black' : 'default'}
                 bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
                 onClick={() => {
                   onClickTab(name);
