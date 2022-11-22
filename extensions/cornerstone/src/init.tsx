@@ -74,12 +74,9 @@ export default async function init({
     CornerstoneViewportService,
     HangingProtocolService,
     ToolGroupService,
-    SegmentationService,
     ViewportGridService,
   } = servicesManager.services;
 
-  window.SegmentationService = SegmentationService;
-  window.DisplaySetService = DisplaySetService;
   window.services = servicesManager.services;
 
   if (cornerstone.getShouldUseCPURendering()) {

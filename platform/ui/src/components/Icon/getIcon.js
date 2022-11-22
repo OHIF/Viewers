@@ -53,6 +53,10 @@ import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
 import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
 import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
 import loadingOHIFMark from './../../assets/icons/loading-ohif-mark.svg';
+import notificationsInfo from './../../assets/icons/notifications-info.svg';
+import notificationsWarning from './../../assets/icons/notifications-warning.svg';
+import notificationsError from './../../assets/icons/notifications-error.svg';
+import notificationsSuccess from './../../assets/icons/notifications-success.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -152,6 +156,10 @@ const ICONS = {
   'checkbox-checked': checkboxChecked,
   'checkbox-unchecked': checkboxUnchecked,
   'loading-ohif-mark': loadingOHIFMark,
+  'notifications-info': notificationsInfo,
+  'notifications-error': notificationsError,
+  'notifications-success': notificationsSuccess,
+  'notifications-warning': notificationsWarning,
 
   /** Tools */
   'tool-zoom': toolZoom,
