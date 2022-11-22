@@ -81,11 +81,15 @@ const StudyBrowser = ({
             const { name, label, studies } = tab;
             const isActive = activeTabName === name;
             const isDisabled = !studies.length;
+            // Apply the contrasting color for brighter button color visibility
+            // const color = isActive ? 'black' : 'default';
+            const color = 'default';
             return (
               <Button
                 key={name}
                 className={'text-white text-base p-2 min-w-18'}
                 size="initial"
+                color={color}
                 bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
                 onClick={() => {
                   onClickTab(name);
