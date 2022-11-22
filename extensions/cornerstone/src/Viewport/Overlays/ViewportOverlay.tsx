@@ -188,10 +188,27 @@ function CornerstoneViewportOverlay({
     return null;
   }
 
+  const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+    viewportIndex
+  );
+
+  if (!ohifViewport) {
+    return null;
+  }
+
+  const backgroundColor = ohifViewport.getViewportOptions().background;
+
+  // Todo: probably this can be done in a better way in which we identify bright
+  // background
+  const isLight = backgroundColor
+    ? utilities.isEqual(backgroundColor, [1, 1, 1])
+    : false;
+
   return (
     <ViewportOverlay
       topLeft={getTopLeftContent()}
       topRight={getTopRightContent()}
+      color={isLight && 'text-[#0944B3]'}
     />
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import classNames from 'classnames';
 import {
   metaData,
   Enums,
@@ -119,13 +120,18 @@ function ViewportOrientationMarkers({
 
     const backgroundColor = ohifViewport.getViewportOptions().background;
 
+    // Todo: probably this can be done in a better way in which we identify bright
+    // background
     const isLight = backgroundColor
       ? csUtils.isEqual(backgroundColor, [1, 1, 1])
       : false;
 
     return orientationMarkers.map((m, index) => (
       <div
-        className={`${m}-mid orientation-marker`}
+        className={classNames(
+          `${m}-mid orientation-marker`,
+          isLight ? 'text-[#726F7E]' : 'text-[#ccc]'
+        )}
         key={`${m}-mid orientation-marker`}
       >
         <div className="orientation-marker-value">{markers[m]}</div>

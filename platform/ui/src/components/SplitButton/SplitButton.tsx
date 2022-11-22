@@ -8,14 +8,14 @@ import { Icon, Tooltip, ListMenu } from '../';
 
 const baseClasses = {
   Button:
-    'flex items-center rounded-md border-transparent border-2 cursor-pointer',
+    'flex items-center rounded-md border-transparent border-2 cursor-pointer group/button',
   Primary:
-    'h-full flex flex-1 items-center rounded-md rounded-tr-none rounded-br-none',
+    'h-full flex flex-1 items-center rounded-md rounded-tr-none rounded-br-none group/primary',
   Secondary:
-    'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4',
+    'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4 group/secondary',
   PrimaryIcon: 'w-5 h-5',
   SecondaryIcon: 'w-4 h-full stroke-1',
-  Separator: 'border-l pt-2 pb-2',
+  Separator: 'border-l py-2.5',
   Content: 'absolute z-10 top-0 mt-12',
 };
 
@@ -49,8 +49,10 @@ const classes = {
   PrimaryIcon: ({ primary, isExpanded }) =>
     classNames(
       baseClasses.PrimaryIcon,
+      !primary.isActive &&
+        'group-hover/primary:text-primary-light group-hover/secondary:text-primary-light group-hover/button:text-primary-light',
       primary.isActive && !isExpanded
-        ? 'text-primary-dark'
+        ? 'text-primary-dark '
         : 'text-common-bright'
     ),
   SecondaryIcon: ({ isExpanded }) =>
@@ -58,7 +60,7 @@ const classes = {
       baseClasses.SecondaryIcon,
       isExpanded
         ? 'text-primary-dark'
-        : 'text-primary-active hover:text-common-bright'
+        : 'text-[#348cfd] group-hover/secondary:text-primary-light'
     ),
   Separator: ({ primary, isExpanded, isHovering }) =>
     classNames(
