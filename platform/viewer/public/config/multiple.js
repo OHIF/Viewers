@@ -1,10 +1,11 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
+  customizationService: [
+  ],
   extensions: [],
   modes: [],
   showStudyList: true,
-  maxNumberOfWebWorkers: 3,
+  maxNumberOfWebWorkers: 4,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
   showLoadingIndicator: true,
@@ -13,7 +14,7 @@ window.config = {
     {
       friendlyName: 'Static WADO Local Data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'dicomweb',
+      sourceName: 'default',
       configuration: {
         name: 'DCM4CHEE',
         qidoRoot: '/dicomweb',
@@ -27,6 +28,45 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
+      },
+    },
+    {
+      friendlyName: 'AWS S3 OHIF',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'aws',
+      configuration: {
+        name: 'aws',
+        qidoRoot: 'https://viewer.flexview.ai/dicomweb',
+        wadoRoot: 'https://viewer.flexview.ai/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video,pdf',
+      },
+    },
+    {
+      friendlyName: 'E2E Test Data',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'e2e',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: '/viewer-testdata',
+        qidoRoot: '/viewer-testdata',
+        wadoRoot: '/viewer-testdata',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'video,thumbnail,pdf',
       },
     },
     {
@@ -51,26 +91,7 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
-  // whiteLabeling: {
-  //   /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
-  //   createLogoComponentFn: function (React) {
-  //     return React.createElement(
-  //       'a',
-  //       {
-  //         target: '_self',
-  //         rel: 'noopener noreferrer',
-  //         className: 'text-purple-600 line-through',
-  //         href: '/',
-  //       },
-  //       React.createElement('img',
-  //         {
-  //           src: './customLogo.svg',
-  //           className: 'w-8 h-8',
-  //         }
-  //       ))
-  //   },
-  // },
-  defaultDataSourceName: 'dicomweb',
+  defaultDataSourceName: 'default',
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',
