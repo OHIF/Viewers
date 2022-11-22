@@ -1,9 +1,15 @@
 import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import Icon from '../Icon';
-import IconButton from '../IconButton';
 
 import SnackbarTypes from './SnackbarTypes';
+
+const iconClasses = {
+  [SnackbarTypes.INFO]: 'notifications-info',
+  [SnackbarTypes.WARNING]: 'notifications-warning',
+  [SnackbarTypes.SUCCESS]: 'notifications-success',
+  [SnackbarTypes.ERROR]: 'notifications-error',
+};
 
 const SnackbarItem = ({ options, onClose }) => {
   const handleClose = () => onClose(options.id);
@@ -15,10 +21,10 @@ const SnackbarItem = ({ options, onClose }) => {
   }, []);
 
   const typeClasses = {
-    [SnackbarTypes.INFO]: 'bg-primary-active',
-    [SnackbarTypes.WARNING]: 'bg-yellow-600',
-    [SnackbarTypes.SUCCESS]: 'bg-green-600',
-    [SnackbarTypes.ERROR]: 'bg-red-600',
+    [SnackbarTypes.INFO]: 'bg-[#bed1db]',
+    [SnackbarTypes.WARNING]: 'bg-[#ebe5c4]',
+    [SnackbarTypes.SUCCESS]: 'bg-[#c6d9bf]',
+    [SnackbarTypes.ERROR]: 'bg-[#dabdbe]',
   };
 
   const hidden =
@@ -31,17 +37,28 @@ const SnackbarItem = ({ options, onClose }) => {
         typeClasses[options.type]
       )}
     >
-      {/* <span className="sb-closeBtn" onClick={handleClose}> */}
-      {/* <span className="sb-closeIcon">x</span> */}
-      <div
-        onClick={handleClose}
-        className="w-5 h-5 rounded-full absolute bg-white flex items-center justify-center right-0 top-0 mr-2 mt-2"
-      >
-        <Icon name="close" className="w-4 text-black" />
+      <div className="flex ">
+        <div
+          onClick={handleClose}
+          className="w-5 h-5 rounded-full absolute flex items-center justify-center right-0 top-0 mr-2 mt-2 text-[#0944b3]"
+        >
+          <Icon name="close" className="w-5 h-5 text-black" />
+        </div>
+        <Icon name={iconClasses[options.type]} className="w-5 h-5 mt-[1px]" />
+        <div className="flex-col ml-2">
+          {/* </span> */}
+          {options.title && (
+            <div className="break-normal text-lg font-bold text-black">
+              {options.title}
+            </div>
+          )}
+          {options.message && (
+            <div className="break-normal text-base text-black">
+              {options.message}
+            </div>
+          )}
+        </div>
       </div>
-      {/* </span> */}
-      {options.title && <div className="sb-title">{options.title}</div>}
-      {options.message && <div className="sb-message">{options.message}</div>}
     </div>
   );
 };

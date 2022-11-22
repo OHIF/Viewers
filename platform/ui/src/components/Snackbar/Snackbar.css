@@ -42,19 +42,11 @@
   background: #fff;
 }
 
-.sb-title {
-  @apply break-normal text-lg font-bold;
-}
-
-.sb-message {
-  @apply break-normal text-base;
-}
-
 .sb-item {
   animation: fadein 1s;
   box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 18px 0 rgba(0, 0, 0, 0.12),
     0 3px 5px -1px rgba(0, 0, 0, 0.14);
-  @apply relative p-5 text-white overflow-hidden rounded-md transition-height ease-in-out duration-300;
+  @apply relative p-3 text-white overflow-hidden rounded-md transition-height ease-in-out duration-300;
 }
 
 @keyframes fadein {
