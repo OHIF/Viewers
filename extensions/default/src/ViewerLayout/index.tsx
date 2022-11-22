@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router';
+
 import {
   SidePanel,
   ErrorBoundary,
@@ -11,7 +13,6 @@ import {
   useModal,
   LoadingIndicatorProgress,
 } from '@ohif/ui';
-
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
 import { useAppConfig } from '@state';
@@ -35,9 +36,19 @@ function ViewerLayout({
 }) {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const onClickReturnButton = () => {
-    navigate('/');
+    const { pathname } = location;
+    const dataSourceIdx = pathname.indexOf('/', 1);
+    const search =
+      dataSourceIdx === -1
+        ? undefined
+        : `datasourcename=${pathname.substring(dataSourceIdx + 1)}`;
+    navigate({
+      pathname: '/',
+      search,
+    });
   };
 
   const { t } = useTranslation();

@@ -143,6 +143,9 @@ module.exports = (env, argv) => {
       client: {
         overlay: { errors: true, warnings: false },
       },
+      proxy: {
+        '/dicomweb': 'http://localhost:5000',
+      },
       'static': [
         {
           directory: '../../testdata',
