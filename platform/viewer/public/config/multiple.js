@@ -1,7 +1,7 @@
 window.config = {
   routerBasename: '/',
   customizationService: [
-    '@ohif/extension-default.customizationModule.helloPage',
+    '@ohif/extension-default.customizationModule.datasources',
     {
       id: 'class:StudyBrowser',
       true: 'black',

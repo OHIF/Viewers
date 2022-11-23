@@ -498,7 +498,7 @@ const defaultFilterValues = {
   sortDirection: 'none',
   pageNumber: 1,
   resultsPerPage: 25,
-  datasourcename: '',
+  datasources: '',
 };
 
 function _tryParseInt(str, defaultValue) {
@@ -530,7 +530,7 @@ function _getQueryFilterValues(query) {
     sortDirection: query.get('sortDirection'),
     pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
-    datasourcename: query.get('datasourcename'),
+    datasources: query.get('datasources'),
   };
 
   // Delete null/undefined keys
