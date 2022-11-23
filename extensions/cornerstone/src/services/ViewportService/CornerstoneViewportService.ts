@@ -79,7 +79,7 @@ class CornerstoneViewportService implements IViewportService {
   ) {
     const viewportInfo = new ViewportInfo(
       viewportIndex,
-      viewportOptions.viewportId
+      this.getViewportId(viewportIndex)
     );
     viewportInfo.setElement(elementRef);
     this.viewportsInfo.set(viewportIndex, viewportInfo);
@@ -93,6 +93,10 @@ class CornerstoneViewportService implements IViewportService {
     });
 
     return viewportIds;
+  }
+
+  public getViewportId(viewportIndex: number): string {
+    return `viewport-${viewportIndex}`;
   }
 
   /**
@@ -173,6 +177,11 @@ class CornerstoneViewportService implements IViewportService {
   ): void {
     const renderingEngine = this.getRenderingEngine();
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
+
+    if (!publicViewportOptions.viewportId) {
+      publicViewportOptions.viewportId = this.getViewportId(viewportIndex);
+    }
+
     let viewportId = viewportInfo.getViewportId();
 
     // if currently there is a viewport with the viewportId, but it is not the same
