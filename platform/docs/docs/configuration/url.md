@@ -59,7 +59,7 @@ If you happen to have multiple data sources configured, you can filter the
 WorkList by adding the `dataSources` query parameter.
 
 ```js
-/?dataSources=orthanc
+/?dataSourcename=orthanc
 ```
 
 :::tip
