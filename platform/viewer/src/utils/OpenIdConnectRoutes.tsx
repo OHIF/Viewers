@@ -111,9 +111,11 @@ function OpenIdConnectRoutes({
   const getAuthorizationHeader = () => {
     const user = UserAuthenticationService.getUser();
 
-    return {
-      Authorization: `Bearer ${user.access_token}`,
-    };
+    if (user && user.access_token) {
+      return {
+        Authorization: `Bearer ${user.access_token}`,
+      };
+    }
   };
 
   const handleUnauthenticated = () => {
@@ -158,11 +160,11 @@ function OpenIdConnectRoutes({
   const location = useLocation();
   const { pathname, search } = location;
 
-  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname; //.replace(routerBasename,'')
-  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri)
+  const redirect_uri = new URL(userManager.settings.redirect_uri).pathname; //.replace(routerBasename,'')
+  const silent_refresh_uri = new URL(userManager.settings.silent_redirect_uri)
     .pathname; //.replace(routerBasename,'')
   const post_logout_redirect_uri = new URL(
-    userManager.settings._post_logout_redirect_uri
+    userManager.settings.post_logout_redirect_uri
   ).pathname; //.replace(routerBasename,'');
 
   // const pathnameRelative = pathname.replace(routerBasename,'');
