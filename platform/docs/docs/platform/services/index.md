@@ -127,6 +127,17 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
+                <a href="./ui/customization-service">
+                    CustomizationService
+                </a>
+            </td>
+            <td>UI Service</td>
+            <td>
+                customizationService (NEW)
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./ui/ui-dialog-service">
                     UIDialogService
                 </a>
