@@ -3,7 +3,7 @@ import { id } from './id';
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
+  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
   rightPanel: '@ohif/extension-default.panelModule.measure',
 };
@@ -88,8 +88,8 @@ function modeFactory({ modeConfiguration }) {
     ],
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
-    /** HangingProtocols used by the mode */
-    hangingProtocols: [''],
+    /** HangingProtocol used by the mode */
+    // hangingProtocol: [''],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */

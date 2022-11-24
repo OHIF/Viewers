@@ -25,9 +25,13 @@ function CornerstoneImageScrollbar({
       viewportId
     );
 
-    // on image scrollbar change, stop the CINE if it is playing
-    CineService.stopClip(element);
-    CineService.setCine({ id: viewportIndex, isPlaying: false });
+    const { isCineEnabled } = CineService.getState();
+
+    if (isCineEnabled) {
+      // on image scrollbar change, stop the CINE if it is playing
+      CineService.stopClip(element);
+      CineService.setCine({ id: viewportIndex, isPlaying: false });
+    }
 
     csToolsUtils.jumpToSlice(viewport.element, {
       imageIndex,
@@ -53,7 +57,7 @@ function CornerstoneImageScrollbar({
 
       setImageSliceData({
         imageIndex: imageIndex,
-        numberOfSlices: viewportData.imageIds.length,
+        numberOfSlices: viewportData.data.imageIds.length,
       });
 
       return;
@@ -83,7 +87,7 @@ function CornerstoneImageScrollbar({
       // find the index of imageId in the imageIds
       setImageSliceData({
         imageIndex: newImageIdIndex,
-        numberOfSlices: viewportData.imageIds.length,
+        numberOfSlices: viewportData.data.imageIds.length,
       });
     };
 

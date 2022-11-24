@@ -43,12 +43,10 @@ export default class ExtensionManager {
     const {
       MeasurementService,
       ViewportGridService,
-      HangingProtocolService,
     } = _servicesManager.services;
 
     MeasurementService.clearMeasurements();
     ViewportGridService.reset();
-    HangingProtocolService.reset();
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
@@ -74,12 +72,10 @@ export default class ExtensionManager {
     const {
       MeasurementService,
       ViewportGridService,
-      HangingProtocolService,
     } = _servicesManager.services;
 
     MeasurementService.clearMeasurements();
     ViewportGridService.reset();
-    HangingProtocolService.reset();
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
@@ -196,6 +192,8 @@ export default class ExtensionManager {
               dataSources
             );
             break;
+          case MODULE_TYPES.HANGING_PROTOCOL:
+            this._initHangingProtocolsModule(extensionModule, extensionId);
           case MODULE_TYPES.TOOLBAR:
           case MODULE_TYPES.VIEWPORT:
           case MODULE_TYPES.PANEL:
@@ -203,7 +201,6 @@ export default class ExtensionManager {
           case MODULE_TYPES.CONTEXT:
           case MODULE_TYPES.LAYOUT_TEMPLATE:
           case MODULE_TYPES.UTILITY:
-          case MODULE_TYPES.HANGING_PROTOCOL:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
             extensionModule.forEach(element => {
@@ -287,6 +284,16 @@ export default class ExtensionManager {
     }
   };
 
+  _initHangingProtocolsModule = (extensionModule, extensionId) => {
+    const { HangingProtocolService } = this._servicesManager.services;
+    extensionModule.forEach(({ id, protocol }) => {
+      if (protocol) {
+        // Only auto-register if protocol specified, otherwise let mode register
+        HangingProtocolService.addProtocol(id, protocol);
+      }
+    });
+  };
+
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
     const { UserAuthenticationService } = this._servicesManager.services;
 
@@ -358,5 +365,5 @@ export default class ExtensionManager {
  * @param {string} lower
  */
 function _capitalizeFirstCharacter(lower) {
-  return lower.charAt(0).toUpperCase() + lower.substr(1);
+  return lower.charAt(0).toUpperCase() + lower.substring(1);
 }

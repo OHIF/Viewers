@@ -4,7 +4,10 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
-  maxNumberOfWebWorkers: 3,
+  maxNumberOfWebWorkers: 4,
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
+  showLoadingIndicator: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -17,17 +20,24 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
-        supportsReject: true,
+        name: 'aws',
+        // old server
+        // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        // new server
+        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
+        supportsFuzzyMatching: false,
         supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video,pdf',
       },
     },
     {
@@ -102,17 +112,22 @@ window.config = {
     { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
     { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
     { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
+    // {
+    //   commandName: 'previousViewportDisplaySet',
+    //   label: 'Previous Series',
+    //   keys: ['pagedown'],
+    // },
+    // {
+    //   commandName: 'nextViewportDisplaySet',
+    //   label: 'Next Series',
+    //   keys: ['pageup'],
+    // },
     {
-      commandName: 'previousViewportDisplaySet',
-      label: 'Previous Series',
-      keys: ['pagedown'],
+      commandName: 'setToolActive',
+      commandOptions: { toolName: 'Zoom' },
+      label: 'Zoom',
+      keys: ['z'],
     },
-    {
-      commandName: 'nextViewportDisplaySet',
-      label: 'Next Series',
-      keys: ['pageup'],
-    },
-    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
     // ~ Window level presets
     {
       commandName: 'windowLevelPreset1',

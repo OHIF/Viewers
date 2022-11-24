@@ -4,6 +4,8 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -117,16 +119,16 @@ window.config = {
     { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
     { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
     { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
-    {
-      commandName: 'previousViewportDisplaySet',
-      label: 'Previous Series',
-      keys: ['pagedown'],
-    },
-    {
-      commandName: 'nextViewportDisplaySet',
-      label: 'Next Series',
-      keys: ['pageup'],
-    },
+    // {
+    //   commandName: 'previousViewportDisplaySet',
+    //   label: 'Previous Series',
+    //   keys: ['pagedown'],
+    // },
+    // {
+    //   commandName: 'nextViewportDisplaySet',
+    //   label: 'Next Series',
+    //   keys: ['pageup'],
+    // },
     { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
     // ~ Window level presets
     {

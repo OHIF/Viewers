@@ -70,21 +70,34 @@ export default class ToolBarService {
         break;
       }
       case 'tool': {
-        this.state.primaryToolId = itemId;
-        commands.forEach(
-          ({ commandName = 'setToolActive', commandOptions, context }) => {
-            commandsManager.runCommand(commandName, commandOptions, context);
-          }
-        );
+        try {
+          commands.forEach(
+            ({ commandName = 'setToolActive', commandOptions, context }) => {
+              commandsManager.runCommand(commandName, commandOptions, context);
+            }
+          );
+
+          // only set the primary tool if no error was thrown
+          this.state.primaryToolId = itemId;
+        } catch (error) {
+          console.warn(error);
+        }
+
         break;
       }
       case 'toggle': {
+        const { commands } = interaction;
+        let commandExecuted;
+
+        // only toggle if a command was executed
         this.state.toggles[itemId] =
           this.state.toggles[itemId] === undefined
             ? true
             : !this.state.toggles[itemId];
 
-        const { commands } = interaction;
+        if (!commands) {
+          break;
+        }
 
         commands.forEach(({ commandName, commandOptions, context }) => {
           if (!commandOptions) {
@@ -93,9 +106,21 @@ export default class ToolBarService {
 
           if (commandName) {
             commandOptions.toggledState = this.state.toggles[itemId];
-            commandsManager.runCommand(commandName, commandOptions, context);
+
+            try {
+              commandsManager.runCommand(commandName, commandOptions, context);
+              commandExecuted = true;
+            } catch (error) {
+              console.warn(error);
+            }
           }
         });
+
+        if (!commandExecuted) {
+          // If no command was executed, we need to toggle the state back
+          this.state.toggles[itemId] = !this.state.toggles[itemId];
+        }
+
         break;
       }
       default:

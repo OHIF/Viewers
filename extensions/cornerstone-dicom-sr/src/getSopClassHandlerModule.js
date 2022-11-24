@@ -6,7 +6,7 @@ import { adapters } from 'dcmjs';
 
 const { CodeScheme: Cornerstone3DCodeScheme } = adapters.Cornerstone3D;
 
-const { ImageSet } = classes;
+const { ImageSet, MetadataProvider: metadataProvider } = classes;
 // TODO ->
 // Add SR thumbnail
 // Make viewport
@@ -16,6 +16,7 @@ const sopClassUids = [
   '1.2.840.10008.5.1.4.1.1.88.11', //BASIC_TEXT_SR:
   '1.2.840.10008.5.1.4.1.1.88.22', //ENHANCED_SR:
   '1.2.840.10008.5.1.4.1.1.88.33', //COMPREHENSIVE_SR:
+  '1.2.840.10008.5.1.4.1.1.88.34', //COMPREHENSIVE_3D_SR:
 ];
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
@@ -44,6 +45,7 @@ const CodingSchemeDesignators = {
 
 const RELATIONSHIP_TYPE = {
   INFERRED_FROM: 'INFERRED FROM',
+  CONTAINS: 'CONTAINS',
 };
 
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
@@ -77,6 +79,7 @@ function _getDisplaySetsFromSeries(
     SeriesNumber,
     SeriesDate,
     ConceptNameCodeSequence,
+    SOPClassUID,
   } = instance;
 
   if (
@@ -101,6 +104,7 @@ function _getDisplaySetsFromSeries(
     SeriesInstanceUID,
     StudyInstanceUID,
     SOPClassHandlerId,
+    SOPClassUID,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,
@@ -212,20 +216,26 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     newDisplaySet
   );
 
-  for (let i = 0; i < images.length; i++) {
+  for (const imageId of imageIdsForDisplaySet) {
     if (!unloadedMeasurements.length) {
       // All measurements loaded.
-      break;
+      return;
     }
 
-    const image = images[i];
-    const { SOPInstanceUID } = image;
-    if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
-      const imageId = imageIdsForDisplaySet[i];
+    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(
+      imageId
+    );
 
+    if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
-        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
+        if (
+          _measurementReferencesSOPInstanceUID(
+            measurement,
+            SOPInstanceUID,
+            frameNumber
+          )
+        ) {
           addMeasurement(
             measurement,
             imageId,
@@ -239,8 +249,22 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   }
 }
 
-function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
+function _measurementReferencesSOPInstanceUID(
+  measurement,
+  SOPInstanceUID,
+  frameNumber
+) {
   const { coords } = measurement;
+
+  // NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
+  //  Standard. But for now, we will support only one ReferenceFrameNumber.
+  const ReferencedFrameNumber =
+    (measurement.coords[0].ReferencedSOPSequence &&
+      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
+    1;
+
+  if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber))
+    return false;
 
   for (let j = 0; j < coords.length; j++) {
     const coord = coords[j];
@@ -376,7 +400,6 @@ function _processMeasurement(mergedContentSequence) {
 function _processTID1410Measurement(mergedContentSequence) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
-  // TODO -> Look at RelationshipType => Contains means
 
   const graphicItem = mergedContentSequence.find(
     group => group.ValueType === 'SCOORD'
@@ -536,9 +559,14 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 function _getCoordsFromSCOORDOrSCOORD3D(item) {
   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
 
-  if (RelationshipType !== RELATIONSHIP_TYPE.INFERRED_FROM) {
+  if (
+    !(
+      RelationshipType == RELATIONSHIP_TYPE.INFERRED_FROM ||
+      RelationshipType == RELATIONSHIP_TYPE.CONTAINS
+    )
+  ) {
     console.warn(
-      `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM."`
+      `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM" or "CONTAINS"`
     );
 
     return;
@@ -597,12 +625,18 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
 
   _getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;
-    const {
-      ReferencedSOPClassUID,
-      ReferencedSOPInstanceUID,
-    } = ReferencedSOPSequence;
 
-    referencedImages.push({ ReferencedSOPClassUID, ReferencedSOPInstanceUID });
+    if (item.hasOwnProperty('ReferencedSOPClassUID')) {
+      const {
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
+      } = ReferencedSOPSequence;
+
+      referencedImages.push({
+        ReferencedSOPClassUID,
+        ReferencedSOPInstanceUID,
+      });
+    }
   });
 
   return referencedImages;

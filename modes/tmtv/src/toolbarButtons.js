@@ -105,6 +105,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            // toolGroupIds.MPR,
           ]),
         ],
         'Length'
@@ -125,6 +126,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Length Tool'
@@ -138,6 +140,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Bidirectional Tool'
@@ -151,6 +154,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Arrow Annotate'
@@ -164,6 +168,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Ellipse Tool'
@@ -184,7 +189,24 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
+      ],
+    },
+  },
+  {
+    id: 'MPR',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleMPR',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
       ],
     },
   },
@@ -203,6 +225,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            // toolGroupIds.MPR,
           ]),
         ],
         'Window Level'
@@ -219,8 +242,8 @@ const toolbarButtons = [
         _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
         _createWwwcPreset(2, 'Lung', '1500 / -600'),
         _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '80 / 40'),
-        _createWwwcPreset(5, 'Brain', '2500 / 480'),
+        _createWwwcPreset(4, 'Bone', '2500 / 480'),
+        _createWwwcPreset(5, 'Brain', '80 / 40'),
       ],
     },
   },
@@ -228,14 +251,15 @@ const toolbarButtons = [
     id: 'Crosshairs',
     type: 'ohif.radioGroup',
     props: {
-      type: 'toggle',
+      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
       commands: [
-        ..._createCommands('toggleCrosshairs', 'Crosshairs', [
+        ..._createCommands('setToolActive', 'Crosshairs', [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
       ],
     },
@@ -253,6 +277,7 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
       ],
     },
@@ -272,7 +297,8 @@ const toolbarButtons = [
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text:
+              'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },

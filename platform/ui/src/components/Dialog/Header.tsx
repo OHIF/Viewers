@@ -27,7 +27,7 @@ const Header = ({ title, noCloseButton, onClose }) => {
 
   return (
     <div className={classNames(theme, flex, border, spacing)}>
-      <Typography variant="h6" className="text-primary-active">
+      <Typography variant="h6" color="primaryActive">
         {title}
       </Typography>
       {!noCloseButton && <CloseButton onClick={onClose} />}
@@ -43,7 +43,7 @@ Header.propTypes = {
 };
 
 Header.defaultProps = {
-  noCloseButton: false
+  noCloseButton: false,
 };
 
 export default Header;

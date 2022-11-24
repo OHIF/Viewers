@@ -38,6 +38,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'FrameOfReferenceUID',
   'referenceStudyUID',
   'referenceSeriesUID',
+  'frameNumber',
   'displaySetInstanceUID',
   'label',
   'description',
@@ -497,8 +498,7 @@ class MeasurementService {
       measurement.source = source;
     } catch (error) {
       throw new Error(
-        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
-        error.message
+        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
       );
     }
 

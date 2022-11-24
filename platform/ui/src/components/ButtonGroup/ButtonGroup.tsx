@@ -46,7 +46,7 @@ const variantClasses = {
   outlined: {
     default: '',
     primary: '',
-    secondary: '',
+    secondary: 'border border-secondary-light',
     white: '',
     black:
       'border-primary-main group-hover:bg-primary-main group-hover:border-black',
@@ -68,6 +68,12 @@ const orientationClasses = {
 const baseDisplayClass = 'inline-flex';
 const fullWidthDisplayClass = 'flex';
 
+// css class that are applied for buttons that not the first or last
+const nonFirstLastClasses = {
+  vertical: 'border-t-0 border-b-0',
+  horizontal: 'border-l-0 last:border-r-0',
+};
+
 const ButtonGroup = ({
   children,
   className,
@@ -78,6 +84,7 @@ const ButtonGroup = ({
   rounded = 'medium',
   size = 'medium',
   variant = 'outlined',
+  splitBorder = true,
   ...other
 }) => {
   const ref = useRef(null);
@@ -101,13 +108,24 @@ const ButtonGroup = ({
       ref={ref}
       {...other}
     >
-      {React.Children.map(children, child => {
+      {React.Children.map(children, (child, index) => {
+        const isFirst = index === 0;
+        const isLast = index === React.Children.count(children) - 1;
+        const isNotFirstOrLast = !isFirst && !isLast;
+
         if (!React.isValidElement(child)) {
           return null;
         }
 
         return React.cloneElement(child, {
-          className: classnames(buttonClasses, child.props.className),
+          className: classnames(
+            buttonClasses,
+            child.props.className,
+            !splitBorder &&
+              isNotFirstOrLast &&
+              nonFirstLastClasses[orientation],
+            !splitBorder && isLast && 'last:border-l-0'
+          ),
           disabled: child.props.disabled || disabled,
           color: child.props.color || color,
           fullWidth,

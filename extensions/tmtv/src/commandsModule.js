@@ -12,6 +12,7 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
+const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
 const commandsModule = ({
   servicesManager,
@@ -25,6 +26,7 @@ const commandsModule = ({
     HangingProtocolService,
     ToolGroupService,
     CornerstoneViewportService,
+    SegmentationService,
   } = servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
@@ -41,9 +43,10 @@ const commandsModule = ({
   }
 
   function _getMatchedViewportsToolGroupIds() {
-    const [matchedViewports] = HangingProtocolService.getState();
+    const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
-    matchedViewports.forEach(({ viewportOptions }) => {
+    viewportMatchDetails.forEach((value, key) => {
+      const { viewportOptions } = value;
       const { toolGroupId } = viewportOptions;
       if (toolGroupIds.indexOf(toolGroupId) === -1) {
         toolGroupIds.push(toolGroupId);
@@ -54,33 +57,30 @@ const commandsModule = ({
   }
 
   const actions = {
-    getMatchingPTDisplaySet: () => {
+    getMatchingPTDisplaySet: ({ viewportMatchDetails }) => {
       // Todo: this is assuming that the hanging protocol has successfully matched
       // the correct PT. For future, we should have a way to filter out the PTs
       // that are in the viewer layout (but then we have the problem of the attenuation
       // corrected PT vs the non-attenuation correct PT)
-      const matches = HangingProtocolService.getDisplaySetsMatchDetails();
-
-      const matchedSeriesInstanceUIDs = Array.from(matches.values()).map(
-        ({ SeriesInstanceUID }) => SeriesInstanceUID
-      );
 
       let ptDisplaySet = null;
-      for (const SeriesInstanceUID of matchedSeriesInstanceUIDs) {
-        const displaySets = DisplaySetService.getDisplaySetsForSeries(
-          SeriesInstanceUID
+      for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
+        const { displaySetsInfo } = viewportDetails;
+        const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
+          DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
         );
 
         if (!displaySets || displaySets.length === 0) {
           continue;
         }
 
-        const displaySet = displaySets[0];
-        if (displaySet.Modality !== 'PT') {
-          continue;
-        }
+        ptDisplaySet = displaySets.find(
+          displaySet => displaySet.Modality === 'PT'
+        );
 
-        ptDisplaySet = displaySet;
+        if (ptDisplaySet) {
+          break;
+        }
       }
 
       return ptDisplaySet;
@@ -121,29 +121,37 @@ const commandsModule = ({
     createNewLabelmapFromPT: async () => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
-      const ptDisplaySet = actions.getMatchingPTDisplaySet();
+      const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
+      const ptDisplaySet = actions.getMatchingPTDisplaySet({
+        viewportMatchDetails,
+      });
 
       if (!ptDisplaySet) {
         UINotificationService.error('No matching PT display set found');
         return;
       }
 
-      const segmentationId = await commandsManager.runCommand(
-        'createSegmentationForDisplaySet',
-        {
-          displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
-        }
+      const segmentationId = await SegmentationService.createSegmentationForDisplaySet(
+        ptDisplaySet.displaySetInstanceUID
       );
 
+      // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
-      const representationType =
-        csTools.Enums.SegmentationRepresentations.Labelmap;
+      const representationType = LABELMAP;
 
       for (const toolGroupId of toolGroupIds) {
-        await commandsManager.runCommand(
-          'addSegmentationRepresentationToToolGroup',
-          { segmentationId, toolGroupId: toolGroupId, representationType }
+        const hydrateSegmentation = true;
+        await SegmentationService.addSegmentationRepresentationToToolGroup(
+          toolGroupId,
+          segmentationId,
+          hydrateSegmentation,
+          representationType
+        );
+
+        SegmentationService.setActiveSegmentationForToolGroup(
+          segmentationId,
+          toolGroupId
         );
       }
 
@@ -153,23 +161,9 @@ const commandsModule = ({
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
       toolGroupIds.forEach(toolGroupId => {
-        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
+        SegmentationService.setActiveSegmentationForToolGroup(
+          segmentationId,
           toolGroupId
-        );
-
-        if (segmentationRepresentations.length === 0) {
-          return;
-        }
-
-        // Todo: this finds the first segmentation representation that matches the segmentationId
-        // If there are two labelmap representations from the same segmentation, this will not work
-        const representation = segmentationRepresentations.find(
-          representation => representation.segmentationId === segmentationId
-        );
-
-        csTools.segmentation.activeSegmentation.setActiveSegmentationRepresentation(
-          toolGroupId,
-          representation.segmentationRepresentationUID
         );
       });
     },
@@ -179,9 +173,7 @@ const commandsModule = ({
       );
 
       const { representationData } = segmentation;
-      const { volumeId: segVolumeId } = representationData[
-        csTools.Enums.SegmentationRepresentations.Labelmap
-      ];
+      const { volumeId: segVolumeId } = representationData[LABELMAP];
 
       const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
 
@@ -227,36 +219,6 @@ const commandsModule = ({
         [referencedVolume],
         configToUse
       );
-    },
-    toggleSegmentationVisibility: ({ segmentationId }) => {
-      const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
-      toolGroupIds.forEach(toolGroupId => {
-        const segmentationRepresentations = csTools.segmentation.state.getSegmentationRepresentations(
-          toolGroupId
-        );
-
-        if (segmentationRepresentations.length === 0) {
-          return;
-        }
-
-        // Todo: this finds the first segmentation representation that matches the segmentationId
-        // If there are two labelmap representations from the same segmentation, this will not work
-        const representation = segmentationRepresentations.find(
-          representation => representation.segmentationId === segmentationId
-        );
-
-        const visibility = csTools.segmentation.config.visibility.getSegmentationVisibility(
-          toolGroupId,
-          representation.segmentationRepresentationUID
-        );
-
-        csTools.segmentation.config.visibility.setSegmentationVisibility(
-          toolGroupId,
-          representation.segmentationRepresentationUID,
-          !visibility
-        );
-      });
     },
     calculateSuvPeak: ({ labelmap }) => {
       const { referencedVolumeId } = labelmap;
@@ -326,9 +288,9 @@ const commandsModule = ({
       };
     },
     calculateTMTV: ({ segmentations }) => {
-      const labelmaps = commandsManager.runCommand('getLabelmapVolumes', {
-        segmentations,
-      });
+      const labelmaps = segmentations.map(s =>
+        SegmentationService.getLabelmapVolume(s.id)
+      );
 
       if (!labelmaps.length) {
         return;
@@ -351,9 +313,9 @@ const commandsModule = ({
       createAndDownloadTMTVReport(segReport, additionalReportRows);
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
-      const labelmapVolumes = commandsManager.runCommand('getLabelmapVolumes', {
-        segmentations,
-      });
+      const labelmapVolumes = segmentations.map(s =>
+        SegmentationService.getLabelmapVolume(s.id)
+      );
 
       let mergedLabelmap;
       // merge labelmap will through an error if labels maps are not the same size
@@ -408,7 +370,6 @@ const commandsModule = ({
         1e-3
       );
     },
-
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
@@ -493,7 +454,7 @@ const commandsModule = ({
       let report = {};
 
       for (const segmentation of segmentations) {
-        const { id, label, data } = segmentation;
+        const { id, label, cachedStats: data } = segmentation;
 
         const segReport = { id, label };
 
@@ -513,7 +474,7 @@ const commandsModule = ({
           }
         });
 
-        const labelmapVolume = cornerstone.cache.getVolume(id);
+        const labelmapVolume = SegmentationService.getLabelmapVolume(id);
 
         if (!labelmapVolume) {
           report[id] = segReport;
@@ -523,7 +484,7 @@ const commandsModule = ({
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume = cornerstone.cache.getVolume(
+        const referencedVolume = SegmentationService.getLabelmapVolume(
           referencedVolumeId
         );
 
@@ -565,8 +526,11 @@ const commandsModule = ({
     },
     setFusionPTColormap: ({ toolGroupId, colormap }) => {
       const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+      const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
 
-      const ptDisplaySet = actions.getMatchingPTDisplaySet();
+      const ptDisplaySet = actions.getMatchingPTDisplaySet({
+        viewportMatchDetails,
+      });
 
       if (!ptDisplaySet) {
         return;
@@ -631,11 +595,6 @@ const commandsModule = ({
     },
     thresholdSegmentationByRectangleROITool: {
       commandFn: actions.thresholdSegmentationByRectangleROITool,
-      storeContexts: [],
-      options: {},
-    },
-    toggleSegmentationVisibility: {
-      commandFn: actions.toggleSegmentationVisibility,
       storeContexts: [],
       options: {},
     },

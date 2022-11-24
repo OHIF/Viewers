@@ -38,6 +38,10 @@ const getImageInstance = dataset => {
   return dataset && dataset.images && dataset.images[0];
 };
 
+const getNonImageInstance = dataset => {
+  return dataset && dataset.instance;
+};
+
 const getImageInstanceId = imageInstance => {
   return getImageId(imageInstance);
 };
@@ -89,19 +93,28 @@ const getImageLoaderType = imageId => {
 
 class DicomLoaderService {
   getLocalData(dataset, studies) {
-    if (dataset && dataset.localFile) {
-      // Use referenced imageInstance
-      const imageInstance = getImageInstance(dataset);
-      let imageId = getImageInstanceId(imageInstance);
+    // Use referenced imageInstance
+    const imageInstance = getImageInstance(dataset);
+    const nonImageInstance = getNonImageInstance(dataset);
 
-      // or Try to get it from studies
-      if (someInvalidStrings(imageId)) {
-        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
-      }
+    if (
+      (!imageInstance && !nonImageInstance) ||
+      !nonImageInstance.imageId.startsWith('dicomfile')
+    ) {
+      return;
+    }
 
-      if (!someInvalidStrings(imageId)) {
-        return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
-      }
+    const instance = imageInstance || nonImageInstance;
+
+    let imageId = getImageInstanceId(instance);
+
+    // or Try to get it from studies
+    if (someInvalidStrings(imageId)) {
+      imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
+    }
+
+    if (!someInvalidStrings(imageId)) {
+      return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
     }
   }
 
@@ -182,13 +195,14 @@ class DicomLoaderService {
     }
   }
 
-  *getLoaderIterator(dataset, studies) {
+  *getLoaderIterator(dataset, studies, headers) {
     yield this.getLocalData(dataset, studies);
     yield this.getDataByImageType(dataset);
     yield this.getDataByDatasetType(dataset);
   }
 
-  findDicomDataPromise(dataset, studies) {
+  findDicomDataPromise(dataset, studies, headers) {
+    dataset.authorizationHeaders = headers;
     const loaderIterator = this.getLoaderIterator(dataset, studies);
     // it returns first valid retriever method.
     for (const loader of loaderIterator) {

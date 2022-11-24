@@ -46,29 +46,19 @@ const dicomVideoExtension = {
       { name: 'dicom-video', component: ExtendedOHIFCornerstoneVideoViewport },
     ];
   },
-  getCommandsModule({ servicesManager }) {
-    return {
-      definitions: {
-        setToolActive: {
-          commandFn: ({ toolName, element }) => {
-            if (!toolName) {
-              console.warn('No toolname provided to setToolActive command');
-            }
-
-            // Set same tool or alt tool
-            const toolAlias = _getToolAlias(toolName);
-
-            cornerstoneTools.setToolActiveForElement(element, toolAlias, {
-              mouseButtonMask: 1,
-            });
-          },
-          storeContexts: [],
-          options: {},
-        },
-      },
-      defaultContext: 'ACTIVE_VIEWPORT::VIDEO',
-    };
-  },
+  // getCommandsModule({ servicesManager }) {
+  //   return {
+  //     definitions: {
+  //       setToolActive: {
+  //         commandFn: ({ toolName, element }) => {
+  //         },
+  //         storeContexts: [],
+  //         options: {},
+  //       },
+  //     },
+  //     defaultContext: 'ACTIVE_VIEWPORT::VIDEO',
+  //   };
+  // },
   getSopClassHandlerModule,
 };
 

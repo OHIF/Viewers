@@ -1,9 +1,13 @@
-import { Types, Enums, CONSTANTS } from '@cornerstonejs/core';
+import { Types, Enums } from '@cornerstonejs/core';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import JumpPresets from '../../utils/JumpPresets';
 import { SyncGroup } from '../SyncGroupService/SyncGroupService';
+import {
+  StackViewportData,
+  VolumeViewportData,
+} from './CornerstoneCacheService';
 
 export type InitialImageOptions = {
   index?: number;
@@ -16,7 +20,6 @@ export type ViewportOptions = {
   viewportId: string;
   orientation?: Types.Orientation;
   background?: Types.Point3;
-  initialView?: string;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -28,7 +31,6 @@ export type PublicViewportOptions = {
   viewportId?: string;
   orientation?: string;
   background?: Types.Point3;
-  initialView?: string;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -69,6 +71,7 @@ class ViewportInfo {
   private element: HTMLDivElement;
   private viewportOptions: ViewportOptions;
   private displaySetOptions: Array<DisplaySetOptions>;
+  private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
 
   constructor(viewportIndex: number, viewportId: string) {
@@ -77,6 +80,13 @@ class ViewportInfo {
     this.setPublicViewportOptions({});
     this.setPublicDisplaySetOptions([{}]);
   }
+
+  public destroy = (): void => {
+    this.element = null;
+    this.viewportData = null;
+    this.viewportOptions = null;
+    this.displaySetOptions = null;
+  };
 
   public setRenderingEngineId(renderingEngineId: string): void {
     this.renderingEngineId = renderingEngineId;
@@ -95,6 +105,16 @@ class ViewportInfo {
 
   public setElement(element: HTMLDivElement): void {
     this.element = element;
+  }
+
+  public setViewportData(
+    viewportData: StackViewportData | VolumeViewportData
+  ): void {
+    this.viewportData = viewportData;
+  }
+
+  public getViewportData(): StackViewportData | VolumeViewportData {
+    return this.viewportData;
   }
 
   public getViewportIndex(): number {
@@ -120,6 +140,23 @@ class ViewportInfo {
     this.setDisplaySetOptions(displaySetOptions);
   }
 
+  public hasDisplaySet(displaySetInstanceUID: string): boolean {
+    // Todo: currently this does not work for non image & referenceImage displaySets.
+    // Since SEG and other derived displaySets are loaded in a different way, and not
+    // via cornerstoneViewportService
+    let viewportData = this.getViewportData();
+
+    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+      viewportData = viewportData as VolumeViewportData;
+      return viewportData.data.some(
+        ({ displaySetInstanceUID: dsUID }) => dsUID === displaySetInstanceUID
+      );
+    }
+
+    viewportData = viewportData as StackViewportData;
+    return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
+  }
+
   public setPublicViewportOptions(
     viewportOptionsEntry: PublicViewportOptions
   ): void {
@@ -139,7 +176,7 @@ class ViewportInfo {
     if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     } else {
-      orientation = CONSTANTS.ORIENTATION.AXIAL;
+      orientation = Enums.OrientationAxis.AXIAL;
     }
 
     if (!toolGroupId) {
@@ -203,12 +240,21 @@ class ViewportInfo {
     const displaySetOptions: Array<DisplaySetOptions> = [];
 
     publicDisplaySetOptions.forEach(option => {
+      if (!option) {
+        option = {
+          blendMode: undefined,
+          slabThickness: undefined,
+          colormap: undefined,
+          voi: {},
+          voiInverted: false,
+        };
+      }
       const blendMode = getCornerstoneBlendMode(option.blendMode);
 
       displaySetOptions.push({
-        voi: option.voi || ({} as VOI),
-        voiInverted: option.voiInverted || false,
-        colormap: option.colormap || undefined,
+        voi: option.voi,
+        voiInverted: option.voiInverted,
+        colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
       });

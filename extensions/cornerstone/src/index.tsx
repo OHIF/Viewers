@@ -3,22 +3,26 @@ import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import {
   Enums as cs3DEnums,
-  CONSTANTS,
   imageLoadPoolManager,
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import init from './init.js';
+import init from './init';
 import commandsModule from './commandsModule';
+import getHangingProtocolModule from './getHangingProtocolModule';
 import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
+import SegmentationService from './services/SegmentationService';
+import CornerstoneCacheService from './services/CornerstoneCacheService';
+
 import { toolNames } from './initCornerstoneTools';
-import { getEnabledElement } from './state';
+import { getEnabledElement, reset as enabledElementReset } from './state';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
 import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
+import * as csWADOImageLoader from './initWADOImageLoader.js';
 
 const Component = React.lazy(() => {
   return import(
@@ -50,6 +54,9 @@ const cornerstoneExtension = {
       imageLoadPoolManager.clearRequestStack(type);
       imageRetrievalPoolManager.clearRequestStack(type);
     });
+
+    csWADOImageLoader.destroy();
+    enabledElementReset();
   },
 
   /**
@@ -69,8 +76,12 @@ const cornerstoneExtension = {
     );
     servicesManager.registerService(ToolGroupService(servicesManager));
     servicesManager.registerService(SyncGroupService(servicesManager));
+    servicesManager.registerService(SegmentationService(servicesManager));
+    servicesManager.registerService(CornerstoneCacheService(servicesManager));
+
     await init({ servicesManager, commandsManager, configuration, appConfig });
   },
+  getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
       // const onNewImageHandler = jumpData => {
@@ -119,7 +130,6 @@ const cornerstoneExtension = {
         name: 'core',
         exports: {
           Enums: cs3DEnums,
-          CONSTANTS,
         },
       },
       {

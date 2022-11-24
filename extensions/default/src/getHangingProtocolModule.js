@@ -9,25 +9,26 @@ const defaultProtocol = {
   editableBy: {},
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
+  displaySetSelectors: {
+    defaultDisplaySetId: {
+      // Unused currently
+      imageMatchingRules: [],
+      // Matches displaysets, NOT series
+      seriesMatchingRules: [],
+      studyMatchingRules: [],
+    },
+  },
   stages: [
     {
       id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
-        type: 'grid',
+        layoutType: 'grid',
         properties: {
           rows: 1,
           columns: 1,
         },
       },
-      displaySets: [
-        {
-          id: 'displaySet',
-          imageMatchingRules: [],
-          seriesMatchingRules: [],
-          studyMatchingRules: [],
-        },
-      ],
       viewports: [
         {
           viewportOptions: {
@@ -40,7 +41,7 @@ const defaultProtocol = {
           displaySets: [
             {
               options: [],
-              id: 'displaySet',
+              id: 'defaultDisplaySetId',
             },
           ],
         },
@@ -54,8 +55,8 @@ const defaultProtocol = {
 function getHangingProtocolModule() {
   return [
     {
-      name: 'default',
-      protocols: [defaultProtocol],
+      id: defaultProtocol.id,
+      protocol: defaultProtocol,
     },
   ];
 }

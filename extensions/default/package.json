@@ -32,7 +32,7 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "@ohif/i18n": "^1.0.0",
-    "dcmjs": "^0.24.5",
+    "dcmjs": "^0.28.3",
     "dicomweb-client": "^0.6.0",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
@@ -43,6 +43,6 @@
   },
   "dependencies": {
     "@babel/runtime": "7.16.3",
-    "@cornerstonejs/calculate-suv": "1.0.2"
+    "@cornerstonejs/calculate-suv": "^1.0.3"
   }
 }

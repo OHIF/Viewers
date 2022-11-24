@@ -7,8 +7,6 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import classnames from 'classnames';
-
 import {
   Typography,
   Input,
@@ -293,7 +291,7 @@ const ViewportDownloadForm = ({
         </div>
         <div className="flex">
           <div className="flex w-1/3">
-            <div className="flex flex-col flex-grow">
+            <div className="flex flex-col grow">
               <div className="w-full">
                 <Input
                   type="number"
@@ -349,7 +347,7 @@ const ViewportDownloadForm = ({
                 onLabelClick={() => {}}
               >
                 <Select
-                  className="mt-2"
+                  className="mt-2 text-white"
                   isClearable={false}
                   value={fileType}
                   data-cy="file-type"
@@ -387,7 +385,7 @@ const ViewportDownloadForm = ({
           <Typography variant="h5">{t('Image preview')}</Typography>
           {activeViewportElement && (
             <div
-              className="mx-auto my-0"
+              className="mx-auto my-2"
               style={{
                 height: viewportElementDimensions.height,
                 width: viewportElementDimensions.width,
@@ -404,7 +402,15 @@ const ViewportDownloadForm = ({
       </div>
 
       <div className="flex justify-end mt-4">
-        <Button data-cy="cancel-btn" variant="outlined" onClick={onClose}>
+        <Button
+          data-cy="cancel-btn"
+          variant="outlined"
+          size="initial"
+          color="black"
+          border="secondary"
+          onClick={onClose}
+          className="p-2"
+        >
           {t('Cancel')}
         </Button>
         <Button

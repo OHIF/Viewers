@@ -11,14 +11,14 @@ export const argTypes = {
 
 <Meta title="Components/Icon" component={Icon} />
 
-export const IconTemplate = (args) => (
+export const IconTemplate = args => (
   // Todo: Icon colors
   <div className="w-8 h-8">
     <Icon {...args} />
   </div>
 );
 
-<Heading title="Icon" componentRelativePath="Icon/Icon.jsx" />
+<Heading title="Icon" componentRelativePath="Icon/Icon.tsx" />
 
 - [Overview](#overview)
 - [Props](#props)
@@ -56,8 +56,8 @@ icons.
       return (
         <div className="flex flex-wrap">
           {icons
-            .filter((ic) => ic !== 'magnifier')
-            .map((icon) => (
+            .filter(ic => ic !== 'magnifier')
+            .map(icon => (
               <div className="m-4 flex flex-col justify-center items-center">
                 <div class="w-8 h-8">
                   <Icon name={icon} />

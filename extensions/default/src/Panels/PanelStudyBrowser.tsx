@@ -10,12 +10,17 @@ const { formatDate } = utils;
  * @param {*} param0
  */
 function PanelStudyBrowser({
-  DisplaySetService,
+  servicesManager,
   getImageSrc,
   getStudiesForPatientByStudyInstanceUID,
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
+  const {
+    HangingProtocolService,
+    DisplaySetService,
+    UINotificationService,
+  } = servicesManager.services;
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
@@ -34,10 +39,25 @@ function PanelStudyBrowser({
   const isMounted = useRef(true);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    viewportGridService.setDisplaySetsForViewport({
-      viewportIndex: activeViewportIndex,
-      displaySetInstanceUIDs: [displaySetInstanceUID],
-    });
+    let updatedViewports = [];
+    const viewportIndex = activeViewportIndex;
+    try {
+      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+        viewportIndex,
+        displaySetInstanceUID
+      );
+    } catch (error) {
+      console.warn(error);
+      UINotificationService.show({
+        title: 'Thumbnail Double Click',
+        message:
+          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+        type: 'info',
+        duration: 3000,
+      });
+    }
+
+    viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
   // ~~ studyDisplayList
@@ -61,7 +81,19 @@ function PanelStudyBrowser({
         };
       });
       if (isMounted.current) {
-        setStudyDisplayList(actuallyMappedStudies);
+        setStudyDisplayList(prevArray => {
+          const ret = [...prevArray];
+          for (const study of actuallyMappedStudies) {
+            if (
+              !prevArray.find(
+                it => it.studyInstanceUid === study.studyInstanceUid
+              )
+            ) {
+              ret.push(study);
+            }
+          }
+          return ret;
+        });
       }
     }
 
@@ -215,12 +247,7 @@ function PanelStudyBrowser({
 }
 
 PanelStudyBrowser.propTypes = {
-  DisplaySetService: PropTypes.shape({
-    EVENTS: PropTypes.object.isRequired,
-    activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-    getDisplaySetByUID: PropTypes.func.isRequired,
-    subscribe: PropTypes.func.isRequired,
-  }).isRequired,
+  servicesManager: PropTypes.object.isRequired,
   dataSource: PropTypes.shape({
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,

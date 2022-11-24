@@ -4,6 +4,9 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
+  showLoadingIndicator: true,
   // filterQueryParam: false,
   dataSources: [
     {

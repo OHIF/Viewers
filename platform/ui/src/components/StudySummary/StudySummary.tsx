@@ -11,7 +11,7 @@ const StudySummary = ({ date, modality, description }) => {
         </span>
       </div>
       <div className="pt-2 text-base leading-none truncate text-primary-light ellipse">
-        {description}
+        {description || ''}
       </div>
     </div>
   );
@@ -20,7 +20,7 @@ const StudySummary = ({ date, modality, description }) => {
 StudySummary.propTypes = {
   date: PropTypes.string.isRequired,
   modality: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  description: PropTypes.string,
 };
 
 export default StudySummary;

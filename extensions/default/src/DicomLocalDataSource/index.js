@@ -25,7 +25,7 @@ function createDicomLocalApi(dicomLocalConfig) {
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
+      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
 
       const StudyInstanceUIDs =
         queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
@@ -166,7 +166,6 @@ function createDicomLocalApi(dicomLocalConfig) {
 
       displaySet.images.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames;
-
         if (NumberOfFrames > 1) {
           for (let i = 0; i < NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
@@ -190,9 +189,14 @@ function createDicomLocalApi(dicomLocalConfig) {
         SeriesInstanceUID,
         SOPInstanceUID
       );
-      if (storedInstance.url) {
-        return storedInstance.url;
+
+      let imageId = storedInstance.url;
+
+      if (frame !== undefined) {
+        imageId += `&frame=${frame}`;
       }
+
+      return imageId;
     },
     deleteStudyMetadataPromise() {
       console.log('deleteStudyMetadataPromise not implemented');

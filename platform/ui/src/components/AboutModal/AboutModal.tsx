@@ -9,7 +9,8 @@ const Link = ({ href, children, showIcon = false }) => {
       <Typography
         variant="subtitle"
         component="p"
-        className="flex items-center text-primary-active"
+        color="primaryActive"
+        className="flex items-center"
       >
         {children}
         {!!showIcon && (

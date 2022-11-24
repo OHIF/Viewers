@@ -8,7 +8,6 @@ import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
@@ -18,7 +17,7 @@ const cs3d = {
 };
 
 const tmtv = {
-  hangingProtocols: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
+  hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
   ROIThresholdPanel: '@ohif/extension-tmtv.panelModule.ROIThresholdSeg',
 };
@@ -92,25 +91,25 @@ function modeFactory({ modeConfiguration }) {
         });
       };
 
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
       const { unsubscribe } = ToolGroupService.subscribe(
         ToolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
           // For fusion toolGroup we need to add the volumeIds for the crosshairs
           // since in the fusion viewport we don't want both PT and CT to render MIP
           // when slabThickness is modified
-          const matches = HangingProtocolService.getDisplaySetsMatchDetails();
+          const {
+            displaySetMatchDetails,
+          } = HangingProtocolService.getMatchDetails();
 
           setCrosshairsConfiguration(
-            matches,
+            displaySetMatchDetails,
             toolNames,
             ToolGroupService,
             DisplaySetService
           );
 
           setFusionActiveVolume(
-            matches,
+            displaySetMatchDetails,
             toolNames,
             ToolGroupService,
             DisplaySetService
@@ -139,6 +138,9 @@ function modeFactory({ modeConfiguration }) {
         SyncGroupService,
         MeasurementService,
         ToolBarService,
+        SegmentationService,
+        CornerstoneViewportService,
+        HangingProtocolService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
@@ -146,6 +148,9 @@ function modeFactory({ modeConfiguration }) {
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
+      SegmentationService.destroy();
+      CornerstoneViewportService.destroy();
+      HangingProtocolService.reset();
     },
     validationTags: {
       study: [],
@@ -172,8 +177,8 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [],
-              rightPanels: [tmtv.petSUV, tmtv.ROIThresholdPanel],
+              // leftPanels: [ohif.thumbnailList],
+              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,
@@ -186,7 +191,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [ohif.hangingProtocols, tmtv.hangingProtocols],
+    hangingProtocol: tmtv.hangingProtocol,
     sopClassHandlers: [ohif.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };

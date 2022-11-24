@@ -66,6 +66,7 @@ const EllipticalROI = {
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
@@ -91,31 +92,34 @@ function getMappedAnnotations(annotation, DisplaySetService) {
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
-    let displaySet;
-
-    if (referencedImageId) {
-      const { SOPInstanceUID, SeriesInstanceUID } = getSOPInstanceAttributes(
-        referencedImageId
-      );
-
-      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-        SOPInstanceUID,
-        SeriesInstanceUID
-      );
-    } else {
+    if (!referencedImageId) {
       // Todo: Non-acquisition plane measurement mapping not supported yet
       throw new Error(
         'Non-acquisition plane measurement mapping not supported'
       );
     }
 
-    const { SeriesNumber, SeriesInstanceUID } = displaySet;
+    const {
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      frameNumber,
+    } = getSOPInstanceAttributes(referencedImageId);
+
+    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      frameNumber
+    );
+
+    const { SeriesNumber } = displaySet;
     const { mean, stdDev, max, area, Modality } = targetStats;
     const unit = getModalityUnit(Modality);
 
     annotations.push({
       SeriesInstanceUID,
+      SOPInstanceUID,
       SeriesNumber,
+      frameNumber,
       Modality,
       unit,
       mean,
@@ -184,7 +188,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { area, SOPInstanceUID } = mappedAnnotations[0];
+  const { area, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID
@@ -195,21 +199,26 @@ function getDisplayText(mappedAnnotations, displaySet) {
     InstanceNumber = instance.InstanceNumber;
   }
 
-  const roundedArea = utils.roundNumber(area, 2);
+  const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
+  const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
+
+  // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
+  const roundedArea = utils.roundNumber(area || 0, 2);
   displayText.push(`${roundedArea} mm<sup>2</sup>`);
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
     const { unit, max, SeriesNumber } = mappedAnnotation;
 
+    let maxStr = '';
     if (max) {
       const roundedMax = utils.roundNumber(max, 2);
+      maxStr = `Max: ${roundedMax} <small>${unit}</small> `;
+    }
 
-      displayText.push(
-        InstanceNumber
-          ? `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber} I:${InstanceNumber})`
-          : `Max: ${roundedMax} <small>${unit}</small> (S:${SeriesNumber})`
-      );
+    const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;
+    if (!displayText.includes(str)) {
+      displayText.push(str);
     }
   });
 

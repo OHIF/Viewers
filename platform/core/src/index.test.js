@@ -1,4 +1,4 @@
-import * as OHIF from './index.js';
+import * as OHIF from './index';
 
 describe('Top level exports', () => {
   test('have not changed', () => {
@@ -31,8 +31,8 @@ describe('Top level exports', () => {
       'DisplaySetService',
       'MeasurementService',
       'ToolBarService',
+      'Types',
       'ViewportGridService',
-      'SegmentationService',
       'HangingProtocolService',
       'UserAuthenticationService',
       'IWebApiDataSource',

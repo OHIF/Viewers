@@ -1,7 +1,7 @@
 {
   "repository": "OHIF/Viewers",
   "keywords": ["ohif-mode"],
-  "module": "src/index.js",
+  "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
     "npm": ">=6",

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
-import Compose from './routes/Mode/Compose.tsx';
+import Compose from './routes/Mode/Compose';
 
 import {
   DialogProvider,
@@ -22,13 +22,12 @@ import {
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
-import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes.tsx';
+import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 
 let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
 function App({ config, defaultExtensions, defaultModes }) {
   const [init, setInit] = useState(null);
-
   useEffect(() => {
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes)
@@ -61,7 +60,6 @@ function App({ config, defaultExtensions, defaultModes }) {
     servicesManager,
     commandsManager,
     hotkeysManager,
-    commandsManager,
     routerBasename,
   });
   const {
@@ -141,6 +139,7 @@ App.defaultProps = {
     /**
      *
      */
+    showLoadingIndicator: true,
     showStudyList: true,
     oidc: [],
     extensions: [],

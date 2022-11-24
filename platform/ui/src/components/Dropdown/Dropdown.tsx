@@ -4,7 +4,7 @@ import classnames from 'classnames';
 
 import { Icon, Typography } from '../';
 
-const Dropdown = ({ id, children, showDropdownIcon, list }) => {
+const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
   const [open, setOpen] = useState(false);
   const element = useRef(null);
 
@@ -22,7 +22,7 @@ const Dropdown = ({ id, children, showDropdownIcon, list }) => {
         data-cy={id}
       >
         {!!icon && <Icon name={icon} className="w-4 mr-2 text-white" />}
-        <Typography>{title}</Typography>
+        <Typography className={titleClassName}>{title}</Typography>
       </div>
     );
   }, []);
@@ -109,6 +109,7 @@ Dropdown.propTypes = {
   id: PropTypes.string,
   children: PropTypes.node.isRequired,
   showDropdownIcon: PropTypes.bool,
+  titleClassName: PropTypes.string,
   /** Items to render in the select's drop down */
   list: PropTypes.arrayOf(
     PropTypes.shape({

@@ -87,7 +87,7 @@ module.exports = (env, argv) => {
             globOptions: {
               // Ignore our HtmlWebpackPlugin template file
               // Ignore our configuration files
-              ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+              ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
           // Short term solution to make sure GCloud config is available in output
@@ -142,6 +142,9 @@ module.exports = (env, argv) => {
       port: 3000,
       client: {
         overlay: { errors: true, warnings: false },
+      },
+      proxy: {
+        '/dicomweb': 'http://localhost:5000',
       },
       'static': [
         {

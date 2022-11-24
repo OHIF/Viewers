@@ -9,24 +9,30 @@ import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
-async function defaultRouteInit({
-  servicesManager,
-  studyInstanceUIDs,
-  dataSource,
-}) {
+/**
+ * Initialize the route.
+ *
+ * @param props.servicesManager to read services from
+ * @param props.studyInstanceUIDs for a list of studies to read
+ * @param props.dataSource to read the data from
+ * @param props.filters filters from query params to read the data from
+ * @returns array of subscriptions to cancel
+ */
+function defaultRouteInit(
+  { servicesManager, studyInstanceUIDs, dataSource, filters },
+  hangingProtocol
+) {
   const {
     DisplaySetService,
     HangingProtocolService,
   } = servicesManager.services;
 
   const unsubscriptions = [];
-  // TODO: This should be baked into core, not manual?
-  // DisplaySetService would wire this up?
   const {
     unsubscribe: instanceAddedUnsubscribe,
   } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
+    function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
       const seriesMetadata = DicomMetadataStore.getSeries(
         StudyInstanceUID,
         SeriesInstanceUID
@@ -38,19 +44,50 @@ async function defaultRouteInit({
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.SERIES_ADDED,
-    ({ StudyInstanceUID, madeInClient }) => {
-      const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-      if (!madeInClient) {
-        HangingProtocolService.run(studyMetadata);
-      }
-    }
+  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
+    dataSource.retrieve.series.metadata({
+      StudyInstanceUID,
+      filters,
+    })
   );
-  unsubscriptions.push(seriesAddedUnsubscribe);
 
-  studyInstanceUIDs.forEach(StudyInstanceUID => {
-    dataSource.retrieve.series.metadata({ StudyInstanceUID });
+  // The hanging protocol matching service is fairly expensive to run multiple
+  // times, and doesn't allow partial matches to be made (it will simply fail
+  // to display anything if a required match fails), so we wait here until all metadata
+  // is retrieved (which will synchronously trigger the display set creation)
+  // until we run the hanging protocol matching service.
+
+  Promise.allSettled(allRetrieves).then(() => {
+    const displaySets = DisplaySetService.getActiveDisplaySets();
+
+    if (!displaySets || !displaySets.length) {
+      return;
+    }
+
+    const studyMap = {};
+
+    // Prior studies don't quite work properly yet, but the studies list
+    // is at least being generated and passed in.
+    const studies = displaySets.reduce((prev, curr) => {
+      const { StudyInstanceUID } = curr;
+      if (!studyMap[StudyInstanceUID]) {
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+        studyMap[StudyInstanceUID] = study;
+        prev.push(study);
+      }
+      return prev;
+    }, []);
+
+    // The assumption is that the display set at position 0 is the first
+    // study being displayed, and is thus the "active" study.
+    const activeStudy = studies[0];
+
+    // run the hanging protocol matching on the displaySets with the predefined
+    // hanging protocol in the mode configuration
+    HangingProtocolService.run(
+      { studies, activeStudy, displaySets },
+      hangingProtocol
+    );
   });
 
   return unsubscriptions;
@@ -83,10 +120,10 @@ export default function ModeRoute({
 
   const {
     DisplaySetService,
-    HangingProtocolService,
+    HangingProtocolService: hangingProtocolService,
   } = servicesManager.services;
 
-  const { extensions, sopClassHandlers, hotkeys, hangingProtocols } = mode;
+  const { extensions, sopClassHandlers, hotkeys, hangingProtocol } = mode;
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;
@@ -197,6 +234,7 @@ export default function ModeRoute({
     if (!layoutTemplateData.current) {
       return;
     }
+
     // TODO: For some reason this is running before the Providers
     // are calling setServiceImplementation
     // TODO -> iterate through services.
@@ -211,36 +249,61 @@ export default function ModeRoute({
       extensionManager,
       commandsManager,
     });
+    // Sets the active hanging protocols - if hangingProtocol is undefined,
+    // resets to default.  Done before the onModeEnter to allow the onModeEnter
+    // to perform custom hanging protocol actions
+    hangingProtocolService.setActiveProtocols(hangingProtocol);
     mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
 
-    // Adding hanging protocols of extensions after onModeEnter since
-    // it will reset the protocols
-    hangingProtocols.forEach(extensionProtocols => {
-      const hangingProtocolModule = extensionManager.getModuleEntry(
-        extensionProtocols
-      );
-
-      if (hangingProtocolModule?.protocols) {
-        HangingProtocolService.addProtocols(hangingProtocolModule.protocols);
-      }
-    });
-
     const setupRouteInit = async () => {
+      /**
+       * The next line should get all the query parameters provided by the URL
+       * - except the StudyInstaceUIDs - and create an object called filters
+       * used to filtering the study as the user wants otherwise it will return
+       * a empty object.
+       *
+       * Example:
+       * const filters = {
+       *   seriesInstaceUID: 1.2.276.0.7230010.3.1.3.1791068887.5412.1620253993.114611
+       * }
+       */
+      const filters =
+        Array.from(query.keys()).reduce(
+          (acc: Record<string, string>, val: string) => {
+            if (val !== 'StudyInstanceUIDs') {
+              if (['seriesInstanceUID', 'SeriesInstanceUID'].includes(val)) {
+                return { ...acc, seriesInstanceUID: query.get(val) };
+              }
+
+              return { ...acc, [val]: query.get(val) };
+            }
+          },
+          {}
+        ) ?? {};
+
       if (route.init) {
-        return await route.init({
+        return await route.init(
+          {
+            servicesManager,
+            extensionManager,
+            hotkeysManager,
+            studyInstanceUIDs,
+            dataSource,
+            filters,
+          },
+          hangingProtocol
+        );
+      }
+
+      return defaultRouteInit(
+        {
           servicesManager,
-          extensionManager,
-          hotkeysManager,
           studyInstanceUIDs,
           dataSource,
-        });
-      }
-
-      return await defaultRouteInit({
-        servicesManager,
-        studyInstanceUIDs,
-        dataSource,
-      });
+          filters,
+        },
+        hangingProtocol
+      );
     };
 
     let unsubscriptions;
@@ -265,7 +328,6 @@ export default function ModeRoute({
     hotkeysManager,
     studyInstanceUIDs,
     refresh,
-    hangingProtocols,
   ]);
 
   const renderLayoutData = props => {
