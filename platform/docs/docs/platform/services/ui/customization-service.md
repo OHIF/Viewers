@@ -1,8 +1,8 @@
 ---
-sidebar_position: 3
-sidebar_label: UI Customization Service
+sidebar_position: 7
+sidebar_label: Customization Service
 ---
-# UI Customization Service
+# Customization Service
 
 There are a lot of places where users may want to configure certain elements
 differently between different modes or for different deployments.  A mode
@@ -95,7 +95,7 @@ while the typed version just needs the attribute and label to use.
    ]
 ```
 
-Mode specific customizations are no different from the global ones,
+Mode-specific customizations are no different from the global ones,
 except that the mode customizations are cleared before the mode `onModeEnter`
 is called, and they can have new values registered in the `onModeEnter`
 
