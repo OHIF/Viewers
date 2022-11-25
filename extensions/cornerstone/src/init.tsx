@@ -27,6 +27,7 @@ import { connectToolsToMeasurementService } from './initMeasurementService';
 import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
+import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 
 const cs3DToolsEvents = Enums.Events;
@@ -121,6 +122,7 @@ export default async function init({
     'interleaveTopToBottom',
     interleaveTopToBottom
   );
+  HangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
   imageLoader.registerImageLoader(
     'streaming-wadors',
