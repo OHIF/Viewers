@@ -1,4 +1,6 @@
 import HangingProtocolServiceClass from './HangingProtocolService';
+import ServicesManager from '../ServicesManager.js';
+import DisplaySetService from '../DisplaySetService';
 
 const testProtocol = {
   id: 'test',
@@ -14,6 +16,7 @@ const testProtocol = {
   ],
   displaySetSelectors: {
     displaySetSelector: {
+      imageMatchingRules: [],
       seriesMatchingRules: [
         {
           weight: 1,
@@ -109,7 +112,9 @@ const studyMatchDisplaySets = [displaySet3, displaySet2, displaySet1];
 
 describe('HangingProtocolService', () => {
   const commandsManager = {};
-  const hps = new HangingProtocolServiceClass(commandsManager);
+  const servicesManager = new ServicesManager(commandsManager);
+  servicesManager.registerService(DisplaySetService);
+  const hps = new HangingProtocolServiceClass(commandsManager, servicesManager);
   let initialScaling;
 
   beforeAll(() => {

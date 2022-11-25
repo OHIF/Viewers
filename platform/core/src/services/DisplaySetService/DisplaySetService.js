@@ -30,6 +30,7 @@ const findInstance = (instance, displaySets) => {
 
 export default class DisplaySetService {
   constructor() {
+    this._unfilteredDisplaySets = new Map();
     this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
@@ -46,6 +47,10 @@ export default class DisplaySetService {
   _addDisplaySetsToCache(displaySets) {
     displaySets.forEach(displaySet => {
       displaySetCache.push(displaySet);
+
+      const instances = displaySet.images || displaySet.others || [];
+      this._unfilteredDisplaySets.set(displaySet.displaySetInstanceUID,
+        [...instances]);
     });
   }
 
@@ -260,5 +265,46 @@ export default class DisplaySetService {
       }
     }
     return allDisplaySets;
+  }
+
+
+  filterDisplaySetInstances(displaySetInstanceUID, filteredInstances) {
+    const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
+    let changed = false;
+
+    if (displaySet) {
+      const instances = displaySet.images || displaySet.others || [];
+
+      if (instances.length === filteredInstances.length) return; //shortcut
+      for (let index = instances.length - 1; index >= 0; index--) {
+        if (!filteredInstances.includes(instances[index])) {
+          instances.splice(index, 1);
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) {
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_FILTERED, displaySet);
+    }
+  }
+
+  clearDisplaySetFilters(displaySetInstanceUID) {
+    const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
+    const allInstances = this._unfilteredDisplaySets.get(displaySetInstanceUID);
+    const displaySetInstances = displaySet.images || displaySet.others;
+
+    if (displaySetInstances.length !== allInstances.length) {
+      displaySetInstances.length = 0;
+      displaySetInstances.push(...allInstances);
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_FILTERED, displaySet);
+    }
+  }
+
+  clearAllDisplaySetsFilters() {
+    displaySetCache.forEach(displaySet => {
+      this.clearDisplaySetFilters(displaySet.displaySetInstanceUID)
+    }
+    )
   }
 }

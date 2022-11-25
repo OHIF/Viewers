@@ -3,6 +3,7 @@ import { utils } from '@ohif/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import {
+  StackData,
   StackViewportData,
   VolumeViewportData,
 } from '../../types/CornerstoneCacheService';
@@ -67,34 +68,42 @@ class CornerstoneCacheService {
   }
 
   public async invalidateViewportData(
-    viewportData: VolumeViewportData,
+    viewportData: StackData | VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     DisplaySetService
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      throw new Error('Invalidation of StackViewport is not supported yet');
+      const displaySet = DisplaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID)
+      if (this.stackImageIds.has(invalidatedDisplaySetInstanceUID)) {
+        this.stackImageIds.delete(invalidatedDisplaySetInstanceUID);
+        return await this._getStackViewportData(
+          dataSource,
+          [displaySet],
+          null
+        );
+      }
+    } else {
+      // Todo: grab the volume and get the id from the viewport itself
+      const volumeId = `${VOLUME_LOADER_SCHEME}:${invalidatedDisplaySetInstanceUID}`;
+
+      const volume = cs3DCache.getVolume(volumeId);
+
+      if (volume) {
+        cs3DCache.removeVolumeLoadObject(volumeId);
+      }
+
+      const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
+        DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
+      );
+
+      const newViewportData = await this._getVolumeViewportData(
+        dataSource,
+        displaySets
+      );
+
+      return newViewportData;
     }
-
-    // Todo: grab the volume and get the id from the viewport itself
-    const volumeId = `${VOLUME_LOADER_SCHEME}:${invalidatedDisplaySetInstanceUID}`;
-
-    const volume = cs3DCache.getVolume(volumeId);
-
-    if (volume) {
-      cs3DCache.removeVolumeLoadObject(volumeId);
-    }
-
-    const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
-      DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
-    );
-
-    const newViewportData = await this._getVolumeViewportData(
-      dataSource,
-      displaySets
-    );
-
-    return newViewportData;
   }
 
   private _getStackViewportData(

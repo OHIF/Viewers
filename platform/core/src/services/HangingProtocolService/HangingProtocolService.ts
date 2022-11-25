@@ -16,7 +16,7 @@ const EVENTS = {
     'event::hanging_protocol_applied_for_viewport',
 };
 
-type Protocol = HangingProtocol.Protocol;
+type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
 class HangingProtocolService {
   studies: StudyMetadata[];
@@ -180,7 +180,21 @@ class HangingProtocolService {
   public getProtocolById(id: string): HangingProtocol.Protocol {
     const protocol = this.protocols.get(id);
 
-    return protocol;
+    if (protocol instanceof Function) {
+      try {
+        const { protocol: generatedProtocol } = this._getProtocolFromGenerator(
+          protocol
+        );
+
+        return generatedProtocol;
+      } catch (error) {
+        console.warn(
+          `Error while executing protocol generator for protocol ${id}: ${error}`
+        );
+      }
+    } else {
+      return protocol;
+    }
   }
 
   /**
@@ -285,7 +299,7 @@ class HangingProtocolService {
     return (
       this.activeImageLoadStrategyName !== null &&
       this.registeredImageLoadStrategies[
-        this.activeImageLoadStrategyName
+      this.activeImageLoadStrategyName
       ] instanceof Function
     );
   }
@@ -588,7 +602,22 @@ class HangingProtocolService {
       return;
     }
 
-    const protocol = this._validateProtocol(foundProtocol);
+    let protocol;
+    if (foundProtocol instanceof Function) {
+      try {
+        ({ protocol } = this._getProtocolFromGenerator(
+          foundProtocol
+        ));
+      } catch (error) {
+        console.warn(
+          `HangingProtocolService::setProtocol - protocol ${protocolId} failed to execute`,
+          error
+        );
+        return;
+      }
+    } else {
+      protocol = this._validateProtocol(foundProtocol);
+    }
 
     if (options) {
       this._validateOptions(options);
@@ -664,6 +693,24 @@ class HangingProtocolService {
    */
   _getCurrentStageModel() {
     return this.protocol.stages[this.stage];
+  }
+
+
+  private _getProtocolFromGenerator(
+    protocolGenerator: HangingProtocol.ProtocolGenerator
+  ): {
+    protocol: HangingProtocol.Protocol
+  } {
+    const { protocol } = protocolGenerator({
+      servicesManager: this._servicesManager,
+      commandsManager: this._commandsManager,
+    });
+
+    const validatedProtocol = this._validateProtocol(protocol);
+
+    return {
+      protocol: validatedProtocol
+    };
   }
 
   /**
@@ -1143,12 +1190,13 @@ class HangingProtocolService {
     // level matching needs to be added in future
 
     // Todo: handle fusion viewports by not taking the first displaySet rule for the viewport
-    const { studyMatchingRules = [], seriesMatchingRules } = displaySetRules;
-
+    const { DisplaySetService } = this._servicesManager.services;
+    const { studyMatchingRules = [], seriesMatchingRules, imageMatchingRules } = displaySetRules;
     const matchingScores = [];
     let highestStudyMatchingScore = 0;
     let highestSeriesMatchingScore = 0;
 
+    DisplaySetService.clearAllDisplaySetsFilters();
     console.log(
       'ProtocolEngine::matchImages',
       studyMatchingRules,
@@ -1206,6 +1254,29 @@ class HangingProtocolService {
           seriesMatchDetails.score,
           highestSeriesMatchingScore
         );
+
+        if (imageMatchingRules && imageMatchingRules.length) {
+          const instances = displaySet.images || displaySet.others || [];
+          const filteredInstances = [];
+          for (let instanceIndex = instances.length - 1; instanceIndex >= 0; instanceIndex--) {
+            const instance = instances[instanceIndex];
+            const imagesMatchDetails = this.protocolEngine.findMatch(
+              instance,
+              imageMatchingRules,
+              { instances }
+            );
+
+            if (!imagesMatchDetails.requiredFailed
+              && imagesMatchDetails.details.failed.length === 0) {
+              filteredInstances.push(instance);
+            }
+          }
+
+          DisplaySetService.filterDisplaySetInstances(displaySet.displaySetInstanceUID, filteredInstances);
+          if (instances.length === 0) {
+            return;
+          }
+        }
 
         const matchDetails = {
           passed: [],

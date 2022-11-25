@@ -152,6 +152,8 @@ class ViewportInfo {
     // via cornerstoneViewportService
     let viewportData = this.getViewportData();
 
+    if (!viewportData) return false;
+
     if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(

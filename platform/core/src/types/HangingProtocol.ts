@@ -92,7 +92,7 @@ type SyncGroup = {
 
 type initialImageOptions = {
   index?: number;
-  preset? : string; // todo: type more
+  preset?: string; // todo: type more
 }
 
 type ViewportOptions = {
@@ -151,8 +151,12 @@ type Protocol = {
   syncDataForViewports?: boolean;
 };
 
+type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
+  protocol: Protocol;
+};
 
 export type {
+  ProtocolGenerator,
   SetProtocolOptions,
   ViewportOptions,
   ViewportMatchDetails,

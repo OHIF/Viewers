@@ -105,6 +105,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     servicesManager,
     onElementEnabled,
     onElementDisabled,
+    needsRerendering,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
@@ -278,6 +279,25 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // handle the default viewportType to be stack
     if (!viewportOptions.viewportType) {
       viewportOptions.viewportType = STACK;
+    }
+
+    if (needsRerendering) {
+      displaySets.forEach(displaySet => {
+        const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+          viewportIndex
+        );
+
+        if (viewportInfo.hasDisplaySet(displaySet.displaySetInstanceUID)) {
+          const viewportData = viewportInfo.getViewportData();
+          const currentViewportData = (viewportData) ? viewportData : { viewportType: STACK };
+          CornerstoneCacheService.invalidateViewportData(currentViewportData,
+            displaySet.displaySetInstanceUID,
+            dataSource,
+            DisplaySetService);
+
+          displaySet.needsRerendering = false;
+        }
+      });
     }
 
     const loadViewportData = async () => {

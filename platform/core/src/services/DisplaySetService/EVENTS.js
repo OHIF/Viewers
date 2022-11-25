@@ -4,6 +4,7 @@ const EVENTS = {
   DISPLAY_SETS_REMOVED: 'event::displaySetService:displaySetsRemoved',
   DISPLAY_SET_SERIES_METADATA_INVALIDATED:
     'event::displaySetService:displaySetSeriesMetadataInvalidated',
+  DISPLAY_SETS_FILTERED: 'event::displaySetService:displaySetsFiltered',
 };
 
 export default EVENTS;
