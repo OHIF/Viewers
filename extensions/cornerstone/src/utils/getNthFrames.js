@@ -1,3 +1,18 @@
+/**
+ * Returns a re-ordered array consisting of, in order:
+ *    1. First few objects
+ *    2. Center objects
+ *    3. Last few objects
+ *    4. nth Objects (n=7), set 2
+ *    5. nth Objects set 5,
+ *    6. Remaining objects
+ * What this does is return the first/center/start objects, as those
+ * are often used first, then a selection of objects scattered over the
+ * instances in order to allow making requests over a set of image instances.
+ *
+ * @param {[]} imageIds
+ * @returns [] reordered to be an nth selection
+ */
 export default function getNthFrames(imageIds) {
   const frames = [[], [], [], [], []];
   const centerStart = imageIds.length / 2 - 3;
