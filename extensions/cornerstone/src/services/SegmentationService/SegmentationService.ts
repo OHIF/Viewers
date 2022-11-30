@@ -1332,9 +1332,7 @@ class SegmentationService {
       segDisplaySetInstanceUID
     );
 
-    const {
-      FrameOfReferenceUID: segFrameOfReferenceUID,
-    } = segDisplaySet.instance;
+    const segFrameOfReferenceUID = segDisplaySet.instance?.FrameOfReferenceUID;
 
     viewportDisplaySetInstanceUIDs.forEach(displaySetInstanceUID => {
       // check if the displaySet is sharing the same frameOfReferenceUID
