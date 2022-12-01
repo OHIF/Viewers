@@ -82,6 +82,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
           <div className="w-1/2">
             <InputRange
               value={instanceNumber}
+              key={selectedDisplaySetInstanceUID}
               onChange={value => {
                 setInstanceNumber(parseInt(value));
               }}
