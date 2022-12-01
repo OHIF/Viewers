@@ -86,6 +86,8 @@ function TrackedCornerstoneViewport(props) {
       cineService.playClip(element, {
         framesPerSecond: validFrameRate,
       });
+    } else {
+      cineService.stopClip(element);
     }
   };
 
