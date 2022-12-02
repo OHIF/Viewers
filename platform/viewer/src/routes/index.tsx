@@ -14,12 +14,6 @@ import PrivateRoute from './PrivateRoute';
 const bakedInRoutes = [
   // WORK LIST
   {
-    path: '/',
-    children: DataSourceWrapper,
-    private: true,
-    props: { children: WorkList },
-  },
-  {
     path: '/local',
     children: Local,
   },
@@ -27,6 +21,12 @@ const bakedInRoutes = [
 
 // NOT FOUND (404)
 const notFoundRoute = { component: NotFound };
+const WorkListRoute = {
+  path: '/',
+  children: DataSourceWrapper,
+  private: true,
+  props: { children: WorkList },
+};
 
 const createRoutes = ({
   modes,
@@ -36,6 +36,7 @@ const createRoutes = ({
   commandsManager,
   hotkeysManager,
   routerBasename,
+  showStudyList,
 }) => {
   const routes =
     buildModeRoutes({
@@ -54,6 +55,7 @@ const createRoutes = ({
   );
   const allRoutes = [
     ...routes,
+    ...(showStudyList ? [WorkListRoute] : []),
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,

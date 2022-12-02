@@ -50,7 +50,13 @@ function App({ config, defaultExtensions, defaultModes }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { routerBasename, modes, dataSources, oidc } = appConfigState;
+  const {
+    routerBasename,
+    modes,
+    dataSources,
+    oidc,
+    showStudyList,
+  } = appConfigState;
 
   const {
     UIDialogService,
@@ -92,6 +98,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     commandsManager,
     hotkeysManager,
     routerBasename,
+    showStudyList,
   });
 
   if (oidc) {
