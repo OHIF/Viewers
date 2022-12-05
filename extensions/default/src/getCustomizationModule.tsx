@@ -65,7 +65,9 @@ export default function getCustomizationModule() {
                 style={{ color: this.color || undefined }}
                 title={this.title || ''}
               >
-                <span className="mr-1">{this.label || ''}</span>
+                {this.label && (
+                  <span className="mr-1 shrink-0">{this.label}</span>
+                )}
                 <span className="font-light">{value}</span>
               </span>
             );

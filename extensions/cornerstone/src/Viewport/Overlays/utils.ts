@@ -18,7 +18,7 @@ export function isValidNumber(value) {
  * @param {number} precision
  * @returns {number} formatted number.
  */
-export function formatNumberPrecision(number, precision) {
+export function formatNumberPrecision(number, precision = 0) {
   if (number !== null) {
     return parseFloat(number).toFixed(precision);
   }
@@ -60,18 +60,15 @@ export function formatDICOMTime(time, strFormat = 'HH:mm:ss') {
  */
 export function formatPN(name) {
   if (!name) {
-    return;
+    return '';
   }
 
-  // Convert the first ^ to a ', '. String.replace() only affects
-  // the first appearance of the character.
-  const commaBetweenFirstAndLast = name.replace('^', ', ');
-
-  // Replace any remaining '^' characters with spaces
-  const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');
-
-  // Trim any extraneous whitespace
-  return cleaned.trim();
+  const cleaned = name
+    .split('^')
+    .filter(s => !!s)
+    .join(', ')
+    .trim();
+  return cleaned === ',' || cleaned === '' ? '' : cleaned;
 }
 
 /**

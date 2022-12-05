@@ -1,0 +1,21 @@
+/* custom overlay panels: top-left, top-right, bottom-left and bottom-right */
+.viewport-overlay {
+  max-width: 40%;
+}
+.viewport-overlay span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewport-overlay.left-viewport {
+  text-align: left;
+}
+
+.viewport-overlay.right-viewport-scrollbar {
+  text-align: right;
+}
+.viewport-overlay.right-viewport-scrollbar .flex.flex-row {
+  justify-content: flex-end;
+}

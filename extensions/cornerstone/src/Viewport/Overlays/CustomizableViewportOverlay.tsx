@@ -13,6 +13,8 @@ import { InstanceMetadata } from 'platform/core/src/types';
 import { ServicesManager } from '@ohif/core';
 import { ImageSliceData } from '@cornerstonejs/core/dist/esm/types';
 
+import './CustomizableViewportOverlay.css';
+
 const EPSILON = 1e-4;
 
 interface OverlayItemProps {
@@ -53,10 +55,14 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
       className="overlay-item flex flex-row"
       style={{ color: (customization && customization.color) || undefined }}
     >
-      <span className="mr-1">W:</span>
-      <span className="ml-1 mr-2 font-light">{windowWidth.toFixed(0)}</span>
-      <span className="mr-1">L:</span>
-      <span className="ml-1 font-light">{windowCenter.toFixed(0)}</span>
+      <span className="mr-1 shrink-0">W:</span>
+      <span className="ml-1 mr-2 font-light shrink-0">
+        {windowWidth.toFixed(0)}
+      </span>
+      <span className="mr-1 shrink-0">L:</span>
+      <span className="ml-1 font-light shrink-0">
+        {windowCenter.toFixed(0)}
+      </span>
     </div>
   );
 }
@@ -70,7 +76,7 @@ function ZoomOverlayItem({ scale, customization }: OverlayItemProps) {
       className="overlay-item flex flex-row"
       style={{ color: (customization && customization.color) || undefined }}
     >
-      <span className="mr-1">Zoom:</span>
+      <span className="mr-1 shrink-0">Zoom:</span>
       <span className="font-light">{scale.toFixed(2)}x</span>
     </div>
   );
@@ -91,9 +97,9 @@ function InstanceNumberOverlayItem({
       className="overlay-item flex flex-row"
       style={{ color: (customization && customization.color) || undefined }}
     >
-      <span className="mr-1">I:</span>
+      <span className="mr-1 shrink-0">I:</span>
       <span className="font-light">
-        {instanceNumber !== undefined
+        {instanceNumber !== undefined && instanceNumber !== null
           ? `${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`
           : `${imageIndex + 1}/${numberOfSlices}`}
       </span>
