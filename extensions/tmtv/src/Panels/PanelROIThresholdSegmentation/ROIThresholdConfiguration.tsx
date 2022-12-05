@@ -79,74 +79,104 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
       )}
       {config.strategy !== ROI_STAT && (
         <>
-          <div className="flex justify-between">
-            <Input
-              label={t('CT Lower')}
-              labelClassName="text-white"
-              className="mt-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
-              value={config.ctLower}
-              onChange={e => {
-                dispatch({
-                  type: 'setThreshold',
-                  payload: {
-                    ctLower: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Upper')}
-              labelClassName="text-white"
-              className="mt-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
-              value={config.ctUpper}
-              onChange={e => {
-                dispatch({
-                  type: 'setThreshold',
-                  payload: {
-                    ctUpper: e.target.value,
-                  },
-                });
-              }}
-            />
-          </div>
-          <div className="flex justify-between">
-            <Input
-              label={t('PT Lower')}
-              labelClassName="text-white"
-              className="mt-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
-              value={config.ptLower}
-              onChange={e => {
-                dispatch({
-                  type: 'setThreshold',
-                  payload: {
-                    ptLower: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Upper')}
-              labelClassName="text-white"
-              className="mt-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
-              value={config.ptUpper}
-              onChange={e => {
-                dispatch({
-                  type: 'setThreshold',
-                  payload: {
-                    ptUpper: e.target.value,
-                  },
-                });
-              }}
-            />
-          </div>
+          <table>
+            <tr>
+              <th
+                className="text-white"
+                style={{
+                  textAlign: 'center',
+                  width: '50px',
+                  verticalAlign: 'bottom',
+                }}
+              >
+                CT
+              </th>
+              <td>
+                <div className="flex justify-between">
+                  <Input
+                    label={t('Lower')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ctLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                  <Input
+                    label={t('Upper')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ctUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th
+                className="text-white"
+                style={{
+                  textAlign: 'center',
+                  width: '50px',
+                  verticalAlign: 'bottom',
+                }}
+              >
+                PT
+              </th>
+              <td>
+                <div className="flex justify-between">
+                  <Input
+                    label={t('Lower')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ptLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                  <Input
+                    label={t('Upper')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ptUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </td>
+            </tr>
+          </table>
         </>
       )}
     </div>
