@@ -1,6 +1,6 @@
 import { cache, imageLoadPoolManager, Enums } from '@cornerstonejs/core';
 import getNthFrames from './getNthFrames';
-import { compact, flatten, zip } from 'lodash';
+import interleave from './interleave';
 
 // Map of volumeId and SeriesInstanceId
 const volumeIdMapsToLoad = new Map<string, string>();
@@ -15,7 +15,7 @@ const viewportIdVolumeInputArrayMap = new Map<string, unknown[]>();
  * visually much better.
  * @param {Object} props image loading properties from Cornerstone ViewportService
  */
-export default function interleaveCenterLoader({
+export default function interleaveNthLoader({
   data: { viewportId, volumeInputArray },
   displaySetsMatchDetails,
   viewportMatchDetails: matchDetails,
@@ -74,37 +74,16 @@ export default function interleaveCenterLoader({
 
   // iterate over all volumes, and get their imageIds, and interleave
   // the imageIds and save them in AllRequests for later use
-  const AllRequests = [];
-  volumes.forEach(volume => {
-    const requests = volume.getImageLoadRequests();
+  const originalRequests = volumes
+    .map(volume => volume.getImageLoadRequests())
+    .filter(requests => requests?.[0]?.imageId);
 
-    if (!requests.length || !requests[0] || !requests[0].imageId) {
-      return;
-    }
-
-    const reOrderedRequests = getNthFrames(requests);
-
-    AllRequests.push(reOrderedRequests);
-  });
-
-  // flatten the AllRequests array, which will result in a list of all the
-  // imageIds for all the volumes but interleaved
-  const interleavedRequests = compact(flatten(zip(...AllRequests)));
+  const orderedRequests = originalRequests.map(request =>
+    getNthFrames(request)
+  );
 
   // set the finalRequests to the imageLoadPoolManager
-  const finalRequests = [];
-  interleavedRequests.forEach(request => {
-    const { imageId } = request;
-
-    AllRequests.forEach(volumeRequests => {
-      const volumeImageIdRequest = volumeRequests.find(
-        req => req.imageId === imageId
-      );
-      if (volumeImageIdRequest) {
-        finalRequests.push(volumeImageIdRequest);
-      }
-    });
-  });
+  const finalRequests = interleave(orderedRequests);
 
   const requestType = Enums.RequestType.Prefetch;
   const priority = 0;
