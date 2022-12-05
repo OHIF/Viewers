@@ -59,9 +59,9 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="px-4 py-2 text-base"
-                  color="white"
+                  color="black"
                   border="primary"
-                  variant="outlined"
+                  variant="contained"
                   onClick={() => navigateToPage(1)}
                 >
                   {`<<`}
@@ -69,9 +69,9 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="py-2 px-2 text-base"
-                  color="white"
+                  color="black"
                   border="primary"
-                  variant="outlined"
+                  variant="contained"
                   onClick={() => navigateToPage(currentPage - 1)}
                 >
                   {t(`< Previous`)}
@@ -79,9 +79,9 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="py-2 px-4 text-base"
-                  color="white"
+                  color="black"
                   border="primary"
-                  variant="outlined"
+                  variant="contained"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
                   {t(`Next >`)}
