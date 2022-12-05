@@ -6,6 +6,7 @@ import { ErrorBoundary } from '@ohif/ui';
 import DataSourceWrapper from './DataSourceWrapper';
 import WorkList from './WorkList';
 import Local from './Local';
+import Debug from './Debug';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
@@ -13,6 +14,16 @@ import PrivateRoute from './PrivateRoute';
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
   // WORK LIST
+  {
+    path: '/',
+    children: DataSourceWrapper,
+    private: true,
+    props: { children: WorkList },
+  },
+  {
+    path: '/debug',
+    children: Debug,
+  },
   {
     path: '/local',
     children: Local,

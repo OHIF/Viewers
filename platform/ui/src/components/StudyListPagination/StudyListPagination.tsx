@@ -59,7 +59,7 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="px-4 py-2 text-base"
-                  color="white"
+                  color="translucent"
                   border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(1)}
@@ -69,7 +69,7 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="py-2 px-2 text-base"
-                  color="white"
+                  color="translucent"
                   border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(currentPage - 1)}
@@ -79,7 +79,7 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="py-2 px-4 text-base"
-                  color="white"
+                  color="translucent"
                   border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(currentPage + 1)}
