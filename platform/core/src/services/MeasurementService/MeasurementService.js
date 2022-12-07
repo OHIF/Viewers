@@ -570,6 +570,23 @@ class MeasurementService {
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
+  /**
+   * @param {string} displaySetInstanceUID
+   */
+  clearMeasurementsByDisplaySet(displaySetInstanceUID) {
+    // clear for specific displaySet
+    const measurements = {};
+    const remainingMeasurements = {};
+    Object.keys(this.measurements).forEach(k => {
+      if (this.measurements[k].displaySetInstanceUID === displaySetInstanceUID)
+        measurements[k] = this.measurements[k];
+      else remainingMeasurements[k] = this.measurements[k];
+    });
+    this.measurements = remainingMeasurements;
+    this._jumpToMeasurementCache = {};
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+  }
+
   jumpToMeasurement(viewportIndex, measurementUID) {
     const measurement = this.measurements[measurementUID];
 

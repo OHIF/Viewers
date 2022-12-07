@@ -18,8 +18,12 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         type: type,
       });
     },
-    clearMeasurements: () => {
-      MeasurementService.clear();
+    clearMeasurements: displaySetInstanceUID => {
+      if (displaySetInstanceUID) {
+        MeasurementService.clearMeasurementsByDisplaySet(displaySetInstanceUID);
+      } else {
+        MeasurementService.clearMeasurements();
+      }
     },
     nextStage: () => {
       // next stage in hanging protocols

@@ -361,6 +361,8 @@ function PanelStudyBrowserTracking({
           displaySetInstanceUID
         );
         // TODO: shift this somewhere else where we're centralizing this logic?
+        // Ensure that measurements added to the non-tracking panel are correctly removed
+        MeasurementService.clearMeasurementsByDisplaySet(displaySetInstanceUID);
         // Potentially a helper from displaySetInstanceUID to this
         sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
