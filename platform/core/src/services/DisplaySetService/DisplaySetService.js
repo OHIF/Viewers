@@ -194,6 +194,11 @@ export default class DisplaySetService {
     }
   };
 
+  onModeExit() {
+    this.getDisplaySetCache().length = 0;
+    this.activeDisplaySets.length = 0;
+  }
+
   makeDisplaySetForInstances(instancesSrc, settings) {
     let instances = instancesSrc;
     const instance = instances[0];

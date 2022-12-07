@@ -312,11 +312,11 @@ export default function ModeRoute({
     });
 
     return () => {
-      extensionManager.onModeExit();
-      mode?.onModeExit({ servicesManager, extensionManager });
       unsubscriptions.forEach(unsub => {
         unsub();
       });
+      extensionManager.onModeExit();
+      mode?.onModeExit?.({ servicesManager, extensionManager });
     };
   }, [
     mode,

@@ -104,7 +104,6 @@ export default class CustomizationService extends PubSubService {
 
     commands.forEach(({ commandName, commandOptions, context }) => {
       if (commandName) {
-        console.log('Running command', commandName);
         commandsManager.runCommand(
           commandName,
           {
@@ -128,7 +127,6 @@ export default class CustomizationService extends PubSubService {
     customizationId: string,
     customization: Customization
   ): void {
-    console.log('** Set mode customization', customizationId, customization);
     this.modeCustomizations[customizationId] = merge(
       this.modeCustomizations[customizationId] || {},
       customization
@@ -194,7 +192,6 @@ export default class CustomizationService extends PubSubService {
   }
 
   setGlobalCustomization(id: string, value: Customization): void {
-    console.log('*** Set global', id, value);
     this.globalCustomizations[id] = value;
     this._broadcastGlobalCustomizationModified();
   }
@@ -234,7 +231,6 @@ export default class CustomizationService extends PubSubService {
     if (!value) return;
     if (typeof value === 'string') {
       const extensionValue = this.findExtensionValue(value);
-      console.log('Adding extension values', value, extensionValue);
       this.addReferences(extensionValue);
     } else if (Array.isArray(value)) {
       this.addReferences(value, isGlobal);

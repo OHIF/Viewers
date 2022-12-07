@@ -136,7 +136,7 @@ class CornerstoneViewportService implements IViewportService {
   public destroy() {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
-    this.renderingEngine.destroy();
+    this.renderingEngine?.destroy?.();
     this.viewportsDisplaySets.clear();
     this.renderingEngine = null;
     cache.purgeCache();

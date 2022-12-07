@@ -96,6 +96,10 @@ class ViewportGridService {
     this.serviceImplementation._reset();
   }
 
+  public onModeExit(): void {
+    this.serviceImplementation._onModeExit();
+  }
+
   public setCachedLayout({ cacheId, cachedLayout }) {
     this.serviceImplementation._setCachedLayout({ cacheId, cachedLayout });
   }

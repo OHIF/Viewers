@@ -235,6 +235,7 @@ Button.propTypes = {
     'black',
     'inherit',
     'light',
+    'translucent',
   ]),
   border: PropTypes.oneOf([
     'none',
