@@ -136,6 +136,20 @@ command will utilize `yarn link` to achieve so.
 yarn run cli link-extension <extensionDir>
 ```
 
+To resolve dependencies for your extension, update webpack configuration with
+the path to your dependencies folder:
+
+https://github.com/OHIF/Viewers/blob/v3-stable/.webpack/webpack.base.js#L111
+```js
+      modules: [
+        // Modules specific to this package
+        // Add this line, replace [extensionName] with your extension directory
+        path.resolve(__dirname, '../node_modules/[extensionName]/node_modules'),
+        ,
+      ],
+
+```
+
 ### unlink-extension
 
 There might be situations where you want to unlink an extension from the Viewer
@@ -154,6 +168,20 @@ OHIF mode to the Viewer.
 
 ```bash
 yarn run cli link-mode <modeDir>
+```
+
+To resolve dependencies for your mode, update webpack configuration with
+the path to your dependencies folder:
+
+https://github.com/OHIF/Viewers/blob/v3-stable/.webpack/webpack.base.js#L111
+```js
+      modules: [
+        // Modules specific to this package
+        // Add this line, replace [modeName] with your mode directory
+        path.resolve(__dirname, '../node_modules/[modeName]/node_modules'),
+        ,
+      ],
+
 ```
 
 ### unlink-mode
@@ -292,7 +320,7 @@ are currently being used by the viewer.
 
 ## Private NPM Repos
 
-For the `yarn cli` to view private NPM repos, create a read-only token with the 
+For the `yarn cli` to view private NPM repos, create a read-only token with the
 following steps and export it as an environmental variable. You may also export
 an existing npm token.
 ```
