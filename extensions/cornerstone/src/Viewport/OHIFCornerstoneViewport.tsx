@@ -11,6 +11,8 @@ import {
   CONSTANTS,
 } from '@cornerstonejs/core';
 
+import { Notification, useViewportDialog } from '@ohif/ui';
+
 import { setEnabledElement } from '../state';
 
 import './OHIFCornerstoneViewport.css';
@@ -125,6 +127,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     CornerstoneCacheService,
     ViewportGridService,
   } = servicesManager.services;
+
+  const [viewportDialogState] = useViewportDialog();
 
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
@@ -336,31 +340,45 @@ const OHIFCornerstoneViewport = React.memo(props => {
   }, [displaySets, elementRef, viewportIndex]);
 
   return (
-    <div className="viewport-wrapper">
-      <ReactResizeDetector
-        handleWidth
-        handleHeight
-        skipOnMount={true} // Todo: make these configurable
-        refreshMode={'debounce'}
-        refreshRate={200} // transition amount in side panel
-        onResize={onResize}
-        targetRef={elementRef.current}
-      />
-      <div
-        className="cornerstone-viewport-element"
-        style={{ height: '100%', width: '100%' }}
-        onContextMenu={e => e.preventDefault()}
-        onMouseDown={e => e.preventDefault()}
-        ref={elementRef}
-      ></div>
-      <CornerstoneOverlays
-        viewportIndex={viewportIndex}
-        ToolBarService={ToolBarService}
-        element={elementRef.current}
-        scrollbarHeight={scrollbarHeight}
-        servicesManager={servicesManager}
-      />
-    </div>
+    <React.Fragment>
+      <div className="viewport-wrapper">
+        <ReactResizeDetector
+          handleWidth
+          handleHeight
+          skipOnMount={true} // Todo: make these configurable
+          refreshMode={'debounce'}
+          refreshRate={200} // transition amount in side panel
+          onResize={onResize}
+          targetRef={elementRef.current}
+        />
+        <div
+          className="cornerstone-viewport-element"
+          style={{ height: '100%', width: '100%' }}
+          onContextMenu={e => e.preventDefault()}
+          onMouseDown={e => e.preventDefault()}
+          ref={elementRef}
+        ></div>
+        <CornerstoneOverlays
+          viewportIndex={viewportIndex}
+          ToolBarService={ToolBarService}
+          element={elementRef.current}
+          scrollbarHeight={scrollbarHeight}
+          servicesManager={servicesManager}
+        />
+      </div>
+      <div className="absolute w-full">
+        {viewportDialogState.viewportIndex === viewportIndex && (
+          <Notification
+            id={viewportDialogState.id}
+            message={viewportDialogState.message}
+            type={viewportDialogState.type}
+            actions={viewportDialogState.actions}
+            onSubmit={viewportDialogState.onSubmit}
+            onOutsideClick={viewportDialogState.onOutsideClick}
+          />
+        )}
+      </div>
+    </React.Fragment>
   );
 }, areEqual);
 
