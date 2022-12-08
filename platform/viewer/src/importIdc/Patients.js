@@ -66,7 +66,7 @@ function ConfirmDialog(props) {
         body: JSON.stringify({ study_uid: StudyUID }),
       };
 
-      const response = await fetch(`${radcadapi}/import-idc`, requestOptions);
+      const response = await fetch(`${radcadapi}/import-idc-study`, requestOptions);
 
       setSearchStatus({ error: null, isFetching: false });
       onComplete();

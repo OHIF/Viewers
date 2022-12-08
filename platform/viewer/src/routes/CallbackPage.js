@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { CallbackComponent } from 'redux-oidc';
+import { radcadapi } from '../utils/constants';
 
 class CallbackPage extends Component {
   static propTypes = {
@@ -18,7 +19,26 @@ class CallbackPage extends Component {
             sessionStorage.getItem('ohif-redirect-to')
           );
 
-          this.props.history.push({ pathname, search });
+          const state = window.store.getState();
+          console.log({ oidc: state.oidc });
+
+          var requestOptions = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + state.oidc.user.access_token,
+            },
+          };
+
+          fetch(radcadapi + '/endpoint-warmup', requestOptions)
+            .then(data => {
+              console.log(data);
+            })
+            .catch(err => {
+              console.log(err);
+            });
+          // const response = await axios.post(radcadapi, {}, config);
+          // this.props.history.push({ pathname, search });
         }}
         errorCallback={error => {
           //this.props.history.push("/");

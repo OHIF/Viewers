@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
-import axios from 'axios';
 
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
@@ -113,17 +112,6 @@ class App extends Component {
   _appConfig;
   _userManager;
 
-  async warmup() {
-    // const fetchedSeries = (async () => {
-    try {
-      const response = await axios.post(radcadapi, {});
-    } catch (error) {
-      console.error('warmup caught', { error });
-      return [];
-    }
-    // })();
-  }
-
   constructor(props) {
     super(props);
 
@@ -148,10 +136,6 @@ class App extends Component {
       extensions,
       oidc,
     } = this._appConfig;
-
-    // warmup api request
-
-    // this.warmup();
 
     setConfiguration(this._appConfig);
 

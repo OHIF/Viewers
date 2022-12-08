@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { servicesManager } from '../App';
 import { CSSTransition } from 'react-transition-group';
-import { client } from '../appExtensions/LungModuleSimilarityPanel/utils';
 import { radcadapi } from '../utils/constants';
 const { UIDialogService } = servicesManager.services;
 
@@ -94,7 +93,6 @@ const ForceRerun = props => {
 function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
   const [processStarted, setProcessState] = useState(false);
   const [count, setCount] = useState(1);
-  const [has_nnunet, setHas_Nnunet] = useState(false);
   const user = useSelector(state => state.oidc.user);
   const location = useLocation();
   const history = useHistory();
@@ -146,25 +144,40 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
     try {
       // const segmentations = await fetchSegmentations();
       const series_uid = JSON.parse(localStorage.getItem('series_uid') || '');
-
+      console.log('checkExistingSegmentations----------');
+      console.log(series_uid);
       // const series_uid = seriesInstanceUIDs;
       // const series_uid = viewportData[0].SeriesInstanceUID;
       // const email = 'nick.fragakis%40thetatech.ai';
       const email = user.profile.email;
       const body = {
-        email: 'bimpongamoako@gmail.com', //'nick.fragakis@thetatech.ai',
+        email: email, //'nick.fragakis@thetatech.ai',
       };
-      let segmentations = await client.get(
-        `/segmentations?series=${series_uid}&email=${email}`,
-        body
-      );
-      console.log(segmentations);
-      segmentations = segmentations.data;
 
+      var requestOptions = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      };
+
+      let segmentations = await fetch(
+        `${radcadapi}/segmentations?series=${series_uid}&email=${email}`,
+        requestOptions
+      );
+      if (segmentations.status == 200)
+        segmentations = await segmentations.json();
+      else segmentations = {};
+
+      // let segmentations = await client.get(
+      //   `/segmentations?series=${series_uid}&email=${email}`,
+      //   body
+      // );
+      console.log({ segmentations });
+      // segmentations = segmentations.data;
+      let has_nnunet = false;
       const segmentationsList = Object.keys(segmentations) || [];
       for (const segment_label_name of segmentationsList) {
         if (segment_label_name.includes('nnunet')) {
-          setHas_Nnunet(true);
+          has_nnunet = true;
           break;
         }
       }
@@ -192,21 +205,21 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
   const checkJobStatus = async () => {
     try {
       setCount(count + 1);
+      const email = user.profile.email;
 
       var requestOptions = {
         method: 'GET',
       };
 
       let response = await fetch(
-        `${radcadapi}/job-status?email=nick.fragakis@thetatech.ai&job_type=NNUNET_LUNG`,
+        `${radcadapi}/job-status?email=${email}&job_type=NNUNET_LUNG`,
         requestOptions
       );
       response = await response.json();
 
       // if (count > 5) handleOnSuccess();
-      if (response.status === 'DONE') {
-        handleOnSuccess();
-      }
+      if (response.status === 'DONE') handleOnSuccess();
+      else if (response.status === 'ERROR') handleOnSuccess();
     } catch (error) {
       console.error(error);
     }
@@ -215,21 +228,23 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
   const startNNunetProcess = async () => {
     try {
       UIDialogService.dismiss({ id: 'ForceRerun' });
+      const series_uid = JSON.parse(localStorage.getItem('series_uid'));
 
-      const series_uid = seriesInstanceUIDs;
+      // const series_uid = seriesInstanceUIDs;
       const study_uid = studyInstanceUIDs;
       const email = user.profile.email;
+      const state = window.store.getState();
 
       const body = {
-        study_uid:
-          '1.3.6.1.4.1.32722.99.99.100855571832074152951605738408734618579',
-        series_uid:
-          '1.3.6.1.4.1.32722.99.99.71621653125201582124240564508842688465',
-        email: 'nick.fragakis@thetatech.ai',
+        // study_uid:
+        //   '1.3.6.1.4.1.32722.99.99.100855571832074152951605738408734618579',
+        // series_uid:
+        //   '1.3.6.1.4.1.32722.99.99.71621653125201582124240564508842688465',
+        // email: 'nick.fragakis@thetatech.ai',
         parameters: {},
-        // study_uid: study_uid,
-        // series_uid: series_uid,
-        // email: email,
+        study_uid: study_uid[0],
+        series_uid: series_uid,
+        email: email,
         // parameters: {
         //   FLAIR:
         //     '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
@@ -242,7 +257,10 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
 
       var requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + state.oidc.user.access_token,
+        },
         body: JSON.stringify(body),
       };
 
@@ -251,8 +269,8 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
 
       setProcessState(true);
     } catch (error) {
-      setProcessState(true);
-      // console.error(error);
+      // setProcessState(true);
+      console.error(error);
     }
   };
 
@@ -263,6 +281,7 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
 
   useEffect(() => {
     // showloadSegmentationDailog('sample');
+    // startNNunetProcess();
     checkExistingSegmentations();
   }, []);
 

@@ -2,11 +2,14 @@
 import React from 'react';
 import { _3DSegmentationApiClass } from './3DApi';
 import Plot from 'react-plotly.js';
+import * as Plotly from 'plotly.js';
+import debounce from 'lodash.debounce';
 
 class Morphology3DComponent extends React.Component {
   constructor(props) {
     super();
     this.state = {
+      currentImage: '',
       segmentationData: null,
       segmentationError: '',
       loadingApp: false,
@@ -20,6 +23,7 @@ class Morphology3DComponent extends React.Component {
     };
     this.graphRef = React.createRef(null);
     // Function binds
+    this.getImage = this.getImage.bind(this);
     this.changeProperty = this.changeProperty.bind(this);
     this.get3DShot = this.get3DShot.bind(this);
     this.changeSegmentationLabel = this.changeSegmentationLabel.bind(this);
@@ -74,7 +78,7 @@ class Morphology3DComponent extends React.Component {
         series_uid
       );
       this.setState({ segmentationLabels });
-      this.setState({ currentSegmentationLabel: segmentationLabels[0] });
+      this.setState({ currentSegmentationLabel: segmentationLabels[1] });
     } catch (error) {
       // handle getting segmentation error
     }
@@ -116,6 +120,55 @@ class Morphology3DComponent extends React.Component {
     // implementation
   }
 
+  async getImage() {
+    const customScene = this.graphRef.current.el.layout.scene;
+
+    const plotDiv = this.graphRef.current.el;
+    const { graphDiv } = plotDiv._fullLayout.scene._scene;
+    console.log(this.graphRef.current);
+    const divToDownload = {
+      ...graphDiv,
+      layout: { ...graphDiv.layout, scene: customScene },
+    };
+    const response = await Plotly.toImage(divToDownload, {
+      format: 'png',
+      width: 800,
+      height: 600,
+    });
+
+    // const localImageUrl = window.URL.createObjectURL(
+    //   new Blob([response], { type: 'application/zip' })
+    // );
+    console.log('localImageUrl');
+    console.log(response);
+    console.log('localImageUrl----');
+
+    localStorage.setItem(
+      'print-chart',
+      JSON.stringify({
+        image: response,
+      })
+    );
+
+    this.setState({
+      currentImage: response,
+    });
+
+    // then(function(base64Str) {
+    //   // if (this.state.currentImage)
+    //   //   window.URL.revokeObjectURL(this.state.currentImage);
+
+    //   // document.getElementById('jpg-export').src = base64Str;
+    //   // return base64Str;
+    // });
+  }
+
+  onPlotlyUpdate = figure => {
+    debounce(this.getImage, {
+      delay: 5000,
+    });
+  };
+
   render() {
     const tabs = this.state.properties;
     const { segmentationLabels } = this.state;
@@ -156,6 +209,7 @@ class Morphology3DComponent extends React.Component {
         ) : (
           <>
             <nav
+              className="hide-on-print"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -239,7 +293,10 @@ class Morphology3DComponent extends React.Component {
                 </label>
               </div>
             </nav>
-            <div style={{ width: '90%', height: '600px' }}>
+            <div
+              className="hide-on-print"
+              style={{ width: '90%', height: '600px' }}
+            >
               {this.state.loadingGraph ? (
                 <TextContainer title="Loading 3D. . ." />
               ) : !this.state.loadingGraph && this.state.segmentationError ? (
@@ -259,6 +316,8 @@ class Morphology3DComponent extends React.Component {
                     paper_bgcolor: '#000',
                     font: { color: '#ffffff', size: '14px' },
                   }}
+                  // onInitialized={this.getImage}
+                  // onUpdate={this.getImage}
                   config={{ displaylogo: false, responsive: true }}
                   ref={this.graphRef}
                 />
