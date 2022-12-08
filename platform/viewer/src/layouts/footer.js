@@ -49,7 +49,7 @@ const Footer = () => {
     }
   }, [location.pathname]);
 
-  // if (activeStep === 1) return <></>;
+  if (activeStep === 1) return <></>;
 
   return (
     <footer className="master-footer">

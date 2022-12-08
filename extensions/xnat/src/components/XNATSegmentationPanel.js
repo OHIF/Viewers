@@ -818,13 +818,13 @@ class XNATSegmentationPanel extends React.Component {
                 }
               />
             </div>
-            <MenuIOButtons
+            {/* <MenuIOButtons
               // ImportCallbackOrComponent={XNATSegmentationImportMenu}
               ExportCallbackOrComponent={XNATSegmentationExportMenu}
               // onImportButtonClick={() => this.setState({ importing: true })}
               onExportButtonClick={() => this.setState({ exporting: true })}
               exportDisabledMessage={exportDisabledMessage}
-            />
+            /> */}
           </div>
           <div className="roiCollectionBody">
             <div className="workingCollectionHeader">

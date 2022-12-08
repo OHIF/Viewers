@@ -117,7 +117,7 @@ function ImportIdcModal({ isOpen = false, onClose, onSuccess, t }) {
         message: '',
         type: 'info',
       });
-
+      UIModalService.hide();
       // Force auto close
       onSuccess(UIModalService);
     };

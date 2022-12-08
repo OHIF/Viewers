@@ -27,6 +27,10 @@ export default function(store, oidcSettings) {
     filterProtocolClaims: true,
   };
 
+  console.log({
+    settings,
+  });
+
   const userManager = createUserManager(settings);
 
   loadUser(store, userManager);

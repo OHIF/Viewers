@@ -84,18 +84,28 @@ function StudyList(props) {
     {
       displayText: `${t('PatientName')} / ${t('MRN')}`,
       fieldName: 'patientNameOrId',
+      PlaceHolder: 'patientName Or Id',
       inputType: 'text',
       size: 250,
     },
     {
       displayText: t('Description'),
       fieldName: 'accessionOrModalityOrDescription',
+      PlaceHolder: 'accession Or Modality OrDescription',
       inputType: 'text',
       size: 350,
     },
     {
+      displayText: t('AccessionNumber'),
+      fieldName: 'AccessionNumber',
+      PlaceHolder: 'Accession Number',
+      inputType: 'text',
+      size: 180,
+    },
+    {
       displayText: t('StudyDate'),
       fieldName: 'StudyDate',
+      PlaceHolder: 'StudyDate',
       inputType: 'date-range',
       size: 300,
     },
@@ -328,7 +338,7 @@ function TableRow(props) {
           </div>
 
           {/* MODALITY & ACCESSION */}
-          <div
+          {/* <div
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -357,11 +367,13 @@ function TableRow(props) {
             >
               {AccessionNumber}
             </div>
-          </div>
+          </div> */}
         </div>
       </td>
+      <td className="hide-xs">{AccessionNumber}</td>
+
       {/* DATE */}
-      <td style={{ textAlign: 'center' }}>{StudyDate}</td>
+      <td style={{ textAlign: 'left' }}>{StudyDate}</td>
     </tr>
   );
 

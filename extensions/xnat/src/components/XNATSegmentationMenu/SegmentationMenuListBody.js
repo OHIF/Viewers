@@ -28,7 +28,8 @@ export default class SegmentationMenuListBody extends React.Component {
 
     return (
       <React.Fragment>
-        {segments.slice(1).map(segment => (
+        {/* {segments.slice(1).map(segment => ( */}
+        {segments.map(segment => (
           <SegmentationMenuListItem
             key={`${segment.metadata.SegmentLabel}_${segment.index}`}
             segmentIndex={segment.index}
