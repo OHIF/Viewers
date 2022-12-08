@@ -15,23 +15,39 @@ export const client = axios.create({
   },
 });
 
-const reconstructSegs = ({ arr, rows, cols, slices }) => {
+const reconstructSegs = ({ arr, rows, cols, slices, isNnunet }) => {
   console.log('reconstructSegs', { arr });
-  const reshaped = reshape(arr, [slices, rows * cols]);
+  let reshaped;
+  // if (isNnunet) reshaped = reshape(arr, [rows, cols * slices]);
+  // else reshaped = reshape(arr, [slices, rows * cols]);
+  reshaped = reshape(arr, [slices, rows * cols]);
   console.log({ reshaped });
   return reshaped;
 };
 
-export const uncompress = ({ segmentation, shape }) => {
-  const compressData = atob(segmentation);
+export const uncompress = ({ segmentation, shape, isNnunet }) => {
+  const compressData = window.atob(segmentation);
   const splitCompressData = compressData.split('').map(function(e) {
     return e.charCodeAt(0);
   });
   const binData = new Uint8Array(splitCompressData);
   const data = Pako.inflate(binData);
   const dataArr = Array.from(data);
+  console.log('starting uncompress');
+  console.log('-------------------------------------------');
+  console.log('-------------------------------------------');
+
+  console.log({
+    isNnunet,
+    shape,
+  });
+  console.log(
+    'Has Values Greater Than Zeroes',
+    dataArr.some((val, index, arr) => val > 0)
+  );
   const reconstructed = reconstructSegs({
     arr: dataArr,
+    isNnunet,
     ...shape,
   });
   console.log({
