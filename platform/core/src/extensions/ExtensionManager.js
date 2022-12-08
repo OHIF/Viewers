@@ -40,6 +40,9 @@ export default class ExtensionManager {
       _extensionLifeCycleHooks,
     } = this;
 
+    // The onModeEnter of the service must occur BEFORE the extension
+    // onModeEnter in order to reset the state to a standard state
+    // before the extension restores and cached data.
     for (const service of Object.values(_servicesManager.services)) {
       service?.onModeEnter?.();
     }
@@ -65,10 +68,6 @@ export default class ExtensionManager {
       _extensionLifeCycleHooks,
     } = this;
 
-    for (const service of Object.values(_servicesManager.services)) {
-      service?.onModeExit?.();
-    }
-
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
 
@@ -79,6 +78,16 @@ export default class ExtensionManager {
         });
       }
     });
+
+    // The service onModeExit calls must occur after the extension ones
+    // so that extension ones can store/restore data.
+    for (const service of Object.values(_servicesManager.services)) {
+      try {
+        service?.onModeExit?.();
+      } catch (e) {
+        console.warn('onModeExit caught', e);
+      }
+    }
   }
 
   /**

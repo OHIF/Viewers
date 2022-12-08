@@ -49,6 +49,9 @@ function createStudyMetadata(StudyInstanceUID) {
       );
 
       if (existingSeries) {
+        // Only add instances not already present, so generate a map
+        // of existing instances and filter the to add by things
+        // already present.
         const sopMap = {};
         existingSeries.instances.forEach(
           it => (sopMap[it.SOPInstanceUID] = it)

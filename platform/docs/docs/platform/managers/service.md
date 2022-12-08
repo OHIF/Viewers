@@ -178,3 +178,27 @@ import BackEndService from "../services/BackEndService/BackEndService";
 
 export { BackEndService };
 ```
+
+# Service Mode Lifecycle
+Services may implement initialization and cleanup for mode specific data.
+In order to prevent defects where there are differences between initial
+and subsequent displays of a study, the contract of the service is that the
+state the service is in on mode entry shall be the same whether the mode was
+entered or was exited and entered again.
+
+To implement storage/recovery of state, the mode must store the data on
+exiting the mode, and restore the data in it's onModeEnter.  For example,
+the mode may decide to preserve measurement data in the onModeExit, and
+to restore it in the onModeEnter.  This does not violate the contract since
+it is the mode's decision to apply the stored state, and to cache it.
+
+## onModeEnter
+A service may implement an onModeEnter call to initialize the service to
+be ready for entering a mode.
+This is called before the mode `onModeEnter` is called.
+
+## onModeExit
+When entering a mode, the service contract states that the service needs to
+be in the same state whether it is a fresh load or has previously entered the mode.
+The onModeExit allows a service to clean itself up after the mode 'onModeExit'
+has stored any persistent data.

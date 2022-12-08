@@ -230,6 +230,7 @@ Button.propTypes = {
   color: PropTypes.oneOf([
     'default',
     'primary',
+    'primaryActive',
     'secondary',
     'white',
     'black',
