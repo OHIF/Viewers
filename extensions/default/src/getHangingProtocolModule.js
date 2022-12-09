@@ -14,7 +14,16 @@ const defaultProtocol = {
       // Unused currently
       imageMatchingRules: [],
       // Matches displaysets, NOT series
-      seriesMatchingRules: [],
+      seriesMatchingRules: [
+        // Try to match series with images by default, to prevent weird display
+        // on SEG/SR containing studies
+        {
+          attribute: 'numImageFrames',
+          constraint: {
+            greaterThan: { value: 0 },
+          },
+        },
+      ],
       studyMatchingRules: [],
     },
   },
@@ -40,7 +49,6 @@ const defaultProtocol = {
           },
           displaySets: [
             {
-              options: [],
               id: 'defaultDisplaySetId',
             },
           ],

@@ -23,6 +23,7 @@ export default class ExtensionManager {
     });
     this._extensionLifeCycleHooks = { onModeEnter: {}, onModeExit: {} };
     this.dataSourceMap = {};
+    this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
     this.activeDataSource = undefined;
   }
@@ -298,6 +299,9 @@ export default class ExtensionManager {
 
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
     const { UserAuthenticationService } = this._servicesManager.services;
+    dataSources.forEach(dataSource => {
+      this.dataSourceDefs[dataSource.sourceName] = dataSource;
+    });
 
     extensionModule.forEach(element => {
       const namespace = `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`;

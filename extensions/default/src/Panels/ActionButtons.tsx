@@ -13,16 +13,10 @@ function ActionButtons({ onExportClick, onCreateReportClick }) {
         <Button className="px-2 py-2 text-base" onClick={onExportClick}>
           {t('Export CSV')}
         </Button>
+        <Button className="px-2 py-2 text-base" onClick={onCreateReportClick}>
+          {t('Create Report')}
+        </Button>
       </ButtonGroup>
-      {/* <Button
-        className="ml-2 text-base"
-        variant="outlined"
-        size="small"
-        color="black"
-        onClick={onCreateReportClick}
-      >
-        {t('Create Report')}
-      </Button> */}
     </React.Fragment>
   );
 }

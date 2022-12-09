@@ -37,6 +37,12 @@ const _generateReport = (
   // Add in top level series options
   Object.assign(dataset, options);
 
+  // Set the default character set as UTF-8
+  // https://dicom.innolitics.com/ciods/nm-image/sop-common/00080005
+  if (typeof dataset.SpecificCharacterSet === 'undefined') {
+    dataset.SpecificCharacterSet = 'ISO_IR 192';
+  }
+
   return dataset;
 };
 
