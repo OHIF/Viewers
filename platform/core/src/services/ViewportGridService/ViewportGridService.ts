@@ -96,6 +96,16 @@ class ViewportGridService {
     this.serviceImplementation._reset();
   }
 
+  /**
+   * The onModeExit must set the state of the viewport grid to a standard/clean
+   * state.  To implement store/recover of the viewport grid, perform
+   * a state store in the mode or extension onModeExit, and recover that
+   * data if appropriate in the onModeEnter of the mode or extension.
+   */
+  public onModeExit(): void {
+    this.serviceImplementation._onModeExit();
+  }
+
   public setCachedLayout({ cacheId, cachedLayout }) {
     this.serviceImplementation._setCachedLayout({ cacheId, cachedLayout });
   }

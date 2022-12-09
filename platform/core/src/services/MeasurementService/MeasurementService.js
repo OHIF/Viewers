@@ -570,6 +570,15 @@ class MeasurementService {
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
+  /**
+   * Called after the mode.onModeExit is called to reset the state.
+   * To store measurements for later use, store them in the mode.onModeExit
+   * and restore them in the mode onModeEnter.
+   */
+  onModeExit() {
+    this.clearMeasurements();
+  }
+
   jumpToMeasurement(viewportIndex, measurementUID) {
     const measurement = this.measurements[measurementUID];
 

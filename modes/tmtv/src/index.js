@@ -136,21 +136,17 @@ function modeFactory({ modeConfiguration }) {
       const {
         ToolGroupService,
         SyncGroupService,
-        MeasurementService,
         ToolBarService,
         SegmentationService,
         CornerstoneViewportService,
-        HangingProtocolService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
       ToolBarService.reset();
-      MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
       SegmentationService.destroy();
       CornerstoneViewportService.destroy();
-      HangingProtocolService.reset();
     },
     validationTags: {
       study: [],
