@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.46](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.45...@ohif/viewer@4.12.46) (2022-12-12)
+
+
+### Bug Fixes
+
+* [#2964](https://github.com/OHIF/Viewers/issues/2964) Reword message for segmentation error loading due to orientation tolerance ([#3017](https://github.com/OHIF/Viewers/issues/3017)) ([597ac11](https://github.com/OHIF/Viewers/commit/597ac11c4daee1b1e14148804551e20611cfef08))
+
+
+
+
+
+## [4.12.45](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.44...@ohif/viewer@4.12.45) (2022-11-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.44](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.43...@ohif/viewer@4.12.44) (2022-11-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.43](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.42...@ohif/viewer@4.12.43) (2022-10-28)
+
+
+### Bug Fixes
+
+* [#2964](https://github.com/OHIF/Viewers/issues/2964) Update message for segmentation error loading due to orientation tolerance ([#2982](https://github.com/OHIF/Viewers/issues/2982)) ([545161d](https://github.com/OHIF/Viewers/commit/545161d5e8d92bb6652f17dc24a36dac8aa7b3a4))
+
+
+
+
+
+## [4.12.42](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.41...@ohif/viewer@4.12.42) (2022-10-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.12.41](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.40...@ohif/viewer@4.12.41) (2022-09-26)
 
 **Note:** Version bump only for package @ohif/viewer

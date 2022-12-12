@@ -33,10 +33,17 @@ export default {
     const ExtendedSegmentationPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();
       const onDisplaySetLoadFailureHandler = error => {
-        LoggerService.error({ error, message: error.message });
+        const message =
+          error.message.includes('orthogonal') ||
+          error.message.includes('oblique')
+            ? 'The segmentation has been detected as non coplanar,\
+              If you really think it is coplanar,\
+              please adjust the tolerance in the segmentation panel settings (at your own peril!)'
+            : error.message;
+        LoggerService.error({ error, message });
         UINotificationService.show({
           title: 'DICOM Segmentation Loader',
-          message: error.message,
+          message,
           type: 'error',
           autoClose: false,
         });

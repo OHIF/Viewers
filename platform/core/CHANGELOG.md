@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.34](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.33...@ohif/core@2.16.34) (2022-12-12)
+
+
+### Bug Fixes
+
+* [#2964](https://github.com/OHIF/Viewers/issues/2964) Reword message for segmentation error loading due to orientation tolerance ([#3017](https://github.com/OHIF/Viewers/issues/3017)) ([597ac11](https://github.com/OHIF/Viewers/commit/597ac11c4daee1b1e14148804551e20611cfef08))
+
+
+
+
+
+## [2.16.33](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.32...@ohif/core@2.16.33) (2022-11-12)
+
+
+### Bug Fixes
+
+* handle missing ReferencedInstanceSequence attribute ([#2786](https://github.com/OHIF/Viewers/issues/2786)) ([4473807](https://github.com/OHIF/Viewers/commit/44738078dbd8dc6b27d2d669e25417e37371f48d))
+
+
+
+
+
+## [2.16.32](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.31...@ohif/core@2.16.32) (2022-11-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.16.31](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.30...@ohif/core@2.16.31) (2022-10-28)
+
+
+### Bug Fixes
+
+* [#2964](https://github.com/OHIF/Viewers/issues/2964) Update message for segmentation error loading due to orientation tolerance ([#2982](https://github.com/OHIF/Viewers/issues/2982)) ([545161d](https://github.com/OHIF/Viewers/commit/545161d5e8d92bb6652f17dc24a36dac8aa7b3a4))
+
+
+
+
+
+## [2.16.30](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.29...@ohif/core@2.16.30) (2022-10-25)
+
+
+### Bug Fixes
+
+* 2965 Correct Parsing Logic for Qualitative Instance Level SR ([#2972](https://github.com/OHIF/Viewers/issues/2972)) ([f7db74a](https://github.com/OHIF/Viewers/commit/f7db74a84376598065b6fa2c00cd5735415ff651))
+
+
+
+
+
 ## [2.16.29](https://github.com/OHIF/Viewers/compare/@ohif/core@2.16.28...@ohif/core@2.16.29) (2022-09-20)
 
 **Note:** Version bump only for package @ohif/core

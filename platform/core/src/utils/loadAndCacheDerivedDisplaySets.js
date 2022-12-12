@@ -119,10 +119,18 @@ async function loadAndCacheDerivedDisplaySets(
         ) {
           if (recentDisplaySet.Modality === 'SEG' && logger) {
             const onDisplaySetLoadFailureHandler = error => {
-              logger.error({ error, message: error.message });
+              const message =
+                error.message.includes('orthogonal') ||
+                error.message.includes('oblique')
+                  ? 'The segmentation has been detected as non coplanar,\
+                    If you really think it is coplanar,\
+                    please adjust the tolerance in the segmentation panel settings (at your own peril!)'
+                  : error.message;
+
+              logger.error({ error, message });
               snackbar.show({
                 title: 'DICOM Segmentation Loader',
-                message: error.message,
+                message,
                 type: 'error',
                 autoClose: false,
               });
