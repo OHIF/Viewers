@@ -342,13 +342,23 @@ const SearchDetails = props => {
   const fetchResults = async ({ jobId, res, instance_uid, email }) => {
     try {
       console.log('fetching from remote');
-      const response = await client.get(
-        `/similarity?instance=${instance_uid}&email=nick.fragakis%40thetatech.ai`
+      var requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`,
+        },
+      };
+
+      let response = await fetch(
+        `${radcadapi}/similarity?instance=${instance_uid}&email=nick.fragakis%40thetatech.ai`,
+        requestOptions
       );
+      response = await response.json();
 
       console.warn({ response, jobId, instance_uid, email });
       if (jobId) {
-        const currJob = response.data.results.find(result => {
+        const currJob = response.results.find(result => {
           return result.job_id === jobId;
         });
         console.log({ currJob });
@@ -356,7 +366,7 @@ const SearchDetails = props => {
         if (currJob && currJob.status === 'DONE') {
           console.log('found job');
 
-          res({ currJob, jobList: response.data.results });
+          res({ currJob, jobList: response.results });
         } else {
           console.log('waiting to retry');
           await setTimeout(() => {
@@ -364,7 +374,7 @@ const SearchDetails = props => {
           }, 1000);
         }
       } else {
-        res({ jobList: response.data.results });
+        res({ jobList: response.results });
       }
     } catch (error) {
       console.log('get similarity result caught', { error });
@@ -379,7 +389,7 @@ const SearchDetails = props => {
     setLoadingState('searching', { data });
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
-    const email = user.profile.email;
+    const email = 'nick.fragakis@thetatech.ai';
 
     // get current image
     const image = cornerstone.getImage(element);
@@ -404,10 +414,17 @@ const SearchDetails = props => {
       },
     };
 
-    console.log({ searchData: body });
+    var requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: JSON.stringify(body),
+    };
 
-    await client
-      .post(`/similarity`, body)
+    fetch(`${radcadapi}/similarity`, requestOptions)
+      .then(r => r.json().then(data => ({ status: r.status, data: data })))
       .then(async response => {
         console.log({ response });
         if (response.status === 201) {

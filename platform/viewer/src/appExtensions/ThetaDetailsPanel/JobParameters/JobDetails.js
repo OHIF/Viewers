@@ -148,8 +148,12 @@ const JobParameters = props => {
   }, [isDisabled]);
 
   const triggerJob = () => {
-    const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
-    const data = tool_data.data[0];
+    let tool_data = localStorage.getItem('mask');
+    tool_data =
+      tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+
+    // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
+    const data = tool_data;
 
     if (allSeriesState.length >= 1000) {
       UINotificationService.show({
@@ -199,7 +203,7 @@ const JobParameters = props => {
     };
 
     await client
-      .post(`/texture`, body)
+      .post(`/texturea`, body)
       .then(response => {
         // cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
         //   {}

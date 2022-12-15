@@ -630,28 +630,12 @@ class Radiomics extends Component {
           instance={text}
         />
         {/* {false && ( */}
-        {!this.state.isComplete && (
-          <div
-            style={{
-              width: '100%',
-              height: '70vh',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {/* <div className="loading-image"> */}
-            <Icon name="circle-notch" className="icon-spin" />
-            {/* </div> */}
-          </div>
-        )}
 
         <div
           className="printView"
           style={{
             paddingBottom: 140,
-            display: this.state.isComplete ? 'block' : 'none',
+            // display: this.state.isComplete ? 'block' : 'none',
           }}
         >
           <div className="container">

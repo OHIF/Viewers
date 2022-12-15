@@ -55,8 +55,19 @@ const TextureFeature = props => {
   // getting all jobs for the current series being displayed in viewport
   const getJobs = async jobsArr => {
     try {
-      await client
-        .get(`/jobs?series=${series}&email=${email}`)
+      var requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`,
+        },
+      };
+
+      fetch(
+        `${radcadapi}/jobs?series=${series}&email=nick.fragakis%40thetatech.ai`,
+        requestOptions
+      )
+        .then(r => r.json().then(data => ({ status: r.status, data: data })))
         .then(response => {
           instancesRef.current = response.data.instances;
           // console.log({ lastJob: response.data });
@@ -72,7 +83,7 @@ const TextureFeature = props => {
           }
           setIsLoading(false);
         });
-    } catch (err) {
+    } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
