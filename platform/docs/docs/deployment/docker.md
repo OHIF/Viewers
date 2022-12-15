@@ -17,7 +17,7 @@ The machine on which to build and run the Docker container must have:
 3. [Docker](https://docs.docker.com/get-docker/) installed.
 
 ## Building the Docker Image
-The docker image can built from a terminal window as such:
+The docker image can be built from a terminal window as such:
 1. Switch to the OHIF Viewer code root directory.
 2. Issue the following docker command. Note that what follows `-t` flag is the `{name}:{tag}` for the Docker image and is arbitrary when creating a local Docker image.
 
@@ -26,11 +26,11 @@ The docker image can built from a terminal window as such:
     ```
 
 ## Running the Docker Container
-Once the Docker image has been built, it can be run as a container again from the command line as in the block below. Note that the last argument to the command is the name of the Docker image and the table below describes the other arguments.
+Once the Docker image has been built, it can be run as a container from the command line as in the block below. Note that the last argument to the command is the name of the Docker image and the table below describes the other arguments.
 
 |Flag|Description|
 |----|-----------|
-|-d|Run the container in the background and print container ID|
+|-d|Run the container in the background and print the container ID|
 |-p {host-port}:{nginx-port}/tcp|Publish the `nginx` listen port on the given host port|
 |--name|An arbitrary name for the container.|
 
