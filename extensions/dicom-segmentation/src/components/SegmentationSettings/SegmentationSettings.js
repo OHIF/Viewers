@@ -141,29 +141,36 @@ const SegmentationSettings = ({ configuration, onBack, onChange, servicesManager
             style={{ margin: '0 15px' }}
             label="Tolerance"
             onKeyPress={event => {
-              const validate = string => {
-                let rgx = /[^-.e0-9]+/g;
-                return string.match(rgx);
-              };
+              if (event.key === 'Enter') {
+                const validate = string => {
+                  let rgx = /[^-.e0-9]+/g;
+                  return string.match(rgx);
+                };
 
-              if (validate(event.key)) {
-                event.preventDefault();
+                if (validate(event.key)) {
+                  event.preventDefault();
+                }
+
+                const {
+                  UINotificationService,
+                  LoggerService,
+                } = servicesManager.services;
+                const error = new Error(
+                  'Segmentation loader tolerance changed.\
+                  This operation can potentially generate errors in the Segmentation parsing.'
+                );
+                LoggerService.error({ error, message: error.message });
+                UINotificationService.show({
+                  title: 'Segmentation panel',
+                  message: error.message,
+                  type: 'warning',
+                  autoClose: true,
+                });
               }
             }}
             onChange={event => {
               save('segsTolerance', event.target.value);
-
-              const { UINotificationService, LoggerService } = servicesManager.services;
-              const error = new Error('Segmentation loader tolerance changed. This operation can potentially generate errors in the Segmentation parsing.');
-              LoggerService.error({ error, message: error.message });
-              UINotificationService.show({
-                title: 'Segmentation panel',
-                message: error.message,
-                type: 'warning',
-                autoClose: true,
-              });
-              }
-            }
+            }}
             value={state.segsTolerance}
           />
         </label>
