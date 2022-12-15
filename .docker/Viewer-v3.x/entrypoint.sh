@@ -1,6 +1,6 @@
 #!/bin/sh
 
-envsubst `${PORT}` < /usr/src/default.conf.template > /etc/nginx/conf.d/default.conf
+envsubst '${PORT}' < /usr/src/default.conf.template > /etc/nginx/conf.d/default.conf
 
 if [ -n "$CLIENT_ID" ] || [ -n "$HEALTHCARE_API_ENDPOINT" ]
   then

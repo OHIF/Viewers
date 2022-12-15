@@ -63,11 +63,10 @@ RUN yarn run build
 # which runs Nginx using Alpine Linux
 FROM nginxinc/nginx-unprivileged:1.23.1-alpine as final
 #RUN apk add --no-cache bash
-ENV PORT=3000
+ENV PORT=80
 RUN rm /etc/nginx/conf.d/default.conf
 USER nginx
 COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
-RUN envsubst `${PORT}` < /usr/src/default.conf.template > /etc/nginx/conf.d/default.conf
 RUN chmod 777 /usr/src/entrypoint.sh
 COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
