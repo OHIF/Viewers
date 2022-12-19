@@ -52,7 +52,7 @@ function StudyListRoute(props) {
   });
   const [showImportIdcModal, setShowImportIdcModal] = useState(false);
   const [activeModalId, setActiveModalId] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [pageNumber, setPageNumber] = useState(0);
   const appContext = useContext(AppContext);
   // ~~ RESPONSIVE
@@ -67,7 +67,7 @@ function StudyListRoute(props) {
   );
   // ~~ DEBOUNCED INPUT
   const debouncedSort = useDebounce(sort, 200);
-  const debouncedFilters = useDebounce(filterValues, 250);
+  const debouncedFilters = useDebounce(filterValues, 400);
 
   // Google Cloud Adapter for DICOM Store Picking
   const { appConfig = {} } = appContext;
@@ -93,7 +93,9 @@ function StudyListRoute(props) {
       setSearchStatus({ error: null, isSearchingForStudies: false });
     } catch (error) {
       console.warn(error);
-      setSearchStatus({ error: true, isFetching: false });
+      setSearchStatus({ error: null, isSearchingForStudies: false });
+
+      // setSearchStatus({ error: true, isFetching: false });
     }
   };
 
@@ -199,12 +201,13 @@ function StudyListRoute(props) {
   }
 
   const handleImportIdcModalClose = async () => {
+    // if (UIModalService) UIModalService.hide();
     setShowImportIdcModal(false);
   };
 
   const handleImportSuccessful = async UIModalService => {
     await fetchStudies();
-    if (UIModalService) UIModalService.hide();
+    // if (UIModalService) UIModalService.hide();
     setShowImportIdcModal(false);
   };
 
@@ -241,11 +244,11 @@ function StudyListRoute(props) {
           </div>
 
           {studyListFunctionsEnabled && healthCareApiButtons}
-          {studyListFunctionsEnabled && (
+          {/* {studyListFunctionsEnabled && (
             <PageToolbar
               onImport={() => setActiveModalId('DicomFilesUploader')}
             />
-          )}
+          )} */}
           {/* <span className="study-count">{studies.length}</span> */}
         </div>
       </div>
@@ -280,6 +283,8 @@ function StudyListRoute(props) {
           paddingRight: '2%',
           paddingLeft: '2%',
           width: '100%',
+          paddingTop: '0',
+          paddingBottom: '0',
         }}
       >
         <TablePagination

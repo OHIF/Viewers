@@ -4,8 +4,12 @@ import { useHistory, useLocation } from 'react-router';
 import classNames from 'classnames';
 import cornerstone from 'cornerstone-core';
 import { Icon } from '../../../../ui/src/elements/Icon';
+import { servicesManager } from '../../App';
+import ReactTooltip from 'react-tooltip';
 
 const NavigateIcons = () => {
+  const { UINotificationService } = servicesManager.services;
+
   const history = useHistory();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState(1);
@@ -20,29 +24,38 @@ const NavigateIcons = () => {
     else if (activeStep === 4)
       pathname = location.pathname.replace('edit', 'selectmask');
     else if (activeStep === 5) {
-      pathname = location.pathname.replace('selectmask', 'radionics');
+      let tool_data = localStorage.getItem('mask');
+      tool_data =
+        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      if (tool_data)
+        pathname = location.pathname.replace('selectmask', 'radionics');
+      else {
+        // notify user here
+
+        UINotificationService.show({
+          title: 'Draw mask region to proceed to Radiomics',
+          // message,
+          type: 'error',
+          autoClose: true,
+        });
+      }
     }
     if (pathname) history.push(pathname);
   };
 
   const handleBack = () => {
-    let pathname = null;
+    let pathname = '';
     if (activeStep === 2) pathname = '/studylist';
     else if (activeStep === 3)
       pathname = location.pathname.replace('nnunet', 'view');
+    // pathname = location.pathname.replace('nnunet', 'selectmask');
     else if (activeStep === 4)
       pathname = location.pathname.replace('edit', 'nnunet');
     else if (activeStep === 5)
       pathname = location.pathname.replace('selectmask', 'edit');
+    // pathname = location.pathname.replace('selectmask', 'view');
     else if (activeStep === 6) {
-      let tool_data = localStorage.getItem('mask');
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      if (tool_data)
-        pathname = location.pathname.replace('radionics', 'selectmask');
-      else {
-        // notifiy user here
-      }
+      pathname = location.pathname.replace('radionics', 'selectmask');
     }
     if (pathname) history.push(pathname);
   };
@@ -99,6 +112,7 @@ const NavigateIcons = () => {
           })}
         >
           <button
+            data-tip data-for={`back`}
             className="btn"
             style={{
               backgroundColor: 'transparent',
@@ -106,6 +120,16 @@ const NavigateIcons = () => {
             disabled={activeStep === 1 || loading}
             onClick={handleBack}
           >
+            
+            <ReactTooltip
+              id={`back`}
+              delayShow={250}
+              // place="right"
+              border={true}
+              // type="light"
+            >
+              <span>Back</span>
+            </ReactTooltip>
             <Icon name="chevron-back" style={{ fontSize: '16px' }} />
           </button>
         </div>
@@ -116,6 +140,7 @@ const NavigateIcons = () => {
           })}
         >
           <button
+           data-tip data-for={`forward`}
             className="btn"
             style={{
               backgroundColor: 'transparent',
@@ -123,7 +148,17 @@ const NavigateIcons = () => {
             disabled={activeStep === 1 || activeStep == 6 || loading}
             onClick={handleNext}
           >
-            <Icon name="chevron-forward" style={{ fontSize: '16px' }} />
+          <ReactTooltip
+              id={`forward`}
+              delayShow={250}
+              // place="right"
+              border={true}
+              // type="light"
+            >
+              <span>Forward</span>
+            </ReactTooltip>
+            <Icon          
+ name="chevron-forward" style={{ fontSize: '16px' }} />
           </button>
         </div>
       </div>

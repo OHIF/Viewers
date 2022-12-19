@@ -176,6 +176,7 @@ a.menu-toggle {
   /* left: -45px; */
   padding-top: 4px;
   box-sizing: border-box;
+  cursor: pointer;
 }
 a.menu-toggle span.line {
   position: relative;
@@ -514,6 +515,20 @@ a.menu-toggle.active span.line.b {
 .stepper-disabled .stepper-head-icon {
   background-color: #858585;
 }
+
+.show-on-print {
+  display: none !important;
+  /* visibility: hidden; */
+  /* overflow: hidden;
+  height: 0; */
+}
+
+.hide-on-print {
+  display: block;
+  /* visibility: visible; */
+  /* overflow: hidden;
+  height: 0; */
+}
 .printing {
   visibility: hidden;
 }
@@ -527,3 +542,15 @@ a.menu-toggle.active span.line.b {
   position: absolute;
   top: 0;
 }
+/* ////////////////////////////PRINT */
+/* ////////////////////////////PRINT */
+/* ////////////////////////////PRINT */
+
+/* @media print {
+  .printable {
+
+  }
+  .print-only{
+    display: block;
+  }
+} */

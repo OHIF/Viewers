@@ -166,7 +166,7 @@ const SearchDetails = props => {
 
   const client = axios.create({
     baseURL: radcadapi,
-    timeout: 90000,
+    // timeout: 90000,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
@@ -336,12 +336,14 @@ const SearchDetails = props => {
 
     setLoadingState('');
     setSimilarityResultState(result.jobList[0]);
-    setResultsList(result.jobList);
+    setResultsList(result.jobList[0]);
   };
 
   const fetchResults = async ({ jobId, res, instance_uid, email }) => {
     try {
       console.log('fetching from remote');
+      // const email = user.profile.email;
+
       var requestOptions = {
         method: 'GET',
         headers: {
@@ -356,11 +358,17 @@ const SearchDetails = props => {
       );
       response = await response.json();
 
-      console.warn({ response, jobId, instance_uid, email });
+      // const response = await client.get(
+      //   `/similarity?instance=${instance_uid}&email=nick.fragakis%40thetatech.ai`
+      // );
+
+      console.log({ response, jobId, instance_uid, email });
       if (jobId) {
-        const currJob = response.results.find(result => {
-          return result.job_id === jobId;
-        });
+        let currJob;
+        if (response.results.length > 0) currJob = response.results[0];
+        // const currJob = response.results.find(result => {
+        //   return result.job_id === jobId;
+        // });
         console.log({ currJob });
 
         if (currJob && currJob.status === 'DONE') {
@@ -389,6 +397,7 @@ const SearchDetails = props => {
     setLoadingState('searching', { data });
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
+    // const email = user.profile.email;
     const email = 'nick.fragakis@thetatech.ai';
 
     // get current image
@@ -403,6 +412,7 @@ const SearchDetails = props => {
       study_uid: study_uid,
       series_uid: series_uid,
       email: 'nick.fragakis@thetatech.ai',
+      // email,
       instance_uid,
       parameters: {
         rectangle: {
@@ -426,7 +436,8 @@ const SearchDetails = props => {
     fetch(`${radcadapi}/similarity`, requestOptions)
       .then(r => r.json().then(data => ({ status: r.status, data: data })))
       .then(async response => {
-        console.log({ response });
+        console.log('response-----search');
+        console.log(response);
         if (response.status === 201) {
           console.log('fetching');
           let result = await new Promise(res =>
@@ -440,11 +451,16 @@ const SearchDetails = props => {
 
           setSimilarityResultState(result.currJob);
           setResultsList(result.jobList);
+          localStorage.setItem(
+            'print-similarscans',
+            JSON.stringify(result.jobList)
+          );
         }
       })
       .catch(error => {
         console.log(error);
       });
+  
   };
 
   function getMeta(url) {
@@ -490,6 +506,8 @@ const SearchDetails = props => {
           }}
         >
           <img
+            crossOrigin="anonymous"
+            className="hide-on-print"
             src={similarityResultState.query}
             style={{
               width: '100%',
@@ -500,70 +518,74 @@ const SearchDetails = props => {
           />
 
           <div
+            id="resetrow"
             style={{
               width: '100%',
               display: 'flex',
-              // flexDirection: 'row',
+              // flexDirection: 'column',
               // flexWrap: 'wrap',
             }}
           >
             {similarityResultState.knn.map((res, index) => {
               return (
-                <div
-                  style={{
-                    width: '50%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    paddingTop: 20,
-                    paddingBottom: 20,
-                    position: 'relative',
-                    cursor: 'pointer',
-                  }}
-                  key={index}
-                  onClick={async () => {
-                    console.log('open similarity modal');
-                    const imgDimensions = await getMeta(res.image_url);
-
-                    rest.modal.show({
-                      content: () => (
-                        <RenderSimilarityResult
-                          data={res}
-                          imgDimensions={imgDimensions}
-                        />
-                      ),
-                      title: 'Similarity Result',
-                    });
-                  }}
-                >
-                  <img
-                    src={res.region_thumbnail_url}
+                <>
+                  <div
                     style={{
-                      width: '90%',
-                      height: '90%',
-                      marginBottom: 20,
-                      border: '2.55px solid blue',
-                      borderColor: res.malignant ? 'red' : 'blue',
+                      width: '50%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      paddingTop: 20,
+                      paddingBottom: 20,
+                      position: 'relative',
+                      cursor: 'pointer',
                     }}
-                  />
-                  <RenderSimilarityResultText
-                    content={`Similarity: ${res.similarity_score}`}
-                    res={res}
-                  />
-                  <RenderSimilarityResultText
-                    content={`Dataset: ${res.dataset}`}
-                    res={res}
-                  />
-                  <RenderSimilarityResultText
-                    content={`Dataset Id: ${res.data_id}`}
-                    res={res}
-                  />
-                  <RenderSimilarityResultText
-                    content={`Malignant: ${res.malignant ? 'true' : 'false'}`}
-                    res={res}
-                    title={'Malignant'}
-                  />
-                </div>
+                    key={index}
+                    onClick={async () => {
+                      console.log('open similarity modal');
+                      const imgDimensions = await getMeta(res.image_url);
+
+                      rest.modal.show({
+                        content: () => (
+                          <RenderSimilarityResult
+                            data={res}
+                            imgDimensions={imgDimensions}
+                          />
+                        ),
+                        title: 'Similarity Result',
+                      });
+                    }}
+                  >
+                    <img
+                      crossOrigin="anonymous"
+                      src={res.region_thumbnail_url}
+                      style={{
+                        width: '90%',
+                        height: '90%',
+                        marginBottom: 20,
+                        border: '2.55px solid blue',
+                        borderColor: res.malignant ? 'red' : 'blue',
+                      }}
+                    />
+                    <RenderSimilarityResultText
+                      content={`Similarity: ${res.similarity_score}`}
+                      res={res}
+                    />
+                    <RenderSimilarityResultText
+                      content={`Dataset: ${res.dataset}`}
+                      res={res}
+                    />
+                    <RenderSimilarityResultText
+                      content={`Dataset Id: ${res.data_id}`}
+                      res={res}
+                    />
+                    <RenderSimilarityResultText
+                      content={`Malignant: ${res.malignant ? 'true' : 'false'}`}
+                      res={res}
+                      title={'Malignant'}
+                    />
+                  </div>
+                </>
               );
             })}
           </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { metadata, studies, utils, log } from '@ohif/core';
 import usePrevious from '../customHooks/usePrevious';
 
-import ConnectedViewer from './ConnectedRadiomicsReport';
+import ConnectedViewer from './ConnectedSelectMask';
 import PropTypes from 'prop-types';
 import { extensionManager } from '../App.js';
 import { useSnackbarContext, ErrorPage } from '@ohif/ui';
@@ -205,7 +205,7 @@ const _thinStudyData = study => {
   };
 };
 
-function RadiomicsReportRetrieveStudyData({
+function SelectMaskRetrieveStudyData({
   server,
   studyInstanceUIDs,
   seriesInstanceUIDs,
@@ -432,7 +432,7 @@ function RadiomicsReportRetrieveStudyData({
   );
 }
 
-RadiomicsReportRetrieveStudyData.propTypes = {
+SelectMaskRetrieveStudyData.propTypes = {
   studyInstanceUIDs: PropTypes.array.isRequired,
   seriesInstanceUIDs: PropTypes.array,
   server: PropTypes.object,
@@ -440,4 +440,4 @@ RadiomicsReportRetrieveStudyData.propTypes = {
   setStudyData: PropTypes.func.isRequired,
 };
 
-export default RadiomicsReportRetrieveStudyData;
+export default SelectMaskRetrieveStudyData;

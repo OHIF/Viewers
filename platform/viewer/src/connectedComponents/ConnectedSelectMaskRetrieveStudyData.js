@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import ViewerRetrieveStudyData from './RadiomicsReportRetrieveStudyData';
+import ViewerRetrieveStudyData from './SelectMaskRetrieveStudyData';
 import OHIF from '@ohif/core';
 
 const { clearViewportSpecificData, setStudyData } = OHIF.redux.actions;
@@ -23,9 +23,9 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedRadiomicsReportRetrieveStudyData = connect(
+const ConnectedSelectMaskRetrieveStudyData = connect(
   mapStateToProps,
   mapDispatchToProps
 )(ViewerRetrieveStudyData);
 
-export default ConnectedRadiomicsReportRetrieveStudyData;
+export default ConnectedSelectMaskRetrieveStudyData;

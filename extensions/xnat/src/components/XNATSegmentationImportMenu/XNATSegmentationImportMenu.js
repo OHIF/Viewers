@@ -196,7 +196,8 @@ class XNATSegmentationImportMenu extends React.Component {
         console.log({ series_uid });
 
         const body = {
-          email: 'bimpongamoako@gmail.com', //'nick.fragakis@thetatech.ai',
+          email,
+          // email: 'bimpongamoako@gmail.com', //'nick.fragakis@thetatech.ai',
         };
 
         console.log({ payload: body });

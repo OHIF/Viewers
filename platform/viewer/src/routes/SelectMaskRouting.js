@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { utils, user } from '@ohif/core';
 //
-import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedRadiomicsReportRetrieveStudyData';
+import ConnectedSelectMaskRetrieveStudyData from '../connectedComponents/ConnectedSelectMaskRetrieveStudyData';
 import useServer from '../customHooks/useServer';
 import useQuery from '../customHooks/useQuery';
 const { urlUtil: UrlUtil } = utils;
@@ -20,10 +20,7 @@ const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
   return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
 };
 
-function RadiomicsReportRouting({
-  match: routeMatch,
-  location: routeLocation,
-}) {
+function SelectMaskRouting({ match: routeMatch, location: routeLocation }) {
   const {
     project,
     location,
@@ -50,7 +47,7 @@ function RadiomicsReportRouting({
 
   if (server && studyUIDs) {
     return (
-      <ConnectedViewerRetrieveStudyData
+      <ConnectedSelectMaskRetrieveStudyData
         studyInstanceUIDs={studyUIDs}
         seriesInstanceUIDs={seriesUIDs}
       />
@@ -60,7 +57,7 @@ function RadiomicsReportRouting({
   return null;
 }
 
-RadiomicsReportRouting.propTypes = {
+SelectMaskRouting.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       studyInstanceUIDs: PropTypes.string.isRequired,
@@ -74,4 +71,4 @@ RadiomicsReportRouting.propTypes = {
   location: PropTypes.any,
 };
 
-export default RadiomicsReportRouting;
+export default SelectMaskRouting;

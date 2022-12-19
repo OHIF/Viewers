@@ -19,6 +19,9 @@ describe('actions', () => {
       'setMeasurements',
       'setServers',
       'setStudyData',
+      'setMask',
+      'setCollections',
+      "setActiveStep"
     ].sort();
 
     const exports = Object.keys(actions).sort();

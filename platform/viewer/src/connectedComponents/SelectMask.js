@@ -9,12 +9,13 @@ import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { extensionManager } from './../App.js';
-import { ReconstructionIssues } from './../../../core/src/enums.js';
+import ErrorBoundaryDialog from '../components/ErrorBoundaryDialog';
+import { commandsManager, extensionManager } from '../App.js';
+import { ReconstructionIssues } from '../../../core/src/enums.js';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
+import csTools from 'cornerstone-tools';
 
 import './Viewer.css';
 import JobsContextUtil from './JobsContextUtil.js';
@@ -24,7 +25,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 import { radcadapi } from '../utils/constants';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
 
-class RadiomicsReport extends Component {
+class SelectMask extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
       PropTypes.shape({
@@ -65,7 +66,7 @@ class RadiomicsReport extends Component {
 
   constructor(props) {
     super(props);
-
+    this.componentRef = React.createRef();
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
 
@@ -106,6 +107,12 @@ class RadiomicsReport extends Component {
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
       const enabledElement = enabledEvt.detail.element;
+
+      const options = {
+        type: 'click',
+      };
+      commandsManager.runCommand('triggerAlgorithm', options);
+
       let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
         tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
@@ -117,7 +124,7 @@ class RadiomicsReport extends Component {
         if (tool_data.voi) viewport.voi = tool_data.voi;
         cornerstone.setViewport(enabledElement, viewport);
       }
-      this.handleSidePanelChange('right', 'lung-module-similarity-panel');
+      // this.handleSidePanelChange('right', 'lung-module-similarity-panel');
       // this.handleSidePanelChange('left', 'theta-details-panel');
     }, 2000);
   };
@@ -136,6 +143,11 @@ class RadiomicsReport extends Component {
     //     console.log('measurement completed', event);
     //   });
     // }
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    if (enabledElement)
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
+        enabledElement
+      );
 
     cornerstone.events.removeEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
@@ -215,6 +227,7 @@ class RadiomicsReport extends Component {
 
     this.handleFetchAndSetSeries(rest.studyInstanceUIDs[0]);
     localStorage.setItem('radiomicsDone', JSON.stringify(0));
+    localStorage.setItem('mask', null);
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -484,7 +497,10 @@ class RadiomicsReport extends Component {
               </ErrorBoundaryDialog>
 
               {/* MAIN */}
-              <div className={classNames('main-content')}>
+              <div
+                className={classNames('main-content')}
+                ref={this.componentRef}
+              >
                 <ErrorBoundaryDialog context="ViewerMain">
                   <ConnectedViewerMain
                     studies={_removeUnwantedSeries(
@@ -526,7 +542,7 @@ class RadiomicsReport extends Component {
     );
   }
 }
-export default withRouter(withDialog(RadiomicsReport));
+export default withRouter(withDialog(SelectMask));
 
 /**
  * Async function to check if there are any inconsistences in the series.

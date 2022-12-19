@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useRef, useState } from 'react';
 import '../AITriggerComponent.css';
 import Jobs from './Jobs';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { JobsContext } from '../../../context/JobsContext';
 import circularLoading from './utils/circular-loading.json';
 import { useLottie } from 'lottie-react';
@@ -16,6 +15,8 @@ const TextureFeature = props => {
   const [showMore, setShowMore] = useState(true);
   const access_token = user.access_token;
   const email = user.profile.email;
+  // const email = 'nick.fragakis@thetatech.ai';
+
   const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const instancesRef = useRef();
@@ -30,20 +31,6 @@ const TextureFeature = props => {
 
   const { View: Loader } = useLottie(options);
 
-  const client = axios.create({
-    baseURL: radcadapi,
-    timeout: 90000,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
-
-  client.interceptors.request.use(config => {
-    config.headers.Authorization = `Bearer ${access_token}`;
-    return config;
-  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,14 +50,14 @@ const TextureFeature = props => {
         },
       };
 
-      fetch(
-        `${radcadapi}/jobs?series=${series}&email=nick.fragakis%40thetatech.ai`,
+      await fetch(
+        `${radcadapi}/jobs?series=${series}&email=${email}`,
         requestOptions
       )
         .then(r => r.json().then(data => ({ status: r.status, data: data })))
         .then(response => {
-          instancesRef.current = response.data.instances;
           // console.log({ lastJob: response.data });
+          instancesRef.current = response.data.instances;
           if (
             response.data.jobs.length !== jobsLengthRef.current ||
             response.data.jobs[0].status !== 'DONE' ||

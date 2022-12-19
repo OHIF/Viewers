@@ -280,8 +280,8 @@ class Viewer extends Component {
             viewport.scale = tool_data.scale;
           if (tool_data.voi) viewport.voi = tool_data.voi;
 
-          cornerstone.setViewport(enabledElement, viewport);
-          eventBus.dispatch('importSegmentations', {});
+          // cornerstone.setViewport(enabledElement, viewport);
+          // eventBus.dispatch('importSegmentations', {});
         } catch (error) {
           console.error(error);
         }

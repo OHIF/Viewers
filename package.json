@@ -45,8 +45,12 @@
     "@babel/runtime": "^7.5.5",
     "core-js": "^3.2.1",
     "crypto-js": "^4.1.1",
+    "html2canvas": "^1.0.0-rc.7",
     "mathjs": "^10.6.3",
     "pako": "^2.0.4",
+    "pdfmake": "^0.2.6",
+    "plotly.js": "^2.15.1",
+    "react-plotly.js": "^2.6.0",
     "react-zlib-js": "^1.0.5",
     "styled-components": "^5.3.5"
   },
@@ -130,5 +134,8 @@
   },
   "resolutions": {
     "**/@babel/runtime": "7.5.5"
+  },
+  "volta": {
+    "node": "14.21.1"
   }
 }

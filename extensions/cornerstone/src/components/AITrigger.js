@@ -43,6 +43,7 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
     const event_data = e.detail;
     const toolState =
       cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+    localStorage.setItem('mask', JSON.stringify(event_data.measurementData));
 
     if (Object.keys(toolState).length > 0) {
       cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(

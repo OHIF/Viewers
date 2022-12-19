@@ -125,6 +125,7 @@ table.table
     padding: 0 $study-list-padding
     border-bottom: 1px solid #87878780;
     background-color: #1a1c21 !important
+    cursor:pointer
 
   > tbody td
     padding: $body-cell-top-bottom-padding 8px;
@@ -138,7 +139,7 @@ table.table
   /* Hover Variant */
   &.table--hoverable > tbody tr
     &:hover, &:active, &.active
-      background-color: var(--table-hover-color)
+      background-color: var(--table-hover-color) !important
     &.no-hover
       &:hover, &:active, &.active
         background-color: var(--ui-gray-darker)

@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './Radiomics.css';
-import { withRouter, matchPath } from 'react-router';
+import { withRouter } from 'react-router';
 import cornerstoneTools from 'cornerstone-tools';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
@@ -15,28 +15,180 @@ import { ReconstructionIssues } from './../../../core/src/enums.js';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
-// import * as html2pdf from 'html2pdf.js';
+import * as Plotly from 'plotly.js';
+import ReactDOM from 'react-dom';
+import html2canvas from 'html2canvas';
 
 import './Viewer.css';
 import JobsContextUtil from './JobsContextUtil.js';
-import ToolbarRow from './RadiomicsToolbarRow';
-import SidePanel from '../components/SidePanel';
-import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
 import eventBus from '../lib/eventBus';
 import { Icon } from '../../../ui/src/elements/Icon';
 import { radcadapi } from '../utils/constants';
+import { Morphology3DComponent } from '../components/3DSegmentation/3D';
+import pdfmake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 
-const RadiomicSummary = () => {
-  const printDiv = () => {
-    // e.preventDefault();
-    const bodyElement = document.getElementsByTagName('body')[0];
 
-    // bodyElement.classList.add('printing');
-    // const exporter = new html2pdf(bodyElement, { filename: 'NotaSimple.pdf' });
-    // exporter.getPdf(true);
-    // bodyElement.classList.remove('printing');
+pdfmake.vfs = pdfFonts.pdfMake.vfs;
+
+const exportComponent = node => {
+  if (!node.current) {
+    throw new Error("'node' must be a RefObject");
+  }
+
+  const element = ReactDOM.findDOMNode(node.current);
+
+  return html2canvas(element, {
+    scrollY: -window.scrollY,
+    allowTaint: true,
+    useCORS: true,
+  });
+};
+
+const generateTemplate = (SimilarScans, ohif_image, chart) => {
+  const contents = [];
+  const images = {};
+  // add radcad
+
+  contents.push(
+    {
+      stack: [
+        {
+          text: 'RadCard Report Summary',
+          style: 'header',
+        },
+      ],
+      style: 'header',
+      background: 'lightgray',
+    },
+    {
+      alignment: 'left',
+      columns: ['Patient Id : ', 'ab123'],
+    },
+    {
+      alignment: 'left',
+      columns: ['Classifier : ', 'ResNet -18'],
+    },
+    {
+      alignment: 'left',
+      columns: ['Prediction : ', 'Nescrosis'],
+    },
+    {
+      alignment: 'left',
+      columns: ['Confidence : ', '81%'],
+    }
+  );
+
+  contents.push(
+    {
+      text: 'Collage Radiomics',
+      style: 'header',
+    },
+    {
+      image: ohif_image,
+      width: 520,
+      height: 500,
+    }
+  );
+
+  contents.push({
+    text: 'Similar looking Scans',
+    style: 'header',
+    pageBreak: 'before',
+  });
+  images['query'] = SimilarScans.query;
+
+  SimilarScans.knn.forEach((data, index) => {
+    const imageIndex = 'img' + index;
+    images[imageIndex + 'thumb'] = data.region_thumbnail_url;
+    images[imageIndex] = data.image_url;
+    const malignant = data.malignant ? ' Yes' : 'No';
+
+    if (index == 0)
+      contents.push({
+        image: 'query',
+        width: 520,
+        height: 300,
+        margin: [0, 20],
+      });
+
+    contents.push({
+      alignment: 'right',
+      columns: [
+        {
+          alignment: 'left',
+          fontSize: 14,
+          stack: [
+            {
+              image: imageIndex + 'thumb',
+              fit: [150, 150],
+            },
+            'Similarity:' + data.similarity_score,
+            'Dataset:' + data.dataset,
+            'Dataset Id:' + data.data_id,
+            'Malignant: ' + malignant,
+          ],
+        },
+        {
+          width: 400,
+          stack: [
+            {
+              image: imageIndex,
+              fit: [300, 300],
+            },
+          ],
+        },
+      ],
+    });
+    contents.push({ text: '', margin: [0, 10] });
+    if (index % 2 == 0) {
+    } else contents.push({ text: '', pageBreak: 'before' });
+  });
+
+  // contents.push(
+  //   {
+  //     text: 'Morphology',
+  //     style: 'header',
+  //     pageBreak: 'before',
+  //   },
+  //   {
+  //     image: chart,
+  //     fit: [518, 500],
+  //   }
+  // );
+
+  return {
+    content: contents,
+    defaultStyle: {
+      fontSize: 14,
+    },
+    styles: {
+      header: {
+        background: 'lightgray',
+        fontSize: 28,
+        bold: true,
+        margin: [0, 20],
+      },
+      normal: {
+        fontSize: 22,
+      },
+    },
+    images,
   };
+};
+
+const RadiomicSummary = props => {
+  useEffect(() => {
+    localStorage.setItem(
+      'summary',
+      JSON.stringify({
+        name: 'sadsad',
+        name2: 'sadsad',
+        name3: 'sadsad',
+      })
+    );
+  }, []);
 
   return (
     <div
@@ -153,7 +305,7 @@ const RadiomicSummary = () => {
           }}
         >
           <button
-            onClick={printDiv}
+            onClick={props.triggerDownload}
             // style={{
             //   marginTop: '20px',
             //   border: '1px yellow solid',
@@ -174,32 +326,6 @@ const RadiomicSummary = () => {
           flex: 1,
         }}
       ></div>
-    </div>
-  );
-};
-
-const Morphology = () => {
-  return (
-    <div
-      className=""
-      style={{
-        width: '100%',
-        height: '100%',
-        padding: '20px',
-        borderRadius: '8px',
-        background: '#000000',
-      }}
-    >
-      <div className="">
-        <h1
-          style={{
-            textAlign: 'left',
-            margin: 0,
-          }}
-        >
-          3D Morphology{' '}
-        </h1>
-      </div>
     </div>
   );
 };
@@ -246,6 +372,24 @@ class Radiomics extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      loading: true,
+      showSegments: true,
+      isLeftSidePanelOpen: false,
+      selectedLeftSidePanel: '', // TODO: Don't hardcode this
+      isRightSidePanelOpen: false,
+      selectedRightSidePanel: '',
+      selectedExtraPanel: '',
+      // selectedRightSidePanel: 'xnat-segmentation-panel',
+      thumbnails: [],
+      isEditSelection: true,
+    };
+
+    this.canvas = React.createRef(null);
+    this.chartRef = React.createRef(null);
+    this.componentRef = React.createRef();
+    this.componentRefNode = React.createRef();
+
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
 
@@ -270,24 +414,18 @@ class Radiomics extends Component {
     this._getActiveViewport = this._getActiveViewport.bind(this);
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
-  }
 
-  state = {
-    loading: true,
-    showSegments: true,
-    isLeftSidePanelOpen: false,
-    selectedLeftSidePanel: '', // TODO: Don't hardcode this
-    isRightSidePanelOpen: false,
-    selectedRightSidePanel: '',
-    selectedExtraPanel: '',
-    // selectedRightSidePanel: 'xnat-segmentation-panel',
-    thumbnails: [],
-    isEditSelection: true,
-  };
+    // this.canvas = this.canvas.bind(this);
+    // this.componentRef = this.componentRef.bind(this);
+  }
 
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
       const enabledElement = enabledEvt.detail.element;
+
+      commandsManager.runCommand('setToolActive', {
+        toolName: 'Pan',
+      });
 
       let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
@@ -312,7 +450,7 @@ class Radiomics extends Component {
         isComplete: radiomicsDone == 1 ? true : false,
       });
       this.triggerReload();
-    }, 2000);
+    }, 5000);
   };
 
   componentWillUnmount() {
@@ -491,7 +629,7 @@ class Radiomics extends Component {
 
   handleBack = () => {
     const location = this.props.location;
-    const pathname = location.pathname.replace('radionics', 'selectmask');
+    const pathname = location.pathname.replace('radionics', 'studylist');
     this.props.history.push(pathname);
   };
 
@@ -565,27 +703,62 @@ class Radiomics extends Component {
     this.setState(updatedState);
   };
 
-  toggleSegmentations() {
-    if (this.state.showSegments) {
-      this.setState(
-        {
-          showSegments: !this.state.showSegments,
-        },
-        () => {
-          eventBus.dispatch('clearSegmentations', {});
-        }
-      );
-    } else {
-      this.setState(
-        {
-          showSegments: !this.state.showSegments,
-        },
-        () => {
-          eventBus.dispatch('importSegmentations', {});
-        }
-      );
-    }
-  }
+
+
+
+  downloadReportAsPdf = () => {
+    console.log(this.canvas);
+    console.log(this.componentRef);
+    let chart = null;
+    let ohif_image = null;
+    const SimilarScans = JSON.parse(
+      localStorage.getItem('print-similarscans') || '{}'
+    );
+
+    const element = ReactDOM.findDOMNode(this.canvas.current);
+
+    // const customScene = this.componentRef.current.graphRef.current.el.layout
+    //   .scene;
+
+    // const plotDiv = this.componentRef.current.graphRef.current.el;
+    // const { graphDiv } = plotDiv._fullLayout.scene._scene;
+    // console.log(this.componentRef.current.graphRef.current);
+    // const divToDownload = {
+    //   ...graphDiv,
+    //   layout: { ...graphDiv.layout, scene: customScene },
+    // };
+
+    Promise.all([
+      // html2canvas(element, {
+      //   scrollY: -window.scrollY,
+      //   allowTaint: true,
+      //   useCORS: true,
+      // }),
+      exportComponent(this.canvas),
+      // Plotly.toImage(divToDownload, {
+      //   format: 'png',
+      //   width: 800,
+      //   height: 600,
+      // }),
+    ])
+      .then(data => {
+        const canvas = data[0];
+        // const gsdsad = data[1];
+        // ohif_image = 'data:image/png;base64,' + canvas.toDataURL();
+
+        const definition = generateTemplate(
+          SimilarScans[0],
+          canvas.toDataURL()
+          // gsdsad
+        );
+        pdfmake.createPdf(definition).download();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+   
+  };
 
   render() {
     if (this.state.loading) {
@@ -629,31 +802,26 @@ class Radiomics extends Component {
           overlay={false}
           instance={text}
         />
-        {/* {false && ( */}
 
         <div
           className="printView"
+          // ref={canvas => (this.canvas = canvas)}
+          // ref={el => (this.componentRefNode = el)}
           style={{
             paddingBottom: 140,
             // display: this.state.isComplete ? 'block' : 'none',
           }}
         >
           <div className="container">
-            {/* <div className="container-item">
+            <div className="container-item">
               <button className="btn btn-danger" onClick={this.handleBack}>
-                Edit Mask Selection
+                Back to Studylist
               </button>
-              <button
-                className="btn btn-danger"
-                onClick={this.toggleSegmentations}
-              >
-                toggleSegmentations
-              </button>
-            </div> */}
+            </div>
           </div>
           <div className="container">
             <div className="container-item">
-              <RadiomicSummary />
+              <RadiomicSummary triggerDownload={this.downloadReportAsPdf} />
               {/* RIGHT */}
               <div
                 style={{
@@ -674,12 +842,7 @@ class Radiomics extends Component {
                     Similarity Looking Scans
                   </h1>
 
-                  {/* <button
-                    className="btn btn-primary"
-                    onClick={() => document.getElementById('trigger').click()}
-                  >
-                    reload
-                  </button> */}
+                 
                 </div>
 
                 <ErrorBoundaryDialog context="RightSidePanel">
@@ -724,7 +887,10 @@ class Radiomics extends Component {
                 {/* MAIN */}
                 <div className="container">
                   <div className="container-item-extra">
-                    <div className={classNames('main-content')}>
+                    <div
+                      className={classNames('main-content')}
+                      ref={this.canvas}
+                    >
                       <ErrorBoundaryDialog context="ViewerMain">
                         <ConnectedViewerMain
                           studies={_removeUnwantedSeries(
@@ -764,11 +930,12 @@ class Radiomics extends Component {
             </div>
           </div>
           <div className="container">
-            {/* <div className="container-item">
-
-            </div> */}
+            
             <div className="container-item">
-              <Morphology />
+              <Morphology3DComponent
+                chartRef={this.chartRef}
+                ref={this.componentRef}
+              />
             </div>
           </div>
         </div>
