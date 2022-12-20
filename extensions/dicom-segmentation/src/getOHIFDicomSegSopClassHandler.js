@@ -94,7 +94,11 @@ export default function getSopClassHandlerModule({ servicesManager }) {
           referencedDisplaySet.SeriesInstanceUID
         );
 
-        const results = await _parseSeg(segArrayBuffer, imageIds, segDisplaySet.tolerance);
+        const results = await _parseSeg(
+          segArrayBuffer,
+          imageIds,
+          segDisplaySet.tolerance
+        );
         if (results === undefined) {
           return;
         }
@@ -130,6 +134,11 @@ export default function getSopClassHandlerModule({ servicesManager }) {
           segDisplaySet.originLabelMapIndex = labelmapIndexes[0];
           labelmapIndex = labelmapIndexes[0];
           console.warn('Overlapping segments!');
+          await Promise.all(labelmapIndexes);
+          const event = new CustomEvent(
+            'extensiondicomsegmentationsegcompletelyloaded'
+          );
+          document.dispatchEvent(event);
         } else {
           segMetadata.segmentationSeriesInstanceUID =
             segDisplaySet.SeriesInstanceUID;
@@ -142,6 +151,10 @@ export default function getSopClassHandlerModule({ servicesManager }) {
             segmentsOnFrame,
             []
           );
+          const event = new CustomEvent(
+            'extensiondicomsegmentationsegcompletelyloaded'
+          );
+          document.dispatchEvent(event);
         }
       };
 

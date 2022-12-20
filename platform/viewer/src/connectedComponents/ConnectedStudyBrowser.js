@@ -1,7 +1,7 @@
 import OHIF from '@ohif/core';
 import { connect } from 'react-redux';
 import findDisplaySetByUID from './findDisplaySetByUID';
-import { servicesManager } from './../App.js';
+import { commandsManager, servicesManager } from './../App.js';
 import { StudyBrowser } from '../../../ui/src/components/studyBrowser/StudyBrowser';
 
 const { setActiveViewportSpecificData } = OHIF.redux.actions;
@@ -13,6 +13,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         ownProps.studyMetadata,
         displaySetInstanceUID
       );
+
+      commandsManager.runCommand('jumpToFirstSegment');
 
       const { LoggerService, UINotificationService } = servicesManager.services;
 
