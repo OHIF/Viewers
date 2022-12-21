@@ -15,7 +15,7 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commands, tooltip) {
+function _createButton(type, id, icon, label, commands, tooltip, uiType) {
   return {
     id,
     icon,
@@ -23,6 +23,7 @@ function _createButton(type, id, icon, label, commands, tooltip) {
     type,
     commands,
     tooltip,
+    uiType,
   };
 }
 
@@ -295,26 +296,41 @@ const toolbarButtons = [
     },
   },
   {
-    id: 'Layout',
-    type: 'ohif.layoutSelector',
+    id: 'Layouts',
+    type: 'ohif.splitButton',
     props: {
-      rows: 3,
-      columns: 3,
-    },
-  },
-  {
-    id: 'MPR',
-    type: 'ohif.action',
-    props: {
-      type: 'toggle',
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleMPR',
-          commandOptions: {},
-          context: 'CORNERSTONE',
+      isRadio: false,
+      groupId: 'Layouts',
+      primary: {
+        id: 'Layout',
+        type: 'action',
+        uiType: 'ohif.layoutSelector',
+        props: {
+          rows: 3,
+          columns: 3,
         },
+      },
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Layouts',
+      },
+      items: [
+        _createToggleButton(
+          'MPR',
+          'icon-mpr',
+          'MPR',
+          [
+            {
+              commandName: 'toggleMPR',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
+          'MPR',
+          'ohif.toggle'
+        ),
       ],
     },
   },

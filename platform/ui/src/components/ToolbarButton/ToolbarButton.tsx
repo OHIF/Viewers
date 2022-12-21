@@ -14,6 +14,7 @@ const ToolbarButton = ({
   dropdownContent,
   //
   isActive: _isActive,
+  className,
   bState = {},
   //
 }) => {
@@ -49,7 +50,7 @@ const ToolbarButton = ({
           variant={isActive ? 'contained' : 'text'}
           bgColor={bgClasses[type]}
           size="toolbar"
-          className={classnames('mx-1', activeClass, classes[type])}
+          className={classnames(activeClass, classes[type], className)}
           onClick={() => {
             onInteraction({
               itemId: id,

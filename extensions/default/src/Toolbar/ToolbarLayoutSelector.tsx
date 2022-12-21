@@ -6,12 +6,12 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
-function LayoutSelector({ rows, columns, servicesManager }) {
+function LayoutSelector({ rows, columns, className, servicesManager }) {
   const [isOpen, setIsOpen] = useState(false);
   const [disableSelector, setDisableSelector] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
-  const { HangingProtocolService } = servicesManager.services;
+  const { HangingProtocolService, ToolBarService } = servicesManager.services;
 
   const closeOnOutsideClick = () => {
     if (isOpen) {
@@ -24,12 +24,6 @@ function LayoutSelector({ rows, columns, servicesManager }) {
       HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       evt => {
         const { protocol } = evt;
-
-        if (protocol.id === 'mpr') {
-          setDisableSelector(true);
-        } else {
-          setDisableSelector(false);
-        }
       }
     );
 
@@ -61,12 +55,30 @@ function LayoutSelector({ rows, columns, servicesManager }) {
       label="Grid Layout"
       icon="tool-layout"
       onInteraction={onInteractionHandler}
+      className={className}
       dropdownContent={
         DropdownContent !== null && (
           <DropdownContent
             rows={rows}
             columns={columns}
             onSelection={({ numRows, numCols }) => {
+              if (
+                HangingProtocolService.getActiveProtocol().protocol.id === 'mpr'
+              ) {
+                ToolBarService.recordInteraction({
+                  groupId: 'MPR',
+                  itemId: 'MPR',
+                  interactionType: 'toggle',
+                  commands: [
+                    {
+                      commandName: 'toggleMPR',
+                      commandOptions: {},
+                      context: 'CORNERSTONE',
+                    },
+                  ],
+                });
+              }
+
               viewportGridService.setLayout({ numRows, numCols });
             }}
           />
