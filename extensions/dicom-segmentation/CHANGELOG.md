@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.19](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.7.18...@ohif/extension-dicom-segmentation@0.7.19) (2022-12-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-segmentation
+
+
+
+
+
 ## [0.7.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.7.17...@ohif/extension-dicom-segmentation@0.7.18) (2022-12-21)
 
 **Note:** Version bump only for package @ohif/extension-dicom-segmentation

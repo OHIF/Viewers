@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-tag-browser",
-  "version": "0.2.24",
+  "version": "0.2.25",
   "description": "OHIF extension for checking DICOM headers.",
   "author": "OHIF",
   "license": "MIT",
