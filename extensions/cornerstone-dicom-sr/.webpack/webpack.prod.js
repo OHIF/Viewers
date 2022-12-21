@@ -9,11 +9,15 @@ const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
+const ENTRYPOINT = path.join(__dirname, '../', pkg.module);
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
   return merge(commonConfig, {
+    entry: {
+      app: ENTRYPOINT,
+    },
     stats: {
       colors: true,
       hash: true,
