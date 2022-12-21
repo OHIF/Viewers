@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const pkg = require('./../package.json');
 
 const ROOT_DIR = path.join(__dirname, './..');
@@ -41,6 +42,10 @@ module.exports = (env, argv) => {
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
+      }),
+      new MiniCssExtractPlugin({
+        filename: './dist/[name].css',
+        chunkFilename: './dist/[id].css',
       }),
     ],
   });
