@@ -125,6 +125,7 @@ describe('HangingProtocolService', () => {
     expect(hps.getProtocols().length).toBe(1);
   });
 
+  //TODO: add a unit test for the imageMatchingRules
   describe('run', () => {
     it('matches best image match', () => {
       hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });

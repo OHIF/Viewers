@@ -193,7 +193,7 @@ class HangingProtocolService {
         );
       }
     } else {
-      return protocol;
+      return this._validateProtocol(protocol);;
     }
   }
 
@@ -593,30 +593,13 @@ class HangingProtocolService {
     options = {} as HangingProtocol.SetProtocolOptions,
     errorCallback = null
   ): void {
-    const foundProtocol = this.protocols.get(protocolId);
+    const protocol = this.getProtocolById(protocolId);
 
-    if (!foundProtocol) {
+    if (!protocol) {
       console.warn(
         `ProtocolEngine::setProtocol - Protocol with id ${protocolId} not found - you should register it first via addProtocol`
       );
       return;
-    }
-
-    let protocol;
-    if (foundProtocol instanceof Function) {
-      try {
-        ({ protocol } = this._getProtocolFromGenerator(
-          foundProtocol
-        ));
-      } catch (error) {
-        console.warn(
-          `HangingProtocolService::setProtocol - protocol ${protocolId} failed to execute`,
-          error
-        );
-        return;
-      }
-    } else {
-      protocol = this._validateProtocol(foundProtocol);
     }
 
     if (options) {
