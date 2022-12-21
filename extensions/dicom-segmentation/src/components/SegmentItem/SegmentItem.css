@@ -62,8 +62,8 @@
 }
 
 .dcmseg-segment-item .segment-label span {
-  overflow-wrap: normal;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  white-space: normal;
   overflow: hidden;
   max-width: calc(100% - 40px); /* calc(100% - 50px); 20px = eye icon */
   text-overflow: ellipsis;
@@ -71,6 +71,7 @@
 
 .dcmseg-segment-item .segment-label .eye-icon {
   cursor: pointer;
+  min-width: 20px;
   color: var(--active-color);
 }
 
