@@ -9,7 +9,10 @@ import { Icon, Tooltip, ListMenu, ToolbarButton } from '../';
 const baseClasses = {
   Button:
     'flex items-center rounded-md border-transparent cursor-pointer group/button',
-  Primary: 'h-full border-2 rounded-md group/primary !p-2',
+  Primary:
+    // By default border on left, top and bottom for hover effect and only rounded on left side.
+    // Extra padding on right to componensate for no right border.
+    'h-full border-l-2 border-t-2 border-b-2 rounded-tl-md rounded-bl-md group/primary !pl-2 !py-2',
   Secondary:
     'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4 border-2 border-transparent group/secondary',
   SecondaryIcon: 'w-4 h-full stroke-1',
@@ -36,16 +39,21 @@ const classes = {
               primary.isToggle
                 ? 'border-secondary-dark bg-secondary-light'
                 : 'border-primary-light bg-primary-light'
-            }`
-        : isExpanded
-        ? 'border-primary-dark bg-primary-dark !text-primary-light'
-        : 'border-secondary-dark bg-secondary-dark group-hover/button:border-primary-dark group-hover/button:text-primary-light hover:bg-primary-dark hover:border-primary-dark'
+            }
+            border-2 rounded-md !p-2` // Full, rounded border with less right padding when active.
+        : `focus:!text-black focus:!rounded-md focus:!border-primary-light focus:!bg-primary-light
+        ${
+          isExpanded
+            ? 'border-primary-dark bg-primary-dark !text-primary-light'
+            : 'border-secondary-dark bg-secondary-dark group-hover/button:border-primary-dark group-hover/button:text-primary-light hover:bg-primary-dark hover:border-primary-dark focus:!text-black'
+        }
+        `
     ),
   Secondary: ({ isExpanded, primary }) =>
     classNames(
       baseClasses.Secondary,
       isExpanded
-        ? 'bg-primary-light rounded-tr-md rounded-br-md'
+        ? 'bg-primary-light !rounded-tr-md !rounded-br-md'
         : primary.isActive
         ? 'bg-secondary-dark'
         : 'hover:bg-primary-dark bg-secondary-dark group-hover/button:border-primary-dark'
@@ -191,6 +199,8 @@ const SplitButton = ({
                 isActive={isPrimaryActive}
                 onInteraction={args => ToolBarService.recordInteraction(args)}
                 servicesManager={servicesManager}
+                // All rounding is taken care of by className
+                rounded="none"
                 className={primaryButtonClassName}
                 data-tool={state.primary.id}
                 data-cy={`${groupId}-split-button-primary`}

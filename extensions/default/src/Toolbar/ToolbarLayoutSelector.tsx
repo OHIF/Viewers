@@ -6,7 +6,13 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
-function LayoutSelector({ rows, columns, className, servicesManager }) {
+function LayoutSelector({
+  rows,
+  columns,
+  className,
+  servicesManager,
+  ...rest
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [disableSelector, setDisableSelector] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
@@ -56,6 +62,7 @@ function LayoutSelector({ rows, columns, className, servicesManager }) {
       icon="tool-layout"
       onInteraction={onInteractionHandler}
       className={className}
+      rounded={rest.rounded}
       dropdownContent={
         DropdownContent !== null && (
           <DropdownContent
