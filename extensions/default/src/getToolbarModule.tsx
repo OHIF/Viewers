@@ -35,6 +35,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.toggle',
       defaultComponent: ToolbarButton,
+      clickHandler: () => {},
     },
   ];
 }
