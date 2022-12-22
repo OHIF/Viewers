@@ -192,6 +192,8 @@ const SplitButton = ({
                 onInteraction={args => ToolBarService.recordInteraction(args)}
                 servicesManager={servicesManager}
                 className={primaryButtonClassName}
+                data-tool={state.primary.id}
+                data-cy={`${groupId}-split-button-primary`}
               />
             </div>
             <div

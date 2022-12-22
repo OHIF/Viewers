@@ -16,6 +16,7 @@ const ToolbarButton = ({
   isActive: _isActive,
   className,
   bState = {},
+  ...rest
   //
 }) => {
   const { primaryToolId } = bState;
@@ -61,6 +62,7 @@ const ToolbarButton = ({
           name={label}
           key={id}
           id={id}
+          {...rest}
         >
           <Icon name={icon} />
         </IconButton>

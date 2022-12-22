@@ -140,8 +140,8 @@ const IconButton = ({
       ref={buttonElement}
       onClick={handleOnClick}
       type={type}
-      data-cy={id}
-      {...rest}
+      data-cy={rest['data-cy'] ?? id}
+      data-tool={rest['data-tool']}
     >
       {React.cloneElement(children, {
         className: classnames(iconSizeClasses[size], 'fill-current'),
