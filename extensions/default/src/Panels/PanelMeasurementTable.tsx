@@ -121,8 +121,6 @@ export default function PanelMeasurementTable({
           SeriesNumber,
         }
       );
-    } else if (promptResult.action === RESPONSE.CANCEL) {
-      // Do nothing
     }
   }
 
