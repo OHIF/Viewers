@@ -35,7 +35,7 @@ function WrappedPanelStudyBrowser({
 
   return (
     <PanelStudyBrowser
-      DisplaySetService={servicesManager.services.DisplaySetService}
+      servicesManager={servicesManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByStudyInstanceUID={

@@ -44,10 +44,10 @@ describe('OHIF Study Viewer Page', function() {
     cy.get('@measurementsPanel').should('exist');
     cy.get('@measurementsPanel').should('be.visible');
 
-    cy.get('@measurementsBtn').click();
+    cy.get('@RightCollapseBtn').click();
     cy.get('@measurementsPanel').should('not.exist');
 
-    cy.get('@measurementsBtn').click();
+    cy.get('@RightCollapseBtn').click();
     cy.get('@measurementsPanel').should('exist');
     cy.get('@measurementsPanel').should('be.visible');
   });

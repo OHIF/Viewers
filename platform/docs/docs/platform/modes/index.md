@@ -298,8 +298,12 @@ properties inside the [route documentation](./routes.md)
 ### HangingProtocols
 
 Currently, you can pass your defined hanging protocols inside the
-`hangingProtocols` property of the mode's config. This will get registered
-inside `HangingProtocolService`.
+`hangingProtocols` property of the mode's config. If you specify the hanging protocol
+explicitly by its name (only string and not array), it will be THE hanging protocol
+that the mode runs with. However, if you specify an array of hanging protocols,
+they will get ranked based on the displaySetSelector requirements and the winner
+will be the hanging protocol that the mode runs with.
+
 
 ### SopClassHandlers
 

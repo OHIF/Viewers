@@ -44,7 +44,10 @@ const variants = {
       'text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
       'text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    translucent:
+      'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    white:
+      'text-black hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
     black:
       'text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
     primaryActive:
@@ -227,11 +230,13 @@ Button.propTypes = {
   color: PropTypes.oneOf([
     'default',
     'primary',
+    'primaryActive',
     'secondary',
     'white',
     'black',
     'inherit',
     'light',
+    'translucent',
   ]),
   border: PropTypes.oneOf([
     'none',

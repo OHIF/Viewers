@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
+import { Icon, IconButton } from '@ohif/ui';
 import PropTypes from 'prop-types';
 import Modal from '../Modal';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const DefaultFallback = ({ error, componentStack, context, resetErrorBoundary, fallbackRoute }) => {
+const DefaultFallback = ({
+  error,
+  context,
+  resetErrorBoundary,
+  fallbackRoute,
+}) => {
+  const [showDetails, setShowDetails] = useState(false);
   const title = `Something went wrong${!isProduction && ` in ${context}`}.`;
   const subtitle = `Sorry, something went wrong there. Try again.`;
   return (
@@ -13,17 +20,33 @@ const DefaultFallback = ({ error, componentStack, context, resetErrorBoundary, f
       <p className="text-primary-light text-xl">{title}</p>
       <p className="text-primary-light text-base">{subtitle}</p>
       {!isProduction && (
-        <div className="rounded-md bg-secondary-dark p-5 mt-5">
-          <pre className="text-primary-light">Context: {context}</pre>
-          <pre className="text-primary-light">Error Message: {error.message}</pre>
-          <pre className="text-primary-light">Stack: {componentStack}</pre>
+        <div className="rounded-md bg-secondary-dark p-5 mt-5 font-mono space-y-2">
+          <p className="text-primary-light">Context: {context}</p>
+          <p className="text-primary-light">Error Message: {error.message}</p>
+
+          <IconButton
+            variant="contained"
+            color="inherit"
+            size="initial"
+            className="text-primary-active"
+            onClick={() => setShowDetails(!showDetails)}
+          >
+            <React.Fragment>
+              <div>{'Stack Trace'}</div>
+              <Icon width="15px" height="15px" name="chevron-down" />
+            </React.Fragment>
+          </IconButton>
+
+          {showDetails && (
+            <p className="px-4 text-primary-light">Stack: {error.stack}</p>
+          )}
         </div>
       )}
     </div>
   );
 };
 
-const noop = () => { };
+const noop = () => {};
 
 DefaultFallback.propTypes = {
   error: PropTypes.object.isRequired,
@@ -32,7 +55,7 @@ DefaultFallback.propTypes = {
 };
 
 DefaultFallback.defaultProps = {
-  resetErrorBoundary: noop
+  resetErrorBoundary: noop,
 };
 
 const ErrorBoundary = ({
@@ -42,7 +65,7 @@ const ErrorBoundary = ({
   fallbackComponent: FallbackComponent,
   children,
   fallbackRoute,
-  isPage
+  isPage,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -53,7 +76,7 @@ const ErrorBoundary = ({
 
   const onResetHandler = (...args) => onReset(...args);
 
-  const withModal = (Component) => props => (
+  const withModal = Component => props => (
     <Modal
       closeButton
       shouldCloseOnEsc
@@ -75,11 +98,7 @@ const ErrorBoundary = ({
   return (
     <ReactErrorBoundary
       fallbackRender={props => (
-        <Fallback
-          {...props}
-          context={context}
-          fallbackRoute={fallbackRoute}
-        />
+        <Fallback {...props} context={context} fallbackRoute={fallbackRoute} />
       )}
       onReset={onResetHandler}
       onError={onErrorHandler}
@@ -95,7 +114,7 @@ ErrorBoundary.propTypes = {
   onError: PropTypes.func,
   fallbackComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   children: PropTypes.node.isRequired,
-  fallbackRoute: PropTypes.string
+  fallbackRoute: PropTypes.string,
 };
 
 ErrorBoundary.defaultProps = {
@@ -103,7 +122,7 @@ ErrorBoundary.defaultProps = {
   onReset: noop,
   onError: noop,
   fallbackComponent: DefaultFallback,
-  fallbackRoute: null
+  fallbackRoute: null,
 };
 
 export default ErrorBoundary;

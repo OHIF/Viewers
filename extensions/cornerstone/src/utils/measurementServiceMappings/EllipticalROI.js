@@ -202,7 +202,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  const roundedArea = utils.roundNumber(area, 2);
+  // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
+  const roundedArea = utils.roundNumber(area || 0, 2);
   displayText.push(`${roundedArea} mm<sup>2</sup>`);
 
   // Todo: we need a better UI for displaying all these information

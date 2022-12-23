@@ -143,7 +143,6 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       ptDisplaySet.displaySetInstanceUID
     );
   }
-
   return (
     <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
       {

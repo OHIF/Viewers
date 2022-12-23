@@ -8,14 +8,6 @@ import { utils } from '@ohif/core';
 
 const { downloadCSVReport } = utils;
 
-// tools with measurements to display inside the panel
-const MEASUREMENT_TOOLS = [
-  'EllipticalROI',
-  'RectangleROI',
-  'Length',
-  'Bidirectional',
-];
-
 export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
@@ -155,7 +147,6 @@ export default function PanelMeasurementTable({
       >
         <MeasurementTable
           title="Measurements"
-          amount={displayMeasurements.length}
           data={displayMeasurements}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
@@ -186,12 +177,8 @@ PanelMeasurementTable.propTypes = {
 
 function _getMappedMeasurements(MeasurementService) {
   const measurements = MeasurementService.getMeasurements();
-  // filter out measurements whose toolName is not in MEASUREMENT_TOOLS
-  const measurementTools = measurements.filter(measurement =>
-    MEASUREMENT_TOOLS.includes(measurement.toolName)
-  );
 
-  const mappedMeasurements = measurementTools.map((m, index) =>
+  const mappedMeasurements = measurements.map((m, index) =>
     _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
   );
 

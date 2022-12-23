@@ -18,10 +18,28 @@ type DisplaySetMatchDetails = {
   sortingInfo?: any;
 };
 
+
+type DisplaySetAndViewportOptions = {
+  displaySetInstanceUIDs: string[];
+  viewportOptions: ViewportOptions;
+  displaySetOptions: DisplaySetOptions;
+}
+
+type ViewportSpecificProtocolOptions = {
+  [viewportIndex: string]: DisplaySetAndViewportOptions
+}
+
+type GlobalProtocolOptions = DisplaySetAndViewportOptions
+
+
+type SetProtocolOptions =
+  ViewportSpecificProtocolOptions | GlobalProtocolOptions;
+
+
 type HangingProtocolMatchDetails = {
   displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
-  viewportMatchDetails: ViewportMatchDetails[];
-  hpAlreadyApplied: boolean[];
+  viewportMatchDetails: Map<number, ViewportMatchDetails>;
+  hpAlreadyApplied: Map<number, boolean>;
 };
 
 type MatchingRule = {
@@ -130,15 +148,12 @@ type Protocol = {
   imageLoadStrategy?: string; // Todo: this should be types specifically
   protocolMatchingRules?: MatchingRule[];
   numberOfPriorsReferenced?: number;
+  syncDataForViewports?: boolean;
 };
 
-type ProtocolGenerator = ({servicesManager: any, commandsManager: any}) => {
-  protocol: Protocol;
-  matchingDisplaySets: any;
-};
 
 export type {
-  ProtocolGenerator,
+  SetProtocolOptions,
   ViewportOptions,
   ViewportMatchDetails,
   DisplaySetMatchDetails,
@@ -153,5 +168,9 @@ export type {
   MatchingRule,
   SyncGroup,
   initialImageOptions,
-  DisplaySetInfo
+  DisplaySetInfo,
+  GlobalProtocolOptions,
+  ViewportSpecificProtocolOptions,
+  DisplaySetAndViewportOptions
+
 };

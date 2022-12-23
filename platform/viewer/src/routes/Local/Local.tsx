@@ -8,7 +8,7 @@ import filesToStudies from './filesToStudies';
 
 import { extensionManager } from '../../App.tsx';
 
-import { Icon, Button } from '@ohif/ui';
+import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
@@ -20,7 +20,7 @@ const getLoadButton = (onDrop, text, isDir) => {
             variant="contained" // outlined
             disabled={false}
             endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-            className={classnames('font-bold', 'ml-2')}
+            className={classnames('font-medium', 'ml-2')}
             onClick={() => {}}
           >
             {text}
@@ -43,6 +43,7 @@ const getLoadButton = (onDrop, text, isDir) => {
 function Local() {
   const navigate = useNavigate();
   const dropzoneRef = useRef();
+  const [dropInitiated, setDropInitiated] = React.useState(false);
 
   // Initializing the dicom local dataSource
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
@@ -76,29 +77,44 @@ function Local() {
   }, []);
 
   return (
-    <Dropzone ref={dropzoneRef} onDrop={onDrop} noClick>
+    <Dropzone
+      ref={dropzoneRef}
+      onDrop={acceptedFiles => {
+        setDropInitiated(true);
+        onDrop(acceptedFiles);
+      }}
+      noClick
+    >
       {({ getRootProps }) => (
         <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
           <div className="h-screen w-screen flex justify-center items-center ">
             <div className="py-8 px-8 mx-auto bg-secondary-dark drop-shadow-md space-y-2 rounded-lg">
               <img
-                className="block mx-auto h-10"
-                src="./customLogo.svg"
+                className="block mx-auto h-14"
+                src="./ohif-logo.svg"
                 alt="OHIF"
               />
               <div className="text-center space-y-2 pt-4">
-                <div className="space-y-2">
-                  <p className="text-blue-300 text-base">
-                    Note: You data is not uploaded to any server, it will stay
-                    in your local browser application
-                  </p>
-                  <p className="text-xg text-primary-active font-semibold pt-8">
-                    Drag and Drop DICOM files here to load them in the Viewer
-                  </p>
-                  <p className="text-blue-300 text-lg">Or click to </p>
-                </div>
+                {dropInitiated ? (
+                  <div className="flex flex-col items-center justify-center pt-48">
+                    <LoadingIndicatorProgress
+                      className={'w-full h-full bg-black'}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-blue-300 text-base">
+                      Note: You data is not uploaded to any server, it will stay
+                      in your local browser application
+                    </p>
+                    <p className="text-xg text-primary-active font-semibold pt-6">
+                      Drag and Drop DICOM files here to load them in the Viewer
+                    </p>
+                    <p className="text-blue-300 text-lg">Or click to </p>
+                  </div>
+                )}
               </div>
-              <div className="flex justify-around pt-4">
+              <div className="flex justify-around pt-4 ">
                 {getLoadButton(onDrop, 'Load files', false)}
                 {getLoadButton(onDrop, 'Load folders', true)}
               </div>

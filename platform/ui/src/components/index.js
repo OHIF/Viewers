@@ -24,6 +24,7 @@ import NavBar from './NavBar';
 import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
+import SegmentationGroupTable from './SegmentationGroupTable';
 import SidePanel from './SidePanel';
 import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
@@ -63,6 +64,10 @@ import HotkeyField from './HotkeyField';
 import Header from './Header';
 import ImageScrollbar from './ImageScrollbar';
 import ViewportOverlay from './ViewportOverlay';
+import InputRange from './InputRange';
+import InputNumber from './InputNumber';
+import CheckBox from './CheckBox';
+import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 
 export {
   AboutModal,
@@ -74,6 +79,7 @@ export {
   ButtonGroup,
   ContextMenu,
   CinePlayer,
+  CheckBox,
   DateRange,
   Dialog,
   Dropdown,
@@ -86,18 +92,22 @@ export {
   Input,
   InputDateRange,
   InputGroup,
+  InputRange,
+  InputNumber,
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
   ImageScrollbar,
   Label,
   LayoutSelector,
+  LoadingIndicatorProgress,
   MeasurementTable,
   Modal,
   NavBar,
   Notification,
   Select,
   SegmentationTable,
+  SegmentationGroupTable,
   SidePanel,
   SplitButton,
   StudyBrowser,

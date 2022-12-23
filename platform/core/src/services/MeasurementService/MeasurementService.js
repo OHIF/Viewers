@@ -498,8 +498,7 @@ class MeasurementService {
       measurement.source = source;
     } catch (error) {
       throw new Error(
-        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
-        error.message
+        `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
       );
     }
 
@@ -569,6 +568,15 @@ class MeasurementService {
     this.measurements = {};
     this._jumpToMeasurementCache = {};
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+  }
+
+  /**
+   * Called after the mode.onModeExit is called to reset the state.
+   * To store measurements for later use, store them in the mode.onModeExit
+   * and restore them in the mode onModeEnter.
+   */
+  onModeExit() {
+    this.clearMeasurements();
   }
 
   jumpToMeasurement(viewportIndex, measurementUID) {

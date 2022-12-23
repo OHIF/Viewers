@@ -24,6 +24,7 @@ describe('Top level exports', () => {
       'OHIF',
       //
       'CineService',
+      'CustomizationServiceRegistration',
       'UIDialogService',
       'UIModalService',
       'UINotificationService',
@@ -33,7 +34,6 @@ describe('Top level exports', () => {
       'ToolBarService',
       'Types',
       'ViewportGridService',
-      'SegmentationService',
       'HangingProtocolService',
       'UserAuthenticationService',
       'IWebApiDataSource',

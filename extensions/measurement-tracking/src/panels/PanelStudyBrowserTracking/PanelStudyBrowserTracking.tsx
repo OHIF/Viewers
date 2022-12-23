@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
+import { HangingProtocolService, utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
@@ -16,15 +16,20 @@ const { formatDate } = utils;
  * @param {*} param0
  */
 function PanelStudyBrowserTracking({
-  MeasurementService,
-  DisplaySetService,
-  UIDialogService,
-  UINotificationService,
+  servicesManager,
   getImageSrc,
   getStudiesForPatientByStudyInstanceUID,
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
+  const {
+    MeasurementService,
+    DisplaySetService,
+    UIDialogService,
+    HangingProtocolService,
+    UINotificationService,
+  } = servicesManager.services;
+
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
@@ -47,10 +52,25 @@ function PanelStudyBrowserTracking({
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    viewportGridService.setDisplaySetsForViewport({
-      viewportIndex: activeViewportIndex,
-      displaySetInstanceUIDs: [displaySetInstanceUID],
-    });
+    let updatedViewports = [];
+    const viewportIndex = activeViewportIndex;
+    try {
+      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+        viewportIndex,
+        displaySetInstanceUID
+      );
+    } catch (error) {
+      console.warn(error);
+      UINotificationService.show({
+        title: 'Thumbnail Double Click',
+        message:
+          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+        type: 'info',
+        duration: 3000,
+      });
+    }
+
+    viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
   const activeViewportDisplaySetInstanceUIDs =
@@ -329,6 +349,7 @@ function PanelStudyBrowserTracking({
   return (
     <StudyBrowser
       tabs={tabs}
+      servicesManager={servicesManager}
       activeTabName={activeTabName}
       expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
       onClickStudy={_handleStudyClick}
@@ -353,16 +374,7 @@ function PanelStudyBrowserTracking({
 }
 
 PanelStudyBrowserTracking.propTypes = {
-  MeasurementService: PropTypes.shape({
-    subscribe: PropTypes.func.isRequired,
-    EVENTS: PropTypes.object.isRequired,
-  }).isRequired,
-  DisplaySetService: PropTypes.shape({
-    EVENTS: PropTypes.object.isRequired,
-    activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-    getDisplaySetByUID: PropTypes.func.isRequired,
-    subscribe: PropTypes.func.isRequired,
-  }).isRequired,
+  servicesManager: PropTypes.object.isRequired,
   dataSource: PropTypes.shape({
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,
@@ -541,8 +553,6 @@ function _getComponentType(Modality) {
 
   return 'thumbnailTracked';
 }
-
-const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 /**
  *

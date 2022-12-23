@@ -7,11 +7,7 @@ sidebar_label: Data Source
 
 ## Overview
 
-The internal data structure of OHIF’s metadata follows naturalized DICOM JSON, A
-format pioneered by `dcmjs`. In short DICOM metadata headers with DICOM Keywords
-instead of tags and sequences as arrays, for easy development and clear code.
-
-We have built a standard for fetching and mapping data into OHIF’s native
+We have built couple of methods for fetching and mapping data into OHIF’s native
 format, which we call DataSources, and have provided one implementation of this
 standard.
 

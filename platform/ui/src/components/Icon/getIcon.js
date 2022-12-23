@@ -38,6 +38,25 @@ import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
 import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
+import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
+import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
+import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
+import iconNext from './../../assets/icons/icon-next.svg';
+import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
+import iconPrev from './../../assets/icons/icon-prev.svg';
+import navigationPanelRightHide from './../../assets/icons/navigation-panel-right-hide.svg';
+import navigationPanelRightReveal from './../../assets/icons/navigation-panel-right-reveal.svg';
+import tabLinear from './../../assets/icons/tab-linear.svg';
+import tabPatientInfo from './../../assets/icons/tab-patient-info.svg';
+import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
+import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
+import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
+import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
+import loadingOHIFMark from './../../assets/icons/loading-ohif-mark.svg';
+import notificationsInfo from './../../assets/icons/notifications-info.svg';
+import notificationsWarning from './../../assets/icons/notifications-warning.svg';
+import notificationsError from './../../assets/icons/notifications-error.svg';
+import notificationsSuccess from './../../assets/icons/notifications-success.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -64,6 +83,21 @@ import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
+import panelGroupMore from './../../assets/icons/panel-group-more.svg';
+import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
+import rowAdd from './../../assets/icons/row-add.svg';
+import rowEdit from './../../assets/icons/row-edit.svg';
+import rowHidden from './../../assets/icons/row-hidden.svg';
+import rowHideAll from './../../assets/icons/row-hide-all.svg';
+import rowHide from './../../assets/icons/row-hide.svg';
+import rowLocked from './../../assets/icons/row-locked.svg';
+import rowShowAll from './../../assets/icons/row-show-all.svg';
+import rowUnhide from './../../assets/icons/row-unhide.svg';
+import rowUnlocked from './../../assets/icons/row-unlocked.svg';
+import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
+import checkboxDefault from './../../assets/icons/checkbox-default.svg';
+import checkboxActive from './../../assets/icons/checkbox-active.svg';
+import referenceLines from './../../assets/icons/reference-lines.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -108,6 +142,24 @@ const ICONS = {
   sorting: sorting,
   tracked: tracked,
   unlink: unlink,
+  'panel-group-more': panelGroupMore,
+  'panel-group-open-close': panelGroupOpenClose,
+  'row-add': rowAdd,
+  'row-edit': rowEdit,
+  'row-hidden': rowHidden,
+  'row-hide-all': rowHideAll,
+  'row-hide': rowHide,
+  'row-locked': rowLocked,
+  'row-show-all': rowShowAll,
+  'row-unhide': rowUnhide,
+  'row-unlocked': rowUnlocked,
+  'checkbox-checked': checkboxChecked,
+  'checkbox-unchecked': checkboxUnchecked,
+  'loading-ohif-mark': loadingOHIFMark,
+  'notifications-info': notificationsInfo,
+  'notifications-error': notificationsError,
+  'notifications-success': notificationsSuccess,
+  'notifications-warning': notificationsWarning,
 
   /** Tools */
   'tool-zoom': toolZoom,
@@ -134,12 +186,36 @@ const ICONS = {
   'tool-fusion-color': toolFusionColor,
   'tool-create-threshold': toolCreateThreshold,
   'edit-patient': editPatient,
+  'icon-mpr': iconMPR,
+  'icon-next-inactive': iconNextInactive,
+  'icon-next': iconNext,
+  'icon-prev-inactive': iconPrevInactive,
+  'icon-prev': iconPrev,
+  'navigation-panel-right-hide': navigationPanelRightHide,
+  'navigation-panel-right-reveal': navigationPanelRightReveal,
+  'tab-linear': tabLinear,
+  'tab-patient-info': tabPatientInfo,
+  'tab-roi-threshold': tabROIThreshold,
+  'tab-segmentation': tabSegmentation,
+  'ui-arrow-down': uiArrowDown,
+  'ui-arrow-up': uiArrowUp,
+  'checkbox-default': checkboxDefault,
+  'checkbox-active': checkboxActive,
+  'tool-referenceLines': referenceLines,
 
   /** Old OHIF */
   'old-trash': oldTrash,
   'old-play': oldPlay,
   'old-stop': oldStop,
 };
+
+function addIcon(iconName, iconSVG) {
+  if (ICONS[iconName]) {
+    console.warn(`Icon ${iconName} already exists.`);
+  }
+
+  ICONS[iconName] = iconSVG;
+}
 
 /**
  * Return the matching SVG Icon as a React Component.
@@ -154,4 +230,4 @@ export default function getIcon(key, props) {
   return React.createElement(ICONS[key], props);
 }
 
-export { getIcon, ICONS };
+export { getIcon, ICONS, addIcon };

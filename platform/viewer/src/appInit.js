@@ -12,10 +12,10 @@ import {
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,
-  SegmentationService,
   CineService,
   UserAuthenticationService,
   errorHandler,
+  CustomizationServiceRegistration,
   // utils,
 } from '@ohif/core';
 
@@ -51,10 +51,10 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     UIViewportDialogService,
     MeasurementService,
     DisplaySetService,
+    [CustomizationServiceRegistration, appConfig.customizationService],
     ToolBarService,
     ViewportGridService,
     HangingProtocolService,
-    SegmentationService,
     CineService,
     UserAuthenticationService,
   ]);

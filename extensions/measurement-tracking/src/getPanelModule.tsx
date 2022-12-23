@@ -26,7 +26,7 @@ function getPanelModule({
     },
     {
       name: 'trackedMeasurements',
-      iconName: 'list-bullets',
+      iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurements',
       component: PanelMeasurementTableTracking.bind(null, {

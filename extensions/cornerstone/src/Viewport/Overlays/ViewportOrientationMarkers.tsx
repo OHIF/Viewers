@@ -1,10 +1,164 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { metaData, Enums, Types } from '@cornerstonejs/core';
+import React, { useEffect, useState, useMemo } from 'react';
+import classNames from 'classnames';
+import {
+  metaData,
+  Enums,
+  Types,
+  getEnabledElement,
+  utilities as csUtils,
+} from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
+import PropTypes from 'prop-types';
+import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
-import { getEnabledElement } from '../../state';
+
+const {
+  getOrientationStringLPS,
+  invertOrientationStringLPS,
+} = utilities.orientation;
+
+function ViewportOrientationMarkers({
+  element,
+  viewportData,
+  imageSliceData,
+  viewportIndex,
+  servicesManager,
+  orientationMarkers = ['top', 'left'],
+}) {
+  // Rotation is in degrees
+  const [rotation, setRotation] = useState(0);
+  const [flipHorizontal, setFlipHorizontal] = useState(false);
+  const [flipVertical, setFlipVertical] = useState(false);
+  const { CornerstoneViewportService } = servicesManager.services;
+
+  useEffect(() => {
+    const cameraModifiedListener = (
+      evt: Types.EventTypes.CameraModifiedEvent
+    ) => {
+      const { rotation, previousCamera, camera } = evt.detail;
+
+      if (rotation !== undefined) {
+        setRotation(rotation);
+      }
+
+      if (
+        camera.flipHorizontal !== undefined &&
+        previousCamera.flipHorizontal !== camera.flipHorizontal
+      ) {
+        setFlipHorizontal(camera.flipHorizontal);
+      }
+
+      if (
+        camera.flipVertical !== undefined &&
+        previousCamera.flipVertical !== camera.flipVertical
+      ) {
+        setFlipVertical(camera.flipVertical);
+      }
+    };
+
+    element.addEventListener(
+      Enums.Events.CAMERA_MODIFIED,
+      cameraModifiedListener
+    );
+
+    return () => {
+      element.removeEventListener(
+        Enums.Events.CAMERA_MODIFIED,
+        cameraModifiedListener
+      );
+    };
+  }, []);
+
+  const markers = useMemo(() => {
+    if (!viewportData) {
+      return '';
+    }
+
+    let rowCosines, columnCosines;
+    if (viewportData.viewportType === 'stack') {
+      const imageIndex = imageSliceData.imageIndex;
+      const imageId = viewportData.data.imageIds?.[imageIndex];
+
+      // Workaround for below TODO stub
+      if (!imageId) {
+        return false;
+      }
+
+      ({ rowCosines, columnCosines } =
+        metaData.get('imagePlaneModule', imageId) || {});
+    } else {
+      if (!element || !getEnabledElement(element)) {
+        return '';
+      }
+
+      const { viewport } = getEnabledElement(element);
+      const { viewUp, viewPlaneNormal } = viewport.getCamera();
+
+      const viewRight = vec3.create();
+      vec3.cross(viewRight, viewUp, viewPlaneNormal);
+
+      columnCosines = [-viewUp[0], -viewUp[1], -viewUp[2]];
+      rowCosines = viewRight;
+    }
+
+    if (!rowCosines || !columnCosines || rotation === undefined) {
+      return '';
+    }
+
+    const markers = _getOrientationMarkers(
+      rowCosines,
+      columnCosines,
+      rotation,
+      flipVertical,
+      flipHorizontal
+    );
+
+    const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+      viewportIndex
+    );
+
+    const backgroundColor = ohifViewport.getViewportOptions().background;
+
+    // Todo: probably this can be done in a better way in which we identify bright
+    // background
+    const isLight = backgroundColor
+      ? csUtils.isEqual(backgroundColor, [1, 1, 1])
+      : false;
+
+    return orientationMarkers.map((m, index) => (
+      <div
+        className={classNames(
+          `${m}-mid orientation-marker`,
+          isLight ? 'text-[#726F7E]' : 'text-[#ccc]'
+        )}
+        key={`${m}-mid orientation-marker`}
+      >
+        <div className="orientation-marker-value">{markers[m]}</div>
+      </div>
+    ));
+  }, [
+    viewportData,
+    imageSliceData,
+    rotation,
+    flipVertical,
+    flipHorizontal,
+    orientationMarkers,
+    element,
+  ]);
+
+  return <div className="ViewportOrientationMarkers noselect">{markers}</div>;
+}
+
+ViewportOrientationMarkers.propTypes = {
+  percentComplete: PropTypes.number,
+  error: PropTypes.object,
+};
+
+ViewportOrientationMarkers.defaultProps = {
+  percentComplete: 0,
+  error: null,
+};
 
 /**
  *
@@ -16,17 +170,13 @@ import { getEnabledElement } from '../../state';
  * @param {*} rotation in degrees
  * @returns
  */
-function getOrientationMarkers(
+function _getOrientationMarkers(
   rowCosines,
   columnCosines,
   rotation,
   flipVertical,
   flipHorizontal
 ) {
-  const {
-    getOrientationStringLPS,
-    invertOrientationStringLPS,
-  } = utilities.orientation;
   const rowString = getOrientationStringLPS(rowCosines);
   const columnString = getOrientationStringLPS(columnCosines);
   const oppositeRowString = invertOrientationStringLPS(rowString);
@@ -78,118 +228,5 @@ function getOrientationMarkers(
 
   return markers;
 }
-
-function ViewportOrientationMarkers({
-  element,
-  viewportData,
-  imageSliceData,
-  viewportIndex,
-  orientationMarkers = ['top', 'left'],
-}) {
-  // Rotation is in degrees
-  const [rotation, setRotation] = useState(0);
-  const [flipHorizontal, setFlipHorizontal] = useState(false);
-  const [flipVertical, setFlipVertical] = useState(false);
-
-  useEffect(() => {
-    const cameraModifiedListener = (
-      evt: Types.EventTypes.CameraModifiedEvent
-    ) => {
-
-      const { rotation, previousCamera, camera } = evt.detail;
-
-      if (rotation !== undefined) {
-        setRotation(rotation);
-      }
-
-      if (camera.flipHorizontal !== undefined &&
-          previousCamera.flipHorizontal !== camera.flipHorizontal) {
-        setFlipHorizontal(camera.flipHorizontal);
-      }
-
-      if (camera.flipVertical !== undefined &&
-          previousCamera.flipVertical !== camera.flipVertical) {
-        setFlipVertical(camera.flipVertical);
-      }
-    };
-
-    element.addEventListener(
-      Enums.Events.CAMERA_MODIFIED,
-      cameraModifiedListener
-    );
-
-    return () => {
-      element.removeEventListener(
-        Enums.Events.CAMERA_MODIFIED,
-        cameraModifiedListener
-      );
-    };
-  }, []);
-
-  const getMarkers = useCallback(
-    orientationMarkers => {
-      // Todo: support orientation markers for the volume viewports
-      if (
-        !viewportData ||
-        viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC
-      ) {
-        return '';
-      }
-
-      const imageIndex = imageSliceData.imageIndex;
-      const imageId = viewportData.imageIds?.[imageIndex];
-
-      // Workaround for below TODO stub
-      if (!imageId) {
-        return false;
-      }
-
-      const { rowCosines, columnCosines } =
-        metaData.get('imagePlaneModule', imageId) || {};
-
-      if (!rowCosines || !columnCosines || rotation === undefined) {
-        return false;
-      }
-
-      if (!rowCosines || !columnCosines) {
-        return '';
-      }
-
-      const markers = getOrientationMarkers(
-        rowCosines,
-        columnCosines,
-        rotation,
-        flipVertical,
-        flipHorizontal
-      );
-
-      return orientationMarkers.map((m, index) => (
-        <div
-          className={`${m}-mid orientation-marker`}
-          key={`${m}-mid orientation-marker`}
-        >
-          <div className="orientation-marker-value">{markers[m]}</div>
-        </div>
-      ));
-    },
-    [flipHorizontal, flipVertical, rotation, viewportData, imageSliceData]
-  );
-
-  return (
-    <div className="ViewportOrientationMarkers noselect">
-      {getMarkers(orientationMarkers)}
-    </div>
-  );
-}
-
-ViewportOrientationMarkers.propTypes = {
-  percentComplete: PropTypes.number,
-  error: PropTypes.object,
-};
-
-ViewportOrientationMarkers.defaultProps = {
-  percentComplete: 0,
-  error: null,
-};
 
 export default ViewportOrientationMarkers;

@@ -312,11 +312,22 @@ export default function ModeRoute({
     });
 
     return () => {
-      extensionManager.onModeExit();
-      mode?.onModeExit({ servicesManager, extensionManager });
+      // The mode.onModeExit must be done first to allow it to store
+      // information, and must be in a try/catch to ensure subscriptions
+      // are unsubscribed.
+      try {
+        mode?.onModeExit?.({ servicesManager, extensionManager });
+      } catch (e) {
+        console.warn('mode exit failure', e);
+      }
+      // The unsubscriptions must occur before the extension onModeExit
+      // in order to prevent exceptions during cleanup caused by spurious events
       unsubscriptions.forEach(unsub => {
         unsub();
       });
+      // The extension manager must be called after the mode, this is
+      // expected to cleanup the state to a standard setup.
+      extensionManager.onModeExit();
     };
   }, [
     mode,

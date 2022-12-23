@@ -28,6 +28,25 @@ function CornerstoneViewportOverlay({
     setActiveTools(ToolBarService.getActiveTools());
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+    const { unsubscribe } = ToolBarService.subscribe(
+      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
+      () => {
+        if (!isMounted) {
+          return;
+        }
+
+        setActiveTools(ToolBarService.getActiveTools());
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
   /**
    * Updating the VOI when the viewport changes its voi
    */
@@ -100,23 +119,6 @@ function CornerstoneViewportOverlay({
     };
   }, [viewportIndex, viewportData]);
 
-  /**
-   * Updating the active tools when the toolbar changes
-   */
-  // Todo: this should act on the toolGroups instead of the toolbar state
-  useEffect(() => {
-    const { unsubscribe } = ToolBarService.subscribe(
-      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => {
-        setActiveTools(ToolBarService.getActiveTools());
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [ToolBarService]);
-
   const getTopLeftContent = useCallback(() => {
     const { windowWidth, windowCenter } = voi;
 
@@ -186,22 +188,33 @@ function CornerstoneViewportOverlay({
     return null;
   }
 
-  if (viewportData.imageIds.length === 0) {
-    throw new Error(
-      'ViewportOverlay: only viewports with imageIds is supported at this time'
-    );
+  const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+    viewportIndex
+  );
+
+  if (!ohifViewport) {
+    return null;
   }
+
+  const backgroundColor = ohifViewport.getViewportOptions().background;
+
+  // Todo: probably this can be done in a better way in which we identify bright
+  // background
+  const isLight = backgroundColor
+    ? utilities.isEqual(backgroundColor, [1, 1, 1])
+    : false;
 
   return (
     <ViewportOverlay
       topLeft={getTopLeftContent()}
       topRight={getTopRightContent()}
+      color={isLight && 'text-[#0944B3]'}
     />
   );
 }
 
 function _getInstanceNumberFromStack(viewportData, imageIndex) {
-  const imageIds = viewportData.imageIds;
+  const imageIds = viewportData.data.imageIds;
   const imageId = imageIds[imageIndex];
 
   if (!imageId) {

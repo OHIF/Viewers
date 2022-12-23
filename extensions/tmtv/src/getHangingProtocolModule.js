@@ -7,12 +7,6 @@ const ptCT = {
   modifiedDate: '2022-10-04T19:22:08.894Z',
   availableTo: {},
   editableBy: {},
-  toolGroupIds: [
-    'ctToolGroup',
-    'ptToolGroup',
-    'fusionToolGroup',
-    'mipToolGroup',
-  ],
   imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
     {
@@ -48,6 +42,16 @@ const ptCT = {
           required: true,
         },
         {
+          weight: 1,
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+        {
           attribute: 'SeriesDescription',
           constraint: {
             contains: 'CT',
@@ -67,6 +71,16 @@ const ptCT = {
           attribute: 'Modality',
           constraint: {
             equals: 'PT',
+          },
+          required: true,
+        },
+        {
+          weight: 1,
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
           },
           required: true,
         },

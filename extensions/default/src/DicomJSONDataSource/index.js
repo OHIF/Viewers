@@ -2,6 +2,7 @@ import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
+import getDirectURL from '../utils/getDirectURL';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -40,7 +41,7 @@ const findStudies = (key, value) => {
 };
 
 function createDicomJSONApi(dicomJsonConfig) {
-  const { name } = dicomJsonConfig;
+  const { name, wadoRoot } = dicomJsonConfig;
 
   const implementation = {
     initialize: async ({ params, query, url }) => {
@@ -93,7 +94,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     query: {
       studies: {
-        mapParams: () => {},
+        mapParams: () => { },
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
@@ -133,6 +134,22 @@ function createDicomJSONApi(dicomJsonConfig) {
       },
     },
     retrieve: {
+      /**
+       * Generates a URL that can be used for direct retrieve of the bulkdata
+       *
+       * @param {object} params
+       * @param {string} params.tag is the tag name of the URL to retrieve
+       * @param {string} params.defaultPath path for the pixel data url
+       * @param {object} params.instance is the instance object that the tag is in
+       * @param {string} params.defaultType is the mime type of the response
+       * @param {string} params.singlepart is the type of the part to retrieve
+       * @param {string} params.fetchPart unknown?
+       * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
+       *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
+       */
+      directURL: params => {
+        return getDirectURL(wadoRoot, params);
+      },
       series: {
         metadata: ({
           StudyInstanceUID,

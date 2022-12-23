@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
 import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
 import { StringNumber } from '../../types';
-
-const buttonClasses = 'text-white text-base border-none p-2 min-w-18';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -29,8 +26,10 @@ const StudyBrowser = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   activeDisplaySetInstanceUIDs,
+  servicesManager,
 }) => {
   const { t } = useTranslation('StudyBrowser');
+  const { customizationService } = servicesManager?.services || {};
 
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -79,20 +78,25 @@ const StudyBrowser = ({
         className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark"
         data-cy={'studyBrowser-panel'}
       >
-        <ButtonGroup
-          variant="outlined"
-          color="inherit"
-          className="border rounded-md border-secondary-light"
-        >
+        <ButtonGroup variant="outlined" color="secondary" splitBorder={false}>
           {tabs.map(tab => {
             const { name, label, studies } = tab;
             const isActive = activeTabName === name;
             const isDisabled = !studies.length;
+            // Apply the contrasting color for brighter button color visibility
+            const classStudyBrowser = customizationService?.getModeCustomization(
+              'class:StudyBrowser'
+            ) || {
+              true: 'default',
+              false: 'default',
+            };
+            const color = classStudyBrowser[`${isActive}`];
             return (
               <Button
                 key={name}
-                className={classnames(buttonClasses)}
+                className={'text-white text-base p-2 min-w-18'}
                 size="initial"
+                color={color}
                 bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
                 onClick={() => {
                   onClickTab(name);

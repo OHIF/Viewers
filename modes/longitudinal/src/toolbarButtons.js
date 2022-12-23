@@ -26,6 +26,18 @@ function _createButton(type, id, icon, label, commands, tooltip) {
   };
 }
 
+function _createCommands(commandName, toolName, toolGroupIds) {
+  return toolGroupIds.map(toolGroupId => ({
+    /* It's a command that is being run when the button is clicked. */
+    commandName,
+    commandOptions: {
+      toolName,
+      toolGroupId,
+    },
+    context: 'CORNERSTONE',
+  }));
+}
+
 const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
@@ -290,23 +302,41 @@ const toolbarButtons = [
       columns: 3,
     },
   },
-  // Todo: MPR not ready yet for SEG support, not activating it now
-  // {
-  //   id: 'MPR',
-  //   type: 'ohif.action',
-  //   props: {
-  //     icon: 'old-play',
-  //     label: 'MPR',
-  //     type: 'action',
-  //     commands: [
-  //       {
-  //         commandName: 'setHangingProtocol',
-  //         commandOptions: { protocolId: 'mpr' },
-  //         context: 'CORNERSTONE',
-  //       },
-  //     ],
-  //   },
-  // },
+  {
+    id: 'MPR',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleMPR',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  },
+  {
+    id: 'Crosshairs',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-crosshair',
+      label: 'Crosshairs',
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolGroupId: 'mpr',
+            toolName: 'Crosshairs',
+          },
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  },
   // More...
   {
     id: 'MoreTools',
@@ -372,6 +402,25 @@ const toolbarButtons = [
             },
           ],
           'Flip Horizontal'
+        ),
+        _createToggleButton('StackImageSync', 'link', 'Stack Image Sync', [
+          {
+            commandName: 'toggleStackImageSync',
+            commandOptions: {},
+            context: 'CORNERSTONE',
+          },
+        ]),
+        _createToggleButton(
+          'ReferenceLines',
+          'tool-referenceLines', // change this with the new icon
+          'Reference Lines',
+          [
+            {
+              commandName: 'toggleReferenceLines',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ]
         ),
         _createToolButton(
           'StackScroll',
@@ -472,6 +521,19 @@ const toolbarButtons = [
             },
           ],
           'Rectangle'
+        ),
+        _createActionButton(
+          'TagBrowser',
+          'list-bullets',
+          'Dicom Tag Browser',
+          [
+            {
+              commandName: 'openDICOMTagViewer',
+              commandOptions: {},
+              context: 'DEFAULT',
+            },
+          ],
+          'Dicom Tag Browser'
         ),
       ],
     },

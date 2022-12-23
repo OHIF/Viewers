@@ -94,7 +94,7 @@ export default function PanelRoiThresholdSegmentation({
       selectedSegmentationId
     );
 
-    const data = {
+    const cachedStats = {
       lesionStats,
       suvPeak,
       lesionGlyoclysisStats,
@@ -102,11 +102,10 @@ export default function PanelRoiThresholdSegmentation({
 
     const notYetUpdatedAtSource = true;
     SegmentationService.addOrUpdateSegmentation(
-      selectedSegmentationId,
       {
         ...segmentation,
-        data: Object.assign(segmentation.data, data),
-        text: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
+        ...Object.assign(segmentation.cachedStats, cachedStats),
+        displayText: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
       },
       notYetUpdatedAtSource
     );
@@ -161,23 +160,6 @@ export default function PanelRoiThresholdSegmentation({
   }, []);
 
   /**
-   * Toggle visibility of the segmentation
-   */
-  useEffect(() => {
-    const subscription = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_VISIBILITY_CHANGED,
-      ({ segmentation }) => {
-        runCommand('toggleSegmentationVisibility', {
-          segmentationId: segmentation.id,
-        });
-      }
-    );
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [SegmentationService]);
-
-  /**
    * Whenever the segmentations change, update the TMTV calculations
    */
   useEffect(() => {
@@ -189,7 +171,7 @@ export default function PanelRoiThresholdSegmentation({
   }, [segmentations, selectedSegmentationId]);
 
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col">
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         <div className="flex mx-4 my-4 mb-4 space-x-4">
           <Button
@@ -203,17 +185,10 @@ export default function PanelRoiThresholdSegmentation({
                 });
               });
             }}
-            className={classnames(
-              'text-xs text-white border-b border-transparent'
-            )}
           >
             {labelmapLoading ? 'loading ...' : 'New Label'}
           </Button>
-          <Button
-            color="primary"
-            onClick={handleROIThresholding}
-            className="text-xs text-white border-b border-transparent "
-          >
+          <Button color="primary" onClick={handleROIThresholding}>
             Run
           </Button>
         </div>
@@ -239,7 +214,6 @@ export default function PanelRoiThresholdSegmentation({
           {segmentations?.length ? (
             <SegmentationTable
               title={t('Segmentations')}
-              amount={segmentations.length}
               segmentations={segmentations}
               activeSegmentationId={selectedSegmentationId}
               onClick={id => {
@@ -249,10 +223,12 @@ export default function PanelRoiThresholdSegmentation({
                 setSelectedSegmentationId(id);
               }}
               onToggleVisibility={id => {
-                SegmentationService.toggleSegmentationsVisibility([id]);
+                SegmentationService.toggleSegmentationVisibility(id);
               }}
               onToggleVisibilityAll={ids => {
-                SegmentationService.toggleSegmentationsVisibility(ids);
+                ids.map(id => {
+                  SegmentationService.toggleSegmentationVisibility(id);
+                });
               }}
               onDelete={id => {
                 SegmentationService.remove(id);
@@ -282,11 +258,11 @@ export default function PanelRoiThresholdSegmentation({
         />
       </div>
       <div
-        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mb-4 cursor-pointer"
+        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mt-auto cursor-pointer mb-4"
         onClick={() => {
           // navigate to a url in a new tab
           window.open(
-            'https://github.com/OHIF/Viewers/blob/feat/segmentation-service/modes/tmtv/README.md',
+            'https://github.com/OHIF/Viewers/blob/v3-stable/modes/tmtv/README.md',
             '_blank'
           );
         }}
@@ -312,10 +288,9 @@ PanelRoiThresholdSegmentation.propTypes = {
       SegmentationService: PropTypes.shape({
         getSegmentation: PropTypes.func.isRequired,
         getSegmentations: PropTypes.func.isRequired,
-        toggleSegmentationsVisibility: PropTypes.func.isRequired,
+        toggleSegmentationVisibility: PropTypes.func.isRequired,
         subscribe: PropTypes.func.isRequired,
         EVENTS: PropTypes.object.isRequired,
-        VALUE_TYPES: PropTypes.object.isRequired,
       }).isRequired,
     }).isRequired,
   }).isRequired,

@@ -29,6 +29,7 @@ const Tooltip = ({
   content,
   isSticky,
   position,
+  className,
   tight,
   children,
   isDisabled,
@@ -52,7 +53,7 @@ const Tooltip = ({
 
   return (
     <div
-      className="relative"
+      className={classnames('relative', className)}
       onMouseOver={handleMouseOver}
       onFocus={handleMouseOver}
       onMouseOut={handleMouseOut}
@@ -110,6 +111,7 @@ Tooltip.propTypes = {
   isSticky: PropTypes.bool,
   tight: PropTypes.bool,
   children: PropTypes.node.isRequired,
+  className: PropTypes.string,
 };
 
 export default Tooltip;

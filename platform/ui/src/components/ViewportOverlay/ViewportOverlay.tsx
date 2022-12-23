@@ -3,38 +3,46 @@ import classnames from 'classnames';
 
 import './ViewportOverlay.css';
 
-const ViewportOverlay = props => {
-  const topLeft = 'top-viewport left-viewport';
-  const topRight = 'top-viewport right-viewport-scrollbar';
-  const bottomRight = 'bottom-viewport right-viewport-scrollbar';
-  const bottomLeft = 'bottom-viewport left-viewport';
-  const overlay = 'absolute pointer-events-none';
+const classes = {
+  topLeft: 'top-viewport left-viewport',
+  topRight: 'top-viewport right-viewport-scrollbar',
+  bottomRight: 'bottom-viewport right-viewport-scrollbar',
+  bottomLeft: 'bottom-viewport left-viewport',
+};
 
+const ViewportOverlay = ({
+  topLeft,
+  topRight,
+  bottomRight,
+  bottomLeft,
+  color,
+}) => {
+  const overlay = 'absolute pointer-events-none';
   return (
-    <div className="text-primary-light">
+    <div className={classnames(color ? color : 'text-primary-light')}>
       <div
         data-cy={'viewport-overlay-top-left'}
-        className={classnames(overlay, topLeft)}
+        className={classnames(overlay, classes.topLeft)}
       >
-        {props.topLeft}
+        {topLeft}
       </div>
       <div
         data-cy={'viewport-overlay-top-right'}
-        className={classnames(overlay, topRight)}
+        className={classnames(overlay, classes.topRight)}
       >
-        {props.topRight}
+        {topRight}
       </div>
       <div
         data-cy={'viewport-overlay-bottom-right'}
-        className={classnames(overlay, bottomRight)}
+        className={classnames(overlay, classes.bottomRight)}
       >
-        {props.bottomRight}
+        {bottomRight}
       </div>
       <div
         data-cy={'viewport-overlay-bottom-left'}
-        className={classnames(overlay, bottomLeft)}
+        className={classnames(overlay, classes.bottomLeft)}
       >
-        {props.bottomLeft}
+        {bottomLeft}
       </div>
     </div>
   );

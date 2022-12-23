@@ -72,7 +72,16 @@ export default class ToolGroupService {
     this.toolGroupIds = new Set();
   }
 
-  public disable(viewportId: string, renderingEngineId: string): void {
+  public destroyToolGroup(toolGroupId: string) {
+    ToolGroupManager.destroyToolGroup(toolGroupId);
+    this.toolGroupIds.delete(toolGroupId);
+  }
+
+  public removeViewportFromToolGroup(
+    viewportId: string,
+    renderingEngineId: string,
+    deleteToolGroupIfEmpty?: boolean
+  ): void {
     const toolGroup = ToolGroupManager.getToolGroupForViewport(
       viewportId,
       renderingEngineId
@@ -85,9 +94,10 @@ export default class ToolGroupService {
     toolGroup.removeViewports(renderingEngineId, viewportId);
 
     const viewportIds = toolGroup.getViewportIds();
-    // if (viewportIds.length === 0) {
-    //   ToolGroupManager.destroyToolGroup(toolGroup.id);
-    // }
+
+    if (viewportIds.length === 0 && deleteToolGroupIfEmpty) {
+      ToolGroupManager.destroyToolGroup(toolGroup.id);
+    }
   }
 
   public addViewportToToolGroup(
@@ -110,7 +120,10 @@ export default class ToolGroupService {
       toolGroup.addViewport(viewportId, renderingEngineId);
     }
 
-    this._broadcastEvent(EVENTS.VIEWPORT_ADDED, { viewportId, toolGroupId });
+    this._broadcastEvent(EVENTS.VIEWPORT_ADDED, {
+      viewportId,
+      toolGroupId,
+    });
   }
 
   public createToolGroup(toolGroupId: string): Types.IToolGroup {
@@ -122,7 +135,9 @@ export default class ToolGroupService {
     const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
     this.toolGroupIds.add(toolGroupId);
 
-    this._broadcastEvent(EVENTS.TOOLGROUP_CREATED, { toolGroupId });
+    this._broadcastEvent(EVENTS.TOOLGROUP_CREATED, {
+      toolGroupId,
+    });
 
     return toolGroup;
   }
@@ -195,9 +210,11 @@ export default class ToolGroupService {
 
   private _getToolNames(toolGroupTools: Tools): string[] {
     const toolNames = [];
-    toolGroupTools.active.forEach(tool => {
-      toolNames.push(tool.toolName);
-    });
+    if (toolGroupTools.active) {
+      toolGroupTools.active.forEach(tool => {
+        toolNames.push(tool.toolName);
+      });
+    }
     if (toolGroupTools.passive) {
       toolGroupTools.passive.forEach(tool => {
         toolNames.push(tool.toolName);
@@ -221,9 +238,12 @@ export default class ToolGroupService {
 
   private _setToolsMode(toolGroup, tools) {
     const { active, passive, enabled, disabled } = tools;
-    active.forEach(({ toolName, bindings }) => {
-      toolGroup.setToolActive(toolName, { bindings });
-    });
+
+    if (active) {
+      active.forEach(({ toolName, bindings }) => {
+        toolGroup.setToolActive(toolName, { bindings });
+      });
+    }
 
     if (passive) {
       passive.forEach(({ toolName }) => {

@@ -7,33 +7,25 @@ sidebar_label: Hanging Protocol Service
 
 ## Overview
 
-`HangingProtocolService` is a migration of the `OHIF-v1` hanging protocol
-engine along with various improvements and fixes.
+
 This service handles the arrangement of the images in the viewport. In
 short, the registered protocols will get matched with the DisplaySets that are
 available. Each protocol gets a score, and they are ranked. The
-winning protocol gets applied and its settings run for the viewports.
+winning protocol (highest score) gets applied and its settings run for the viewports
+to be arranged.
 
-You can read more about hanging protocols
-[here](http://dicom.nema.org/dicom/Conf-2005/Day-2_Selected_Papers/B305_Morgan_HangProto_v1.pdf).
-In `OHIF-v3` hanging protocols you can:
+You can read more about a HangingProtocol Structure and its properties in the
+[HangingProtocol Module](../../extensions/modules/hpModule.md).
 
-- Define what layout of the viewport should the viewer starts with (2x2 layout)
-- Specify the type of the viewport and its orientation
-- Define which displaySets gets displayed in which viewport of the layout
-- Apply certain initial viewport settings; e.g., inverting the contrast, jumping to a specific slice, etc.
-- Add specific synchronization rules for the viewports
+The rest of this page is dedicated on how the Hanging Protocol Service works and
+what you can do with it.
 
 ## Protocols
 
-A protocol can be an object or a function that returns an object (protocol generator).
-Each protocol can get added to the `HangingProtocolService` by using the `addProtocol` method given
-an `id` and the protocol itself. As an example, the `default` protocol is an object, while
-the 'mpr' protocol is a function that returns the protocol (the reason for this is that the
-`mpr` protocol needs to be generated based on the active viewport).
+Protocols are provided by each extension's HangingProtocolModule and are
+registered automatically to the HangingProtocolService.
 
-All protocols are stored in the `HangingProtocolService` using their `id` as the key, and
-the protocol itself as the value.
+All protocols are stored in the `HangingProtocolService` using their `id` as the key, and the protocol itself as the value.
 
 ## Events
 
@@ -44,14 +36,15 @@ There are two events that get publish in `HangingProtocolService`:
 | NEW_LAYOUT   | Fires when a new layout is requested by the `HangingProtocolService` |
 | STAGE_CHANGE | Fires when the the stage is changed in the hanging protocols         |
 | PROTOCOL_CHANGED | Fires when the the protocol is changed in the hanging protocols         |
+| HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT | Fires when the hanging protocol applies for a viewport (sets its displaySets) |
 
 
 
 ## API
 
 - `getMatchDetails`: returns an object which contains the details of the
-  matching for the viewports, displaysets and whether the protocol is
-  applied to the viewport or not
+  matching for the viewports, displaySets and whether the protocol is
+  applied to the viewport or not yet.
 
 - `addProtocol`: adds provided protocol to the list of registered protocols
   for matching
@@ -67,6 +60,14 @@ init.
   based on the constraints.
 
 - `addCustomAttribute`: adding a custom attribute for matching. (see below)
+
+- `setProtocol`: applies a protocol to the current studies, it can be used for instance to apply a
+  hanging protocol when pressing a button in the toolbar. We use this for applying 'mpr'
+  hanging protocol when pressing the MPR button in the toolbar. `setProtocol` will
+  accept a set of options that can be used to define the displaySets that will be
+  used for the protocol. If no options are provided, all displaySets will
+  be used to match the protocol.
+
 
 Default initialization of the modes handles running the `HangingProtocolService`
 

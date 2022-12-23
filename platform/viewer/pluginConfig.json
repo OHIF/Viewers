@@ -27,6 +27,10 @@
     {
       "packageName": "@ohif/extension-tmtv",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-cornerstone-dicom-seg",
+      "version": "3.0.0"
     }
   ],
   "modes": [

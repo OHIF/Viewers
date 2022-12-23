@@ -79,6 +79,7 @@ function _getDisplaySetsFromSeries(
     SeriesNumber,
     SeriesDate,
     ConceptNameCodeSequence,
+    SOPClassUID,
   } = instance;
 
   if (
@@ -103,6 +104,7 @@ function _getDisplaySetsFromSeries(
     SeriesInstanceUID,
     StudyInstanceUID,
     SOPClassHandlerId,
+    SOPClassUID,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,

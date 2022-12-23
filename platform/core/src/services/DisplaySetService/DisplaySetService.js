@@ -53,7 +53,12 @@ export default class DisplaySetService {
     const activeDisplaySets = this.activeDisplaySets;
 
     displaySets.forEach(displaySet => {
-      activeDisplaySets.push(displaySet);
+      // This test makes adding display sets an N^2 operation, so it might
+      // become important to do this in an efficient manner for large
+      // numbers of display sets.
+      if (!activeDisplaySets.includes(displaySet)) {
+        activeDisplaySets.push(displaySet);
+      }
     });
   }
 
@@ -193,6 +198,17 @@ export default class DisplaySetService {
       return displaySetsAdded;
     }
   };
+
+  /**
+   * The onModeExit returns the display set service to the initial state,
+   * that is without any display sets.  To avoid recreating display sets,
+   * the mode specific onModeExit is called before this method and should
+   * store the active display sets and the cached data.
+   */
+  onModeExit() {
+    this.getDisplaySetCache().length = 0;
+    this.activeDisplaySets.length = 0;
+  }
 
   makeDisplaySetForInstances(instancesSrc, settings) {
     let instances = instancesSrc;

@@ -1,8 +1,13 @@
+import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
+import React from 'react';
+
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
     MeasurementService,
     HangingProtocolService,
     UINotificationService,
+    ViewportGridService,
+    DisplaySetService,
   } = servicesManager.services;
 
   const actions = {
@@ -22,6 +27,25 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
     previousStage: () => {
       HangingProtocolService.previousProtocolStage();
+    },
+    openDICOMTagViewer() {
+      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
+
+      const displaySets = DisplaySetService.activeDisplaySets;
+      const { UIModalService } = servicesManager.services;
+
+      const displaySetInstanceUID = displaySetInstanceUIDs[0];
+      UIModalService.show({
+        content: DicomTagBrowser,
+        contentProps: {
+          displaySets,
+          displaySetInstanceUID,
+          onClose: UIModalService.hide,
+        },
+        title: 'DICOM Tag Browser',
+      });
     },
   };
 
@@ -45,6 +69,9 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       commandFn: actions.previousStage,
       storeContexts: [],
       options: {},
+    },
+    openDICOMTagViewer: {
+      commandFn: actions.openDICOMTagViewer,
     },
   };
 

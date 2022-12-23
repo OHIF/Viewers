@@ -1,23 +1,21 @@
 import {
   getEnabledElement,
   StackViewport,
-  volumeLoader,
-  cache,
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
   Enums,
-  segmentation,
-  utilities as csToolsUtils,
+  utilities as cstUtils,
+  ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 
-import { Types } from '@ohif/core';
-import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-
 import { getEnabledElement as OHIFgetEnabledElement } from './state';
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
+import toggleMPRHangingProtocol from './utils/mpr/toggleMPRHangingProtocol';
+import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -27,8 +25,6 @@ const commandsModule = ({ servicesManager }) => {
     ToolBarService,
     UIDialogService,
     CornerstoneViewportService,
-    SegmentationService,
-    DisplaySetService,
     HangingProtocolService,
     UINotificationService,
   } = servicesManager.services;
@@ -133,76 +129,68 @@ const commandsModule = ({ servicesManager }) => {
       });
       viewport.render();
     },
-    toggleCrosshairs({ toolGroupId, toggledState }) {
-      const toolName = 'Crosshairs';
-      // If it is Enabled
-      if (toggledState) {
-        actions.setToolActive({ toolName, toolGroupId });
-        return;
-      }
-      const toolGroup = _getToolGroup(toolGroupId);
-
-      if (!toolGroup) {
-        return;
-      }
-
-      toolGroup.setToolDisabled(toolName);
-
-      // Get the primary toolId from the ToolBarService and set it to active
-      // Since it was set to passive if not already active
-      const primaryActiveTool = ToolBarService.state.primaryToolId;
-      if (
-        toolGroup?.toolOptions[primaryActiveTool]?.mode ===
-        Enums.ToolModes.Passive
-      ) {
-        toolGroup.setToolActive(primaryActiveTool, {
-          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-        });
-      }
-    },
     setToolActive: ({ toolName, toolGroupId = null }) => {
-      const toolGroup = _getToolGroup(toolGroupId);
+      if (toolName === 'Crosshairs') {
+        const activeViewportToolGroup = _getToolGroup(null);
 
-      if (!toolGroup) {
-        console.warn('No tool group found for toolGroupId:', toolGroupId);
-        return;
+        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
+          UINotificationService.show({
+            title: 'Crosshairs',
+            message:
+              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
+            type: 'info',
+            duration: 3000,
+          });
+
+          throw new Error('Crosshairs tool is not available in this viewport');
+        }
       }
-      // Todo: we need to check if the viewports of the toolGroup is actually
-      // parts of the ViewportGrid's viewports, if not we return
 
       const { viewports } = ViewportGridService.getState() || {
         viewports: [],
       };
 
-      // iterate over all viewports and set the tool active for the
-      // viewports that belong to the toolGroup
-      for (let index = 0; index < viewports.length; index++) {
-        const ohifEnabledElement = OHIFgetEnabledElement(index);
+      const toolGroup = _getToolGroup(toolGroupId);
+      const toolGroupViewportIds = toolGroup.getViewportIds();
 
-        if (!ohifEnabledElement) {
-          continue;
-        }
-
-        const viewport = getEnabledElement(ohifEnabledElement.element);
-
-        if (!viewport) {
-          continue;
-        }
-
-        // Find the current active tool and set it to be passive
-        const activeTool = toolGroup.getActivePrimaryMouseButtonTool();
-
-        if (activeTool) {
-          toolGroup.setToolPassive(activeTool);
-        }
-
-        // Set the new toolName to be active
-        toolGroup.setToolActive(toolName, {
-          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-        });
-
+      // if toolGroup has been destroyed, or its viewports have been removed
+      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
         return;
       }
+
+      const filteredViewports = viewports.filter(viewport => {
+        if (!viewport.viewportOptions) {
+          return false;
+        }
+
+        return toolGroupViewportIds.includes(
+          viewport.viewportOptions.viewportId
+        );
+      });
+
+      if (!filteredViewports.length) {
+        return;
+      }
+
+      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
+
+      if (activeToolName) {
+        // Todo: this is a hack to prevent the crosshairs to stick around
+        // after another tool is selected. We should find a better way to do this
+        if (activeToolName === 'Crosshairs') {
+          toolGroup.setToolDisabled(activeToolName);
+        } else {
+          toolGroup.setToolPassive(activeToolName);
+        }
+      }
+      // Set the new toolName to be active
+      toolGroup.setToolActive(toolName, {
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+          },
+        ],
+      });
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = ViewportGridService.getState();
@@ -298,8 +286,12 @@ const commandsModule = ({ servicesManager }) => {
       if (viewport instanceof StackViewport) {
         viewport.resetProperties();
         viewport.resetCamera();
-        viewport.render();
+      } else {
+        // Todo: add reset properties for volume viewport
+        viewport.resetCamera();
       }
+
+      viewport.render();
     },
     scaleViewport: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -331,59 +323,7 @@ const commandsModule = ({ servicesManager }) => {
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      csToolsUtils.scroll(viewport, options);
-    },
-    async createSegmentationForDisplaySet({ displaySetInstanceUID }) {
-      const volumeId = displaySetInstanceUID;
-
-      const segmentationUID = csUtils.uuidv4();
-      const segmentationId = `${volumeId}::${segmentationUID}`;
-
-      await volumeLoader.createAndCacheDerivedVolume(volumeId, {
-        volumeId: segmentationId,
-      });
-
-      // Add the segmentations to state
-      segmentation.addSegmentations([
-        {
-          segmentationId,
-          representation: {
-            // The type of segmentation
-            type: Enums.SegmentationRepresentations.Labelmap,
-            // The actual segmentation data, in the case of labelmap this is a
-            // reference to the source volume of the segmentation.
-            data: {
-              volumeId: segmentationId,
-            },
-          },
-        },
-      ]);
-
-      return segmentationId;
-    },
-    async addSegmentationRepresentationToToolGroup({
-      segmentationId,
-      toolGroupId,
-      representationType,
-    }) {
-      // // Add the segmentation representation to the toolgroup
-      await segmentation.addSegmentationRepresentations(toolGroupId, [
-        {
-          segmentationId,
-          type: representationType,
-        },
-      ]);
-    },
-    getLabelmapVolumes: ({ segmentations }) => {
-      if (!segmentations || !segmentations.length) {
-        segmentations = SegmentationService.getSegmentations();
-      }
-
-      const labelmapVolumes = segmentations.map(segmentation => {
-        return cache.getVolume(segmentation.id);
-      });
-
-      return labelmapVolumes;
+      cstUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
       viewportIndex,
@@ -398,7 +338,7 @@ const commandsModule = ({ servicesManager }) => {
       const actorEntries = viewport.getActors();
 
       const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid === displaySetInstanceUID;
+        return actorEntry.uid.includes(displaySetInstanceUID);
       });
 
       const { actor: volumeActor } = actorEntry;
@@ -423,6 +363,42 @@ const commandsModule = ({ servicesManager }) => {
     setHangingProtocol: ({ protocolId }) => {
       HangingProtocolService.setProtocol(protocolId);
     },
+    toggleMPR: ({ toggledState }) => {
+      toggleMPRHangingProtocol({
+        toggledState,
+        servicesManager,
+        getToolGroup: _getToolGroup,
+      });
+    },
+    toggleStackImageSync: ({ toggledState }) => {
+      toggleStackImageSync({
+        getEnabledElement,
+        servicesManager,
+        toggledState,
+      });
+    },
+    toggleReferenceLines: ({ toggledState }) => {
+      const { activeViewportIndex } = ViewportGridService.getState();
+      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+        activeViewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+
+      if (!toggledState) {
+        toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
+      }
+
+      toolGroup.setToolConfiguration(
+        ReferenceLinesTool.toolName,
+        {
+          sourceViewportId: viewportId,
+        },
+        true // overwrite
+      );
+      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
+    },
   };
 
   const definitions = {
@@ -433,11 +409,6 @@ const commandsModule = ({ servicesManager }) => {
     },
     setToolActive: {
       commandFn: actions.setToolActive,
-      storeContexts: [],
-      options: {},
-    },
-    toggleCrosshairs: {
-      commandFn: actions.toggleCrosshairs,
       storeContexts: [],
       options: {},
     },
@@ -524,22 +495,6 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    createSegmentationForDisplaySet: {
-      commandFn: actions.createSegmentationForDisplaySet,
-      storeContexts: [],
-      options: {},
-    },
-    addSegmentationRepresentationToToolGroup: {
-      commandFn: actions.addSegmentationRepresentationToToolGroup,
-      storeContexts: [],
-      options: {},
-    },
-
-    getLabelmapVolumes: {
-      commandFn: actions.getLabelmapVolumes,
-      storeContexts: [],
-      options: {},
-    },
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
       storeContexts: [],
@@ -547,6 +502,21 @@ const commandsModule = ({ servicesManager }) => {
     },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
+      storeContexts: [],
+      options: {},
+    },
+    toggleMPR: {
+      commandFn: actions.toggleMPR,
+      storeContexts: [],
+      options: {},
+    },
+    toggleStackImageSync: {
+      commandFn: actions.toggleStackImageSync,
+      storeContexts: [],
+      options: {},
+    },
+    toggleReferenceLines: {
+      commandFn: actions.toggleReferenceLines,
       storeContexts: [],
       options: {},
     },

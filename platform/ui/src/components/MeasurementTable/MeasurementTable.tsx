@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
 
-const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
+const MeasurementTable = ({ data, title, onClick, onEdit }) => {
   const { t } = useTranslation('MeasurementTable');
+  const amount = data.length;
 
   return (
     <div>
@@ -45,7 +46,6 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
 };
 
 MeasurementTable.defaultProps = {
-  amount: null,
   data: [],
   onClick: () => {},
   onEdit: () => {},
@@ -53,7 +53,6 @@ MeasurementTable.defaultProps = {
 
 MeasurementTable.propTypes = {
   title: PropTypes.string.isRequired,
-  amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   data: PropTypes.arrayOf(
     PropTypes.shape({
       uid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

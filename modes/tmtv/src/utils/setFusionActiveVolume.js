@@ -32,14 +32,17 @@ export default function setFusionActiveVolume(
     toolNames.EllipticalROI
   );
 
+  // Todo: this should not take into account the loader id
+  const volumeId = `cornerstoneStreamingImageVolume:${displaySets[0].displaySetInstanceUID}`;
+
   const windowLevelConfig = {
     ...wlToolConfig,
-    volumeId: displaySets[0].displaySetInstanceUID,
+    volumeId,
   };
 
   const ellipticalROIConfig = {
     ...ellipticalToolConfig,
-    volumeId: displaySets[0].displaySetInstanceUID,
+    volumeId,
   };
 
   ToolGroupService.setToolConfiguration(
