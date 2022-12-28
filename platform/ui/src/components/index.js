@@ -68,7 +68,6 @@ import InputRange from './InputRange';
 import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
-import LoadingIndicator from './LoadingIndicator';
 
 export {
   AboutModal,
@@ -101,7 +100,6 @@ export {
   ImageScrollbar,
   Label,
   LayoutSelector,
-  LoadingIndicator,
   LoadingIndicatorProgress,
   MeasurementTable,
   Modal,

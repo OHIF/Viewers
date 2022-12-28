@@ -67,7 +67,13 @@ function modeFactory() {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const {
+        MeasurementService,
+        ToolBarService,
+        ToolGroupService,
+      } = servicesManager.services;
+
+      MeasurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, ToolGroupService, commandsManager);
@@ -120,20 +126,16 @@ function modeFactory() {
       const {
         ToolGroupService,
         SyncGroupService,
-        MeasurementService,
         ToolBarService,
         SegmentationService,
         CornerstoneViewportService,
-        HangingProtocolService,
       } = servicesManager.services;
 
       ToolBarService.reset();
-      MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
       SegmentationService.destroy();
       CornerstoneViewportService.destroy();
-      HangingProtocolService.reset();
     },
     validationTags: {
       study: [],

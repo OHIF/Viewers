@@ -6,6 +6,7 @@ import getToolbarModule from './getToolbarModule';
 import commandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByStudyInstanceUID from './Panels/getStudiesForPatientByStudyInstanceUID';
+import getCustomizationModule from './getCustomizationModule';
 import { id } from './id.js';
 import init from './init';
 
@@ -36,6 +37,8 @@ const defaultExtension = {
       },
     ];
   },
+
+  getCustomizationModule,
 };
 
 export default defaultExtension;

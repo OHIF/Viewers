@@ -140,7 +140,6 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       ToolBarService.reset();
-      MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
     },
     validationTags: {

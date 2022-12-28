@@ -122,6 +122,11 @@ class HangingProtocolService {
     this.displaySetMatchDetails = new Map();
   }
 
+  /** Leave the hanging protocol in the initialized state */
+  public onModeExit() {
+    this.reset();
+  }
+
   public getActiveProtocol(): {
     protocol: HangingProtocol.Protocol;
     stage: number;

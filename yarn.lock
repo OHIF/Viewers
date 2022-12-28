@@ -2383,28 +2383,28 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-0.1.1.tgz#5bd1c52a33a425299299e970312731fa0cc2711b"
   integrity sha512-HOMMOLV6xy8O/agNGGvrl0a8DwShpBvWxAzEzv2pqq12d3r5z/3MyIgNA3Oj/8bIBVvvVXxh9RX7rMDRHJdowg==
 
-"@cornerstonejs/core@^0.21.4":
-  version "0.21.4"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.21.4.tgz#d1dab2c985c382495a8ec91a28f2d62872cdb350"
-  integrity sha512-8D8QyK5bjqxefSVr3vLzsp2MUprmABAbX4qpvpp1XRmC76i1dKKR8Yo9G9jdreR5xwKvJN7pY6/n1F2ZYSN48w==
+"@cornerstonejs/core@^0.22.3":
+  version "0.22.3"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.22.3.tgz#57bf1482ce91d094342bf116636dea1335bff0b3"
+  integrity sha512-WqV6TnsTpsgezSj9SmnSgGCdY3u/EwYr6nKD8KnRQI8lqRTmMIKzbcIvPWAKJ/sU+A9Da6A5tweZvrhrcSorGg==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.6.5":
-  version "0.6.5"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.6.5.tgz#f3f2ab362bf494e4072a146b45acedce0197fb36"
-  integrity sha512-dowoZYz0tMVtuUQl2WIZjOC/2TC0zMgas8KtpVcxJcGEu9HWA9oatgPlY0WqtFniDU7Oxnyy7OqYawtEoSSwdw==
+"@cornerstonejs/streaming-image-volume-loader@^0.6.11":
+  version "0.6.11"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.6.11.tgz#53800b12d588300320aa479eef24f168a38826bd"
+  integrity sha512-UrgiWIsTSPFWEgCKxsKZUZ5hgir8ymdXes2UB8OT7yX6M4QeTmKi26nVNP21vebKMMPBootK//geSToqBoBs4Q==
   dependencies:
-    "@cornerstonejs/core" "^0.21.4"
+    "@cornerstonejs/core" "^0.22.3"
     cornerstone-wado-image-loader "^4.2.1"
 
-"@cornerstonejs/tools@^0.29.6":
-  version "0.29.6"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.29.6.tgz#6cfcb6b56284c4d1265330993ecafa3f48c429b8"
-  integrity sha512-Rmz4Nx6IfH+31C7fsGxLWwQXQ+w1nN5WmILb9/N7WB4M5mYUZvYiopXdWII4mzh91nHXcEfEiJimaihyuCVLJQ==
+"@cornerstonejs/tools@^0.30.6":
+  version "0.30.6"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.30.6.tgz#a6e5209f00fe00a919f20fe1387f06062b289a16"
+  integrity sha512-GEm2xWOlBwgS/3aZDBZObyu+KJESyOmkCo3hA+tellLKCVr207wBUUDndEmkNX6PJ/mR4o9Md6ZjMfNF7CAYiA==
   dependencies:
-    "@cornerstonejs/core" "^0.21.4"
+    "@cornerstonejs/core" "^0.22.3"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -15796,18 +15796,6 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.2.0, loose-envify@^1.3
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
-
-lottie-react@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/lottie-react/-/lottie-react-2.3.1.tgz#697060417bab027edb57ed45bda9d62e920d4040"
-  integrity sha512-8cxd6XZZtECT6LoAhCftRdYrEpHxiouvB5EPiYA+TtCG5LHNYAdMS9IVIHcxKtWnpo7x16QfCLj1XLXZpaN81A==
-  dependencies:
-    lottie-web "^5.9.4"
-
-lottie-web@^5.9.4:
-  version "5.9.6"
-  resolved "https://registry.npmjs.org/lottie-web/-/lottie-web-5.9.6.tgz#62ae68563355d3e04aa75d53dec3dd4bea0e57c9"
-  integrity sha512-JFs7KsHwflugH5qIXBpB4905yC1Sub2MZWtl/elvO/QC6qj1ApqbUZJyjzJseJUtVpgiDaXQLjBlIJGS7UUUXA==
 
 loud-rejection@^1.0.0:
   version "1.6.0"

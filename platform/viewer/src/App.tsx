@@ -50,18 +50,14 @@ function App({ config, defaultExtensions, defaultModes }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { routerBasename, modes, dataSources, oidc } = appConfigState;
-
-  // Use config to create routes
-  const appRoutes = createRoutes({
+  const {
+    routerBasename,
     modes,
     dataSources,
-    extensionManager,
-    servicesManager,
-    commandsManager,
-    hotkeysManager,
-    routerBasename,
-  });
+    oidc,
+    showStudyList,
+  } = appConfigState;
+
   const {
     UIDialogService,
     UIModalService,
@@ -70,6 +66,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     ViewportGridService,
     CineService,
     UserAuthenticationService,
+    customizationService,
   } = servicesManager.services;
 
   const providers = [
@@ -88,6 +85,21 @@ function App({ config, defaultExtensions, defaultModes }) {
     Compose({ components: providers, children });
 
   let authRoutes = null;
+
+  // Should there be a generic call to init on the extension manager?
+  customizationService.init(extensionManager);
+
+  // Use config to create routes
+  const appRoutes = createRoutes({
+    modes,
+    dataSources,
+    extensionManager,
+    servicesManager,
+    commandsManager,
+    hotkeysManager,
+    routerBasename,
+    showStudyList,
+  });
 
   if (oidc) {
     authRoutes = (
@@ -115,9 +127,7 @@ App.propTypes = {
     PropTypes.shape({
       routerBasename: PropTypes.string.isRequired,
       oidc: PropTypes.array,
-      whiteLabeling: PropTypes.shape({
-        createLogoComponentFn: PropTypes.func,
-      }),
+      whiteLabeling: PropTypes.object,
       extensions: PropTypes.array,
     }),
   ]).isRequired,

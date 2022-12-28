@@ -26,8 +26,10 @@ const StudyBrowser = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   activeDisplaySetInstanceUIDs,
+  servicesManager,
 }) => {
   const { t } = useTranslation('StudyBrowser');
+  const { customizationService } = servicesManager?.services || {};
 
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -82,8 +84,13 @@ const StudyBrowser = ({
             const isActive = activeTabName === name;
             const isDisabled = !studies.length;
             // Apply the contrasting color for brighter button color visibility
-            // const color = isActive ? 'black' : 'default';
-            const color = 'default';
+            const classStudyBrowser = customizationService?.getModeCustomization(
+              'class:StudyBrowser'
+            ) || {
+              true: 'default',
+              false: 'default',
+            };
+            const color = classStudyBrowser[`${isActive}`];
             return (
               <Button
                 key={name}

@@ -19,6 +19,7 @@ We maintain the following non-ui Services:
 - [Hanging Protocol Service](../data/HangingProtocolService.md)
 - [Toolbar Service](../data/ToolBarService.md)
 - [Measurement Service](../data/MeasurementService.md)
+- [Customization Service](customization-service.md)
 
 ## Service Architecture
 

@@ -40,13 +40,12 @@ export default class ExtensionManager {
       _extensionLifeCycleHooks,
     } = this;
 
-    const {
-      MeasurementService,
-      ViewportGridService,
-    } = _servicesManager.services;
-
-    MeasurementService.clearMeasurements();
-    ViewportGridService.reset();
+    // The onModeEnter of the service must occur BEFORE the extension
+    // onModeEnter in order to reset the state to a standard state
+    // before the extension restores and cached data.
+    for (const service of Object.values(_servicesManager.services)) {
+      service?.onModeEnter?.();
+    }
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
@@ -69,14 +68,6 @@ export default class ExtensionManager {
       _extensionLifeCycleHooks,
     } = this;
 
-    const {
-      MeasurementService,
-      ViewportGridService,
-    } = _servicesManager.services;
-
-    MeasurementService.clearMeasurements();
-    ViewportGridService.reset();
-
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
 
@@ -87,6 +78,16 @@ export default class ExtensionManager {
         });
       }
     });
+
+    // The service onModeExit calls must occur after the extension ones
+    // so that extension ones can store/restore data.
+    for (const service of Object.values(_servicesManager.services)) {
+      try {
+        service?.onModeExit?.();
+      } catch (e) {
+        console.warn('onModeExit caught', e);
+      }
+    }
   }
 
   /**
@@ -200,6 +201,7 @@ export default class ExtensionManager {
           case MODULE_TYPES.SOP_CLASS_HANDLER:
           case MODULE_TYPES.CONTEXT:
           case MODULE_TYPES.LAYOUT_TEMPLATE:
+          case MODULE_TYPES.CUSTOMIZATION:
           case MODULE_TYPES.UTILITY:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
