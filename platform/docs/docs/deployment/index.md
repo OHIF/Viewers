@@ -97,12 +97,12 @@ support it yet, but it is gaining wider adoption.
 If you have an existing archive and intend to host the OHIF Viewer at the same
 domain name as your archive, then connecting the two is as simple as following
 the steps layed out in our
-[Configuration Essentials Guide](./../configuration/index.md).
+[Configuration Essentials Guide](./../configuration/configurationFiles.md).
 
 #### What if I don't have an imaging archive?
 
 We provide some guidance on configuring a local image archive in our
-[Data Source Essentials](./../configuration/index.md#set-up-a-local-DICOM-server)
+[Data Source Essentials](./../configuration/dataSources/introduction.md)
 guide. Hosting an archive remotely is a little trickier. You can check out some
 of our [advanced recipes](#recipes) for modeled setups that may work for you.
 

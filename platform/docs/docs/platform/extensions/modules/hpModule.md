@@ -219,6 +219,17 @@ matching), or provides and array of ids which will
 make the ProtocolEngine to choose the best matching protocol (based on
 protocolMatching rules, which is next section).
 
+### imageLoadStrategy
+The image load strategy specifies a function (by name) containing logic to re-order
+the image load requests.  This allows loading images viewed earlier to be done
+sooner than those loaded later.  The available strategies are:
+
+* interleaveTopToBottom to start at the top and work towards the bottom, for all series being loaded
+* interleaveCenter is like top to bottom but starts at the center
+* nth is a strategy that loads every nth instance, starting with the center
+and end points, and then filling in progressively all along the image.  This results in partial
+image view very quickly.
+
 ### protocolMatchingRules
 A list of criteria for the protocol along with the provided points for ranking.
 
