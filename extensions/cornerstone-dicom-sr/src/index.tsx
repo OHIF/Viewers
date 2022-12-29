@@ -5,6 +5,7 @@ import commandsModule from './commandsModule';
 import init from './init';
 import { id } from './id.js';
 import toolNames from './tools/toolNames';
+import hydrateStructuredReport from './utils/hydrateStructuredReport';
 
 const Component = React.lazy(() => {
   return import(
@@ -74,3 +75,4 @@ const dicomSRExtension = {
 };
 
 export default dicomSRExtension;
+export { hydrateStructuredReport };

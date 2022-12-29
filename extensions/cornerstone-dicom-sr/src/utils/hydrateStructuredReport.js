@@ -1,6 +1,6 @@
 import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
-import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
+import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adapters } from 'dcmjs';
 
 const { guid } = OHIF.utils;
@@ -12,9 +12,10 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 /**
+ * Hydrates a structured report, for default viewports.
  *
  */
-export default function _hydrateStructuredReport(
+export default function hydrateStructuredReport(
   { servicesManager, extensionManager },
   displaySetInstanceUID
 ) {
@@ -250,7 +251,7 @@ function _mapLegacyDataSet(dataset) {
   return dataset;
 }
 
-const toArray = function(x) {
+const toArray = function (x) {
   return Array.isArray(x) ? x : [x];
 };
 

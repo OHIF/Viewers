@@ -5,15 +5,27 @@ import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
 import { utils } from '@ohif/core';
+import createReportDialogPrompt, {
+  CREATE_REPORT_DIALOG_RESPONSE,
+} from './createReportDialogPrompt';
+import createReportAsync from '../Actions/createReportAsync';
+import getNextSRSeriesNumber from '../utils/getNextSRSeriesNumber';
 
 const { downloadCSVReport } = utils;
 
 export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
+  extensionManager,
 }) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const { MeasurementService, UIDialogService } = servicesManager.services;
+  const { activeViewportIndex, viewports } = viewportGrid;
+  const {
+    MeasurementService,
+    UIDialogService,
+    UINotificationService,
+    DisplaySetService,
+  } = servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
@@ -54,6 +66,62 @@ export default function PanelMeasurementTable({
     const measurements = MeasurementService.getMeasurements();
 
     downloadCSVReport(measurements, MeasurementService);
+  }
+
+  async function clearMeasurements() {
+    MeasurementService.clearMeasurements();
+  }
+
+  async function createReport() {
+    // filter measurements that are added to the active study
+    const activeViewport = viewports[activeViewportIndex];
+    const measurements = MeasurementService.getMeasurements();
+    const displaySet = DisplaySetService.getDisplaySetByUID(
+      activeViewport.displaySetInstanceUIDs[0]
+    );
+    const trackedMeasurements = measurements.filter(
+      m => displaySet.StudyInstanceUID === m.referenceStudyUID
+    );
+
+    if (trackedMeasurements.length <= 0) {
+      UINotificationService.show({
+        title: 'No Measurements',
+        message: 'No Measurements are added to the current Study.',
+        type: 'info',
+        duration: 3000,
+      });
+      return;
+    }
+
+    const promptResult = await createReportDialogPrompt(UIDialogService, {
+      extensionManager,
+    });
+
+    if (promptResult.action === CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT) {
+      const dataSources = extensionManager.getDataSources(
+        promptResult.dataSourceName
+      );
+      const dataSource = dataSources[0];
+
+      const SeriesDescription =
+        // isUndefinedOrEmpty
+        promptResult.value === undefined || promptResult.value === ''
+          ? 'Research Derived Series' // default
+          : promptResult.value; // provided value
+
+      const SeriesNumber = getNextSRSeriesNumber(DisplaySetService);
+
+      const displaySetInstanceUIDs = await createReportAsync(
+        servicesManager,
+        commandsManager,
+        dataSource,
+        trackedMeasurements,
+        {
+          SeriesDescription,
+          SeriesNumber,
+        }
+      );
+    }
   }
 
   const jumpToImage = ({ uid, isActive }) => {
@@ -142,7 +210,7 @@ export default function PanelMeasurementTable({
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        className="overflow-x-hidden overflow-y-auto ohif-scrollbar"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable
@@ -155,7 +223,8 @@ export default function PanelMeasurementTable({
       <div className="flex justify-center p-4">
         <ActionButtons
           onExportClick={exportReport}
-          onCreateReportClick={() => {}}
+          onClearMeasurementsClick={clearMeasurements}
+          onCreateReportClick={createReport}
         />
       </div>
     </>

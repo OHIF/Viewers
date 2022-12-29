@@ -467,6 +467,12 @@ class HangingProtocolService {
       return defaultReturn;
     }
 
+    // If the viewport options says to allow any instance, then we can assume
+    // it just updates this viewport
+    if (protocolViewport.viewportOptions.allowUnmatchedView) {
+      return defaultReturn;
+    }
+
     // if the viewport is not empty, then we check the displaySets it is showing
     // currently, which means we need to check if the requested updated displaySet
     // follow the same rules as the current displaySets
@@ -1098,10 +1104,9 @@ class HangingProtocolService {
   ) {
     const { seriesMatchingRules } = displaySetSelector;
 
-    if (seriesMatchingRules.length) {
-      // only match the required rules
-      const requiredRules = seriesMatchingRules.filter(rule => rule.required);
-
+    // only match the required rules
+    const requiredRules = seriesMatchingRules.filter(rule => rule.required);
+    if (requiredRules.length) {
       const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
 
       if (!matched || matched.score === 0) {

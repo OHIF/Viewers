@@ -130,6 +130,7 @@ Typography.propTypes = {
     'initial',
     'inherit',
     'primary',
+    'primaryActive',
     'secondary',
     'error',
   ]),
