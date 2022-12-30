@@ -367,8 +367,8 @@ export default async function init({
 
   ViewportGridService.subscribe(
     ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
-    ({ viewportIndex }) => {
-      const viewportId = `viewport-${viewportIndex}`;
+    ({ viewportIndex, viewportId }) => {
+      viewportId = viewportId || `viewport-${viewportIndex}`;
       const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {

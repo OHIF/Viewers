@@ -61,8 +61,11 @@ class ViewportGridService {
 
   public setActiveViewportIndex(index) {
     this.serviceImplementation._setActiveViewportIndex(index);
+    const state = this.getState();
+    const viewportId = state.viewports[index]?.viewportOptions?.viewportId;
     this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED, {
       viewportIndex: index,
+      viewportId,
     });
   }
 

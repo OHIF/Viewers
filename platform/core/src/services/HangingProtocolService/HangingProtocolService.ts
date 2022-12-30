@@ -1458,7 +1458,7 @@ class HangingProtocolService {
           },
           displaySets: [
             {
-              id: `viewport-${i}`,
+              id: getViewportId(i),
             },
           ],
         });

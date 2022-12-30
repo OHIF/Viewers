@@ -96,7 +96,7 @@ class CornerstoneViewportService implements IViewportService {
   }
 
   public getViewportId(viewportIndex: number): string {
-    return `viewport-${viewportIndex}`;
+    return this.viewportsInfo[viewportIndex]?.getViewporId?.();
   }
 
   /**
@@ -199,7 +199,7 @@ class CornerstoneViewportService implements IViewportService {
       newViewportId = publicViewportOptions.viewportId;
       viewportInfo.setViewportId(newViewportId);
 
-      renderingEngine.disableElement(viewportId);
+      viewportId ?? renderingEngine.disableElement(viewportId);
     }
 
     viewportInfo.setRenderingEngineId(renderingEngine.id);
@@ -220,6 +220,7 @@ class CornerstoneViewportService implements IViewportService {
     this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
       viewportData,
       viewportIndex,
+      viewportId,
     });
 
     viewportId = viewportInfo.getViewportId();
@@ -589,7 +590,11 @@ class CornerstoneViewportService implements IViewportService {
 
   // Todo: keepCamera is an interim solution until we have a better solution for
   // keeping the camera position when the viewport data is changed
-  public updateViewport(viewportIndex, viewportData, keepCamera = false) {
+  public updateViewport(
+    viewportIndex: number,
+    viewportData,
+    keepCamera = false
+  ) {
     const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
 
     const viewportId = viewportInfo.getViewportId();

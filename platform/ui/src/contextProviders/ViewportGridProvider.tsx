@@ -31,15 +31,8 @@ const DEFAULT_STATE = {
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
-/**
- * Given the flatten index, and rows and column, it returns the
- * row and column index
- */
-const unravelIndex = (index, numRows, numCols) => {
-  const row = Math.floor(index / numCols);
-  const col = index % numCols;
-  return { row, col };
-};
+const findOrCreate = (viewportId, viewports) =>
+  viewports.find(it => it.viewportId === viewportId) || { viewportId };
 
 export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state, action) => {
@@ -59,17 +52,18 @@ export function ViewportGridProvider({ children, service }) {
         // which might have been a PDF Viewport. The viewport itself
         // will deal with inheritance if required. Here is just a simple
         // provider.
-        const viewportOptions = payload.viewportOptions || {};
+        const viewportOptions = { ...payload.viewportOptions };
         const displaySetOptions = payload.displaySetOptions || [{}];
 
         const viewports = state.viewports.slice();
 
         if (!viewportOptions.viewportId) {
-          viewportOptions.viewportId = `viewport-${viewportIndex}`;
+          viewportOptions.viewportId = viewports[viewportIndex].viewportId;
         }
 
         // merge the displaySetOptions and viewportOptions and displaySetInstanceUIDs
         // into the viewport object at the given index
+        // TODO - perform a deep copy of viewportOptions and displaySetOptions
         viewports[viewportIndex] = {
           ...viewports[viewportIndex],
           displaySetInstanceUIDs,
@@ -89,35 +83,44 @@ export function ViewportGridProvider({ children, service }) {
         } = action.payload;
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
-        const numPanes = layoutOptions.length || numRows * numCols;
-        const viewports = state.viewports.slice();
-        const activeViewportIndex =
-          state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
+        const hasOptions = layoutOptions?.length;
+        const viewports = [];
+        let activeViewportIndex;
 
-        while (viewports.length < numPanes) {
-          viewports.push({});
-        }
-        while (viewports.length > numPanes) {
-          viewports.pop();
-        }
+        for (let col = 0; col < numCols; col++) {
+          for (let row = 0; row < numRows; row++) {
+            const pos = col + row * numCols;
+            const layoutOption = layoutOptions[pos];
+            const viewportId = layoutOption?.viewportId || `${col},${row}`;
+            if ((hasOptions && pos < layoutOptions.length) || !hasOptions) {
+              if (
+                !activeViewportIndex ||
+                state.viewports[pos]?.viewportId === viewportId
+              ) {
+                activeViewportIndex = pos;
+              }
+              const viewport = findOrCreate(viewportId, state.viewports);
+              console.log('Pushing viewport', col, row, pos, viewport);
+              viewports.push(viewport);
+              let xPos, yPos, w, h;
 
-        for (let i = 0; i < numPanes; i++) {
-          let xPos, yPos, w, h;
+              if (layoutOptions && layoutOptions[pos]) {
+                ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[
+                  pos
+                ]);
+              } else {
+                w = 1 / numCols;
+                h = 1 / numRows;
+                xPos = col * w;
+                yPos = row * h;
+              }
 
-          if (layoutOptions && layoutOptions[i]) {
-            ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[i]);
-          } else {
-            const { row, col } = unravelIndex(i, numRows, numCols);
-            w = 1 / numCols;
-            h = 1 / numRows;
-            xPos = col * w;
-            yPos = row * h;
+              viewport.width = w;
+              viewport.height = h;
+              viewport.x = xPos;
+              viewport.y = yPos;
+            }
           }
-
-          viewports[i].width = w;
-          viewports[i].height = h;
-          viewports[i].x = xPos;
-          viewports[i].y = yPos;
         }
 
         return {
@@ -238,7 +241,7 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const setLayout = useCallback(
-    ({ layoutType, numRows, numCols, layoutOptions = [] }) =>
+    ({ layoutType, numRows, numCols, layoutOptions = [], newLayout = {} }) =>
       dispatch({
         type: 'SET_LAYOUT',
         payload: {
@@ -246,6 +249,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           numCols,
           layoutOptions,
+          newLayout,
         },
       }),
     [dispatch]
