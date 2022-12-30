@@ -13,6 +13,7 @@ import {
   Icon,
 } from '@ohif/ui';
 import classNames from 'classnames';
+import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 
 const { formatDate } = utils;
 
@@ -37,6 +38,7 @@ function OHIFCornerstoneSRViewport(props) {
   const {
     DisplaySetService,
     CornerstoneViewportService,
+    MeasurementService,
   } = servicesManager.services;
 
   // SR viewport will always have a single display set
@@ -69,18 +71,25 @@ function OHIFCornerstoneSRViewport(props) {
     MEASUREMENT_TRACKING_EXTENSION_ID
   );
 
-  // TODO: this is a hook that fails if we register/de-register
   if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
       '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
     );
 
-    const useTrackedMeasurements = () => useContext(contextModule.context);
-
-    [
-      trackedMeasurements,
-      sendTrackedMeasurementsEvent,
-    ] = useTrackedMeasurements();
+    const tracked = useContext(contextModule.context);
+    trackedMeasurements = tracked?.[0];
+    sendTrackedMeasurementsEvent = tracked?.[1];
+  }
+  if (!sendTrackedMeasurementsEvent) {
+    // if no panels from measurement-tracking extension is used, this code will trun
+    trackedMeasurements = null;
+    sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
+      MeasurementService.clearMeasurements();
+      hydrateStructuredReport(
+        { servicesManager, extensionManager },
+        displaySetInstanceUID
+      );
+    };
   }
 
   /**
@@ -362,7 +371,7 @@ function OHIFCornerstoneSRViewport(props) {
           useAltStyling: true,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
-          seriesDescription: SeriesDescription,
+          seriesDescription: SeriesDescription || '',
           patientInformation: {
             patientName: PatientName
               ? OHIF.utils.formatPN(PatientName.Alphabetic)

@@ -243,6 +243,7 @@ Button.propTypes = {
     'light',
     'default',
     'primary',
+    'primaryActive',
     'secondary',
     'white',
     'black',

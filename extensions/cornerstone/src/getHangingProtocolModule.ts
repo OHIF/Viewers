@@ -8,6 +8,7 @@ const mpr = {
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
+  imageLoadStrategy: 'nth',
   displaySetSelectors: {
     mprDisplaySet: {
       seriesMatchingRules: [
