@@ -1,3 +1,6 @@
+// Code and structure based on:
+// extensions\tmtv\src\utils\dicomRTAnnotationExport\RTStructureSet\RTSSReport.js
+
 import SegmentationToROIContour from './contours/SegmentationToROIContour';
 import dcmjs from 'dcmjs';
 import { DicomMetadataStore } from '@ohif/core';
@@ -19,6 +22,7 @@ export default class RTSS {
    * @returns Report object containing the dataset
    */
   static async generateRTSS(segmentations, metadataProvider, options) {
+    // Convert segmentations to ROIContours
     const roiContours = await SegmentationToROIContour.convert(
       segmentations,
       metadataProvider
@@ -27,12 +31,7 @@ export default class RTSS {
     let dataset = initializeDataset(roiContours[0].metadata, metadataProvider);
 
     roiContours.forEach((contour, index) => {
-      //const ContourSequence = AnnotationToPointData.convert(
-      //  annotation,
-      //  index,
-      //  metadataProvider,
-      //  options
-      //);
+      // TOTO: set colour based on segmentation
       const roiContour = {
         ROIDisplayColor: [255, 0, 0],
         ContourSequence: contour.contourSequence,
@@ -44,9 +43,6 @@ export default class RTSS {
       );
 
       dataset.ROIContourSequence.push(roiContour);
-      //dataset.RTROIObservationsSequence.push(
-      //  getRTROIObservationsSequence(annotation, index, metadataProvider)
-      //);
 
       // ReferencedSeriesSequence
       // Todo: handle more than one series

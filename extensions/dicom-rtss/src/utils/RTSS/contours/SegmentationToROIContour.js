@@ -8,28 +8,14 @@ class SegmentationToROIContour {
   construction() {}
 
   static async convert(segmentations, metadataProvider) {
-    console.log('>>>convert');
-    //segmentations = SegmentationService.getSegmentations();
-    console.log(segmentations);
+    //console.log('>>>convert');
+    //console.log(segmentations);
 
     const ROIContours = [];
-
-    //const vol = cs.volumeLoader.loadVolume(segmentations[0].volumeId);
-    //console.log(vol);
-    //cs.volumeLoader.loadVolume(segmentations[0].volumeId).then(vol => {
-    //  cs.volumeLoader.loadVolume(vol.referencedVolumeId).then(imageVol => {
 
     await segmentations.forEach(async (segmentation, segIndex) => {
       const vol = await cs.volumeLoader.loadVolume(segmentation.volumeId);
       const imageVol = await cs.volumeLoader.loadVolume(vol.referencedVolumeId);
-
-      //console.log(vol);
-      //console.log(imageVol);
-      //console.log(vol.imageData);
-      //console.log(vol.imageData.getBounds());
-      //console.log(vol.imageData.getCellData().getArrays());
-      //console.log(vol.imageData.getFieldData().getArrays());
-      //console.log(vol.imageData.getPointData().getArrays());
 
       const numSlices = vol.dimensions[2];
 
@@ -72,6 +58,7 @@ class SegmentationToROIContour {
         mSquares.setContourValues(cValues);
         mSquares.setMergePoints(false);
 
+        // cleans up console output, otherwise will have lots of time data
         window['console']['time'] = function() {};
         window['console']['timeEnd'] = function() {};
         const msOutput = mSquares.getOutputData();
@@ -138,7 +125,6 @@ class SegmentationToROIContour {
           const ReferencedSOPClassUID = sopCommon.sopClassUID;
           const ReferencedSOPInstanceUID = sopCommon.sopInstanceUID;
           const ContourImageSequence = [
-            //imageVol.imageIds[i],
             { ReferencedSOPClassUID, ReferencedSOPInstanceUID }, // NOTE: replace in dcmjs?
           ];
           contours.forEach((contour, index) => {
@@ -183,7 +169,7 @@ class SegmentationToROIContour {
       ROIContours.push(ROIContour);
     });
 
-    console.log('<<<convert');
+    //console.log('<<<convert');
     return ROIContours;
   }
 }

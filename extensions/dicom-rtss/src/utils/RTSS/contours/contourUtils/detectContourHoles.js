@@ -1,16 +1,24 @@
 import vtkPolygon from '@kitware/vtk.js/Common/DataModel/Polygon';
+
 /**
- * Contour format:
+ * Functions for detecting and dealing with holes within contours.
+ * Expected Contour format:
  * {
  *   type,
  *   contourPoints
  * }
  */
-// Code from
-// https://stackoverflow.com/questions/22521982/check-if-point-is-inside-a-polygon
-// most original version based on:
-// https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
-//const getIsPointInsidePolygon = (point: number[], vertices: number[][]) => {
+
+/**
+ * Checks if point is inside polygon defined by vertices array
+ * Code from
+ * https://stackoverflow.com/questions/22521982/check-if-point-is-inside-a-polygon
+ * most original version based on:
+ * https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+ * @param {*} point
+ * @param {*} vertices
+ * @returns
+ */
 const getIsPointInsidePolygon = (point, vertices) => {
   const x = point[0];
   const y = point[1];
@@ -48,7 +56,7 @@ function checkEnclosed(outerContour, innerContour, points) {
       [points[point][0], points[point][1]],
       vertices
     );
-    console.log(result);
+    //console.log(result);
 
     if (!result) {
       pointsNotEnclosed++;
@@ -59,12 +67,12 @@ function checkEnclosed(outerContour, innerContour, points) {
 }
 
 /**
- *
+ * Check if contours have holes, if so update contour accordingly
  * @param {*} polyData
  * @param {*} bypass
  */
 export function processContourHoles(contours, points, useXOR = true) {
-  console.log(points);
+  //console.log(points);
 
   // Add non-closed planars to contour list
   const retContours = contours.filter(

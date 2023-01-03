@@ -16,32 +16,40 @@ const commandsModule = ({
     exportRTSS: ({}) => {
       console.log('dicom-rtss exportRTSS');
 
+      // Grab Segmentations
       const { SegmentationService } = servicesManager.services;
       const segmentations = SegmentationService.getSegmentations();
 
+      // Convert to RTSS and prepare blob for download
       dicomRTSSExport(segmentations, true);
     },
     uploadRTSS: ({}) => {
       console.log('dicom-rtss uploadRTSS');
 
+      // Grab Segmentations
       const { SegmentationService } = servicesManager.services;
       const segmentations = SegmentationService.getSegmentations();
 
+      // Convert to RTSS and then upload
       dicomRTSSExport(segmentations, false).then(rtss => {
         const dataSources = extensionManager.getDataSources();
         const dataSource = dataSources[0];
         console.log('upload rtss');
         const { StudyInstanceUID } = rtss;
-        //log.info(naturalizedReport);
+
+        let shouldReplace = false;
 
         //await dataSource.store.dicom(rtss);
-        if (true) {
+        if (shouldReplace) {
+          // NOTE: not implemented - replace if segmentations editted was
+          // from existing RTSS
+
+          //if (StudyInstanceUID) {
+          //  dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
+          //}
+        } else {
           dataSource.store.dicom(rtss); // need save confirmation
         }
-
-        //if (StudyInstanceUID) {
-        //  dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
-        //}
       });
     },
   };
