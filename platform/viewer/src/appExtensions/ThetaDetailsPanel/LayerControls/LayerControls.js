@@ -3,6 +3,7 @@ import cornerstone from 'cornerstone-core';
 import '../AITriggerComponent.css';
 import { getEnabledElement } from '../../../../../../extensions/cornerstone/src/state';
 import { JobsContext } from '../../../context/JobsContext';
+import classNames from 'classnames';
 
 const LayerControls = () => {
   const [opacity, setOpacity] = React.useState(0.5);
@@ -16,6 +17,7 @@ const LayerControls = () => {
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const { opacityStatus, setOpacityStatus } = useContext(JobsContext);
   const { colorMapStatus, setColorMapStatus } = useContext(JobsContext);
+  const [activeTab, setActiveTab] = React.useState(true);
 
   useEffect(() => {
     const view_ports = cornerstone.getEnabledElements();
@@ -111,40 +113,62 @@ const LayerControls = () => {
 
   return (
     <div className="component">
-      <div className="title-header">Layer Controls</div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          width: '100%',
+          justifyContent: 'space-around',
+          // flexWrap: 'wrap',
+        }}
+      >
+        <div
+          className={classNames('btn', {
+            'btn-primary': true,
+          })}
+          onClick={() => setActiveTab(!activeTab)}
+        >
+          {activeTab ? ' Hide Layout Parameter' : ' Show Layout Parameter'}
+        </div>
+      </div>
 
-      <h4>Opacity Settings</h4>
-      <form>
-        <label>
-          <input
-            id="imageOpacity"
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value={opacity}
-            onChange={onHandleOpacuty}
-            disabled={overlayStatus === true ? false : true}
-          />
-        </label>
+      {activeTab && (
+        <>
+          <div className="title-header">Layer Controls</div>
+          <h4>Opacity Settings</h4>
+          <form>
+            <label>
+              <input
+                id="imageOpacity"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={opacity}
+                onChange={onHandleOpacuty}
+                disabled={overlayStatus === true ? false : true}
+              />
+            </label>
 
-        <h4>Color Maps</h4>
-        <label>
-          <select
-            id="colormaps"
-            className="select-container"
-            onChange={onHandleColorChange}
-            value={colorMap}
-            disabled={overlayStatus === true ? false : true}
-          >
-            {colors.map((color, index) => (
-              <option key={index} value={color.id}>
-                {color.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </form>
+            <h4>Color Maps</h4>
+            <label>
+              <select
+                id="colormaps"
+                className="select-container"
+                onChange={onHandleColorChange}
+                value={colorMap}
+                disabled={overlayStatus === true ? false : true}
+              >
+                {colors.map((color, index) => (
+                  <option key={index} value={color.id}>
+                    {color.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </form>
+        </>
+      )}
     </div>
   );
 };

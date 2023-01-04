@@ -29,7 +29,6 @@ import { Morphology3DComponent } from '../components/3DSegmentation/3D';
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 
-
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 
 const exportComponent = node => {
@@ -107,10 +106,17 @@ const generateTemplate = (SimilarScans, ohif_image, chart) => {
 
     if (index == 0)
       contents.push({
-        image: 'query',
-        width: 520,
-        height: 300,
-        margin: [0, 20],
+        margin: [0, 10],
+        stack: [
+          {
+            image: 'query',
+            fit: [150, 150],
+          },
+          {
+            text: 'Original Query',
+            fontsize: 14,
+          },
+        ],
       });
 
     contents.push({
@@ -703,9 +709,6 @@ class Radiomics extends Component {
     this.setState(updatedState);
   };
 
-
-
-
   downloadReportAsPdf = () => {
     console.log(this.canvas);
     console.log(this.componentRef);
@@ -756,8 +759,6 @@ class Radiomics extends Component {
       .catch(error => {
         console.log(error);
       });
-
-   
   };
 
   render() {
@@ -841,8 +842,6 @@ class Radiomics extends Component {
                   >
                     Similarity Looking Scans
                   </h1>
-
-                 
                 </div>
 
                 <ErrorBoundaryDialog context="RightSidePanel">
@@ -930,7 +929,6 @@ class Radiomics extends Component {
             </div>
           </div>
           <div className="container">
-            
             <div className="container-item">
               <Morphology3DComponent
                 chartRef={this.chartRef}

@@ -364,11 +364,11 @@ const SearchDetails = props => {
 
       console.log({ response, jobId, instance_uid, email });
       if (jobId) {
-        let currJob;
-        if (response.results.length > 0) currJob = response.results[0];
-        // const currJob = response.results.find(result => {
-        //   return result.job_id === jobId;
-        // });
+        // let currJob;
+        // if (response.results.length > 0) currJob = response.results[0];
+        const currJob = response.results.find(result => {
+          return result.job_id === jobId;
+        });
         console.log({ currJob });
 
         if (currJob && currJob.status === 'DONE') {
@@ -460,7 +460,6 @@ const SearchDetails = props => {
       .catch(error => {
         console.log(error);
       });
-  
   };
 
   function getMeta(url) {
@@ -510,8 +509,8 @@ const SearchDetails = props => {
             className="hide-on-print"
             src={similarityResultState.query}
             style={{
-              width: '100%',
-              height: 200,
+              // width: '100%',
+              // height: 200,
               marginBottom: 20,
               border: '2.55px solid green',
             }}
