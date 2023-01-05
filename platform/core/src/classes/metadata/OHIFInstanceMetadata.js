@@ -86,7 +86,12 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
   }
 
   // Override
-  getImageId(frame, thumbnail) {
+  getImageId(frame = undefined, thumbnail = undefined) {
+    if (frame !== undefined || thumbnail !== undefined) {
+      // Always recompute this if arguments are specified, as using the cached id would break multiframe images
+      return getImageId(this.getData(), frame, thumbnail);
+    }
+
     // If _imageID is not cached, create it
     if (this._imageId === null) {
       this._imageId = getImageId(this.getData(), frame, thumbnail);

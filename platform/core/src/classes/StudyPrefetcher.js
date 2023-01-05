@@ -494,7 +494,7 @@ export class StudyPrefetcher {
 
     // TODO: This duplicates work done by the stack manager
     displaySet.images.forEach(image => {
-      const numFrames = image.numFrames;
+      const numFrames = image.getData().metadata.NumberOfFrames;
       if (numFrames > 1) {
         for (let i = 0; i < numFrames; i++) {
           let imageId = getImageId(image, i);

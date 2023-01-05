@@ -25,7 +25,7 @@ export default function getImageId(instance, frame, thumbnail = false) {
   }
 
   if (typeof instance.getImageId === 'function') {
-    return instance.getImageId();
+    return instance.getImageId(frame, thumbnail);
   }
 
   if (instance.url) {
