@@ -305,6 +305,7 @@ const toolbarButtons = [
         id: 'Layout',
         type: 'action',
         uiType: 'ohif.layoutSelector',
+        // TODO Add here maybe another prop to specify the hanging protocol this applies to (e.g. default)
         props: {
           rows: 3,
           columns: 3,
