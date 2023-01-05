@@ -55,6 +55,24 @@ function LayoutSelector({
   const onInteractionHandler = () => setIsOpen(!isOpen);
   const DropdownContent = isOpen ? OHIFLayoutSelector : null;
 
+  const onSelectionHandler = ({ numRows, numCols }) => {
+    if (HangingProtocolService.getActiveProtocol().protocol.id === 'mpr') {
+      ToolBarService.recordInteraction({
+        groupId: 'MPR',
+        itemId: 'MPR',
+        interactionType: 'toggle',
+        commands: [
+          {
+            commandName: 'toggleMPR',
+            commandOptions: {},
+            context: 'CORNERSTONE',
+          },
+        ],
+      });
+    }
+    viewportGridService.setLayout({ numRows, numCols });
+  };
+
   return (
     <ToolbarButton
       id="Layout"
@@ -68,26 +86,7 @@ function LayoutSelector({
           <DropdownContent
             rows={rows}
             columns={columns}
-            onSelection={({ numRows, numCols }) => {
-              if (
-                HangingProtocolService.getActiveProtocol().protocol.id === 'mpr'
-              ) {
-                ToolBarService.recordInteraction({
-                  groupId: 'MPR',
-                  itemId: 'MPR',
-                  interactionType: 'toggle',
-                  commands: [
-                    {
-                      commandName: 'toggleMPR',
-                      commandOptions: {},
-                      context: 'CORNERSTONE',
-                    },
-                  ],
-                });
-              }
-
-              viewportGridService.setLayout({ numRows, numCols });
-            }}
+            onSelection={onSelectionHandler}
           />
         )
       }
