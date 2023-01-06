@@ -296,42 +296,26 @@ const toolbarButtons = [
     },
   },
   {
-    id: 'Layouts',
-    type: 'ohif.splitButton',
+    id: 'Layout',
+    type: 'ohif.layoutSelector',
     props: {
-      isRadio: false,
-      groupId: 'Layouts',
-      primary: {
-        id: 'Layout',
-        type: 'action',
-        uiType: 'ohif.layoutSelector',
-        // TODO Add here maybe another prop to specify the hanging protocol this applies to (e.g. default)
-        props: {
-          rows: 3,
-          columns: 3,
+      rows: 3,
+      columns: 3,
+    },
+  },
+  {
+    id: 'MPR',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleMPR',
+          commandOptions: {},
+          context: 'CORNERSTONE',
         },
-      },
-      secondary: {
-        icon: 'chevron-down',
-        label: '',
-        isActive: true,
-        tooltip: 'More Layouts',
-      },
-      items: [
-        _createToggleButton(
-          'MPR',
-          'icon-mpr',
-          'MPR',
-          [
-            {
-              commandName: 'toggleMPR',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'MPR',
-          'ohif.toggle'
-        ),
       ],
     },
   },

@@ -116,7 +116,8 @@ function modeFactory() {
         'WindowLevel',
         'Pan',
         'Capture',
-        'Layouts',
+        'Layout',
+        'MPR',
         'Crosshairs',
         'MoreTools',
       ]);
