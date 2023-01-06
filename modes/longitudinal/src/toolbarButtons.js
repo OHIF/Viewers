@@ -15,7 +15,7 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commands, tooltip) {
+function _createButton(type, id, icon, label, commands, tooltip, uiType) {
   return {
     id,
     icon,
@@ -23,6 +23,7 @@ function _createButton(type, id, icon, label, commands, tooltip) {
     type,
     commands,
     tooltip,
+    uiType,
   };
 }
 
