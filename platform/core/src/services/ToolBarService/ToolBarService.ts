@@ -287,4 +287,10 @@ export default class ToolBarService {
       componentProps: Object.assign({}, btn.props, props),
     };
   }
+
+  getButtonComponentForUIType(uiType: string) {
+    return uiType
+      ? this._buttonTypes()[uiType]?.defaultComponent ?? null
+      : null;
+  }
 }

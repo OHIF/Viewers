@@ -45,6 +45,10 @@ export default function toggleMPRHangingProtocol({
     ToolBarService,
   } = servicesManager.services;
 
+  // TODO Introduce a service to persist the state of the current hanging protocol/app.
+  // So all of the code to persist the state here will no longer be needed. Perhaps
+  // just the id of the current hanging protocol to toggle MPR off is needed.
+
   const {
     activeViewportIndex,
     viewports,
