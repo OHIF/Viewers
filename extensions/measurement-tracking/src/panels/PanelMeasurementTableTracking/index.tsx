@@ -273,6 +273,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
               isBackupSave: true,
             });
           }}
+          disabled={
+            additionalFindings.length === 0 &&
+            displayMeasurementsWithoutFindings.length === 0
+          }
         />
       </div>
     </>
