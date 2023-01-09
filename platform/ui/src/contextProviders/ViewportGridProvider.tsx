@@ -31,8 +31,8 @@ const DEFAULT_STATE = {
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
-const findOrCreate = (viewportId, viewports) =>
-  viewports.find(it => it.viewportId === viewportId) || { viewportId };
+const findOrCreate = (positionId, viewports) =>
+  viewports.find(it => it.positionId === positionId) || { positionId };
 
 export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state, action) => {
@@ -91,16 +91,15 @@ export function ViewportGridProvider({ children, service }) {
           for (let row = 0; row < numRows; row++) {
             const pos = col + row * numCols;
             const layoutOption = layoutOptions[pos];
-            const viewportId =
-              layoutOption?.viewportId || `viewport-${col}-${row}`;
+            const positionId = layoutOption?.positionId || `${col}-${row}`;
             if ((hasOptions && pos < layoutOptions.length) || !hasOptions) {
               if (
                 !activeViewportIndex ||
-                state.viewports[pos]?.viewportId === viewportId
+                state.viewports[pos]?.positionId === positionId
               ) {
                 activeViewportIndex = pos;
               }
-              const viewport = findOrCreate(viewportId, state.viewports);
+              const viewport = findOrCreate(positionId, state.viewports);
               console.log('Pushing viewport', col, row, pos, viewport);
               viewports.push(viewport);
               let xPos, yPos, w, h;

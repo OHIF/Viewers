@@ -118,6 +118,10 @@ function ViewportOrientationMarkers({
       viewportIndex
     );
 
+    if (!ohifViewport) {
+      console.log('No viewport');
+      return null;
+    }
     const backgroundColor = ohifViewport.getViewportOptions().background;
 
     // Todo: probably this can be done in a better way in which we identify bright

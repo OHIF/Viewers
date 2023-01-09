@@ -12,8 +12,7 @@
   base = ""
   build = "yarn run build:viewer:ci"
   publish = "dist"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF . ../ui/ ../core/ ../i18n/"
-
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF . ../ui/ ../core/ ../i18n/ ../extensions/ ../modes/"
 
 # NODE_VERSION in root `.nvmrc` takes priority
 # YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
