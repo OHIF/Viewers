@@ -96,7 +96,7 @@ class CornerstoneViewportService implements IViewportService {
   }
 
   public getViewportId(viewportIndex: number): string {
-    return this.viewportsInfo[viewportIndex]?.getViewporId?.();
+    return this.viewportsInfo[viewportIndex]?.getViewportId?.();
   }
 
   /**

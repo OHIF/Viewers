@@ -91,7 +91,8 @@ export function ViewportGridProvider({ children, service }) {
           for (let row = 0; row < numRows; row++) {
             const pos = col + row * numCols;
             const layoutOption = layoutOptions[pos];
-            const viewportId = layoutOption?.viewportId || `${col},${row}`;
+            const viewportId =
+              layoutOption?.viewportId || `viewport-${col}-${row}`;
             if ((hasOptions && pos < layoutOptions.length) || !hasOptions) {
               if (
                 !activeViewportIndex ||
@@ -241,7 +242,7 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const setLayout = useCallback(
-    ({ layoutType, numRows, numCols, layoutOptions = [], newLayout = {} }) =>
+    ({ layoutType, numRows, numCols, layoutOptions = [] }) =>
       dispatch({
         type: 'SET_LAYOUT',
         payload: {
@@ -249,7 +250,6 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           numCols,
           layoutOptions,
-          newLayout,
         },
       }),
     [dispatch]
