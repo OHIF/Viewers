@@ -1174,7 +1174,7 @@ class HangingProtocolService {
 
     // Todo: handle fusion viewports by not taking the first displaySet rule for the viewport
     const { DisplaySetService } = this._servicesManager.services;
-    const { studyMatchingRules = [], seriesMatchingRules, imageMatchingRules } = displaySetRules;
+    const { studyMatchingRules = [], seriesMatchingRules, instanceMatchingRules } = displaySetRules;
     const matchingScores = [];
     let highestStudyMatchingScore = 0;
     let highestSeriesMatchingScore = 0;
@@ -1238,14 +1238,14 @@ class HangingProtocolService {
           highestSeriesMatchingScore
         );
 
-        if (imageMatchingRules && imageMatchingRules.length) {
+        if (instanceMatchingRules && instanceMatchingRules.length) {
           const instances = displaySet.images || displaySet.others || [];
           const filteredInstances = [];
           for (let instanceIndex = instances.length - 1; instanceIndex >= 0; instanceIndex--) {
             const instance = instances[instanceIndex];
             const imagesMatchDetails = this.protocolEngine.findMatch(
               instance,
-              imageMatchingRules,
+              instanceMatchingRules,
               { instances }
             );
 

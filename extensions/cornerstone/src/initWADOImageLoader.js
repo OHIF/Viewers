@@ -62,6 +62,9 @@ export default function initWADOImageLoader(
       // whatever transfer-syntax the origin server provides.
       // For now we use image/jls and image/x-jls because some servers still use the old type
       // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
+      // The Accept header should only be set to a multipart/related type in
+      // wado-rs request. Other requests (e.g. wado-uri) that don't support
+      // this value in the accept header may cause the server to reject the request as unacceptable.
       const xhrRequestHeaders = isWadoRs(imagId) ? {
         Accept: appConfig.omitQuotationForMultipartRequest
           ? 'multipart/related; type=application/octet-stream'
@@ -84,7 +87,7 @@ export default function initWADOImageLoader(
 }
 
 function isWadoRs(imageId) {
-  return imageId.indexOf('wadors:') == 0;
+  return imageId.indexOf('wadors:') === 0;
 }
 
 export function destroy() {

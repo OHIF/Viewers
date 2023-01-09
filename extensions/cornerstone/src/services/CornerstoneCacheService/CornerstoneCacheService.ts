@@ -3,7 +3,6 @@ import { utils } from '@ohif/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import {
-  StackData,
   StackViewportData,
   VolumeViewportData,
 } from '../../types/CornerstoneCacheService';
@@ -12,8 +11,8 @@ const VOLUME_IMAGE_LOADER_SCHEME = 'streaming-wadors';
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class CornerstoneCacheService {
-  stackImageIds: Map<string, string[]> = new Map();
-  volumeImageIds: Map<string, string[]> = new Map();
+  stackImageIdsMap: Map<string, string[]> = new Map();
+  volumeImageIdsMap: Map<string, string[]> = new Map();
 
   constructor(servicesManager) {
     this.servicesManager = servicesManager;
@@ -68,15 +67,15 @@ class CornerstoneCacheService {
   }
 
   public async invalidateViewportData(
-    viewportData: StackData | VolumeViewportData,
+    viewportData: StackViewportData | VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     DisplaySetService
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
       const displaySet = DisplaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID)
-      if (this.stackImageIds.has(invalidatedDisplaySetInstanceUID)) {
-        this.stackImageIds.delete(invalidatedDisplaySetInstanceUID);
+      if (this.stackImageIdsMap.has(invalidatedDisplaySetInstanceUID)) {
+        this.stackImageIdsMap.delete(invalidatedDisplaySetInstanceUID);
         return await this._getStackViewportData(
           dataSource,
           [displaySet],
@@ -114,13 +113,13 @@ class CornerstoneCacheService {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
 
-    let stackImageIds = this.stackImageIds.get(
+    let stackImageIds = this.stackImageIdsMap.get(
       displaySet.displaySetInstanceUID
     );
 
     if (!stackImageIds) {
       stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
-      this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
+      this.stackImageIdsMap.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
     const { displaySetInstanceUID, StudyInstanceUID } = displaySet;
@@ -175,7 +174,7 @@ class CornerstoneCacheService {
 
       const volumeId = `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
 
-      let volumeImageIds = this.volumeImageIds.get(
+      let volumeImageIds = this.volumeImageIdsMap.get(
         displaySet.displaySetInstanceUID
       );
 
@@ -191,7 +190,7 @@ class CornerstoneCacheService {
           imageIds: volumeImageIds,
         });
 
-        this.volumeImageIds.set(
+        this.volumeImageIdsMap.set(
           displaySet.displaySetInstanceUID,
           volumeImageIds
         );

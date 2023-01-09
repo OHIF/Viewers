@@ -17,11 +17,12 @@ There are three events that get broadcasted in `DisplaySetService`:
 
 
 
-| Event                | Description                                          |
-| -------------------- | ---------------------------------------------------- |
-| DISPLAY_SETS_ADDED   | Fires a displayset is added to the displaysets cache |
-| DISPLAY_SETS_CHANGED | Fires when a displayset is changed                   |
-| DISPLAY_SETS_REMOVED | Fires when a displayset is removed                   |
+| Event                 | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| DISPLAY_SETS_ADDED    | Fires a displayset is added to the displaysets cache  |
+| DISPLAY_SETS_CHANGED  | Fires when a displayset is changed                    |
+| DISPLAY_SETS_REMOVED  | Fires when a displayset is removed                    |
+| DISPLAY_SETS_FILTERED | Fires when a displayset filtered instances is changed |
 
 
 
@@ -49,3 +50,19 @@ Let's find out about the public API for `DisplaySetService`.
 - `getActiveDisplaySets`: Returns the active displaySets
 
 - `deleteDisplaySet`: Deletes the displaySets from the displaySets cache
+
+- `filterDisplaySetInstances`: Updates the displaySet to include only the provided 'filteredInstances' for rendering.
+
+- `clearDisplaySetFilters`: Clears the filtered instances from the displaySet so all instances will be rendered
+
+- `clearAllDisplaySetsFilters`: Clears any filtering to the instances from all displaySets
+
+## Filtering
+The DisplaySetService enables applying filtered set of instances to the displaySet using the methods
+`filterDisplaySetInstances`, `clearDisplaySetFilters` and `clearAllDisplaySetsFilters`. These instances could be
+images that matched a run-time condition and you want to update the displaySet to only show these images.
+
+The `HangingProtocolService` uses these methods to implement the ability to apply instance level matching to the
+displaySet. You can see an example of this capability in the [HangingProtocol Module](../../extensions/modules/hpModule.md)
+under `displaySetSelectors` --> `Instance Matching Rules`
+.

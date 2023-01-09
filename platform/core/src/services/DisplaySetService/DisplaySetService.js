@@ -30,10 +30,10 @@ const findInstance = (instance, displaySets) => {
 
 export default class DisplaySetService {
   constructor() {
-    this._unfilteredDisplaySets = new Map();
     this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
+    this._unfilteredDisplaySets = new Map();
 
     Object.assign(this, pubSubServiceInterface);
   }
@@ -48,7 +48,7 @@ export default class DisplaySetService {
     displaySets.forEach(displaySet => {
       displaySetCache.push(displaySet);
 
-      const instances = displaySet.images || displaySet.others || [];
+      const instances = this._getDisplaySetInstances(displaySet);
       this._unfilteredDisplaySets.set(displaySet.displaySetInstanceUID,
         [...instances]);
     });
@@ -130,6 +130,8 @@ export default class DisplaySetService {
 
     displaySetCache.splice(displaySetCacheIndex, 1);
     activeDisplaySets.splice(activeDisplaySetsIndex, 1);
+
+    this._unfilteredDisplaySets.delete(displaySetInstanceUID);
 
     this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     this._broadcastEvent(EVENTS.DISPLAY_SETS_REMOVED, {
@@ -268,12 +270,22 @@ export default class DisplaySetService {
   }
 
 
+
+  /**
+   * Updates the displaySet to include only the provided
+   * 'filteredInstances' for rendering. This filtering should happen in a
+   * different component (e.g HangingProtocolService), which then calls this
+   * method to update the displaySet and notifies other components
+   * @param {string} displaySetInstanceUID the displaySet UID
+   * @param {any[]} filteredInstances - the filtered array of instances to
+   * be rendered
+  */
   filterDisplaySetInstances(displaySetInstanceUID, filteredInstances) {
     const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
     let changed = false;
 
     if (displaySet) {
-      const instances = displaySet.images || displaySet.others || [];
+      const instances = this._getDisplaySetInstances(displaySet);
 
       if (instances.length === filteredInstances.length) return; //shortcut
       for (let index = instances.length - 1; index >= 0; index--) {
@@ -289,10 +301,15 @@ export default class DisplaySetService {
     }
   }
 
+  /**
+   * Clears the filtered instances from the displaySet so all instances will be
+   * rendered
+   * @param {string} displaySetInstanceUID the displaySet UID
+   */
   clearDisplaySetFilters(displaySetInstanceUID) {
     const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
     const allInstances = this._unfilteredDisplaySets.get(displaySetInstanceUID);
-    const displaySetInstances = displaySet.images || displaySet.others;
+    const displaySetInstances = this._getDisplaySetInstances(displaySet);
 
     if (displaySetInstances.length !== allInstances.length) {
       displaySetInstances.length = 0;
@@ -301,10 +318,21 @@ export default class DisplaySetService {
     }
   }
 
+  /**
+   * Clears any filtering to the instances from all displaySets
+   */
   clearAllDisplaySetsFilters() {
     displaySetCache.forEach(displaySet => {
       this.clearDisplaySetFilters(displaySet.displaySetInstanceUID)
     }
     )
+  }
+
+  _getDisplaySetInstances(displaySet) {
+    if (displaySet) {
+      return displaySet.images || displaySet.others || [];
+    }
+
+    return null;
   }
 }

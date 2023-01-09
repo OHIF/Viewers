@@ -75,9 +75,9 @@ type ViewportStructure = {
  * it won't be selected.
  */
 type DisplaySetSelector = {
-  // The image matching rule (not currently implemented) selects which image to
-  // display initially, only for stack views.
-  imageMatchingRules?: MatchingRule[];
+  // The instance matching rules selects which instance to
+  // display, only for stack views.
+  instanceMatchingRules?: MatchingRule[];
   // The matching rules to choose the display sets at the series level
   seriesMatchingRules: MatchingRule[];
   studyMatchingRules?: MatchingRule[];

@@ -12,7 +12,7 @@ const defaultProtocol = {
   displaySetSelectors: {
     defaultDisplaySetId: {
       // Unused currently
-      imageMatchingRules: [],
+      instanceMatchingRules: [],
       // Matches displaysets, NOT series
       seriesMatchingRules: [
         // Try to match series with images by default, to prevent weird display

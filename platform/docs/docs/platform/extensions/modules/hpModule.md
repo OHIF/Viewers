@@ -329,6 +329,35 @@ The ptDisplaySet will match against all the series that are PT and reconstructab
 As you see each selector is composed of an `id` as the key and a set of `seriesMatchingRules` (displaySetMatchingRules) which gives score to the displaySet
 based on the matching rules. The displaySet with the highest score will be used for the `id`.
 
+
+#### Instance Matching Rules
+The `HangingProtocolService` supports matching at the instance level in a displaySet. This lets you define conditions
+in the protocol for what instances (e.g. images) should be displayed based on an attribute value at the instance level.
+For example, in the HandingProtocol you can define a rule to only display the instance with InstanceNumber = 1:
+
+```js
+
+      displaySetSelectors: {
+        defaultDisplaySetId: {
+          instanceMatchingRules:[
+            {
+              weight: 1,
+              attribute: 'InstanceNumber',
+              constraint: {
+                equals: {
+                  value: 1,
+                },
+              },
+              required: true,
+            },
+          ],
+          seriesMatchingRules: [],
+          studyMatchingRules: [],
+        },
+      },
+
+  ```
+
 ### stages
 Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is array of objects, each object being one stage.
 

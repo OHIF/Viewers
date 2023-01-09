@@ -17,9 +17,6 @@ window.config = {
     thumbnail: 75,
     prefetch: 10,
   },
-  videoViewport: {
-    autoPlay: true
-  },
   // filterQueryParam: false,
   dataSources: [
     {

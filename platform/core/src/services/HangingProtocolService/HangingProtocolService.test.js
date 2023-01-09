@@ -16,7 +16,7 @@ const testProtocol = {
   ],
   displaySetSelectors: {
     displaySetSelector: {
-      imageMatchingRules: [],
+      instanceMatchingRules: [],
       seriesMatchingRules: [
         {
           weight: 1,
@@ -125,7 +125,7 @@ describe('HangingProtocolService', () => {
     expect(hps.getProtocols().length).toBe(1);
   });
 
-  //TODO: add a unit test for the imageMatchingRules
+  //TODO: add a unit test for the instanceMatchingRules
   describe('run', () => {
     it('matches best image match', () => {
       hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
