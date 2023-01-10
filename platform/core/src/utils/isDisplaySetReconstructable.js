@@ -29,6 +29,11 @@ export default function isDisplaySetReconstructable(instances) {
     return { value: false };
   }
 
+  // Can't reconstruct if all instances don't have the ImagePositionPatient.
+  if (!instances.every(instance => !!instance.ImagePositionPatient)) {
+    return { value: false };
+  }
+
   const sortedInstances = sortInstancesByPosition(instances);
 
   if (isMultiframe) {
