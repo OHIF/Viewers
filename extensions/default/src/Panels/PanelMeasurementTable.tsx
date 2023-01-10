@@ -42,9 +42,10 @@ export default function PanelMeasurementTable({
     const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
     const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
     const cleared = MeasurementService.EVENTS.MEASUREMENTS_CLEARED;
+    const selected = MeasurementService.EVENTS.MEASUREMENT_SELECTED_CHANGED;
     const subscriptions = [];
 
-    [added, addedRaw, updated, removed, cleared].forEach(evt => {
+    [added, addedRaw, updated, removed, cleared, selected].forEach(evt => {
       subscriptions.push(
         MeasurementService.subscribe(evt, () => {
           debouncedSetDisplayMeasurements(
@@ -255,14 +256,13 @@ function _getMappedMeasurements(MeasurementService) {
 }
 
 function _mapMeasurementToDisplay(measurement, index, types) {
-  const { displayText, uid, label, type } = measurement;
+  const { displayText, uid, label, type, selected } = measurement;
 
   return {
     uid,
     label: label || '(empty)',
     measurementType: type,
     displayText: displayText || [],
-    // TODO: handle one layer down
-    isActive: false, // activeMeasurementItem === i + 1,
+    isActive: selected,
   };
 }
