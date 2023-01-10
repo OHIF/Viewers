@@ -630,25 +630,17 @@ const SegmentationPanel = ({
 
   const onVisibilityChangeHandler = isVisible => {
     let segmentsHidden = [];
+    const labelmap3D = getActiveLabelMaps3D();
+
     state.segmentNumbers.forEach(segmentNumber => {
       if (isVTK()) {
         onSegmentVisibilityChange(segmentNumber, isVisible);
       }
 
-      /** Get all labelmaps with this segmentNumber (overlapping segments) */
-      const { labelmaps3D } = getBrushStackState();
-      const possibleLabelMaps3D = labelmaps3D.filter(({ labelmaps2D }) => {
-        return labelmaps2D.some(({ segmentsOnLabelmap }) =>
-          segmentsOnLabelmap.includes(segmentNumber)
-        );
-      });
-
-      possibleLabelMaps3D.forEach(labelmap3D => {
-        labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
-        segmentsHidden = [
-          ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
-        ];
-      });
+      labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
+      segmentsHidden = [
+        ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
+      ];
     });
 
     setState(state => ({ ...state, segmentsHidden }));
