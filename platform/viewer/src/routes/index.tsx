@@ -68,7 +68,7 @@ const createRoutes = ({
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
     ...(customRoutes?.routes || []),
-    ...bakedInRoutes,
+    ...bakedInRoutes.filter(route => route.path !== '/' || showStudyList),
     customRoutes?.notFoundRoute || notFoundRoute,
   ];
 
