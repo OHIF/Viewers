@@ -353,6 +353,15 @@
     json5 "^2.2.1"
     semver "^6.3.0"
 
+"@babel/eslint-parser@^7.19.1":
+  version "7.19.1"
+  resolved "https://registry.npmjs.org/@babel/eslint-parser/-/eslint-parser-7.19.1.tgz#4f68f6b0825489e00a24b41b6a1ae35414ecd2f4"
+  integrity sha512-AqNf2QWt1rtu2/1rLswy6CDP7H9Oh3mMhk177Y67Rg8d7RD9WfOLLv8CGn6tisFvS2htm86yIe1yLF6I1UDaGQ==
+  dependencies:
+    "@nicolo-ribaudo/eslint-scope-5-internals" "5.1.1-v1"
+    eslint-visitor-keys "^2.1.0"
+    semver "^6.3.0"
+
 "@babel/generator@7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "https://registry.npmjs.org/@babel/generator/-/generator-7.0.0-beta.44.tgz#c7e67b9b5284afcf69b309b50d7d37f3e5033d42"
@@ -2383,28 +2392,33 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-0.1.1.tgz#5bd1c52a33a425299299e970312731fa0cc2711b"
   integrity sha512-HOMMOLV6xy8O/agNGGvrl0a8DwShpBvWxAzEzv2pqq12d3r5z/3MyIgNA3Oj/8bIBVvvVXxh9RX7rMDRHJdowg==
 
-"@cornerstonejs/core@^0.22.3":
-  version "0.22.3"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.22.3.tgz#57bf1482ce91d094342bf116636dea1335bff0b3"
-  integrity sha512-WqV6TnsTpsgezSj9SmnSgGCdY3u/EwYr6nKD8KnRQI8lqRTmMIKzbcIvPWAKJ/sU+A9Da6A5tweZvrhrcSorGg==
+"@cornerstonejs/codec-openjph@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-1.0.3.tgz#4c82642e8a6beb0d263f5a263723aec4225e5300"
+  integrity sha512-PK+9N/JL7ZMGum6OKuReRGGhWXpWjRC9WnltQ6aEzRKEQPMg+3WFiQPZowKCCG1I4whv35DYFRi6wu7RyRaEMQ==
+
+"@cornerstonejs/core@^0.25.0":
+  version "0.25.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.25.0.tgz#b392f5526e087c591d5d7ae68782a980aa3488f7"
+  integrity sha512-MtT3N1+c3apalilsQs8SWaBLD6A0TKo1NLRMY1gFVYfZ9BkyCPlvKxhtgAJthRbr8ME2NMEMs/VjV3/RrFyMVg==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.6.11":
-  version "0.6.11"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.6.11.tgz#53800b12d588300320aa479eef24f168a38826bd"
-  integrity sha512-UrgiWIsTSPFWEgCKxsKZUZ5hgir8ymdXes2UB8OT7yX6M4QeTmKi26nVNP21vebKMMPBootK//geSToqBoBs4Q==
+"@cornerstonejs/streaming-image-volume-loader@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.8.2.tgz#058a591501e7fe7ebbe195695c92d047a288290f"
+  integrity sha512-50Ihn/tp5GJG7Uu0ZtrjSdS/JRfYIyeuRVAXZKvj2jbjuE2fqf+lgXULPgDKQhKiT7nBy6nb2PEpMRzTH/vlnA==
   dependencies:
-    "@cornerstonejs/core" "^0.22.3"
-    cornerstone-wado-image-loader "^4.2.1"
+    "@cornerstonejs/core" "^0.25.0"
+    cornerstone-wado-image-loader "^4.7.0"
 
-"@cornerstonejs/tools@^0.30.6":
-  version "0.30.6"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.30.6.tgz#a6e5209f00fe00a919f20fe1387f06062b289a16"
-  integrity sha512-GEm2xWOlBwgS/3aZDBZObyu+KJESyOmkCo3hA+tellLKCVr207wBUUDndEmkNX6PJ/mR4o9Md6ZjMfNF7CAYiA==
+"@cornerstonejs/tools@^0.34.0":
+  version "0.34.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.34.0.tgz#d164f575b4870cea2f3300aaf88722a5f47e61f4"
+  integrity sha512-J+pcLsAobcX3oHuDOmaWvXLfofBCa7wivuKjkuEajssgm+pUHp+hAt+LAZz0fy1m2ZGOFUZn6TQjGbQg/nrYEQ==
   dependencies:
-    "@cornerstonejs/core" "^0.22.3"
+    "@cornerstonejs/core" "^0.25.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -3537,6 +3551,17 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@jsdevtools/coverage-istanbul-loader@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.npmjs.org/@jsdevtools/coverage-istanbul-loader/-/coverage-istanbul-loader-3.0.5.tgz#2a4bc65d0271df8d4435982db4af35d81754ee26"
+  integrity sha512-EUCPEkaRPvmHjWAAZkWMT7JDzpw7FKB00WTISaiXsbNOd5hCHg77XLA8sLYLFDo1zepYLo2w7GstN8YBqRXZfA==
+  dependencies:
+    convert-source-map "^1.7.0"
+    istanbul-lib-instrument "^4.0.3"
+    loader-utils "^2.0.0"
+    merge-source-map "^1.1.0"
+    schema-utils "^2.7.0"
+
 "@kitware/vtk.js@25.9.0":
   version "25.9.0"
   resolved "https://registry.npmjs.org/@kitware/vtk.js/-/vtk.js-25.9.0.tgz#ecf555c56f6e117b454131c43aba45311a515ecc"
@@ -4304,6 +4329,13 @@
   dependencies:
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
+
+"@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
+  version "5.1.1-v1"
+  resolved "https://registry.npmjs.org/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz#dbf733a965ca47b1973177dc0bb6c889edcfb129"
+  integrity sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==
+  dependencies:
+    eslint-scope "5.1.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -9493,6 +9525,22 @@ cornerstone-wado-image-loader@^4.2.1:
     dicom-parser "^1.8.9"
     pako "^2.0.4"
 
+cornerstone-wado-image-loader@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.7.0.tgz#0b36ea3e8b0f4554234e3fc6db6260e95afea545"
+  integrity sha512-tq8YhiS4eQ9FmmxSCuoFmntSPzM9rccPq3WkeHbfglAEwmQjRaZMOR9r0MQaT0se/A9hY37q3xRfe9inhK1Ezw==
+  dependencies:
+    "@babel/eslint-parser" "^7.19.1"
+    "@cornerstonejs/codec-charls" "^0.1.1"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
+    "@cornerstonejs/codec-openjpeg" "^0.1.0"
+    "@cornerstonejs/codec-openjph" "^1.0.3"
+    coverage-istanbul-loader "^3.0.5"
+    date-format "^4.0.14"
+    dicom-parser "^1.8.9"
+    pako "^2.0.4"
+    uuid "^9.0.0"
+
 cosmiconfig@^5.0.0, cosmiconfig@^5.1.0, cosmiconfig@^5.2.1:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-5.2.1.tgz#040f726809c591e77a17c0a3626ca45b4f168b1a"
@@ -9524,6 +9572,13 @@ cosmiconfig@^7.0.0, cosmiconfig@^7.0.1:
     parse-json "^5.0.0"
     path-type "^4.0.0"
     yaml "^1.10.0"
+
+coverage-istanbul-loader@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.npmjs.org/coverage-istanbul-loader/-/coverage-istanbul-loader-3.0.5.tgz#bf942efc0f4e3ac27565203c17dca5008eae6637"
+  integrity sha512-xsw2phF0VNqUPk47V/vHXkdcTyl0tkMSmaZfLrTOhoPhPMXFelNju7utl5s7I93KXzipqDEK0YwofQSSflPz8A==
+  dependencies:
+    "@jsdevtools/coverage-istanbul-loader" "3.0.5"
 
 cp-file@^7.0.0:
   version "7.0.0"
@@ -10174,6 +10229,11 @@ date-fns@^1.27.2:
   version "1.30.1"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
+
+date-format@^4.0.14:
+  version "4.0.14"
+  resolved "https://registry.npmjs.org/date-format/-/date-format-4.0.14.tgz#7a8e584434fb169a521c8b7aa481f355810d9400"
+  integrity sha512-39BOQLs9ZjKh0/patS9nrT8wc3ioX3/eA/zgbKNopnF2wCqJEoxywwwElATYvRsXdnOxA/OQeQoFZ3rFjVajhg==
 
 dateformat@^3.0.0:
   version "3.0.3"
@@ -11428,7 +11488,7 @@ eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0, eslint-visitor-keys@^1.3
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.3.0.tgz#30ebd1ef7c2fdff01c3a4f151044af25fab0523e"
   integrity sha512-6J72N8UNa462wa/KFODt/PJ3IU60SDpC3QXC1Hjc1BXXpfL2C9R5+AU7jhe0F6GREqVMh4Juu+NY7xn+6dipUQ==
 
-eslint-visitor-keys@^2.0.0:
+eslint-visitor-keys@^2.0.0, eslint-visitor-keys@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-2.1.0.tgz#f65328259305927392c938ed44eb0a5c9b2bd303"
   integrity sha512-0rSmRBzXgDzIsD6mGdJgevzgezI534Cer5L/vyMX0kHzT/jiB43jRhd9YUlMGYLQy2zprNmoT8qasCGtY+QaKw==
@@ -14528,6 +14588,16 @@ istanbul-lib-instrument@^3.0.1, istanbul-lib-instrument@^3.3.0:
     istanbul-lib-coverage "^2.0.5"
     semver "^6.0.0"
 
+istanbul-lib-instrument@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.npmjs.org/istanbul-lib-instrument/-/istanbul-lib-instrument-4.0.3.tgz#873c6fff897450118222774696a3f28902d77c1d"
+  integrity sha512-BXgQl9kf4WTCPCCpmFGoJkz/+uhvm7h7PFKUYxh7qarQd3ER33vHG//qaE8eN25l07YqZPpHXU9I09l/RD5aGQ==
+  dependencies:
+    "@babel/core" "^7.7.5"
+    "@istanbuljs/schema" "^0.1.2"
+    istanbul-lib-coverage "^3.0.0"
+    semver "^6.3.0"
+
 istanbul-lib-instrument@^5.0.4:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/istanbul-lib-instrument/-/istanbul-lib-instrument-5.2.0.tgz#31d18bdd127f825dd02ea7bfdfd906f8ab840e9f"
@@ -16131,6 +16201,13 @@ merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha512-cCi6g3/Zr1iqQi6ySbseM1Xvooa98N0w31jzUYrXPX2xqObmFGHJ0tQ5u74H3mVh7wLouTseZyYIq39g8cNp1w==
+
+merge-source-map@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/merge-source-map/-/merge-source-map-1.1.0.tgz#2fdde7e6020939f70906a68f2d7ae685e4c8c646"
+  integrity sha512-Qkcp7P2ygktpMPh2mCQZaf3jhN6D3Z/qVZHSdWvQ+2Ef5HgRAPBO57A77+ENm0CPx2+1Ce/MYKi3ymqdfuqibw==
+  dependencies:
+    source-map "^0.6.1"
 
 merge-stream@^2.0.0:
   version "2.0.0"
@@ -22972,6 +23049,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uuid@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
+  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 v8-compile-cache@^2.0.3:
   version "2.3.0"
