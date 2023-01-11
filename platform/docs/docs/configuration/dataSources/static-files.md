@@ -12,14 +12,14 @@ performance of serving the files is just the read from disk/write to http stream
 time, without any extra processing time.
 
 The project for the static wado files is located here: [static-wado]:
-https://github.com/wayfarer3130/static-wado
+https://github.com/OHIF/static-wado
 
 It can be compiled with Java and Gradle, and then run against a set of dicom, in
 the example located in /dicom/study1 outputting to /dicomweb, and then a server
 run against that data, like this:
 
 ```
-git clone https://github.com/wayfarer3130/static-wado.git
+git clone https://github.com/OHIF/static-wado
 cd static-wado
 ./gradlew installDist
 StaticWado/build/install/StaticWado/bin/StaticWado -d /dicomweb /dicom/study1

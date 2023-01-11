@@ -10,15 +10,11 @@ import {
   EVENTS,
   metaData,
   volumeLoader,
-  imageLoader,
   imageLoadPoolManager,
   Settings,
 } from '@cornerstonejs/core';
 import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
-import {
-  cornerstoneStreamingImageVolumeLoader,
-  sharedArrayBufferImageLoader,
-} from '@cornerstonejs/streaming-image-volume-loader';
+import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
@@ -123,11 +119,6 @@ export default async function init({
     interleaveTopToBottom
   );
   HangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
-
-  imageLoader.registerImageLoader(
-    'streaming-wadors',
-    sharedArrayBufferImageLoader
-  );
 
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
