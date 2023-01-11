@@ -2,6 +2,8 @@
 <!-- Please read our Rules of Conduct: https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md -->
 <!-- 🕮 Read our guide about our Contributing Guide here https://v3-docs.ohif.org/development/contributing -->
 <!-- :hand: Thank you for starting this amazing contribution! -->
+<!-- Please make sure the checklist below is complete before submitting your PR.
+To complete the checklist, add an 'x' to each item. -->
 
 ### Context
 
@@ -37,10 +39,31 @@ Describe how we can test your changes.
 
 ### Checklist
 
+#### PR
+
+<!--
+https://semantic-release.gitbook.io/semantic-release/#how-does-it-work
+
+Examples:
+- feat(MeasurementService): add ...
+- fix(Toolbar): fix ...
+- docs(Readme): update ...
+- style(Whitespace): fix ...
+- refactor(ExtensionManager): ...
+- test(HangingProtocol): Add test ...
+- chore(git): update ...
+- perf(VolumeLoader): ...
+
+⚠️⚠️ Please note the letter casing in the provided examples (upper or lower). ⚠️⚠️
+-->
+
+- [] My Pull Request title above is meaningful and follows semantic-release
+  format and guidelines.
+
 #### Code
 
-- [] The code has been well-documented to help with understanding and
-  maintenance.
+- [] My code has been well-documented (function documentation, inline comments,
+  etc.)
 
 #### Public Documentation Updates
 
