@@ -563,7 +563,6 @@ class MeasurementService {
       newMeasurement.selected = this.measurements[internalUID].selected;
       this.measurements[internalUID] = newMeasurement;
       if (isUpdate) {
-        log.info('updated');
         this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
           measurement: newMeasurement,
