@@ -6,19 +6,17 @@ labels: 'Community: Report :bug:, Awaiting Reproduction'
 assignees: ''
 ---
 
-> **Before Creating an issue**
->
-> - Are you running the latest version?
-> - Are you reporting to the correct repository?
-> - Did you search existing issues?
-
-## Bug Report
+<!-- ⚠️⚠️ Do Not Delete This! bug_report_template ⚠️⚠️ -->
+<!-- Please read our Rules of Conduct: https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md -->
+<!-- 🕮 Read our guide about our process: https://v3-docs.ohif.org/development/our-process -->
+<!-- 🔎 Search existing issues to avoid creating duplicates. -->
+<!-- 🧪 Test using the latest version -->
 
 ### Describe the Bug
 
 _A clear and concise description of what the bug is._
 
-### What steps can we follow to reproduce the bug?
+### Steps to Reproduce:
 
 1. First step
 2. Second step
