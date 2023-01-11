@@ -2,7 +2,7 @@
 name: "\U0001F41B Bug report"
 about: Create a report to help us improve
 title: ''
-labels: 'Community: Report :bug:, Awaiting Reproduction, Triage :white_flag:'
+labels: 'Community: Report :bug:, Awaiting Reproduction'
 assignees: ''
 ---
 
@@ -27,6 +27,15 @@ _A clear and concise description of what the bug is._
 ```js
 Please use code blocks to show formatted errors or code snippets
 ```
+
+### The current behavior
+
+_A clear and concise description of what happens instead of the expected
+behavior._
+
+### The expected behavior
+
+_A clear and concise description of what you expected to happen._
 
 > :warning: Reports we cannot reproduce are at risk of being marked stale and
 > closed. The more information you can provide, the more likely we are to look

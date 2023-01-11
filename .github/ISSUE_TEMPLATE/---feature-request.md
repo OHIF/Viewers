@@ -2,7 +2,7 @@
 name: "\U0001F680 Feature request"
 about: Suggest an idea for this project
 title: ''
-labels: 'Community: Request :hand:, Triage :white_flag:'
+labels: 'Community: Request :hand:'
 assignees: ''
 ---
 
@@ -10,8 +10,8 @@ assignees: ''
 > community. How does it add value? Why _this feature_?
 >
 > Is your request very specific to your needs? Consider
-> [contributing it](https://docs.ohif.org/contributing.html) yourself! Or reach
-> out to a community member that offers
+> [contributing it](https://v3-docs.ohif.org/development/contributing) yourself!
+> Or reach out to a community member that offers
 > [consulting services](https://docs.ohif.org/help.html#paid--commercial).
 
 ## Request
