@@ -14,8 +14,8 @@ To complete the checklist, add an 'x' to each item: [] -> [x]
 <!--
 Provide a clear explanation of the reasoning behind this change, such as:
 - A link to the issue being addressed, using the format "Fixes #ISSUE_NUMBER"
-- An image showing the issue or problem being addressed
-- Error logs or callStacks to help with the understanding of the problem
+- An image showing the issue or problem being addressed (if not already in the issue)
+- Error logs or callStacks to help with the understanding of the problem (if not already in the issue)
 -->
 
 ### Changes & Results

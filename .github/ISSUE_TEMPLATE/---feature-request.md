@@ -20,6 +20,11 @@ assignees: ''
 
 ### Request
 
+<!--
+Please include as much detail as possible including possibly mock up screen shots, workflow or logic flow diagrams etc.
+Discuss if and how the requested feature interacts with existing features
+-->
+
 **What feature or change would you like to see made?**
 
 ...
