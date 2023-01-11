@@ -57,8 +57,8 @@ Examples:
 ⚠️⚠️ Please note the letter casing in the provided examples (upper or lower). ⚠️⚠️
 -->
 
-- [] My Pull Request title above is meaningful and follows semantic-release
-  format and guidelines.
+- [] My Pull Request title is accurate and follows the semantic-release format
+  and guidelines.
 
 #### Code
 
