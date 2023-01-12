@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Select, Button, ButtonGroup } from '@ohif/ui';
+import { Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';
@@ -81,16 +81,15 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
         <>
           <table>
             <tr>
-              <th
-                className="text-white"
+              <td
                 style={{
-                  textAlign: 'center',
+                  textAlign: 'left',
                   width: '50px',
                   verticalAlign: 'bottom',
                 }}
               >
-                CT
-              </th>
+                <Label className="text-white" text="CT"></Label>
+              </td>
               <td>
                 <div className="flex justify-between">
                   <Input
@@ -129,20 +128,19 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
               </td>
             </tr>
             <tr>
-              <th
-                className="text-white"
+              <td
                 style={{
-                  textAlign: 'center',
+                  textAlign: 'left',
                   width: '50px',
                   verticalAlign: 'bottom',
                 }}
               >
-                PT
-              </th>
+                <Label className="text-white" text="PT"></Label>
+              </td>
               <td>
                 <div className="flex justify-between">
                   <Input
-                    label={t('Lower')}
+                    label={t('')}
                     labelClassName="text-white"
                     className="mt-2 bg-black border-primary-main"
                     type="text"
@@ -158,7 +156,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
                     }}
                   />
                   <Input
-                    label={t('Upper')}
+                    label={t('')}
                     labelClassName="text-white"
                     className="mt-2 bg-black border-primary-main"
                     type="text"
