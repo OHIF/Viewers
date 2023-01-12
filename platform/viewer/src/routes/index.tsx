@@ -13,13 +13,6 @@ import PrivateRoute from './PrivateRoute';
 
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
-  // WORK LIST
-  {
-    path: '/',
-    children: DataSourceWrapper,
-    private: true,
-    props: { children: WorkList },
-  },
   {
     path: '/debug',
     children: Debug,
