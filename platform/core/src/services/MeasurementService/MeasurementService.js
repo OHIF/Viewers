@@ -194,7 +194,7 @@ class MeasurementService {
 
     measurement.selected = selected;
 
-    this._publishEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
       measurement,
     });
@@ -627,7 +627,7 @@ class MeasurementService {
     }
     this._addJumpToMeasurement(viewportIndex, measurementUID);
 
-    this._publishEvent(this.EVENTS.JUMP_TO_MEASUREMENT, {
+    this._broadcastEvent(this.EVENTS.JUMP_TO_MEASUREMENT, {
       viewportIndex,
       measurement,
     });
@@ -737,22 +737,6 @@ class MeasurementService {
     });
 
     return true;
-  }
-
-  /**
-   * Publishes an event if there are registered listeners.
-   * @param {string} eventName
-   * @param {*} eventPayload
-   */
-  _publishEvent(eventName, eventPayload) {
-    const hasListeners = Object.keys(this.listeners).length > 0;
-    const hasCallbacks = Array.isArray(this.listeners[eventName]);
-
-    if (hasListeners && hasCallbacks) {
-      this.listeners[eventName].forEach(listener => {
-        listener.callback(eventPayload);
-      });
-    }
   }
 
   /**
