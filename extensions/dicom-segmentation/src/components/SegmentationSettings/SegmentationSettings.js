@@ -29,6 +29,32 @@ const SegmentationSettings = ({ configuration, onBack, onChange, servicesManager
     setState(state => ({ ...state, [field]: value }));
   };
 
+  const once = fn => (...args) => {
+    if (!fn) return;
+    fn(...args);
+    fn = null;
+  };
+
+  const segTolValue = document.getElementById('segToleranceValue');
+  if (segTolValue) {
+    segTolValue.onchange = once(function() {
+      const { UINotificationService, LoggerService } = servicesManager.services;
+
+      const error = new Error(
+        'Segmentation loader tolerance changed.\
+        This operation can potentially generate errors in the Segmentation parsing.'
+      );
+
+      LoggerService.error({ error, message: error.message });
+      UINotificationService.show({
+        title: 'Segmentation panel',
+        message: error.message,
+        type: 'warning',
+        autoClose: true,
+      });
+  });
+}
+
   const toFloat = value => parseFloat(value / 100).toFixed(2);
 
   return (
@@ -138,10 +164,10 @@ const SegmentationSettings = ({ configuration, onBack, onChange, servicesManager
         <label style={{ margin: '0 15px' }}>
           Tolerance:
           <input
+            id="segToleranceValue"
             style={{ margin: '0 15px' }}
             label="Tolerance"
             onKeyPress={event => {
-              if (event.key === 'Enter') {
                 const validate = string => {
                   let rgx = /[^-.e0-9]+/g;
                   return string.match(rgx);
@@ -150,24 +176,8 @@ const SegmentationSettings = ({ configuration, onBack, onChange, servicesManager
                 if (validate(event.key)) {
                   event.preventDefault();
                 }
-
-                const {
-                  UINotificationService,
-                  LoggerService,
-                } = servicesManager.services;
-                const error = new Error(
-                  'Segmentation loader tolerance changed.\
-                  This operation can potentially generate errors in the Segmentation parsing.'
-                );
-                LoggerService.error({ error, message: error.message });
-                UINotificationService.show({
-                  title: 'Segmentation panel',
-                  message: error.message,
-                  type: 'warning',
-                  autoClose: true,
-                });
               }
-            }}
+            }
             onChange={event => {
               save('segsTolerance', event.target.value);
             }}
