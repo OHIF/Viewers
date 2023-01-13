@@ -86,7 +86,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
   const targets = Object.keys(cachedStats);
 
   if (!targets.length) {
-    return;
+    return [];
   }
 
   const annotations = [];
