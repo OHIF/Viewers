@@ -68,7 +68,6 @@ const EVENTS = {
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
   JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
-  MEASUREMENT_SELECTED_CHANGED: 'event:measurement_selected_changed',
 };
 
 const VALUE_TYPES = {
@@ -189,20 +188,16 @@ class MeasurementService {
 
   setMeasurementSelected(measurementUID, selected) {
     const measurement = this.getMeasurement(measurementUID);
-    if (measurement) {
-      measurement.selected = selected;
-
-      const eventName = this.EVENTS.MEASUREMENT_SELECTED_CHANGED;
-
-      const hasListeners = Object.keys(this.listeners).length > 0;
-      const hasCallbacks = Array.isArray(this.listeners[eventName]);
-
-      if (hasListeners && hasCallbacks) {
-        this.listeners[eventName].forEach(listener => {
-          listener.callback({ measurement });
-        });
-      }
+    if (!measurement) {
+      return;
     }
+
+    measurement.selected = selected;
+
+    this._publishEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement,
+    });
   }
 
   /**
@@ -560,6 +555,8 @@ class MeasurementService {
     };
 
     if (this.measurements[internalUID]) {
+      // TODO: Ultimately, each annotation should have a selected flag right from the soure.
+      // For now, it is just added in OHIF here and in setMeasurementSelected.
       newMeasurement.selected = this.measurements[internalUID].selected;
       this.measurements[internalUID] = newMeasurement;
       if (isUpdate) {
@@ -630,16 +627,10 @@ class MeasurementService {
     }
     this._addJumpToMeasurement(viewportIndex, measurementUID);
 
-    const eventName = this.EVENTS.JUMP_TO_MEASUREMENT;
-
-    const hasListeners = Object.keys(this.listeners).length > 0;
-    const hasCallbacks = Array.isArray(this.listeners[eventName]);
-
-    if (hasListeners && hasCallbacks) {
-      this.listeners[eventName].forEach(listener => {
-        listener.callback({ viewportIndex, measurement });
-      });
-    }
+    this._publishEvent(this.EVENTS.JUMP_TO_MEASUREMENT, {
+      viewportIndex,
+      measurement,
+    });
   }
 
   getJumpToMeasurement(viewportIndex) {
@@ -746,6 +737,22 @@ class MeasurementService {
     });
 
     return true;
+  }
+
+  /**
+   * Publishes an event if there are registered listeners.
+   * @param {string} eventName
+   * @param {*} eventPayload
+   */
+  _publishEvent(eventName, eventPayload) {
+    const hasListeners = Object.keys(this.listeners).length > 0;
+    const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+    if (hasListeners && hasCallbacks) {
+      this.listeners[eventName].forEach(listener => {
+        listener.callback(eventPayload);
+      });
+    }
   }
 
   /**

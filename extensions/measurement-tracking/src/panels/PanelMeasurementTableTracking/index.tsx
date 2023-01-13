@@ -119,19 +119,15 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
     const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
     const cleared = MeasurementService.EVENTS.MEASUREMENTS_CLEARED;
-    const selectedChanged =
-      MeasurementService.EVENTS.MEASUREMENT_SELECTED_CHANGED;
     const subscriptions = [];
 
-    [added, addedRaw, updated, removed, cleared, selectedChanged].forEach(
-      evt => {
-        subscriptions.push(
-          MeasurementService.subscribe(evt, () => {
-            setMeasurementsUpdated(Date.now().toString());
-          }).unsubscribe
-        );
-      }
-    );
+    [added, addedRaw, updated, removed, cleared].forEach(evt => {
+      subscriptions.push(
+        MeasurementService.subscribe(evt, () => {
+          setMeasurementsUpdated(Date.now().toString());
+        }).unsubscribe
+      );
+    });
 
     return () => {
       subscriptions.forEach(unsub => {

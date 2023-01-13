@@ -121,6 +121,7 @@ const connectToolsToMeasurementService = (
       const { toolName } = metadata;
 
       annotationModifiedEventDetail.uid = annotationUID;
+      // Passing true to indicate this is an update and NOT a annotation (start) completion.
       annotationToMeasurement(toolName, annotationModifiedEventDetail, true);
     } catch (error) {
       console.warn('Failed to update measurement:', error);
