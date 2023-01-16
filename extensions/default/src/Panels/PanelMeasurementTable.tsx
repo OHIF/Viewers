@@ -255,14 +255,13 @@ function _getMappedMeasurements(MeasurementService) {
 }
 
 function _mapMeasurementToDisplay(measurement, index, types) {
-  const { displayText, uid, label, type } = measurement;
+  const { displayText, uid, label, type, selected } = measurement;
 
   return {
     uid,
     label: label || '(empty)',
     measurementType: type,
     displayText: displayText || [],
-    // TODO: handle one layer down
-    isActive: false, // activeMeasurementItem === i + 1,
+    isActive: selected,
   };
 }

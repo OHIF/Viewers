@@ -323,7 +323,7 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
     label: measurement.label || '(empty)',
     measurementType: measurement.type,
     displayText: displayText || [],
-    isActive: false, // activeMeasurementItem === i + 1,
+    isActive: measurement.selected,
   };
 }
 

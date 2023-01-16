@@ -364,8 +364,9 @@ describe('MeasurementService.js', () => {
         () => (addCallbackWasCalled = true)
       );
 
-      /* Add new measurement */
-      source.annotationToMeasurement(annotationType, measurement);
+      /* Add new measurement - two calls needed for the start and the other for the completed*/
+      const uid = source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, { uid, ...measurement });
 
       expect(addCallbackWasCalled).toBe(true);
     });
@@ -392,7 +393,11 @@ describe('MeasurementService.js', () => {
       const uid = source.annotationToMeasurement(annotationType, measurement);
 
       /* Update measurement */
-      source.annotationToMeasurement(annotationType, { uid, ...measurement });
+      source.annotationToMeasurement(
+        annotationType,
+        { uid, ...measurement },
+        true
+      );
 
       expect(updateCallbackWasCalled).toBe(true);
     });
@@ -418,8 +423,9 @@ describe('MeasurementService.js', () => {
       /* Unsubscribe */
       unsubscribe();
 
-      /* Create measurement */
-      source.annotationToMeasurement(annotationType, measurement);
+      /* Create measurement - two calls needed one to start and one to complete */
+      const uid = source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, { uid, ...measurement });
 
       expect(updateCallbackWasCalled).toBe(false);
     });

@@ -121,9 +121,34 @@ const connectToolsToMeasurementService = (
       const { toolName } = metadata;
 
       annotationModifiedEventDetail.uid = annotationUID;
-      annotationToMeasurement(toolName, annotationModifiedEventDetail);
+      // Passing true to indicate this is an update and NOT a annotation (start) completion.
+      annotationToMeasurement(toolName, annotationModifiedEventDetail, true);
     } catch (error) {
       console.warn('Failed to update measurement:', error);
+    }
+  }
+  function selectMeasurement(csToolsEvent) {
+    try {
+      const annotationSelectionEventDetail = csToolsEvent.detail;
+
+      const {
+        added: addedSelectedAnnotationUIDs,
+        removed: removedSelectedAnnotationUIDs,
+      } = annotationSelectionEventDetail;
+
+      if (removedSelectedAnnotationUIDs) {
+        removedSelectedAnnotationUIDs.forEach(annotationUID =>
+          MeasurementService.setMeasurementSelected(annotationUID, false)
+        );
+      }
+
+      if (addedSelectedAnnotationUIDs) {
+        addedSelectedAnnotationUIDs.forEach(annotationUID =>
+          MeasurementService.setMeasurementSelected(annotationUID, true)
+        );
+      }
+    } catch (error) {
+      console.warn('Failed to select and unselect measurements:', error);
     }
   }
 
@@ -157,13 +182,17 @@ const connectToolsToMeasurementService = (
 
   // on display sets added, check if there are any measurements in measurement service that need to be
   // put into cornerstone tools
+  const addedEvt = csToolsEvents.ANNOTATION_ADDED;
   const completedEvt = csToolsEvents.ANNOTATION_COMPLETED;
   const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
   const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
+  const selectionEvt = csToolsEvents.ANNOTATION_SELECTION_CHANGE;
 
+  eventTarget.addEventListener(addedEvt, addMeasurement);
   eventTarget.addEventListener(completedEvt, addMeasurement);
   eventTarget.addEventListener(updatedEvt, updateMeasurement);
   eventTarget.addEventListener(removedEvt, removeMeasurement);
+  eventTarget.addEventListener(selectionEvt, selectMeasurement);
 
   return csTools3DVer1MeasurementSource;
 };
