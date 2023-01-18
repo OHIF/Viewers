@@ -7,7 +7,7 @@ import TextureFeature from './TextureFeatures/TextureFeature';
 const AITriggerComponentPanel = () => {
   return (
     <div>
-      {/* <LayerControls /> */}
+      <LayerControls />
       <JobDetail />
       <TextureFeature />
     </div>
