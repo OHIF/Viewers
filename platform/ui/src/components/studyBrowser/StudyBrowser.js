@@ -21,7 +21,6 @@ function StudyBrowser(props) {
             // console.log({ study });
 
             return study.thumbnails.map((thumb, thumbIndex) => {
-
               // console.log({ thumb });
               // TODO: Thumb has more props than we care about?
               const {
@@ -63,7 +62,8 @@ function StudyBrowser(props) {
                     // Events
                     onClick={onThumbnailClick.bind(
                       undefined,
-                      displaySetInstanceUID
+                      displaySetInstanceUID,
+                      thumbIndex
                     )}
                     onDoubleClick={onThumbnailDoubleClick}
                   />

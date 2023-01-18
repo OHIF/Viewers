@@ -67,6 +67,13 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onThumbnailClick: displaySetInstanceUID => {
+      localStorage.setItem(
+        'active_study',
+        JSON.stringify({
+          displaySetInstanceUID: displaySetInstanceUID,
+        })
+      );
+
       let displaySet = findDisplaySetByUID(
         ownProps.studyMetadata,
         displaySetInstanceUID

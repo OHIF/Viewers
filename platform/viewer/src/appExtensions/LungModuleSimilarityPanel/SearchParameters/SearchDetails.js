@@ -451,6 +451,9 @@ const SearchDetails = props => {
 
           setSimilarityResultState(result.currJob);
           setResultsList(result.jobList);
+
+          eventBus.dispatch('fetchscans', result.currJob);
+
           localStorage.setItem(
             'print-similarscans',
             JSON.stringify(result.jobList)
