@@ -95,6 +95,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           __dirname,
           '../platform/viewer/node_modules/date-fns'
         ),
+        'react-router': path.resolve(
+          __dirname,
+          '../platform/viewer/node_modules/react-router'
+        ),
       },
       // Which directories to search when resolving modules
       modules: [
