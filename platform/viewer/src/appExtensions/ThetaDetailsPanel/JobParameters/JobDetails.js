@@ -280,7 +280,7 @@ const JobParameters = props => {
 
   return (
     <div className="component">
-      <div
+      {/* <div
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -297,9 +297,9 @@ const JobParameters = props => {
         >
           {activeTab ? ' Hide Layout Parameter' : ' Show Layout Parameter'}
         </div>
-      </div>
+      </div> */}
 
-      {activeTab && (
+      {/* {activeTab && (
         <>
           <div className="title-header">Layer Controls</div>
 
@@ -336,7 +336,7 @@ const JobParameters = props => {
             </label>
           </form>
         </>
-      )}
+      )} */}
 
       {Object.keys(toolData).length > 0 && (
         <div>

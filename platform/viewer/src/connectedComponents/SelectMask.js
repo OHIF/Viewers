@@ -106,13 +106,14 @@ class SelectMask extends Component {
 
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
-      const enabledElement = enabledEvt.detail.element;
-
+      // this.loadLastActiveStudy();
+      
       const options = {
         type: 'click',
       };
       commandsManager.runCommand('triggerAlgorithm', options);
-
+      
+      const enabledElement = enabledEvt.detail.element;
       let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
         tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
@@ -126,7 +127,7 @@ class SelectMask extends Component {
       }
       // this.handleSidePanelChange('right', 'lung-module-similarity-panel');
       // this.handleSidePanelChange('left', 'theta-details-panel');
-    }, 2000);
+    }, 5);
   };
 
   componentWillUnmount() {
@@ -363,6 +364,16 @@ class SelectMask extends Component {
       this.timepointApi.retrieveTimepoints({ PatientID });
       this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
+  }
+
+  loadLastActiveStudy() {
+    // let active_study = JSON.parse(localStorage.getItem('active_study'));
+
+    if (this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID)
+      this.props.onThumbnailClick(
+        this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID,
+        this.props.studies
+      );
   }
 
   _getActiveViewport() {

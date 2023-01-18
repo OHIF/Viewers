@@ -25,6 +25,10 @@ import eventBus from '../lib/eventBus.js';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state.js';
 import { radcadapi } from '../utils/constants.js';
 
+const MINIMUM_SIZE = 100;
+const DEFAULT_SIZE = 512;
+const MAX_TEXTURE_SIZE = 10000;
+
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -119,6 +123,13 @@ class Viewer extends Component {
       //   enabledElement
       // );
       let viewport = cornerstone.getViewport(enabledElement);
+      // if (
+      //   !matchPath(this.props.location.pathname, {
+      //     path:
+      //       '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+      //     exact: true,
+      //   })
+      // )
       localStorage.setItem(
         this.props.studyInstanceUID,
         JSON.stringify({
@@ -237,12 +248,16 @@ class Viewer extends Component {
         ? activeViewport.displaySetInstanceUID
         : undefined;
 
+      const thumbnails = _mapStudiesToThumbnails(
+        studies,
+        activeDisplaySetInstanceUID
+      );
+
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(
-          studies,
-          activeDisplaySetInstanceUID
-        ),
+        thumbnails,
       });
+
+      this.loadLastActiveStudy(thumbnails);
     }
 
     this.setState({
@@ -263,29 +278,30 @@ class Viewer extends Component {
 
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
-      const enabledElement = enabledEvt.detail.element;
-      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      if (enabledElement && tool_data) {
-        try {
-          let viewport = cornerstone.getViewport(enabledElement);
-          // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
-          if (viewport.scale < 1) return;
-          if (tool_data.x && viewport.translation.x != tool_data.x)
-            viewport.translation.x = tool_data.x;
-          if (tool_data.y && viewport.translation.y != tool_data.y)
-            viewport.translation.y = tool_data.y;
-          if (tool_data.scale && viewport.scale != tool_data.scale)
-            viewport.scale = tool_data.scale;
-          if (tool_data.voi) viewport.voi = tool_data.voi;
+      // this.loadLastActiveStudy();
+      // const enabledElement = enabledEvt.detail.element;
+      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      // tool_data =
+      //   tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      // if (enabledElement && tool_data) {
+      //   try {
+      //     let viewport = cornerstone.getViewport(enabledElement);
+      //     // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
+      //     if (viewport.scale < 1) return;
+      //     // if (tool_data.x && viewport.translation.x != tool_data.x)
+      //     //   viewport.translation.x = tool_data.x;
+      //     // if (tool_data.y && viewport.translation.y != tool_data.y)
+      //     //   viewport.translation.y = tool_data.y;
+      //     if (tool_data.scale && viewport.scale != tool_data.scale)
+      //       viewport.scale = tool_data.scale;
+      //     if (tool_data.voi) viewport.voi = tool_data.voi;
 
-          // cornerstone.setViewport(enabledElement, viewport);
-          // eventBus.dispatch('importSegmentations', {});
-        } catch (error) {
-          console.error(error);
-        }
-      }
+      //     cornerstone.setViewport(enabledElement, viewport);
+      //     // eventBus.dispatch('importSegmentations', {});
+      //   } catch (error) {
+      //     console.error(error);
+      //   }
+      // }
 
       if (
         matchPath(this.props.location.pathname, {
@@ -297,6 +313,48 @@ class Viewer extends Component {
         this.handleSidePanelChange('right', 'xnat-segmentation-panel');
       }
     }, 5000);
+
+    setTimeout(() => {
+      // this.loadLastActiveStudy();
+      const enabledElement = enabledEvt.detail.element;
+      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      tool_data =
+        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      if (enabledElement && tool_data) {
+        try {
+          let viewport = cornerstone.getViewport(enabledElement);
+
+  
+          let newWidth = enabledElement.offsetHeight;
+          let newHeight = enabledElement.offsetWidth;
+
+          if (newWidth > DEFAULT_SIZE || newHeight > DEFAULT_SIZE) {
+            const multiplier = DEFAULT_SIZE / Math.max(newWidth, newHeight);
+            newHeight *= multiplier;
+            newWidth *= multiplier;
+          }
+          // enabledElement.offsetHeight = newHeight;
+          // enabledElement.offsetWidth = newWidth;
+          console.log({ width: newWidth, height: newHeight });
+
+          // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
+          if (viewport.scale < 1) return;
+          if (tool_data.x && viewport.translation.x != tool_data.x)
+            viewport.translation.x = tool_data.x;
+          if (tool_data.y && viewport.translation.y != tool_data.y)
+            viewport.translation.y = tool_data.y;
+          if (tool_data.scale && viewport.scale != tool_data.scale)
+            viewport.scale = tool_data.scale;
+          if (tool_data.voi) viewport.voi = tool_data.voi;
+
+          cornerstone.resize(enabledElement, true);
+          cornerstone.setViewport(enabledElement, viewport);
+          // eventBus.dispatch('importSegmentations', {});
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }, 2000);
   };
 
   async handleFetchAndSetSeries(studyInstanceUID) {
@@ -350,12 +408,17 @@ class Viewer extends Component {
       activeViewportIndex !== prevProps.activeViewportIndex ||
       activeDisplaySetInstanceUID !== prevActiveDisplaySetInstanceUID
     ) {
+      const thumbnails = _mapStudiesToThumbnails(
+        studies,
+        activeDisplaySetInstanceUID
+      );
+
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(
-          studies,
-          activeDisplaySetInstanceUID
-        ),
+        thumbnails,
       });
+
+      // this.loadLastActiveStudy(thumbnails);
+
       // if (activeDisplaySetInstanceUID)
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
@@ -369,6 +432,20 @@ class Viewer extends Component {
 
   _getActiveViewport() {
     return this.props.viewports[this.props.activeViewportIndex];
+  }
+
+  loadLastActiveStudy(thumbnails) {
+    // let active_study = JSON.parse(localStorage.getItem('active_study'));
+
+    try {
+      // if (thumbnails[0].thumbnails[2].displaySetInstanceUID)
+      //   this.props.onThumbnailClick(
+      //     thumbnails[0].thumbnails[2].displaySetInstanceUID,
+      //     this.props.studies
+      //   );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   handleSidePanelChange = (side, selectedPanel) => {
@@ -803,6 +880,7 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         displaySet,
         studies
       );
+      
       const active = _isDisplaySetActive(
         displaySet,
         studies,
