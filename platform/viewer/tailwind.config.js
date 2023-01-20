@@ -313,6 +313,12 @@ module.exports = {
       '1/2': '50%',
       'viewport-scrollbar': '1.3rem',
     },
+    minHeight: theme => ({
+      ...theme('spacing'),
+      '0': '0',
+      full: '100%',
+      screen: '100vh',
+    }),
     letterSpacing: {
       tighter: '-0.05em',
       tight: '-0.025em',
