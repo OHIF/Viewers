@@ -55,7 +55,7 @@ const SegmentationGroupTable = ({
   setRenderOutline,
 }) => {
   return (
-    <div className="font-inter font-[300]">
+    <div className="flex flex-col min-h-0 font-inter font-[300]">
       <GetSegmentationConfig
         // showAddSegmentation={showAddSegmentation}
         // onSegmentationAdd={onSegmentationAdd}
@@ -68,7 +68,7 @@ const SegmentationGroupTable = ({
         setRenderInactiveSegmentations={setRenderInactiveSegmentations}
         setRenderOutline={setRenderOutline}
       />
-      <div className="flex flex-col pr-[1px] mt-1">
+      <div className="flex flex-col min-h-0 pr-[1px] mt-1">
         {!!segmentations.length &&
           segmentations.map((segmentation, index) => {
             const {
@@ -82,7 +82,6 @@ const SegmentationGroupTable = ({
               activeSegmentIndex,
             } = segmentation;
             return (
-              <>
                 <SegmentationGroup
                   id={id}
                   label={label}
@@ -107,8 +106,6 @@ const SegmentationGroupTable = ({
                   onSegmentAdd={onSegmentAdd}
                   showSegmentDelete={false}
                 />
-                <div className="h-2 bg-black"></div>
-              </>
             );
           })}
       </div>

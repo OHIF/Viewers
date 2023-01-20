@@ -176,7 +176,7 @@ const SidePanel = ({
           {/** Panel Header with Arrow and Close Actions */}
           <div
             className={classnames(
-              'px-[10px] bg-primary-dark h-9 cursor-pointer flex shrink-0',
+              'flex flex-static px-[10px] bg-primary-dark h-9 cursor-pointer',
               tabs.length === 1 && 'mb-1'
             )}
             onClick={() => {
@@ -190,7 +190,7 @@ const SidePanel = ({
               color="inherit"
               border="none"
               rounded="none"
-              className="flex flex-row items-center px-3 relative w-full"
+              className="flex flex-row flex-static items-center px-3 relative w-full"
               name={tabs.length === 1 ? `${tabs[activeTabIndex].name}` : ''}
             >
               <Icon
@@ -278,7 +278,7 @@ function _getMoreThanOneTabLayout(
 ) {
   return (
     <div
-      className="collapse-sidebar relative"
+      className="flex-static collapse-sidebar relative"
       style={{
         backgroundColor: '#06081f',
       }}

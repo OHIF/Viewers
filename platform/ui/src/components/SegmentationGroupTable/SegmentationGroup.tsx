@@ -58,7 +58,7 @@ const SegmentGroupHeader = ({
   return (
     <div
       className={classnames(
-        'flex items-center pr-2 pl-[3px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
+        'flex flex-static items-center pr-2 pl-[3px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
         {
           'bg-secondary-main': isActive,
           'bg-secondary-dark': !isActive,
@@ -149,7 +149,7 @@ const SegmentationGroup = ({
   onSegmentEdit,
 }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col flex-auto min-h-0">
       <SegmentGroupHeader
         id={id}
         label={label}
@@ -162,7 +162,7 @@ const SegmentationGroup = ({
         onSegmentationDelete={onSegmentationDelete}
       />
       {!isMinimized && (
-        <div className="">
+        <div className="flex flex-col flex-auto min-h-0">
           <AddNewSegmentRow
             onConfigChange={onSegmentationConfigChange}
             onSegmentAdd={onSegmentAdd}
@@ -172,8 +172,7 @@ const SegmentationGroup = ({
             showAddSegment={showAddSegment}
           />
           <div
-            className="ohif-scrollbar overflow-y-hidden"
-            style={{ maxHeight: '40rem' }}
+            className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden"
           >
             {!!segments.length &&
               segments.map(segment => {
