@@ -19,14 +19,11 @@ import {
 } from '@cornerstonejs/core';
 import isEqual from 'lodash.isequal';
 import { easeInOutBell } from '../../utils/transitions';
-import {
-  Segmentation,
-  SegmentationConfig,
-  SegmentationSchema,
-} from './SegmentationServiceTypes';
+import { Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
+const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
 const EVENTS = {
   // fired when the segmentation is updated (e.g. when a segment is added, removed, or modified, locked, visibility changed etc.)
@@ -68,7 +65,7 @@ class SegmentationService {
   public destroy = () => {
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_MODIFIED,
-      this._onSegmentationModified
+      this._onSegmentationModifiedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -431,15 +428,15 @@ class SegmentationService {
   }
 
   public addOrUpdateSegmentation(
-    segmentationSchema: SegmentationSchema,
+    segmentation: Segmentation,
     suppressEvents = false,
     notYetUpdatedAtSource = false
   ): string {
-    const { id: segmentationId } = segmentationSchema;
-    let segmentation = this.segmentations[segmentationId];
-    if (segmentation) {
+    const { id: segmentationId } = segmentation;
+    let cachedSegmentation = this.segmentations[segmentationId];
+    if (cachedSegmentation) {
       // Update the segmentation (mostly for assigning metadata/labels)
-      Object.assign(segmentation, segmentationSchema);
+      Object.assign(cachedSegmentation, segmentation);
 
       this._updateCornerstoneSegmentations({
         segmentationId,
@@ -448,7 +445,7 @@ class SegmentationService {
 
       if (!suppressEvents) {
         this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-          segmentation,
+          segmentation: cachedSegmentation,
         });
       }
 
@@ -477,24 +474,21 @@ class SegmentationService {
 
     cstSegmentation.config.color.addColorLUT(newColorLUT, newColorLUTIndex);
 
-    if (
-      segmentationSchema.label === undefined ||
-      segmentationSchema.label === ''
-    ) {
-      segmentationSchema.label = 'Segmentation';
+    if (segmentation.label === undefined || segmentation.label === '') {
+      segmentation.label = 'Segmentation';
     }
 
     this.segmentations[segmentationId] = {
-      ...segmentationSchema,
-      segments: segmentationSchema.segments || [null],
-      activeSegmentIndex: segmentationSchema.activeSegmentIndex ?? null,
-      segmentCount: segmentationSchema.segmentCount ?? 0,
+      ...segmentation,
+      segments: segmentation.segments || [null],
+      activeSegmentIndex: segmentation.activeSegmentIndex ?? null,
+      segmentCount: segmentation.segmentCount ?? 0,
       isActive: false,
       colorLUTIndex: newColorLUTIndex,
       isVisible: true,
     };
 
-    segmentation = this.segmentations[segmentationId];
+    cachedSegmentation = this.segmentations[segmentationId];
 
     this._updateCornerstoneSegmentations({
       segmentationId,
@@ -503,14 +497,14 @@ class SegmentationService {
 
     if (!suppressEvents) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
-        segmentation,
+        segmentation: cachedSegmentation,
       });
     }
 
-    return segmentation.id;
+    return cachedSegmentation.id;
   }
 
-  public async createSegmentationForSEGDisplaySet(
+  public async createSegmentationForDisplaySet(
     segDisplaySet,
     segmentationId?: string,
     suppressEvents = false
@@ -524,11 +518,9 @@ class SegmentationService {
       );
     }
 
-    const segmentationSchema: SegmentationSchema = {
+    const segmentation: Segmentation = {
       id: segmentationId,
-      volumeId: segmentationId,
       displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
-      referencedVolumeURI: segDisplaySet.referencedVolumeURI,
       activeSegmentIndex: 1,
       cachedStats: {},
       label: '',
@@ -537,18 +529,27 @@ class SegmentationService {
       displayText: [],
       hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
       segmentCount: 0,
+      isVisible: true,
+      isActive: false,
       segments: [],
+      colorLUTIndex: 0,
+      representationData: {
+        LABELMAP: {
+          volumeId: segmentationId,
+          referencedVolumeId: segDisplaySet.referencedVolumeURI,
+        },
+      },
     };
 
     const labelmap = this.getLabelmapVolume(segmentationId);
-    const segmentation = this.getSegmentation(segmentationId);
+    const cachedSegmentation = this.getSegmentation(segmentationId);
 
-    if (labelmap && segmentation) {
-      // if the labalemap with the same segmentationId already exists, we can
+    if (labelmap && cachedSegmentation) {
+      // if the labelmap with the same segmentationId already exists, we can
       // just assume that the segmentation is already created and move on with
       // updating the state
       return this.addOrUpdateSegmentation(
-        Object.assign(segmentationSchema, segmentation),
+        Object.assign(segmentation, cachedSegmentation),
         suppressEvents
       );
     }
@@ -660,10 +661,10 @@ class SegmentationService {
 
       const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
 
-      segmentationSchema.cachedStats = {
-        ...segmentationSchema.cachedStats,
+      segmentation.cachedStats = {
+        ...segmentation.cachedStats,
         segmentCenter: {
-          ...segmentationSchema.cachedStats.segmentCenter,
+          ...segmentation.cachedStats.segmentCenter,
           [segmentIndex]: {
             center: {
               image: [x, y, z],
@@ -696,14 +697,14 @@ class SegmentationService {
       await promise;
     }
 
-    segmentationSchema.segmentCount = Object.keys(segments).length;
-    segmentationSchema.segments = [null]; // segment 0
+    segmentation.segmentCount = Object.keys(segments).length;
+    segmentation.segments = [null]; // segment 0
 
     Object.keys(segments).forEach(segmentIndex => {
       const segmentInfo = segments[segmentIndex];
       const segIndex = Number(segmentIndex);
 
-      segmentationSchema.segments[segIndex] = {
+      segmentation.segments[segIndex] = {
         label: segmentInfo.label || `Segment ${segIndex}`,
         segmentIndex: Number(segmentIndex),
         color: [
@@ -725,7 +726,232 @@ class SegmentationService {
       overlappingSegments,
     });
 
-    return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);
+    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
+  }
+
+  public async createSegmentationForSEGDisplaySet(
+    segDisplaySet,
+    segmentationId?: string,
+    suppressEvents = false
+  ): Promise<string> {
+    segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
+    const { segments, referencedVolumeId } = segDisplaySet;
+
+    if (!segments || !referencedVolumeId) {
+      throw new Error(
+        'To create the segmentation from SEG displaySet, the displaySet should be loaded first, you can perform segDisplaySet.load() before calling this method.'
+      );
+    }
+
+    const segmentation: Segmentation = {
+      id: segmentationId,
+      displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
+      activeSegmentIndex: 1,
+      cachedStats: {},
+      label: '',
+      segmentsLocked: [],
+      type: LABELMAP,
+      displayText: [],
+      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
+      segmentCount: 0,
+      segments: [],
+      isVisible: true,
+      isActive: false,
+      colorLUTIndex: 0,
+      representationData: {
+        [LABELMAP]: {
+          volumeId: segmentationId,
+          referencedVolumeId: segDisplaySet.referencedVolumeURI,
+        },
+      },
+    };
+
+    const labelmap = this.getLabelmapVolume(segmentationId);
+    const cachedSegmentation = this.getSegmentation(segmentationId);
+
+    if (labelmap && cachedSegmentation) {
+      // if the labelmap with the same segmentationId already exists, we can
+      // just assume that the segmentation is already created and move on with
+      // updating the state
+      return this.addOrUpdateSegmentation(
+        Object.assign(segmentation, cachedSegmentation),
+        suppressEvents
+      );
+    }
+
+    // if the labelmap doesn't exist, we need to create it first from the
+    // DICOM SEG displaySet data
+
+    const referencedVolume = cache.getVolume(referencedVolumeId);
+
+    if (!referencedVolume) {
+      throw new Error(
+        `No volume found for referencedVolumeId: ${referencedVolumeId}`
+      );
+    }
+
+    // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
+    // it is easily compressible in worker thread.
+    const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(
+      referencedVolumeId,
+      {
+        volumeId: segmentationId,
+        targetBuffer: {
+          type: 'Uint8Array',
+          sharedArrayBuffer: true,
+        },
+      }
+    );
+    const [rows, columns] = derivedVolume.dimensions;
+    const derivedVolumeScalarData = derivedVolume.scalarData;
+
+    const { imageIds } = referencedVolume;
+    const sopUIDImageIdIndexMap = imageIds.reduce((acc, imageId, index) => {
+      const { sopInstanceUid } = metaData.get('generalImageModule', imageId);
+      acc[sopInstanceUid] = index;
+      return acc;
+    }, {} as { [sopUID: string]: number });
+
+    const numSegments = Object.keys(segments).length;
+    // Note: ideally we could use the TypedArray set method, but since each
+    // slice can have multiple segments, we need to loop over each slice and
+    // set the segment value for each segment.
+    let overlappingSegments = false;
+
+    const _segmentInfoUpdate = (segmentInfo, segmentIndex) => {
+      const { pixelData: segPixelData } = segmentInfo;
+
+      let segmentX = 0;
+      let segmentY = 0;
+      let segmentZ = 0;
+      let count = 0;
+
+      for (const [
+        functionalGroupIndex,
+        functionalGroup,
+      ] of segmentInfo.functionalGroups.entries()) {
+        const {
+          ReferencedSOPInstanceUID,
+        } = functionalGroup.DerivationImageSequence.SourceImageSequence;
+
+        const imageIdIndex = sopUIDImageIdIndexMap[ReferencedSOPInstanceUID];
+
+        if (imageIdIndex === -1) {
+          return;
+        }
+
+        const step = rows * columns;
+
+        // we need a faster way to get the pixel data for the current
+        // functional group, which we use typed array view
+
+        const functionGroupPixelData = new Uint8Array(
+          segPixelData.buffer,
+          functionalGroupIndex * step,
+          step
+        );
+
+        const functionalGroupStartIndex = imageIdIndex * step;
+        const functionalGroupEndIndex = (imageIdIndex + 1) * step;
+
+        // Note: this for loop is not optimized, since DICOM SEG stores
+        // each segment as a separate labelmap so if there is a slice
+        // that has multiple segments, we will have to loop over each
+        // segment and we cannot use the TypedArray set method.
+        for (
+          let i = functionalGroupStartIndex, j = 0;
+          i < functionalGroupEndIndex;
+          i++, j++
+        ) {
+          if (functionGroupPixelData[j] !== 0) {
+            if (derivedVolumeScalarData[i] !== 0) {
+              overlappingSegments = true;
+            }
+
+            derivedVolumeScalarData[i] = segmentIndex;
+
+            // centroid calculations
+            segmentX += i % columns;
+            segmentY += Math.floor(i / columns) % rows;
+            segmentZ += Math.floor(i / (columns * rows));
+            count++;
+          }
+        }
+      }
+
+      // centroid calculations
+      const x = Math.floor(segmentX / count);
+      const y = Math.floor(segmentY / count);
+      const z = Math.floor(segmentZ / count);
+
+      const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
+
+      segmentation.cachedStats = {
+        ...segmentation.cachedStats,
+        segmentCenter: {
+          ...segmentation.cachedStats.segmentCenter,
+          [segmentIndex]: {
+            center: {
+              image: [x, y, z],
+              world: centerWorld,
+            },
+            modifiedTime: Date.now(),
+          },
+        },
+      };
+
+      this._broadcastEvent(EVENTS.SEGMENT_PIXEL_DATA_CREATED, {
+        segmentIndex: Number(segmentIndex),
+        numSegments,
+      });
+    };
+
+    for (const segmentIndex in segments) {
+      const segmentInfo = segments[segmentIndex];
+
+      // Important: we need a non-blocking way to update the segmentation
+      // state, otherwise the UI will freeze and the user will not be able
+      // to interact with the app or progress bars will not be updated.
+      const promise = new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          _segmentInfoUpdate(segmentInfo, segmentIndex);
+          resolve();
+        }, 0);
+      });
+
+      await promise;
+    }
+
+    segmentation.segmentCount = Object.keys(segments).length;
+    segmentation.segments = [null]; // segment 0
+
+    Object.keys(segments).forEach(segmentIndex => {
+      const segmentInfo = segments[segmentIndex];
+      const segIndex = Number(segmentIndex);
+
+      segmentation.segments[segIndex] = {
+        label: segmentInfo.label || `Segment ${segIndex}`,
+        segmentIndex: Number(segmentIndex),
+        color: [
+          segmentInfo.color[0],
+          segmentInfo.color[1],
+          segmentInfo.color[2],
+        ],
+        opacity: segmentInfo.color[3],
+        isVisible: true,
+        isLocked: false,
+      };
+    });
+
+    segDisplaySet.isLoaded = true;
+
+    this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
+      segmentationId,
+      segDisplaySet,
+      overlappingSegments,
+    });
+
+    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
   }
 
   public jumpToSegmentCenter(
@@ -736,7 +962,7 @@ class SegmentationService {
     highlightSegment = true,
     animationLength = 750,
     highlightHideOthers = false,
-    highlightFunctionType: 'ease-in-out' // todo: make animation functions configurable from outside
+    highlightFunctionType = 'ease-in-out' // todo: make animation functions configurable from outside
   ): void {
     const { toolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
@@ -790,7 +1016,7 @@ class SegmentationService {
     alpha = 0.9,
     animationLength = 750,
     hideOthers = true,
-    highlightFunctionType: 'ease-in-out'
+    highlightFunctionType = 'ease-in-out'
   ): void {
     if (this.highlightIntervalId) {
       clearInterval(this.highlightIntervalId);
@@ -866,6 +1092,7 @@ class SegmentationService {
     options?: {
       segmentationId: string;
       label: string;
+      representationType?: string;
     }
   ): Promise<string> => {
     const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
@@ -883,23 +1110,30 @@ class SegmentationService {
       },
     });
 
-    const segmentationSchema: SegmentationSchema = {
+    const segmentation: Segmentation = {
       id: segmentationId,
-      volumeId: segmentationId,
       displaySetInstanceUID,
-      referencedVolumeURI: volumeId.split(':')[0], // Todo: this is so ugly
       activeSegmentIndex: 1,
       cachedStats: {},
       label: options?.label,
       segmentsLocked: [],
-      type: LABELMAP,
       displayText: [],
       hydrated: false,
       segmentCount: 0,
       segments: [],
+      isActive: true,
+      isVisible: true,
+      colorLUTIndex: 0,
+      type: options?.representationType || LABELMAP,
+      representationData: {
+        LABELMAP: {
+          volumeId: segmentationId,
+          referencedVolumeId: volumeId.split(':')[0], // Todo: this is so ugly
+        },
+      },
     };
 
-    this.addOrUpdateSegmentation(segmentationSchema);
+    this.addOrUpdateSegmentation(segmentation);
 
     return segmentationId;
   };
@@ -1729,7 +1963,7 @@ class SegmentationService {
     // Connect Segmentation Service to Cornerstone3D.
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_MODIFIED,
-      this._onSegmentationModified
+      this._onSegmentationModifiedFromSource
     );
 
     eventTarget.addEventListener(
@@ -1753,7 +1987,7 @@ class SegmentationService {
     });
   };
 
-  private _onSegmentationModified = evt => {
+  private _onSegmentationModifiedFromSource = evt => {
     const { segmentationId } = evt.detail;
 
     const segmentation = this.segmentations[segmentationId];
@@ -1788,6 +2022,7 @@ class SegmentationService {
 
     // TODO: handle other representations when available in cornerstone3D
     const segmentationSchema = {
+      ...segmentation,
       activeSegmentIndex,
       cachedStats,
       displayText: [],
@@ -1795,7 +2030,11 @@ class SegmentationService {
       label,
       segmentsLocked,
       type,
-      volumeId: labelmapRepresentationData.volumeId,
+      representationData: {
+        LABELMAP: {
+          ...labelmapRepresentationData,
+        },
+      },
     };
 
     try {

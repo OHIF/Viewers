@@ -207,17 +207,20 @@ const commandsModule = ({
         config
       );
 
-      const configToUse = {
-        lower,
-        upper,
-        overwrite: true,
-      };
-
       return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
-        [referencedVolume],
-        configToUse
+        [
+          {
+            volume: referencedVolume,
+            lower,
+            upper,
+          },
+          // Add CT volume to threshold against
+        ],
+        {
+          overwrite: true,
+        }
       );
     },
     calculateSuvPeak: ({ labelmap }) => {
