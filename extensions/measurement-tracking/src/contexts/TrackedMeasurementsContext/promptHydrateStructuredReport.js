@@ -1,4 +1,4 @@
-import hydrateStructuredReport from '@ohif/extension-cornerstone-dicom-sr';
+import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 
 const RESPONSE = {
   NO_NEVER: -1,
