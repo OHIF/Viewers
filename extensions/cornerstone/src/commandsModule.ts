@@ -322,6 +322,14 @@ const commandsModule = ({ servicesManager }) => {
       }
       const { viewport } = enabledElement;
 
+      // Check viewport is supported
+      if (
+        viewport! instanceof StackViewport &&
+        viewport! instanceof VolumeViewport
+      ) {
+        throw new Error('Unsupported viewport type');
+      }
+
       // Set slice to first slice
       const options = { imageIndex: 0 };
       cstUtils.jumpToSlice(viewport.element, options);
