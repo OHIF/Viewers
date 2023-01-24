@@ -1,6 +1,7 @@
 import {
   getEnabledElement,
   StackViewport,
+  VolumeViewport,
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import {
@@ -313,6 +314,43 @@ const commandsModule = ({ servicesManager }) => {
         }
       }
     },
+    firstImage: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+      const options = { imageIndex: 0 };
+
+      cstUtils.jumpToSlice(viewport.element, options);
+    },
+    lastImage: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      // Copied from cornerstone3D jumpToSlice\_getImageSliceData()
+      let numberOfSlices = 0;
+
+      if (viewport instanceof StackViewport) {
+        numberOfSlices = viewport.getImageIds().length;
+      } else if (viewport instanceof VolumeViewport) {
+        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport)
+          .numberOfSlices;
+      } else {
+        throw new Error('Unsupported viewport type');
+      }
+
+      const options = { imageIndex: numberOfSlices - 1 };
+
+      cstUtils.jumpToSlice(viewport.element, options);
+    },
     scroll: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
 
@@ -474,6 +512,16 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.scroll,
       storeContexts: [],
       options: { direction: -1 },
+    },
+    firstImage: {
+      commandFn: actions.firstImage,
+      storeContexts: [],
+      options: {},
+    },
+    lastImage: {
+      commandFn: actions.lastImage,
+      storeContexts: [],
+      options: {},
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
