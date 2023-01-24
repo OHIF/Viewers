@@ -78,7 +78,20 @@ do not overlap, with the suggested id being `${moduleId}.${simpleName}`.  The
 'default' name is used as the hanging protocol id when no other protocol applies,
 and can be set as the last module listed containing 'default'.
 
-See the typescript definitions for more details on the structure.
+A hanging protocol can also be defined with a generator. 
+A generator is a function we can write this way:
+
+```ts
+function protocolGenerator({ servicesManager, commandsManager }) {
+  // Some computations using services and commands ...
+
+  return {
+    protocol: generatedProtocol
+  }
+}
+```
+
+See the typescript definitions for more details on the structure of protocols.
 
 ## Custom Attribute
 In some situations, you might want to match based on a custom attribute and not the DICOM tags. For instance,
