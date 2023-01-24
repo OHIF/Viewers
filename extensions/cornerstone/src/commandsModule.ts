@@ -315,27 +315,27 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     firstImage: () => {
+      // Get current active viewport (return if none active)
       const enabledElement = _getActiveViewportEnabledElement();
-
       if (!enabledElement) {
         return;
       }
-
       const { viewport } = enabledElement;
-      const options = { imageIndex: 0 };
 
+      // Set slice to first slice
+      const options = { imageIndex: 0 };
       cstUtils.jumpToSlice(viewport.element, options);
     },
     lastImage: () => {
+      // Get current active viewport (return if none active)
       const enabledElement = _getActiveViewportEnabledElement();
-
       if (!enabledElement) {
         return;
       }
-
       const { viewport } = enabledElement;
 
-      // Copied from cornerstone3D jumpToSlice\_getImageSliceData()
+      // Get number of slices
+      // -> Copied from cornerstone3D jumpToSlice\_getImageSliceData()
       let numberOfSlices = 0;
 
       if (viewport instanceof StackViewport) {
@@ -347,8 +347,8 @@ const commandsModule = ({ servicesManager }) => {
         throw new Error('Unsupported viewport type');
       }
 
+      // Set slice to last slice
       const options = { imageIndex: numberOfSlices - 1 };
-
       cstUtils.jumpToSlice(viewport.element, options);
     },
     scroll: ({ direction }) => {
