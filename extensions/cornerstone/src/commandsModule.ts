@@ -1,6 +1,7 @@
 import {
   getEnabledElement,
   StackViewport,
+  VolumeViewport,
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import {
@@ -313,6 +314,51 @@ const commandsModule = ({ servicesManager }) => {
         }
       }
     },
+    firstImage: () => {
+      // Get current active viewport (return if none active)
+      const enabledElement = _getActiveViewportEnabledElement();
+      if (!enabledElement) {
+        return;
+      }
+      const { viewport } = enabledElement;
+
+      // Check viewport is supported
+      if (
+        viewport! instanceof StackViewport &&
+        viewport! instanceof VolumeViewport
+      ) {
+        throw new Error('Unsupported viewport type');
+      }
+
+      // Set slice to first slice
+      const options = { imageIndex: 0 };
+      cstUtils.jumpToSlice(viewport.element, options);
+    },
+    lastImage: () => {
+      // Get current active viewport (return if none active)
+      const enabledElement = _getActiveViewportEnabledElement();
+      if (!enabledElement) {
+        return;
+      }
+      const { viewport } = enabledElement;
+
+      // Get number of slices
+      // -> Copied from cornerstone3D jumpToSlice\_getImageSliceData()
+      let numberOfSlices = 0;
+
+      if (viewport instanceof StackViewport) {
+        numberOfSlices = viewport.getImageIds().length;
+      } else if (viewport instanceof VolumeViewport) {
+        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport)
+          .numberOfSlices;
+      } else {
+        throw new Error('Unsupported viewport type');
+      }
+
+      // Set slice to last slice
+      const options = { imageIndex: numberOfSlices - 1 };
+      cstUtils.jumpToSlice(viewport.element, options);
+    },
     scroll: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
 
@@ -474,6 +520,16 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.scroll,
       storeContexts: [],
       options: { direction: -1 },
+    },
+    firstImage: {
+      commandFn: actions.firstImage,
+      storeContexts: [],
+      options: {},
+    },
+    lastImage: {
+      commandFn: actions.lastImage,
+      storeContexts: [],
+      options: {},
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
