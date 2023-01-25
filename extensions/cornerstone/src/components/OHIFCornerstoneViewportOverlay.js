@@ -147,49 +147,47 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     const SRLabelsOn = SRLabels && SRLabels.length !== 0 ? true : false;
 
     /**/
-
     const getSRLabelsContent = SRLabels => {
-      if (Array.isArray(SRLabels)) {
-        const listedSRLabels = SRLabels.map((SRLabel, index) => {
-          const color = SRLabel.labels.color;
-          return (
-            SRLabel.labels.visible && (
-              <OverlayTrigger
+      function srLabelMapper(singleLabel, index) {
+        const childLabels = singleLabel.children.length > 0 ? true : false;
+        const color = singleLabel.color;
+
+        return (
+          singleLabel.visible && (
+            <div id="SRlabelcontainer" style={{ display: 'inline-block' }}>
+              <Button
+                id="parent-button"
+                style={{
+                  backgroundColor: color,
+                }}
+                disabled={true}
                 key={index}
-                placement="top"
-                overlay={
-                  <Tooltip
-                    placement="top"
-                    className="in tooltip-warning"
-                    id="tooltip-top"
-                  >
-                    <div className="warningTitle">
-                      {' '}
-                      Coding scheme designators{' '}
-                    </div>
-                    <div className="warningContent">
-                      {SRLabel.labels.labelCodingSchemeDesignator +
-                        ' : ' +
-                        SRLabel.labels.valueCodingSchemeDesignator}
-                    </div>
-                  </Tooltip>
-                }
               >
-                <div style={{ display: 'inline-block' }}>
+                {singleLabel.label + ' : ' + singleLabel.value}
+              </Button>
+              {childLabels ? (
+                <div style={{ display: 'grid' }}>
                   <Button
-                    style={{
-                      backgroundColor: color,
-                    }}
+                    id="child-button"
+                    style={{ backgroundColor: color }}
                     disabled={true}
                     key={index}
                   >
-                    {SRLabel.labels.label + ' : ' + SRLabel.labels.value}
+                    {singleLabel.children[0].label +
+                      ' : ' +
+                      singleLabel.children[0].value}
                   </Button>
                 </div>
-              </OverlayTrigger>
-            )
-          );
-        });
+              ) : null}
+            </div>
+          )
+        );
+      }
+
+      if (Array.isArray(SRLabels)) {
+        const listedSRLabels = SRLabels.map(SRLabel => SRLabel.labels)
+          .flatMap(labels => labels)
+          .map((label, index) => srLabelMapper(label, index));
 
         return <ol>{listedSRLabels}</ol>;
       } else {

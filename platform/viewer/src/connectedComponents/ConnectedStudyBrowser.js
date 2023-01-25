@@ -1,8 +1,9 @@
-import OHIF from '@ohif/core';
+import OHIF, {utils} from '@ohif/core';
 import { connect } from 'react-redux';
 import findDisplaySetByUID from './findDisplaySetByUID';
 import { servicesManager } from './../App.js';
 import { StudyBrowser } from '../../../ui/src/components/studyBrowser/StudyBrowser';
+const { studyMetadataManager } = utils;
 
 const { setActiveViewportSpecificData } = OHIF.redux.actions;
 
@@ -13,6 +14,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         ownProps.studyMetadata,
         displaySetInstanceUID
       );
+
+      const StudyInstanceUID = displaySet.StudyInstanceUID;
+      const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+      const referencedSRDisplaySet = studyMetadata.getDerivedDatasets({
+        Modality: 'SR',
+      });
+
+      if (referencedSRDisplaySet.length > 0) {
+        const event = new CustomEvent('foundSRDisplaySets', {
+          detail: { referencedSRDisplaySet },
+        });
+        document.dispatchEvent(event);
+      }
 
       const { LoggerService, UINotificationService } = servicesManager.services;
 

@@ -34,7 +34,7 @@
   left: 20px;
 }
 .OHIFCornerstoneViewportOverlay .bottom-left3 {
-  bottom: 110px;
+  bottom: 150px;
   left: -20px;
 }
 .OHIFCornerstoneViewportOverlay .bottom-right {
@@ -70,4 +70,28 @@
   margin: 2px;
   width: 18px;
   height: 18px;
+}
+
+#SRlabelcontainer {
+  position: relative;
+}
+#parent-button {
+  position: relative;
+  z-index: 2;
+}
+#child-button {
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  z-index: 1;
+}
+#child-button::before {
+  content: "";
+  border-style: solid;
+  border-width: 9px 9px 0 9px;
+  border-color: rgb(248, 244, 244) transparent transparent transparent;
+  position: absolute;
+  top: -6px;
+  right: 50%;
+  margin-right: -9px;
 }

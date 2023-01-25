@@ -1,9 +1,12 @@
 import { CodeNameCodeSequenceValues } from '../enums';
 import getSequenceAsArray from './getSequenceAsArray';
-import getMergedContentSequencesByTrackingUniqueIdentifiers from './getMergedContentSequencesByTrackingUniqueIdentifiers';
 import processMeasurement from './processMeasurement';
 
-const getMeasurements = ImagingMeasurementReportContentSequence => {
+const getMeasurements = (
+  ImagingMeasurementReportContentSequence,
+  SRSeriesInstanceUID,
+  index
+) => {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
@@ -18,16 +21,20 @@ const getMeasurements = ImagingMeasurementReportContentSequence => {
       CodeNameCodeSequenceValues.MeasurementGroup
   );
 
-  /* const mergedContentSequencesByTrackingUniqueIdentifiers = getMergedContentSequencesByTrackingUniqueIdentifiers(
-    MeasurementGroups
-  );*/
-
   let measurements = [];
 
   MeasurementGroups.forEach(MeasurementGroup => {
     const contentSequence = MeasurementGroup.ContentSequence;
     const measurement = processMeasurement(contentSequence);
     if (measurement) {
+      measurement.seriesInstanceUID = SRSeriesInstanceUID;
+      if (index === 0) {
+        measurement.isVisible = true;
+        measurement.labels.forEach(label => (label.visible = true));
+      } else {
+        measurement.isVisible = false;
+        measurement.labels.forEach(label => (label.visible = false));
+      }
       measurements.push(measurement);
     }
   });

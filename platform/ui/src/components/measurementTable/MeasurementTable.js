@@ -10,11 +10,21 @@ import PropTypes from 'prop-types';
 import { ScrollableArea } from './../../ScrollableArea/ScrollableArea.js';
 import { TableList } from './../tableList';
 import { Tooltip } from './../tooltip';
+import MeasurementSelect from './MeasurementSelect';
+import MeasurementItem from './MeasurementItem';
+
+function groupBy(list, props) {
+  return list.reduce((a, b) => {
+    (a[b[props]] = a[b[props]] || []).push(b);
+    return a;
+  }, {});
+}
 
 class MeasurementTable extends Component {
   static propTypes = {
     measurementCollection: PropTypes.array.isRequired,
     timepoints: PropTypes.array.isRequired,
+    AllSRDisplaySets: PropTypes.array.isRequired,
     overallWarnings: PropTypes.object.isRequired,
     readOnly: PropTypes.bool,
     onItemClick: PropTypes.func,
@@ -36,11 +46,55 @@ class MeasurementTable extends Component {
 
   state = {
     selectedKey: null,
+    selectedMeasurement: 0,
   };
 
   render() {
     const { overallWarnings, saveFunction, t } = this.props;
     const hasOverallWarnings = overallWarnings.warningList.length > 0;
+
+    const measurementList = groupBy(
+      this.props.measurementCollection[0].measurements,
+      'srSeriesInstanceUID'
+    );
+
+    function handleMeasurementChange(selectedOption) {
+      for (const key in measurementList) {
+        if (measurementList.hasOwnProperty(key)) {
+          if (key === selectedOption.value) {
+            measurementList[key].forEach(measurement => {
+              measurement.isVisible = true;
+              measurement.labels.forEach(label => (label.visible = true));
+            });
+          } else {
+            measurementList[key].forEach(measurement => {
+              measurement.isVisible = false;
+              measurement.labels.forEach(label => (label.visible = false));
+            });
+          }
+        }
+      }
+    }
+
+    const measurementOptions = Object.keys(measurementList).map(
+      (key, index) => {
+        const sRDisplaySet = this.props.AllSRDisplaySets.filter(
+          ele => ele.SeriesInstanceUID === key
+        );
+        return {
+          value: key,
+          title: sRDisplaySet[0].SeriesDescription,
+          onClick: () => {
+            const measurementIndex = Object.keys(measurementList).findIndex(
+              elt => elt === key
+            );
+            this.setState({
+              selectedMeasurement: measurementIndex,
+            });
+          },
+        };
+      }
+    );
 
     return (
       <div className="measurementTable">
@@ -72,10 +126,23 @@ class MeasurementTable extends Component {
               </span>
             </OverlayTrigger>
           )}
-          {this.getTimepointsHeader()}
+        </div>
+        <div>
+          <MeasurementSelect
+            value={measurementOptions[this.state.selectedMeasurement]}
+            formatOptionLabel={MeasurementItem}
+            options={measurementOptions}
+            onChange={handleMeasurementChange}
+          />
         </div>
         <ScrollableArea>
-          <div>{this.getMeasurementsGroups()}</div>
+          <div>
+            {this.getMeasurementsGroups(
+              measurementList[
+                Object.keys(measurementList)[this.state.selectedMeasurement]
+              ]
+            )}
+          </div>
         </ScrollableArea>
         <div className="measurementTableFooter">
           {saveFunction && (
@@ -117,26 +184,24 @@ class MeasurementTable extends Component {
     }
   };
 
-  getMeasurementsGroups = () => {
-    return this.props.measurementCollection.map((measureGroup, index) => {
-      return (
-        <TableList
-          key={index}
-          customHeader={this.getCustomHeader(measureGroup)}
-        >
-          {this.getMeasurements(measureGroup)}
-        </TableList>
-      );
-    });
+  getMeasurementsGroups = currentMeasurement => {
+    return (
+      <TableList
+        key={0}
+        customHeader={this.getCustomHeader(currentMeasurement)}
+      >
+        {this.getMeasurements(currentMeasurement)}
+      </TableList>
+    );
   };
 
   getMeasurements = measureGroup => {
     const selectedKey = this.props.selectedMeasurementNumber
       ? this.props.selectedMeasurementNumber
       : this.state.selectedKey;
-    return measureGroup.measurements.map((measurement, index) => {
+    return measureGroup.map((measurement, index) => {
       const key = measurement.measurementNumber;
-      const itemIndex = measurement.itemNumber || index + 1;
+      const itemIndex = index + 1;
       const itemClass =
         selectedKey === key && !this.props.readOnly ? 'selected' : '';
       return (
@@ -169,30 +234,15 @@ class MeasurementTable extends Component {
   getCustomHeader = measureGroup => {
     return (
       <React.Fragment>
-        <div className="tableListHeaderTitle">
-          {this.props.t(measureGroup.groupName)}
-        </div>
+        <div className="tableListHeaderTitle">{'Measurements'}</div>
         {measureGroup.maxMeasurements && (
           <div className="maxMeasurements">
             {this.props.t('MAX')} {measureGroup.maxMeasurements}
           </div>
         )}
-        <div className="numberOfItems">{measureGroup.measurements.length}</div>
+        <div className="numberOfItems">{measureGroup.length}</div>
       </React.Fragment>
     );
-  };
-
-  getTimepointsHeader = () => {
-    const { timepoints, t } = this.props;
-
-    return timepoints.map((timepoint, index) => {
-      return (
-        <div key={index} className="measurementTableHeaderItem">
-          <div className="timepointLabel">{t(timepoint.key)}</div>
-          <div className="timepointDate">{timepoint.date}</div>
-        </div>
-      );
-    });
   };
 
   getWarningContent = () => {

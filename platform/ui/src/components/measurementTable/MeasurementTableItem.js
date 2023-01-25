@@ -165,6 +165,7 @@ class MeasurementTableItem extends Component {
           </TableListItem>
           {this.state.collapsed &&
             this.props.measurementData.labels.map((SRLabel, index) => {
+              const isChildLabel = SRLabel.children.length > 0 ? true : false;
               return (
                 <TableListItem
                   key={index}
@@ -177,6 +178,13 @@ class MeasurementTableItem extends Component {
                     <div className="icons">
                       <span style={{ width: '90px' }}>
                         {SRLabel.label + ' : ' + SRLabel.value}
+                        {isChildLabel ? (
+                          <p>
+                            {SRLabel.children[0].label +
+                              ' : ' +
+                              SRLabel.children[0].value}
+                          </p>
+                        ) : null}
                       </span>
                       <Icon
                         className={`eye-icon`}

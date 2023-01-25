@@ -70,12 +70,33 @@ export default {
         }}
       />
     );
+
+    const MeasurementTabUpdatedEvent = 'measurement-panel-tab-updated';
+
+    const updateMeasurementPanel = data => {
+      const event = new CustomEvent(MeasurementTabUpdatedEvent, {
+        detail: data,
+      });
+      document.dispatchEvent(event);
+    };
+
+    const onMeasurementsFound = ({ detail }) => {
+      const { referencedSRDisplaySet } = detail;
+      updateMeasurementPanel({
+        badgeNumber: referencedSRDisplaySet.length,
+        target: 'measurement-panel',
+      });
+    };
+
+    document.addEventListener('foundSRDisplaySets', onMeasurementsFound);
+
     return {
       menuOptions: [
         {
           icon: 'list',
           label: 'Measurements',
           target: 'measurement-panel',
+          stateEvent: MeasurementTabUpdatedEvent,
         },
       ],
       components: [

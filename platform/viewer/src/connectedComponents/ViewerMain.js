@@ -6,8 +6,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import memoize from 'lodash/memoize';
 import _values from 'lodash/values';
+import { utils } from '@ohif/core';
 
 var values = memoize(_values);
+const { studyMetadataManager } = utils;
 
 class ViewerMain extends Component {
   static propTypes = {
@@ -138,6 +140,18 @@ class ViewerMain extends Component {
       StudyInstanceUID,
       displaySetInstanceUID
     );
+
+    const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+    const referencedSRDisplaySet = studyMetadata.getDerivedDatasets({
+      Modality: 'SR',
+    });
+
+    if (referencedSRDisplaySet.length > 0) {
+      const event = new CustomEvent('foundSRDisplaySets', {
+        detail: { referencedSRDisplaySet },
+      });
+      document.dispatchEvent(event);
+    }
 
     const { LoggerService, UINotificationService } = servicesManager.services;
 
