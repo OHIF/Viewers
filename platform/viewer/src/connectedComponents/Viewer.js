@@ -505,14 +505,14 @@ const _checkForDerivedDisplaySets = async function(displaySet, study) {
  * @returns {[string]} an array of strings containing the warnings
  */
 const _checkForSeriesInconsistencesWarnings = async function(displaySet) {
-  if (displaySet.inconsistencyWarnings) {
-    // warnings already checked and cached in displaySet
-    return displaySet.inconsistencyWarnings;
-  }
-
   const inconsistencyWarnings = [];
 
   if (displaySet.Modality !== 'SEG') {
+    // warnings already checked and cached in displaySet
+    if (displaySet.inconsistencyWarnings) {
+      return displaySet.inconsistencyWarnings;
+    }
+
     if (
       displaySet.reconstructionIssues &&
       displaySet.reconstructionIssues.length !== 0
