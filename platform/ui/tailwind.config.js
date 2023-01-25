@@ -230,6 +230,7 @@ module.exports = {
       auto: '1 1 auto',
       initial: '0 1 auto',
       none: 'none',
+      static: '0 0 auto',
     },
     flexGrow: {
       '0': '0',
