@@ -175,7 +175,10 @@ function initMPRToolGroup(extensionManager, ToolGroupService, commandsManager) {
       { toolName: toolNames.Angle },
       { toolName: toolNames.SegmentationDisplay },
     ],
-    disabled: [{ toolName: toolNames.Crosshairs }],
+    disabled: [
+      { toolName: toolNames.Crosshairs },
+      { toolName: toolNames.ReferenceLines },
+    ],
 
     // enabled
     // disabled
