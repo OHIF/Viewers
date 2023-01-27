@@ -25,6 +25,8 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 
+import CalibrationLineTool from './tools/CalibrationLineTool';
+
 export default function initCornerstoneTools(configuration = {}) {
   init(configuration);
   addTool(PanTool);
@@ -48,6 +50,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(CrosshairsTool);
   addTool(SegmentationDisplayTool);
   addTool(ReferenceLinesTool);
+  addTool(CalibrationLineTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -86,6 +89,7 @@ const toolNames = {
   Crosshairs: CrosshairsTool.toolName,
   SegmentationDisplay: SegmentationDisplayTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,
+  CalibrationLine: CalibrationLineTool.toolName,
 };
 
 export { toolNames };
