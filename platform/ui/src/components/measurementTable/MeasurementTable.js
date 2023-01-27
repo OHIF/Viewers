@@ -241,11 +241,6 @@ class MeasurementTable extends Component {
     return (
       <React.Fragment>
         <div className="tableListHeaderTitle">{'Measurements'}</div>
-        {measureGroup.maxMeasurements && (
-          <div className="maxMeasurements">
-            {this.props.t('MAX')} {measureGroup.maxMeasurements}
-          </div>
-        )}
         <div className="numberOfItems">{measureGroup.length}</div>
       </React.Fragment>
     );
