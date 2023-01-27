@@ -83,6 +83,7 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.EllipticalROI },
           { toolName: toolNames.RectangleROI },
           { toolName: toolNames.StackScroll },
+          { toolName: toolNames.CalibrationLine },
         ],
         // enabled
         // disabled

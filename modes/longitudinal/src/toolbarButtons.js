@@ -555,6 +555,21 @@ const toolbarButtons = [
           ],
           'Rectangle'
         ),
+        _createToolButton(
+          'CalibrationLine',
+          'tool-length',
+          'Calibration',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'CalibrationLine',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Calibration Line'
+        ),
         _createActionButton(
           'TagBrowser',
           'list-bullets',

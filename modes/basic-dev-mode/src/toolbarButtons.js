@@ -323,6 +323,21 @@ const toolbarButtons = [
           ],
           'Invert Colors'
         ),
+        _createToolButton(
+          'CalibrationLine',
+          'tool-length',
+          'Calibration',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'CalibrationLine',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Calibration Line'
+        ),
       ],
     },
   },

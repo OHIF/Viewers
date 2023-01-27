@@ -39,6 +39,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.CalibrationLine },
     ],
     // enabled
     // disabled
