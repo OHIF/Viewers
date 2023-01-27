@@ -165,7 +165,10 @@ class MeasurementTableItem extends Component {
           </TableListItem>
           {this.state.collapsed &&
             this.props.measurementData.labels.map((SRLabel, index) => {
-              const isChildLabel = SRLabel.children.length > 0 ? true : false;
+              let isChildLabel;
+              if (SRLabel.children) {
+                isChildLabel = SRLabel.children.length > 0 ? true : false;
+              }
               return (
                 <TableListItem
                   key={index}

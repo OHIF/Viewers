@@ -161,20 +161,19 @@ const checkIfCanAddMeasurementsToDisplaySet = (
             srDisplaySet.referencedDisplaySets.push(imageDisplaySet);
           }
 
-          if (!areLabelsAdded) {
-            imageDisplaySet.SRLabels.push({
-              ReferencedSOPInstanceUID:
-                coord.ReferencedSOPSequence.ReferencedSOPInstanceUID,
-              SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
-              labels: measurement.labels,
-            });
-            areLabelsAdded = true;
-          }
-
           const imageId = imageIds[imageIndex];
           const imageMetadata = images[imageIndex].getData().metadata;
 
           if (coord.GraphicType === 'TEXT') {
+            if (!areLabelsAdded) {
+              imageDisplaySet.SRLabels.push({
+                ReferencedSOPInstanceUID:
+                  coord.ReferencedSOPSequence.ReferencedSOPInstanceUID,
+                SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
+                labels: measurement.labels,
+              });
+              areLabelsAdded = true;
+            }
             if (index === 0) {
               addMeasurement(
                 measurement,

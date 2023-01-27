@@ -149,7 +149,10 @@ class OHIFCornerstoneViewportOverlay extends PureComponent {
     /**/
     const getSRLabelsContent = SRLabels => {
       function srLabelMapper(singleLabel, index) {
-        const childLabels = singleLabel.children.length > 0 ? true : false;
+        let childLabels;
+        if (singleLabel.children) {
+          childLabels = singleLabel.children.length > 0 ? true : false;
+        }
         const color = singleLabel.color;
 
         return (

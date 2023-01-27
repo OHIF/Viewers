@@ -58,6 +58,12 @@ class MeasurementTable extends Component {
       'srSeriesInstanceUID'
     );
 
+    //Since for user added measurements/annotations, SeriesInstanceUID is not created until
+    //the measurement is saved
+    Object.defineProperty(measurementList, 'undefined', {
+      enumerable: false,
+    });
+
     function handleMeasurementChange(selectedOption) {
       for (const key in measurementList) {
         if (measurementList.hasOwnProperty(key)) {
