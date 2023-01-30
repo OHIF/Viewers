@@ -14,6 +14,24 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         displaySetInstanceUID
       );
 
+      if (displaySet.SRLabels && displaySet.SRLabels.length > 0) {
+        let srWithMeasurements = 1;
+        let prevUID = displaySet.SRLabels[0].SeriesInstanceUID;
+
+        displaySet.SRLabels.forEach(SRLabel => {
+          const currUID = SRLabel.SeriesInstanceUID;
+          if (currUID !== prevUID) {
+            srWithMeasurements = srWithMeasurements + 1;
+            prevUID = currUID;
+          }
+        });
+
+        const event = new CustomEvent('foundSRDisplaySets', {
+          detail: { srWithMeasurements: srWithMeasurements },
+        });
+        document.dispatchEvent(event);
+      }
+
       const { LoggerService, UINotificationService } = servicesManager.services;
 
       if (displaySet.isDerived) {

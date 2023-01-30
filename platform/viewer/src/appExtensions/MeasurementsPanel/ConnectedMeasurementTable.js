@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { MeasurementTable } from '@ohif/ui';
-import OHIF, { DICOMSR } from '@ohif/core';
+import OHIF, { DICOMSR, utils } from '@ohif/core';
 import moment from 'moment';
 import cornerstone from 'cornerstone-core';
 
@@ -8,6 +8,7 @@ import jumpToRowItem from './jumpToRowItem.js';
 
 const { setViewportSpecificData } = OHIF.redux.actions;
 const { MeasurementApi } = OHIF.measurements;
+const { studyMetadataManager } = utils;
 
 /**
  * Takes a list of objects and a property and return the list grouped by the property
@@ -152,8 +153,10 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
       const tableMeasurement = {
         itemNumber: lesionNamingNumber,
         label: getMeasurementText(measurementData),
+        srSeriesInstanceUID: measurementData.srSeriesInstanceUID,
         labels: measurementData.labels,
         isSRText: measurementData.isSRText,
+        isVisible: measurementData.isVisible,
         measurementId,
         measurementNumber,
         lesionNamingNumber,
@@ -227,10 +230,20 @@ function getSaveFunction(serverType) {
 }
 
 const mapStateToProps = state => {
-  const { timepointManager, servers } = state;
+  const { timepointManager, servers, viewports } = state;
   const { timepoints, measurements } = timepointManager;
   const activeServer = servers.servers.find(a => a.active === true);
   const saveFunction = getSaveFunction(activeServer.type);
+
+  const getAllSRDisplaySets = () => {
+    const StudyInstanceUID = viewports.viewportSpecificData[0].StudyInstanceUID;
+    const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+    return studyMetadata.getDerivedDatasets({
+      Modality: 'SR',
+    });
+  };
+
+  const AllSRDisplaySets = getAllSRDisplaySets();
 
   return {
     timepoints: convertTimepointsToTableData(timepoints),
@@ -241,6 +254,7 @@ const mapStateToProps = state => {
     timepointManager: state.timepointManager,
     viewports: state.viewports,
     saveFunction,
+    AllSRDisplaySets: AllSRDisplaySets,
   };
 };
 
@@ -358,13 +372,21 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 };
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  const { timepoints, saveFunction, measurementCollection } = propsFromState;
+  const {
+    timepoints,
+    saveFunction,
+    measurementCollection,
+    AllSRDisplaySets,
+    viewports,
+  } = propsFromState;
   const { onSaveComplete, selectedMeasurementNumber } = ownProps;
 
   return {
     timepoints,
     saveFunction,
     measurementCollection,
+    AllSRDisplaySets,
+    viewports,
     onSaveComplete,
     selectedMeasurementNumber,
     ...propsFromDispatch,

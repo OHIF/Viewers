@@ -1,6 +1,7 @@
 import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
+import OHIF from '@ohif/core';
 
 import LabellingFlow from '../../components/Labelling/LabellingFlow';
 
@@ -70,12 +71,72 @@ export default {
         }}
       />
     );
+
+    const MeasurementTabUpdatedEvent = 'measurement-panel-tab-updated';
+
+    const updateMeasurementPanel = data => {
+      const event = new CustomEvent(MeasurementTabUpdatedEvent, {
+        detail: data,
+      });
+      document.dispatchEvent(event);
+    };
+
+    const onMeasurementsFound = ({ detail }) => {
+      const { srWithMeasurements } = detail;
+      updateMeasurementPanel({
+        badgeNumber: srWithMeasurements,
+        target: 'measurement-panel',
+      });
+    };
+
+    document.addEventListener('foundSRDisplaySets', onMeasurementsFound);
+
     return {
       menuOptions: [
         {
           icon: 'list',
           label: 'Measurements',
           target: 'measurement-panel',
+          stateEvent: MeasurementTabUpdatedEvent,
+          isDisabled: (studies, activeViewport) => {
+            if (!studies) {
+              return true;
+            }
+
+            for (let i = 0; i < studies.length; i++) {
+              const study = studies[i];
+              if (study && study.series) {
+                for (let j = 0; j < study.series.length; j++) {
+                  const series = study.series[j];
+
+                  if (series.Modality === 'SR') {
+                    if (activeViewport) {
+                      const { SRLabels } = activeViewport;
+                      if (SRLabels && SRLabels.length > 0) {
+                        let srWithMeasurements = 1;
+                        let prevUID = SRLabels[0].SeriesInstanceUID;
+
+                        SRLabels.forEach(SRLabel => {
+                          const currUID = SRLabel.SeriesInstanceUID;
+                          if (currUID !== prevUID) {
+                            srWithMeasurements = srWithMeasurements + 1;
+                            prevUID = currUID;
+                          }
+                        });
+
+                        updateMeasurementPanel({
+                          badgeNumber: srWithMeasurements,
+                          target: 'measurement-panel',
+                        });
+                      }
+                    }
+                    return false;
+                  }
+                }
+              }
+            }
+            return true;
+          },
         },
       ],
       components: [

@@ -327,14 +327,18 @@ const SegmentationPanel = ({
         labelmapIndex,
         originLabelMapIndex,
         hasOverlapping,
-        SeriesDate,
-        SeriesTime,
+        metadata,
       } = displaySet;
 
       /* Map to display representation */
-      const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
+      const dateStr = `${metadata.ContentDate}:${metadata.ContentTime}`.split(
+        '.'
+      )[0];
       const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-      const displayDate = date.format('ddd, MMM Do YYYY, h:mm:ss a');
+      let displayDate = date.format('ddd, MMM Do YYYY, h:mm:ss a');
+      if (displayDate === 'Invalid date') {
+        displayDate = ' ';
+      }
       const displayDescription = displaySet.SeriesDescription;
 
       return {
