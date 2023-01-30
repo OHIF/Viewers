@@ -7,7 +7,8 @@ export const CodeNameCodeSequenceValues = {
   TrackingUniqueIdentifier: '112040',
   TrackingIdentifier: '112039',
   Finding: '121071',
-  FindingSite: 'G-C0E3', // SRT
+  FindingSite: '363698007',
+  TopographicalModifier: '106233006',
   CornerstoneFreeText: 'CORNERSTONEFREETEXT', // CST4
   Score: '246262008',
 };
@@ -20,6 +21,7 @@ export const RELATIONSHIP_TYPE = {
 export const CodingSchemeDesignators = {
   SRT: 'SRT',
   cornerstoneTools4: 'CST4',
+  SCT: 'SCT',
 };
 
 export default {

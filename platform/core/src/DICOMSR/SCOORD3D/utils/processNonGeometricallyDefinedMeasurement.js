@@ -37,7 +37,7 @@ const processNonGeometricallyDefinedMeasurement = contentSequence => {
   const FindingSites = contentSequence.filter(
     item =>
       item.ConceptNameCodeSequence.CodingSchemeDesignator ===
-        CodingSchemeDesignators.SRT &&
+        CodingSchemeDesignators.SCT &&
       item.ConceptNameCodeSequence.CodeValue ===
         CodeNameCodeSequenceValues.FindingSite
   );
@@ -62,8 +62,6 @@ const processNonGeometricallyDefinedMeasurement = contentSequence => {
       value: Finding.ConceptCodeSequence.CodeMeaning,
     });
   }
-
-  // TODO -> Eventually hopefully support SNOMED or some proper code library, just free text for now.
   if (FindingSites.length) {
     const cornerstoneFreeTextFindingSite = FindingSites.find(
       FindingSite =>
@@ -122,11 +120,14 @@ const processNonGeometricallyDefinedMeasurement = contentSequence => {
 
   if (NUMContentItems.length === 0 && IMAGEContentItem) {
     CODEContentItems.forEach(item => {
-      const { ConceptCodeSequence, ConceptNameCodeSequence } = item;
+      const {
+        ConceptCodeSequence,
+        ConceptNameCodeSequence,
+        ContentSequence,
+      } = item;
 
       if (!ConceptCodeSequence || !ConceptNameCodeSequence) {
         console.warn(`Graphic missing, skipping annotation.`);
-
         return;
       }
 
@@ -147,7 +148,23 @@ const processNonGeometricallyDefinedMeasurement = contentSequence => {
           ConceptNameCodeSequence.CodingSchemeDesignator,
         value: ConceptCodeSequence.CodeMeaning,
         valueCodingSchemeDesignator: ConceptCodeSequence.CodingSchemeDesignator,
+        children: [],
       });
+
+      if (ContentSequence) {
+        ContentSequence.forEach(childItem => {
+          const { ConceptCodeSequence, ConceptNameCodeSequence } = childItem;
+          const lastIndex = measurement.labels.length - 1;
+          measurement.labels[lastIndex].children.push({
+            label: ConceptNameCodeSequence.CodeMeaning,
+            labelCodingSchemeDesignator:
+              ConceptNameCodeSequence.CodingSchemeDesignator,
+            value: ConceptCodeSequence.CodeMeaning,
+            valueCodingSchemeDesignator:
+              ConceptCodeSequence.CodingSchemeDesignator,
+          });
+        });
+      }
     });
   }
 

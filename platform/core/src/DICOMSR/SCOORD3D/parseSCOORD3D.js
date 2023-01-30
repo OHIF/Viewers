@@ -18,7 +18,7 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
     imageDisplaySet.SRLabels = [];
   });
 
-  srDisplaySets.forEach(srDisplaySet => {
+  srDisplaySets.forEach((srDisplaySet, index) => {
     const firstInstance = srDisplaySet.metadata;
     if (!firstInstance) {
       return;
@@ -26,7 +26,11 @@ const parseSCOORD3D = ({ servicesManager, displaySets }) => {
 
     const { ContentSequence } = firstInstance;
 
-    srDisplaySet.measurements = getMeasurements(ContentSequence);
+    srDisplaySet.measurements = getMeasurements(
+      ContentSequence,
+      srDisplaySet.SeriesInstanceUID,
+      index
+    );
     const mappings = MeasurementService.getSourceMappings(
       'CornerstoneTools',
       '4'
@@ -130,7 +134,21 @@ const checkIfCanAddMeasurementsToDisplaySet = (
   const SOPInstanceUIDs = images.map(i => i.SOPInstanceUID);
   const colors = new Map();
   measurements.forEach(measurement => {
-    const { coords } = measurement;
+    const { coords, labels } = measurement;
+    labels.forEach((label, labelIndex) => {
+      const key =
+        measurement.labels[labelIndex].label +
+        measurement.labels[labelIndex].value;
+      let color = colors.get(key);
+      if (!color) {
+        color = 'hsla(' + Math.floor(Math.random() * 360) + ', 70%, 30%, 1)';
+        colors.set(key, color);
+      }
+      measurement.labels[labelIndex].color = color;
+      measurement.isSRText = true;
+    });
+    let areLabelsAdded = false;
+
     coords.forEach((coord, index) => {
       if (coord.ReferencedSOPSequence !== undefined) {
         const imageIndex = SOPInstanceUIDs.findIndex(
@@ -147,26 +165,15 @@ const checkIfCanAddMeasurementsToDisplaySet = (
           const imageMetadata = images[imageIndex].getData().metadata;
 
           if (coord.GraphicType === 'TEXT') {
-            const key =
-              measurement.labels[index].label + measurement.labels[index].value;
-            let color = colors.get(key);
-            if (!color) {
-              // random dark color
-              color =
-                'hsla(' + Math.floor(Math.random() * 360) + ', 70%, 30%, 1)';
-              colors.set(key, color);
+            if (!areLabelsAdded) {
+              imageDisplaySet.SRLabels.push({
+                ReferencedSOPInstanceUID:
+                  coord.ReferencedSOPSequence.ReferencedSOPInstanceUID,
+                SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
+                labels: measurement.labels,
+              });
+              areLabelsAdded = true;
             }
-
-            measurement.labels[index].color = color;
-            measurement.isSRText = true;
-            measurement.labels[index].visible = true;
-
-            imageDisplaySet.SRLabels.push({
-              ReferencedSOPInstanceUID:
-                coord.ReferencedSOPSequence.ReferencedSOPInstanceUID,
-              labels: measurement.labels[index],
-            });
-
             if (index === 0) {
               addMeasurement(
                 measurement,

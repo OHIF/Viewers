@@ -30,6 +30,8 @@ export default function addMeasurement(
     renderableData: {},
     labels: measurement.labels,
     isSRText: measurement.isSRText,
+    isVisible: measurement.isVisible,
+    srSeriesInstanceUID: measurement.seriesInstanceUID,
   };
 
   measurement.coords.forEach(coord => {
