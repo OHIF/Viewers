@@ -325,7 +325,7 @@ const toolbarButtons = [
         ),
         _createToolButton(
           'CalibrationLine',
-          'tool-length',
+          'tool-calibration',
           'Calibration',
           [
             {
