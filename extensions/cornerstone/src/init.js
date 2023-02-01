@@ -533,9 +533,8 @@ const _connectToolsToMeasurementService = (
             `/api/measurement/${evtDetail.id}/`,
             _transformMeasurement(measurement, csToolsVer4MeasurementSource)
           )
-          .then(({ data }) => addOrUpdate(csToolName, { ...evtDetail, author }))
-          .catch(err =>
-            UINotificationService.show({
+          .then(({ data }) => addOrUpdate(csToolName, { ...evtDetail, author: user }))
+          .catch(err => UINotificationService.show({
               message: 'Failed to update the measurement',
               type: 'error',
             })
