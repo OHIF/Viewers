@@ -3,10 +3,9 @@ window.config = function(props) {
 
   return {
     disableServersCache: true,
-    disableMeasurementPanel: true,
+    disableMeasurementPanel: false,
     routerBasename: '/',
     enableGoogleCloudAdapter: true,
-    disableMeasurementPanel: false,
     splitQueryParameterCalls: true, // Allows the user to split QIDO SeriesInstanceUID filters into multiple calls, if the server does not support multi-valued query parameters.
     enableGoogleCloudAdapterUI: false,
     showStudyList: true,
