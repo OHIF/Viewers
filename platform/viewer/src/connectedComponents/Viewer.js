@@ -279,7 +279,7 @@ class Viewer extends Component {
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
       const options = {};
-      // commandsManager.runCommand('scrollToIndex', options);
+      commandsManager.runCommand('scrollToIndex', options);
       // commandsManager.runCommand('nextImage', options);
       // commandsManager.runCommand('nextImage', options);
       // commandsManager.runCommand('nextImage', options);
@@ -319,7 +319,7 @@ class Viewer extends Component {
       ) {
         this.handleSidePanelChange('right', 'xnat-segmentation-panel');
       }
-    }, 5000);
+    }, 3000);
 
     setTimeout(() => {
       // this.loadLastActiveStudy();

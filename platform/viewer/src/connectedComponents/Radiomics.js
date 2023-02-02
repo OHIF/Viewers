@@ -457,6 +457,13 @@ class Radiomics extends Component {
         toolName: 'Pan',
       });
 
+      const radiomicsDone = JSON.parse(
+        localStorage.getItem('radiomicsDone') || 0
+      );
+      this.setState({
+        isComplete: radiomicsDone == 1 ? true : false,
+      });
+
       const enabledElement = enabledEvt.detail.element;
       let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
@@ -466,18 +473,12 @@ class Radiomics extends Component {
         if (tool_data.x) viewport.translation.x = tool_data.x;
         if (tool_data.y) viewport.translation.y = tool_data.y;
         // if (tool_data.scale) viewport.scale = tool_data.scale;
-        if (tool_data.voi) viewport.voi = tool_data.voi;
+        // if (tool_data.voi) viewport.voi = tool_data.voi;
         // cornerstone.resize(enabledElement, true);
         cornerstone.setViewport(enabledElement, viewport);
       }
 
       //  handle radiomicsDone
-      const radiomicsDone = JSON.parse(
-        localStorage.getItem('radiomicsDone') || 0
-      );
-      this.setState({
-        isComplete: radiomicsDone == 1 ? true : false,
-      });
 
       this.handleSidePanelChange('right', 'theta-details-panel');
       this.handleSidePanelChange('left', 'lung-module-similarity-panel');
@@ -934,7 +935,7 @@ class Radiomics extends Component {
               >
                 <div className="accordion-title">
                   <div>
-                    <b>Job {this.state.job.data.job}</b>
+                    <b>Running Job {this.state.job.data.job}</b>
                   </div>
                   {/* Not the best way to go about this */}
                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
