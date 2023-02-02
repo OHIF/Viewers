@@ -13,6 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { JobsContext } from '../../../context/JobsContext';
 import { radcadapi } from '../../../utils/constants';
+import eventBus from '../../../lib/eventBus';
 
 const Jobs = ({
   data,
@@ -53,7 +54,6 @@ const Jobs = ({
     'dicomWeb/studies'
   )}`;
 
-
   // useEffect for checking data status
   useEffect(() => {
     if (data.status === 'RUNNING') {
@@ -66,6 +66,13 @@ const Jobs = ({
       window.location.reload();
     }
   }, [data.status]);
+
+  useEffect(() => {
+    eventBus.dispatch('jobstatus', {
+      data,
+      instances,
+    });
+  }, [data]);
 
   // setting up useEffect for adding and removing an event listener
   useEffect(() => {
@@ -187,8 +194,6 @@ const Jobs = ({
           const image_id = response['data']['texture_instance_uid'];
           performOverlay(seriesUID, image_id);
         });
-
-     
     } catch (err) {
       console.log(err);
     }

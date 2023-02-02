@@ -32,9 +32,9 @@ import { RenderLoadingModal } from '../../appExtensions/LungModuleSimilarityPane
 import { useLocation } from 'react-router';
 import { radcadapi } from '../../utils/constants';
 
+
+
 const { loadAndCacheDerivedDisplaySets, studyMetadataManager } = utils;
-
-
 
 const ViewportGrid = function(props) {
   const {
@@ -72,6 +72,9 @@ const ViewportGrid = function(props) {
   const elementRef = useRef(null);
   const changedSegmentsRef = useRef([]);
   const editedSegmentationRef = useRef({});
+  const [isSegmentsLoadedSuccessfully, setSegmentloadingState] = useState(
+    false
+  );
   const [loadingState, setLoadingState] = useState(
     location.pathname.includes('/edit') ||
       location.pathname.includes('/radionics')
@@ -111,6 +114,8 @@ const ViewportGrid = function(props) {
   };
 
   useEffect(() => {
+    localStorage.setItem('fetchsegments', JSON.stringify(0));
+
     //  storing this for series used nnunet api call, currently pass via redux series is null -- fix redux and use redux implementation
     // localStorage.setItem('isSegmentLoaded', JSON.stringify(1));
 
@@ -145,6 +150,11 @@ const ViewportGrid = function(props) {
       props,
     });
     const series_uid = props.viewportData[0].SeriesInstanceUID;
+
+    console.log({
+      series_uid: props.viewportData[0],
+    });
+
     console.log('series_uid----------149'),
       console.log(series_uid),
       localStorage.setItem('series_uid', JSON.stringify(series_uid));
@@ -295,7 +305,13 @@ const ViewportGrid = function(props) {
         }, 5000);
       }
     }
-  }, [studies, viewportData, isStudyLoaded, snackbar]);
+  }, [
+    studies,
+    viewportData,
+    isStudyLoaded,
+    snackbar,
+    isSegmentsLoadedSuccessfully,
+  ]);
 
   const updateAndSaveLocalSegmentations = b => {
     console.log({ b });
@@ -327,7 +343,7 @@ const ViewportGrid = function(props) {
 
         const email = props.user.profile.email;
 
-        console.log({ segmentation });
+        console.log({ savingSegmentation: segmentation });
 
         const body = {
           series_uid: series_uid,
@@ -361,6 +377,8 @@ const ViewportGrid = function(props) {
           console.log('value not changed');
           rej('value not changed');
         } else {
+          console.log('');
+
           var requestOptions = {
             method: 'PUT',
             headers: {
@@ -377,7 +395,7 @@ const ViewportGrid = function(props) {
 
           response = await response.json();
           console.log({ saveddata: response });
-          updateAndSaveLocalSegmentations(body);
+          // updateAndSaveLocalSegmentations(body);
           res({ response });
 
           //   console.log('value changed. saving');
@@ -773,6 +791,14 @@ const ViewportGrid = function(props) {
 
   const onImportButtonClick = async () => {
     if (location.pathname.includes('/edit')) {
+      let isSegmentsLoadedSuccessfullyll = JSON.parse(
+        localStorage.getItem('fetchsegments') || 0
+      );
+      isSegmentsLoadedSuccessfullyll == 1 ? true : false;
+      if (isSegmentsLoadedSuccessfullyll) return;
+      localStorage.setItem('fetchsegments', JSON.stringify(1));
+      // const segmentations = localSavedSegmentaion.response.data;
+      // setSegmentloadingState(true);
       const segmentations = await fetchSegmentations();
       console.log({ segmentations });
       importSegmentationLayers({

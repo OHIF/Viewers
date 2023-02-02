@@ -452,6 +452,10 @@ const SearchDetails = props => {
           setSimilarityResultState(result.currJob);
           setResultsList(result.jobList);
 
+          console.log({
+            fetchscans: result.currJob,
+          })
+
           eventBus.dispatch('fetchscans', result.currJob);
 
           localStorage.setItem(

@@ -4,13 +4,23 @@ import classNames from 'classnames';
 import './Radiomics.css';
 import { withRouter } from 'react-router';
 import cornerstoneTools from 'cornerstone-tools';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faRunning,
+  faExclamationTriangle,
+  faCheckCircle,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { commandsManager, extensionManager } from './../App.js';
+import {
+  commandsManager,
+  extensionManager,
+  servicesManager,
+} from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
@@ -40,12 +50,12 @@ const exportComponent = node => {
 
   return html2canvas(element, {
     scrollY: -window.scrollY,
-    allowTaint: true,
+    allowTaint: false,
     useCORS: true,
   });
 };
 
-const generateTemplate = (SimilarScans, ohif_image, chart) => {
+const generateTemplate = (SimilarScans, ohif_image, chart, chart2) => {
   const contents = [];
   const images = {};
   // add radcad
@@ -103,7 +113,6 @@ const generateTemplate = (SimilarScans, ohif_image, chart) => {
     images[imageIndex + 'thumb'] = data.region_thumbnail_url;
     images[imageIndex] = data.image_url;
     const malignant = data.malignant ? ' Yes' : 'No';
-
     if (index == 0)
       contents.push({
         margin: [0, 10],
@@ -121,6 +130,7 @@ const generateTemplate = (SimilarScans, ohif_image, chart) => {
 
     contents.push({
       alignment: 'right',
+      // pageBreak: 'before',
       columns: [
         {
           alignment: 'left',
@@ -139,9 +149,18 @@ const generateTemplate = (SimilarScans, ohif_image, chart) => {
         {
           width: 400,
           stack: [
+            // {
+            //   image: imageIndex,
+            //   fit: [300, 300],
+            // },
             {
-              image: imageIndex,
+              image: chart[index],
               fit: [300, 300],
+              // relativePosition: {
+              //   y: -355,
+              //   x: -15,
+              // },
+              // opacity: 0.2,
             },
           ],
         },
@@ -152,17 +171,17 @@ const generateTemplate = (SimilarScans, ohif_image, chart) => {
     } else contents.push({ text: '', pageBreak: 'before' });
   });
 
-  // contents.push(
-  //   {
-  //     text: 'Morphology',
-  //     style: 'header',
-  //     pageBreak: 'before',
-  //   },
-  //   {
-  //     image: chart,
-  //     fit: [518, 500],
-  //   }
-  // );
+  contents.push(
+    {
+      text: 'Morphology',
+      style: 'header',
+      pageBreak: 'before',
+    },
+    {
+      image: chart2,
+      fit: [518, 500],
+    }
+  );
 
   return {
     content: contents,
@@ -386,8 +405,12 @@ class Radiomics extends Component {
       isRightSidePanelOpen: false,
       selectedRightSidePanel: '',
       selectedExtraPanel: '',
+      showImages: false,
       // selectedRightSidePanel: 'xnat-segmentation-panel',
       thumbnails: [],
+      job: null,
+      isComplete: false,
+      similarityResultState: { knn: [] },
       isEditSelection: true,
     };
 
@@ -395,6 +418,7 @@ class Radiomics extends Component {
     this.chartRef = React.createRef(null);
     this.componentRef = React.createRef();
     this.componentRefNode = React.createRef();
+    this.imageRefs = [];
 
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
@@ -426,13 +450,14 @@ class Radiomics extends Component {
   }
 
   onCornerstageLoaded = enabledEvt => {
-    setTimeout(() => {
-      const enabledElement = enabledEvt.detail.element;
+    // setTimeout(() => {}, 2000);
 
+    setTimeout(() => {
       commandsManager.runCommand('setToolActive', {
         toolName: 'Pan',
       });
 
+      const enabledElement = enabledEvt.detail.element;
       let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
         tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
@@ -440,13 +465,11 @@ class Radiomics extends Component {
         let viewport = cornerstone.getViewport(enabledElement);
         if (tool_data.x) viewport.translation.x = tool_data.x;
         if (tool_data.y) viewport.translation.y = tool_data.y;
-        if (tool_data.scale) viewport.scale = tool_data.scale;
+        // if (tool_data.scale) viewport.scale = tool_data.scale;
         if (tool_data.voi) viewport.voi = tool_data.voi;
+        // cornerstone.resize(enabledElement, true);
         cornerstone.setViewport(enabledElement, viewport);
       }
-
-      this.handleSidePanelChange('right', 'theta-details-panel');
-      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
 
       //  handle radiomicsDone
       const radiomicsDone = JSON.parse(
@@ -455,8 +478,13 @@ class Radiomics extends Component {
       this.setState({
         isComplete: radiomicsDone == 1 ? true : false,
       });
+
+      this.handleSidePanelChange('right', 'theta-details-panel');
+      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
+
+      //  handle radiomicsDone
       this.triggerReload();
-    }, 5000);
+    }, 2000);
   };
 
   componentWillUnmount() {
@@ -473,6 +501,8 @@ class Radiomics extends Component {
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
+    eventBus.remove('fetchscans');
+    eventBus.remove('jobstatus');
   }
 
   retrieveTimepoints = filter => {
@@ -588,6 +618,23 @@ class Radiomics extends Component {
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
+
+    eventBus.on('fetchscans', data => {
+      console.log({
+        fetchscans: data,
+      });
+      this.setState({
+        similarityResultState: data,
+      });
+    });
+    eventBus.on('jobstatus', data => {
+      console.log({
+        jobstatus: data,
+      });
+      this.setState({
+        job: data,
+      });
+    });
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
@@ -710,55 +757,109 @@ class Radiomics extends Component {
   };
 
   downloadReportAsPdf = () => {
-    console.log(this.canvas);
-    console.log(this.componentRef);
+    this.setState(
+      {
+        showImages: true,
+      },
+      () => {
+        // this.downloadReportAsPdfa();
+      }
+    );
+  };
+
+  downloadReportAsPdf = () => {
+    const base64 = [];
+    const promises = [];
     let chart = null;
     let ohif_image = null;
-    const SimilarScans = JSON.parse(
-      localStorage.getItem('print-similarscans') || '{}'
-    );
 
-    const element = ReactDOM.findDOMNode(this.canvas.current);
+    this.setState({
+      showImages: true,
+    });
+    const { UINotificationService } = servicesManager.services;
 
-    // const customScene = this.componentRef.current.graphRef.current.el.layout
-    //   .scene;
+    UINotificationService.show({
+      title: 'Generating Pdf',
+      // message,
+      type: 'info',
+      autoClose: true,
+    });
 
-    // const plotDiv = this.componentRef.current.graphRef.current.el;
-    // const { graphDiv } = plotDiv._fullLayout.scene._scene;
-    // console.log(this.componentRef.current.graphRef.current);
-    // const divToDownload = {
-    //   ...graphDiv,
-    //   layout: { ...graphDiv.layout, scene: customScene },
-    // };
+    // grpah
+    setTimeout(() => {
+      const customScene = this.componentRef.current.graphRef.current.el.layout
+        .scene;
 
-    Promise.all([
-      // html2canvas(element, {
-      //   scrollY: -window.scrollY,
-      //   allowTaint: true,
-      //   useCORS: true,
-      // }),
-      exportComponent(this.canvas),
-      // Plotly.toImage(divToDownload, {
-      //   format: 'png',
-      //   width: 800,
-      //   height: 600,
-      // }),
-    ])
-      .then(data => {
-        const canvas = data[0];
-        // const gsdsad = data[1];
-        // ohif_image = 'data:image/png;base64,' + canvas.toDataURL();
+      const plotDiv = this.componentRef.current.graphRef.current.el;
+      const { graphDiv } = plotDiv._fullLayout.scene._scene;
+      console.log(this.componentRef.current.graphRef.current);
+      const divToDownload = {
+        ...graphDiv,
+        layout: { ...graphDiv.layout, scene: customScene },
+      };
+      // end of grah
 
-        const definition = generateTemplate(
-          SimilarScans[0],
-          canvas.toDataURL()
-          // gsdsad
-        );
-        pdfmake.createPdf(definition).download();
-      })
-      .catch(error => {
-        console.log(error);
+      const similarityResultState = this.state.similarityResultState;
+
+      console.log({
+        similarityResultState,
       });
+
+      for (let i = 0; i < similarityResultState.knn.length; i++) {
+        const imageElement = this.imageRefs[i];
+        promises.push(exportComponent(imageElement));
+      }
+
+      Promise.all(promises)
+        .then(data => {
+          data.forEach(element => {
+            base64.push(element.toDataURL());
+          });
+
+          return Promise.all([
+            exportComponent(this.canvas),
+            Plotly.toImage(divToDownload, {
+              format: 'png',
+              width: 800,
+              height: 600,
+            }),
+          ]);
+        })
+        .then(data => {
+          const canvas = data[0];
+
+          const gsdsad = data[1];
+          // ohif_image = 'data:image/png;base64,' + canvas.toDataURL();
+
+          const SimilarScans = JSON.parse(
+            localStorage.getItem('print-similarscans') || '{}'
+          );
+
+          const definition = generateTemplate(
+            SimilarScans[0],
+            canvas.toDataURL(),
+            base64,
+            gsdsad
+          );
+          this.setState({
+            showImages: false,
+          });
+          pdfmake.createPdf(definition).download();
+
+          UINotificationService.show({
+            title: 'Pdf Generation Completed',
+            // message,
+            type: 'info',
+            autoClose: true,
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({
+            showImages: false,
+          });
+        });
+    }, 500);
   };
 
   render() {
@@ -792,6 +893,7 @@ class Radiomics extends Component {
     });
 
     const text = '';
+
     return (
       <div style={{}}>
         <JobsContextUtil
@@ -803,6 +905,79 @@ class Radiomics extends Component {
           overlay={false}
           instance={text}
         />
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            display: this.state.isComplete ? 'none' : 'block',
+          }}
+        >
+          {this.state.job && this.state.job.data ? (
+            <div
+              style={{
+                color: 'white',
+                fontSize: '40px',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '40px',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div className="accordion-title">
+                  <div>
+                    <b>Job {this.state.job.data.job}</b>
+                  </div>
+                  {/* Not the best way to go about this */}
+                  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                  <div>
+                    {this.state.job.data.status === 'RUNNING' && (
+                      <div>
+                        <FontAwesomeIcon icon={faRunning} />
+                        &nbsp; {this.state.job.data.instances_done}/
+                        {this.state.job.instances}
+                      </div>
+                    )}
+                    {this.state.job.data.status === 'PENDING' && (
+                      <FontAwesomeIcon icon={faSpinner} />
+                    )}
+                    {this.state.job.data.status === 'ERROR' && (
+                      <FontAwesomeIcon
+                        icon={faExclamationTriangle}
+                        // onClick={showError}
+                      />
+                    )}
+                    {this.state.job.data.status === 'DONE' && (
+                      <FontAwesomeIcon icon={faCheckCircle} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p
+              style={{
+                color: 'white',
+                fontSize: '40px',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              Loading...
+            </p>
+          )}
+        </div>
 
         <div
           className="printView"
@@ -810,7 +985,7 @@ class Radiomics extends Component {
           // ref={el => (this.componentRefNode = el)}
           style={{
             paddingBottom: 140,
-            // display: this.state.isComplete ? 'block' : 'none',
+            display: this.state.isComplete ? 'block' : 'none',
           }}
         >
           <div className="container">
@@ -936,11 +1111,67 @@ class Radiomics extends Component {
               />
             </div>
           </div>
-        </div>
 
+          <div className="container">
+            <div
+              id="resetrow"
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                marginTop: '700px',
+                display: this.state.showImages ? 'flex' : 'none',
+              }}
+            >
+              {this.state.similarityResultState.knn.map((data, index) => {
+                this.imageRefs[index] = React.createRef();
+                return (
+                  <>
+                    <div
+                      ref={this.imageRefs[index]}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 500,
+                          height: 500,
+                          position: 'relative',
+                        }}
+                      >
+                        <div
+                          style={{
+                            position: 'absolute',
+                            left: data.region_rectangle.x,
+                            top: data.region_rectangle.y,
+                            width: data.region_rectangle.w,
+                            height: data.region_rectangle.h,
+                            border: data.malignant
+                              ? '3px solid red'
+                              : '3px solid blue',
+                          }}
+                        />
+                        <img
+                          crossOrigin=""
+                          src={data.image_url}
+                          style={{
+                            flex: 1,
+                            marginBottom: 20,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </>
+                );
+              })}
+            </div>
+          </div>
+        </div>
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
-
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">{/* LEFT */}</div>
       </div>

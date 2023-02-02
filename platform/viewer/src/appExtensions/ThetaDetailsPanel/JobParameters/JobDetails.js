@@ -197,7 +197,7 @@ const JobParameters = props => {
       body: JSON.stringify(body),
     };
 
-    fetch(`${radcadapi}/texturea`, requestOptions)
+    fetch(`${radcadapi}/texture`, requestOptions)
       .then(r => r.json().then(data => ({ status: r.status, data: data })))
       .then(response => {
         console.log('response--------texture');
@@ -207,7 +207,7 @@ const JobParameters = props => {
         // );
         // cornerstone.updateImage(element);
 
-        if (response.status === 202) {
+        if (response.status === 202 || response.status === 200 ) {
           UINotificationService.show({
             message:
               'Job triggered successfully. Please wait for it to be completed',
