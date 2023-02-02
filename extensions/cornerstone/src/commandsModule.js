@@ -7,6 +7,7 @@ import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
+const scrollTo = cornerstoneTools.import('util/scrollToIndex');
 
 const { studyMetadataManager } = OHIF.utils;
 const { setViewportSpecificData } = OHIF.redux.actions;
@@ -149,6 +150,10 @@ const commandsModule = ({ servicesManager }) => {
     previousImage: ({ viewports }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       scroll(enabledElement, -1);
+    },
+    scrollToIndex: ({ viewports }) => {
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+      scrollTo(enabledElement, 12);
     },
     getActiveViewportEnabledElement: ({ viewports }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
@@ -389,6 +394,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     previousImage: {
       commandFn: actions.previousImage,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    scrollToIndex: {
+      commandFn: actions.scrollToIndex,
       storeContexts: ['viewports'],
       options: {},
     },

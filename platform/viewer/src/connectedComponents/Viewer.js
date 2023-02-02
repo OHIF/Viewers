@@ -12,7 +12,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { extensionManager } from './../App.js';
+import { commandsManager, extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
 import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import '../googleCloud/googleCloud.css';
@@ -278,6 +278,13 @@ class Viewer extends Component {
 
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
+      const options = {};
+      // commandsManager.runCommand('scrollToIndex', options);
+      // commandsManager.runCommand('nextImage', options);
+      // commandsManager.runCommand('nextImage', options);
+      // commandsManager.runCommand('nextImage', options);
+      // commandsManager.runCommand('nextImage', options);
+
       // this.loadLastActiveStudy();
       // const enabledElement = enabledEvt.detail.element;
       // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
@@ -317,25 +324,13 @@ class Viewer extends Component {
     setTimeout(() => {
       // this.loadLastActiveStudy();
       const enabledElement = enabledEvt.detail.element;
-      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      let tool_data = null;
+      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : false;
       if (enabledElement && tool_data) {
         try {
           let viewport = cornerstone.getViewport(enabledElement);
-
-  
-          let newWidth = enabledElement.offsetHeight;
-          let newHeight = enabledElement.offsetWidth;
-
-          if (newWidth > DEFAULT_SIZE || newHeight > DEFAULT_SIZE) {
-            const multiplier = DEFAULT_SIZE / Math.max(newWidth, newHeight);
-            newHeight *= multiplier;
-            newWidth *= multiplier;
-          }
-          // enabledElement.offsetHeight = newHeight;
-          // enabledElement.offsetWidth = newWidth;
-          console.log({ width: newWidth, height: newHeight });
 
           // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
           if (viewport.scale < 1) return;
@@ -349,11 +344,24 @@ class Viewer extends Component {
 
           cornerstone.resize(enabledElement, true);
           cornerstone.setViewport(enabledElement, viewport);
+          cornerstone.fitToWindow(enabledElement);
+          // cornerstone.reset(enabledElement);
+
           // eventBus.dispatch('importSegmentations', {});
         } catch (error) {
           console.error(error);
         }
       }
+      // else if (enabledElement && !tool_data) {
+      //   let viewport = cornerstone.getViewport(enabledElement);
+      //   const defaultVoi = {
+      //     windowWidth: 1600,
+      //     windowCenter: -800,
+      //   };
+      //   viewport.voi = defaultVoi;
+      //   cornerstone.resize(enabledElement, true);
+      //   cornerstone.setViewport(enabledElement, viewport);
+      // }
     }, 2000);
   };
 
@@ -880,7 +888,7 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         displaySet,
         studies
       );
-      
+
       const active = _isDisplaySetActive(
         displaySet,
         studies,
