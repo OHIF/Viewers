@@ -5,6 +5,14 @@ const EVENTS = {
 };
 
 class ViewportGridService extends PubSubService {
+  public static REGISTRATION = {
+    name: 'viewportGridService',
+    altName: 'ViewportGridService',
+    create: ({ configuration = {} }) => {
+      return new ViewportGridService();
+    },
+  };
+
   serviceImplementation = {};
 
   constructor() {

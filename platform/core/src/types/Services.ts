@@ -4,6 +4,7 @@ import {
   MeasurementService,
   ViewportGridService,
   ToolbarService,
+  DisplaySetService,
 } from '../services';
 
 /**
@@ -13,14 +14,14 @@ export default interface Services {
   hangingProtocolService?: HangingProtocolService;
   customizationService?: CustomizationService;
   measurementService?: MeasurementService;
-  DisplaySetService?: Record<string, unknown>;
-  CineService?: Record<string, unknown>;
+  displaySetService?: DisplaySetService;
+  cineService?: Record<string, unknown>;
   toolbarService?: ToolbarService;
-  CornerstoneViewportService?: Record<string, unknown>;
-  UIDialogService?: Record<string, unknown>;
-  ToolGroupService?: Record<string, unknown>;
-  UINotificationService?: Record<string, unknown>;
+  cornerstoneViewportService?: Record<string, unknown>;
+  uiDialogService?: Record<string, unknown>;
+  toolGroupService?: Record<string, unknown>;
+  uiNotificationService?: Record<string, unknown>;
   viewportGridService?: ViewportGridService;
-  SyncGroupService?: Record<string, unknown>;
-  CornerstoneCacheService?: Record<string, unknown>;
+  syncGroupService?: Record<string, unknown>;
+  cornerstoneCacheService?: Record<string, unknown>;
 }

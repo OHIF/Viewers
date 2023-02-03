@@ -1,12 +1,3 @@
-import ToolbarService from './ToolBarService';
+import ToolbarService from './ToolbarService';
 
-const ToolbarServiceRegistration = {
-  name: 'toolbarService',
-  altName: 'ToolBarService',
-  create: ({ configuration = {}, commandsManager }) => {
-    return new ToolbarService(commandsManager);
-  },
-};
-
-export default ToolbarServiceRegistration;
-export { ToolbarService, ToolbarServiceRegistration };
+export default ToolbarService;

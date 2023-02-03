@@ -10,6 +10,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
+import { ServicesManager } from '@ohif/core';
 
 import { getEnabledElement as OHIFgetEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
@@ -22,13 +23,13 @@ const commandsModule = ({ servicesManager }) => {
   const {
     ViewportGridService,
     ToolGroupService,
-    CineService,
-    ToolBarService,
+    cineService,
+    toolbarService,
     UIDialogService,
     CornerstoneViewportService,
     HangingProtocolService,
     UINotificationService,
-  } = servicesManager.services;
+  } = (servicesManager as ServicesManager).services;
 
   function _getActiveViewportEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
@@ -92,11 +93,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     toggleCine: () => {
       const { viewports } = ViewportGridService.getState();
-      const { isCineEnabled } = CineService.getState();
-      CineService.setIsCineEnabled(!isCineEnabled);
-      ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
+      const { isCineEnabled } = cineService.getState();
+      cineService.setIsCineEnabled(!isCineEnabled);
+      toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
       viewports.forEach((_, index) =>
-        CineService.setCine({ id: index, isPlaying: false })
+        cineService.setCine({ id: index, isPlaying: false })
       );
     },
     setWindowLevel({ window, level, toolGroupId }) {

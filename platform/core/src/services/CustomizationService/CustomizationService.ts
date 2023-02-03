@@ -1,6 +1,7 @@
 import merge from 'lodash.merge';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import { Customization, NestedStrings, Obj } from './types';
+import { CommandsManager } from '../../classes';
 
 const EVENTS = {
   MODE_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:modeModified',
@@ -50,7 +51,14 @@ const flattenNestedStrings = (
  * every module for the given id and to load it/add it to the extensions.
  */
 export default class CustomizationService extends PubSubService {
-  commandsManager: Record<string, unknown>;
+  public static REGISTRATION = {
+    name: 'customizationService',
+    create: ({ configuration = {}, commandsManager }) => {
+      return new CustomizationService({ configuration, commandsManager });
+    },
+  };
+
+  commandsManager: CommandsManager;
   extensionManager: Record<string, unknown>;
 
   modeCustomizations: Record<string, Customization> = {};

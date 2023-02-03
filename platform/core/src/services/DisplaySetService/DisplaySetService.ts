@@ -29,6 +29,14 @@ const findInstance = (instance, displaySets) => {
 };
 
 export default class DisplaySetService extends PubSubService {
+  public static REGISTRATION = {
+    altName: 'DisplaySetService',
+    name: 'displaySetService',
+    create: ({ configuration = {} }) => {
+      return new DisplaySetService();
+    },
+  };
+
   public activeDisplaySets = [];
   constructor() {
     super(EVENTS);

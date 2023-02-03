@@ -25,28 +25,21 @@ describe('Top level exports', () => {
       //
       'CineService',
       'CustomizationService',
-      'CustomizationServiceRegistration',
       'UIDialogService',
       'UIModalService',
       'UINotificationService',
       'UIViewportDialogService',
       'DisplaySetService',
-      'DisplaySetServiceRegistration',
       'MeasurementService',
-      'MeasurementServiceRegistration',
       'ToolbarService',
-      'ToolbarServiceRegistration',
       'Types',
       'ViewportGridService',
-      'ViewportGridServiceRegistration',
       'HangingProtocolService',
-      'HangingProtocolServiceRegistration',
       'UserAuthenticationService',
       'IWebApiDataSource',
       'DicomMetadataStore',
       'pubSubServiceInterface',
       'PubSubService',
-      'Services',
     ].sort();
 
     const exports = Object.keys(OHIF).sort();

@@ -19,6 +19,14 @@ const EVENTS = {
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
 class HangingProtocolService {
+  public static REGISTRATION = {
+    name: 'hangingProtocolService',
+    altName: 'HangingProtocolService',
+    create: ({ configuration = {}, commandsManager, servicesManager }) => {
+      return new HangingProtocolService(commandsManager, servicesManager);
+    },
+  };
+
   studies: StudyMetadata[];
   // stores all the protocols (object or function that returns an object) in a map
   protocols: Map<string, Protocol>;
