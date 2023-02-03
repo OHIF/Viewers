@@ -275,6 +275,8 @@ class StudyMetadata extends Metadata {
 
     const otherDisplaySets = allDisplaySets.filter(
       ds =>
+        ds &&
+        derivatedDisplaySet &&
         ds.displaySetInstanceUID !== derivatedDisplaySet.displaySetInstanceUID
     );
 
@@ -350,6 +352,13 @@ class StudyMetadata extends Metadata {
               referencedSeriesInstanceUID
             );
           } else {
+            if (
+              !displaySet.referencedDisplaySets ||
+              displaySet.referencedDisplaySets.length === 0
+            ) {
+              return false;
+            }
+
             const filteredReferencedDisplaySets = displaySet.referencedDisplaySets.filter(
               referencedDisplaySet =>
                 referencedDisplaySet.SeriesInstanceUID ===

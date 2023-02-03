@@ -721,14 +721,6 @@
     "@babel/helper-regex" "^7.4.4"
     regexpu-core "^4.6.0"
 
-"@babel/polyfill@^7.8.3":
-  version "7.8.7"
-  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.8.7.tgz#151ec24c7135481336168c3bd8b8bf0cf91c032f"
-  integrity sha512-LeSfP9bNZH2UOZgcGcZ0PIHUt1ZuHub1L3CVmEyqLxCeDLm4C5Gi8jRH8ZX2PNpDhQCo0z6y/+DIs2JlliXW8w==
-  dependencies:
-    core-js "^2.6.5"
-    regenerator-runtime "^0.13.4"
-
 "@babel/preset-env@^7.5.0", "@babel/preset-env@^7.5.5":
   version "7.6.3"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.6.3.tgz#9e1bf05a2e2d687036d24c40e4639dc46cef2271"
@@ -796,7 +788,15 @@
     "@babel/plugin-transform-react-jsx-self" "^7.0.0"
     "@babel/plugin-transform-react-jsx-source" "^7.0.0"
 
-"@babel/runtime@7.1.2", "@babel/runtime@7.5.5", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.16.5", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.0", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.6":
+"@babel/runtime-corejs2@^7.17.8":
+  version "7.18.9"
+  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs2/-/runtime-corejs2-7.18.9.tgz#d88c327736ecc4b9db13ddef5a33a004b9aeac74"
+  integrity sha512-l057ZarpDX2QnXM89ViR2BgRFgTy2l5UFGDt0SbInhim1N/ljBgPeTJV0kRG1/Bo7CkHfYfrNNwTeQ2CPph9xQ==
+  dependencies:
+    core-js "^2.6.12"
+    regenerator-runtime "^0.13.4"
+
+"@babel/runtime@7.1.2", "@babel/runtime@7.5.5", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.16.5", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.0", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.6":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.5.5.tgz#74fba56d35efbeca444091c7850ccd494fd2f132"
   integrity sha512-28QvEGyQyNkB0/m2B4FU7IEZGK2NUrcMtT6BZEFALTguLk+AUT6ofsHtPk5QyjAdUkpMJ+/Em+quwz4HOt30AQ==
@@ -4242,13 +4242,13 @@ capture-exit@^2.0.0:
     rsvp "^4.8.4"
 
 cardboard-vr-display@^1.0.15:
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/cardboard-vr-display/-/cardboard-vr-display-1.0.16.tgz#f91e2798e8fb70a348599638c6742c72dfeadabc"
-  integrity sha512-GFBWPMH/ixy4Ji014BAO1ryddGHphtJlA8gUR6UdKsOpPjUQukCKpgsx2XIJ5oBlqXnDQOcLVRqBWyuvTI32jQ==
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/cardboard-vr-display/-/cardboard-vr-display-1.0.19.tgz#81dcde1804b329b8228b757ac00e1fd2afa9d748"
+  integrity sha512-+MjcnWKAkb95p68elqZLDPzoiF/dGncQilLGvPBM5ZorABp/ao3lCs7nnRcYBckmuNkg1V/5rdGDKoUaCVsHzQ==
   dependencies:
     gl-preserve-state "^1.0.0"
     nosleep.js "^0.7.0"
-    webvr-polyfill-dpdb "^1.0.11"
+    webvr-polyfill-dpdb "^1.0.17"
 
 cardinal@^2.1.1:
   version "2.1.1"
@@ -5079,10 +5079,15 @@ core-js-compat@^3.1.1:
     browserslist "^4.7.2"
     semver "^6.3.0"
 
-core-js@^2.4.0, core-js@^2.5.0, core-js@^2.5.7, core-js@^2.6.5:
+core-js@^2.4.0, core-js@^2.5.0, core-js@^2.5.7:
   version "2.6.10"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.10.tgz#8a5b8391f8cc7013da703411ce5b585706300d7f"
   integrity sha512-I39t74+4t+zau64EN1fE5v2W31Adtc/REhzWN+gWRRXg6WH5qAsZm62DHpQ1+Yhe4047T55jvzz7MUqF/dBBlA==
+
+core-js@^2.6.12:
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
+  integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
 core-js@^3.2.1:
   version "3.3.4"
@@ -5112,10 +5117,10 @@ cornerstone-tools@^6.0.6:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.9"
 
-cornerstone-wado-image-loader@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.1.0.tgz#a85c206eb23e188181ed3f1dcf3ec715e65efcb4"
-  integrity sha512-QRoMqBE5xEc1Jttg3eH6RB4jFY2aIEjd9rcbvJszefl0isow+JwcLv2kh1xkSvqGfHGozcz+F4mrORyTNNLuFQ==
+cornerstone-wado-image-loader@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.2.1.tgz#ee37797fe8970dcb7e438a6d87b710e817066100"
+  integrity sha512-nRu+6GfHFERpZLytH/SCfymODCz1SC1NKRv/xn02pr3PEkzU6fvKI76sSxSFOozxDsYljupTRNi/qGMprfdBHA==
   dependencies:
     "@cornerstonejs/codec-charls" "^0.1.1"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
@@ -5632,17 +5637,17 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@0.19.9:
-  version "0.19.9"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.19.9.tgz#be500101b1f75a28ea9eb7ef845a8ed197355e76"
-  integrity sha512-V+0tND+SPX5e7WFeLzeoooaTsZbiKmEP2i3AyERsojaXXfaDV5E+pta5IqId4Ok1yfRT5qfTFwLGstGT6nLplA==
+dcmjs@0.29.3:
+  version "0.29.3"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.29.3.tgz#e672ed079bd5371406e022361c60d7794af40d7b"
+  integrity sha512-aLAkrpejrFAatzU84ID9s01+oUFBzIP3gSkgyr2OcDfOphW7ms/JUDUdH24Y6361NaMovEo4gJ3bRrzsBmI8cA==
   dependencies:
-    "@babel/polyfill" "^7.8.3"
-    "@babel/runtime" "^7.8.4"
+    "@babel/runtime-corejs2" "^7.17.8"
     gl-matrix "^3.1.0"
     lodash.clonedeep "^4.5.0"
     loglevelnext "^3.0.1"
     ndarray "^1.0.19"
+    pako "^2.0.4"
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
@@ -11204,7 +11209,7 @@ normalize-url@^3.0.0, normalize-url@^3.3.0:
 nosleep.js@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/nosleep.js/-/nosleep.js-0.7.0.tgz#cfd919c25523ca0d0f4a69fb3305c083adaee289"
-  integrity sha1-z9kZwlUjyg0PSmn7MwXAg62u4ok=
+  integrity sha512-Z4B1HgvzR+en62ghwZf6BwAR6x4/pjezsiMcbF9KMLh7xoscpoYhaSXfY3lLkqC68AtW+/qLJ1lzvBIj0FGaTA==
 
 npm-bundled@^1.0.1:
   version "1.0.6"
@@ -13515,10 +13520,10 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@^0.14.4:
-  version "0.14.4"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.14.4.tgz#8cc5a49738fff3fee75ead61c98307bc24710151"
-  integrity sha512-WKU87iqH6AQ1R8zp1hUXU4hsGwfbkkoUhzSCjbBGZ9Di0ELYNx/xY9DtdmgsKOU5Y5Arp5+VQW/ziFsq2KTcTA==
+react-vtkjs-viewport@^0.14.5:
+  version "0.14.5"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.14.5.tgz#95cda594370e557d43aa966392ed92926e6c53c1"
+  integrity sha512-DE+Ytub6veya3DTvItJdZhkTR8MppoLkrq57qhN9vd2meykeS1fZp9cDyWmq92dJ7IHSuS5FPof8ucsae9ci5w==
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"
@@ -14495,7 +14500,7 @@ scriptjs@^2.5.9:
 seedrandom@2.4.3:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/seedrandom/-/seedrandom-2.4.3.tgz#2438504dad33917314bff18ac4d794f16d6aaecc"
-  integrity sha1-JDhQTa0zkXMUv/GKxNeU8W1qrsw=
+  integrity sha512-2CkZ9Wn2dS4mMUWQaXLsOAfGD+irMlLEeSP3cMxpGbgyOOzJGFa+MWCOMTOCMyZinHRPxyOj/S/C57li/1to6Q==
 
 seedrandom@^3.0.5:
   version "3.0.5"
@@ -14711,7 +14716,7 @@ shebang-regex@^3.0.0:
 shelljs@0.7.8:
   version "0.7.8"
   resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.8.tgz#decbcf874b0d1e5fb72e14b164a9683048e9acb3"
-  integrity sha1-3svPh0sNHl+3LhSxZKloMEjprLM=
+  integrity sha512-/YF5Uk8hcwi7ima04ppkbA4RaRMdPMBfwAvAf8sufYOxsJRtbdoBsT8vGvlb+799BrlGdYrd+oczIA2eN2JdWA==
   dependencies:
     glob "^7.0.0"
     interpret "^1.0.0"
@@ -16658,10 +16663,10 @@ websocket-extensions@>=0.1.1:
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
   integrity sha512-nqHUnMXmBzT0w570r2JpJxfiSD1IzoI+HGVdd3aZ0yNi3ngvQ4jv1dtHt5VGxfI2yj5yqImPhOK4vmIh2xMbGg==
 
-webvr-polyfill-dpdb@^1.0.11:
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/webvr-polyfill-dpdb/-/webvr-polyfill-dpdb-1.0.16.tgz#7f2cf88460c002a5f10ff69b2bf3a5663e0ad9dd"
-  integrity sha512-FCciTtPhwkYYHGL0K67G8k7ZnNVqnEx3u4NVHLJ0+Ya6f2VTZUl/GJpaEo1Id2pBP/2l0RYZ3IGZE4Pe8fRalg==
+webvr-polyfill-dpdb@^1.0.17:
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/webvr-polyfill-dpdb/-/webvr-polyfill-dpdb-1.0.18.tgz#258484ce06b057bf18898acc911bd173847bce11"
+  integrity sha512-O0S1ZGEWyPvyZEkS2VbyV7mtir/NM9MNK3EuhbHPoJ8EHTky2pTXehjIl+IiDPr+Lldgx129QGt3NGly7rwRPw==
 
 webvr-polyfill@0.10.8:
   version "0.10.8"

@@ -473,7 +473,7 @@ const _checkForDerivedDisplaySets = async function(displaySet, study) {
   let derivedDisplaySetsNumber = 0;
   if (
     displaySet.Modality &&
-    !['SEG', 'SR', 'RTSTRUCT', 'RTDOSE'].includes(displaySet.Modality)
+    !['SEG', 'SR', 'RTSTRUCT'].includes(displaySet.Modality)
   ) {
     const studyMetadata = studyMetadataManager.get(study.StudyInstanceUID);
 
@@ -505,14 +505,14 @@ const _checkForDerivedDisplaySets = async function(displaySet, study) {
  * @returns {[string]} an array of strings containing the warnings
  */
 const _checkForSeriesInconsistencesWarnings = async function(displaySet) {
-  if (displaySet.inconsistencyWarnings) {
-    // warnings already checked and cached in displaySet
-    return displaySet.inconsistencyWarnings;
-  }
-
   const inconsistencyWarnings = [];
 
   if (displaySet.Modality !== 'SEG') {
+    // warnings already checked and cached in displaySet
+    if (displaySet.inconsistencyWarnings) {
+      return displaySet.inconsistencyWarnings;
+    }
+
     if (
       displaySet.reconstructionIssues &&
       displaySet.reconstructionIssues.length !== 0
@@ -612,7 +612,6 @@ const _isDisplaySetActive = function(
   if (
     displaySet.Modality !== 'SEG' &&
     displaySet.Modality !== 'RTSTRUCT' &&
-    displaySet.Modality !== 'RTDOSE' &&
     displaySet.Modality !== 'SR'
   ) {
     active = activeDisplaySetInstanceUID === displaySetInstanceUID;
