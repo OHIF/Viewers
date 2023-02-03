@@ -1,14 +1,17 @@
 import React from 'react';
 import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
+import { useAppConfig } from '@state';
 
 import { Button } from '@ohif/ui';
 
 function DataSourceSelector() {
-  console.log('Rendering multi-data sources initial page');
+  const [appConfig] = useAppConfig();
   const navigate = useNavigate();
 
-  const dsConfigs = window.config.dataSources;
+  // This is frowned upon, but the raw config is needed here to provide
+  // the selector
+  const dsConfigs = appConfig.dataSources;
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
@@ -27,7 +30,7 @@ function DataSourceSelector() {
                   it.sourceName !== 'dicomlocal'
               )
               .map(ds => (
-                <>
+                <div key={ds.sourceName}>
                   <h1 className="text-white">{ds.friendlyName}</h1>
                   <Button
                     className={classnames('font-bold', 'ml-2')}
@@ -41,7 +44,7 @@ function DataSourceSelector() {
                     {ds.sourceName}
                   </Button>
                   <br />
-                </>
+                </div>
               ))}
           </div>
         </div>

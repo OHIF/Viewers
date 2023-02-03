@@ -74,6 +74,7 @@ const createRoutes = ({
           {...route.props}
           route={route}
           servicesManager={servicesManager}
+          extensionManager={extensionManager}
           hotkeysManager={hotkeysManager}
         />
       </ErrorBoundary>
