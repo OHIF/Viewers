@@ -5,6 +5,7 @@
     // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": false,
     "jsx": "react",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
