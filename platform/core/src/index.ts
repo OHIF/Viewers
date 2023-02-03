@@ -21,13 +21,21 @@ import {
   //
   DicomMetadataStore,
   DisplaySetService,
-  ToolBarService,
+  DisplaySetServiceRegistration,
+  ToolbarService,
+  ToolbarServiceRegistration,
   MeasurementService,
+  MeasurementServiceRegistration,
   ViewportGridService,
+  ViewportGridServiceRegistration,
   HangingProtocolService,
+  HangingProtocolServiceRegistration,
   pubSubServiceInterface,
+  PubSubService,
   UserAuthenticationService,
+  CustomizationService,
   CustomizationServiceRegistration,
+  Services,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -58,20 +66,27 @@ const OHIF = {
   viewer: {},
   //
   CineService,
+  CustomizationService,
   CustomizationServiceRegistration,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
+  DisplaySetServiceRegistration,
   MeasurementService,
-  ToolBarService, // TODO: TYPO
+  MeasurementServiceRegistration,
+  ToolbarService,
+  ToolbarServiceRegistration,
   ViewportGridService,
+  ViewportGridServiceRegistration,
   HangingProtocolService,
+  HangingProtocolServiceRegistration,
   UserAuthenticationService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
+  PubSubService,
 };
 
 export {
@@ -94,21 +109,29 @@ export {
   DICOMWeb,
   //
   CineService,
+  CustomizationService,
   CustomizationServiceRegistration,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
+  DisplaySetServiceRegistration,
   MeasurementService,
-  ToolBarService,
+  MeasurementServiceRegistration,
+  ToolbarService,
+  ToolbarServiceRegistration,
   ViewportGridService,
+  ViewportGridServiceRegistration,
   HangingProtocolService,
+  HangingProtocolServiceRegistration,
   UserAuthenticationService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
+  PubSubService,
   Types,
+  Services,
 };
 
 export { OHIF };

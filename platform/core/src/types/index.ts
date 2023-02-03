@@ -9,6 +9,8 @@ import { ExtensionManager } from '../extensions';
 import { CustomizationService, PubSubService } from '../services';
 import * as HangingProtocol from './HangingProtocol';
 import Command from './Command';
+import Services from './Services';
+import { CommandsManager } from '../classes';
 
 export * from '../services/CustomizationService/types';
 
@@ -22,4 +24,6 @@ export type {
   PubSubService,
   CustomizationService,
   Command,
+  Services,
+  CommandsManager,
 };
