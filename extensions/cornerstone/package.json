@@ -39,7 +39,7 @@
     "react-resize-detector": "^6.7.6"
   },
   "devDependencies": {
-    "lodash": "4.17.21"
+    "lodash": "^4.17.21"
   },
   "dependencies": {
     "@babel/runtime": "7.17.9",
