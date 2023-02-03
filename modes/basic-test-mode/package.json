@@ -1,12 +1,12 @@
 {
-  "name": "@ohif/extension-cornerstone-dicom-sr",
-  "version": "3.0.0",
-  "description": "OHIF extension for an SR Cornerstone Viewport",
+  "name": "mode-basic-test-mode",
+  "version": "0.0.1",
+  "description": "Basic mode for testing",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
-  "module": "src/index.tsx",
+  "module": "src/index.js",
   "engines": {
     "node": ">=14",
     "npm": ">=6",
@@ -20,7 +20,7 @@
     "access": "public"
   },
   "keywords": [
-    "ohif-extension"
+    "ohif-mode"
   ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
@@ -33,19 +33,18 @@
   },
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
+    "@ohif/extension-default": "^3.0.0",
     "@ohif/extension-cornerstone": "^3.0.0",
-    "@ohif/extension-measurement-tracking": "^3.0.0",
-    "@ohif/ui": "^2.0.0",
-    "dcmjs": "^0.28.3",
-    "dicom-parser": "^1.8.9",
-    "hammerjs": "^2.0.8",
-    "prop-types": "^15.6.2",
-    "react": "^17.0.2"
+    "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
+    "@ohif/extension-dicom-pdf": "^3.0.1",
+    "@ohif/extension-dicom-video": "^3.0.1",
+    "@ohif/extension-measurement-tracking": "^3.0.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3",
-    "classnames": "^2.2.6",
-    "@cornerstonejs/core": "^0.27.1",
-    "@cornerstonejs/tools": "^0.36.3"
+    "@babel/runtime": "7.16.3"
+  },
+  "devDependencies": {
+    "webpack": "^5.50.0",
+    "webpack-merge": "^5.7.3"
   }
 }
