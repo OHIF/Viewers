@@ -1,0 +1,8 @@
+{
+  "Sex": "性别",
+  "Age": "年龄",
+  "MRN": "病例号",
+  "Thickness": "厚度",
+  "Spacing": "间距",
+  "Scanner": "扫描器"
+}

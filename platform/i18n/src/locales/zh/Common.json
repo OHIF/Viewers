@@ -11,5 +11,21 @@
   "Series": "序列",
   "Show": "显示",
   "Stop": "停止",
-  "StudyDate": "时间"
+  "StudyDate": "时间",
+  "Today": "今天",
+  "Last 7 days": "最近7天",
+  "Last 30 days": "最近30天",
+  "Start Date": "开始日期",
+  "End Date": "结束日期",
+  "Primary": "当前",
+  "Recent": "最近",
+  "All": "全部",
+  "Loading...": "加载中...",
+  "Basic Viewer": "基本查看器",
+  "Enter your annotation": "输入标注",
+  "Cancel": "取消",
+  "Save": "保存",
+  "Create Report": "新建报告",
+  "Measurements saved successfully": "测量值保存成功",
+  "Failed to store measurements": "测量值保存失败"
 }
