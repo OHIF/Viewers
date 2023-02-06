@@ -197,6 +197,7 @@ class MeasurementService {
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
       measurement,
+      notYetUpdatedAtSource: false,
     });
   }
 

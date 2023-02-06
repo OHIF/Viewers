@@ -238,6 +238,7 @@ module.exports = {
       auto: '1 1 auto',
       initial: '0 1 auto',
       none: 'none',
+      static: '0 0 auto',
     },
     flexGrow: {
       '0': '0',
@@ -302,6 +303,7 @@ module.exports = {
       ...theme('spacing'),
       full: '100%',
       screen: '100vh',
+      inherit: 'inherit',
     }),
     inset: {
       '0': '0',
@@ -311,6 +313,12 @@ module.exports = {
       '1/2': '50%',
       'viewport-scrollbar': '1.3rem',
     },
+    minHeight: theme => ({
+      ...theme('spacing'),
+      '0': '0',
+      full: '100%',
+      screen: '100vh',
+    }),
     letterSpacing: {
       tighter: '-0.05em',
       tight: '-0.025em',
@@ -365,12 +373,6 @@ module.exports = {
       full: '100%',
       ...breakpoints(theme('screens')),
       ...theme('spacing'),
-    }),
-    minHeight: theme => ({
-      ...theme('spacing'),
-      '0': '0',
-      full: '100%',
-      screen: '100vh',
     }),
     minWidth: theme => ({
       ...theme('spacing'),

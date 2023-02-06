@@ -1,6 +1,6 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
+  // whiteLabeling: {},
   extensions: [],
   modes: [],
   customizationService: {
@@ -8,7 +8,8 @@ window.config = {
     // helloPage: '@ohif/extension-default.customizationModule.helloPage',
   },
   showStudyList: true,
-  maxNumberOfWebWorkers: 4,
+  // some windows systems have issues with more than 3 web workers
+  maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
   showLoadingIndicator: true,

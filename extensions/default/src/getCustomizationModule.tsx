@@ -1,4 +1,5 @@
 import React from 'react';
+import DataSourceSelector from './Panels/DataSourceSelector';
 
 /**
  *
@@ -21,6 +22,20 @@ export default function getCustomizationModule() {
             children: () => (
               <h1 style={{ color: 'white' }}>Hello Custom Route</h1>
             ),
+          },
+        ],
+      },
+    },
+
+    // Example customization to list a set of datasources
+    {
+      name: 'datasources',
+      value: {
+        id: 'customRoutes',
+        routes: [
+          {
+            path: '/datasources',
+            children: DataSourceSelector,
           },
         ],
       },

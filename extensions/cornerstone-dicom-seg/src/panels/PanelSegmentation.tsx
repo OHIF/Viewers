@@ -196,7 +196,7 @@ export default function PanelSegmentation({
   );
 
   return (
-    <div className="flex flex-col justify-between mt-1">
+    <div className="flex flex-col flex-auto min-h-0 justify-between mt-1">
       {/* show segmentation table */}
       {segmentations?.length ? (
         <SegmentationGroupTable
