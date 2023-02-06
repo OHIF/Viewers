@@ -597,7 +597,7 @@ function _getLabelFromMeasuredValueSequence(
   const { CodeValue } = MeasurementUnitsCodeSequence;
 
   const formatedNumericValue = NumericValue
-    ? Number(NumericValue).toFixed(1)
+    ? Number(NumericValue).toFixed(2)
     : '';
 
   return {
