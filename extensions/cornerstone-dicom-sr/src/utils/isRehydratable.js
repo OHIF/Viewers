@@ -1,6 +1,6 @@
-import { adapters } from 'dcmjs';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
-const cornerstoneAdapters = adapters.Cornerstone3D;
+const cornerstoneAdapters = adaptersSR.Cornerstone3D;
 
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;

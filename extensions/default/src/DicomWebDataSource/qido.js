@@ -23,6 +23,7 @@
  * | offset           | {number}           |
  */
 import { DICOMWeb, utils } from '@ohif/core';
+import { sortStudySeries } from '@ohif/core/src/utils/sortStudy';
 
 const { getString, getName, getModalities } = DICOMWeb;
 
@@ -89,6 +90,8 @@ export function processSeriesResults(qidoSeries) {
       })
     );
   }
+
+  sortStudySeries(series);
 
   return series;
 }

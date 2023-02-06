@@ -81,14 +81,23 @@ function OHIFCornerstoneSRViewport(props) {
     sendTrackedMeasurementsEvent = tracked?.[1];
   }
   if (!sendTrackedMeasurementsEvent) {
-    // if no panels from measurement-tracking extension is used, this code will trun
+    // if no panels from measurement-tracking extension is used, this code will run
     trackedMeasurements = null;
     sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
       MeasurementService.clearMeasurements();
-      hydrateStructuredReport(
+      const { SeriesInstanceUIDs } = hydrateStructuredReport(
         { servicesManager, extensionManager },
         displaySetInstanceUID
       );
+      const displaySets = DisplaySetService.getDisplaySetsForSeries(
+        SeriesInstanceUIDs[0]
+      );
+      if (displaySets.length) {
+        viewportGridService.setDisplaySetsForViewport({
+          viewportIndex: activeViewportIndex,
+          displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+        });
+      }
     };
   }
 

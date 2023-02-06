@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 
-const { formatDate } = utils;
+const { sortStudyInstances, formatDate } = utils;
 
 /**
  *
@@ -139,6 +139,7 @@ function PanelStudyBrowser({
       currentDisplaySets,
       thumbnailImageSrcMap
     );
+    sortStudyInstances(mappedDisplaySets);
 
     setDisplaySets(mappedDisplaySets);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -300,6 +301,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
       seriesDate: ds.SeriesDate,
+      seriesTime: ds.SeriesTime,
       numInstances: ds.numImageFrames,
       StudyInstanceUID: ds.StudyInstanceUID,
       componentType,

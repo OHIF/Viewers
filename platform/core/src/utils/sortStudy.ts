@@ -1,5 +1,22 @@
 import isLowPriorityModality from './isLowPriorityModality';
 
+const compareSeriesDateTime = (a, b) => {
+  const seriesDateA = Date.parse(
+    `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`
+  );
+  const seriesDateB = Date.parse(
+    `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`
+  );
+  return seriesDateA - seriesDateB;
+};
+
+const defaultSeriesSort = (a, b) => {
+  const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
+  const seriesNumberB = b.SeriesNumber ?? b.seriesNumber;
+  if (seriesNumberA === seriesNumberB) return compareSeriesDateTime(a, b);
+  return seriesNumberA - seriesNumberB;
+};
+
 /**
  * Series sorting criteria: series considered low priority are moved to the end
  * of the list and series number is used to break ties
@@ -7,20 +24,24 @@ import isLowPriorityModality from './isLowPriorityModality';
  * @param {Object} secondSeries
  */
 function seriesInfoSortingCriteria(firstSeries, secondSeries) {
-  const aLowPriority = isLowPriorityModality(firstSeries.Modality);
-  const bLowPriority = isLowPriorityModality(secondSeries.Modality);
-  if (!aLowPriority && bLowPriority) {
+  const aLowPriority = isLowPriorityModality(
+    firstSeries.Modality ?? firstSeries.modality
+  );
+  const bLowPriority = isLowPriorityModality(
+    secondSeries.Modality ?? secondSeries.modality
+  );
+
+  if (aLowPriority) {
+    return bLowPriority ? defaultSeriesSort(secondSeries, firstSeries) : 1;
+  } else if (bLowPriority) {
     return -1;
   }
-  if (aLowPriority && !bLowPriority) {
-    return 1;
-  }
 
-  return firstSeries.SeriesNumber - secondSeries.SeriesNumber;
+  return defaultSeriesSort(firstSeries, secondSeries);
 }
 
 const seriesSortCriteria = {
-  default: (a, b) => a.SeriesNumber - b.SeriesNumber,
+  default: seriesInfoSortingCriteria,
   seriesInfoSortingCriteria,
 };
 
@@ -44,7 +65,7 @@ const sortingCriteria = {
 const sortStudySeries = (
   series,
   seriesSortingCriteria = seriesSortCriteria.default,
-  sortFunction
+  sortFunction = null
 ) => {
   if (typeof sortFunction === 'function') return sortFunction(series);
   else return series.sort(seriesSortingCriteria);
@@ -96,4 +117,10 @@ export default function sortStudy(
   return study;
 }
 
-export { sortStudy, sortStudySeries, sortStudyInstances, sortingCriteria };
+export {
+  sortStudy,
+  sortStudySeries,
+  sortStudyInstances,
+  sortingCriteria,
+  seriesSortCriteria,
+};
