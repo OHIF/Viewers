@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "browser-detect": "^0.2.28",
-    "classnames": "2.2.6",
+    "classnames": "^2.3.2",
     "lodash.debounce": "4.0.8",
     "moment": "2.24.0",
     "mousetrap": "^1.6.5",

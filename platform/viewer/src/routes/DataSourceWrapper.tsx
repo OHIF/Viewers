@@ -20,9 +20,7 @@ function DataSourceWrapper(props) {
   const location = useLocation();
 
   // TODO - get the variable from the props all the time...
-  let dataSourceName = new URLSearchParams(location.search).get(
-    'datasourcename'
-  );
+  let dataSourceName = new URLSearchParams(location.search).get('datasources');
   const dataPath = dataSourceName ? `/${dataSourceName}` : '';
 
   if (!dataSourceName && window.config.defaultDataSourceName) {

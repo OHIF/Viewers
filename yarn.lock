@@ -2397,36 +2397,28 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-1.0.3.tgz#4c82642e8a6beb0d263f5a263723aec4225e5300"
   integrity sha512-PK+9N/JL7ZMGum6OKuReRGGhWXpWjRC9WnltQ6aEzRKEQPMg+3WFiQPZowKCCG1I4whv35DYFRi6wu7RyRaEMQ==
 
-"@cornerstonejs/core@^0.25.0":
-  version "0.25.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.25.0.tgz#b392f5526e087c591d5d7ae68782a980aa3488f7"
-  integrity sha512-MtT3N1+c3apalilsQs8SWaBLD6A0TKo1NLRMY1gFVYfZ9BkyCPlvKxhtgAJthRbr8ME2NMEMs/VjV3/RrFyMVg==
+"@cornerstonejs/core@^0.27.1":
+  version "0.27.1"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.27.1.tgz#1c56697cee8071eacfd9b1ee6f59c0fa6071accc"
+  integrity sha512-RyZicIallTZtr8i1BDkZ3U1JrwPZF7DYj9dj5uwE4WdhoPB+Rp77k5T7BH7gHsNWPyJjPgZwyq+tgV5sdD7zXg==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/core@^0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.25.1.tgz#7e5c70858018d99417b61965ac606754542f77ad"
-  integrity sha512-/Ve9qwGyRRK1uUCrefh9cVG3OIaaS9LQoTUk9YMUbsoWxd6JitXh31XVHjlvNtBYGMRVdz+uGPS2zSxq1vi4aA==
+"@cornerstonejs/streaming-image-volume-loader@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.11.2.tgz#75a8502a381a402a28ca2022f4bd2733eb90427f"
+  integrity sha512-cFkAKjcIk6V2p3hZ2gpvTGMBmPNrDlg/Ku6CTCqz7D+U6pEQPvct2e42G1tG+Y4MtnYgGpC+oYAeu9Zt/C6XlQ==
   dependencies:
-    detect-gpu "^4.0.45"
-    lodash.clonedeep "4.5.0"
+    "@cornerstonejs/core" "^0.27.1"
+    cornerstone-wado-image-loader "^4.8.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.8.2.tgz#058a591501e7fe7ebbe195695c92d047a288290f"
-  integrity sha512-50Ihn/tp5GJG7Uu0ZtrjSdS/JRfYIyeuRVAXZKvj2jbjuE2fqf+lgXULPgDKQhKiT7nBy6nb2PEpMRzTH/vlnA==
+"@cornerstonejs/tools@^0.36.3":
+  version "0.36.3"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.36.3.tgz#22769dbcac57f6811f37376ac45ea1041286d4a0"
+  integrity sha512-popsYtA5Tvr9u7AoRFASwAr9vdxT3S697sb14clydczbbURAk/vHJw1K70P55BJ38jVx/yaGqfZWObFMWbqPLg==
   dependencies:
-    "@cornerstonejs/core" "^0.25.0"
-    cornerstone-wado-image-loader "^4.7.0"
-
-"@cornerstonejs/tools@^0.34.2":
-  version "0.34.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.34.2.tgz#645c97583066a872fd35188153cd21b26625473e"
-  integrity sha512-rbdQuSXGJ++ARS6eUAkBZi0tjmUKVtad0QPk0SZZXlDC2QAQRyIfq7n7oF2AaIR/0ngarTekUzuIy2nKiaOT+Q==
-  dependencies:
-    "@cornerstonejs/core" "^0.25.1"
+    "@cornerstonejs/core" "^0.27.1"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -6291,10 +6283,10 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@^16.0.0":
-  version "16.14.26"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.26.tgz#82540a240ba7207ebe87d9579051bc19c9ef7605"
-  integrity sha512-c/5CYyciOO4XdFcNhZW1O2woVx86k4T+DO2RorHZL7EhitkNQgSD/SgpdZJAUJa/qjVgOmTM44gHkAdZSXeQuQ==
+"@types/react@^17.0.38":
+  version "17.0.53"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.53.tgz#10d4d5999b8af3d6bc6a9369d7eb953da82442ab"
+  integrity sha512-1yIpQR2zdYu1Z/dc1OxC+MA6GR240u3gcnP4l6mvj/PJiVaqHsQPmWttsvHsfnhfPbU2FuGmo0wSITPygjBmsw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -8799,15 +8791,15 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@2.2.6:
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
-  integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
-
-classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.1:
+classnames@^2.2.5:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
   integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
+
+classnames@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.2.tgz#351d813bf0137fcc6a76a16b88208d2560a0d924"
+  integrity sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==
 
 clean-css@^4.2.3:
   version "4.2.4"
@@ -9533,10 +9525,10 @@ cornerstone-wado-image-loader@^4.2.1:
     dicom-parser "^1.8.9"
     pako "^2.0.4"
 
-cornerstone-wado-image-loader@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.7.0.tgz#0b36ea3e8b0f4554234e3fc6db6260e95afea545"
-  integrity sha512-tq8YhiS4eQ9FmmxSCuoFmntSPzM9rccPq3WkeHbfglAEwmQjRaZMOR9r0MQaT0se/A9hY37q3xRfe9inhK1Ezw==
+cornerstone-wado-image-loader@^4.8.0:
+  version "4.8.0"
+  resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.8.0.tgz#64237a807227815bd117af839db4c05ab028d5f0"
+  integrity sha512-pvAAeH9tzL9PZydYOQqRSmIVoWiaxGDdgp0l/U8KafC0UNTiRyB6Sk0pTXTQqvGK2ZnwM4evjSDS9zyD3PxCmg==
   dependencies:
     "@babel/eslint-parser" "^7.19.1"
     "@cornerstonejs/codec-charls" "^0.1.1"
@@ -10105,7 +10097,7 @@ cypress-file-upload@^3.5.3:
 
 cypress@^9.5.4:
   version "9.7.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-9.7.0.tgz#bf55b2afd481f7a113ef5604aa8b693564b5e744"
+  resolved "https://registry.npmjs.org/cypress/-/cypress-9.7.0.tgz#bf55b2afd481f7a113ef5604aa8b693564b5e744"
   integrity sha512-+1EE1nuuuwIt/N1KXRR2iWHU+OiIt7H28jJDyyI4tiUftId/DrXYEwoDa5+kH2pki1zxnA0r6HrUGHV5eLbF5Q==
   dependencies:
     "@cypress/request" "^2.88.10"
@@ -10252,6 +10244,11 @@ dayjs@^1.10.4:
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.2.tgz#fa0f5223ef0d6724b3d8327134890cfe3d72fbe5"
   integrity sha512-F4LXf1OeU9hrSYRPTTj/6FbO4HTjPKXvEIC1P2kcnFurViINCVk3ZV0xAS3XVx9MkMsXbbqlK6hjseaYbgKEHw==
+
+dayjs@^1.11.6:
+  version "1.11.7"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.7.tgz#4b296922642f70999544d1144a2c25730fce63e2"
+  integrity sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==
 
 dcmjs@^0.28.3:
   version "0.28.3"
@@ -11336,6 +11333,13 @@ eslint-module-utils@^2.7.3:
     debug "^3.2.7"
     find-up "^2.1.0"
 
+eslint-plugin-cypress@^2.12.1:
+  version "2.12.1"
+  resolved "https://registry.npmjs.org/eslint-plugin-cypress/-/eslint-plugin-cypress-2.12.1.tgz#9aeee700708ca8c058e00cdafe215199918c2632"
+  integrity sha512-c2W/uPADl5kospNDihgiLc7n87t5XhUbFDoTl6CfVkmG+kDAb5Ux10V9PoLPu9N+r7znpc+iQlcmAqT1A/89HA==
+  dependencies:
+    globals "^11.12.0"
+
 eslint-plugin-es@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-es/-/eslint-plugin-es-3.0.1.tgz#75a7cdfdccddc0589934aeeb384175f221c57893"
@@ -11704,9 +11708,9 @@ event-stream@=3.3.4:
     through "~2.3.1"
 
 eventemitter2@^6.4.3:
-  version "6.4.5"
-  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-6.4.5.tgz#97380f758ae24ac15df8353e0cc27f8b95644655"
-  integrity sha512-bXE7Dyc1i6oQElDG0jMRZJrRAn9QR2xyyFGmBdZleNmyQX0FqGYmhZIrIrpPfm/w//LTo4tVQGOGQcGCb5q9uw==
+  version "6.4.9"
+  resolved "https://registry.npmjs.org/eventemitter2/-/eventemitter2-6.4.9.tgz#41f2750781b4230ed58827bc119d293471ecb125"
+  integrity sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg==
 
 eventemitter3@^3.1.0:
   version "3.1.2"
@@ -12933,7 +12937,7 @@ global@^4.3.0, global@^4.4.0:
     min-document "^2.19.0"
     process "^0.11.10"
 
-globals@^11.1.0, globals@^11.7.0:
+globals@^11.1.0, globals@^11.12.0, globals@^11.7.0:
   version "11.12.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.12.0.tgz#ab8795338868a0babd8525758018c2a7eb95c42e"
   integrity sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==
@@ -15812,12 +15816,7 @@ lodash.uniq@4.5.0, lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
-lodash@4.17.15:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
-
-lodash@4.17.21, lodash@^4.0.1, lodash@^4.1.1, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1:
+lodash@^4.0.1, lodash@^4.1.1, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==

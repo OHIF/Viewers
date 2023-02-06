@@ -1,7 +1,7 @@
 window.config = {
   routerBasename: '/',
   customizationService: [
-    '@ohif/extension-default.customizationModule.helloPage',
+    '@ohif/extension-default.customizationModule.datasources',
     {
       id: 'class:StudyBrowser',
       true: 'black',
@@ -43,8 +43,8 @@ window.config = {
       sourceName: 'aws',
       configuration: {
         name: 'aws',
-        qidoRoot: 'https://viewer.flexview.ai/dicomweb',
-        wadoRoot: 'https://viewer.flexview.ai/dicomweb',
+        qidoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
+        wadoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         supportsStow: false,

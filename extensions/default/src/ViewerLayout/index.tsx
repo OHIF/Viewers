@@ -44,7 +44,7 @@ function ViewerLayout({
     const search =
       dataSourceIdx === -1
         ? undefined
-        : `datasourcename=${pathname.substring(dataSourceIdx + 1)}`;
+        : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
     navigate({
       pathname: '/',
       search,
