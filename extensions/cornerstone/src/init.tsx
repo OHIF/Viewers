@@ -68,7 +68,7 @@ export default async function init({
     UIDialogService,
     UIModalService,
     UINotificationService,
-    CineService,
+    cineService,
     CornerstoneViewportService,
     HangingProtocolService,
     ToolGroupService,
@@ -137,7 +137,7 @@ export default async function init({
     CornerstoneViewportService
   );
 
-  initCineService(CineService);
+  initCineService(cineService);
 
   const _getDefaultPosition = event => ({
     x: (event && event.currentPoints.client[0]) || 0,
