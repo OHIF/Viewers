@@ -760,7 +760,8 @@ class CornerstoneViewportService implements IViewportService {
 
 export default function ExtendedCornerstoneViewportService(serviceManager) {
   return {
-    name: 'CornerstoneViewportService',
+    name: 'cornerstoneViewportService',
+    altName: 'CornerstoneViewportService',
     create: ({ configuration = {} }) => {
       return new CornerstoneViewportService(serviceManager);
     },

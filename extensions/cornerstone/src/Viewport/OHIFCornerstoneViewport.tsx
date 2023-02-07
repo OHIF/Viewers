@@ -118,7 +118,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const {
     MeasurementService,
     DisplaySetService,
-    ToolBarService,
+    toolbarService,
     ToolGroupService,
     SyncGroupService,
     CornerstoneViewportService,
@@ -355,7 +355,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       ></div>
       <CornerstoneOverlays
         viewportIndex={viewportIndex}
-        ToolBarService={ToolBarService}
+        toolbarService={toolbarService}
         element={elementRef.current}
         scrollbarHeight={scrollbarHeight}
         servicesManager={servicesManager}

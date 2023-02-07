@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button } from '@ohif/ui';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
 const DEFAULT_MEATADATA = {
@@ -27,9 +27,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const {
     DisplaySetService,
     ToolGroupService,
-    ToolBarService,
+    toolbarService,
     HangingProtocolService,
-  } = servicesManager.services;
+  } = (servicesManager as ServicesManager).services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -126,9 +126,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       });
     });
 
-    ToolBarService.state.toggles['Crosshairs'] = false;
-    ToolBarService._broadcastEvent(
-      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED
+    toolbarService.state.toggles['Crosshairs'] = false;
+    toolbarService._broadcastEvent(
+      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED
     );
 
     // metadata should be dcmjs naturalized

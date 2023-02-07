@@ -1,5 +1,5 @@
 import toolbarButtons from './toolbarButtons.js';
-import { hotkeys } from '@ohif/core';
+import { hotkeys, ServicesManager } from '@ohif/core';
 import { id } from './id';
 
 const configs = {
@@ -53,7 +53,7 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const { toolbarService, ToolGroupService } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
@@ -94,7 +94,7 @@ function modeFactory({ modeConfiguration }) {
       let unsubscribe;
 
       const activateTool = () => {
-        ToolBarService.recordInteraction({
+        toolbarService.recordInteraction({
           groupId: 'WindowLevel',
           itemId: 'WindowLevel',
           interactionType: 'tool',
@@ -121,9 +121,9 @@ function modeFactory({ modeConfiguration }) {
         activateTool
       ));
 
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -136,10 +136,10 @@ function modeFactory({ modeConfiguration }) {
       const {
         ToolGroupService,
         MeasurementService,
-        ToolBarService,
+        toolbarService,
       } = servicesManager.services;
 
-      ToolBarService.reset();
+      toolbarService.reset();
       ToolGroupService.destroy();
     },
     validationTags: {

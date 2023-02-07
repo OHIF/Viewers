@@ -1,7 +1,7 @@
-import MeasurementService from './MeasurementService.js';
+import MeasurementService from './MeasurementService';
 import log from '../../log';
 
-jest.mock('../../log.js', () => ({
+jest.mock('../../log', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
