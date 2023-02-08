@@ -2,10 +2,11 @@ import { metaData, utilities } from '@cornerstonejs/core';
 
 import OHIF from '@ohif/core';
 import dcmjs from 'dcmjs';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 
-const { MeasurementReport } = dcmjs.adapters.Cornerstone3D;
+const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
 
 /**

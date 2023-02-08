@@ -1,21 +1,26 @@
-import pubSubServiceInterface from './../_shared/pubSubServiceInterface';
+import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 const EVENTS = {
   ACTIVE_VIEWPORT_INDEX_CHANGED: 'event::activeviewportindexchanged',
 };
 
-class ViewportGridService {
+class ViewportGridService extends PubSubService {
+  public static REGISTRATION = {
+    name: 'viewportGridService',
+    altName: 'ViewportGridService',
+    create: ({ configuration = {} }) => {
+      return new ViewportGridService();
+    },
+  };
+
   serviceImplementation = {};
-  EVENTS: { [key: string]: string };
-  listeners = {};
 
   constructor() {
-    Object.assign(this, pubSubServiceInterface);
+    super(EVENTS);
     this.serviceImplementation = {};
-    this.EVENTS = EVENTS;
   }
 
-  setServiceImplementation({
+  public setServiceImplementation({
     getState: getStateImplementation,
     setActiveViewportIndex: setActiveViewportIndexImplementation,
     setDisplaySetsForViewport: setDisplaySetsForViewportImplementation,
@@ -26,7 +31,7 @@ class ViewportGridService {
     reset: resetImplementation,
     onModeExit: onModeExitImplementation,
     set: setImplementation,
-  }) {
+  }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
@@ -119,9 +124,4 @@ class ViewportGridService {
   }
 }
 
-export default {
-  name: 'ViewportGridService',
-  create: ({ configuration = {} }) => {
-    return new ViewportGridService();
-  },
-};
+export default ViewportGridService;

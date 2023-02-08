@@ -1,4 +1,4 @@
-import CommandsManager from './CommandsManager.js';
+import CommandsManager from './CommandsManager';
 import log from './../log.js';
 
 jest.mock('./../log.js');

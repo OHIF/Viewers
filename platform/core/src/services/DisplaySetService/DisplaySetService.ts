@@ -1,4 +1,4 @@
-import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
+import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 
 const displaySetCache = [];
@@ -28,16 +28,21 @@ const findInstance = (instance, displaySets) => {
   return false;
 };
 
-export default class DisplaySetService {
-  constructor() {
-    this.activeDisplaySets = [];
-    this.listeners = {};
-    this.EVENTS = EVENTS;
+export default class DisplaySetService extends PubSubService {
+  public static REGISTRATION = {
+    altName: 'DisplaySetService',
+    name: 'displaySetService',
+    create: ({ configuration = {} }) => {
+      return new DisplaySetService();
+    },
+  };
 
-    Object.assign(this, pubSubServiceInterface);
+  public activeDisplaySets = [];
+  constructor() {
+    super(EVENTS);
   }
 
-  init(extensionManager, SOPClassHandlerIds) {
+  public init(extensionManager, SOPClassHandlerIds): void {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];

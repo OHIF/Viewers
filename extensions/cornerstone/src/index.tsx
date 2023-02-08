@@ -87,12 +87,12 @@ const cornerstoneExtension = {
       // const onNewImageHandler = jumpData => {
       //   commandsManager.runCommand('jumpToImage', jumpData);
       // };
-      const { ToolBarService } = servicesManager.services;
+      const { ToolbarService } = servicesManager.services;
 
       return (
         <OHIFCornerstoneViewport
           {...props}
-          ToolBarService={ToolBarService}
+          ToolbarService={ToolbarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />

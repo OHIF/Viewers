@@ -2,9 +2,9 @@ import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
-import { adapters } from 'dcmjs';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
-const { CodeScheme: Cornerstone3DCodeScheme } = adapters.Cornerstone3D;
+const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 const { ImageSet, MetadataProvider: metadataProvider } = classes;
 // TODO ->

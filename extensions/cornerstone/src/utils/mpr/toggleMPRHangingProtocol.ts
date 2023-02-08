@@ -42,7 +42,7 @@ export default function toggleMPRHangingProtocol({
     UINotificationService,
     HangingProtocolService,
     ViewportGridService,
-    ToolBarService,
+    toolbarService,
   } = servicesManager.services;
 
   // TODO Introduce a service to persist the state of the current hanging protocol/app.
@@ -185,7 +185,7 @@ export default function toggleMPRHangingProtocol({
     }
   });
 
-  ToolBarService.recordInteraction({
+  toolbarService.recordInteraction({
     groupId: 'WindowLevel',
     itemId: 'WindowLevel',
     interactionType: 'tool',

@@ -1,17 +1,25 @@
 import merge from 'lodash.merge';
-import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
+import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
 
-export default class ToolBarService {
+export default class ToolbarService extends PubSubService {
+  public static REGISTRATION = {
+    name: 'toolbarService',
+    // Note the old name is ToolBarService, with an upper B
+    altName: 'ToolBarService',
+    create: ({ commandsManager }) => {
+      return new ToolbarService(commandsManager);
+    },
+  };
+
   constructor(commandsManager) {
+    super(EVENTS);
     this._commandsManager = commandsManager;
     //
-    this.EVENTS = EVENTS;
-    this.listeners = {};
     this.buttons = {};
     this.unsubscriptions = []; // if tools need to unsubscribe from events
     this.buttonSections = {
@@ -32,8 +40,6 @@ export default class ToolBarService {
         /* track most recent click per group...? */
       },
     };
-
-    Object.assign(this, pubSubServiceInterface);
   }
 
   init(extensionManager) {

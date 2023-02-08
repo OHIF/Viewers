@@ -1,4 +1,4 @@
-const name = 'UserAuthenticationService';
+const name = 'userAuthenticationService';
 
 const publicAPI = {
   name,
@@ -85,8 +85,11 @@ function setServiceImplementation({
 }
 
 export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+  REGISTRATION: {
+    name,
+    altName: 'UserAuthenticationService',
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };

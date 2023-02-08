@@ -6,6 +6,8 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
+import { ServicesManager } from '@ohif/core';
+
 function LayoutSelector({
   rows,
   columns,
@@ -17,7 +19,10 @@ function LayoutSelector({
   const [disableSelector, setDisableSelector] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
-  const { HangingProtocolService, ToolBarService } = servicesManager.services;
+  const {
+    HangingProtocolService,
+    toolbarService,
+  } = (servicesManager as ServicesManager).services;
 
   const closeOnOutsideClick = () => {
     if (isOpen) {
@@ -61,7 +66,7 @@ function LayoutSelector({
     // TODO Here the layout change will amount to a change of hanging protocol as specified by the extension for this layout selector tool
     // followed by the change of the grid itself.
     if (HangingProtocolService.getActiveProtocol().protocol.id === 'mpr') {
-      ToolBarService.recordInteraction({
+      toolbarService.recordInteraction({
         groupId: 'MPR',
         itemId: 'MPR',
         interactionType: 'toggle',
@@ -104,6 +109,7 @@ LayoutSelector.propTypes = {
   rows: PropTypes.number,
   columns: PropTypes.number,
   onLayoutChange: PropTypes.func,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 LayoutSelector.defaultProps = {

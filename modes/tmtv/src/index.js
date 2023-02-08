@@ -42,7 +42,7 @@ function modeFactory({ modeConfiguration }) {
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
       const {
-        ToolBarService,
+        toolbarService,
         ToolGroupService,
         HangingProtocolService,
         DisplaySetService,
@@ -58,7 +58,7 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(toolNames, Enums, ToolGroupService, commandsManager);
 
       const setWindowLevelActive = () => {
-        ToolBarService.recordInteraction({
+        toolbarService.recordInteraction({
           groupId: 'WindowLevel',
           itemId: 'WindowLevel',
           interactionType: 'tool',
@@ -120,9 +120,9 @@ function modeFactory({ modeConfiguration }) {
       );
 
       unsubscriptions.push(unsubscribe);
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -136,13 +136,13 @@ function modeFactory({ modeConfiguration }) {
       const {
         ToolGroupService,
         SyncGroupService,
-        ToolBarService,
+        toolbarService,
         SegmentationService,
         CornerstoneViewportService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
-      ToolBarService.reset();
+      toolbarService.reset();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
       SegmentationService.destroy();

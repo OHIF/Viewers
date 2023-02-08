@@ -3,6 +3,7 @@ import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ViewportOverlay } from '@ohif/ui';
+import { ServicesManager } from '@ohif/core';
 
 const EPSILON = 1e-4;
 
@@ -15,7 +16,7 @@ function CornerstoneViewportOverlay({
 }) {
   const {
     CornerstoneViewportService,
-    ToolBarService,
+    toolbarService,
   } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
@@ -25,19 +26,19 @@ function CornerstoneViewportOverlay({
    * Initial toolbar state
    */
   useEffect(() => {
-    setActiveTools(ToolBarService.getActiveTools());
+    setActiveTools(toolbarService.getActiveTools());
   }, []);
 
   useEffect(() => {
     let isMounted = true;
-    const { unsubscribe } = ToolBarService.subscribe(
-      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
+    const { unsubscribe } = toolbarService.subscribe(
+      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
       () => {
         if (!isMounted) {
           return;
         }
 
-        setActiveTools(ToolBarService.getActiveTools());
+        setActiveTools(toolbarService.getActiveTools());
       }
     );
 
@@ -287,6 +288,7 @@ CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
   viewportIndex: PropTypes.number,
+  servicesManager: ServicesManager,
 };
 
 export default CornerstoneViewportOverlay;

@@ -10,7 +10,7 @@
  * @property {boolean} [autoClose=true]
  */
 
-const name = 'UINotificationService';
+const name = 'uiNotificationService';
 
 const serviceShowRequestQueue = [];
 
@@ -91,8 +91,11 @@ function setServiceImplementation({
 }
 
 export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+  REGISTRATION: {
+    name,
+    altName: 'UINotificationService',
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };
