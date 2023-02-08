@@ -20,11 +20,12 @@ class CalibrationLineTool extends LengthTool {
   };
 
   _getTextLines(data, targetId) {
-    const [point1, point2] = data.handles.points.map(p =>
+    const [canvasPoint1, canvasPoint2] = data.handles.points.map(p =>
       this._renderingViewport.worldToCanvas(p)
     );
     // for display, round to 2 decimal points
-    const lengthPx = Math.round(calculateLength2(point1, point2) * 100) / 100;
+    const lengthPx =
+      Math.round(calculateLength2(canvasPoint1, canvasPoint2) * 100) / 100;
 
     const textLines = [`${lengthPx}px`];
 
@@ -60,30 +61,36 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
   const enabledElement = getActiveViewportEnabledElement(ViewportGridService);
   const { viewport } = enabledElement;
 
-  const [point1, point2] = annotationData.handles.points.map(p =>
-    viewport.worldToCanvas(p)
+  const length =
+    Math.round(
+      calculateLength3(
+        annotationData.handles.points[0],
+        annotationData.handles.points[1]
+      ) * 100
+    ) / 100;
+
+  // calculate the currently applied pixel spacing on the viewport
+  const calibratedPixelSpacing = metaData.get(
+    'calibratedPixelSpacing',
+    imageId
   );
-  const lengthPx = calculateLength2(point1, point2);
-  const length = calculateLength3(
-    annotationData.handles.points[0],
-    annotationData.handles.points[1]
-  );
+  const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
+  const currentRowPixelSpacing =
+    calibratedPixelSpacing?.[0] || imagePlaneModule?.rowPixelSpacing || 1;
+  const currentColumnPixelSpacing =
+    calibratedPixelSpacing?.[1] || imagePlaneModule?.columnPixelSpacing || 1;
 
   const adjustCalibration = newLength => {
-    const spacing = newLength / lengthPx;
-    console.log(
-      'previous spacing = ',
-      length / lengthPx,
-      'new spacing=',
-      spacing
-    );
+    const spacingScale = newLength / length;
+    const rowSpacing = spacingScale * currentRowPixelSpacing;
+    const colSpacing = spacingScale * currentColumnPixelSpacing;
 
     // trigger resize of the viewport to adjust the world/pixel mapping
     calibrateImageSpacing(
       imageId,
       viewport.getRenderingEngine(),
-      spacing,
-      spacing
+      rowSpacing,
+      colSpacing
     );
   };
 
