@@ -203,7 +203,7 @@ const SidePanel = ({
               />
               {/* Todo: ass secondary label here */}
               <span className="text-primary-active">
-                {tabs.length === 1 && tabs[activeTabIndex].label}
+                {tabs.length === 1 && t(tabs[activeTabIndex].label) as string}
               </span>
             </Button>
           </div>
