@@ -42,3 +42,6 @@ platform/viewer/src/pluginImports.js
 /Viewers.iml
 platform/viewer/.recipes/Nginx-Dcm4Che/dcm4che/dcm4che-arc/*
 platform/viewer/.recipes/OpenResty-Orthanc/logs/*
+
+#visual studio
+.vs
