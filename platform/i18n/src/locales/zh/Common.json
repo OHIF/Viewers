@@ -11,10 +11,6 @@
   "Series": "序列",
   "Show": "显示",
   "Stop": "停止",
-<<<<<<< HEAD
-  "StudyDate": "时间"
-}
-=======
   "StudyDate": "时间",
   "Today": "今天",
   "Last 7 days": "最近7天",
@@ -33,4 +29,3 @@
   "Measurements saved successfully": "测量值保存成功",
   "Failed to store measurements": "测量值保存失败"
 }
->>>>>>> a706f0f71 (first commit)

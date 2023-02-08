@@ -1,63 +1,43 @@
 {
-<<<<<<< HEAD
   "Acquired": "已获取",
   "Angle": "角度",
   "Axial": "轴状面",
   "Bidirectional": "双向",
   "Brush": "橡皮擦",
   "CINE": "播放动画",
-=======
   "Capture": "截图",
-  "Acquired": "已获取",
-  "Angle": "角度",
-  "Axial": "轴状面",
   "Window Level": "窗位",
   "W/L Presets": "窗位预设",
   "Annotation": "标注",
   "Arrow Annotate": "标注",
-  "Bidirectional": "双向",
   "Bidirectional Tool": "双向",
   "More Measure Tools": "更多测量工具",
-  "Brush": "橡皮擦",
-  "CINE": "播放动画",
   "Grid Layout": "网格布局",
   "More Tools": "更多工具",
->>>>>>> a706f0f71 (first commit)
   "Cancel": "取消",
   "Circle": "圆",
   "Clear": "清除",
   "Coronal": "冠状面",
   "Crosshairs": "十字线",
   "Ellipse": "椭圆",
-<<<<<<< HEAD
-=======
   "Ellipse Tool": "椭圆",
   "Flip Horizontally": "水平翻转",
   "Flip Horizontal": "水平翻转",
->>>>>>> a706f0f71 (first commit)
   "Elliptical": "椭圆的",
   "Flip H": "左右翻转",
   "Flip V": "上下翻转",
   "Freehand": "自由画线",
   "Invert": "灰度反转",
-<<<<<<< HEAD
   "Layout": "显示窗口",
   "Length": "长度",
-=======
   "Invert Colors": "灰度反转",
-  "Layout": "显示窗口",
-  "Length": "长度",
   "Length Tool": "长度",
->>>>>>> a706f0f71 (first commit)
   "Levels": "层级",
   "Magnify": "放大镜",
   "Manual": "手动",
   "Measurements": "测量",
   "More": "更多",
-<<<<<<< HEAD
-=======
   "Cine": "连续播放",
->>>>>>> a706f0f71 (first commit)
   "Next": "下一个",
   "Pan": "移动",
   "Play": "播放",
@@ -66,24 +46,15 @@
   "ROI Window": "选择对比度",
   "Rectangle": "矩形",
   "Reset": "复原",
-<<<<<<< HEAD
   "Reset to Defaults": "返回默认",
   "Rotate Right": "顺时针旋转",
-=======
   "Reset View": "复原",
-  "Reset to Defaults": "返回默认",
-  "Rotate Right": "顺时针旋转",
   "Rotate +90": "顺时针旋转",
->>>>>>> a706f0f71 (first commit)
   "Sagittal": "矢状面",
   "Save": "保存",
   "Stack Scroll": "滑动切换图层",
   "Stop": "停止",
   "Themes": "主题",
-<<<<<<< HEAD
-  "Zoom": "放大"
-}
-=======
   "Zoom": "放大",
   "Lung": "肺窗",
   "Liver": "肝窗",
@@ -93,4 +64,3 @@
   "Dismiss Aspect": "解除Aspect",
   "Keep Aspect": "保持Aspect"
 }
->>>>>>> a706f0f71 (first commit)
