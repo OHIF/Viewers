@@ -84,7 +84,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .click({ force: true })
       .trigger('mousedown', 'center', { buttons: 1 })
       // Since we have scrollbar on the right side of the viewport, we need to
       // force the mousemove since it goes to another element
