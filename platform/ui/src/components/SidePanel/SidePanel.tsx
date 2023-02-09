@@ -276,6 +276,7 @@ function _getMoreThanOneTabLayout(
   setActiveTabIndex: React.Dispatch<any>,
   setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
 ) {
+  const { t } = useTranslation('SidePanel');
   return (
     <div
       className="flex-static collapse-sidebar relative"
@@ -329,7 +330,7 @@ function _getMoreThanOneTabLayout(
                   />
                 </span>
                 <span className="text-[10px] select-none font-medium whitespace-nowrap mt-[5px]">
-                  {obj.label}
+                  {t(obj.label) as string}
                 </span>
               </div>
             </SwiperSlide>
