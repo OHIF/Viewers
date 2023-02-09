@@ -261,6 +261,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         <MeasurementTable
           title="Measurements"
           data={displayMeasurementsWithoutFindings}
+          servicesManager={servicesManager}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
@@ -268,6 +269,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
+            servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
           />
