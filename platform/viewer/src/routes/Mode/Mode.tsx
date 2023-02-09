@@ -160,8 +160,9 @@ export default function ModeRoute({
   const CombinedContextProvider = ({ children }) =>
     Compose({ components: contextModuleProviders, children });
 
-  function ViewportGridWithDataSource(props) {
-    return ViewportGrid({ ...props, dataSource });
+  function ViewportGridWithDataSourceFactory(customViewportGridProps) {
+    return props =>
+      ViewportGrid({ ...props, dataSource, ...customViewportGridProps });
   }
 
   useEffect(() => {
@@ -363,7 +364,9 @@ export default function ModeRoute({
             studyInstanceUIDs[0] !== undefined &&
             renderLayoutData({
               ...layoutTemplateData.current.props,
-              ViewportGridComp: ViewportGridWithDataSource,
+              ViewportGridComp: ViewportGridWithDataSourceFactory(
+                layoutTemplateData.current?.props?.viewportGridProps
+              ),
             })}
         </DragAndDropProvider>
       </CombinedContextProvider>

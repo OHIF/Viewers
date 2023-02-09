@@ -7,7 +7,7 @@ import { SyncGroup } from '../SyncGroupService/SyncGroupService';
 import {
   StackViewportData,
   VolumeViewportData,
-} from './CornerstoneCacheService';
+} from '../../types/CornerstoneCacheService';
 
 export type InitialImageOptions = {
   index?: number;
