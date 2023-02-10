@@ -121,7 +121,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     toolbarService,
     ToolGroupService,
     SyncGroupService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     CornerstoneCacheService,
     ViewportGridService,
   } = servicesManager.services;
@@ -135,13 +135,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
   // useCallback for onResize
   const onResize = useCallback(() => {
     if (elementRef.current) {
-      CornerstoneViewportService.resize();
+      cornerstoneViewportService.resize();
       setImageScrollBarHeight();
     }
   }, [elementRef]);
 
   const cleanUpServices = useCallback(() => {
-    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+    const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
 
@@ -170,7 +170,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
 
       const { viewportId, element } = evt.detail;
-      const viewportInfo = CornerstoneViewportService.getViewportInfo(
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(
         viewportId
       );
       const viewportIndex = viewportInfo.getViewportIndex();
@@ -202,7 +202,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   // disable the element upon unmounting
   useEffect(() => {
-    CornerstoneViewportService.enableViewport(
+    cornerstoneViewportService.enableViewport(
       viewportIndex,
       viewportOptions,
       elementRef.current
@@ -218,10 +218,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
     return () => {
       cleanUpServices();
 
-      CornerstoneViewportService.disableElement(viewportIndex);
+      cornerstoneViewportService.disableElement(viewportIndex);
 
       if (onElementDisabled) {
-        const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+        const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
           viewportIndex
         );
 
@@ -247,7 +247,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const { unsubscribe } = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       async invalidatedDisplaySetInstanceUID => {
-        const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+        const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
           viewportIndex
         );
 
@@ -261,7 +261,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
           );
 
           const keepCamera = true;
-          CornerstoneViewportService.updateViewport(
+          cornerstoneViewportService.updateViewport(
             viewportIndex,
             newViewportData,
             keepCamera
@@ -288,7 +288,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIndex
       );
 
-      CornerstoneViewportService.setViewportData(
+      cornerstoneViewportService.setViewportData(
         viewportIndex,
         viewportData,
         viewportOptions,
@@ -317,7 +317,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       viewportIndex,
       displaySets,
       ViewportGridService,
-      CornerstoneViewportService
+      cornerstoneViewportService
     );
 
     _checkForCachedJumpToMeasurementEvents(
@@ -327,7 +327,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       viewportIndex,
       displaySets,
       ViewportGridService,
-      CornerstoneViewportService
+      cornerstoneViewportService
     );
 
     return () => {
@@ -371,7 +371,7 @@ function _subscribeToJumpToMeasurementEvents(
   viewportIndex,
   displaySets,
   ViewportGridService,
-  CornerstoneViewportService
+  cornerstoneViewportService
 ) {
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
@@ -390,7 +390,7 @@ function _subscribeToJumpToMeasurementEvents(
           measurementService,
           displaySetService,
           ViewportGridService,
-          CornerstoneViewportService
+          cornerstoneViewportService
         );
       }
     }
@@ -407,7 +407,7 @@ function _checkForCachedJumpToMeasurementEvents(
   viewportIndex,
   displaySets,
   ViewportGridService,
-  CornerstoneViewportService
+  cornerstoneViewportService
 ) {
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
@@ -431,7 +431,7 @@ function _checkForCachedJumpToMeasurementEvents(
         measurementService,
         displaySetService,
         ViewportGridService,
-        CornerstoneViewportService
+        cornerstoneViewportService
       );
     }
   }
@@ -444,7 +444,7 @@ function _jumpToMeasurement(
   measurementService,
   displaySetService,
   ViewportGridService,
-  CornerstoneViewportService
+  cornerstoneViewportService
 ) {
   const targetElement = targetElementRef.current;
   const { displaySetInstanceUID, SOPInstanceUID, frameNumber } = measurement;
@@ -465,7 +465,7 @@ function _jumpToMeasurement(
 
   const enableElement = getEnabledElement(targetElement);
 
-  const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+  const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
     viewportIndex
   );
 

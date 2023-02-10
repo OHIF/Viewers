@@ -15,7 +15,7 @@ export default function toggleStackImageSync({
     SyncGroupService,
     ViewportGridService,
     displaySetService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   if (!toggledState) {
@@ -70,7 +70,7 @@ export default function toggleStackImageSync({
       return acc;
     }
 
-    const { element } = CornerstoneViewportService.getViewportInfo(viewportId);
+    const { element } = cornerstoneViewportService.getViewportInfo(viewportId);
     const { viewport: csViewport, renderingEngineId } = getEnabledElement(
       element
     );

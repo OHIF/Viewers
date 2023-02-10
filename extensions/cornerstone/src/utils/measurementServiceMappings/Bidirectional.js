@@ -9,7 +9,7 @@ const Bidirectional = {
   toMeasurement: (
     csToolsEventDetail,
     displaySetService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     getValueTypeFromToolType
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
@@ -33,7 +33,7 @@ const Bidirectional = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(
       referencedImageId,
-      CornerstoneViewportService,
+      cornerstoneViewportService,
       viewportId
     );
 

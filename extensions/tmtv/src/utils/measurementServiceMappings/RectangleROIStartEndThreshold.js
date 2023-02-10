@@ -13,7 +13,7 @@ const RectangleROIStartEndThreshold = {
   toMeasurement: (
     csToolsEventDetail,
     displaySetService,
-    CornerstoneViewportService
+    cornerstoneViewportService
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
@@ -36,7 +36,7 @@ const RectangleROIStartEndThreshold = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(
       referencedImageId,
-      CornerstoneViewportService,
+      cornerstoneViewportService,
       viewportId
     );
 

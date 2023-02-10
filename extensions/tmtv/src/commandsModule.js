@@ -25,7 +25,7 @@ const commandsModule = ({
     displaySetService,
     hangingProtocolService,
     ToolGroupService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     SegmentationService,
   } = servicesManager.services;
 
@@ -540,7 +540,7 @@ const commandsModule = ({
 
       let viewports = [];
       fusionViewportIds.forEach(viewportId => {
-        const viewportInfo = CornerstoneViewportService.getViewportInfo(
+        const viewportInfo = cornerstoneViewportService.getViewportInfo(
           viewportId
         );
 
@@ -552,7 +552,7 @@ const commandsModule = ({
         });
 
         viewports.push(
-          CornerstoneViewportService.getCornerstoneViewport(viewportId)
+          cornerstoneViewportService.getCornerstoneViewport(viewportId)
         );
       });
 

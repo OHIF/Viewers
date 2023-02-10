@@ -138,7 +138,7 @@ function modeFactory({ modeConfiguration }) {
         SyncGroupService,
         toolbarService,
         SegmentationService,
-        CornerstoneViewportService,
+        cornerstoneViewportService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
@@ -146,7 +146,7 @@ function modeFactory({ modeConfiguration }) {
       ToolGroupService.destroy();
       SyncGroupService.destroy();
       SegmentationService.destroy();
-      CornerstoneViewportService.destroy();
+      cornerstoneViewportService.destroy();
     },
     validationTags: {
       study: [],

@@ -15,7 +15,7 @@ export default function PanelSegmentation({
     UIDialogService,
     ViewportGridService,
     ToolGroupService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');

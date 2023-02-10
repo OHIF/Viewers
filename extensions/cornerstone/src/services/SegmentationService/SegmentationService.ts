@@ -1710,7 +1710,7 @@ class SegmentationService {
   }
 
   private _setLabelmapConfigValue = (property, value) => {
-    const { CornerstoneViewportService } = this.servicesManager.services;
+    const { cornerstoneViewportService } = this.servicesManager.services;
 
     const config = cstSegmentation.config.getGlobalConfig();
 
@@ -1719,8 +1719,8 @@ class SegmentationService {
     // Todo: add non global (representation specific config as well)
     cstSegmentation.config.setGlobalConfig(config);
 
-    const renderingEngine = CornerstoneViewportService.getRenderingEngine();
-    const viewportIds = CornerstoneViewportService.getViewportIds();
+    const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+    const viewportIds = cornerstoneViewportService.getViewportIds();
 
     renderingEngine.renderViewports(viewportIds);
   };

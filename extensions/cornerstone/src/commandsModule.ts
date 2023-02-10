@@ -26,7 +26,7 @@ const commandsModule = ({ servicesManager }) => {
     cineService,
     toolbarService,
     UIDialogService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     hangingProtocolService,
     UINotificationService,
   } = (servicesManager as ServicesManager).services;
@@ -77,7 +77,7 @@ const commandsModule = ({ servicesManager }) => {
       return _getActiveViewportEnabledElement();
     },
     setViewportActive: ({ viewportId }) => {
-      const viewportInfo = CornerstoneViewportService.getViewportInfo(
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(
         viewportId
       );
       if (!viewportInfo) {
@@ -115,7 +115,7 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       // get actor from the viewport
-      const renderingEngine = CornerstoneViewportService.getRenderingEngine();
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(
@@ -205,7 +205,7 @@ const commandsModule = ({ servicesManager }) => {
           contentProps: {
             activeViewportIndex,
             onClose: UIModalService.hide,
-            CornerstoneViewportService,
+            cornerstoneViewportService,
           },
         });
       }
@@ -378,7 +378,7 @@ const commandsModule = ({ servicesManager }) => {
       colormap,
       immediate = false,
     }) => {
-      const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
         viewportIndex
       );
 
@@ -426,7 +426,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     toggleReferenceLines: ({ toggledState }) => {
       const { activeViewportIndex } = ViewportGridService.getState();
-      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
         activeViewportIndex
       );
 

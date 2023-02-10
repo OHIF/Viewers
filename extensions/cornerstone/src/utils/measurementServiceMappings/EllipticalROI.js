@@ -8,7 +8,7 @@ const EllipticalROI = {
   toMeasurement: (
     csToolsEventDetail,
     displaySetService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     getValueTypeFromToolType
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
@@ -32,7 +32,7 @@ const EllipticalROI = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(
       referencedImageId,
-      CornerstoneViewportService,
+      cornerstoneViewportService,
       viewportId
     );
 

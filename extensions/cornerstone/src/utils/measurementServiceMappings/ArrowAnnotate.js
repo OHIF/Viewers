@@ -13,7 +13,7 @@ const Length = {
   toMeasurement: (
     csToolsEventDetail,
     displaySetService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     getValueTypeFromToolType
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
@@ -37,7 +37,7 @@ const Length = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(
       referencedImageId,
-      CornerstoneViewportService,
+      cornerstoneViewportService,
       viewportId
     );
 

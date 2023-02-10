@@ -69,7 +69,7 @@ export default async function init({
     UIModalService,
     UINotificationService,
     cineService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     hangingProtocolService,
     ToolGroupService,
     ViewportGridService,
@@ -134,7 +134,7 @@ export default async function init({
   const measurementServiceSource = connectToolsToMeasurementService(
     measurementService,
     displaySetService,
-    CornerstoneViewportService
+    cornerstoneViewportService
   );
 
   initCineService(cineService);
@@ -251,11 +251,11 @@ export default async function init({
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = CornerstoneViewportService.getCornerstoneViewport(
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(
           viewportId
         );
 
-        CornerstoneViewportService.setVolumesForViewport(
+        cornerstoneViewportService.setVolumesForViewport(
           viewport,
           volumeInputArray
         );

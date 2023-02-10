@@ -18,7 +18,7 @@ export default function init({ servicesManager, extensionManager }) {
   const {
     measurementService,
     displaySetService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   addTool(RectangleROIStartEndThresholdTool);
@@ -26,7 +26,7 @@ export default function init({ servicesManager, extensionManager }) {
   const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
-    CornerstoneViewportService
+    cornerstoneViewportService
   );
 
   const csTools3DVer1MeasurementSource = measurementService.getSource(

@@ -128,14 +128,14 @@ function modeFactory() {
         SyncGroupService,
         toolbarService,
         SegmentationService,
-        CornerstoneViewportService,
+        cornerstoneViewportService,
       } = servicesManager.services;
 
       toolbarService.reset();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
       SegmentationService.destroy();
-      CornerstoneViewportService.destroy();
+      cornerstoneViewportService.destroy();
     },
     validationTags: {
       study: [],
