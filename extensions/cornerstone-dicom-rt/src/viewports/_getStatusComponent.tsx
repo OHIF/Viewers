@@ -73,7 +73,7 @@ export default function _getStatusComponent({ isHydrated, onPillClick }) {
       }}
     >
       <div className="pr-1 text-base font-medium leading-none text-black">
-        RTSTRUCT
+        RT
       </div>
       <StatusIcon />
     </div>
