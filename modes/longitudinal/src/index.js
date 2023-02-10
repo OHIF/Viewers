@@ -125,7 +125,7 @@ function modeFactory() {
     onModeExit: ({ servicesManager }) => {
       const {
         toolGroupService,
-        SyncGroupService,
+        syncGroupService,
         toolbarService,
         segmentationService,
         cornerstoneViewportService,
@@ -133,7 +133,7 @@ function modeFactory() {
 
       toolbarService.reset();
       toolGroupService.destroy();
-      SyncGroupService.destroy();
+      syncGroupService.destroy();
       segmentationService.destroy();
       cornerstoneViewportService.destroy();
     },

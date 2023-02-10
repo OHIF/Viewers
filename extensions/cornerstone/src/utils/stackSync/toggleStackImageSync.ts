@@ -12,7 +12,7 @@ export default function toggleStackImageSync({
   getEnabledElement,
 }) {
   const {
-    SyncGroupService,
+    syncGroupService,
     viewportGridService,
     displaySetService,
     cornerstoneViewportService,
@@ -23,7 +23,7 @@ export default function toggleStackImageSync({
       const { viewports, synchronizerId } = syncGroupInfo;
 
       viewports.forEach(({ viewportId, renderingEngineId }) => {
-        SyncGroupService.removeViewportFromSyncGroup(
+        syncGroupService.removeViewportFromSyncGroup(
           viewportId,
           renderingEngineId,
           synchronizerId
@@ -99,7 +99,7 @@ export default function toggleStackImageSync({
     calculateViewportRegistrations(viewports);
 
     viewports.forEach(({ viewportId, renderingEngineId }) => {
-      SyncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, {
+      syncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, {
         type: 'stackimage',
         id: synchronizerId,
         source: true,

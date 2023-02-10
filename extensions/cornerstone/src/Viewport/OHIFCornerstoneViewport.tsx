@@ -120,7 +120,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     displaySetService,
     toolbarService,
     toolGroupService,
-    SyncGroupService,
+    syncGroupService,
     cornerstoneViewportService,
     CornerstoneCacheService,
     viewportGridService,
@@ -155,7 +155,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
     toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
-    SyncGroupService.removeViewportFromSyncGroup(
+    syncGroupService.removeViewportFromSyncGroup(
       viewportId,
       renderingEngineId,
       syncGroups
@@ -187,7 +187,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         toolGroupId
       );
 
-      SyncGroupService.addViewportToSyncGroup(
+      syncGroupService.addViewportToSyncGroup(
         viewportId,
         renderingEngineId,
         syncGroups
