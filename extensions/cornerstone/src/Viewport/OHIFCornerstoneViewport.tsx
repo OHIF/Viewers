@@ -119,7 +119,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     measurementService,
     displaySetService,
     toolbarService,
-    ToolGroupService,
+    toolGroupService,
     SyncGroupService,
     cornerstoneViewportService,
     CornerstoneCacheService,
@@ -153,7 +153,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const renderingEngineId = viewportInfo.getRenderingEngineId();
     const syncGroups = viewportInfo.getSyncGroups();
 
-    ToolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
+    toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
     SyncGroupService.removeViewportFromSyncGroup(
       viewportId,
@@ -181,7 +181,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       const toolGroupId = viewportInfo.getToolGroupId();
       const syncGroups = viewportInfo.getSyncGroups();
 
-      ToolGroupService.addViewportToToolGroup(
+      toolGroupService.addViewportToToolGroup(
         viewportId,
         renderingEngineId,
         toolGroupId
@@ -197,7 +197,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         onElementEnabled(evt);
       }
     },
-    [viewportIndex, onElementEnabled, ToolGroupService]
+    [viewportIndex, onElementEnabled, toolGroupService]
   );
 
   // disable the element upon unmounting

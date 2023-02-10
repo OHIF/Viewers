@@ -222,7 +222,7 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
   const {
     ViewportGridService,
     hangingProtocolService,
-    ToolGroupService,
+    toolGroupService,
   } = servicesManager.services;
 
   const { numRows, numCols } = ViewportGridService.getState();
@@ -277,7 +277,7 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
 
   if (viewportIds.length) {
     toolOptions = viewportIds.map(viewportId => {
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
       return {
         toolGroupId: toolGroup.id,
         toolOptions: toolGroup.toolOptions,

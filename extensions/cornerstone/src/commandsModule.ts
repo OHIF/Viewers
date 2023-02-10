@@ -22,7 +22,7 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 const commandsModule = ({ servicesManager }) => {
   const {
     ViewportGridService,
-    ToolGroupService,
+    toolGroupService,
     cineService,
     toolbarService,
     uiDialogService,
@@ -68,7 +68,7 @@ const commandsModule = ({ servicesManager }) => {
       toolGroupIdToUse = toolGroup.id;
     }
 
-    const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
+    const toolGroup = toolGroupService.getToolGroup(toolGroupIdToUse);
     return toolGroup;
   }
 
@@ -106,7 +106,7 @@ const commandsModule = ({ servicesManager }) => {
       const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = ToolGroupService.getToolGroupForViewport(
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(
         viewportId
       );
 
@@ -431,7 +431,7 @@ const commandsModule = ({ servicesManager }) => {
       );
 
       const viewportId = viewportInfo.getViewportId();
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toggledState) {
         toolGroup.setToolDisabled(ReferenceLinesTool.toolName);

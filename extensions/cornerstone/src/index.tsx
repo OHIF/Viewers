@@ -73,6 +73,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     configuration = {},
     appConfig,
   }) {
+    // Todo: we should be consistent with how services get registered. Use REGISTRATION static method for all
     servicesManager.registerService(
       CornerstoneViewportService(servicesManager)
     );

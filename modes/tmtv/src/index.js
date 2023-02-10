@@ -43,7 +43,7 @@ function modeFactory({ modeConfiguration }) {
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
       const {
         toolbarService,
-        ToolGroupService,
+        toolGroupService,
         hangingProtocolService,
         displaySetService,
       } = servicesManager.services;
@@ -55,7 +55,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       // Init Default and SR ToolGroups
-      initToolGroups(toolNames, Enums, ToolGroupService, commandsManager);
+      initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 
       const setWindowLevelActive = () => {
         toolbarService.recordInteraction({
@@ -91,8 +91,8 @@ function modeFactory({ modeConfiguration }) {
         });
       };
 
-      const { unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      const { unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
           // For fusion toolGroup we need to add the volumeIds for the crosshairs
           // since in the fusion viewport we don't want both PT and CT to render MIP
@@ -104,14 +104,14 @@ function modeFactory({ modeConfiguration }) {
           setCrosshairsConfiguration(
             displaySetMatchDetails,
             toolNames,
-            ToolGroupService,
+            toolGroupService,
             displaySetService
           );
 
           setFusionActiveVolume(
             displaySetMatchDetails,
             toolNames,
-            ToolGroupService,
+            toolGroupService,
             displaySetService
           );
 
@@ -134,7 +134,7 @@ function modeFactory({ modeConfiguration }) {
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
+        toolGroupService,
         SyncGroupService,
         toolbarService,
         segmentationService,
@@ -143,7 +143,7 @@ function modeFactory({ modeConfiguration }) {
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
       toolbarService.reset();
-      ToolGroupService.destroy();
+      toolGroupService.destroy();
       SyncGroupService.destroy();
       segmentationService.destroy();
       cornerstoneViewportService.destroy();

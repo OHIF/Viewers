@@ -34,7 +34,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
   const {
     displaySetService,
-    ToolGroupService,
+    toolGroupService,
     segmentationService,
     UINotificationService,
   } = servicesManager.services;
@@ -235,14 +235,14 @@ function OHIFCornerstoneSEGViewport(props) {
   }, []);
 
   useEffect(() => {
-    let toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+    let toolGroup = toolGroupService.getToolGroup(toolGroupId);
 
     if (toolGroup) {
       return;
     }
 
     toolGroup = createSEGToolGroupAndAddTools(
-      ToolGroupService,
+      toolGroupService,
       toolGroupId,
       extensionManager
     );
@@ -255,7 +255,7 @@ function OHIFCornerstoneSEGViewport(props) {
         toolGroupId
       );
 
-      ToolGroupService.destroyToolGroup(toolGroupId);
+      toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
 

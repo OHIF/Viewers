@@ -71,7 +71,7 @@ export default async function init({
     cineService,
     cornerstoneViewportService,
     hangingProtocolService,
-    ToolGroupService,
+    toolGroupService,
     ViewportGridService,
   } = servicesManager.services;
 
@@ -360,7 +360,7 @@ export default async function init({
     ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
     ({ viewportIndex }) => {
       const viewportId = `viewport-${viewportIndex}`;
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
         return;

@@ -14,7 +14,7 @@ export default function PanelSegmentation({
     segmentationService,
     uiDialogService,
     ViewportGridService,
-    ToolGroupService,
+    toolGroupService,
     cornerstoneViewportService,
   } = servicesManager.services;
 

@@ -471,7 +471,7 @@ class CornerstoneViewportService implements IViewportService {
     const {
       displaySetService,
       segmentationService,
-      ToolGroupService,
+      toolGroupService,
     } = this.servicesManager.services;
 
     await viewport.setVolumes(volumeInputArray);
@@ -488,7 +488,7 @@ class CornerstoneViewportService implements IViewportService {
       const referencedVolume = cache.getVolume(referencedVolumeId);
       const segmentationId = segDisplaySet.displaySetInstanceUID;
 
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
 
       if (referencedVolume) {
         segmentationService.addSegmentationRepresentationToToolGroup(
@@ -497,7 +497,7 @@ class CornerstoneViewportService implements IViewportService {
         );
       }
     } else {
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
       const toolGroupSegmentationRepresentations =
         segmentationService.getSegmentationRepresentationsForToolGroup(
           toolGroup.id
@@ -543,7 +543,7 @@ class CornerstoneViewportService implements IViewportService {
         }
 
         if (shouldDisplaySeg) {
-          const toolGroup = ToolGroupService.getToolGroupForViewport(
+          const toolGroup = toolGroupService.getToolGroupForViewport(
             viewport.id
           );
 
@@ -557,7 +557,7 @@ class CornerstoneViewportService implements IViewportService {
 
     const viewportInfo = this.getViewportInfo(viewport.id);
 
-    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
 
     const initialImageOptions = viewportInfo.getInitialImageOptions();

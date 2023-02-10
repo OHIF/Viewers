@@ -24,7 +24,7 @@ const commandsModule = ({
     UINotificationService,
     displaySetService,
     hangingProtocolService,
-    ToolGroupService,
+    toolGroupService,
     cornerstoneViewportService,
     segmentationService,
   } = servicesManager.services;
@@ -525,7 +525,7 @@ const commandsModule = ({
       dicomRTAnnotationExport(annotations);
     },
     setFusionPTColormap: ({ toolGroupId, colormap }) => {
-      const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
 
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
