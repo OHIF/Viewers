@@ -13,7 +13,7 @@ export default function toggleStackImageSync({
 }) {
   const {
     SyncGroupService,
-    ViewportGridService,
+    viewportGridService,
     displaySetService,
     cornerstoneViewportService,
   } = servicesManager.services;
@@ -37,7 +37,7 @@ export default function toggleStackImageSync({
   STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
   // create synchronization groups and add viewports
-  let { viewports } = ViewportGridService.getState();
+  let { viewports } = viewportGridService.getState();
 
   // filter empty viewports
   viewports = viewports.filter(

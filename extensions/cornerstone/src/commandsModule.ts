@@ -21,7 +21,7 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 
 const commandsModule = ({ servicesManager }) => {
   const {
-    ViewportGridService,
+    viewportGridService,
     toolGroupService,
     cineService,
     toolbarService,
@@ -32,7 +32,7 @@ const commandsModule = ({ servicesManager }) => {
   } = (servicesManager as ServicesManager).services;
 
   function _getActiveViewportEnabledElement() {
-    const { activeViewportIndex } = ViewportGridService.getState();
+    const { activeViewportIndex } = viewportGridService.getState();
     const { element } = OHIFgetEnabledElement(activeViewportIndex) || {};
     const enabledElement = getEnabledElement(element);
     return enabledElement;
@@ -86,13 +86,13 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       const viewportIndex = viewportInfo.getViewportIndex();
-      ViewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportIndex(viewportIndex);
     },
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
     },
     toggleCine: () => {
-      const { viewports } = ViewportGridService.getState();
+      const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
       toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
@@ -148,7 +148,7 @@ const commandsModule = ({ servicesManager }) => {
         }
       }
 
-      const { viewports } = ViewportGridService.getState() || {
+      const { viewports } = viewportGridService.getState() || {
         viewports: [],
       };
 
@@ -195,7 +195,7 @@ const commandsModule = ({ servicesManager }) => {
       });
     },
     showDownloadViewportModal: () => {
-      const { activeViewportIndex } = ViewportGridService.getState();
+      const { activeViewportIndex } = viewportGridService.getState();
       const { UIModalService } = servicesManager.services;
 
       if (UIModalService) {
@@ -397,15 +397,15 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
       const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      ViewportGridService.setActiveViewportIndex(nextViewportIndex);
+      viewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
     decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
       const nextViewportIndex =
         (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      ViewportGridService.setActiveViewportIndex(nextViewportIndex);
+      viewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
     setHangingProtocol: ({ protocolId }) => {
       hangingProtocolService.setProtocol(protocolId);
@@ -425,7 +425,7 @@ const commandsModule = ({ servicesManager }) => {
       });
     },
     toggleReferenceLines: ({ toggledState }) => {
-      const { activeViewportIndex } = ViewportGridService.getState();
+      const { activeViewportIndex } = viewportGridService.getState();
       const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
         activeViewportIndex
       );

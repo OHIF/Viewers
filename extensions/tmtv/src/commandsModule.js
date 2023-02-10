@@ -20,7 +20,7 @@ const commandsModule = ({
   extensionManager,
 }) => {
   const {
-    ViewportGridService,
+    viewportGridService,
     uiNotificationService,
     displaySetService,
     hangingProtocolService,
@@ -36,7 +36,7 @@ const commandsModule = ({
   const { getEnabledElement } = utilityModule.exports;
 
   function _getActiveViewportsEnabledElement() {
-    const { activeViewportIndex } = ViewportGridService.getState();
+    const { activeViewportIndex } = viewportGridService.getState();
     const { element } = getEnabledElement(activeViewportIndex) || {};
     const enabledElement = cs.getEnabledElement(element);
     return enabledElement;

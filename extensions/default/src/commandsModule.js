@@ -6,7 +6,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     measurementService,
     hangingProtocolService,
     uiNotificationService,
-    ViewportGridService,
+    viewportGridService,
     displaySetService,
   } = servicesManager.services;
 
@@ -29,7 +29,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       hangingProtocolService.previousProtocolStage();
     },
     openDICOMTagViewer() {
-      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports[activeViewportIndex];
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 

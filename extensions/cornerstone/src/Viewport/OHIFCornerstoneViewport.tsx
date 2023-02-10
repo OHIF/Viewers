@@ -123,7 +123,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     SyncGroupService,
     cornerstoneViewportService,
     CornerstoneCacheService,
-    ViewportGridService,
+    viewportGridService,
   } = servicesManager.services;
 
   // useCallback for scroll bar height calculation
@@ -316,7 +316,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       elementRef,
       viewportIndex,
       displaySets,
-      ViewportGridService,
+      viewportGridService,
       cornerstoneViewportService
     );
 
@@ -326,7 +326,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       elementRef,
       viewportIndex,
       displaySets,
-      ViewportGridService,
+      viewportGridService,
       cornerstoneViewportService
     );
 
@@ -370,7 +370,7 @@ function _subscribeToJumpToMeasurementEvents(
   elementRef,
   viewportIndex,
   displaySets,
-  ViewportGridService,
+  viewportGridService,
   cornerstoneViewportService
 ) {
   const displaysUIDs = displaySets.map(
@@ -389,7 +389,7 @@ function _subscribeToJumpToMeasurementEvents(
           viewportIndex,
           measurementService,
           displaySetService,
-          ViewportGridService,
+          viewportGridService,
           cornerstoneViewportService
         );
       }
@@ -406,7 +406,7 @@ function _checkForCachedJumpToMeasurementEvents(
   elementRef,
   viewportIndex,
   displaySets,
-  ViewportGridService,
+  viewportGridService,
   cornerstoneViewportService
 ) {
   const displaysUIDs = displaySets.map(
@@ -430,7 +430,7 @@ function _checkForCachedJumpToMeasurementEvents(
         viewportIndex,
         measurementService,
         displaySetService,
-        ViewportGridService,
+        viewportGridService,
         cornerstoneViewportService
       );
     }
@@ -443,7 +443,7 @@ function _jumpToMeasurement(
   viewportIndex,
   measurementService,
   displaySetService,
-  ViewportGridService,
+  viewportGridService,
   cornerstoneViewportService
 ) {
   const targetElement = targetElementRef.current;
@@ -461,7 +461,7 @@ function _jumpToMeasurement(
   //  to set it properly
   // setCornerstoneMeasurementActive(measurement);
 
-  ViewportGridService.setActiveViewportIndex(viewportIndex);
+  viewportGridService.setActiveViewportIndex(viewportIndex);
 
   const enableElement = getEnabledElement(targetElement);
 

@@ -72,7 +72,7 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     toolGroupService,
-    ViewportGridService,
+    viewportGridService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -356,8 +356,8 @@ export default async function init({
     elementDisabledHandler.bind(null)
   );
 
-  ViewportGridService.subscribe(
-    ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
+  viewportGridService.subscribe(
+    viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
     ({ viewportIndex }) => {
       const viewportId = `viewport-${viewportIndex}`;
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);

@@ -13,7 +13,7 @@ export default function PanelSegmentation({
   const {
     segmentationService,
     uiDialogService,
-    ViewportGridService,
+    viewportGridService,
     toolGroupService,
     cornerstoneViewportService,
   } = servicesManager.services;
