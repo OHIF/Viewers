@@ -33,7 +33,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
   const {
     measurementService,
-    UIDialogService,
+    uiDialogService,
     displaySetService,
   } = servicesManager.services;
   const [
@@ -170,10 +170,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           );
         }
       }
-      UIDialogService.dismiss({ id: 'enter-annotation' });
+      uiDialogService.dismiss({ id: 'enter-annotation' });
     };
 
-    UIDialogService.create({
+    uiDialogService.create({
       id: 'enter-annotation',
       centralize: true,
       isDraggable: false,

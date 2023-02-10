@@ -65,20 +65,20 @@ export default async function init({
     UserAuthenticationService,
     measurementService,
     displaySetService,
-    UIDialogService,
+    uiDialogService,
     UIModalService,
-    UINotificationService,
+    uiNotificationService,
     cineService,
     cornerstoneViewportService,
     hangingProtocolService,
-    ToolGroupService,
-    ViewportGridService,
+    toolGroupService,
+    viewportGridService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
 
   if (!window.crossOriginIsolated) {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
         'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
@@ -145,7 +145,7 @@ export default async function init({
   });
 
   const onRightClick = event => {
-    if (!UIDialogService) {
+    if (!uiDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
@@ -172,15 +172,15 @@ export default async function init({
 
     CONTEXT_MENU_OPEN = true;
 
-    UIDialogService.dismiss({ id: 'context-menu' });
-    UIDialogService.create({
+    uiDialogService.dismiss({ id: 'context-menu' });
+    uiDialogService.create({
       id: 'context-menu',
       isDraggable: false,
       preservePosition: false,
       defaultPosition: _getDefaultPosition(event.detail),
       content: ContextMenuMeasurements,
       onClickOutside: () => {
-        UIDialogService.dismiss({ id: 'context-menu' });
+        uiDialogService.dismiss({ id: 'context-menu' });
         CONTEXT_MENU_OPEN = false;
       },
       contentProps: {
@@ -200,7 +200,7 @@ export default async function init({
         },
         onClose: () => {
           CONTEXT_MENU_OPEN = false;
-          UIDialogService.dismiss({ id: 'context-menu' });
+          uiDialogService.dismiss({ id: 'context-menu' });
         },
         onSetLabel: item => {
           const { annotationUID } = item.value;
@@ -208,7 +208,7 @@ export default async function init({
           const measurement = measurementService.getMeasurement(annotationUID);
 
           callInputDialog(
-            UIDialogService,
+            uiDialogService,
             measurement,
             (label, actionId) => {
               if (actionId === 'cancel') {
@@ -235,14 +235,14 @@ export default async function init({
   };
 
   const resetContextMenu = () => {
-    if (!UIDialogService) {
+    if (!uiDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
 
     CONTEXT_MENU_OPEN = false;
 
-    UIDialogService.dismiss({ id: 'context-menu' });
+    uiDialogService.dismiss({ id: 'context-menu' });
   };
 
   // When a custom image load is performed, update the relevant viewports
@@ -356,11 +356,11 @@ export default async function init({
     elementDisabledHandler.bind(null)
   );
 
-  ViewportGridService.subscribe(
-    ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
+  viewportGridService.subscribe(
+    viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
     ({ viewportIndex }) => {
       const viewportId = `viewport-${viewportIndex}`;
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
         return;

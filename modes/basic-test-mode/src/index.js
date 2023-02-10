@@ -70,13 +70,13 @@ function modeFactory() {
       const {
         measurementService,
         toolbarService,
-        ToolGroupService,
+        toolGroupService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, ToolGroupService, commandsManager);
+      initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       let unsubscribe;
 
@@ -103,8 +103,8 @@ function modeFactory() {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         activateTool
       ));
 
@@ -124,16 +124,16 @@ function modeFactory() {
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
-        SyncGroupService,
+        toolGroupService,
+        syncGroupService,
         toolbarService,
         segmentationService,
         cornerstoneViewportService,
       } = servicesManager.services;
 
       toolbarService.reset();
-      ToolGroupService.destroy();
-      SyncGroupService.destroy();
+      toolGroupService.destroy();
+      syncGroupService.destroy();
       segmentationService.destroy();
       cornerstoneViewportService.destroy();
     },

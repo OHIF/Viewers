@@ -39,9 +39,9 @@ export default function toggleMPRHangingProtocol({
   getToolGroup,
 }) {
   const {
-    UINotificationService,
+    uiNotificationService,
     hangingProtocolService,
-    ViewportGridService,
+    viewportGridService,
     toolbarService,
   } = servicesManager.services;
 
@@ -54,12 +54,12 @@ export default function toggleMPRHangingProtocol({
     viewports,
     numRows,
     numCols,
-  } = ViewportGridService.getState();
+  } = viewportGridService.getState();
   const viewportDisplaySetInstanceUIDs =
     viewports[activeViewportIndex].displaySetInstanceUIDs;
 
   const errorCallback = error => {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
         'Cannot create MPR for this DisplaySet since it is not reconstructable.',
@@ -111,7 +111,7 @@ export default function toggleMPRHangingProtocol({
   }
 
   const restoreErrorCallback = error => {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
         'Something went wrong while trying to restore the previous layout.',
@@ -146,7 +146,7 @@ export default function toggleMPRHangingProtocol({
   );
 
   if (numRows !== properties.rows || numCols !== properties.columns) {
-    ViewportGridService.setLayout({
+    viewportGridService.setLayout({
       numRows: properties.rows,
       numCols: properties.columns,
       layoutType,
@@ -169,7 +169,7 @@ export default function toggleMPRHangingProtocol({
         viewportOptions,
         displaySetsInfo,
       } = viewportMatchDetailsForViewport;
-      ViewportGridService.setDisplaySetsForViewport({
+      viewportGridService.setDisplaySetsForViewport({
         viewportIndex,
         displaySetInstanceUIDs: displaySetsInfo.map(
           displaySetInfo => displaySetInfo.displaySetInstanceUID
@@ -177,7 +177,7 @@ export default function toggleMPRHangingProtocol({
         viewportOptions,
       });
     } else {
-      ViewportGridService.setDisplaySetsForViewport({
+      viewportGridService.setDisplaySetsForViewport({
         viewportIndex,
         displaySetInstanceUIDs: [],
         viewportOptions: {},
@@ -220,12 +220,12 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
   // viewportMatchDetails and displaySetMatch that hangingProtocolService
   // expects
   const {
-    ViewportGridService,
+    viewportGridService,
     hangingProtocolService,
-    ToolGroupService,
+    toolGroupService,
   } = servicesManager.services;
 
-  const { numRows, numCols } = ViewportGridService.getState();
+  const { numRows, numCols } = viewportGridService.getState();
 
   let viewportMatchDetails = new Map();
 
@@ -277,7 +277,7 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
 
   if (viewportIds.length) {
     toolOptions = viewportIds.map(viewportId => {
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
       return {
         toolGroupId: toolGroup.id,
         toolOptions: toolGroup.toolOptions,

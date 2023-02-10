@@ -26,7 +26,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
   const {
     displaySetService,
-    ToolGroupService,
+    toolGroupService,
     toolbarService,
     hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
@@ -112,7 +112,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       throw new Error('No ptDisplaySet found');
     }
 
-    const toolGroupIds = ToolGroupService.getToolGroupIds();
+    const toolGroupIds = toolGroupService.getToolGroupIds();
 
     // Todo: we don't have a proper way to perform a toggle command and update the
     // state for the toolbar, so here, we manually toggle the toolbar

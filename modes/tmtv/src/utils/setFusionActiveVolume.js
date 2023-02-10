@@ -3,7 +3,7 @@ import { toolGroupIds } from '../initToolGroups';
 export default function setFusionActiveVolume(
   matches,
   toolNames,
-  ToolGroupService,
+  toolGroupService,
   displaySetService
 ) {
   const matchDetails = matches.get('ptDisplaySet');
@@ -22,12 +22,12 @@ export default function setFusionActiveVolume(
     return;
   }
 
-  const wlToolConfig = ToolGroupService.getToolConfiguration(
+  const wlToolConfig = toolGroupService.getToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.WindowLevel
   );
 
-  const ellipticalToolConfig = ToolGroupService.getToolConfiguration(
+  const ellipticalToolConfig = toolGroupService.getToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.EllipticalROI
   );
@@ -45,13 +45,13 @@ export default function setFusionActiveVolume(
     volumeId,
   };
 
-  ToolGroupService.setToolConfiguration(
+  toolGroupService.setToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.WindowLevel,
     windowLevelConfig
   );
 
-  ToolGroupService.setToolConfiguration(
+  toolGroupService.setToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.EllipticalROI,
     ellipticalROIConfig

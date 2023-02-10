@@ -20,11 +20,11 @@ const commandsModule = ({
   extensionManager,
 }) => {
   const {
-    ViewportGridService,
-    UINotificationService,
+    viewportGridService,
+    uiNotificationService,
     displaySetService,
     hangingProtocolService,
-    ToolGroupService,
+    toolGroupService,
     cornerstoneViewportService,
     segmentationService,
   } = servicesManager.services;
@@ -36,7 +36,7 @@ const commandsModule = ({
   const { getEnabledElement } = utilityModule.exports;
 
   function _getActiveViewportsEnabledElement() {
-    const { activeViewportIndex } = ViewportGridService.getState();
+    const { activeViewportIndex } = viewportGridService.getState();
     const { element } = getEnabledElement(activeViewportIndex) || {};
     const enabledElement = cs.getEnabledElement(element);
     return enabledElement;
@@ -127,7 +127,7 @@ const commandsModule = ({
       });
 
       if (!ptDisplaySet) {
-        UINotificationService.error('No matching PT display set found');
+        uiNotificationService.error('No matching PT display set found');
         return;
       }
 
@@ -193,7 +193,7 @@ const commandsModule = ({
       );
 
       if (annotationUIDs.length === 0) {
-        UINotificationService.show({
+        uiNotificationService.show({
           title: 'Commands Module',
           message: 'No ROIThreshold Tool is Selected',
           type: 'error',
@@ -525,7 +525,7 @@ const commandsModule = ({
       dicomRTAnnotationExport(annotations);
     },
     setFusionPTColormap: ({ toolGroupId, colormap }) => {
-      const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
 
       const ptDisplaySet = actions.getMatchingPTDisplaySet({

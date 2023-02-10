@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { HangingProtocolService, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
@@ -25,9 +25,9 @@ function PanelStudyBrowserTracking({
   const {
     measurementService,
     displaySetService,
-    UIDialogService,
-    HangingProtocolService,
-    UINotificationService,
+    uiDialogService,
+    hangingProtocolService,
+    uiNotificationService,
   } = servicesManager.services;
 
   // Normally you nest the components so the tree isn't so deep, and the data
@@ -55,13 +55,13 @@ function PanelStudyBrowserTracking({
     let updatedViewports = [];
     const viewportIndex = activeViewportIndex;
     try {
-      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportIndex,
         displaySetInstanceUID
       );
     } catch (error) {
       console.warn(error);
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message:
           'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
@@ -185,8 +185,8 @@ function PanelStudyBrowserTracking({
       isSingleViewport,
       dataSource,
       displaySetService,
-      UIDialogService,
-      UINotificationService
+      uiDialogService,
+      uiNotificationService
     );
 
     setDisplaySets(mappedDisplaySets);
@@ -248,8 +248,8 @@ function PanelStudyBrowserTracking({
           isSingleViewport,
           dataSource,
           displaySetService,
-          UIDialogService,
-          UINotificationService
+          uiDialogService,
+          uiNotificationService
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -415,8 +415,8 @@ function _mapDisplaySets(
   isSingleViewport,
   dataSource,
   displaySetService,
-  UIDialogService,
-  UINotificationService
+  uiDialogService,
+  uiNotificationService
 ) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
@@ -466,7 +466,7 @@ function _mapDisplaySets(
       if (dataSource.reject && dataSource.reject.series) {
         thumbnailProps.canReject = true;
         thumbnailProps.onReject = () => {
-          UIDialogService.create({
+          uiDialogService.create({
             id: 'ds-reject-sr',
             centralize: true,
             isDraggable: false,
@@ -489,7 +489,7 @@ function _mapDisplaySets(
                   classes: ['reject-yes-button'],
                 },
               ],
-              onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
+              onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
               onShow: () => {
                 const yesButton = document.querySelector('.reject-yes-button');
 
@@ -504,15 +504,15 @@ function _mapDisplaySets(
                         ds.SeriesInstanceUID
                       );
                       displaySetService.deleteDisplaySet(displaySetInstanceUID);
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
+                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                      uiNotificationService.show({
                         title: 'Delete Report',
                         message: 'Report deleted successfully',
                         type: 'success',
                       });
                     } catch (error) {
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
+                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                      uiNotificationService.show({
                         title: 'Delete Report',
                         message: 'Failed to delete report',
                         type: 'error',
@@ -520,7 +520,7 @@ function _mapDisplaySets(
                     }
                     break;
                   case 'cancel':
-                    UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                    uiDialogService.dismiss({ id: 'ds-reject-sr' });
                     break;
                 }
               },

@@ -22,8 +22,8 @@ export default function PanelMeasurementTable({
   const { activeViewportIndex, viewports } = viewportGrid;
   const {
     measurementService,
-    UIDialogService,
-    UINotificationService,
+    uiDialogService,
+    uiNotificationService,
     displaySetService,
   } = servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
@@ -84,7 +84,7 @@ export default function PanelMeasurementTable({
     );
 
     if (trackedMeasurements.length <= 0) {
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'No Measurements',
         message: 'No Measurements are added to the current Study.',
         type: 'info',
@@ -93,7 +93,7 @@ export default function PanelMeasurementTable({
       return;
     }
 
-    const promptResult = await createReportDialogPrompt(UIDialogService, {
+    const promptResult = await createReportDialogPrompt(uiDialogService, {
       extensionManager,
     });
 
@@ -148,10 +148,10 @@ export default function PanelMeasurementTable({
           );
         }
       }
-      UIDialogService.dismiss({ id: 'enter-annotation' });
+      uiDialogService.dismiss({ id: 'enter-annotation' });
     };
 
-    UIDialogService.create({
+    uiDialogService.create({
       id: 'enter-annotation',
       centralize: true,
       isDraggable: false,

@@ -21,18 +21,18 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 
 const commandsModule = ({ servicesManager }) => {
   const {
-    ViewportGridService,
-    ToolGroupService,
+    viewportGridService,
+    toolGroupService,
     cineService,
     toolbarService,
-    UIDialogService,
+    uiDialogService,
     cornerstoneViewportService,
     hangingProtocolService,
-    UINotificationService,
+    uiNotificationService,
   } = (servicesManager as ServicesManager).services;
 
   function _getActiveViewportEnabledElement() {
-    const { activeViewportIndex } = ViewportGridService.getState();
+    const { activeViewportIndex } = viewportGridService.getState();
     const { element } = OHIFgetEnabledElement(activeViewportIndex) || {};
     const enabledElement = getEnabledElement(element);
     return enabledElement;
@@ -68,7 +68,7 @@ const commandsModule = ({ servicesManager }) => {
       toolGroupIdToUse = toolGroup.id;
     }
 
-    const toolGroup = ToolGroupService.getToolGroup(toolGroupIdToUse);
+    const toolGroup = toolGroupService.getToolGroup(toolGroupIdToUse);
     return toolGroup;
   }
 
@@ -86,13 +86,13 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       const viewportIndex = viewportInfo.getViewportIndex();
-      ViewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportIndex(viewportIndex);
     },
     arrowTextCallback: ({ callback, data }) => {
-      callInputDialog(UIDialogService, data, callback);
+      callInputDialog(uiDialogService, data, callback);
     },
     toggleCine: () => {
-      const { viewports } = ViewportGridService.getState();
+      const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
       toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
@@ -106,7 +106,7 @@ const commandsModule = ({ servicesManager }) => {
       const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = ToolGroupService.getToolGroupForViewport(
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(
         viewportId
       );
 
@@ -136,7 +136,7 @@ const commandsModule = ({ servicesManager }) => {
         const activeViewportToolGroup = _getToolGroup(null);
 
         if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          UINotificationService.show({
+          uiNotificationService.show({
             title: 'Crosshairs',
             message:
               'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
@@ -148,7 +148,7 @@ const commandsModule = ({ servicesManager }) => {
         }
       }
 
-      const { viewports } = ViewportGridService.getState() || {
+      const { viewports } = viewportGridService.getState() || {
         viewports: [],
       };
 
@@ -195,7 +195,7 @@ const commandsModule = ({ servicesManager }) => {
       });
     },
     showDownloadViewportModal: () => {
-      const { activeViewportIndex } = ViewportGridService.getState();
+      const { activeViewportIndex } = viewportGridService.getState();
       const { UIModalService } = servicesManager.services;
 
       if (UIModalService) {
@@ -397,15 +397,15 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
       const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      ViewportGridService.setActiveViewportIndex(nextViewportIndex);
+      viewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
     decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
       const nextViewportIndex =
         (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      ViewportGridService.setActiveViewportIndex(nextViewportIndex);
+      viewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
     setHangingProtocol: ({ protocolId }) => {
       hangingProtocolService.setProtocol(protocolId);
@@ -425,13 +425,13 @@ const commandsModule = ({ servicesManager }) => {
       });
     },
     toggleReferenceLines: ({ toggledState }) => {
-      const { activeViewportIndex } = ViewportGridService.getState();
+      const { activeViewportIndex } = viewportGridService.getState();
       const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
         activeViewportIndex
       );
 
       const viewportId = viewportInfo.getViewportId();
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toggledState) {
         toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
