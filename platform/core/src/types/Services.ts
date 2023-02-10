@@ -24,4 +24,5 @@ export default interface Services {
   viewportGridService?: ViewportGridService;
   syncGroupService?: Record<string, unknown>;
   cornerstoneCacheService?: Record<string, unknown>;
+  segmentationService?: Record<string, unknown>;
 }
