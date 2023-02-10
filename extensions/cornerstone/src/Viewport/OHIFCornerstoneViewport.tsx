@@ -122,7 +122,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     toolGroupService,
     syncGroupService,
     cornerstoneViewportService,
-    CornerstoneCacheService,
+    cornerstoneCacheService,
     viewportGridService,
   } = servicesManager.services;
 
@@ -253,7 +253,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
         if (viewportInfo.hasDisplaySet(invalidatedDisplaySetInstanceUID)) {
           const viewportData = viewportInfo.getViewportData();
-          const newViewportData = await CornerstoneCacheService.invalidateViewportData(
+          const newViewportData = await cornerstoneCacheService.invalidateViewportData(
             viewportData,
             invalidatedDisplaySetInstanceUID,
             dataSource,
@@ -281,7 +281,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
 
     const loadViewportData = async () => {
-      const viewportData = await CornerstoneCacheService.createViewportData(
+      const viewportData = await cornerstoneCacheService.createViewportData(
         displaySets,
         viewportOptions,
         dataSource,

@@ -1,5 +1,4 @@
 import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
-import { utils } from '@ohif/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import {
