@@ -20,6 +20,15 @@ type Tools = {
 };
 
 export default class ToolGroupService {
+  public static REGISTRATION = serviceManager => {
+    return {
+      name: 'ToolGroupService',
+      create: ({ configuration = {} }) => {
+        return new ToolGroupService(serviceManager);
+      },
+    };
+  };
+
   serviceManager: any;
   private toolGroupIds: Set<string> = new Set();
   /**

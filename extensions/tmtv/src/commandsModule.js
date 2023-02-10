@@ -26,7 +26,7 @@ const commandsModule = ({
     hangingProtocolService,
     ToolGroupService,
     cornerstoneViewportService,
-    SegmentationService,
+    segmentationService,
   } = servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
@@ -131,7 +131,7 @@ const commandsModule = ({
         return;
       }
 
-      const segmentationId = await SegmentationService.createSegmentationForDisplaySet(
+      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
         ptDisplaySet.displaySetInstanceUID
       );
 
@@ -142,14 +142,14 @@ const commandsModule = ({
 
       for (const toolGroupId of toolGroupIds) {
         const hydrateSegmentation = true;
-        await SegmentationService.addSegmentationRepresentationToToolGroup(
+        await segmentationService.addSegmentationRepresentationToToolGroup(
           toolGroupId,
           segmentationId,
           hydrateSegmentation,
           representationType
         );
 
-        SegmentationService.setActiveSegmentationForToolGroup(
+        segmentationService.setActiveSegmentationForToolGroup(
           segmentationId,
           toolGroupId
         );
@@ -161,7 +161,7 @@ const commandsModule = ({
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
       toolGroupIds.forEach(toolGroupId => {
-        SegmentationService.setActiveSegmentationForToolGroup(
+        segmentationService.setActiveSegmentationForToolGroup(
           segmentationId,
           toolGroupId
         );
@@ -289,7 +289,7 @@ const commandsModule = ({
     },
     calculateTMTV: ({ segmentations }) => {
       const labelmaps = segmentations.map(s =>
-        SegmentationService.getLabelmapVolume(s.id)
+        segmentationService.getLabelmapVolume(s.id)
       );
 
       if (!labelmaps.length) {
@@ -314,7 +314,7 @@ const commandsModule = ({
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
       const labelmapVolumes = segmentations.map(s =>
-        SegmentationService.getLabelmapVolume(s.id)
+        segmentationService.getLabelmapVolume(s.id)
       );
 
       let mergedLabelmap;
@@ -448,7 +448,7 @@ const commandsModule = ({
     },
     getSegmentationCSVReport: ({ segmentations }) => {
       if (!segmentations || !segmentations.length) {
-        segmentations = SegmentationService.getSegmentations();
+        segmentations = segmentationService.getSegmentations();
       }
 
       let report = {};
@@ -474,7 +474,7 @@ const commandsModule = ({
           }
         });
 
-        const labelmapVolume = SegmentationService.getLabelmapVolume(id);
+        const labelmapVolume = segmentationService.getLabelmapVolume(id);
 
         if (!labelmapVolume) {
           report[id] = segReport;
@@ -484,7 +484,7 @@ const commandsModule = ({
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume = SegmentationService.getLabelmapVolume(
+        const referencedVolume = segmentationService.getLabelmapVolume(
           referencedVolumeId
         );
 

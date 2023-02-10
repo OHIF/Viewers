@@ -470,7 +470,7 @@ class CornerstoneViewportService implements IViewportService {
   public async setVolumesForViewport(viewport, volumeInputArray) {
     const {
       displaySetService,
-      SegmentationService,
+      segmentationService,
       ToolGroupService,
     } = this.servicesManager.services;
 
@@ -491,7 +491,7 @@ class CornerstoneViewportService implements IViewportService {
       const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
 
       if (referencedVolume) {
-        SegmentationService.addSegmentationRepresentationToToolGroup(
+        segmentationService.addSegmentationRepresentationToToolGroup(
           toolGroup.id,
           segmentationId
         );
@@ -499,7 +499,7 @@ class CornerstoneViewportService implements IViewportService {
     } else {
       const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
       const toolGroupSegmentationRepresentations =
-        SegmentationService.getSegmentationRepresentationsForToolGroup(
+        segmentationService.getSegmentationRepresentationsForToolGroup(
           toolGroup.id
         ) || [];
 
@@ -508,7 +508,7 @@ class CornerstoneViewportService implements IViewportService {
       // and we can look into hydrated segmentations to check if any of them are
       // associated with the primary displaySet
       // get segmentations only returns the hydrated segmentations
-      const segmentations = SegmentationService.getSegmentations();
+      const segmentations = segmentationService.getSegmentations();
 
       for (const segmentation of segmentations) {
         // if there is already a segmentation representation for this segmentation
@@ -547,7 +547,7 @@ class CornerstoneViewportService implements IViewportService {
             viewport.id
           );
 
-          SegmentationService.addSegmentationRepresentationToToolGroup(
+          segmentationService.addSegmentationRepresentationToToolGroup(
             toolGroup.id,
             segmentation.id
           );

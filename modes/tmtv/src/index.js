@@ -137,7 +137,7 @@ function modeFactory({ modeConfiguration }) {
         ToolGroupService,
         SyncGroupService,
         toolbarService,
-        SegmentationService,
+        segmentationService,
         cornerstoneViewportService,
       } = servicesManager.services;
 
@@ -145,7 +145,7 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.reset();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
-      SegmentationService.destroy();
+      segmentationService.destroy();
       cornerstoneViewportService.destroy();
     },
     validationTags: {

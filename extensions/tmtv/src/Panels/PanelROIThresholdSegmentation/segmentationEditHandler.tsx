@@ -2,14 +2,14 @@ import React from 'react';
 import { Input, Dialog } from '@ohif/ui';
 
 function segmentationItemEditHandler({ id, servicesManager }) {
-  const { SegmentationService, UIDialogService } = servicesManager.services;
+  const { segmentationService, UIDialogService } = servicesManager.services;
 
-  const segmentation = SegmentationService.getSegmentation(id);
+  const segmentation = segmentationService.getSegmentation(id);
 
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save': {
-        SegmentationService.addOrUpdateSegmentation(
+        segmentationService.addOrUpdateSegmentation(
           {
             ...segmentation,
             ...value,

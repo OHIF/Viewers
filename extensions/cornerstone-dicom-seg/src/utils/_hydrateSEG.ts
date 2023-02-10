@@ -5,7 +5,7 @@ async function _hydrateSEGDisplaySet({
   servicesManager,
 }) {
   const {
-    SegmentationService,
+    segmentationService,
     hangingProtocolService,
     ViewportGridService,
   } = servicesManager.services;
@@ -17,13 +17,13 @@ async function _hydrateSEGDisplaySet({
   // We need the hydration to notify panels about the new segmentation added
   const suppressEvents = false;
 
-  segmentationId = await SegmentationService.createSegmentationForSEGDisplaySet(
+  segmentationId = await segmentationService.createSegmentationForSEGDisplaySet(
     segDisplaySet,
     segmentationId,
     suppressEvents
   );
 
-  SegmentationService.hydrateSegmentation(segDisplaySet.displaySetInstanceUID);
+  segmentationService.hydrateSegmentation(segDisplaySet.displaySetInstanceUID);
 
   const { viewports } = ViewportGridService.getState();
 
@@ -45,7 +45,7 @@ async function _hydrateSEGDisplaySet({
       return;
     }
 
-    const shouldDisplaySeg = SegmentationService.shouldRenderSegmentation(
+    const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
       viewport.displaySetInstanceUIDs,
       segDisplaySet.displaySetInstanceUID
     );

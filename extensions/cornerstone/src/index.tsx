@@ -7,6 +7,8 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
+import { Types } from '@ohif/core';
+
 import init from './init';
 import commandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
@@ -41,7 +43,7 @@ const OHIFCornerstoneViewport = props => {
 /**
  *
  */
-const cornerstoneExtension = {
+const cornerstoneExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
@@ -74,7 +76,9 @@ const cornerstoneExtension = {
     servicesManager.registerService(
       CornerstoneViewportService(servicesManager)
     );
-    servicesManager.registerService(ToolGroupService(servicesManager));
+    servicesManager.registerService(
+      ToolGroupService.REGISTRATION(servicesManager)
+    );
     servicesManager.registerService(SyncGroupService(servicesManager));
     servicesManager.registerService(SegmentationService(servicesManager));
     servicesManager.registerService(CornerstoneCacheService(servicesManager));
