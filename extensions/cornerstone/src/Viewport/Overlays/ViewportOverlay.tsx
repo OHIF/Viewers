@@ -288,7 +288,7 @@ CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
   viewportIndex: PropTypes.number,
-  servicesManager: ServicesManager,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 export default CornerstoneViewportOverlay;

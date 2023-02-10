@@ -82,7 +82,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     );
     servicesManager.registerService(SyncGroupService(servicesManager));
     servicesManager.registerService(SegmentationService(servicesManager));
-    servicesManager.registerService(CornerstoneCacheService(servicesManager));
+    servicesManager.registerService(
+      CornerstoneCacheService.REGISTRATION(servicesManager)
+    );
 
     await init({ servicesManager, commandsManager, configuration, appConfig });
   },

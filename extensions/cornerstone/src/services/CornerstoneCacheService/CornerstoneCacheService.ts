@@ -1,3 +1,4 @@
+import { ServicesManager } from '@ohif/core';
 import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -9,6 +10,16 @@ import {
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class CornerstoneCacheService {
+  static REGISTRATION = (serviceManager: ServicesManager) => {
+    return {
+      name: 'cornerstoneCacheService',
+      altName: 'CornerstoneCacheService',
+      create: ({ configuration = {} }) => {
+        return new CornerstoneCacheService(serviceManager);
+      },
+    };
+  };
+
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
 

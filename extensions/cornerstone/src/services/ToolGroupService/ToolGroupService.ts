@@ -22,7 +22,8 @@ type Tools = {
 export default class ToolGroupService {
   public static REGISTRATION = serviceManager => {
     return {
-      name: 'ToolGroupService',
+      name: 'toolGroupService',
+      altName: 'ToolGroupService',
       create: ({ configuration = {} }) => {
         return new ToolGroupService(serviceManager);
       },
