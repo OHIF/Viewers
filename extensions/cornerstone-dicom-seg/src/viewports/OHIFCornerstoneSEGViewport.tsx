@@ -1,18 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 import {
-  Notification,
-  ViewportActionBar,
-  useViewportGrid,
-  useViewportDialog,
-  LoadingIndicatorProgress,
+  LoadingIndicatorProgress, Notification, useViewportDialog, useViewportGrid, ViewportActionBar
 } from '@ohif/ui';
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
-import _hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
 
@@ -307,7 +302,7 @@ function OHIFCornerstoneSEGViewport(props) {
     SeriesNumber,
   } = referencedDisplaySetRef.current.metadata;
 
-  const onPillClick = () => {
+  const onStatusClick = () => {
     promptHydrateSEG({
       servicesManager,
       viewportIndex,
@@ -330,14 +325,13 @@ function OHIFCornerstoneSEGViewport(props) {
         getStatusComponent={() => {
           return _getStatusComponent({
             isHydrated,
-            onPillClick,
+            onStatusClick,
           });
         }}
         studyData={{
           label: viewportLabel,
           useAltStyling: true,
           studyDate: formatDate(StudyDate),
-          currentSeries: SeriesNumber,
           seriesDescription: `SEG Viewport ${SeriesDescription}`,
           patientInformation: {
             patientName: PatientName

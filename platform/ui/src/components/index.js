@@ -2,7 +2,7 @@ import AboutModal from './AboutModal';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import ContextMenu from './ContextMenu';
-import CinePlayer from './CinePlayer';
+import LegacyCinePlayer from './LegacyCinePlayer';
 import DateRange from './DateRange';
 import Dialog from './Dialog';
 import Dropdown from './Dropdown';
@@ -53,7 +53,7 @@ import Tooltip from './Tooltip';
 import TooltipClipboard from './TooltipClipboard';
 import Typography from './Typography';
 import Viewport from './Viewport';
-import ViewportActionBar from './ViewportActionBar';
+import LegacyViewportActionBar from './LegacyViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
@@ -68,6 +68,7 @@ import InputRange from './InputRange';
 import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
+import ViewportActionBar from './ViewportActionBar';
 
 export {
   AboutModal,
@@ -78,7 +79,6 @@ export {
   Button,
   ButtonGroup,
   ContextMenu,
-  CinePlayer,
   CheckBox,
   DateRange,
   Dialog,
@@ -100,6 +100,8 @@ export {
   ImageScrollbar,
   Label,
   LayoutSelector,
+  LegacyCinePlayer,
+  LegacyViewportActionBar,
   LoadingIndicatorProgress,
   MeasurementTable,
   Modal,

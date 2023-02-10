@@ -7,6 +7,11 @@ module.exports = {
   // }),
   content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
   theme: {
+    extend: {
+      spacing: {
+        '1.5': '0.375rem',
+      },
+    },
     screens: {
       sm: '640px',
       md: '768px',
@@ -55,11 +60,16 @@ module.exports = {
 
       customgreen: {
         100: '#05D97C',
+        200: '#0FD97C',
       },
 
       customblue: {
         100: '#c4fdff',
         200: '#38daff',
+      },
+
+      customgray: {
+        100: '#262943',
       },
 
       gray: {
