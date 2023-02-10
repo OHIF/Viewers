@@ -18,7 +18,7 @@ function PanelStudyBrowser({
 }) {
   const {
     hangingProtocolService,
-    DisplaySetService,
+    displaySetService,
     UINotificationService,
   } = servicesManager.services;
   // Normally you nest the components so the tree isn't so deep, and the data
@@ -103,10 +103,10 @@ function PanelStudyBrowser({
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         dSet.displaySetInstanceUID
       );
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -134,7 +134,7 @@ function PanelStudyBrowser({
   // ~~ displaySets
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
       thumbnailImageSrcMap
@@ -148,13 +148,13 @@ function PanelStudyBrowser({
   // ~~ subscriptions --> displaySets
   useEffect(() => {
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
-    const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+    const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
         const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
-          const displaySet = DisplaySetService.getDisplaySetByUID(
+          const displaySet = displaySetService.getDisplaySetByUID(
             dSet.displaySetInstanceUID
           );
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -179,8 +179,8 @@ function PanelStudyBrowser({
 
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
-    const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
@@ -222,7 +222,7 @@ function PanelStudyBrowser({
     if (!shouldCollapseStudy) {
       const madeInClient = true;
       requestDisplaySetCreationForStudy(
-        DisplaySetService,
+        displaySetService,
         StudyInstanceUID,
         madeInClient
       );

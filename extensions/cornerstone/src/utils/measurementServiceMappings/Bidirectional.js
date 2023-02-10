@@ -8,7 +8,7 @@ const Bidirectional = {
   toAnnotation: measurement => {},
   toMeasurement: (
     csToolsEventDetail,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
     getValueTypeFromToolType
   ) => {
@@ -40,19 +40,19 @@ const Bidirectional = {
     let displaySet;
 
     if (SOPInstanceUID) {
-      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
         SeriesInstanceUID
       );
     } else {
-      displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
     const { points } = data.handles;
 
     const mappedAnnotations = getMappedAnnotations(
       annotation,
-      DisplaySetService
+      displaySetService
     );
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
@@ -79,7 +79,7 @@ const Bidirectional = {
   },
 };
 
-function getMappedAnnotations(annotation, DisplaySetService) {
+function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
   const { cachedStats } = data;
   const { referencedImageId, referencedSeriesInstanceUID } = metadata;
@@ -105,7 +105,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       frameNumber,
     } = getSOPInstanceAttributes(referencedImageId);
 
-    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+    const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
       SeriesInstanceUID,
       frameNumber

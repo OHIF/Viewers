@@ -64,7 +64,7 @@ export default async function init({
   const {
     UserAuthenticationService,
     measurementService,
-    DisplaySetService,
+    displaySetService,
     UIDialogService,
     UIModalService,
     UINotificationService,
@@ -133,7 +133,7 @@ export default async function init({
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
     measurementService,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService
   );
 

@@ -45,7 +45,7 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         ToolGroupService,
         hangingProtocolService,
-        DisplaySetService,
+        displaySetService,
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -105,14 +105,14 @@ function modeFactory({ modeConfiguration }) {
             displaySetMatchDetails,
             toolNames,
             ToolGroupService,
-            DisplaySetService
+            displaySetService
           );
 
           setFusionActiveVolume(
             displaySetMatchDetails,
             toolNames,
             ToolGroupService,
-            DisplaySetService
+            displaySetService
           );
 
           setWindowLevelActive();

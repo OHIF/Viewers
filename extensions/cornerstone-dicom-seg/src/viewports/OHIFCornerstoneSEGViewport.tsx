@@ -33,7 +33,7 @@ function OHIFCornerstoneSEGViewport(props) {
   const { t } = useTranslation('SEGViewport');
 
   const {
-    DisplaySetService,
+    displaySetService,
     ToolGroupService,
     SegmentationService,
     UINotificationService,
@@ -214,8 +214,8 @@ function OHIFCornerstoneSEGViewport(props) {
    Cleanup the SEG viewport when the viewport is destroyed
    */
   useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
         if (

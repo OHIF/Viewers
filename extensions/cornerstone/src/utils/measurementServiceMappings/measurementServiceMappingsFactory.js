@@ -5,7 +5,7 @@ import ArrowAnnotate from './ArrowAnnotate';
 
 const measurementServiceMappingsFactory = (
   measurementService,
-  DisplaySetService,
+  displaySetService,
   CornerstoneViewportService
 ) => {
   /**
@@ -45,7 +45,7 @@ const measurementServiceMappingsFactory = (
       toMeasurement: csToolsAnnotation =>
         Length.toMeasurement(
           csToolsAnnotation,
-          DisplaySetService,
+          displaySetService,
           CornerstoneViewportService,
           _getValueTypeFromToolType
         ),
@@ -61,7 +61,7 @@ const measurementServiceMappingsFactory = (
       toMeasurement: csToolsAnnotation =>
         Bidirectional.toMeasurement(
           csToolsAnnotation,
-          DisplaySetService,
+          displaySetService,
           CornerstoneViewportService,
           _getValueTypeFromToolType
         ),
@@ -83,7 +83,7 @@ const measurementServiceMappingsFactory = (
       toMeasurement: csToolsAnnotation =>
         EllipticalROI.toMeasurement(
           csToolsAnnotation,
-          DisplaySetService,
+          displaySetService,
           CornerstoneViewportService,
           _getValueTypeFromToolType
         ),
@@ -98,7 +98,7 @@ const measurementServiceMappingsFactory = (
       toMeasurement: csToolsAnnotation =>
         ArrowAnnotate.toMeasurement(
           csToolsAnnotation,
-          DisplaySetService,
+          displaySetService,
           CornerstoneViewportService,
           _getValueTypeFromToolType
         ),

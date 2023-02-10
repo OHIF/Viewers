@@ -117,7 +117,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   const {
     measurementService,
-    DisplaySetService,
+    displaySetService,
     toolbarService,
     ToolGroupService,
     SyncGroupService,
@@ -244,8 +244,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
   // Note: this approach does not actually end of sending network requests
   // and it uses the network cache
   useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+    const { unsubscribe } = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       async invalidatedDisplaySetInstanceUID => {
         const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
           viewportIndex
@@ -257,7 +257,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
             viewportData,
             invalidatedDisplaySetInstanceUID,
             dataSource,
-            DisplaySetService
+            displaySetService
           );
 
           const keepCamera = true;
@@ -312,7 +312,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   useEffect(() => {
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
       measurementService,
-      DisplaySetService,
+      displaySetService,
       elementRef,
       viewportIndex,
       displaySets,
@@ -322,7 +322,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
     _checkForCachedJumpToMeasurementEvents(
       measurementService,
-      DisplaySetService,
+      displaySetService,
       elementRef,
       viewportIndex,
       displaySets,
@@ -366,7 +366,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
 function _subscribeToJumpToMeasurementEvents(
   measurementService,
-  DisplaySetService,
+  displaySetService,
   elementRef,
   viewportIndex,
   displaySets,
@@ -388,7 +388,7 @@ function _subscribeToJumpToMeasurementEvents(
           elementRef,
           viewportIndex,
           measurementService,
-          DisplaySetService,
+          displaySetService,
           ViewportGridService,
           CornerstoneViewportService
         );
@@ -402,7 +402,7 @@ function _subscribeToJumpToMeasurementEvents(
 // Check if there is a queued jumpToMeasurement event
 function _checkForCachedJumpToMeasurementEvents(
   measurementService,
-  DisplaySetService,
+  displaySetService,
   elementRef,
   viewportIndex,
   displaySets,
@@ -429,7 +429,7 @@ function _checkForCachedJumpToMeasurementEvents(
         elementRef,
         viewportIndex,
         measurementService,
-        DisplaySetService,
+        displaySetService,
         ViewportGridService,
         CornerstoneViewportService
       );
@@ -442,7 +442,7 @@ function _jumpToMeasurement(
   targetElementRef,
   viewportIndex,
   measurementService,
-  DisplaySetService,
+  displaySetService,
   ViewportGridService,
   CornerstoneViewportService
 ) {
@@ -453,7 +453,7 @@ function _jumpToMeasurement(
     console.warn('cannot jump in a non-acquisition plane measurements yet');
   }
 
-  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 

@@ -1324,11 +1324,11 @@ class SegmentationService {
       return false;
     }
 
-    const { DisplaySetService } = this.servicesManager.services;
+    const { displaySetService } = this.servicesManager.services;
 
     let shouldDisplaySeg = false;
 
-    const segDisplaySet = DisplaySetService.getDisplaySetByUID(
+    const segDisplaySet = displaySetService.getDisplaySetByUID(
       segDisplaySetInstanceUID
     );
 
@@ -1337,7 +1337,7 @@ class SegmentationService {
     viewportDisplaySetInstanceUIDs.forEach(displaySetInstanceUID => {
       // check if the displaySet is sharing the same frameOfReferenceUID
       // with the new segmentation
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 

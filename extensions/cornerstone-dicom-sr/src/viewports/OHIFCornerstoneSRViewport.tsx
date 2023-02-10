@@ -36,7 +36,7 @@ function OHIFCornerstoneSRViewport(props) {
   const { t } = useTranslation('SRViewport');
 
   const {
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
     measurementService,
   } = servicesManager.services;
@@ -89,7 +89,7 @@ function OHIFCornerstoneSRViewport(props) {
         { servicesManager, extensionManager },
         displaySetInstanceUID
       );
-      const displaySets = DisplaySetService.getDisplaySetsForSeries(
+      const displaySets = displaySetService.getDisplaySetsForSeries(
         SeriesInstanceUIDs[0]
       );
       if (displaySets.length) {
@@ -152,7 +152,7 @@ function OHIFCornerstoneSRViewport(props) {
       _getViewportReferencedDisplaySetData(
         srDisplaySet,
         newMeasurementSelected,
-        DisplaySetService
+        displaySetService
       ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
         setMeasurementSelected(newMeasurementSelected);
         setActiveImageDisplaySetData(referencedDisplaySet);
@@ -259,8 +259,8 @@ function OHIFCornerstoneSRViewport(props) {
    Cleanup the SR viewport when the viewport is destroyed
    */
   useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
         if (
@@ -432,14 +432,14 @@ OHIFCornerstoneSRViewport.defaultProps = {
 async function _getViewportReferencedDisplaySetData(
   displaySet,
   measurementSelected,
-  DisplaySetService
+  displaySetService
 ) {
   const { measurements } = displaySet;
   const measurement = measurements[measurementSelected];
 
   const { displaySetInstanceUID } = measurement;
 
-  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 

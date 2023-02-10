@@ -469,7 +469,7 @@ class CornerstoneViewportService implements IViewportService {
 
   public async setVolumesForViewport(viewport, volumeInputArray) {
     const {
-      DisplaySetService,
+      displaySetService,
       SegmentationService,
       ToolGroupService,
     } = this.servicesManager.services;
@@ -480,7 +480,7 @@ class CornerstoneViewportService implements IViewportService {
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
 
     const segDisplaySet = displaySetInstanceUIDs
-      .map(DisplaySetService.getDisplaySetByUID)
+      .map(displaySetService.getDisplaySetByUID)
       .find(displaySet => displaySet && displaySet.Modality === 'SEG');
 
     if (segDisplaySet) {
@@ -733,8 +733,8 @@ class CornerstoneViewportService implements IViewportService {
   }
 
   _getFrameOfReferenceUID(displaySetInstanceUID) {
-    const { DisplaySetService } = this.servicesManager.services;
-    const displaySet = DisplaySetService.getDisplaySetByUID(
+    const { displaySetService } = this.servicesManager.services;
+    const displaySet = displaySetService.getDisplaySetByUID(
       displaySetInstanceUID
     );
 

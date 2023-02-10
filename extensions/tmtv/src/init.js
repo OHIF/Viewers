@@ -17,7 +17,7 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 export default function init({ servicesManager, extensionManager }) {
   const {
     measurementService,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
   } = servicesManager.services;
 
@@ -25,7 +25,7 @@ export default function init({ servicesManager, extensionManager }) {
 
   const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
     measurementService,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService
   );
 

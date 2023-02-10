@@ -4,7 +4,7 @@ export default function setFusionActiveVolume(
   matches,
   toolNames,
   ToolGroupService,
-  DisplaySetService
+  displaySetService
 ) {
   const matchDetails = matches.get('ptDisplaySet');
 
@@ -14,7 +14,7 @@ export default function setFusionActiveVolume(
 
   const { SeriesInstanceUID } = matchDetails;
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+  const displaySets = displaySetService.getDisplaySetsForSeries(
     SeriesInstanceUID
   );
 

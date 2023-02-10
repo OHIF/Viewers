@@ -71,8 +71,8 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.getReferenceDisplaySet = () => {
-    const { DisplaySetService } = servicesManager.services;
-    const referencedDisplaySets = DisplaySetService.getDisplaySetsForSeries(
+    const { displaySetService } = servicesManager.services;
+    const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
       displaySet.referencedSeriesInstanceUID
     );
 

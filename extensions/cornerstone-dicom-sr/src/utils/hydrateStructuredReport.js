@@ -20,9 +20,9 @@ export default function hydrateStructuredReport(
   displaySetInstanceUID
 ) {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const { measurementService, DisplaySetService } = servicesManager.services;
+  const { measurementService, displaySetService } = servicesManager.services;
 
-  const displaySet = DisplaySetService.getDisplaySetByUID(
+  const displaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 

@@ -24,7 +24,7 @@ export default function PanelMeasurementTable({
     measurementService,
     UIDialogService,
     UINotificationService,
-    DisplaySetService,
+    displaySetService,
   } = servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
@@ -76,7 +76,7 @@ export default function PanelMeasurementTable({
     // filter measurements that are added to the active study
     const activeViewport = viewports[activeViewportIndex];
     const measurements = measurementService.getMeasurements();
-    const displaySet = DisplaySetService.getDisplaySetByUID(
+    const displaySet = displaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]
     );
     const trackedMeasurements = measurements.filter(
@@ -109,7 +109,7 @@ export default function PanelMeasurementTable({
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      const SeriesNumber = getNextSRSeriesNumber(DisplaySetService);
+      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
 
       const displaySetInstanceUIDs = await createReportAsync(
         servicesManager,

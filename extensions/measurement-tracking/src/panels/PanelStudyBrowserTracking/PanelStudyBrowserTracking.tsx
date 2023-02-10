@@ -24,7 +24,7 @@ function PanelStudyBrowserTracking({
 }) {
   const {
     measurementService,
-    DisplaySetService,
+    displaySetService,
     UIDialogService,
     HangingProtocolService,
     UINotificationService,
@@ -150,10 +150,10 @@ function PanelStudyBrowserTracking({
 
   // ~~ Initial Thumbnails
   useEffect(() => {
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         dSet.displaySetInstanceUID
       );
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -171,12 +171,12 @@ function PanelStudyBrowserTracking({
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [DisplaySetService, dataSource, getImageSrc]);
+  }, [displaySetService, dataSource, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
       thumbnailImageSrcMap,
@@ -184,7 +184,7 @@ function PanelStudyBrowserTracking({
       viewports,
       isSingleViewport,
       dataSource,
-      DisplaySetService,
+      displaySetService,
       UIDialogService,
       UINotificationService
     );
@@ -192,7 +192,7 @@ function PanelStudyBrowserTracking({
     setDisplaySets(mappedDisplaySets);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    DisplaySetService.activeDisplaySets,
+    displaySetService.activeDisplaySets,
     trackedSeries,
     thumbnailImageSrcMap,
     viewports,
@@ -202,15 +202,15 @@ function PanelStudyBrowserTracking({
   // ~~ subscriptions --> displaySets
   useEffect(() => {
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
-    const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+    const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
 
           const newImageSrcEntry = {};
-          const displaySet = DisplaySetService.getDisplaySetByUID(
+          const displaySet = displaySetService.getDisplaySetByUID(
             displaySetInstanceUID
           );
 
@@ -237,8 +237,8 @@ function PanelStudyBrowserTracking({
 
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
-    const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
@@ -247,7 +247,7 @@ function PanelStudyBrowserTracking({
           viewports,
           isSingleViewport,
           dataSource,
-          DisplaySetService,
+          displaySetService,
           UIDialogService,
           UINotificationService
         );
@@ -262,7 +262,7 @@ function PanelStudyBrowserTracking({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    DisplaySetService,
+    displaySetService,
     dataSource,
     getImageSrc,
     thumbnailImageSrcMap,
@@ -294,7 +294,7 @@ function PanelStudyBrowserTracking({
     if (!shouldCollapseStudy) {
       const madeInClient = true;
       requestDisplaySetCreationForStudy(
-        DisplaySetService,
+        displaySetService,
         StudyInstanceUID,
         madeInClient
       );
@@ -357,7 +357,7 @@ function PanelStudyBrowserTracking({
         setActiveTabName(clickedTabName);
       }}
       onClickUntrack={displaySetInstanceUID => {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           displaySetInstanceUID
         );
         // TODO: shift this somewhere else where we're centralizing this logic?
@@ -414,7 +414,7 @@ function _mapDisplaySets(
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
   isSingleViewport,
   dataSource,
-  DisplaySetService,
+  displaySetService,
   UIDialogService,
   UINotificationService
 ) {
@@ -503,7 +503,7 @@ function _mapDisplaySets(
                         ds.StudyInstanceUID,
                         ds.SeriesInstanceUID
                       );
-                      DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
+                      displaySetService.deleteDisplaySet(displaySetInstanceUID);
                       UIDialogService.dismiss({ id: 'ds-reject-sr' });
                       UINotificationService.show({
                         title: 'Delete Report',

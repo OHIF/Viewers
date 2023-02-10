@@ -14,7 +14,7 @@ export default function toggleStackImageSync({
   const {
     SyncGroupService,
     ViewportGridService,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
   } = servicesManager.services;
 
@@ -50,7 +50,7 @@ export default function toggleStackImageSync({
     const { displaySetInstanceUIDs } = viewport;
 
     for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 

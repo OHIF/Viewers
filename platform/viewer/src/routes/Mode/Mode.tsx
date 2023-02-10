@@ -23,7 +23,7 @@ function defaultRouteInit(
   hangingProtocol
 ) {
   const {
-    DisplaySetService,
+    displaySetService,
     hangingProtocolService,
   } = servicesManager.services;
 
@@ -38,7 +38,7 @@ function defaultRouteInit(
         SeriesInstanceUID
       );
 
-      DisplaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
     }
   );
 
@@ -58,7 +58,7 @@ function defaultRouteInit(
   // until we run the hanging protocol matching service.
 
   Promise.allSettled(allRetrieves).then(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
+    const displaySets = displaySetService.getActiveDisplaySets();
 
     if (!displaySets || !displaySets.length) {
       return;
@@ -119,7 +119,7 @@ export default function ModeRoute({
   }
 
   const {
-    DisplaySetService,
+    displaySetService,
     hangingProtocolService,
   } = servicesManager.services;
 
@@ -242,7 +242,7 @@ export default function ModeRoute({
     // Extension
 
     // Add SOPClassHandlers to a new SOPClassManager.
-    DisplaySetService.init(extensionManager, sopClassHandlers);
+    displaySetService.init(extensionManager, sopClassHandlers);
 
     extensionManager.onModeEnter({
       servicesManager,

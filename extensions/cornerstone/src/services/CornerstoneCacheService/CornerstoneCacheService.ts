@@ -69,7 +69,7 @@ class CornerstoneCacheService {
     viewportData: VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
-    DisplaySetService
+    displaySetService
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
       throw new Error('Invalidation of StackViewport is not supported yet');
@@ -85,7 +85,7 @@ class CornerstoneCacheService {
     }
 
     const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
-      DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
+      displaySetService.getDisplaySetByUID(displaySetInstanceUID)
     );
 
     const newViewportData = await this._getVolumeViewportData(

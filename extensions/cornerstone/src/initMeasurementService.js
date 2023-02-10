@@ -14,7 +14,7 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 const initMeasurementService = (
   measurementService,
-  DisplaySetService,
+  displaySetService,
   CornerstoneViewportService
 ) => {
   /* Initialization */
@@ -25,7 +25,7 @@ const initMeasurementService = (
     ArrowAnnotate,
   } = measurementServiceMappingsFactory(
     measurementService,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService
   );
   const csTools3DVer1MeasurementSource = measurementService.createSource(
@@ -71,12 +71,12 @@ const initMeasurementService = (
 
 const connectToolsToMeasurementService = (
   measurementService,
-  DisplaySetService,
+  displaySetService,
   CornerstoneViewportService
 ) => {
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService
   );
   connectMeasurementServiceToTools(

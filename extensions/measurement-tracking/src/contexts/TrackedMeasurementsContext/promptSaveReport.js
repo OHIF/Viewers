@@ -11,7 +11,7 @@ function promptSaveReport(
   const {
     UIDialogService,
     measurementService,
-    DisplaySetService,
+    displaySetService,
   } = servicesManager.services;
   const viewportIndex =
     evt.viewportIndex === undefined
@@ -45,7 +45,7 @@ function promptSaveReport(
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      const SeriesNumber = getNextSRSeriesNumber(DisplaySetService);
+      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
 
       displaySetInstanceUIDs = await createReportAsync(
         servicesManager,

@@ -25,7 +25,7 @@ const DEFAULT_MEATADATA = {
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
   const {
-    DisplaySetService,
+    displaySetService,
     ToolGroupService,
     toolbarService,
     hangingProtocolService,
@@ -70,7 +70,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   };
 
   useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
+    const displaySets = displaySetService.getActiveDisplaySets();
     const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     if (!displaySets.length) {
       return;
@@ -139,7 +139,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     );
 
     // update the displaySets
-    DisplaySetService.setDisplaySetMetadataInvalidated(
+    displaySetService.setDisplaySetMetadataInvalidated(
       ptDisplaySet.displaySetInstanceUID
     );
   }

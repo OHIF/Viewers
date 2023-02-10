@@ -119,7 +119,7 @@ function _getDisplaySetsFromSeries(
 }
 
 function _load(displaySet, servicesManager, extensionManager) {
-  const { DisplaySetService, measurementService } = servicesManager.services;
+  const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
 
@@ -138,7 +138,7 @@ function _load(displaySet, servicesManager, extensionManager) {
   displaySet.isLoaded = true;
 
   // Check currently added displaySets and add measurements if the sources exist.
-  DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
+  displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
     _checkIfCanAddMeasurementsToDisplaySet(
       displaySet,
       activeDisplaySet,
@@ -147,8 +147,8 @@ function _load(displaySet, servicesManager, extensionManager) {
   });
 
   // Subscribe to new displaySets as the source may come in after.
-  DisplaySetService.subscribe(
-    DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+  displaySetService.subscribe(
+    displaySetService.EVENTS.DISPLAY_SETS_ADDED,
     data => {
       const { displaySetsAdded } = data;
       // If there are still some measurements that have not yet been loaded into cornerstone,

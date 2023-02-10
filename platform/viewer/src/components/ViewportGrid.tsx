@@ -30,7 +30,7 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const {
-    DisplaySetService,
+    displaySetService,
     measurementService,
     hangingProtocolService,
     UINotificationService,
@@ -140,7 +140,7 @@ function ViewerViewportGrid(props) {
   );
 
   useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
+    const displaySets = displaySetService.getActiveDisplaySets();
     updateDisplaySetsForViewports(displaySets);
   }, [numRows, numCols]);
 
@@ -168,7 +168,7 @@ function ViewerViewportGrid(props) {
     const { unsubscribe } = hangingProtocolService.subscribe(
       hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       () => {
-        const displaySets = DisplaySetService.getActiveDisplaySets();
+        const displaySets = displaySetService.getActiveDisplaySets();
         updateDisplaySetsForViewports(displaySets);
       }
     );
@@ -198,7 +198,7 @@ function ViewerViewportGrid(props) {
           }
         }
 
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           referencedDisplaySetInstanceUID
         );
 
@@ -335,7 +335,7 @@ function ViewerViewportGrid(props) {
       const displaySets = displaySetInstanceUIDsToUse.map(
         displaySetInstanceUID => {
           return (
-            DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
+            displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
           );
         }
       );

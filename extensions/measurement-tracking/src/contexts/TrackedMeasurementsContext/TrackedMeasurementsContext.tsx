@@ -139,8 +139,8 @@ function TrackedMeasurementsContextProvider(
 
       // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
       // tracking fusion viewports yet. This should change when we do.
-      const { DisplaySetService } = servicesManager.services;
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const { displaySetService } = servicesManager.services;
+      const displaySet = displaySetService.getDisplaySetByUID(
         activeViewport.displaySetInstanceUIDs[0]
       );
 

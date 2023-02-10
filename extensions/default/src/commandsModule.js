@@ -7,7 +7,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     hangingProtocolService,
     UINotificationService,
     ViewportGridService,
-    DisplaySetService,
+    displaySetService,
   } = servicesManager.services;
 
   const actions = {
@@ -33,7 +33,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       const activeViewportSpecificData = viewports[activeViewportIndex];
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
-      const displaySets = DisplaySetService.activeDisplaySets;
+      const displaySets = displaySetService.activeDisplaySets;
       const { UIModalService } = servicesManager.services;
 
       const displaySetInstanceUID = displaySetInstanceUIDs[0];

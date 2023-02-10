@@ -22,7 +22,7 @@ const commandsModule = ({
   const {
     ViewportGridService,
     UINotificationService,
-    DisplaySetService,
+    displaySetService,
     hangingProtocolService,
     ToolGroupService,
     CornerstoneViewportService,
@@ -67,7 +67,7 @@ const commandsModule = ({
       for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
         const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
-          DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
+          displaySetService.getDisplaySetByUID(displaySetInstanceUID)
         );
 
         if (!displaySets || displaySets.length === 0) {

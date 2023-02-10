@@ -34,7 +34,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const {
     measurementService,
     UIDialogService,
-    DisplaySetService,
+    displaySetService,
   } = servicesManager.services;
   const [
     trackedMeasurements,
@@ -58,7 +58,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       _mapMeasurementToDisplay(
         m,
         measurementService.VALUE_TYPES,
-        DisplaySetService
+        displaySetService
       )
     );
     setDisplayMeasurements(mappedMeasurements);
@@ -295,7 +295,7 @@ PanelMeasurementTableTracking.propTypes = {
 };
 
 // TODO: This could be a measurementService mapper
-function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
+function _mapMeasurementToDisplay(measurement, types, displaySetService) {
   const { referenceStudyUID, referenceSeriesUID, SOPInstanceUID } = measurement;
 
   // TODO: We don't deal with multiframe well yet, would need to update
@@ -307,7 +307,7 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
     SOPInstanceUID
   );
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+  const displaySets = displaySetService.getDisplaySetsForSeries(
     referenceSeriesUID
   );
 
