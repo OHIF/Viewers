@@ -866,13 +866,13 @@ class HangingProtocolService {
     protocol: Protocol,
     options: HangingProtocol.SetProtocolOptions
   ) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
 
     if (options.displaySetInstanceUIDs) {
       this._updateGlobalMatchByOptions(
         options as HangingProtocol.GlobalProtocolOptions,
         protocol,
-        DisplaySetService
+        displaySetService
       );
       return;
     }
@@ -893,7 +893,7 @@ class HangingProtocolService {
     options: HangingProtocol.ViewportSpecificProtocolOptions,
     protocol: HangingProtocol.Protocol
   ) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
     const { displaySetSelectors = {} } = protocol;
     const protocolViewports = protocol.stages[this.stage].viewports;
 
@@ -914,7 +914,7 @@ class HangingProtocolService {
 
         displaySetAndViewportOptions.displaySetInstanceUIDs.forEach(
           (displaySetInstanceUID, index) => {
-            const displaySet = DisplaySetService.getDisplaySetByUID(
+            const displaySet = displaySetService.getDisplaySetByUID(
               displaySetInstanceUID
             );
 
@@ -968,7 +968,7 @@ class HangingProtocolService {
 
         displaySetAndViewportOptions?.displaySetInstanceUIDs?.forEach(
           (displaySetInstanceUID, index) => {
-            const displaySet = DisplaySetService.getDisplaySetByUID(
+            const displaySet = displaySetService.getDisplaySetByUID(
               displaySetInstanceUID
             );
 
@@ -999,7 +999,7 @@ class HangingProtocolService {
     protocolViewport: HangingProtocol.Viewport,
     displaySetSelectors: Record<string, HangingProtocol.DisplaySetSelector>
   ) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
     const protocolViewportDisplaySets = protocolViewport.displaySets;
     const numDisplaySetsToSet =
       displaySetAndViewportOptions.displaySetInstanceUIDs.length;
@@ -1015,7 +1015,7 @@ class HangingProtocolService {
 
     displaySetAndViewportOptions.displaySetInstanceUIDs.forEach(
       displaySetInstanceUID => {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           displaySetInstanceUID
         );
 
@@ -1036,7 +1036,7 @@ class HangingProtocolService {
   private _updateGlobalMatchByOptions(
     options: HangingProtocol.GlobalProtocolOptions,
     protocol: Protocol,
-    DisplaySetService: any
+    displaySetService: any
   ) {
     const { displaySetSelectors = {} } = protocol;
     const protocolViewports = protocol.stages[this.stage].viewports;
@@ -1045,7 +1045,7 @@ class HangingProtocolService {
     // we need to check each displaySetInstanceUIDs to see if it satisfies the
     // seriesMatching criteria
     options.displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 
@@ -1076,7 +1076,7 @@ class HangingProtocolService {
     Array.from(newDisplaySetIds).forEach((displaySetId, index) => {
       const displaySetInstanceUID = options.displaySetInstanceUIDs[index];
 
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 
@@ -1115,7 +1115,7 @@ class HangingProtocolService {
         });
 
         remainingDisplaySetMatches.forEach(({ displaySetInstanceUID }) => {
-          const displaySet = DisplaySetService.getDisplaySetByUID(
+          const displaySet = displaySetService.getDisplaySetByUID(
             displaySetInstanceUID
           );
 
@@ -1157,13 +1157,13 @@ class HangingProtocolService {
   }
 
   _validateOptions(options: HangingProtocol.SetProtocolOptions) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
 
     if (options.displaySetInstanceUIDs) {
       options = options as HangingProtocol.GlobalProtocolOptions;
 
       options.displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           displaySetInstanceUID
         );
 

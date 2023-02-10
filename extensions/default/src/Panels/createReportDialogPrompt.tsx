@@ -8,7 +8,7 @@ export const CREATE_REPORT_DIALOG_RESPONSE = {
 };
 
 export default function createReportDialogPrompt(
-  UIDialogService,
+  uiDialogService,
   { extensionManager }
 ) {
   return new Promise(function (resolve, reject) {
@@ -16,7 +16,7 @@ export default function createReportDialogPrompt(
 
     const _handleClose = () => {
       // Dismiss dialog
-      UIDialogService.dismiss({ id: dialogId });
+      uiDialogService.dismiss({ id: dialogId });
       // Notify of cancel action
       resolve({
         action: CREATE_REPORT_DIALOG_RESPONSE.CANCEL,
@@ -31,7 +31,7 @@ export default function createReportDialogPrompt(
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      UIDialogService.dismiss({ id: dialogId });
+      uiDialogService.dismiss({ id: dialogId });
       switch (action.id) {
         case 'save':
           resolve({
@@ -66,7 +66,7 @@ export default function createReportDialogPrompt(
         };
       });
 
-    dialogId = UIDialogService.create({
+    dialogId = uiDialogService.create({
       centralize: true,
       isDraggable: false,
       content: Dialog,
@@ -93,7 +93,7 @@ export default function createReportDialogPrompt(
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              UIDialogService.dismiss({ id: dialogId });
+              uiDialogService.dismiss({ id: dialogId });
               resolve({
                 action: CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT,
                 value: value.label,

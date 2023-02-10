@@ -15,7 +15,7 @@ function CornerstoneViewportOverlay({
   servicesManager,
 }) {
   const {
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     toolbarService,
   } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
@@ -86,7 +86,7 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
           viewportIndex
         );
 
@@ -169,7 +169,7 @@ function CornerstoneViewportOverlay({
         viewportData,
         imageIndex,
         viewportIndex,
-        CornerstoneViewportService
+        cornerstoneViewportService
       );
     }
 
@@ -189,7 +189,7 @@ function CornerstoneViewportOverlay({
     return null;
   }
 
-  const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+  const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
     viewportIndex
   );
 
@@ -241,7 +241,7 @@ function _getInstanceNumberFromVolume(
   viewportData,
   imageIndex,
   viewportIndex,
-  CornerstoneViewportService
+  cornerstoneViewportService
 ) {
   const volumes = viewportData.volumes;
 
@@ -253,7 +253,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
     viewportIndex
   );
 
@@ -288,7 +288,7 @@ CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
   viewportIndex: PropTypes.number,
-  servicesManager: ServicesManager,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 export default CornerstoneViewportOverlay;

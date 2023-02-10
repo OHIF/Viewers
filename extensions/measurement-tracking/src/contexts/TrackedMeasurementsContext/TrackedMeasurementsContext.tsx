@@ -34,10 +34,10 @@ function TrackedMeasurementsContextProvider(
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const { MeasurementService } = servicesManager.services;
+      const { measurementService } = servicesManager.services;
 
       const { trackedStudy, trackedSeries } = ctx;
-      const measurements = MeasurementService.getMeasurements();
+      const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m =>
           trackedStudy === m.referenceStudyUID &&
@@ -46,7 +46,7 @@ function TrackedMeasurementsContextProvider(
 
       const uid = trackedMeasurements[0].uid;
 
-      MeasurementService.jumpToMeasurement(
+      measurementService.jumpToMeasurement(
         viewportGrid.activeViewportIndex,
         uid
       );
@@ -63,24 +63,24 @@ function TrackedMeasurementsContextProvider(
       }
     },
     discardPreviouslyTrackedMeasurements: (ctx, evt) => {
-      const { MeasurementService } = servicesManager.services;
-      const measurements = MeasurementService.getMeasurements();
+      const { measurementService } = servicesManager.services;
+      const measurements = measurementService.getMeasurements();
       const filteredMeasurements = measurements.filter(ms =>
         ctx.prevTrackedSeries.includes(ms.referenceSeriesUID)
       );
       const measurementIds = filteredMeasurements.map(fm => fm.id);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove(measurementIds[i]);
+        measurementService.remove(measurementIds[i]);
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      const { MeasurementService } = servicesManager.services;
-      const measurements = MeasurementService.getMeasurements();
+      const { measurementService } = servicesManager.services;
+      const measurements = measurementService.getMeasurements();
       const measurementIds = measurements.map(fm => fm.uid);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove(measurementIds[i]);
+        measurementService.remove(measurementIds[i]);
       }
     },
   });
@@ -139,8 +139,8 @@ function TrackedMeasurementsContextProvider(
 
       // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
       // tracking fusion viewports yet. This should change when we do.
-      const { DisplaySetService } = servicesManager.services;
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const { displaySetService } = servicesManager.services;
+      const displaySet = displaySetService.getDisplaySetByUID(
         activeViewport.displaySetInstanceUIDs[0]
       );
 
