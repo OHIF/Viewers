@@ -445,7 +445,7 @@ class MetadataProvider {
     // check if the imageId starts with http:// or https:// using regex
     // Todo: handle non http imageIds
     let imageURI;
-    const urlRegex = /^(http|https):\/\//;
+    const urlRegex = /^(http|https|dicomfile):\/\//;
     if (urlRegex.test(imageId)) {
       imageURI = imageId;
     } else {
@@ -453,7 +453,8 @@ class MetadataProvider {
     }
 
     const uids = this.imageURIToUIDs.get(imageURI);
-    const frameNumber = imageId.split(/\/frames\//)[1];
+    const frameNumber =
+      imageId.split(/\/frames\//)[1] || imageId.split('&frame=')[1];
 
     if (uids && frameNumber !== undefined) {
       return { ...uids, frameNumber };

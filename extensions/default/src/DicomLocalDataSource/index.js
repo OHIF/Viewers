@@ -138,7 +138,9 @@ function createDicomLocalApi(dicomLocalConfig) {
           study.series.forEach(aSeries => {
             const { SeriesInstanceUID } = aSeries;
 
-            aSeries.instances.forEach(instance => {
+            const isMultiframe = aSeries.instances[0].NumberOfFrames > 1;
+
+            aSeries.instances.forEach((instance, index) => {
               const {
                 url: imageId,
                 StudyInstanceUID,
@@ -153,6 +155,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 StudyInstanceUID,
                 SeriesInstanceUID,
                 SOPInstanceUID,
+                frameIndex: isMultiframe ? index : undefined,
               });
             });
 
