@@ -33,7 +33,7 @@ function ViewerViewportGrid(props) {
     displaySetService,
     measurementService,
     hangingProtocolService,
-    UINotificationService,
+    uiNotificationService,
   } = servicesManager.services;
 
   /**
@@ -125,7 +125,7 @@ function ViewerViewportGrid(props) {
         );
       } catch (error) {
         console.warn(error);
-        UINotificationService.show({
+        uiNotificationService.show({
           title: 'Drag and Drop',
           message:
             'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
@@ -136,7 +136,7 @@ function ViewerViewportGrid(props) {
 
       return updatedViewports;
     },
-    [hangingProtocolService, UINotificationService]
+    [hangingProtocolService, uiNotificationService]
   );
 
   useEffect(() => {
@@ -343,7 +343,7 @@ function ViewerViewportGrid(props) {
       const ViewportComponent = _getViewportComponent(
         displaySets,
         viewportComponents,
-        UINotificationService
+        uiNotificationService
       );
 
       // look inside displaySets to see if they need reRendering
@@ -428,7 +428,7 @@ ViewerViewportGrid.defaultProps = {
 function _getViewportComponent(
   displaySets,
   viewportComponents,
-  UINotificationService
+  uiNotificationService
 ) {
   if (!displaySets || !displaySets.length) {
     return EmptyViewport;
@@ -453,7 +453,7 @@ function _getViewportComponent(
   }
 
   console.log("Can't show displaySet", SOPClassHandlerId, displaySets[0]);
-  UINotificationService.show({
+  uiNotificationService.show({
     title: 'Viewport Not Supported Yet',
     message: `Cannot display SOPClassId of ${displaySets[0].SOPClassUID} yet`,
     type: 'error',

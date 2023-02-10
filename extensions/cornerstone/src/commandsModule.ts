@@ -28,7 +28,7 @@ const commandsModule = ({ servicesManager }) => {
     uiDialogService,
     cornerstoneViewportService,
     hangingProtocolService,
-    UINotificationService,
+    uiNotificationService,
   } = (servicesManager as ServicesManager).services;
 
   function _getActiveViewportEnabledElement() {
@@ -136,7 +136,7 @@ const commandsModule = ({ servicesManager }) => {
         const activeViewportToolGroup = _getToolGroup(null);
 
         if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          UINotificationService.show({
+          uiNotificationService.show({
             title: 'Crosshairs',
             message:
               'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',

@@ -23,7 +23,7 @@ export default function PanelMeasurementTable({
   const {
     measurementService,
     uiDialogService,
-    UINotificationService,
+    uiNotificationService,
     displaySetService,
   } = servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
@@ -84,7 +84,7 @@ export default function PanelMeasurementTable({
     );
 
     if (trackedMeasurements.length <= 0) {
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'No Measurements',
         message: 'No Measurements are added to the current Study.',
         type: 'info',

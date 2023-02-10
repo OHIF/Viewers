@@ -39,7 +39,7 @@ export default function toggleMPRHangingProtocol({
   getToolGroup,
 }) {
   const {
-    UINotificationService,
+    uiNotificationService,
     hangingProtocolService,
     ViewportGridService,
     toolbarService,
@@ -59,7 +59,7 @@ export default function toggleMPRHangingProtocol({
     viewports[activeViewportIndex].displaySetInstanceUIDs;
 
   const errorCallback = error => {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
         'Cannot create MPR for this DisplaySet since it is not reconstructable.',
@@ -111,7 +111,7 @@ export default function toggleMPRHangingProtocol({
   }
 
   const restoreErrorCallback = error => {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
         'Something went wrong while trying to restore the previous layout.',

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { HangingProtocolService, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
@@ -26,8 +26,8 @@ function PanelStudyBrowserTracking({
     measurementService,
     displaySetService,
     uiDialogService,
-    HangingProtocolService,
-    UINotificationService,
+    hangingProtocolService,
+    uiNotificationService,
   } = servicesManager.services;
 
   // Normally you nest the components so the tree isn't so deep, and the data
@@ -55,13 +55,13 @@ function PanelStudyBrowserTracking({
     let updatedViewports = [];
     const viewportIndex = activeViewportIndex;
     try {
-      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportIndex,
         displaySetInstanceUID
       );
     } catch (error) {
       console.warn(error);
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message:
           'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
@@ -186,7 +186,7 @@ function PanelStudyBrowserTracking({
       dataSource,
       displaySetService,
       uiDialogService,
-      UINotificationService
+      uiNotificationService
     );
 
     setDisplaySets(mappedDisplaySets);
@@ -249,7 +249,7 @@ function PanelStudyBrowserTracking({
           dataSource,
           displaySetService,
           uiDialogService,
-          UINotificationService
+          uiNotificationService
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -416,7 +416,7 @@ function _mapDisplaySets(
   dataSource,
   displaySetService,
   uiDialogService,
-  UINotificationService
+  uiNotificationService
 ) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
@@ -505,14 +505,14 @@ function _mapDisplaySets(
                       );
                       displaySetService.deleteDisplaySet(displaySetInstanceUID);
                       uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
+                      uiNotificationService.show({
                         title: 'Delete Report',
                         message: 'Report deleted successfully',
                         type: 'success',
                       });
                     } catch (error) {
                       uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
+                      uiNotificationService.show({
                         title: 'Delete Report',
                         message: 'Failed to delete report',
                         type: 'error',

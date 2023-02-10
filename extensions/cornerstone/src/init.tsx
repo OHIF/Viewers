@@ -67,7 +67,7 @@ export default async function init({
     displaySetService,
     uiDialogService,
     UIModalService,
-    UINotificationService,
+    uiNotificationService,
     cineService,
     cornerstoneViewportService,
     hangingProtocolService,
@@ -78,7 +78,7 @@ export default async function init({
   window.services = servicesManager.services;
 
   if (!window.crossOriginIsolated) {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
         'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',

@@ -5,14 +5,14 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
     measurementService,
     hangingProtocolService,
-    UINotificationService,
+    uiNotificationService,
     ViewportGridService,
     displaySetService,
   } = servicesManager.services;
 
   const actions = {
     displayNotification: ({ text, title, type }) => {
-      UINotificationService.show({
+      uiNotificationService.show({
         title: title,
         message: text,
         type: type,

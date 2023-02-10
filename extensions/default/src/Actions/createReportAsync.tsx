@@ -18,7 +18,7 @@ async function createReportAsync(
 ) {
   const {
     displaySetService,
-    UINotificationService,
+    uiNotificationService,
     uiDialogService,
   } = servicesManager.services;
   const loadingDialogId = uiDialogService.create({
@@ -48,7 +48,7 @@ async function createReportAsync(
 
     const displaySetInstanceUID = displaySetService.getMostRecentDisplaySet();
 
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Create Report',
       message: 'Measurements saved successfully',
       type: 'success',
@@ -56,7 +56,7 @@ async function createReportAsync(
 
     return [displaySetInstanceUID];
   } catch (error) {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Create Report',
       message: error.message || 'Failed to store measurements',
       type: 'error',

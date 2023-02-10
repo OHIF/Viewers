@@ -19,7 +19,7 @@ function PanelStudyBrowser({
   const {
     hangingProtocolService,
     displaySetService,
-    UINotificationService,
+    uiNotificationService,
   } = servicesManager.services;
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -48,7 +48,7 @@ function PanelStudyBrowser({
       );
     } catch (error) {
       console.warn(error);
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message:
           'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',

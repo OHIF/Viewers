@@ -21,7 +21,7 @@ const commandsModule = ({
 }) => {
   const {
     ViewportGridService,
-    UINotificationService,
+    uiNotificationService,
     displaySetService,
     hangingProtocolService,
     toolGroupService,
@@ -127,7 +127,7 @@ const commandsModule = ({
       });
 
       if (!ptDisplaySet) {
-        UINotificationService.error('No matching PT display set found');
+        uiNotificationService.error('No matching PT display set found');
         return;
       }
 
@@ -193,7 +193,7 @@ const commandsModule = ({
       );
 
       if (annotationUIDs.length === 0) {
-        UINotificationService.show({
+        uiNotificationService.show({
           title: 'Commands Module',
           message: 'No ROIThreshold Tool is Selected',
           type: 'error',
