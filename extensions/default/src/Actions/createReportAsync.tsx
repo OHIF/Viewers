@@ -19,9 +19,9 @@ async function createReportAsync(
   const {
     displaySetService,
     UINotificationService,
-    UIDialogService,
+    uiDialogService,
   } = servicesManager.services;
-  const loadingDialogId = UIDialogService.create({
+  const loadingDialogId = uiDialogService.create({
     showOverlay: true,
     isDraggable: false,
     centralize: true,
@@ -62,7 +62,7 @@ async function createReportAsync(
       type: 'error',
     });
   } finally {
-    UIDialogService.dismiss({ id: loadingDialogId });
+    uiDialogService.dismiss({ id: loadingDialogId });
   }
 }
 

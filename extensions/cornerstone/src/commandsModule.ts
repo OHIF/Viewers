@@ -25,7 +25,7 @@ const commandsModule = ({ servicesManager }) => {
     ToolGroupService,
     cineService,
     toolbarService,
-    UIDialogService,
+    uiDialogService,
     cornerstoneViewportService,
     hangingProtocolService,
     UINotificationService,
@@ -89,7 +89,7 @@ const commandsModule = ({ servicesManager }) => {
       ViewportGridService.setActiveViewportIndex(viewportIndex);
     },
     arrowTextCallback: ({ callback, data }) => {
-      callInputDialog(UIDialogService, data, callback);
+      callInputDialog(uiDialogService, data, callback);
     },
     toggleCine: () => {
       const { viewports } = ViewportGridService.getState();

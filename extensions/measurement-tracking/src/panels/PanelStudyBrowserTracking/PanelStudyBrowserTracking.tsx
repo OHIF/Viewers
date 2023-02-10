@@ -25,7 +25,7 @@ function PanelStudyBrowserTracking({
   const {
     measurementService,
     displaySetService,
-    UIDialogService,
+    uiDialogService,
     HangingProtocolService,
     UINotificationService,
   } = servicesManager.services;
@@ -185,7 +185,7 @@ function PanelStudyBrowserTracking({
       isSingleViewport,
       dataSource,
       displaySetService,
-      UIDialogService,
+      uiDialogService,
       UINotificationService
     );
 
@@ -248,7 +248,7 @@ function PanelStudyBrowserTracking({
           isSingleViewport,
           dataSource,
           displaySetService,
-          UIDialogService,
+          uiDialogService,
           UINotificationService
         );
 
@@ -415,7 +415,7 @@ function _mapDisplaySets(
   isSingleViewport,
   dataSource,
   displaySetService,
-  UIDialogService,
+  uiDialogService,
   UINotificationService
 ) {
   const thumbnailDisplaySets = [];
@@ -466,7 +466,7 @@ function _mapDisplaySets(
       if (dataSource.reject && dataSource.reject.series) {
         thumbnailProps.canReject = true;
         thumbnailProps.onReject = () => {
-          UIDialogService.create({
+          uiDialogService.create({
             id: 'ds-reject-sr',
             centralize: true,
             isDraggable: false,
@@ -489,7 +489,7 @@ function _mapDisplaySets(
                   classes: ['reject-yes-button'],
                 },
               ],
-              onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
+              onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
               onShow: () => {
                 const yesButton = document.querySelector('.reject-yes-button');
 
@@ -504,14 +504,14 @@ function _mapDisplaySets(
                         ds.SeriesInstanceUID
                       );
                       displaySetService.deleteDisplaySet(displaySetInstanceUID);
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
                       UINotificationService.show({
                         title: 'Delete Report',
                         message: 'Report deleted successfully',
                         type: 'success',
                       });
                     } catch (error) {
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
                       UINotificationService.show({
                         title: 'Delete Report',
                         message: 'Failed to delete report',
@@ -520,7 +520,7 @@ function _mapDisplaySets(
                     }
                     break;
                   case 'cancel':
-                    UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                    uiDialogService.dismiss({ id: 'ds-reject-sr' });
                     break;
                 }
               },

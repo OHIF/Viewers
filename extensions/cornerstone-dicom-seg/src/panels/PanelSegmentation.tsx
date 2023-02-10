@@ -12,7 +12,7 @@ export default function PanelSegmentation({
 }) {
   const {
     segmentationService,
-    UIDialogService,
+    uiDialogService,
     ViewportGridService,
     ToolGroupService,
     cornerstoneViewportService,
@@ -118,7 +118,7 @@ export default function PanelSegmentation({
     const segment = segmentation.segments[segmentIndex];
     const { label } = segment;
 
-    callInputDialog(UIDialogService, label, (label, actionId) => {
+    callInputDialog(uiDialogService, label, (label, actionId) => {
       if (label === '') {
         return;
       }
@@ -135,7 +135,7 @@ export default function PanelSegmentation({
     const segmentation = segmentationService.getSegmentation(segmentationId);
     const { label } = segmentation;
 
-    callInputDialog(UIDialogService, label, (label, actionId) => {
+    callInputDialog(uiDialogService, label, (label, actionId) => {
       if (label === '') {
         return;
       }

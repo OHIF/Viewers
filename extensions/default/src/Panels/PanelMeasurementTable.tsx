@@ -22,7 +22,7 @@ export default function PanelMeasurementTable({
   const { activeViewportIndex, viewports } = viewportGrid;
   const {
     measurementService,
-    UIDialogService,
+    uiDialogService,
     UINotificationService,
     displaySetService,
   } = servicesManager.services;
@@ -93,7 +93,7 @@ export default function PanelMeasurementTable({
       return;
     }
 
-    const promptResult = await createReportDialogPrompt(UIDialogService, {
+    const promptResult = await createReportDialogPrompt(uiDialogService, {
       extensionManager,
     });
 
@@ -148,10 +148,10 @@ export default function PanelMeasurementTable({
           );
         }
       }
-      UIDialogService.dismiss({ id: 'enter-annotation' });
+      uiDialogService.dismiss({ id: 'enter-annotation' });
     };
 
-    UIDialogService.create({
+    uiDialogService.create({
       id: 'enter-annotation',
       centralize: true,
       isDraggable: false,

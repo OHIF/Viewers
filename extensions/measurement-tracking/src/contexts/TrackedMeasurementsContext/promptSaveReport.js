@@ -9,7 +9,7 @@ function promptSaveReport(
   evt
 ) {
   const {
-    UIDialogService,
+    uiDialogService,
     measurementService,
     displaySetService,
   } = servicesManager.services;
@@ -26,8 +26,8 @@ function promptSaveReport(
   let displaySetInstanceUIDs;
 
   return new Promise(async function(resolve, reject) {
-    // TODO: Fallback if (UIDialogService) {
-    const promptResult = await createReportDialogPrompt(UIDialogService);
+    // TODO: Fallback if (uiDialogService) {
+    const promptResult = await createReportDialogPrompt(uiDialogService);
 
     if (promptResult.action === RESPONSE.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();

@@ -2,7 +2,7 @@ import React from 'react';
 import { Input, Dialog } from '@ohif/ui';
 
 function segmentationItemEditHandler({ id, servicesManager }) {
-  const { segmentationService, UIDialogService } = servicesManager.services;
+  const { segmentationService, uiDialogService } = servicesManager.services;
 
   const segmentation = segmentationService.getSegmentation(id);
 
@@ -18,10 +18,10 @@ function segmentationItemEditHandler({ id, servicesManager }) {
         );
       }
     }
-    UIDialogService.dismiss({ id: 'enter-annotation' });
+    uiDialogService.dismiss({ id: 'enter-annotation' });
   };
 
-  UIDialogService.create({
+  uiDialogService.create({
     id: 'enter-annotation',
     centralize: true,
     isDraggable: false,
