@@ -744,37 +744,6 @@ class SegmentationService {
     }
 
     const defaultScheme = this._getDefaultSegmentationScheme();
-    const geometryId = `${rtDisplaySet.displaySetInstanceUID}-contour`;
-
-    const segmentation: Segmentation = {
-      ...defaultScheme,
-      id: segmentationId,
-      displaySetInstanceUID: rtDisplaySet.displaySetInstanceUID,
-      type: representationType,
-      representationData: {
-        [CONTOUR]: {
-          geometryId,
-        },
-      },
-    };
-
-    const cachedSegmentation = this.getSegmentation(segmentationId);
-
-    if (cachedSegmentation) {
-      // if the labelmap with the same segmentationId already exists, we can
-      // just assume that the segmentation is already created and move on with
-      // updating the state
-      return this.addOrUpdateSegmentation(
-        Object.assign(segmentation, cachedSegmentation),
-        suppressEvents
-      );
-    }
-
-    if (!structureSet.ROIContours || !structureSet.ROIContours.length) {
-      throw new Error(
-        'The structureSet does not contain any ROIContours, please make sure that the structureSet is loaded first.'
-      );
-    }
 
     // Todo: make this readable
     const rtStructData = structureSet.ROIContours.reduce((acc, ROIContour) => {
@@ -802,30 +771,56 @@ class SegmentationService {
       return acc;
     }, []);
 
-    debugger;
-    const contours = await geometryLoader.createAndCacheGeometry(
-      `${rtDisplaySet.displaySetInstanceUID}-contour`,
-      {
-        data: rtStructData,
-        type: csEnums.GeometryType.CONTOUR,
-      }
-    );
+    const geometryIds = rtStructData.map(struct => struct.id);
 
-    if (!contours || !contours.data || !contours.data.length) {
-      throw new Error(
-        'Failed to create the contours from the RT displaySet, please make sure that the structureSet is loaded first.'
+    const segmentation: Segmentation = {
+      ...defaultScheme,
+      id: segmentationId,
+      displaySetInstanceUID: rtDisplaySet.displaySetInstanceUID,
+      type: representationType,
+      representationData: {
+        [CONTOUR]: {
+          geometryIds,
+        },
+      },
+    };
+
+    const cachedSegmentation = this.getSegmentation(segmentationId);
+
+    if (cachedSegmentation) {
+      // if the labelmap with the same segmentationId already exists, we can
+      // just assume that the segmentation is already created and move on with
+      // updating the state
+      return this.addOrUpdateSegmentation(
+        Object.assign(segmentation, cachedSegmentation),
+        suppressEvents
       );
     }
 
-    segmentation.segmentCount = contours.data.length;
+    if (!structureSet.ROIContours || !structureSet.ROIContours.length) {
+      throw new Error(
+        'The structureSet does not contain any ROIContours, please make sure that the structureSet is loaded first.'
+      );
+    }
 
-    const _initializeContour = (contours, i) => {
-      const contour = contours.data[i];
+    const _initializeContour = async i => {
+      const contourSet = await geometryLoader.createAndCacheGeometry(
+        geometryIds[i],
+        {
+          geometryData: {
+            data: rtStructData[i].data,
+            frameOfReferenceUID: structureSet.frameOfReferenceUID,
+            id: rtStructData[i].id,
+            color: rtStructData[i].color,
+          },
+          type: csEnums.GeometryType.CONTOUR,
+        }
+      );
 
       segmentation.segments[i] = {
-        label: contour.geometryId,
+        label: contourSet.id,
         segmentIndex: i,
-        color: contour.color,
+        color: contourSet.data.color,
         opacity: 255,
         isVisible: true,
         isLocked: false,
@@ -839,10 +834,10 @@ class SegmentationService {
       });
     };
 
-    for (let i = 0; i < contours.data.length; i++) {
+    for (let i = 0; i < rtStructData.length; i++) {
       const promise = new Promise<void>((resolve, reject) => {
         setTimeout(() => {
-          _initializeContour(contours, i);
+          _initializeContour(i);
           resolve();
         }, 0);
       });
@@ -850,6 +845,7 @@ class SegmentationService {
       await promise;
     }
 
+    segmentation.segmentCount = rtStructData.length;
     rtDisplaySet.isLoaded = true;
 
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
