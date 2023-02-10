@@ -21,7 +21,7 @@ export default function PanelMeasurementTable({
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportIndex, viewports } = viewportGrid;
   const {
-    MeasurementService,
+    measurementService,
     UIDialogService,
     UINotificationService,
     DisplaySetService,
@@ -34,21 +34,21 @@ export default function PanelMeasurementTable({
       100
     );
     // ~~ Initial
-    setDisplayMeasurements(_getMappedMeasurements(MeasurementService));
+    setDisplayMeasurements(_getMappedMeasurements(measurementService));
 
     // ~~ Subscription
-    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
-    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
-    const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
-    const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
-    const cleared = MeasurementService.EVENTS.MEASUREMENTS_CLEARED;
+    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
+    const updated = measurementService.EVENTS.MEASUREMENT_UPDATED;
+    const removed = measurementService.EVENTS.MEASUREMENT_REMOVED;
+    const cleared = measurementService.EVENTS.MEASUREMENTS_CLEARED;
     const subscriptions = [];
 
     [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
-        MeasurementService.subscribe(evt, () => {
+        measurementService.subscribe(evt, () => {
           debouncedSetDisplayMeasurements(
-            _getMappedMeasurements(MeasurementService)
+            _getMappedMeasurements(measurementService)
           );
         }).unsubscribe
       );
@@ -63,19 +63,19 @@ export default function PanelMeasurementTable({
   }, []);
 
   async function exportReport() {
-    const measurements = MeasurementService.getMeasurements();
+    const measurements = measurementService.getMeasurements();
 
-    downloadCSVReport(measurements, MeasurementService);
+    downloadCSVReport(measurements, measurementService);
   }
 
   async function clearMeasurements() {
-    MeasurementService.clearMeasurements();
+    measurementService.clearMeasurements();
   }
 
   async function createReport() {
     // filter measurements that are added to the active study
     const activeViewport = viewports[activeViewportIndex];
-    const measurements = MeasurementService.getMeasurements();
+    const measurements = measurementService.getMeasurements();
     const displaySet = DisplaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]
     );
@@ -125,20 +125,20 @@ export default function PanelMeasurementTable({
   }
 
   const jumpToImage = ({ uid, isActive }) => {
-    MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
+    measurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
 
     onMeasurementItemClickHandler({ uid, isActive });
   };
 
   const onMeasurementItemEditHandler = ({ uid, isActive }) => {
-    const measurement = MeasurementService.getMeasurement(uid);
+    const measurement = measurementService.getMeasurement(uid);
     //Todo: why we are jumping to image?
     // jumpToImage({ id, isActive });
 
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
-          MeasurementService.update(
+          measurementService.update(
             uid,
             {
               ...measurement,
@@ -234,7 +234,7 @@ export default function PanelMeasurementTable({
 PanelMeasurementTable.propTypes = {
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
-      MeasurementService: PropTypes.shape({
+      measurementService: PropTypes.shape({
         getMeasurements: PropTypes.func.isRequired,
         subscribe: PropTypes.func.isRequired,
         EVENTS: PropTypes.object.isRequired,
@@ -244,11 +244,11 @@ PanelMeasurementTable.propTypes = {
   }).isRequired,
 };
 
-function _getMappedMeasurements(MeasurementService) {
-  const measurements = MeasurementService.getMeasurements();
+function _getMappedMeasurements(measurementService) {
+  const measurements = measurementService.getMeasurements();
 
   const mappedMeasurements = measurements.map((m, index) =>
-    _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
+    _mapMeasurementToDisplay(m, index, measurementService.VALUE_TYPES)
   );
 
   return mappedMeasurements;

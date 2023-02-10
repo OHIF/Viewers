@@ -63,14 +63,14 @@ export default async function init({
 
   const {
     UserAuthenticationService,
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     UIDialogService,
     UIModalService,
     UINotificationService,
     cineService,
     CornerstoneViewportService,
-    HangingProtocolService,
+    hangingProtocolService,
     ToolGroupService,
     ViewportGridService,
   } = servicesManager.services;
@@ -87,7 +87,7 @@ export default async function init({
   }
 
   if (cornerstone.getShouldUseCPURendering()) {
-    _showCPURenderingModal(UIModalService, HangingProtocolService);
+    _showCPURenderingModal(UIModalService, hangingProtocolService);
   }
 
   const labelmapRepresentation =
@@ -110,15 +110,15 @@ export default async function init({
     cornerstoneStreamingImageVolumeLoader
   );
 
-  HangingProtocolService.registerImageLoadStrategy(
+  hangingProtocolService.registerImageLoadStrategy(
     'interleaveCenter',
     interleaveCenterLoader
   );
-  HangingProtocolService.registerImageLoadStrategy(
+  hangingProtocolService.registerImageLoadStrategy(
     'interleaveTopToBottom',
     interleaveTopToBottom
   );
-  HangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
+  hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
@@ -132,7 +132,7 @@ export default async function init({
 
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     CornerstoneViewportService
   );
@@ -205,7 +205,7 @@ export default async function init({
         onSetLabel: item => {
           const { annotationUID } = item.value;
 
-          const measurement = MeasurementService.getMeasurement(annotationUID);
+          const measurement = measurementService.getMeasurement(annotationUID);
 
           callInputDialog(
             UIDialogService,
@@ -219,7 +219,7 @@ export default async function init({
                 label,
               });
 
-              MeasurementService.update(
+              measurementService.update(
                 updatedMeasurement.uid,
                 updatedMeasurement,
                 true
@@ -246,8 +246,8 @@ export default async function init({
   };
 
   // When a custom image load is performed, update the relevant viewports
-  HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
+  hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
@@ -403,7 +403,7 @@ function CPUModal() {
   );
 }
 
-function _showCPURenderingModal(UIModalService, HangingProtocolService) {
+function _showCPURenderingModal(UIModalService, hangingProtocolService) {
   const callback = progress => {
     if (progress === 100) {
       UIModalService.show({
@@ -415,8 +415,8 @@ function _showCPURenderingModal(UIModalService, HangingProtocolService) {
     }
   };
 
-  const { unsubscribe } = HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
+  const { unsubscribe } = hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
     ({ progress }) => {
       const done = callback(progress);
 

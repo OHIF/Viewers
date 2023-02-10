@@ -1,7 +1,7 @@
 import RectangleROIStartEndThreshold from './RectangleROIStartEndThreshold';
 
 const measurementServiceMappingsFactory = (
-  MeasurementService,
+  measurementService,
   DisplaySetService,
   CornerstoneViewportService
 ) => {
@@ -16,7 +16,7 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.ROI_THRESHOLD_MANUAL,
+          valueType: measurementService.VALUE_TYPES.ROI_THRESHOLD_MANUAL,
         },
       ],
     },

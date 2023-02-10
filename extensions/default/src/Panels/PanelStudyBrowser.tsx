@@ -17,7 +17,7 @@ function PanelStudyBrowser({
   dataSource,
 }) {
   const {
-    HangingProtocolService,
+    hangingProtocolService,
     DisplaySetService,
     UINotificationService,
   } = servicesManager.services;
@@ -42,7 +42,7 @@ function PanelStudyBrowser({
     let updatedViewports = [];
     const viewportIndex = activeViewportIndex;
     try {
-      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportIndex,
         displaySetInstanceUID
       );

@@ -23,7 +23,7 @@ function PanelStudyBrowserTracking({
   dataSource,
 }) {
   const {
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     UIDialogService,
     HangingProtocolService,
@@ -79,13 +79,13 @@ function PanelStudyBrowserTracking({
   const isSingleViewport = numCols === 1 && numRows === 1;
 
   useEffect(() => {
-    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
-    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
+    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
     const subscriptions = [];
 
     [added, addedRaw].forEach(evt => {
       subscriptions.push(
-        MeasurementService.subscribe(evt, ({ source, measurement }) => {
+        measurementService.subscribe(evt, ({ source, measurement }) => {
           const {
             referenceSeriesUID: SeriesInstanceUID,
             referenceStudyUID: StudyInstanceUID,
@@ -106,7 +106,7 @@ function PanelStudyBrowserTracking({
         unsub();
       });
     };
-  }, [MeasurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
+  }, [measurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
 
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
 

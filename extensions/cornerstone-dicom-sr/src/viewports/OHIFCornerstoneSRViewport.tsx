@@ -38,7 +38,7 @@ function OHIFCornerstoneSRViewport(props) {
   const {
     DisplaySetService,
     CornerstoneViewportService,
-    MeasurementService,
+    measurementService,
   } = servicesManager.services;
 
   // SR viewport will always have a single display set
@@ -84,7 +84,7 @@ function OHIFCornerstoneSRViewport(props) {
     // if no panels from measurement-tracking extension is used, this code will run
     trackedMeasurements = null;
     sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
-      MeasurementService.clearMeasurements();
+      measurementService.clearMeasurements();
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
         { servicesManager, extensionManager },
         displaySetInstanceUID
@@ -166,7 +166,7 @@ function OHIFCornerstoneSRViewport(props) {
 
           // it means that we have a new referenced display set, and the
           // imageIdIndex will handle it by updating the viewport, but if they
-          // are the same we just need to use MeasurementService to jump to the
+          // are the same we just need to use measurementService to jump to the
           // new measurement
           const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
             viewportIndex

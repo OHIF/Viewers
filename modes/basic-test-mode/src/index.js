@@ -68,12 +68,12 @@ function modeFactory() {
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
       const {
-        MeasurementService,
+        measurementService,
         toolbarService,
         ToolGroupService,
       } = servicesManager.services;
 
-      MeasurementService.clearMeasurements();
+      measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, ToolGroupService, commandsManager);

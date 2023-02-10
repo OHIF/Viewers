@@ -27,7 +27,7 @@ const commandsModule = ({ servicesManager }) => {
     toolbarService,
     UIDialogService,
     CornerstoneViewportService,
-    HangingProtocolService,
+    hangingProtocolService,
     UINotificationService,
   } = (servicesManager as ServicesManager).services;
 
@@ -408,7 +408,7 @@ const commandsModule = ({ servicesManager }) => {
       ViewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
     setHangingProtocol: ({ protocolId }) => {
-      HangingProtocolService.setProtocol(protocolId);
+      hangingProtocolService.setProtocol(protocolId);
     },
     toggleMPR: ({ toggledState }) => {
       toggleMPRHangingProtocol({

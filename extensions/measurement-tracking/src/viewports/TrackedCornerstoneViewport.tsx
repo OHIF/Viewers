@@ -35,7 +35,7 @@ function TrackedCornerstoneViewport(props) {
   const { t } = useTranslation('TrackedViewport');
 
   const {
-    MeasurementService,
+    measurementService,
     CornerstoneViewportService,
   } = servicesManager.services;
 
@@ -177,7 +177,7 @@ function TrackedCornerstoneViewport(props) {
 
     setTrackedMeasurementUID(newTrackedMeasurementUID);
 
-    MeasurementService.jumpToMeasurement(
+    measurementService.jumpToMeasurement(
       viewportIndex,
       newTrackedMeasurementUID
     );
@@ -281,8 +281,8 @@ function _getNextMeasurementUID(
   trackedMeasurementId,
   trackedMeasurements
 ) {
-  const { MeasurementService } = servicesManager.services;
-  const measurements = MeasurementService.getMeasurements();
+  const { measurementService } = servicesManager.services;
+  const measurements = measurementService.getMeasurements();
 
   const { trackedSeries } = trackedMeasurements.context;
 

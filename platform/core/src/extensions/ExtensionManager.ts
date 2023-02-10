@@ -347,11 +347,11 @@ export default class ExtensionManager {
   };
 
   _initHangingProtocolsModule = (extensionModule, extensionId) => {
-    const { HangingProtocolService } = this._servicesManager.services;
+    const { hangingProtocolService } = this._servicesManager.services;
     extensionModule.forEach(({ id, protocol }) => {
       if (protocol) {
         // Only auto-register if protocol specified, otherwise let mode register
-        HangingProtocolService.addProtocol(id, protocol);
+        hangingProtocolService.addProtocol(id, protocol);
       }
     });
   };

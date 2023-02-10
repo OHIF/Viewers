@@ -44,7 +44,7 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolbarService,
         ToolGroupService,
-        HangingProtocolService,
+        hangingProtocolService,
         DisplaySetService,
       } = servicesManager.services;
 
@@ -99,7 +99,7 @@ function modeFactory({ modeConfiguration }) {
           // when slabThickness is modified
           const {
             displaySetMatchDetails,
-          } = HangingProtocolService.getMatchDetails();
+          } = hangingProtocolService.getMatchDetails();
 
           setCrosshairsConfiguration(
             displaySetMatchDetails,

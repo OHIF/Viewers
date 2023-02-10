@@ -3,8 +3,8 @@ import React from 'react';
 
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
-    MeasurementService,
-    HangingProtocolService,
+    measurementService,
+    hangingProtocolService,
     UINotificationService,
     ViewportGridService,
     DisplaySetService,
@@ -19,14 +19,14 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       });
     },
     clearMeasurements: () => {
-      MeasurementService.clear();
+      measurementService.clear();
     },
     nextStage: () => {
       // next stage in hanging protocols
-      HangingProtocolService.nextProtocolStage();
+      hangingProtocolService.nextProtocolStage();
     },
     previousStage: () => {
-      HangingProtocolService.previousProtocolStage();
+      hangingProtocolService.previousProtocolStage();
     },
     openDICOMTagViewer() {
       const { activeViewportIndex, viewports } = ViewportGridService.getState();

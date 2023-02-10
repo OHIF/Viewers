@@ -412,7 +412,7 @@ class CornerstoneViewportService implements IViewportService {
     // (This call may or may not create sub-requests for series metadata)
     const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
-    const { HangingProtocolService } = this.servicesManager.services;
+    const { hangingProtocolService } = this.servicesManager.services;
 
     const volumeToLoad = [];
     const displaySetInstanceUIDs = [];
@@ -449,11 +449,11 @@ class CornerstoneViewportService implements IViewportService {
     this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
 
     if (
-      HangingProtocolService.hasCustomImageLoadStrategy() &&
-      !HangingProtocolService.customImageLoadPerformed
+      hangingProtocolService.hasCustomImageLoadStrategy() &&
+      !hangingProtocolService.customImageLoadPerformed
     ) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      return HangingProtocolService.runImageLoadStrategy({
+      return hangingProtocolService.runImageLoadStrategy({
         viewportId: viewport.id,
         volumeInputArray,
       });

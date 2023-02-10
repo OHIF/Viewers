@@ -135,7 +135,7 @@ function modeFactory({ modeConfiguration }) {
     onModeExit: ({ servicesManager }) => {
       const {
         ToolGroupService,
-        MeasurementService,
+        measurementService,
         toolbarService,
       } = servicesManager.services;
 

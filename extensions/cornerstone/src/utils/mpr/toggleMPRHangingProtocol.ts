@@ -40,7 +40,7 @@ export default function toggleMPRHangingProtocol({
 }) {
   const {
     UINotificationService,
-    HangingProtocolService,
+    hangingProtocolService,
     ViewportGridService,
     toolbarService,
   } = servicesManager.services;
@@ -69,7 +69,7 @@ export default function toggleMPRHangingProtocol({
   };
 
   // What is the current active protocol and stage number to restore later
-  const { protocol, stage } = HangingProtocolService.getActiveProtocol();
+  const { protocol, stage } = hangingProtocolService.getActiveProtocol();
 
   if (toggledState) {
     resetCachedState();
@@ -102,7 +102,7 @@ export default function toggleMPRHangingProtocol({
       getToolGroup
     );
 
-    HangingProtocolService.setProtocol(
+    hangingProtocolService.setProtocol(
       MPR_TOOLGROUP_ID,
       matchDetails,
       errorCallback
@@ -130,7 +130,7 @@ export default function toggleMPRHangingProtocol({
   // cached protocol and stage. However, for the default protocol, we need
   // to also apply the layout type and properties.
   if (cachedState.protocol.id !== 'default') {
-    HangingProtocolService.setProtocol(
+    hangingProtocolService.setProtocol(
       cachedState.protocol.id,
       viewportMatchDetails,
       restoreErrorCallback
@@ -139,7 +139,7 @@ export default function toggleMPRHangingProtocol({
     return;
   }
 
-  HangingProtocolService.setProtocol(
+  hangingProtocolService.setProtocol(
     'default',
     viewportMatchDetails,
     restoreErrorCallback
@@ -217,11 +217,11 @@ function _disableCrosshairs(toolGroupIds, getToolGroup) {
 
 function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
   // here we need to use the viewports and try to map it into the
-  // viewportMatchDetails and displaySetMatch that HangingProtocolService
+  // viewportMatchDetails and displaySetMatch that hangingProtocolService
   // expects
   const {
     ViewportGridService,
-    HangingProtocolService,
+    hangingProtocolService,
     ToolGroupService,
   } = servicesManager.services;
 
@@ -261,7 +261,7 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
       }
     });
   } else {
-    ({ viewportMatchDetails } = HangingProtocolService.getMatchDetails());
+    ({ viewportMatchDetails } = hangingProtocolService.getMatchDetails());
   }
 
   // get the toolGroup state for viewports

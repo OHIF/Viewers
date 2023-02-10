@@ -1,4 +1,4 @@
-import HangingProtocolServiceClass from './HangingProtocolService';
+import HangingProtocolService from './HangingProtocolService';
 
 const testProtocol = {
   id: 'test',
@@ -149,7 +149,10 @@ describe('HangingProtocolService', () => {
       },
     },
   };
-  const hps = new HangingProtocolServiceClass(commandsManager, servicesManager);
+  const hangingProtocolService = new HangingProtocolService(
+    commandsManager,
+    servicesManager
+  );
   let initialScaling;
 
   afterEach(() => {
@@ -158,36 +161,42 @@ describe('HangingProtocolService', () => {
 
   describe('with a static protocol', () => {
     beforeAll(() => {
-      hps.addProtocol(testProtocol.id, testProtocol);
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocol);
     });
 
     it('has one protocol', () => {
-      expect(hps.getProtocols().length).toBe(1);
+      expect(hangingProtocolService.getProtocols().length).toBe(1);
     });
 
     describe('run', () => {
       it('matches best image match', () => {
-        checkHpsBestMatch(hps);
+        checkHpsBestMatch(hangingProtocolService);
       });
     });
   });
 
   describe('with protocol generator', () => {
     beforeAll(() => {
-      hps.addProtocol(testProtocol.id, testProtocolGenerator);
+      hangingProtocolService.addProtocol(
+        testProtocol.id,
+        testProtocolGenerator
+      );
     });
 
     it('has one protocol', () => {
-      expect(hps.getProtocols().length).toBe(1);
+      expect(hangingProtocolService.getProtocols().length).toBe(1);
     });
 
     describe('run', () => {
       it('matches best image match', () => {
-        checkHpsBestMatch(hps);
+        checkHpsBestMatch(hangingProtocolService);
       });
 
       it('uses services manager', () => {
-        hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
+        hangingProtocolService.run({
+          studies: [studyMatch],
+          displaySets: studyMatchDisplaySets,
+        });
         expect(mockedFunction).toHaveBeenCalledTimes(1);
       });
     });

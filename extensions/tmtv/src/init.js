@@ -16,7 +16,7 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
  */
 export default function init({ servicesManager, extensionManager }) {
   const {
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     CornerstoneViewportService,
   } = servicesManager.services;
@@ -24,17 +24,17 @@ export default function init({ servicesManager, extensionManager }) {
   addTool(RectangleROIStartEndThresholdTool);
 
   const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     CornerstoneViewportService
   );
 
-  const csTools3DVer1MeasurementSource = MeasurementService.getSource(
+  const csTools3DVer1MeasurementSource = measurementService.getSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
-  MeasurementService.addMapping(
+  measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'RectangleROIStartEndThreshold',
     RectangleROIStartEndThreshold.matchingCriteria,

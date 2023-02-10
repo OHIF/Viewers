@@ -116,7 +116,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const elementRef = useRef();
 
   const {
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     toolbarService,
     ToolGroupService,
@@ -311,7 +311,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
    */
   useEffect(() => {
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
-      MeasurementService,
+      measurementService,
       DisplaySetService,
       elementRef,
       viewportIndex,
@@ -321,7 +321,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     );
 
     _checkForCachedJumpToMeasurementEvents(
-      MeasurementService,
+      measurementService,
       DisplaySetService,
       elementRef,
       viewportIndex,
@@ -365,7 +365,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 }, areEqual);
 
 function _subscribeToJumpToMeasurementEvents(
-  MeasurementService,
+  measurementService,
   DisplaySetService,
   elementRef,
   viewportIndex,
@@ -376,8 +376,8 @@ function _subscribeToJumpToMeasurementEvents(
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
-  const { unsubscribe } = MeasurementService.subscribe(
-    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
+  const { unsubscribe } = measurementService.subscribe(
+    measurementService.EVENTS.JUMP_TO_MEASUREMENT,
     ({ measurement }) => {
       if (!measurement) return;
 
@@ -387,7 +387,7 @@ function _subscribeToJumpToMeasurementEvents(
           measurement,
           elementRef,
           viewportIndex,
-          MeasurementService,
+          measurementService,
           DisplaySetService,
           ViewportGridService,
           CornerstoneViewportService
@@ -401,7 +401,7 @@ function _subscribeToJumpToMeasurementEvents(
 
 // Check if there is a queued jumpToMeasurement event
 function _checkForCachedJumpToMeasurementEvents(
-  MeasurementService,
+  measurementService,
   DisplaySetService,
   elementRef,
   viewportIndex,
@@ -413,13 +413,13 @@ function _checkForCachedJumpToMeasurementEvents(
     displaySet => displaySet.displaySetInstanceUID
   );
 
-  const measurementIdToJumpTo = MeasurementService.getJumpToMeasurement(
+  const measurementIdToJumpTo = measurementService.getJumpToMeasurement(
     viewportIndex
   );
 
   if (measurementIdToJumpTo && elementRef) {
     // Jump to measurement if the measurement exists
-    const measurement = MeasurementService.getMeasurement(
+    const measurement = measurementService.getMeasurement(
       measurementIdToJumpTo
     );
 
@@ -428,7 +428,7 @@ function _checkForCachedJumpToMeasurementEvents(
         measurement,
         elementRef,
         viewportIndex,
-        MeasurementService,
+        measurementService,
         DisplaySetService,
         ViewportGridService,
         CornerstoneViewportService
@@ -441,7 +441,7 @@ function _jumpToMeasurement(
   measurement,
   targetElementRef,
   viewportIndex,
-  MeasurementService,
+  measurementService,
   DisplaySetService,
   ViewportGridService,
   CornerstoneViewportService
@@ -520,7 +520,7 @@ function _jumpToMeasurement(
 
     cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
     // Jump to measurement consumed, remove.
-    MeasurementService.removeJumpToMeasurement(viewportIndex);
+    measurementService.removeJumpToMeasurement(viewportIndex);
   }
 }
 

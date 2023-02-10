@@ -119,7 +119,7 @@ function _getDisplaySetsFromSeries(
 }
 
 function _load(displaySet, servicesManager, extensionManager) {
-  const { DisplaySetService, MeasurementService } = servicesManager.services;
+  const { DisplaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
 
@@ -128,7 +128,7 @@ function _load(displaySet, servicesManager, extensionManager) {
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   displaySet.measurements = _getMeasurements(ContentSequence);
 
-  const mappings = MeasurementService.getSourceMappings(
+  const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );

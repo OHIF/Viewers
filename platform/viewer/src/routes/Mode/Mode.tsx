@@ -24,7 +24,7 @@ function defaultRouteInit(
 ) {
   const {
     DisplaySetService,
-    HangingProtocolService,
+    hangingProtocolService,
   } = servicesManager.services;
 
   const unsubscriptions = [];
@@ -84,7 +84,7 @@ function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    HangingProtocolService.run(
+    hangingProtocolService.run(
       { studies, activeStudy, displaySets },
       hangingProtocol
     );
@@ -120,7 +120,7 @@ export default function ModeRoute({
 
   const {
     DisplaySetService,
-    HangingProtocolService: hangingProtocolService,
+    hangingProtocolService,
   } = servicesManager.services;
 
   const { extensions, sopClassHandlers, hotkeys, hangingProtocol } = mode;

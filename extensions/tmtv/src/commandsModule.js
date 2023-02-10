@@ -23,7 +23,7 @@ const commandsModule = ({
     ViewportGridService,
     UINotificationService,
     DisplaySetService,
-    HangingProtocolService,
+    hangingProtocolService,
     ToolGroupService,
     CornerstoneViewportService,
     SegmentationService,
@@ -43,7 +43,7 @@ const commandsModule = ({
   }
 
   function _getMatchedViewportsToolGroupIds() {
-    const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
+    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
     viewportMatchDetails.forEach((value, key) => {
       const { viewportOptions } = value;
@@ -121,7 +121,7 @@ const commandsModule = ({
     createNewLabelmapFromPT: async () => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
-      const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
+      const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
         viewportMatchDetails,
       });
@@ -526,7 +526,7 @@ const commandsModule = ({
     },
     setFusionPTColormap: ({ toolGroupId, colormap }) => {
       const toolGroup = ToolGroupService.getToolGroup(toolGroupId);
-      const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
+      const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
 
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
         viewportMatchDetails,

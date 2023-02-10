@@ -10,7 +10,7 @@ function promptSaveReport(
 ) {
   const {
     UIDialogService,
-    MeasurementService,
+    measurementService,
     DisplaySetService,
   } = servicesManager.services;
   const viewportIndex =
@@ -32,7 +32,7 @@ function promptSaveReport(
     if (promptResult.action === RESPONSE.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
-      const measurements = MeasurementService.getMeasurements();
+      const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m =>
           trackedStudy === m.referenceStudyUID &&

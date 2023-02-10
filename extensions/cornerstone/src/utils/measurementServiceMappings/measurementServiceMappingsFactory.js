@@ -4,7 +4,7 @@ import EllipticalROI from './EllipticalROI';
 import ArrowAnnotate from './ArrowAnnotate';
 
 const measurementServiceMappingsFactory = (
-  MeasurementService,
+  measurementService,
   DisplaySetService,
   CornerstoneViewportService
 ) => {
@@ -23,7 +23,7 @@ const measurementServiceMappingsFactory = (
       RECTANGLE,
       BIDIRECTIONAL,
       POINT,
-    } = MeasurementService.VALUE_TYPES;
+    } = measurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attempted, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.
@@ -51,7 +51,7 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          valueType: measurementService.VALUE_TYPES.POLYLINE,
           points: 2,
         },
       ],
@@ -69,11 +69,11 @@ const measurementServiceMappingsFactory = (
         // TODO -> We should eventually do something like shortAxis + longAxis,
         // But its still a little unclear how these automatic interpretations will work.
         {
-          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          valueType: measurementService.VALUE_TYPES.POLYLINE,
           points: 2,
         },
         {
-          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          valueType: measurementService.VALUE_TYPES.POLYLINE,
           points: 2,
         },
       ],
@@ -89,7 +89,7 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.ELLIPSE,
+          valueType: measurementService.VALUE_TYPES.ELLIPSE,
         },
       ],
     },
@@ -104,7 +104,7 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.POINT,
+          valueType: measurementService.VALUE_TYPES.POINT,
           points: 1,
         },
       ],

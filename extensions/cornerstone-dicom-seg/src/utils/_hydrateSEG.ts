@@ -6,7 +6,7 @@ async function _hydrateSEGDisplaySet({
 }) {
   const {
     SegmentationService,
-    HangingProtocolService,
+    hangingProtocolService,
     ViewportGridService,
   } = servicesManager.services;
 
@@ -27,7 +27,7 @@ async function _hydrateSEGDisplaySet({
 
   const { viewports } = ViewportGridService.getState();
 
-  const updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+  const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
     viewportIndex,
     displaySetInstanceUID
   );

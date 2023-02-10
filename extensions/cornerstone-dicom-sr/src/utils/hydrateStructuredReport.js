@@ -20,14 +20,14 @@ export default function hydrateStructuredReport(
   displaySetInstanceUID
 ) {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const { MeasurementService, DisplaySetService } = servicesManager.services;
+  const { measurementService, DisplaySetService } = servicesManager.services;
 
   const displaySet = DisplaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 
   // TODO -> We should define a strict versioning somewhere.
-  const mappings = MeasurementService.getSourceMappings(
+  const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
@@ -166,7 +166,7 @@ export default function hydrateStructuredReport(
         },
       };
 
-      const source = MeasurementService.getSource(
+      const source = measurementService.getSource(
         CORNERSTONE_3D_TOOLS_SOURCE_NAME,
         CORNERSTONE_3D_TOOLS_SOURCE_VERSION
       );
@@ -176,7 +176,7 @@ export default function hydrateStructuredReport(
         m => m.annotationType === annotationType
       );
 
-      MeasurementService.addRawMeasurement(
+      measurementService.addRawMeasurement(
         source,
         annotationType,
         { annotation },

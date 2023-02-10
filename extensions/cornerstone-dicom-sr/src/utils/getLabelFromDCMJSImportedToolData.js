@@ -1,6 +1,6 @@
 /**
  * Extracts the label from the toolData imported from dcmjs. We need to do this
- * as dcmjs does not depeend on OHIF/the MeasurementService, it just produces data for cornestoneTools.
+ * as dcmjs does not depeend on OHIF/the measurementService, it just produces data for cornestoneTools.
  * This optional data is available for the consumer to process if they wish to.
  * @param {object} toolData The tooldata relating to the
  *

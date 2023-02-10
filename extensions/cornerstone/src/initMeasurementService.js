@@ -13,7 +13,7 @@ const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 const initMeasurementService = (
-  MeasurementService,
+  measurementService,
   DisplaySetService,
   CornerstoneViewportService
 ) => {
@@ -24,17 +24,17 @@ const initMeasurementService = (
     EllipticalROI,
     ArrowAnnotate,
   } = measurementServiceMappingsFactory(
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     CornerstoneViewportService
   );
-  const csTools3DVer1MeasurementSource = MeasurementService.createSource(
+  const csTools3DVer1MeasurementSource = measurementService.createSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
   /* Mappings */
-  MeasurementService.addMapping(
+  measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'Length',
     Length.matchingCriteria,
@@ -42,7 +42,7 @@ const initMeasurementService = (
     Length.toMeasurement
   );
 
-  MeasurementService.addMapping(
+  measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'Bidirectional',
     Bidirectional.matchingCriteria,
@@ -50,7 +50,7 @@ const initMeasurementService = (
     Bidirectional.toMeasurement
   );
 
-  MeasurementService.addMapping(
+  measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'EllipticalROI',
     EllipticalROI.matchingCriteria,
@@ -58,7 +58,7 @@ const initMeasurementService = (
     EllipticalROI.toMeasurement
   );
 
-  MeasurementService.addMapping(
+  measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'ArrowAnnotate',
     ArrowAnnotate.matchingCriteria,
@@ -70,17 +70,17 @@ const initMeasurementService = (
 };
 
 const connectToolsToMeasurementService = (
-  MeasurementService,
+  measurementService,
   DisplaySetService,
   CornerstoneViewportService
 ) => {
   const csTools3DVer1MeasurementSource = initMeasurementService(
-    MeasurementService,
+    measurementService,
     DisplaySetService,
     CornerstoneViewportService
   );
   connectMeasurementServiceToTools(
-    MeasurementService,
+    measurementService,
     CornerstoneViewportService,
     csTools3DVer1MeasurementSource
   );
@@ -113,7 +113,7 @@ const connectToolsToMeasurementService = (
       } = annotationModifiedEventDetail;
 
       // If the measurement hasn't been added, don't modify it
-      const measurement = MeasurementService.getMeasurement(annotationUID);
+      const measurement = measurementService.getMeasurement(annotationUID);
 
       if (!measurement) {
         return;
@@ -138,13 +138,13 @@ const connectToolsToMeasurementService = (
 
       if (removedSelectedAnnotationUIDs) {
         removedSelectedAnnotationUIDs.forEach(annotationUID =>
-          MeasurementService.setMeasurementSelected(annotationUID, false)
+          measurementService.setMeasurementSelected(annotationUID, false)
         );
       }
 
       if (addedSelectedAnnotationUIDs) {
         addedSelectedAnnotationUIDs.forEach(annotationUID =>
-          MeasurementService.setMeasurementSelected(annotationUID, true)
+          measurementService.setMeasurementSelected(annotationUID, true)
         );
       }
     } catch (error) {
@@ -166,7 +166,7 @@ const connectToolsToMeasurementService = (
           annotation: { annotationUID },
         } = annotationRemovedEventDetail;
 
-        const measurement = MeasurementService.getMeasurement(annotationUID);
+        const measurement = measurementService.getMeasurement(annotationUID);
 
         if (measurement) {
           console.log('~~ removeEvt', csToolsEvent);
@@ -198,7 +198,7 @@ const connectToolsToMeasurementService = (
 };
 
 const connectMeasurementServiceToTools = (
-  MeasurementService,
+  measurementService,
   CornerstoneViewportService,
   measurementSource
 ) => {
@@ -207,14 +207,14 @@ const connectMeasurementServiceToTools = (
     MEASUREMENTS_CLEARED,
     MEASUREMENT_UPDATED,
     RAW_MEASUREMENT_ADDED,
-  } = MeasurementService.EVENTS;
+  } = measurementService.EVENTS;
 
-  const csTools3DVer1MeasurementSource = MeasurementService.getSource(
+  const csTools3DVer1MeasurementSource = measurementService.getSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
-  MeasurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements }) => {
+  measurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements }) => {
     if (!Object.keys(measurements).length) {
       return;
     }
@@ -229,7 +229,7 @@ const connectMeasurementServiceToTools = (
     }
   });
 
-  MeasurementService.subscribe(
+  measurementService.subscribe(
     MEASUREMENT_UPDATED,
     ({ source, measurement, notYetUpdatedAtSource }) => {
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
@@ -263,7 +263,7 @@ const connectMeasurementServiceToTools = (
     }
   );
 
-  MeasurementService.subscribe(
+  measurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
     ({ source, measurement, data, dataSource }) => {
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
@@ -316,7 +316,7 @@ const connectMeasurementServiceToTools = (
     }
   );
 
-  MeasurementService.subscribe(
+  measurementService.subscribe(
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {
       if (source?.name && source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {

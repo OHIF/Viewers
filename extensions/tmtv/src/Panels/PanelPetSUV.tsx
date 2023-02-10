@@ -28,7 +28,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     DisplaySetService,
     ToolGroupService,
     toolbarService,
-    HangingProtocolService,
+    hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
@@ -71,7 +71,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 
   useEffect(() => {
     const displaySets = DisplaySetService.getActiveDisplaySets();
-    const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
+    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     if (!displaySets.length) {
       return;
     }
@@ -89,8 +89,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 
   // get the patientMetadata from the StudyInstanceUIDs and update the state
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       ({ viewportMatchDetails }) => {
         const displaySetInfo = getMatchingPTDisplaySet(viewportMatchDetails);
 
@@ -238,7 +238,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 PanelPetSUV.propTypes = {
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
-      MeasurementService: PropTypes.shape({
+      measurementService: PropTypes.shape({
         getMeasurements: PropTypes.func.isRequired,
         subscribe: PropTypes.func.isRequired,
         EVENTS: PropTypes.object.isRequired,
