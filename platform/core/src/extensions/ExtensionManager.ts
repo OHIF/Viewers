@@ -357,7 +357,7 @@ export default class ExtensionManager {
   };
 
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
-    const { UserAuthenticationService } = this._servicesManager.services;
+    const { userAuthenticationService } = this._servicesManager.services;
     dataSources.forEach(dataSource => {
       this.dataSourceDefs[dataSource.sourceName] = dataSource;
     });
@@ -369,7 +369,7 @@ export default class ExtensionManager {
         if (dataSource.namespace === namespace) {
           const dataSourceInstance = element.createDataSource(
             dataSource.configuration,
-            UserAuthenticationService
+            userAuthenticationService
           );
 
           if (this.dataSourceMap[dataSource.sourceName]) {

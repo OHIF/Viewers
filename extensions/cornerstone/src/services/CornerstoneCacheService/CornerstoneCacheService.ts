@@ -157,8 +157,8 @@ class CornerstoneCacheService {
       // getSOPClassHandler method
 
       if (displaySet.load && displaySet.load instanceof Function) {
-        const { UserAuthenticationService } = this.servicesManager.services;
-        const headers = UserAuthenticationService.getAuthorizationHeader();
+        const { userAuthenticationService } = this.servicesManager.services;
+        const headers = userAuthenticationService.getAuthorizationHeader();
         await displaySet.load({ headers });
 
         volumeData.push({

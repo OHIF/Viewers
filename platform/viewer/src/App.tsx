@@ -60,18 +60,18 @@ function App({ config, defaultExtensions, defaultModes }) {
 
   const {
     UIDialogService,
-    UIModalService,
+    uiModalService,
     UINotificationService,
     UIViewportDialogService,
     ViewportGridService,
     CineService,
-    UserAuthenticationService,
+    userAuthenticationService,
     customizationService,
   } = servicesManager.services;
 
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
-    [UserAuthenticationProvider, { service: UserAuthenticationService }],
+    [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapper],
     [ViewportGridProvider, { service: ViewportGridService }],
@@ -79,7 +79,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     [CineProvider, { service: CineService }],
     [SnackbarProvider, { service: UINotificationService }],
     [DialogProvider, { service: UIDialogService }],
-    [ModalProvider, { service: UIModalService, modal: Modal }],
+    [ModalProvider, { service: uiModalService, modal: Modal }],
   ];
   const CombinedProviders = ({ children }) =>
     Compose({ components: providers, children });
@@ -106,7 +106,7 @@ function App({ config, defaultExtensions, defaultModes }) {
       <OpenIdConnectRoutes
         oidc={oidc}
         routerBasename={routerBasename}
-        UserAuthenticationService={UserAuthenticationService}
+        userAuthenticationService={userAuthenticationService}
       />
     );
   }

@@ -62,11 +62,11 @@ export default async function init({
   );
 
   const {
-    UserAuthenticationService,
+    userAuthenticationService,
     measurementService,
     displaySetService,
     uiDialogService,
-    UIModalService,
+    uiModalService,
     uiNotificationService,
     cineService,
     cornerstoneViewportService,
@@ -87,7 +87,7 @@ export default async function init({
   }
 
   if (cornerstone.getShouldUseCPURendering()) {
-    _showCPURenderingModal(UIModalService, hangingProtocolService);
+    _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
   const labelmapRepresentation =
@@ -128,7 +128,7 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(UserAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig);
 
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
@@ -403,10 +403,10 @@ function CPUModal() {
   );
 }
 
-function _showCPURenderingModal(UIModalService, hangingProtocolService) {
+function _showCPURenderingModal(uiModalService, hangingProtocolService) {
   const callback = progress => {
     if (progress === 100) {
-      UIModalService.show({
+      uiModalService.show({
         content: CPUModal,
         title: 'OHIF Fell Back to CPU Rendering',
       });
