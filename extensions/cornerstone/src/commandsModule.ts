@@ -196,15 +196,15 @@ const commandsModule = ({ servicesManager }) => {
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();
-      const { UIModalService } = servicesManager.services;
+      const { uiModalService } = servicesManager.services;
 
-      if (UIModalService) {
-        UIModalService.show({
+      if (uiModalService) {
+        uiModalService.show({
           content: CornerstoneViewportDownloadForm,
           title: 'Download High Quality Image',
           contentProps: {
             activeViewportIndex,
-            onClose: UIModalService.hide,
+            onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
         });

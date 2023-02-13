@@ -81,7 +81,7 @@ const createRoutes = ({
     );
   }
 
-  const { UserAuthenticationService } = servicesManager.services;
+  const { userAuthenticationService } = servicesManager.services;
 
   // Note: PrivateRoutes in react-router-dom 6.x should be defined within
   // a Route element
@@ -96,7 +96,7 @@ const createRoutes = ({
             element={
               <PrivateRoute
                 handleUnauthenticated={
-                  UserAuthenticationService.handleUnauthenticated
+                  userAuthenticationService.handleUnauthenticated
                 }
               >
                 <RouteWithErrorBoundary route={route} />

@@ -34,7 +34,7 @@ function initWebWorkers(appConfig) {
 }
 
 export default function initWADOImageLoader(
-  UserAuthenticationService,
+  userAuthenticationService,
   appConfig
 ) {
   cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
@@ -55,7 +55,7 @@ export default function initWADOImageLoader(
       convertFloatPixelDataToInt: false,
     },
     beforeSend: function(xhr) {
-      const headers = UserAuthenticationService.getAuthorizationHeader();
+      const headers = userAuthenticationService.getAuthorizationHeader();
 
       // Request:
       // JPEG-LS Lossless (1.2.840.10008.1.2.4.80) if available, otherwise accept
