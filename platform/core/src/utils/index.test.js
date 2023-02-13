@@ -35,7 +35,6 @@ describe('Top level exports', () => {
       'resolveObjectPath',
       'hierarchicalListUtils',
       'progressTrackingUtils',
-      'getNumViewportPanes',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

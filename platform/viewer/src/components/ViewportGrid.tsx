@@ -6,7 +6,7 @@ import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import IDisplaySet from '@ohif/core';
 
-const { isEqualWithin, getNumViewportPanes } = utils;
+const { isEqualWithin } = utils;
 
 const ORIENTATION_MAP = {
   axial: {
@@ -59,7 +59,7 @@ function ViewerViewportGrid(props) {
       const blankViewportIndices = [];
 
       // Match each viewport individually.
-      const numViewports = getNumViewportPanes(viewportGridService);
+      const numViewports = viewportGridService.getNumViewportPanes();
 
       for (
         let viewportIndex = 0;
@@ -365,7 +365,7 @@ function ViewerViewportGrid(props) {
   const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
 
-    const numViewports = getNumViewportPanes(viewportGridService);
+    const numViewports = viewportGridService.getNumViewportPanes();
     for (let i = 0; i < numViewports; i++) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;

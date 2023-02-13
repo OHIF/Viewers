@@ -299,6 +299,11 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const getNumViewportPanes = useCallback(() => {
+    const { numCols, numRows, viewports } = viewportGridState;
+    return Math.min(viewports.length, numCols * numRows);
+  }, [viewportGridState]);
+
   /**
    * Sets the implementation of ViewportGridService that can be used by extensions.
    *
@@ -317,6 +322,7 @@ export function ViewportGridProvider({ children, service }) {
         setCachedLayout,
         restoreCachedLayout,
         set,
+        getNumViewportPanes,
       });
     }
   }, [
@@ -330,6 +336,7 @@ export function ViewportGridProvider({ children, service }) {
     setCachedLayout,
     restoreCachedLayout,
     set,
+    getNumViewportPanes,
   ]);
 
   const api = {
@@ -342,6 +349,7 @@ export function ViewportGridProvider({ children, service }) {
     restoreCachedLayout,
     reset,
     set,
+    getNumViewportPanes,
   };
 
   return (

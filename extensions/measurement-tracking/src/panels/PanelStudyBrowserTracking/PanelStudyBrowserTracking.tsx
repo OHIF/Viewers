@@ -9,7 +9,7 @@ import {
 } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
-const { formatDate, getNumViewportPanes } = utils;
+const { formatDate } = utils;
 
 /**
  *
@@ -423,7 +423,7 @@ function _mapDisplaySets(
   displaySets.forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     const componentType = _getComponentType(ds.Modality);
-    const numPanes = getNumViewportPanes(viewportGridService);
+    const numPanes = viewportGridService.getNumViewportPanes();
     const viewportIdentificator =
       numPanes === 1
         ? []

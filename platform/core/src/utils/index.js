@@ -25,7 +25,6 @@ import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
 import isEqualWithin from './isEqualWithin';
-import getNumViewportPanes from './getNumViewportPanes';
 import {
   sortStudy,
   sortStudySeries,
@@ -70,7 +69,6 @@ const utils = {
   debounce,
   roundNumber,
   downloadCSVReport,
-  getNumViewportPanes,
 };
 
 export {
