@@ -3589,14 +3589,15 @@
     merge-source-map "^1.1.0"
     schema-utils "^2.7.0"
 
-"@kitware/vtk.js@25.9.0":
-  version "25.9.0"
-  resolved "https://registry.npmjs.org/@kitware/vtk.js/-/vtk.js-25.9.0.tgz#ecf555c56f6e117b454131c43aba45311a515ecc"
-  integrity sha512-L4OQavJkSZjYYvW4GsEVkX7hqPKEbzEKwitq9GcjoAijrV0MINyxkChRbYEEYnTMcSW3i2jZ/jmiXaPfXuhPFQ==
+"@kitware/vtk.js@26.4.0":
+  version "26.4.0"
+  resolved "https://registry.npmjs.org/@kitware/vtk.js/-/vtk.js-26.4.0.tgz#2b876d94c33c365bbb6352cbe7b18f7942753ad3"
+  integrity sha512-V8lTv0E0/cp5ORLId0Noy3+NryZjneDvZOrHnRCGhVzMuH/aCND8xy8M9AejwC0BRI0mIp5eX9MjH3xhAlbeFg==
   dependencies:
     "@babel/runtime" "7.17.9"
     commander "9.2.0"
     d3-scale "4.0.2"
+    fast-deep-equal "^3.1.3"
     fflate "0.7.3"
     gl-matrix "3.4.3"
     globalthis "1.0.3"
