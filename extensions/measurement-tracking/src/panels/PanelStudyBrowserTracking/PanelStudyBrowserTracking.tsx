@@ -182,7 +182,7 @@ function PanelStudyBrowserTracking({
       thumbnailImageSrcMap,
       trackedSeries,
       viewports,
-      isSingleViewport,
+      viewportGridService,
       dataSource,
       displaySetService,
       uiDialogService,
@@ -245,7 +245,7 @@ function PanelStudyBrowserTracking({
           thumbnailImageSrcMap,
           trackedSeries,
           viewports,
-          isSingleViewport,
+          viewportGridService,
           dataSource,
           displaySetService,
           uiDialogService,
@@ -412,7 +412,7 @@ function _mapDisplaySets(
   thumbnailImageSrcMap,
   trackedSeriesInstanceUIDs,
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
-  isSingleViewport,
+  viewportGridService,
   dataSource,
   displaySetService,
   uiDialogService,
@@ -423,18 +423,21 @@ function _mapDisplaySets(
   displaySets.forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     const componentType = _getComponentType(ds.Modality);
-    const viewportIdentificator = isSingleViewport
-      ? []
-      : viewports.reduce((acc, viewportData, index) => {
-          if (
-            viewportData?.displaySetInstanceUIDs?.includes(
-              ds.displaySetInstanceUID
-            )
-          ) {
-            acc.push(viewportData.viewportLabel);
-          }
-          return acc;
-        }, []);
+    const numPanes = viewportGridService.getNumViewportPanes();
+    const viewportIdentificator =
+      numPanes === 1
+        ? []
+        : viewports.reduce((acc, viewportData, index) => {
+            if (
+              index < numPanes &&
+              viewportData?.displaySetInstanceUIDs?.includes(
+                ds.displaySetInstanceUID
+              )
+            ) {
+              acc.push(viewportData.viewportLabel);
+            }
+            return acc;
+          }, []);
 
     const array =
       componentType === 'thumbnailTracked'

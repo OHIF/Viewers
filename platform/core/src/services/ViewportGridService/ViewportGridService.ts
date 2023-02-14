@@ -31,6 +31,7 @@ class ViewportGridService extends PubSubService {
     reset: resetImplementation,
     onModeExit: onModeExitImplementation,
     set: setImplementation,
+    getNumViewportPanes: getNumViewportPanesImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -61,6 +62,9 @@ class ViewportGridService extends PubSubService {
     }
     if (setImplementation) {
       this.serviceImplementation._set = setImplementation;
+    }
+    if (getNumViewportPanesImplementation) {
+      this.serviceImplementation._getNumViewportPanes = getNumViewportPanesImplementation;
     }
   }
 
@@ -121,6 +125,10 @@ class ViewportGridService extends PubSubService {
 
   public set(state) {
     this.serviceImplementation._set(state);
+  }
+
+  public getNumViewportPanes() {
+    return this.serviceImplementation._getNumViewportPanes();
   }
 }
 

@@ -59,6 +59,13 @@ export default function toggleMPRHangingProtocol({
     viewports[activeViewportIndex].displaySetInstanceUIDs;
 
   const errorCallback = error => {
+    // Unable to create MPR, so be sure to return to the cached/original protocol.
+    hangingProtocolService.setProtocol(
+      cachedState.protocol.id,
+      viewportMatchDetails,
+      restoreErrorCallback
+    );
+
     uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
@@ -276,13 +283,17 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
     .filter(Boolean);
 
   if (viewportIds.length) {
-    toolOptions = viewportIds.map(viewportId => {
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-      return {
-        toolGroupId: toolGroup.id,
-        toolOptions: toolGroup.toolOptions,
-      };
-    });
+    toolOptions = viewportIds
+      .map(viewportId => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        return toolGroup
+          ? {
+              toolGroupId: toolGroup.id,
+              toolOptions: toolGroup.toolOptions,
+            }
+          : null;
+      })
+      .filter(Boolean);
   }
 
   return { viewportMatchDetails, viewportStructure, toolOptions };

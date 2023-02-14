@@ -79,7 +79,15 @@ function LayoutSelector({
         ],
       });
     }
-    viewportGridService.setLayout({ numRows, numCols });
+
+    // When a new layout is selected, keep any extra/offscreen viewports
+    // so that if any of those viewports were populated via the UI then they
+    // will be maintained in case those viewports are redisplayed later.
+    viewportGridService.setLayout({
+      numRows,
+      numCols,
+      keepExtraViewports: true,
+    });
   };
 
   return (

@@ -54,20 +54,35 @@ function ViewerViewportGrid(props) {
         return;
       }
 
-      // Match each viewport individually
-      const numViewports = viewportGrid.numRows * viewportGrid.numCols;
+      const gridDisplaySetUIDs = [];
+      const blankViewportIndices = [];
+
+      // Match each viewport individually.
+      const numViewports = viewportGridService.getNumViewportPanes();
+
       for (
         let viewportIndex = 0;
         viewportIndex < numViewports;
         viewportIndex++
       ) {
+        const viewportDisplaySetUIDs =
+          viewports[viewportIndex]?.displaySetInstanceUIDs ?? [];
+
         if (hpAlreadyApplied.get(viewportIndex)) {
+          gridDisplaySetUIDs.push(...viewportDisplaySetUIDs);
           continue;
         }
 
         // if current viewport doesn't have a match
         if (viewportMatchDetails.get(viewportIndex) === undefined) {
-          return;
+          // if the current viewport is empty/blank
+          if (viewportDisplaySetUIDs.length === 0) {
+            blankViewportIndices.push(viewportIndex);
+          } else {
+            gridDisplaySetUIDs.push(...viewportDisplaySetUIDs);
+          }
+
+          continue;
         }
 
         const { displaySetsInfo, viewportOptions } = viewportMatchDetails.get(
@@ -86,6 +101,8 @@ function ViewerViewportGrid(props) {
             displaySetUIDsToHangOptions.push(displaySetOptions);
           }
         );
+
+        gridDisplaySetUIDs.push(...displaySetUIDsToHang);
 
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex: viewportIndex,
@@ -111,6 +128,25 @@ function ViewerViewportGrid(props) {
           );
         }
       }
+
+      blankViewportIndices.forEach((blankVPIndex: number) => {
+        // try to fill the empty viewport with a display set not already in the grid
+        const displaySetsNotInGrid = availableDisplaySets.filter(
+          displaySet =>
+            gridDisplaySetUIDs.indexOf(displaySet.displaySetInstanceUID) === -1
+        );
+
+        if (displaySetsNotInGrid.length > 0) {
+          const displaySetUIDToAdd =
+            displaySetsNotInGrid[0].displaySetInstanceUID;
+          gridDisplaySetUIDs.push(displaySetUIDToAdd);
+
+          viewportGridService.setDisplaySetsForViewport({
+            viewportIndex: blankVPIndex,
+            displaySetInstanceUIDs: [displaySetUIDToAdd],
+          });
+        }
+      });
     },
     [viewportGrid, numRows, numCols]
   );
@@ -169,6 +205,20 @@ function ViewerViewportGrid(props) {
       hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       () => {
         const displaySets = displaySetService.getActiveDisplaySets();
+        updateDisplaySetsForViewports(displaySets);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [viewports]);
+
+  useEffect(() => {
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.STAGE_CHANGE,
+      () => {
+        const displaySets = DisplaySetService.getActiveDisplaySets();
         updateDisplaySetsForViewports(displaySets);
       }
     );
@@ -314,7 +364,8 @@ function ViewerViewportGrid(props) {
   const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
 
-    for (let i = 0; i < viewports.length; i++) {
+    const numViewports = viewportGridService.getNumViewportPanes();
+    for (let i = 0; i < numViewports; i++) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
@@ -388,7 +439,7 @@ function ViewerViewportGrid(props) {
             <ViewportComponent
               displaySets={displaySets}
               viewportIndex={viewportIndex}
-              viewportLabel={viewports.length > 1 ? viewportLabel : ''}
+              viewportLabel={numViewports > 1 ? viewportLabel : ''}
               dataSource={dataSource}
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}
