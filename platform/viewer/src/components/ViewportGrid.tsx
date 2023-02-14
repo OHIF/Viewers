@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
-import { utils, Types } from '@ohif/core';
+import { utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
@@ -132,7 +132,7 @@ function ViewerViewportGrid(props) {
       blankViewportIndices.forEach((blankVPIndex: number) => {
         // try to fill the empty viewport with a display set not already in the grid
         const displaySetsNotInGrid = availableDisplaySets.filter(
-          (displaySet: Types.IDisplaySet) =>
+          displaySet =>
             gridDisplaySetUIDs.indexOf(displaySet.displaySetInstanceUID) === -1
         );
 

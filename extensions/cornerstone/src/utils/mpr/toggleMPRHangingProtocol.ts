@@ -60,13 +60,13 @@ export default function toggleMPRHangingProtocol({
 
   const errorCallback = error => {
     // Unable to create MPR, so be sure to return to the cached/original protocol.
-    HangingProtocolService.setProtocol(
+    hangingProtocolService.setProtocol(
       cachedState.protocol.id,
       viewportMatchDetails,
       restoreErrorCallback
     );
 
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
         'Cannot create MPR for this DisplaySet since it is not reconstructable.',
@@ -285,7 +285,7 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
   if (viewportIds.length) {
     toolOptions = viewportIds
       .map(viewportId => {
-        const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
         return toolGroup
           ? {
               toolGroupId: toolGroup.id,
