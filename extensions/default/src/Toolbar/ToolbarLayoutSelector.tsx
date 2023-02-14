@@ -20,7 +20,7 @@ function LayoutSelector({
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
   const {
-    HangingProtocolService,
+    hangingProtocolService,
     toolbarService,
   } = (servicesManager as ServicesManager).services;
 
@@ -31,8 +31,8 @@ function LayoutSelector({
   };
 
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       evt => {
         const { protocol } = evt;
       }
@@ -41,7 +41,7 @@ function LayoutSelector({
     return () => {
       unsubscribe();
     };
-  }, [HangingProtocolService]);
+  }, [hangingProtocolService]);
 
   useEffect(() => {
     window.addEventListener('click', closeOnOutsideClick);
@@ -65,7 +65,7 @@ function LayoutSelector({
 
     // TODO Here the layout change will amount to a change of hanging protocol as specified by the extension for this layout selector tool
     // followed by the change of the grid itself.
-    if (HangingProtocolService.getActiveProtocol().protocol.id === 'mpr') {
+    if (hangingProtocolService.getActiveProtocol().protocol.id === 'mpr') {
       toolbarService.recordInteraction({
         groupId: 'MPR',
         itemId: 'MPR',

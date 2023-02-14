@@ -30,7 +30,7 @@ function ViewportOrientationMarkers({
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
-  const { CornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
 
   useEffect(() => {
     const cameraModifiedListener = (
@@ -114,7 +114,7 @@ function ViewportOrientationMarkers({
       flipHorizontal
     );
 
-    const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+    const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
 

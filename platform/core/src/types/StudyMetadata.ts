@@ -1,4 +1,6 @@
-/** Defines a typescript type for study metadata */
+/** Defines a typescript interface for study metadata.
+ * This defines the types for when using study metadata as interfaces.
+ */
 
 export interface PatientMetadata extends Record<string, unknown> {
   PatientName?: string;
@@ -20,4 +22,3 @@ export interface InstanceMetadata extends SeriesMetadata {
   readonly SOPInstanceUID: string;
   InstanceNumber?: string | number;
 }
-export default StudyMetadata;

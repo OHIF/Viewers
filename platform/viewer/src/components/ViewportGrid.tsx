@@ -31,10 +31,10 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const {
-    DisplaySetService,
-    MeasurementService,
-    HangingProtocolService,
-    UINotificationService,
+    displaySetService,
+    measurementService,
+    hangingProtocolService,
+    uiNotificationService,
   } = servicesManager.services;
 
   /**
@@ -49,7 +49,7 @@ function ViewerViewportGrid(props) {
       const {
         viewportMatchDetails,
         hpAlreadyApplied,
-      } = HangingProtocolService.getMatchDetails();
+      } = hangingProtocolService.getMatchDetails();
 
       if (!viewportMatchDetails.size) {
         return;
@@ -122,7 +122,7 @@ function ViewerViewportGrid(props) {
 
           const suppressEvent = true;
           const applied = true;
-          HangingProtocolService.setHangingProtocolAppliedForViewport(
+          hangingProtocolService.setHangingProtocolAppliedForViewport(
             viewportIndex,
             applied,
             suppressEvent
@@ -156,13 +156,13 @@ function ViewerViewportGrid(props) {
     (viewportIndex, displaySetInstanceUID) => {
       let updatedViewports = [];
       try {
-        updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+        updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           viewportIndex,
           displaySetInstanceUID
         );
       } catch (error) {
         console.warn(error);
-        UINotificationService.show({
+        uiNotificationService.show({
           title: 'Drag and Drop',
           message:
             'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
@@ -173,18 +173,18 @@ function ViewerViewportGrid(props) {
 
       return updatedViewports;
     },
-    [HangingProtocolService, UINotificationService]
+    [hangingProtocolService, uiNotificationService]
   );
 
   useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
+    const displaySets = displaySetService.getActiveDisplaySets();
     updateDisplaySetsForViewports(displaySets);
   }, [numRows, numCols]);
 
   // Layout change based on hanging protocols
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.NEW_LAYOUT,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.NEW_LAYOUT,
       ({ layoutType, numRows, numCols, layoutOptions }) => {
         viewportGridService.setLayout({
           numRows,
@@ -202,10 +202,10 @@ function ViewerViewportGrid(props) {
 
   // Using Hanging protocol engine to match the displaySets
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       () => {
-        const displaySets = DisplaySetService.getActiveDisplaySets();
+        const displaySets = displaySetService.getActiveDisplaySets();
         updateDisplaySetsForViewports(displaySets);
       }
     );
@@ -249,7 +249,7 @@ function ViewerViewportGrid(props) {
           }
         }
 
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           referencedDisplaySetInstanceUID
         );
 
@@ -387,7 +387,7 @@ function ViewerViewportGrid(props) {
       const displaySets = displaySetInstanceUIDsToUse.map(
         displaySetInstanceUID => {
           return (
-            DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
+            displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
           );
         }
       );
@@ -395,7 +395,7 @@ function ViewerViewportGrid(props) {
       const ViewportComponent = _getViewportComponent(
         displaySets,
         viewportComponents,
-        UINotificationService
+        uiNotificationService
       );
 
       // look inside displaySets to see if they need reRendering
@@ -455,7 +455,7 @@ function ViewerViewportGrid(props) {
   }, [viewports, activeViewportIndex, viewportComponents, dataSource]);
 
   /**
-   * Loading indicator until numCols and numRows are gotten from the HangingProtocolService
+   * Loading indicator until numCols and numRows are gotten from the hangingProtocolService
    */
   if (!numRows || !numCols) {
     return null;
@@ -480,7 +480,7 @@ ViewerViewportGrid.defaultProps = {
 function _getViewportComponent(
   displaySets,
   viewportComponents,
-  UINotificationService
+  uiNotificationService
 ) {
   if (!displaySets || !displaySets.length) {
     return EmptyViewport;
@@ -505,7 +505,7 @@ function _getViewportComponent(
   }
 
   console.log("Can't show displaySet", SOPClassHandlerId, displaySets[0]);
-  UINotificationService.show({
+  uiNotificationService.show({
     title: 'Viewport Not Supported Yet',
     message: `Cannot display SOPClassId of ${displaySets[0].SOPClassUID} yet`,
     type: 'error',

@@ -3,8 +3,8 @@ import { toolGroupIds } from '../initToolGroups';
 export default function setCrosshairsConfiguration(
   matches,
   toolNames,
-  ToolGroupService,
-  DisplaySetService
+  toolGroupService,
+  displaySetService
 ) {
   const matchDetails = matches.get('ctDisplaySet');
 
@@ -13,11 +13,11 @@ export default function setCrosshairsConfiguration(
   }
 
   const { SeriesInstanceUID } = matchDetails;
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+  const displaySets = displaySetService.getDisplaySetsForSeries(
     SeriesInstanceUID
   );
 
-  const toolConfig = ToolGroupService.getToolConfiguration(
+  const toolConfig = toolGroupService.getToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.Crosshairs
   );
@@ -27,7 +27,7 @@ export default function setCrosshairsConfiguration(
     filterActorUIDsToSetSlabThickness: [displaySets[0].displaySetInstanceUID],
   };
 
-  ToolGroupService.setToolConfiguration(
+  toolGroupService.setToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.Crosshairs,
     crosshairsConfig

@@ -16,16 +16,16 @@ function CornerstoneImageScrollbar({
 }) {
   const {
     cineService,
-    CornerstoneViewportService,
+    cornerstoneViewportService,
   } = (servicesManager as ServicesManger).services;
 
   const onImageScrollbarChange = (imageIndex, viewportIndex) => {
-    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+    const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
 
     const viewportId = viewportInfo.getViewportId();
-    const viewport = CornerstoneViewportService.getCornerstoneViewport(
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(
       viewportId
     );
 
@@ -48,7 +48,7 @@ function CornerstoneImageScrollbar({
       return;
     }
 
-    const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
       viewportIndex
     );
 

@@ -62,23 +62,23 @@ export default async function init({
   );
 
   const {
-    UserAuthenticationService,
-    MeasurementService,
-    DisplaySetService,
-    UIDialogService,
-    UIModalService,
-    UINotificationService,
+    userAuthenticationService,
+    measurementService,
+    displaySetService,
+    uiDialogService,
+    uiModalService,
+    uiNotificationService,
     cineService,
-    CornerstoneViewportService,
-    HangingProtocolService,
-    ToolGroupService,
-    ViewportGridService,
+    cornerstoneViewportService,
+    hangingProtocolService,
+    toolGroupService,
+    viewportGridService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
 
   if (!window.crossOriginIsolated) {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
         'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
@@ -87,7 +87,7 @@ export default async function init({
   }
 
   if (cornerstone.getShouldUseCPURendering()) {
-    _showCPURenderingModal(UIModalService, HangingProtocolService);
+    _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
   const labelmapRepresentation =
@@ -110,15 +110,15 @@ export default async function init({
     cornerstoneStreamingImageVolumeLoader
   );
 
-  HangingProtocolService.registerImageLoadStrategy(
+  hangingProtocolService.registerImageLoadStrategy(
     'interleaveCenter',
     interleaveCenterLoader
   );
-  HangingProtocolService.registerImageLoadStrategy(
+  hangingProtocolService.registerImageLoadStrategy(
     'interleaveTopToBottom',
     interleaveTopToBottom
   );
-  HangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
+  hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
@@ -128,13 +128,13 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(UserAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig);
 
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
-    MeasurementService,
-    DisplaySetService,
-    CornerstoneViewportService
+    measurementService,
+    displaySetService,
+    cornerstoneViewportService
   );
 
   initCineService(cineService);
@@ -145,7 +145,7 @@ export default async function init({
   });
 
   const onRightClick = event => {
-    if (!UIDialogService) {
+    if (!uiDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
@@ -172,15 +172,15 @@ export default async function init({
 
     CONTEXT_MENU_OPEN = true;
 
-    UIDialogService.dismiss({ id: 'context-menu' });
-    UIDialogService.create({
+    uiDialogService.dismiss({ id: 'context-menu' });
+    uiDialogService.create({
       id: 'context-menu',
       isDraggable: false,
       preservePosition: false,
       defaultPosition: _getDefaultPosition(event.detail),
       content: ContextMenuMeasurements,
       onClickOutside: () => {
-        UIDialogService.dismiss({ id: 'context-menu' });
+        uiDialogService.dismiss({ id: 'context-menu' });
         CONTEXT_MENU_OPEN = false;
       },
       contentProps: {
@@ -200,15 +200,15 @@ export default async function init({
         },
         onClose: () => {
           CONTEXT_MENU_OPEN = false;
-          UIDialogService.dismiss({ id: 'context-menu' });
+          uiDialogService.dismiss({ id: 'context-menu' });
         },
         onSetLabel: item => {
           const { annotationUID } = item.value;
 
-          const measurement = MeasurementService.getMeasurement(annotationUID);
+          const measurement = measurementService.getMeasurement(annotationUID);
 
           callInputDialog(
-            UIDialogService,
+            uiDialogService,
             measurement,
             (label, actionId) => {
               if (actionId === 'cancel') {
@@ -219,7 +219,7 @@ export default async function init({
                 label,
               });
 
-              MeasurementService.update(
+              measurementService.update(
                 updatedMeasurement.uid,
                 updatedMeasurement,
                 true
@@ -235,27 +235,27 @@ export default async function init({
   };
 
   const resetContextMenu = () => {
-    if (!UIDialogService) {
+    if (!uiDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
 
     CONTEXT_MENU_OPEN = false;
 
-    UIDialogService.dismiss({ id: 'context-menu' });
+    uiDialogService.dismiss({ id: 'context-menu' });
   };
 
   // When a custom image load is performed, update the relevant viewports
-  HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
+  hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = CornerstoneViewportService.getCornerstoneViewport(
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(
           viewportId
         );
 
-        CornerstoneViewportService.setVolumesForViewport(
+        cornerstoneViewportService.setVolumesForViewport(
           viewport,
           volumeInputArray
         );
@@ -356,11 +356,11 @@ export default async function init({
     elementDisabledHandler.bind(null)
   );
 
-  ViewportGridService.subscribe(
-    ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
+  viewportGridService.subscribe(
+    viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
     ({ viewportIndex }) => {
       const viewportId = `viewport-${viewportIndex}`;
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
         return;
@@ -403,10 +403,10 @@ function CPUModal() {
   );
 }
 
-function _showCPURenderingModal(UIModalService, HangingProtocolService) {
+function _showCPURenderingModal(uiModalService, hangingProtocolService) {
   const callback = progress => {
     if (progress === 100) {
-      UIModalService.show({
+      uiModalService.show({
         content: CPUModal,
         title: 'OHIF Fell Back to CPU Rendering',
       });
@@ -415,8 +415,8 @@ function _showCPURenderingModal(UIModalService, HangingProtocolService) {
     }
   };
 
-  const { unsubscribe } = HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
+  const { unsubscribe } = hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
     ({ progress }) => {
       const done = callback(progress);
 

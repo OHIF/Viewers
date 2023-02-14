@@ -3,46 +3,46 @@ import React from 'react';
 
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
-    MeasurementService,
-    HangingProtocolService,
-    UINotificationService,
-    ViewportGridService,
-    DisplaySetService,
+    measurementService,
+    hangingProtocolService,
+    uiNotificationService,
+    viewportGridService,
+    displaySetService,
   } = servicesManager.services;
 
   const actions = {
     displayNotification: ({ text, title, type }) => {
-      UINotificationService.show({
+      uiNotificationService.show({
         title: title,
         message: text,
         type: type,
       });
     },
     clearMeasurements: () => {
-      MeasurementService.clear();
+      measurementService.clear();
     },
     nextStage: () => {
       // next stage in hanging protocols
-      HangingProtocolService.nextProtocolStage();
+      hangingProtocolService.nextProtocolStage();
     },
     previousStage: () => {
-      HangingProtocolService.previousProtocolStage();
+      hangingProtocolService.previousProtocolStage();
     },
     openDICOMTagViewer() {
-      const { activeViewportIndex, viewports } = ViewportGridService.getState();
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports[activeViewportIndex];
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
-      const displaySets = DisplaySetService.activeDisplaySets;
-      const { UIModalService } = servicesManager.services;
+      const displaySets = displaySetService.activeDisplaySets;
+      const { uiModalService } = servicesManager.services;
 
       const displaySetInstanceUID = displaySetInstanceUIDs[0];
-      UIModalService.show({
+      uiModalService.show({
         content: DicomTagBrowser,
         contentProps: {
           displaySets,
           displaySetInstanceUID,
-          onClose: UIModalService.hide,
+          onClose: uiModalService.hide,
         },
         title: 'DICOM Tag Browser',
       });

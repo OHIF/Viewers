@@ -3,5 +3,3 @@ export interface Command {
   commandOptions?: Record<string, unknown>;
   context?: string;
 }
-
-export default Command;

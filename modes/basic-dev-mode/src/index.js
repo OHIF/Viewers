@@ -53,7 +53,7 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { toolbarService, ToolGroupService } = servicesManager.services;
+      const { toolbarService, toolGroupService } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
@@ -89,7 +89,7 @@ function modeFactory({ modeConfiguration }) {
       };
 
       const toolGroupId = 'default';
-      ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
+      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
 
       let unsubscribe;
 
@@ -116,8 +116,8 @@ function modeFactory({ modeConfiguration }) {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         activateTool
       ));
 
@@ -134,13 +134,13 @@ function modeFactory({ modeConfiguration }) {
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
-        MeasurementService,
+        toolGroupService,
+        measurementService,
         toolbarService,
       } = servicesManager.services;
 
       toolbarService.reset();
-      ToolGroupService.destroy();
+      toolGroupService.destroy();
     },
     validationTags: {
       study: [],

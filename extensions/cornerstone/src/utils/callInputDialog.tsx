@@ -11,7 +11,7 @@ import { Input, Dialog } from '@ohif/ui';
  * @param {*} isArrowAnnotateInputDialog
  */
 function callInputDialog(
-  UIDialogService,
+  uiDialogService,
   data,
   callback,
   isArrowAnnotateInputDialog = true
@@ -32,11 +32,11 @@ function callInputDialog(
         callback('', action.id);
         break;
     }
-    UIDialogService.dismiss({ id: dialogId });
+    uiDialogService.dismiss({ id: dialogId });
   };
 
-  if (UIDialogService) {
-    UIDialogService.create({
+  if (uiDialogService) {
+    uiDialogService.create({
       id: dialogId,
       centralize: true,
       isDraggable: false,
@@ -46,7 +46,7 @@ function callInputDialog(
         title: 'Enter your annotation',
         value: { label },
         noCloseButton: true,
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
           { id: 'cancel', text: 'Cancel', type: 'primary' },
           { id: 'save', text: 'Save', type: 'secondary' },

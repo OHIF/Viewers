@@ -17,11 +17,11 @@ async function createReportAsync(
   options
 ) {
   const {
-    DisplaySetService,
-    UINotificationService,
-    UIDialogService,
+    displaySetService,
+    uiNotificationService,
+    uiDialogService,
   } = servicesManager.services;
-  const loadingDialogId = UIDialogService.create({
+  const loadingDialogId = uiDialogService.create({
     showOverlay: true,
     isDraggable: false,
     centralize: true,
@@ -46,9 +46,9 @@ async function createReportAsync(
     // automatically calls makeDisplaySets
     DicomMetadataStore.addInstances([naturalizedReport], true);
 
-    const displaySetInstanceUID = DisplaySetService.getMostRecentDisplaySet();
+    const displaySetInstanceUID = displaySetService.getMostRecentDisplaySet();
 
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Create Report',
       message: 'Measurements saved successfully',
       type: 'success',
@@ -56,13 +56,13 @@ async function createReportAsync(
 
     return [displaySetInstanceUID];
   } catch (error) {
-    UINotificationService.show({
+    uiNotificationService.show({
       title: 'Create Report',
       message: error.message || 'Failed to store measurements',
       type: 'error',
     });
   } finally {
-    UIDialogService.dismiss({ id: loadingDialogId });
+    uiDialogService.dismiss({ id: loadingDialogId });
   }
 }
 

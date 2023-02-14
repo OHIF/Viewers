@@ -43,9 +43,9 @@ function modeFactory({ modeConfiguration }) {
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
       const {
         toolbarService,
-        ToolGroupService,
-        HangingProtocolService,
-        DisplaySetService,
+        toolGroupService,
+        hangingProtocolService,
+        displaySetService,
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -55,7 +55,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       // Init Default and SR ToolGroups
-      initToolGroups(toolNames, Enums, ToolGroupService, commandsManager);
+      initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 
       const setWindowLevelActive = () => {
         toolbarService.recordInteraction({
@@ -91,28 +91,28 @@ function modeFactory({ modeConfiguration }) {
         });
       };
 
-      const { unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      const { unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
           // For fusion toolGroup we need to add the volumeIds for the crosshairs
           // since in the fusion viewport we don't want both PT and CT to render MIP
           // when slabThickness is modified
           const {
             displaySetMatchDetails,
-          } = HangingProtocolService.getMatchDetails();
+          } = hangingProtocolService.getMatchDetails();
 
           setCrosshairsConfiguration(
             displaySetMatchDetails,
             toolNames,
-            ToolGroupService,
-            DisplaySetService
+            toolGroupService,
+            displaySetService
           );
 
           setFusionActiveVolume(
             displaySetMatchDetails,
             toolNames,
-            ToolGroupService,
-            DisplaySetService
+            toolGroupService,
+            displaySetService
           );
 
           setWindowLevelActive();
@@ -134,19 +134,19 @@ function modeFactory({ modeConfiguration }) {
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
-        SyncGroupService,
+        toolGroupService,
+        syncGroupService,
         toolbarService,
-        SegmentationService,
-        CornerstoneViewportService,
+        segmentationService,
+        cornerstoneViewportService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
       toolbarService.reset();
-      ToolGroupService.destroy();
-      SyncGroupService.destroy();
-      SegmentationService.destroy();
-      CornerstoneViewportService.destroy();
+      toolGroupService.destroy();
+      syncGroupService.destroy();
+      segmentationService.destroy();
+      cornerstoneViewportService.destroy();
     },
     validationTags: {
       study: [],

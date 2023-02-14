@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, Dialog } from '@ohif/ui';
 
-function callInputDialog(UIDialogService, label, callback) {
+function callInputDialog(uiDialogService, label, callback) {
   const dialogId = 'enter-segment-label';
 
   const onSubmitHandler = ({ action, value }) => {
@@ -13,11 +13,11 @@ function callInputDialog(UIDialogService, label, callback) {
         callback('', action.id);
         break;
     }
-    UIDialogService.dismiss({ id: dialogId });
+    uiDialogService.dismiss({ id: dialogId });
   };
 
-  if (UIDialogService) {
-    UIDialogService.create({
+  if (uiDialogService) {
+    uiDialogService.create({
       id: dialogId,
       centralize: true,
       isDraggable: false,
@@ -27,7 +27,7 @@ function callInputDialog(UIDialogService, label, callback) {
         title: 'Enter Segment Label',
         value: { label },
         noCloseButton: true,
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
           { id: 'cancel', text: 'Cancel', type: 'primary' },
           { id: 'save', text: 'Confirm', type: 'secondary' },
