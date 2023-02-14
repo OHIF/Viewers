@@ -133,7 +133,9 @@ function ViewerViewportGrid(props) {
         // try to fill the empty viewport with a display set not already in the grid
         const displaySetsNotInGrid = availableDisplaySets.filter(
           displaySet =>
-            gridDisplaySetUIDs.indexOf(displaySet.displaySetInstanceUID) === -1
+            gridDisplaySetUIDs.indexOf(displaySet.displaySetInstanceUID) ===
+              -1 &&
+            ['SEG', 'SR', 'RTSTRUCT'].indexOf(displaySet.Modality) === -1
         );
 
         if (displaySetsNotInGrid.length > 0) {
