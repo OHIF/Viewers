@@ -96,6 +96,11 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     appConfig.modes.push(mode);
   }
 
+  // remove modes that are not objects, or have no id
+  appConfig.modes = appConfig.modes.filter(
+    mode => typeof mode === 'object' && mode.id
+  );
+
   return {
     appConfig,
     commandsManager,

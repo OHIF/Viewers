@@ -79,6 +79,7 @@ const Select = ({
         className,
         'flex flex-col flex-1 customSelect__wrapper'
       )}
+      data-cy={`input-${id}`}
       classNamePrefix="customSelect"
       isDisabled={isDisabled}
       isClearable={isClearable}

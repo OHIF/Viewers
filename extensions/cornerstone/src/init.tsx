@@ -77,7 +77,10 @@ export default async function init({
 
   window.services = servicesManager.services;
 
-  if (!window.crossOriginIsolated) {
+  if (
+    appConfig.showWarningMessageForCrossOrigin &&
+    !window.crossOriginIsolated
+  ) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
@@ -86,7 +89,10 @@ export default async function init({
     });
   }
 
-  if (cornerstone.getShouldUseCPURendering()) {
+  if (
+    appConfig.showCPUFallbackMessage &&
+    cornerstone.getShouldUseCPURendering()
+  ) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 

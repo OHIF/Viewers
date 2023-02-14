@@ -35,6 +35,7 @@ export interface ExtensionParams extends ExtensionConstructor {
  * have more values than this.
  */
 export interface Extension {
+  id: string;
   preRegistration?: (p: ExtensionParams) => void;
 }
 
