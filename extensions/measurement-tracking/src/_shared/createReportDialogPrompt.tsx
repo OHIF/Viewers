@@ -22,8 +22,12 @@ export default function createReportDialogPrompt(uiDialogService) {
     const _handleFormSubmit = ({ action, value }) => {
       switch (action.id) {
         case 'save':
-          if (value.label && value.label !== '') {
-            resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
+          // Only save if description is not blank otherwise alert
+          if (value.label && value.label.trim() !== '') {
+            resolve({
+              action: RESPONSE.CREATE_REPORT,
+              value: value.label.trim(),
+            });
             UIDialogService.dismiss({ id: dialogId });
           } else {
             alert('Please provide a description');
@@ -60,6 +64,7 @@ export default function createReportDialogPrompt(uiDialogService) {
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
+              // Trigger form submit
               _handleFormSubmit({ action: { id: 'save' }, value });
             }
           };
