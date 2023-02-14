@@ -1,10 +1,9 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
-import { utils } from '@ohif/core';
+import { utils, Types } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
-import IDisplaySet from '@ohif/core';
 
 const { isEqualWithin } = utils;
 
@@ -55,7 +54,7 @@ function ViewerViewportGrid(props) {
         return;
       }
 
-      const displaySetsInGrid = [];
+      const gridDisplaySetUIDs = [];
       const blankViewportIndices = [];
 
       // Match each viewport individually.
@@ -66,21 +65,21 @@ function ViewerViewportGrid(props) {
         viewportIndex < numViewports;
         viewportIndex++
       ) {
-        const displaySetsInViewport =
+        const viewportDisplaySetUIDs =
           viewports[viewportIndex]?.displaySetInstanceUIDs ?? [];
 
         if (hpAlreadyApplied.get(viewportIndex)) {
-          displaySetsInGrid.push(...displaySetsInViewport);
+          gridDisplaySetUIDs.push(...viewportDisplaySetUIDs);
           continue;
         }
 
         // if current viewport doesn't have a match
         if (viewportMatchDetails.get(viewportIndex) === undefined) {
           // if the current viewport is empty/blank
-          if (displaySetsInViewport.length === 0) {
+          if (viewportDisplaySetUIDs.length === 0) {
             blankViewportIndices.push(viewportIndex);
           } else {
-            displaySetsInGrid.push(...displaySetsInViewport);
+            gridDisplaySetUIDs.push(...viewportDisplaySetUIDs);
           }
 
           continue;
@@ -103,7 +102,7 @@ function ViewerViewportGrid(props) {
           }
         );
 
-        displaySetsInGrid.push(...displaySetUIDsToHang);
+        gridDisplaySetUIDs.push(...displaySetUIDsToHang);
 
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex: viewportIndex,
@@ -133,14 +132,14 @@ function ViewerViewportGrid(props) {
       blankViewportIndices.forEach((blankVPIndex: number) => {
         // try to fill the empty viewport with a display set not already in the grid
         const displaySetsNotInGrid = availableDisplaySets.filter(
-          (displaySet: IDisplaySet) =>
-            displaySetsInGrid.indexOf(displaySet.displaySetInstanceUID) === -1
+          (displaySet: Types.IDisplaySet) =>
+            gridDisplaySetUIDs.indexOf(displaySet.displaySetInstanceUID) === -1
         );
 
         if (displaySetsNotInGrid.length > 0) {
           const displaySetUIDToAdd =
             displaySetsNotInGrid[0].displaySetInstanceUID;
-          displaySetsInGrid.push(displaySetUIDToAdd);
+          gridDisplaySetUIDs.push(displaySetUIDToAdd);
 
           viewportGridService.setDisplaySetsForViewport({
             viewportIndex: blankVPIndex,
@@ -216,8 +215,8 @@ function ViewerViewportGrid(props) {
   }, [viewports]);
 
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.STAGE_CHANGE,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.STAGE_CHANGE,
       () => {
         const displaySets = DisplaySetService.getActiveDisplaySets();
         updateDisplaySetsForViewports(displaySets);
@@ -230,8 +229,8 @@ function ViewerViewportGrid(props) {
   }, [viewports]);
 
   useEffect(() => {
-    const { unsubscribe } = MeasurementService.subscribe(
-      MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
+    const { unsubscribe } = measurementService.subscribe(
+      measurementService.EVENTS.JUMP_TO_MEASUREMENT,
       ({ viewportIndex, measurement }) => {
         const {
           displaySetInstanceUID: referencedDisplaySetInstanceUID,

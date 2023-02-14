@@ -99,6 +99,9 @@ export function ViewportGridProvider({ children, service }) {
           viewports.push({});
         }
 
+        // Extra viewports are kept when the grid layout is changed in the UI
+        // because the user populated those viewports and if the viewports were to
+        // return on screen their contents should be maintained.
         if (!keepExtraViewports) {
           while (viewports.length > numPanes) {
             viewports.pop();
