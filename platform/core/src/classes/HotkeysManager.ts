@@ -1,6 +1,9 @@
 import objectHash from 'object-hash';
-import log from './../log.js';
+import log from '../log.js';
 import { hotkeys } from '../utils';
+import isequal from 'lodash.isequal';
+import Hotkey from './Hotkey';
+import ServicesManager from '../services/ServicesManager';
 
 /**
  *
@@ -13,6 +16,8 @@ import { hotkeys } from '../utils';
  */
 
 export class HotkeysManager {
+  private _servicesManager: ServicesManager;
+
   constructor(commandsManager, servicesManager) {
     this.hotkeyDefinitions = {};
     this.hotkeyDefaults = [];
@@ -59,14 +64,20 @@ export class HotkeysManager {
    *
    * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
-  setHotkeys(hotkeyDefinitions = []) {
+  setHotkeys(hotkeyDefinitions = [], key = 'hotkey-definitions') {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
+      if (isequal(definitions, this.hotkeyDefaults)) {
+        console.log('hotkeys REMOVING unused definition', key);
+        localStorage.removeItem(key);
+      } else {
+        console.log('hotkeys setting local storage', key);
+        localStorage.setItem(key, JSON.stringify(definitions));
+      }
       definitions.forEach(definition => this.registerHotkeys(definition));
-      localStorage.setItem('hotkey-definitions', JSON.stringify(definitions));
     } catch (error) {
-      const { UINotificationService } = this._servicesManager.services;
-      UINotificationService.show({
+      const { uiNotificationService, } = this._servicesManager.services;
+      uiNotificationService.show({
         title: 'Hotkeys Manager',
         message: 'Error while setting hotkeys',
         type: 'error',
@@ -165,7 +176,14 @@ export class HotkeysManager {
    * @returns {undefined}
    */
   registerHotkeys(
-    { commandName, commandOptions = {}, keys, label, isEditable } = {},
+    {
+      commandName,
+      commandOptions = {},
+      context,
+      keys,
+      label,
+      isEditable,
+    }: Hotkey = {},
     extension
   ) {
     if (!commandName) {
@@ -181,9 +199,9 @@ export class HotkeysManager {
     if (previouslyRegisteredDefinition) {
       const previouslyRegisteredKeys = previouslyRegisteredDefinition.keys;
       this._unbindHotkeys(commandName, previouslyRegisteredKeys);
-      log.info(
-        `[hotkeys] Unbinding ${commandName} with ${options} options from ${previouslyRegisteredKeys}`
-      );
+      // log.info(
+      //   `[hotkeys] Unbinding ${commandName} with ${options} options from ${previouslyRegisteredKeys}`
+      // );
     }
 
     // Set definition & bind
@@ -194,10 +212,11 @@ export class HotkeysManager {
       label,
       isEditable,
     };
-    this._bindHotkeys(commandName, commandOptions, keys);
-    log.info(
-      `[hotkeys] Binding ${commandName} with ${options} options to ${keys}`
-    );
+    this._bindHotkeys(commandName, commandOptions, context, keys);
+    // log.info(
+    //   `[hotkeys] Binding ${commandName} with ${options} from ${context ||
+    //   'default'} options to ${keys}`
+    // );
   }
 
   /**
@@ -226,7 +245,7 @@ export class HotkeysManager {
    * @param {string[]} keys - One or more key combinations that should trigger command
    * @returns {undefined}
    */
-  _bindHotkeys(commandName, commandOptions = {}, keys) {
+  _bindHotkeys(commandName, commandOptions = {}, context, keys) {
     const isKeyDefined = keys === '' || keys === undefined;
     if (isKeyDefined) {
       return;
@@ -238,7 +257,11 @@ export class HotkeysManager {
     hotkeys.bind(combinedKeys, evt => {
       evt.preventDefault();
       evt.stopPropagation();
-      this._commandsManager.runCommand(commandName, { evt, ...commandOptions });
+      this._commandsManager.runCommand(
+        commandName,
+        { evt, ...commandOptions },
+        context
+      );
     });
   }
 

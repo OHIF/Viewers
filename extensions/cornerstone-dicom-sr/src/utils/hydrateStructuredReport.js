@@ -1,10 +1,10 @@
 import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
-import { adapters } from 'dcmjs';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
 const { guid } = OHIF.utils;
-const { MeasurementReport, CORNERSTONE_3D_TAG } = adapters.Cornerstone3D;
+const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
@@ -20,14 +20,14 @@ export default function hydrateStructuredReport(
   displaySetInstanceUID
 ) {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const { MeasurementService, DisplaySetService } = servicesManager.services;
+  const { measurementService, displaySetService } = servicesManager.services;
 
-  const displaySet = DisplaySetService.getDisplaySetByUID(
+  const displaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 
   // TODO -> We should define a strict versioning somewhere.
-  const mappings = MeasurementService.getSourceMappings(
+  const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
@@ -166,7 +166,7 @@ export default function hydrateStructuredReport(
         },
       };
 
-      const source = MeasurementService.getSource(
+      const source = measurementService.getSource(
         CORNERSTONE_3D_TOOLS_SOURCE_NAME,
         CORNERSTONE_3D_TOOLS_SOURCE_VERSION
       );
@@ -176,7 +176,7 @@ export default function hydrateStructuredReport(
         m => m.annotationType === annotationType
       );
 
-      MeasurementService.addRawMeasurement(
+      measurementService.addRawMeasurement(
         source,
         annotationType,
         { annotation },

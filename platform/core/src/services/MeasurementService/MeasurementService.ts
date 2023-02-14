@@ -1,6 +1,6 @@
 import log from '../../log';
 import guid from '../../utils/guid';
-import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
+import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 /**
  * Measurement source schema
@@ -94,27 +94,27 @@ const VALUE_TYPES = {
  * Note and Todo: We should be able to support measurements that are composed of multiple
  * annotations, but that is not the case at the moment.
  */
-class MeasurementService {
+class MeasurementService extends PubSubService {
+  public static REGISTRATION = {
+    name: 'measurementService',
+    altName: 'MeasurementService',
+    create: ({ configuration = {} }) => {
+      return new MeasurementService();
+    },
+  };
+
   constructor() {
+    super(EVENTS);
     this.sources = {};
     this.mappings = {};
     this.measurements = {};
-    this.listeners = {};
     this._jumpToMeasurementCache = {};
-    Object.defineProperty(this, 'EVENTS', {
-      value: EVENTS,
-      writable: false,
-      enumerable: true,
-      configurable: false,
-    });
     Object.defineProperty(this, 'VALUE_TYPES', {
       value: VALUE_TYPES,
       writable: false,
       enumerable: true,
       configurable: false,
     });
-
-    Object.assign(this, pubSubServiceInterface);
   }
 
   /**

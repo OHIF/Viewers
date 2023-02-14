@@ -11,11 +11,11 @@ export default function PanelSegmentation({
   commandsManager,
 }) {
   const {
-    SegmentationService,
-    UIDialogService,
-    ViewportGridService,
-    ToolGroupService,
-    CornerstoneViewportService,
+    segmentationService,
+    uiDialogService,
+    viewportGridService,
+    toolGroupService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
@@ -23,10 +23,10 @@ export default function PanelSegmentation({
   const [
     initialSegmentationConfigurations,
     setInitialSegmentationConfigurations,
-  ] = useState(SegmentationService.getConfiguration());
+  ] = useState(segmentationService.getConfiguration());
 
   const [segmentations, setSegmentations] = useState(() =>
-    SegmentationService.getSegmentations()
+    segmentationService.getSegmentations()
   );
 
   const [isMinimized, setIsMinimized] = useState({});
@@ -54,14 +54,14 @@ export default function PanelSegmentation({
 
   useEffect(() => {
     // ~~ Subscription
-    const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
-    const updated = SegmentationService.EVENTS.SEGMENTATION_UPDATED;
-    const removed = SegmentationService.EVENTS.SEGMENTATION_REMOVED;
+    const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
+    const updated = segmentationService.EVENTS.SEGMENTATION_UPDATED;
+    const removed = segmentationService.EVENTS.SEGMENTATION_REMOVED;
     const subscriptions = [];
 
     [added, updated, removed].forEach(evt => {
-      const { unsubscribe } = SegmentationService.subscribe(evt, () => {
-        const segmentations = SegmentationService.getSegmentations();
+      const { unsubscribe } = segmentationService.subscribe(evt, () => {
+        const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
       });
       subscriptions.push(unsubscribe);
@@ -75,15 +75,15 @@ export default function PanelSegmentation({
   }, []);
 
   const onSegmentationClick = (segmentationId: string) => {
-    SegmentationService.setActiveSegmentationForToolGroup(segmentationId);
+    segmentationService.setActiveSegmentationForToolGroup(segmentationId);
   };
 
   const onSegmentationDelete = (segmentationId: string) => {
-    SegmentationService.remove(segmentationId);
+    segmentationService.remove(segmentationId);
   };
 
   const getToolGroupIds = segmentationId => {
-    const toolGroupIds = SegmentationService.getToolGroupIdsWithSegmentation(
+    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(
       segmentationId
     );
 
@@ -91,7 +91,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
-    SegmentationService.setActiveSegmentForSegmentation(
+    segmentationService.setActiveSegmentForSegmentation(
       segmentationId,
       segmentIndex
     );
@@ -100,11 +100,11 @@ export default function PanelSegmentation({
 
     toolGroupIds.forEach(toolGroupId => {
       // const toolGroupId =
-      SegmentationService.setActiveSegmentationForToolGroup(
+      segmentationService.setActiveSegmentationForToolGroup(
         segmentationId,
         toolGroupId
       );
-      SegmentationService.jumpToSegmentCenter(
+      segmentationService.jumpToSegmentCenter(
         segmentationId,
         segmentIndex,
         toolGroupId
@@ -113,17 +113,17 @@ export default function PanelSegmentation({
   };
 
   const onSegmentEdit = (segmentationId, segmentIndex) => {
-    const segmentation = SegmentationService.getSegmentation(segmentationId);
+    const segmentation = segmentationService.getSegmentation(segmentationId);
 
     const segment = segmentation.segments[segmentIndex];
     const { label } = segment;
 
-    callInputDialog(UIDialogService, label, (label, actionId) => {
+    callInputDialog(uiDialogService, label, (label, actionId) => {
       if (label === '') {
         return;
       }
 
-      SegmentationService.setSegmentLabelForSegmentation(
+      segmentationService.setSegmentLabelForSegmentation(
         segmentationId,
         segmentIndex,
         label
@@ -132,15 +132,15 @@ export default function PanelSegmentation({
   };
 
   const onSegmentationEdit = segmentationId => {
-    const segmentation = SegmentationService.getSegmentation(segmentationId);
+    const segmentation = segmentationService.getSegmentation(segmentationId);
     const { label } = segmentation;
 
-    callInputDialog(UIDialogService, label, (label, actionId) => {
+    callInputDialog(uiDialogService, label, (label, actionId) => {
       if (label === '') {
         return;
       }
 
-      SegmentationService.addOrUpdateSegmentation(
+      segmentationService.addOrUpdateSegmentation(
         {
           id: segmentationId,
           label,
@@ -157,7 +157,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentDelete = (segmentationId, segmentIndex) => {
-    // SegmentationService.removeSegmentFromSegmentation(
+    // segmentationService.removeSegmentFromSegmentation(
     //   segmentationId,
     //   segmentIndex
     // );
@@ -165,14 +165,14 @@ export default function PanelSegmentation({
   };
 
   const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
-    const segmentation = SegmentationService.getSegmentation(segmentationId);
+    const segmentation = segmentationService.getSegmentation(segmentationId);
     const segmentInfo = segmentation.segments[segmentIndex];
     const isVisible = !segmentInfo.isVisible;
     const toolGroupIds = getToolGroupIds(segmentationId);
 
     // Todo: right now we apply the visibility to all tool groups
     toolGroupIds.forEach(toolGroupId => {
-      SegmentationService.setSegmentVisibility(
+      segmentationService.setSegmentVisibility(
         segmentationId,
         segmentIndex,
         isVisible,
@@ -182,17 +182,17 @@ export default function PanelSegmentation({
   };
 
   const onToggleSegmentationVisibility = segmentationId => {
-    SegmentationService.toggleSegmentationVisibility(segmentationId);
+    segmentationService.toggleSegmentationVisibility(segmentationId);
   };
 
   const setSegmentationConfiguration = useCallback(
     (segmentationId, key, value) => {
-      SegmentationService.setConfiguration({
+      segmentationService.setConfiguration({
         segmentationId,
         [key]: value,
       });
     },
-    [SegmentationService]
+    [segmentationService]
   );
 
   return (
@@ -280,7 +280,7 @@ PanelSegmentation.propTypes = {
   }),
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
-      SegmentationService: PropTypes.shape({
+      segmentationService: PropTypes.shape({
         getSegmentation: PropTypes.func.isRequired,
         getSegmentations: PropTypes.func.isRequired,
         toggleSegmentationVisibility: PropTypes.func.isRequired,

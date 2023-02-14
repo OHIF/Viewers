@@ -1,6 +1,6 @@
 import { utilities } from '@cornerstonejs/tools';
 
-function initCineService(CineService) {
+function initCineService(cineService) {
   const playClip = (element, playClipOptions) => {
     return utilities.cine.playClip(element, playClipOptions);
   };
@@ -9,7 +9,7 @@ function initCineService(CineService) {
     return utilities.cine.stopClip(element);
   };
 
-  CineService.setServiceImplementation({ playClip, stopClip });
+  cineService.setServiceImplementation({ playClip, stopClip });
 }
 
 export default initCineService;

@@ -1,4 +1,4 @@
-import hydrateStructuredReport from '@ohif/extension-cornerstone-dicom-sr';
+import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -17,10 +17,10 @@ function promptHydrateStructuredReport(
 ) {
   const {
     UIViewportDialogService,
-    DisplaySetService,
+    displaySetService,
   } = servicesManager.services;
   const { viewportIndex, displaySetInstanceUID } = evt;
-  const srDisplaySet = DisplaySetService.getDisplaySetByUID(
+  const srDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 

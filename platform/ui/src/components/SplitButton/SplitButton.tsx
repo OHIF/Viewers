@@ -92,7 +92,7 @@ const SplitButton = ({
 }) => {
   const { t } = useTranslation('Buttons');
 
-  const { ToolBarService } = servicesManager.services;
+  const { toolbarService } = servicesManager.services;
 
   const { primaryToolId, toggles } = bState;
   /* Bubbles up individual item clicks */
@@ -146,7 +146,7 @@ const SplitButton = ({
     (isPrimaryToggle && toggles[state.primary.id] === true);
 
   const PrimaryButtonComponent =
-    ToolBarService.getButtonComponentForUIType(state.primary.uiType) ??
+    toolbarService.getButtonComponentForUIType(state.primary.uiType) ??
     ToolbarButton;
 
   const primaryButtonClassName = classes.Primary({
@@ -197,7 +197,7 @@ const SplitButton = ({
                 {...state.primary}
                 bState={bState}
                 isActive={isPrimaryActive}
-                onInteraction={args => ToolBarService.recordInteraction(args)}
+                onInteraction={args => toolbarService.recordInteraction(args)}
                 servicesManager={servicesManager}
                 // All rounding is taken care of by className
                 rounded="none"
@@ -295,7 +295,7 @@ SplitButton.propTypes = {
       isActive: PropTypes.bool,
     })
   ),
-  /** Callback function to inform ToolBarService of important events */
+  /** Callback function to inform toolbarService of important events */
   onInteraction: PropTypes.func.isRequired,
 };
 

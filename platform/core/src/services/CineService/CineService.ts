@@ -64,9 +64,14 @@ function setServiceImplementation({
   }
 }
 
-export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+const CineService = {
+  REGISTRATION: {
+    altName: name,
+    name: 'cineService',
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };
+
+export default CineService;

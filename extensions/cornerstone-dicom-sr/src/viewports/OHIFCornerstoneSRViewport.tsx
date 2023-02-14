@@ -36,9 +36,9 @@ function OHIFCornerstoneSRViewport(props) {
   const { t } = useTranslation('SRViewport');
 
   const {
-    DisplaySetService,
-    CornerstoneViewportService,
-    MeasurementService,
+    displaySetService,
+    cornerstoneViewportService,
+    measurementService,
   } = servicesManager.services;
 
   // SR viewport will always have a single display set
@@ -81,14 +81,23 @@ function OHIFCornerstoneSRViewport(props) {
     sendTrackedMeasurementsEvent = tracked?.[1];
   }
   if (!sendTrackedMeasurementsEvent) {
-    // if no panels from measurement-tracking extension is used, this code will trun
+    // if no panels from measurement-tracking extension is used, this code will run
     trackedMeasurements = null;
     sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
-      MeasurementService.clearMeasurements();
-      hydrateStructuredReport(
+      measurementService.clearMeasurements();
+      const { SeriesInstanceUIDs } = hydrateStructuredReport(
         { servicesManager, extensionManager },
         displaySetInstanceUID
       );
+      const displaySets = displaySetService.getDisplaySetsForSeries(
+        SeriesInstanceUIDs[0]
+      );
+      if (displaySets.length) {
+        viewportGridService.setDisplaySetsForViewport({
+          viewportIndex: activeViewportIndex,
+          displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+        });
+      }
     };
   }
 
@@ -143,7 +152,7 @@ function OHIFCornerstoneSRViewport(props) {
       _getViewportReferencedDisplaySetData(
         srDisplaySet,
         newMeasurementSelected,
-        DisplaySetService
+        displaySetService
       ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
         setMeasurementSelected(newMeasurementSelected);
         setActiveImageDisplaySetData(referencedDisplaySet);
@@ -157,13 +166,13 @@ function OHIFCornerstoneSRViewport(props) {
 
           // it means that we have a new referenced display set, and the
           // imageIdIndex will handle it by updating the viewport, but if they
-          // are the same we just need to use MeasurementService to jump to the
+          // are the same we just need to use measurementService to jump to the
           // new measurement
-          const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+          const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
             viewportIndex
           );
 
-          const csViewport = CornerstoneViewportService.getCornerstoneViewport(
+          const csViewport = cornerstoneViewportService.getCornerstoneViewport(
             viewportInfo.getViewportId()
           );
 
@@ -250,8 +259,8 @@ function OHIFCornerstoneSRViewport(props) {
    Cleanup the SR viewport when the viewport is destroyed
    */
   useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
         if (
@@ -423,14 +432,14 @@ OHIFCornerstoneSRViewport.defaultProps = {
 async function _getViewportReferencedDisplaySetData(
   displaySet,
   measurementSelected,
-  DisplaySetService
+  displaySetService
 ) {
   const { measurements } = displaySet;
   const measurement = measurements[measurementSelected];
 
   const { displaySetInstanceUID } = measurement;
 
-  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 

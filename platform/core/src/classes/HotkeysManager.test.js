@@ -1,12 +1,12 @@
-import CommandsManager from './CommandsManager.js';
-import HotkeysManager from './HotkeysManager.js';
+import CommandsManager from './CommandsManager';
+import HotkeysManager from './HotkeysManager';
 import hotkeys from './../utils/hotkeys';
-import log from './../log.js';
+import log from './../log';
 import objectHash from 'object-hash';
 
-jest.mock('./CommandsManager.js');
+jest.mock('./CommandsManager');
 jest.mock('./../utils/hotkeys');
-jest.mock('./../log.js');
+jest.mock('./../log');
 
 describe('HotkeysManager', () => {
   let hotkeysManager, commandsManager;

@@ -4,8 +4,6 @@ import ToolbarLayoutSelector from './Toolbar/ToolbarLayoutSelector.tsx';
 import ToolbarSplitButton from './Toolbar/ToolbarSplitButton.tsx';
 
 export default function getToolbarModule({ commandsManager, servicesManager }) {
-  const toolbarService = servicesManager.services.ToolBarService;
-
   return [
     {
       name: 'ohif.divider',

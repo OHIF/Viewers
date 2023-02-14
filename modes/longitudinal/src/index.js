@@ -68,20 +68,20 @@ function modeFactory() {
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
       const {
-        MeasurementService,
-        ToolBarService,
-        ToolGroupService,
+        measurementService,
+        toolbarService,
+        toolGroupService,
       } = servicesManager.services;
 
-      MeasurementService.clearMeasurements();
+      measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, ToolGroupService, commandsManager);
+      initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       let unsubscribe;
 
       const activateTool = () => {
-        ToolBarService.recordInteraction({
+        toolbarService.recordInteraction({
           groupId: 'WindowLevel',
           itemId: 'WindowLevel',
           interactionType: 'tool',
@@ -103,14 +103,14 @@ function modeFactory() {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         activateTool
       ));
 
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -124,18 +124,18 @@ function modeFactory() {
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
-        SyncGroupService,
-        ToolBarService,
-        SegmentationService,
-        CornerstoneViewportService,
+        toolGroupService,
+        syncGroupService,
+        toolbarService,
+        segmentationService,
+        cornerstoneViewportService,
       } = servicesManager.services;
 
-      ToolBarService.reset();
-      ToolGroupService.destroy();
-      SyncGroupService.destroy();
-      SegmentationService.destroy();
-      CornerstoneViewportService.destroy();
+      toolbarService.reset();
+      toolGroupService.destroy();
+      syncGroupService.destroy();
+      segmentationService.destroy();
+      cornerstoneViewportService.destroy();
     },
     validationTags: {
       study: [],

@@ -6,6 +6,8 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
+import { ServicesManager } from '@ohif/core';
+
 function LayoutSelector({
   rows,
   columns,
@@ -17,7 +19,10 @@ function LayoutSelector({
   const [disableSelector, setDisableSelector] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
-  const { HangingProtocolService, ToolBarService } = servicesManager.services;
+  const {
+    hangingProtocolService,
+    toolbarService,
+  } = (servicesManager as ServicesManager).services;
 
   const closeOnOutsideClick = () => {
     if (isOpen) {
@@ -26,8 +31,8 @@ function LayoutSelector({
   };
 
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       evt => {
         const { protocol } = evt;
       }
@@ -36,7 +41,7 @@ function LayoutSelector({
     return () => {
       unsubscribe();
     };
-  }, [HangingProtocolService]);
+  }, [hangingProtocolService]);
 
   useEffect(() => {
     window.addEventListener('click', closeOnOutsideClick);
@@ -60,8 +65,8 @@ function LayoutSelector({
 
     // TODO Here the layout change will amount to a change of hanging protocol as specified by the extension for this layout selector tool
     // followed by the change of the grid itself.
-    if (HangingProtocolService.getActiveProtocol().protocol.id === 'mpr') {
-      ToolBarService.recordInteraction({
+    if (hangingProtocolService.getActiveProtocol().protocol.id === 'mpr') {
+      toolbarService.recordInteraction({
         groupId: 'MPR',
         itemId: 'MPR',
         interactionType: 'toggle',
@@ -74,7 +79,15 @@ function LayoutSelector({
         ],
       });
     }
-    viewportGridService.setLayout({ numRows, numCols });
+
+    // When a new layout is selected, keep any extra/offscreen viewports
+    // so that if any of those viewports were populated via the UI then they
+    // will be maintained in case those viewports are redisplayed later.
+    viewportGridService.setLayout({
+      numRows,
+      numCols,
+      keepExtraViewports: true,
+    });
   };
 
   return (
@@ -104,6 +117,7 @@ LayoutSelector.propTypes = {
   rows: PropTypes.number,
   columns: PropTypes.number,
   onLayoutChange: PropTypes.func,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 LayoutSelector.defaultProps = {

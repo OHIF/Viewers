@@ -33,10 +33,10 @@ function OHIFCornerstoneSEGViewport(props) {
   const { t } = useTranslation('SEGViewport');
 
   const {
-    DisplaySetService,
-    ToolGroupService,
-    SegmentationService,
-    UINotificationService,
+    displaySetService,
+    toolGroupService,
+    segmentationService,
+    uiNotificationService,
   } = servicesManager.services;
 
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
@@ -127,7 +127,7 @@ function OHIFCornerstoneSEGViewport(props) {
     direction => {
       direction = direction === 'left' ? -1 : 1;
       const segmentationId = segDisplaySet.displaySetInstanceUID;
-      const segmentation = SegmentationService.getSegmentation(segmentationId);
+      const segmentation = segmentationService.getSegmentation(segmentationId);
 
       const { segments } = segmentation;
 
@@ -141,7 +141,7 @@ function OHIFCornerstoneSEGViewport(props) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      SegmentationService.jumpToSegmentCenter(
+      segmentationService.jumpToSegmentCenter(
         segmentationId,
         newSelectedSegmentIndex,
         toolGroupId
@@ -168,8 +168,8 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
       evt => {
         if (
           evt.segDisplaySet.displaySetInstanceUID ===
@@ -179,7 +179,7 @@ function OHIFCornerstoneSEGViewport(props) {
         }
 
         if (evt.overlappingSegments) {
-          UINotificationService.show({
+          uiNotificationService.show({
             title: 'Overlapping Segments',
             message:
               'Overlapping segments detected which is not currently supported',
@@ -195,8 +195,8 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [segDisplaySet]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENT_PIXEL_DATA_CREATED,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENT_PIXEL_DATA_CREATED,
       ({ segmentIndex, numSegments }) => {
         setProcessingProgress({
           segmentIndex,
@@ -214,8 +214,8 @@ function OHIFCornerstoneSEGViewport(props) {
    Cleanup the SEG viewport when the viewport is destroyed
    */
   useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
         if (
@@ -235,14 +235,14 @@ function OHIFCornerstoneSEGViewport(props) {
   }, []);
 
   useEffect(() => {
-    let toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+    let toolGroup = toolGroupService.getToolGroup(toolGroupId);
 
     if (toolGroup) {
       return;
     }
 
     toolGroup = createSEGToolGroupAndAddTools(
-      ToolGroupService,
+      toolGroupService,
       toolGroupId,
       extensionManager
     );
@@ -251,11 +251,11 @@ function OHIFCornerstoneSEGViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+      segmentationService.removeSegmentationRepresentationFromToolGroup(
         toolGroupId
       );
 
-      ToolGroupService.destroyToolGroup(toolGroupId);
+      toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
 
@@ -264,7 +264,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+      segmentationService.removeSegmentationRepresentationFromToolGroup(
         toolGroupId
       );
       referencedDisplaySetRef.current = null;

@@ -1,16 +1,16 @@
-import { adapters } from 'dcmjs';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
-const cornerstoneAdapters = adapters.Cornerstone3D;
+const cornerstoneAdapters = adaptersSR.Cornerstone3D;
 
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;
 
 /**
- * Checks if the given `displaySet`can be rehydrated into the `MeasurementService`.
+ * Checks if the given `displaySet`can be rehydrated into the `measurementService`.
  *
  * @param {object} displaySet The SR `displaySet` to check.
- * @param {object[]} mappings The CornerstoneTools 4 mappings to the `MeasurementService`.
- * @returns {boolean} True if the SR can be rehydrated into the `MeasurementService`.
+ * @param {object[]} mappings The CornerstoneTools 4 mappings to the `measurementService`.
+ * @returns {boolean} True if the SR can be rehydrated into the `measurementService`.
  */
 export default function isRehydratable(displaySet, mappings) {
   if (!mappings || !mappings.length) {
@@ -30,7 +30,7 @@ export default function isRehydratable(displaySet, mappings) {
 
   adapterKeys.forEach(key => {
     if (mappingDefinitions.includes(key)) {
-      // Must have both a dcmjs adapter and a MeasurementService
+      // Must have both a dcmjs adapter and a measurementService
       // Definition in order to be a candidate for import.
       adapters.push(cornerstoneAdapters[key]);
     }

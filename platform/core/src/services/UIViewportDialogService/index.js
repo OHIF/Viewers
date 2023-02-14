@@ -75,8 +75,10 @@ function setServiceImplementation({
 }
 
 export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+  REGISTRATION: {
+    name,
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };

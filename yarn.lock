@@ -2372,6 +2372,17 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
+"@cornerstonejs/adapters@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.3.0.tgz#c0a2a904c92ebfae77520eba4fc64c07ebd06db4"
+  integrity sha512-o3GIrccNM0q/QF0//ueVIXeRltUmtTBkTR47qPgIY9gdi+3sYEFHEW6RTXe3OOtDDXOWgM88Jp3mWWUK4ZeXxg==
+  dependencies:
+    "@babel/runtime-corejs2" "^7.17.8"
+    dcmjs "^0.29.4"
+    gl-matrix "^3.4.3"
+    lodash.clonedeep "^4.5.0"
+    ndarray "^1.0.19"
+
 "@cornerstonejs/calculate-suv@^1.0.3":
   version "1.0.3"
   resolved "https://registry.npmjs.org/@cornerstonejs/calculate-suv/-/calculate-suv-1.0.3.tgz#6d99a72032c0f90cebf44dc6f0b12a5f1102e884"
@@ -2397,10 +2408,26 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-1.0.3.tgz#4c82642e8a6beb0d263f5a263723aec4225e5300"
   integrity sha512-PK+9N/JL7ZMGum6OKuReRGGhWXpWjRC9WnltQ6aEzRKEQPMg+3WFiQPZowKCCG1I4whv35DYFRi6wu7RyRaEMQ==
 
+"@cornerstonejs/core@0.30.1":
+  version "0.30.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.30.1.tgz#6cb7088260641e7e55de2edb11979b1a0c00c794"
+  integrity sha512-A7t6WtPut17uLGpv3cUfk1gSzEvWiFcCg1K3H0WGySdZsf4tIinb5xA+9oD2eaBPbvTXmIef4HWFIAsN3kAEgg==
+  dependencies:
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
 "@cornerstonejs/core@^0.27.1":
   version "0.27.1"
   resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.27.1.tgz#1c56697cee8071eacfd9b1ee6f59c0fa6071accc"
   integrity sha512-RyZicIallTZtr8i1BDkZ3U1JrwPZF7DYj9dj5uwE4WdhoPB+Rp77k5T7BH7gHsNWPyJjPgZwyq+tgV5sdD7zXg==
+  dependencies:
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/core@^0.28.0":
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.28.0.tgz#bc5114dfd332fcc5caf4ab049bcb08f6457e5f97"
+  integrity sha512-DSAdH2+8h/rRCTR6WbbGkY+vqnAVVZH47+GgGQQHscEwDD/K3ZO62JMl4LgcgkDzI0LIIZAk6CgAtok31yG/3Q==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
@@ -2413,12 +2440,12 @@
     "@cornerstonejs/core" "^0.27.1"
     cornerstone-wado-image-loader "^4.8.0"
 
-"@cornerstonejs/tools@^0.36.3":
-  version "0.36.3"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.36.3.tgz#22769dbcac57f6811f37376ac45ea1041286d4a0"
-  integrity sha512-popsYtA5Tvr9u7AoRFASwAr9vdxT3S697sb14clydczbbURAk/vHJw1K70P55BJ38jVx/yaGqfZWObFMWbqPLg==
+"@cornerstonejs/tools@0.39.0":
+  version "0.39.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.39.0.tgz#7d9bac4c55bc19145c2051f7c7150b34570849e4"
+  integrity sha512-xDR51lOEuNIDaTJltZvxDK+BIdIbznXUsWt+OpYiiygCQYt1Lt2eHufO2wVFVPrMgvm0dryF+WQbRVwtWvx4yA==
   dependencies:
-    "@cornerstonejs/core" "^0.27.1"
+    "@cornerstonejs/core" "^0.28.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -3562,14 +3589,15 @@
     merge-source-map "^1.1.0"
     schema-utils "^2.7.0"
 
-"@kitware/vtk.js@25.9.0":
-  version "25.9.0"
-  resolved "https://registry.npmjs.org/@kitware/vtk.js/-/vtk.js-25.9.0.tgz#ecf555c56f6e117b454131c43aba45311a515ecc"
-  integrity sha512-L4OQavJkSZjYYvW4GsEVkX7hqPKEbzEKwitq9GcjoAijrV0MINyxkChRbYEEYnTMcSW3i2jZ/jmiXaPfXuhPFQ==
+"@kitware/vtk.js@26.4.0":
+  version "26.4.0"
+  resolved "https://registry.npmjs.org/@kitware/vtk.js/-/vtk.js-26.4.0.tgz#2b876d94c33c365bbb6352cbe7b18f7942753ad3"
+  integrity sha512-V8lTv0E0/cp5ORLId0Noy3+NryZjneDvZOrHnRCGhVzMuH/aCND8xy8M9AejwC0BRI0mIp5eX9MjH3xhAlbeFg==
   dependencies:
     "@babel/runtime" "7.17.9"
     commander "9.2.0"
     d3-scale "4.0.2"
+    fast-deep-equal "^3.1.3"
     fflate "0.7.3"
     gl-matrix "3.4.3"
     globalthis "1.0.3"
@@ -10250,10 +10278,10 @@ dayjs@^1.11.6:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.7.tgz#4b296922642f70999544d1144a2c25730fce63e2"
   integrity sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==
 
-dcmjs@^0.28.3:
-  version "0.28.3"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.28.3.tgz#a756ab4b02363d12545c9830b8f97b5141723727"
-  integrity sha512-GZOu+CtNvdWsPv8ga9Ywm/1YadEqT/+FhwcpgsbDAmKDUKe+6uNH+8KbEsRcaN1V5WFQEMwRbF9IRTl2qOoZvA==
+dcmjs@0.29.4, dcmjs@^0.29.4:
+  version "0.29.4"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.29.4.tgz#3fb13945611979f756bc91b3f199fd87b4eabdb4"
+  integrity sha512-PzD6C4oB7v/AVTIPbkS6D6hjgVcSW7+T+DsxFpkD1xcEgU4qjGM16WGEHH3ZAPDBF0Xgm2d9FXUu/lXZIyfmow==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     gl-matrix "^3.1.0"

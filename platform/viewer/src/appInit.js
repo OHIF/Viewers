@@ -9,13 +9,13 @@ import {
   UIViewportDialogService,
   MeasurementService,
   DisplaySetService,
-  ToolBarService,
+  ToolbarService,
   ViewportGridService,
   HangingProtocolService,
   CineService,
   UserAuthenticationService,
   errorHandler,
-  CustomizationServiceRegistration,
+  CustomizationService,
   // utils,
 } from '@ohif/core';
 
@@ -45,18 +45,18 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   });
 
   servicesManager.registerServices([
-    UINotificationService,
-    UIModalService,
-    UIDialogService,
-    UIViewportDialogService,
-    MeasurementService,
-    DisplaySetService,
-    [CustomizationServiceRegistration, appConfig.customizationService],
-    ToolBarService,
-    ViewportGridService,
-    HangingProtocolService,
-    CineService,
-    UserAuthenticationService,
+    UINotificationService.REGISTRATION,
+    UIModalService.REGISTRATION,
+    UIDialogService.REGISTRATION,
+    UIViewportDialogService.REGISTRATION,
+    MeasurementService.REGISTRATION,
+    DisplaySetService.REGISTRATION,
+    [CustomizationService.REGISTRATION, appConfig.customizationService],
+    ToolbarService.REGISTRATION,
+    ViewportGridService.REGISTRATION,
+    HangingProtocolService.REGISTRATION,
+    CineService.REGISTRATION,
+    UserAuthenticationService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

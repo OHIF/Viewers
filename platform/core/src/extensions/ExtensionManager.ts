@@ -1,13 +1,59 @@
-import MODULE_TYPES from './MODULE_TYPES.js';
-import log from './../log.js';
+import MODULE_TYPES from './MODULE_TYPES';
+import log from '../log';
+import { AppConfig } from '../types/AppConfig';
+import { ServicesManager } from '../services';
+import { HotkeysManager, CommandsManager } from '../classes';
+
+/**
+ * This is the arguments given to create the extension.
+ */
+export interface ExtensionConstructor {
+  servicesManager: ServicesManager;
+  commandsManager: CommandsManager;
+  hotkeysManager: HotkeysManager;
+  appConfig: AppConfig;
+}
+
+/**
+ * The configuration of an extension.
+ * This uses type as the extension manager only knows that the configuration
+ * is an object of some sort, and doesn't know anything else about it.
+ */
+export type ExtensionConfiguration = Record<string, unknown>;
+
+/**
+ * The parameters passed to the extension.
+ */
+export interface ExtensionParams extends ExtensionConstructor {
+  extensionManager: ExtensionManager;
+  configuration?: ExtensionConfiguration;
+}
+
+/**
+ * The type of an actual extension instance.
+ * This is an interface as it declares possible calls, but extensions can
+ * have more values than this.
+ */
+export interface Extension {
+  preRegistration?: (p: ExtensionParams) => void;
+}
+
+export type ExtensionRegister = {
+  id: string;
+  create: (p: ExtensionParams) => Extension;
+};
 
 export default class ExtensionManager {
+  private _commandsManager: CommandsManager;
+  private _servicesManager: ServicesManager;
+  private _hotkeysManager: HotkeysManager;
+
   constructor({
     commandsManager,
     servicesManager,
     hotkeysManager,
     appConfig = {},
-  }) {
+  }: ExtensionConstructor) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
@@ -28,11 +74,17 @@ export default class ExtensionManager {
     this.activeDataSource = undefined;
   }
 
-  setActiveDataSource(dataSourceName) {
+  public setActiveDataSource(dataSourceName: string): void {
     this.activeDataSource = dataSourceName;
   }
 
-  onModeEnter() {
+  /**
+   * Calls all the services and extension on mode enters.
+   * The service onModeEnter is called first
+   * Then registered extensions onModeEnter is called
+   * This is supposed to setup the extension for a standard entry.
+   */
+  public onModeEnter(): void {
     const {
       registeredExtensionIds,
       _servicesManager,
@@ -61,7 +113,7 @@ export default class ExtensionManager {
     });
   }
 
-  onModeExit() {
+  public onModeExit(): void {
     const {
       registeredExtensionIds,
       _servicesManager,
@@ -97,7 +149,13 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions = async (extensions, dataSources = []) => {
+  public registerExtensions = async (
+    extensions: (
+      | ExtensionRegister
+      | [ExtensionRegister, ExtensionConfiguration]
+    )[],
+    dataSources: unknown[] = []
+  ): Promise<void> => {
     // Todo: we ideally should be able to run registrations in parallel
     // but currently since some extensions need to be registered before
     // others, we need to run them sequentially. We need a postInit hook
@@ -127,16 +185,16 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {Object} configuration
    */
-  registerExtension = async (
-    extension,
+  public registerExtension = async (
+    extension: ExtensionRegister,
     configuration = {},
     dataSources = []
-  ) => {
+  ): Promise<void> => {
     if (!extension) {
       throw new Error('Attempting to register a null/undefined extension.');
     }
 
-    let extensionId = extension.id;
+    const extensionId = extension.id;
 
     if (!extensionId) {
       // Note: Mode framework cannot function without IDs.
@@ -203,6 +261,7 @@ export default class ExtensionManager {
           case MODULE_TYPES.CONTEXT:
           case MODULE_TYPES.LAYOUT_TEMPLATE:
           case MODULE_TYPES.CUSTOMIZATION:
+          case MODULE_TYPES.STATE_SYNC:
           case MODULE_TYPES.UTILITY:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
@@ -288,17 +347,17 @@ export default class ExtensionManager {
   };
 
   _initHangingProtocolsModule = (extensionModule, extensionId) => {
-    const { HangingProtocolService } = this._servicesManager.services;
+    const { hangingProtocolService } = this._servicesManager.services;
     extensionModule.forEach(({ id, protocol }) => {
       if (protocol) {
         // Only auto-register if protocol specified, otherwise let mode register
-        HangingProtocolService.addProtocol(id, protocol);
+        hangingProtocolService.addProtocol(id, protocol);
       }
     });
   };
 
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
-    const { UserAuthenticationService } = this._servicesManager.services;
+    const { userAuthenticationService } = this._servicesManager.services;
     dataSources.forEach(dataSource => {
       this.dataSourceDefs[dataSource.sourceName] = dataSource;
     });
@@ -310,7 +369,7 @@ export default class ExtensionManager {
         if (dataSource.namespace === namespace) {
           const dataSourceInstance = element.createDataSource(
             dataSource.configuration,
-            UserAuthenticationService
+            userAuthenticationService
           );
 
           if (this.dataSourceMap[dataSource.sourceName]) {

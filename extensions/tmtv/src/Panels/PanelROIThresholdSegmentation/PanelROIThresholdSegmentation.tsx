@@ -45,14 +45,14 @@ export default function PanelRoiThresholdSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const { SegmentationService } = servicesManager.services;
+  const { segmentationService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentations, setSegmentations] = useState(() =>
-    SegmentationService.getSegmentations()
+    segmentationService.getSegmentations()
   );
 
   const [config, dispatch] = useReducer(reducer, {
@@ -90,7 +90,7 @@ export default function PanelRoiThresholdSegmentation({
     const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
     // update segDetails with the suv peak for the active segmentation
-    const segmentation = SegmentationService.getSegmentation(
+    const segmentation = segmentationService.getSegmentation(
       selectedSegmentationId
     );
 
@@ -101,7 +101,7 @@ export default function PanelRoiThresholdSegmentation({
     };
 
     const notYetUpdatedAtSource = true;
-    SegmentationService.addOrUpdateSegmentation(
+    segmentationService.addOrUpdateSegmentation(
       {
         ...segmentation,
         ...Object.assign(segmentation.cachedStats, cachedStats),
@@ -118,13 +118,13 @@ export default function PanelRoiThresholdSegmentation({
    */
   useEffect(() => {
     // ~~ Subscription
-    const added = SegmentationService.EVENTS.SEGMENTATION_ADDED;
-    const updated = SegmentationService.EVENTS.SEGMENTATION_UPDATED;
+    const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
+    const updated = segmentationService.EVENTS.SEGMENTATION_UPDATED;
     const subscriptions = [];
 
     [added, updated].forEach(evt => {
-      const { unsubscribe } = SegmentationService.subscribe(evt, () => {
-        const segmentations = SegmentationService.getSegmentations();
+      const { unsubscribe } = segmentationService.subscribe(evt, () => {
+        const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
       });
       subscriptions.push(unsubscribe);
@@ -138,10 +138,10 @@ export default function PanelRoiThresholdSegmentation({
   }, []);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_REMOVED,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENTATION_REMOVED,
       () => {
-        const segmentations = SegmentationService.getSegmentations();
+        const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
 
         if (segmentations.length > 0) {
@@ -223,15 +223,15 @@ export default function PanelRoiThresholdSegmentation({
                 setSelectedSegmentationId(id);
               }}
               onToggleVisibility={id => {
-                SegmentationService.toggleSegmentationVisibility(id);
+                segmentationService.toggleSegmentationVisibility(id);
               }}
               onToggleVisibilityAll={ids => {
                 ids.map(id => {
-                  SegmentationService.toggleSegmentationVisibility(id);
+                  segmentationService.toggleSegmentationVisibility(id);
                 });
               }}
               onDelete={id => {
-                SegmentationService.remove(id);
+                segmentationService.remove(id);
               }}
               onEdit={id => {
                 segmentationEditHandler({
@@ -285,7 +285,7 @@ PanelRoiThresholdSegmentation.propTypes = {
   }),
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
-      SegmentationService: PropTypes.shape({
+      segmentationService: PropTypes.shape({
         getSegmentation: PropTypes.func.isRequired,
         getSegmentations: PropTypes.func.isRequired,
         toggleSegmentationVisibility: PropTypes.func.isRequired,

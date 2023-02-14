@@ -7,7 +7,7 @@ import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndic
 
 function CornerstoneOverlays(props) {
   const { viewportIndex, element, scrollbarHeight, servicesManager } = props;
-  const { CornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
     numberOfSlices: 0,
@@ -15,8 +15,8 @@ function CornerstoneOverlays(props) {
   const [viewportData, setViewportData] = useState(null);
 
   useEffect(() => {
-    const { unsubscribe } = CornerstoneViewportService.subscribe(
-      CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+    const { unsubscribe } = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
       props => {
         if (props.viewportIndex !== viewportIndex) {
           return;
@@ -36,7 +36,7 @@ function CornerstoneOverlays(props) {
   }
 
   if (viewportData) {
-    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+    const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
 

@@ -1,5 +1,5 @@
 import toolbarButtons from './toolbarButtons.js';
-import { hotkeys } from '@ohif/core';
+import { hotkeys, ServicesManager } from '@ohif/core';
 import { id } from './id';
 
 const configs = {
@@ -53,7 +53,7 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const { toolbarService, toolGroupService } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
@@ -89,12 +89,12 @@ function modeFactory({ modeConfiguration }) {
       };
 
       const toolGroupId = 'default';
-      ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
+      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
 
       let unsubscribe;
 
       const activateTool = () => {
-        ToolBarService.recordInteraction({
+        toolbarService.recordInteraction({
           groupId: 'WindowLevel',
           itemId: 'WindowLevel',
           interactionType: 'tool',
@@ -116,14 +116,14 @@ function modeFactory({ modeConfiguration }) {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         activateTool
       ));
 
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -134,13 +134,13 @@ function modeFactory({ modeConfiguration }) {
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
-        MeasurementService,
-        ToolBarService,
+        toolGroupService,
+        measurementService,
+        toolbarService,
       } = servicesManager.services;
 
-      ToolBarService.reset();
-      ToolGroupService.destroy();
+      toolbarService.reset();
+      toolGroupService.destroy();
     },
     validationTags: {
       study: [],

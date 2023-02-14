@@ -35,8 +35,8 @@ function TrackedCornerstoneViewport(props) {
   const { t } = useTranslation('TrackedViewport');
 
   const {
-    MeasurementService,
-    CornerstoneViewportService,
+    measurementService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
@@ -99,9 +99,9 @@ function TrackedCornerstoneViewport(props) {
         },
       });
 
-      CornerstoneViewportService.getRenderingEngine().renderViewport(
-        viewportId
-      );
+      cornerstoneViewportService
+        .getRenderingEngine()
+        .renderViewport(viewportId);
 
       return;
     }
@@ -112,7 +112,7 @@ function TrackedCornerstoneViewport(props) {
       },
     });
 
-    CornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
+    cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
 
     return () => {
       annotation.config.style.setViewportToolStyles(viewportId, {});
@@ -177,7 +177,7 @@ function TrackedCornerstoneViewport(props) {
 
     setTrackedMeasurementUID(newTrackedMeasurementUID);
 
-    MeasurementService.jumpToMeasurement(
+    measurementService.jumpToMeasurement(
       viewportIndex,
       newTrackedMeasurementUID
     );
@@ -281,8 +281,8 @@ function _getNextMeasurementUID(
   trackedMeasurementId,
   trackedMeasurements
 ) {
-  const { MeasurementService } = servicesManager.services;
-  const measurements = MeasurementService.getMeasurements();
+  const { measurementService } = servicesManager.services;
+  const measurements = measurementService.getMeasurements();
 
   const { trackedSeries } = trackedMeasurements.context;
 

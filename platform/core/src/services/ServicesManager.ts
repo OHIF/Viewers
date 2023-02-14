@@ -1,6 +1,9 @@
 import log from './../log.js';
+import Services from '../types/Services';
 
 export default class ServicesManager {
+  public services: Services = {};
+
   constructor(commandsManager) {
     this._commandsManager = commandsManager;
     this.services = {};
@@ -39,6 +42,10 @@ export default class ServicesManager {
         commandsManager: this._commandsManager,
         servicesManager: this,
       });
+      if (service.altName) {
+        console.log('Registering old name', service.altName);
+        this.services[service.altName] = this.services[service.name];
+      }
     } else {
       log.warn(`Service create factory function not defined. Exiting early.`);
       return;

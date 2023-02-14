@@ -121,28 +121,23 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         const renderableDataForGraphicType = renderableData[GraphicType];
 
         let renderMethod;
-        let renderTextBox;
         let canvasCoordinatesAdapter;
 
         switch (GraphicType) {
           case SCOORD_TYPES.POINT:
             renderMethod = this.renderPoint;
-            renderTextBox = this.renderTextBox;
             break;
           case SCOORD_TYPES.MULTIPOINT:
             renderMethod = this.renderMultipoint;
-            renderTextBox = this.renderTextBox;
             break;
           case SCOORD_TYPES.POLYLINE:
             renderMethod = this.renderPolyLine;
             break;
           case SCOORD_TYPES.CIRCLE:
             renderMethod = this.renderEllipse;
-            renderTextBox = this.renderTextBox;
             break;
           case SCOORD_TYPES.ELLIPSE:
             renderMethod = this.renderEllipse;
-            renderTextBox = this.renderTextBox;
             canvasCoordinatesAdapter =
               utilities.math.ellipse.getCanvasEllipseCorners;
             break;
@@ -159,18 +154,15 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           options
         );
 
-        if (typeof renderTextBox === 'function') {
-          renderTextBox.call(
-            this,
-            svgDrawingHelper,
-            viewport,
-            canvasCoordinates,
-            canvasCoordinatesAdapter,
-            annotation,
-            styleSpecifier,
-            options
-          );
-        }
+        this.renderTextBox(
+          svgDrawingHelper,
+          viewport,
+          canvasCoordinates,
+          canvasCoordinatesAdapter,
+          annotation,
+          styleSpecifier,
+          options
+        );
       });
     }
   };
@@ -187,11 +179,11 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       color: options.color,
       width: options.lineWidth,
     };
-    let canvasCoordinates;
+    let allCanvasCoordinates = [];
     renderableData.map((data, index) => {
-      canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
-
+      const canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
       const lineUID = `${index}`;
+
       if (canvasCoordinates.length === 2) {
         drawing.drawLine(
           svgDrawingHelper,
@@ -210,9 +202,11 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           drawingOptions
         );
       }
+
+      allCanvasCoordinates = allCanvasCoordinates.concat(canvasCoordinates);
     });
 
-    return canvasCoordinates; // used for drawing textBox
+    return allCanvasCoordinates; // used for drawing textBox
   }
 
   renderMultipoint(
@@ -405,9 +399,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 }
 
 const SHORT_HAND_MAP = {
-  'Short Axis': 'W ',
-  'Long Axis': 'L ',
-  AREA: 'Area ',
+  'Short Axis': 'W: ',
+  'Long Axis': 'L: ',
+  AREA: 'Area: ',
   Length: '',
   CORNERSTONEFREETEXT: '',
 };
