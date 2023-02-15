@@ -10,7 +10,7 @@ import cornerstoneTools, {
   toolColors,
   EVENTS,
 } from 'cornerstone-tools';
-import drawSquare from './drawSquare';
+// import drawSquare from './drawSquare';
 
 const BaseAnnotationTool = importInternal('base/BaseAnnotationTool');
 
@@ -185,90 +185,7 @@ export default class SquareRoiTool extends BaseAnnotationTool {
 
     draw(context, context => {
       // If we have tool data for this element - iterate over each set and draw it
-      for (let i = 0; i < toolData.data.length; i++) {
-        const data = toolData.data[i];
-
-        if (data.visible === false) {
-          continue;
-        }
-
-        // Configure
-        const color = toolColors.getColorIfActive(data);
-        const handleOptions = {
-          color,
-          handleRadius,
-          drawHandlesIfActive: drawHandlesOnHover,
-          hideHandlesIfMoving,
-        };
-
-        setShadow(context, this.configuration);
-
-        const rectOptions = { color };
-
-        if (renderDashed) {
-          rectOptions.lineDash = lineDash;
-        }
-
-        // Draw
-        drawSquare(
-          context,
-          element,
-          data.handles.start,
-          data.handles.end,
-          rectOptions,
-          'pixel',
-          data.handles.initialRotation
-        );
-
-        if (this.configuration.drawHandles) {
-          drawHandles(context, eventData, data.handles, handleOptions);
-        }
-
-        // Update textbox stats
-        if (data.invalidated === true) {
-          if (data.cachedStats) {
-            this.throttledUpdateCachedStats(image, element, data);
-          } else {
-            this.updateCachedStats(image, element, data);
-          }
-        }
-
-        // Default to textbox on right side of ROI
-        if (!data.handles.textBox.hasMoved) {
-          const defaultCoords = getROITextBoxCoords(
-            eventData.viewport,
-            data.handles
-          );
-
-          Object.assign(data.handles.textBox, defaultCoords);
-        }
-
-        const textBoxAnchorPoints = handles =>
-          _findTextBoxAnchorPoints(handles.start, handles.end);
-        const textBoxContent = _createTextBoxContent(
-          context,
-          image.color,
-          data.cachedStats,
-          modality,
-          hasPixelSpacing,
-          this.configuration
-        );
-
-        data.unit = _getUnit(modality, this.configuration.showHounsfieldUnits);
-
-        drawLinkedTextBox(
-          context,
-          element,
-          data.handles.textBox,
-          textBoxContent,
-          data.handles,
-          textBoxAnchorPoints,
-          color,
-          lineWidth,
-          10,
-          true
-        );
-      }
+    
     });
   }
 }
