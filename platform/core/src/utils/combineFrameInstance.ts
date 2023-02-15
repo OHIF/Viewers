@@ -30,6 +30,23 @@ const combineFrameInstance = (frame, instance) => {
       .map(it => it[0])
       .filter(it => it !== undefined && typeof it === 'object');
 
+    // this is to fix NM multiframe datasets with position and orientation
+    // information inside DetectorInformationSequence
+    if (
+      !instance.ImageOrientationPatient &&
+      instance.DetectorInformationSequence
+    ) {
+      instance.ImageOrientationPatient =
+        instance.DetectorInformationSequence[0].ImageOrientationPatient;
+    }
+    if (
+      !instance.ImagePositionPatient &&
+      instance.DetectorInformationSequence
+    ) {
+      instance.ImagePositionPatient =
+        instance.DetectorInformationSequence[0].ImagePositionPatient;
+    }
+
     return Object.assign(
       { frameNumber: frameNumber },
       instance,

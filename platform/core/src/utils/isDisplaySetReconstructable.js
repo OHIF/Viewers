@@ -45,46 +45,102 @@ export default function isDisplaySetReconstructable(instances) {
   }
 }
 
-function processMultiframe(multiFrameInstance) {
+function hasPixelMeasurements(multiFrameInstance) {
+  const {
+    SharedFunctionalGroupsSequence,
+    PerFrameFunctionalGroupsSequence,
+  } = multiFrameInstance;
+
+  let found = false;
+  found =
+    PerFrameFunctionalGroupsSequence &&
+    PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence;
+
+  if (!found) {
+    found =
+      SharedFunctionalGroupsSequence &&
+      SharedFunctionalGroupsSequence.PixelMeasuresSequence;
+  }
+  if (!found) {
+    found =
+      multiFrameInstance.PixelSpacing &&
+      (multiFrameInstance.SliceThickness ||
+        multiFrameInstance.SpacingBetweenFrames);
+  }
+  return found;
+}
+
+function hasOrientation(multiFrameInstance) {
+  const {
+    SharedFunctionalGroupsSequence,
+    PerFrameFunctionalGroupsSequence,
+  } = multiFrameInstance;
+
+  let found = false;
+  // Check that the orientation is either shared or with the allowed
+  // difference amount
+  found =
+    SharedFunctionalGroupsSequence &&
+    SharedFunctionalGroupsSequence.PlaneOrientationSequence;
+
+  if (!found) {
+    found =
+      PerFrameFunctionalGroupsSequence &&
+      PerFrameFunctionalGroupsSequence.length > 0 &&
+      PerFrameFunctionalGroupsSequence[0].PlaneOrientationSequence;
+  }
+
+  if (!found) {
+    found =
+      multiFrameInstance.ImageOrientationPatient ||
+      (multiFrameInstance.DetectorInformationSequence &&
+        multiFrameInstance.DetectorInformationSequence[0]
+          .ImageOrientationPatient);
+  }
+
+  return found;
+}
+
+function hasPosition(multiFrameInstance) {
   const { PerFrameFunctionalGroupsSequence } = multiFrameInstance;
 
+  let found =
+    PerFrameFunctionalGroupsSequence &&
+    PerFrameFunctionalGroupsSequence.length > 0;
+
+  if (found) {
+    let frame0 = PerFrameFunctionalGroupsSequence[0];
+    found = frame0.PlanePositionSequence || frame0.CTPositionSequence;
+  }
+  if (!found) {
+    found =
+      multiFrameInstance.ImagePositionPatient ||
+      (multiFrameInstance.DetectorInformationSequence &&
+        multiFrameInstance.DetectorInformationSequence[0].ImagePositionPatient);
+  }
+
+  return found;
+}
+
+function processMultiframe(multiFrameInstance) {
   // If we don't have the PixelMeasuresSequence, then the pixel spacing and
   // slice thickness isn't specified or is changing and we can't reconstruct
   // the dataset.
-  if (
-    !PerFrameFunctionalGroupsSequence ||
-    !PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence
-  ) {
+  if (!hasPixelMeasurements(multiFrameInstance)) {
     return { value: false };
   }
 
-  // Check that the orientation is either shared or with the allowed
-  // difference amount
-  const {
-    PlaneOrientationSequence: sharedOrientation,
-  } = PerFrameFunctionalGroupsSequence[0];
-
-  if (!sharedOrientation) {
-    const {
-      PlaneOrientationSequence: firstOrientation,
-    } = PerFrameFunctionalGroupsSequence[0];
-
-    if (!firstOrientation) {
-      console.log('No orientation information');
-      return { value: false };
-    }
-    // TODO - check orientation consistency
+  if (!hasOrientation(multiFrameInstance)) {
+    console.log('No image orientation information, not reconstructable');
+    return { value: false };
   }
 
-  const frame0 = PerFrameFunctionalGroupsSequence[0];
-  const firstPosition =
-    frame0.PlanePositionSequence || frame0.CTPositionSequence;
-  if (!firstPosition) {
+  if (!hasPosition(multiFrameInstance)) {
     console.log('No image position information, not reconstructable');
     return { value: false };
   }
-  // TODO - check spacing consistency
 
+  // TODO - check spacing consistency
   return { value: true };
 }
 
