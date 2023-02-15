@@ -190,6 +190,20 @@ class XNATSegmentationPanel extends React.Component {
       segments = segmentList.segments;
       activeSegmentIndex = segmentList.activeSegmentIndex;
       labelmap3D = segmentList.labelmap3D;
+
+      const slicexsegments = new Set();
+      labelmap3D.labelmaps2D.forEach((labelmap, index) => {
+        console.log('index', index);
+        for (let i = 0; i < labelmap.pixelData.length; i++) {
+          if (labelmap.pixelData[i] === 1) {
+            slicexsegments.add(index);
+          }
+        }
+      });
+
+      const slicexsegmentsArray = Array.from(slicexsegments);
+
+      console.log('-------------------', slicexsegmentsArray);
     }
 
     this.setState({

@@ -5,6 +5,7 @@ export const JobsContext = React.createContext({});
 
 const JobsContextProvider = ({ children, series, overlay, instance }) => {
   const [allSeriesState, setSeries] = useState([]);
+  const [isloading, setLoading] = useState(false);
   const [overlayStatus, setOverlayStatus] = useState(overlay);
   const [isInstance, setIsInstance] = useState(instance);
   const [opacityStatus, setOpacityStatus] = useState(0.5);
@@ -38,6 +39,8 @@ const JobsContextProvider = ({ children, series, overlay, instance }) => {
         isInstance,
         setIsInstance,
         opacityStatus,
+        setLoading,
+        isloading,
         setOpacityStatus,
         colorMapStatus,
         setColorMapStatus,

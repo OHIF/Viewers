@@ -4,10 +4,18 @@ import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
 
 import StepItem from './StepItem';
-import { ApplicationSteps } from '../../../../core/src/redux/reducers/steps';
+import {
+  BrainApplicationSteps,
+  LungApplicationSteps,
+} from '../../../../core/src/redux/reducers/steps';
 import NavigateIcons from './NavigateIcons';
+import { BrainMode, lungMode } from '../../utils/constants';
 
-export const navConfig = Object.values(ApplicationSteps);
+const currentMode = BrainMode;
+
+export const navConfig = Object.values(
+  currentMode == BrainMode ? BrainApplicationSteps : LungApplicationSteps
+);
 
 const reduceChildRoutes = ({ acc, pathname, item, depth }) => {
   const key = item.title + depth;
@@ -68,6 +76,9 @@ const Header = ({ onMobileClose, openMobile }) => {
     </section>
   );
 
+  const applicationTitle =
+    currentMode == BrainMode ? 'Brain Mode' : 'Lung Mode';
+
   return (
     <div
       style={{
@@ -108,7 +119,7 @@ const Header = ({ onMobileClose, openMobile }) => {
             lineHeight: '31px',
           }}
         >
-          <h4>Thetatech</h4>
+          <h4>{applicationTitle}</h4>
         </div>
       </div>
 

@@ -133,6 +133,15 @@ export const setActiveStep = step => ({
   type: 'SET_ACTIVE_STEP',
   step,
 });
+export const setActiveTool = tool => ({
+  type: 'SET_ACTIVE_TOOL',
+  tool,
+});
+
+export const setApplicationMode = mode => ({
+  type: 'SET_APPLICATION_MODE',
+  mode,
+});
 
 export const setMask = mask => ({
   type: 'SET_SELECTION_MASK',
@@ -163,9 +172,11 @@ const actions = {
 
   // set collection action
   setCollections,
+  setApplicationMode,
   // redesign actions
   setActiveStep,
   setMask,
+  setActiveTool,
 };
 
 export default actions;

@@ -42,6 +42,7 @@ store.subscribe(() => {
   });
   sessionStorage.saveState({
     servers: store.getState().servers,
+    mode: store.getState().mode,
   });
 });
 

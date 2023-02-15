@@ -6,6 +6,39 @@ import '../XNATRoiPanel.styl';
 
 const segmentationModule = cornerstoneTools.getModule('segmentation');
 
+const colorMap = {
+  0: 'red',
+  1: 'orange',
+  2: 'yellow',
+  3: 'green',
+  4: 'blue',
+  5: 'indigo',
+  6: 'violet',
+  7: 'pink',
+  8: 'purple',
+  9: 'brown',
+  10: '#1abc9c',
+  11: '#2ecc71',
+  12: '#3498db',
+  13: '#9b59b6',
+  14: '#f1c40f',
+  15: '#e67e22',
+  16: '#e74c3c',
+  17: '#95a5a6',
+  18: '#16a085',
+  19: '#27ae60',
+  20: '#2980b9',
+  21: '#8e44ad',
+  22: '#f39c12',
+  23: '#d35400',
+  24: '#c0392b',
+  25: '#7f8c8d',
+  26: '#2c3e50',
+  27: '#34495e',
+  28: '#1abc9c',
+  29: '#2ecc71',
+  30: '#3498db',
+};
 /**
  * @class SegmentationMenuListItem - Renders metadata for a single segment.
  */
@@ -22,7 +55,9 @@ export default class SegmentationMenuListItem extends React.Component {
     const colorLUT = segmentationModule.getters.colorLUT(
       labelmap3D.colorLUTIndex
     );
+    const displayedColor = colorMap[segmentIndex];
     const color = colorLUT[segmentIndex];
+    // const segmentColor = displayedColor;
     const segmentColor = _colorArrayToRGBColor(color);
 
     this.state = {
@@ -67,6 +102,10 @@ export default class SegmentationMenuListItem extends React.Component {
     });
     let { visible } = this.state;
     const { segmentIndex, labelmap3D } = this.props;
+    console.log({
+      labelmap3D,
+      segmentIndex,
+    });
 
     visible = !visible;
     labelmap3D.segmentsHidden[segmentIndex] = !visible;
@@ -112,6 +151,11 @@ export default class SegmentationMenuListItem extends React.Component {
         slices.push(key);
       }
     }
+
+    console.log('slices', {
+      slices,
+    });
+
     const midSlice = slices.length
       ? slices[Math.floor(slices.length / 2)]
       : undefined;
@@ -129,7 +173,7 @@ export default class SegmentationMenuListItem extends React.Component {
         </td>
         <td className="left-aligned-cell">
           <a
-            style={{ cursor: 'pointer'}}
+            style={{ cursor: 'pointer' }}
             onClick={() => {
               onEditClick(segmentIndex, metadata);
             }}

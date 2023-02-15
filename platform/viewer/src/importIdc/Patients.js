@@ -253,6 +253,9 @@ function PatientsPage(props) {
 
   function handleOnSelect(StudyUID) {
     setStudyUID(StudyUID);
+
+    const series_uid = JSON.parse(localStorage.getItem('series_uid'));
+
     setOpenDialog(true);
   }
 

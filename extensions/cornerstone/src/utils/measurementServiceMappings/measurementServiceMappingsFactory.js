@@ -4,6 +4,7 @@ const SUPPORTED_TOOLS = [
   'Length',
   'EllipticalRoi',
   'RectangleRoi',
+  'SquareRoiTool',
   'ArrowAnnotate',
 ];
 
@@ -107,6 +108,7 @@ const measurementServiceMappingsFactory = measurementService => {
       Length: POLYLINE,
       EllipticalRoi: ELLIPSE,
       RectangleRoi: POLYLINE,
+      SquareRoiTool: POLYLINE,
       ArrowAnnotate: POINT,
     };
 

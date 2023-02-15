@@ -31,8 +31,8 @@ import { triggerEvent } from 'cornerstone-core';
 import { RenderLoadingModal } from '../../appExtensions/LungModuleSimilarityPanel/SearchParameters/SearchDetails';
 import { useLocation } from 'react-router';
 import { radcadapi } from '../../utils/constants';
-
-
+import { JobsContext } from '../../context/JobsContext';
+import { servicesManager } from '../../App';
 
 const { loadAndCacheDerivedDisplaySets, studyMetadataManager } = utils;
 
@@ -52,6 +52,7 @@ const ViewportGrid = function(props) {
   } = props;
 
   const segmentationModule = cornerstoneTools.getModule('segmentation');
+  const { setLoading } = useContext(JobsContext);
 
   const rowSize = 100 / numRows;
   const colSize = 100 / numColumns;
@@ -79,7 +80,9 @@ const ViewportGrid = function(props) {
     location.pathname.includes('/edit') ||
       location.pathname.includes('/radionics')
   );
+
   const [fetchedSegmentations, setFetchedSegmentations] = useState('idle');
+  const { UINotificationService } = servicesManager.services;
 
   const removeSegments = () => {
     const view_ports = cornerstone.getEnabledElements();
@@ -113,6 +116,34 @@ const ViewportGrid = function(props) {
     }
   };
 
+  const removeSegments2 = () => {
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+
+    const segmentationState = segmentationModule.state;
+    let firstImageId = _getFirstImageId(props.viewportData[0]);
+    const brushStackState = segmentationState.series[firstImageId];
+
+    if (!brushStackState) {
+      return [];
+    }
+
+    const labelmap3D =
+      brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
+
+    if (!labelmap3D) {
+      return [];
+    }
+
+    const metadata = labelmap3D.metadata;
+
+    // if (!metadata) {
+    //   return [];
+    // }
+  };
+
   useEffect(() => {
     localStorage.setItem('fetchsegments', JSON.stringify(0));
 
@@ -128,7 +159,7 @@ const ViewportGrid = function(props) {
     return () => {
       //  use localstorage to avoid duplicate segmentations issue 0 for false 1 for true
       // localStorage.setItem('isSegmentLoaded', JSON.stringify(0));
-      removeSegments();
+      // removeSegments();
       // eventBus.remove('importSegmentations');
     };
   }, []);
@@ -203,6 +234,7 @@ const ViewportGrid = function(props) {
     return () => {
       if (
         location.pathname.includes('/edit')
+        // location.pathname.includes('/selectmask')
         // ||location.pathname.includes('/radionics')
       )
         targeDiv.removeEventListener('mouseup', handleDragEnd);
@@ -216,11 +248,16 @@ const ViewportGrid = function(props) {
   }, [editedSegmentationRef.current]);
 
   const handleDragEnd = event => {
+    const tool_to_avoid = ['Pan', 'Zoom', 'Reset', 'More', 'Wwwc'];
+    const last_active_tool = localStorage.getItem('setToolActive') || null;
+    if (tool_to_avoid.includes(last_active_tool)) return;
     console.log('drag ended', {
       props,
       el: elementRef.current,
       cornerstoneTools,
     });
+
+    //  get ative tool here
     let element = elementRef.current;
     console.log({ element });
 
@@ -337,6 +374,12 @@ const ViewportGrid = function(props) {
   const saveSegmentation = ({ segmentation, shape, label }) => {
     return new Promise(async (res, rej) => {
       try {
+        UINotificationService.show({
+          title: 'Saving your last segment',
+          type: 'info',
+          autoClose: true,
+        });
+
         console.log('saving', props);
         const series_uid = props.viewportData[0].SeriesInstanceUID;
         console.log({ series_uid });
@@ -393,25 +436,26 @@ const ViewportGrid = function(props) {
             requestOptions
           );
 
+          UINotificationService.show({
+            title: 'Segment saved successfully',
+            type: 'info',
+            autoClose: true,
+          });
+          setLoading(true);
           response = await response.json();
+          setLoading(false);
           console.log({ saveddata: response });
           // updateAndSaveLocalSegmentations(body);
           res({ response });
-
-          //   console.log('value changed. saving');
-          //   await client
-          //     .put(`/segmentations`, body)
-          //     .then(async response => {
-          //       console.log({ response });
-          //       updateAndSaveLocalSegmentations(body);
-          //       res({ response });
-          //     })
-          //     .catch(error => {
-          //       console.log(error);
-          //     });
         }
       } catch (error) {
+        setLoading(false);
         console.log({ error });
+        UINotificationService.show({
+          title: 'Error saving Segment',
+          type: 'error',
+          autoClose: true,
+        });
       }
     });
   };
@@ -560,6 +604,7 @@ const ViewportGrid = function(props) {
     const labelmap2D = segmentationModule.getters.labelmap2D
       ? segmentationModule.getters.labelmap2D(element)
       : false;
+
     console.log({
       labelmap2D,
     });
@@ -717,6 +762,13 @@ const ViewportGrid = function(props) {
       setFetchedSegmentations('complete');
       refreshViewports();
       triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
+
+      const updatedLabelmap2 = segmentationModule.getters.labelmap2D(element);
+      // updatedLabelmap2.forEach(element => {
+      //   element.pixelData.forEach(xdata => {
+      //     if(xdata ==1) console.log("FOUND-------------------")
+      //   });
+      // });
     } catch (error) {
       setFetchedSegmentations('complete');
     }
@@ -796,6 +848,13 @@ const ViewportGrid = function(props) {
       );
       isSegmentsLoadedSuccessfullyll == 1 ? true : false;
       if (isSegmentsLoadedSuccessfullyll) return;
+
+      UINotificationService.show({
+        title: 'Processing Segmentations',
+        type: 'info',
+        autoClose: true,
+      });
+
       localStorage.setItem('fetchsegments', JSON.stringify(1));
       // const segmentations = localSavedSegmentaion.response.data;
       // setSegmentloadingState(true);

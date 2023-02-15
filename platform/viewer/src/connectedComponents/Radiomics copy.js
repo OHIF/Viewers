@@ -1,35 +1,49 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withRouter, matchPath } from 'react-router';
+import './Radiomics.css';
+import { withRouter } from 'react-router';
 import cornerstoneTools from 'cornerstone-tools';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faRunning,
+  faExclamationTriangle,
+  faCheckCircle,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
-import ToolbarRow from './ToolbarRow.js';
-import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { commandsManager, extensionManager } from './../App.js';
+import {
+  commandsManager,
+  extensionManager,
+  servicesManager,
+} from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
-import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
-
+import * as Plotly from 'plotly.js';
 import './Viewer.css';
 import JobsContextUtil from './JobsContextUtil.js';
-import eventBus from '../lib/eventBus.js';
-import { getEnabledElement } from '../../../../extensions/cornerstone/src/state.js';
-import { radcadapi } from '../utils/constants.js';
+import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
+import eventBus from '../lib/eventBus';
+import { Icon } from '../../../ui/src/elements/Icon';
+import { lungMode, BrainMode, radcadapi } from '../utils/constants';
+import { Morphology3DComponent } from '../components/3DSegmentation/3D';
+import pdfmake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import Summary from '../components/Summary';
+import PdfMaker from '../lib/PdfMaker';
+import exportComponent from '../lib/ExportComponent';
 
-const MINIMUM_SIZE = 100;
-const DEFAULT_SIZE = 512;
-const MAX_TEXTURE_SIZE = 10000;
+pdfmake.vfs = pdfFonts.pdfMake.vfs;
 
-class Viewer extends Component {
+const currentMode = BrainMode;
+
+class Radiomics extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
       PropTypes.shape({
@@ -60,9 +74,7 @@ class Viewer extends Component {
     }),
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
-    // window.store.getState().viewports.viewportSpecificData
     viewports: PropTypes.object.isRequired,
-    // window.store.getState().viewports.activeViewportIndex
     activeViewportIndex: PropTypes.number.isRequired,
     isStudyLoaded: PropTypes.bool,
     dialog: PropTypes.object,
@@ -70,6 +82,29 @@ class Viewer extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      loading: true,
+      showSegments: true,
+      isLeftSidePanelOpen: false,
+      selectedLeftSidePanel: '', // TODO: Don't hardcode this
+      isRightSidePanelOpen: false,
+      selectedRightSidePanel: '',
+      selectedExtraPanel: '',
+      showImages: false,
+      // selectedRightSidePanel: 'xnat-segmentation-panel',
+      thumbnails: [],
+      job: null,
+      isComplete: false,
+      similarityResultState: { knn: [] },
+      isEditSelection: true,
+    };
+
+    this.canvas = React.createRef(null);
+    this.chartRef = React.createRef(null);
+    this.componentRef = React.createRef();
+    this.componentRefNode = React.createRef();
+    this.imageRefs = [];
 
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
@@ -95,56 +130,62 @@ class Viewer extends Component {
     this._getActiveViewport = this._getActiveViewport.bind(this);
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
-  }
 
-  state = {
-    loading: true,
-    isToolSet: false,
-    inEditSegmentationMode: false,
-    isLeftSidePanelOpen: true,
-    selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
-    isRightSidePanelOpen: false,
-    selectedRightSidePanel: '',
-    // selectedRightSidePanel: 'xnat-segmentation-panel',
-    thumbnails: [],
+    // this.canvas = this.canvas.bind(this);
+    // this.componentRef = this.componentRef.bind(this);
+  }
+  onCornerstageLoaded = enabledEvt => {
+    new Promise(resolve => {
+      const checkIfElementsEnabled = setInterval(() => {
+        const enabledElements = cornerstone.getEnabledElements();
+        if (enabledElements.length) {
+          clearInterval(checkIfElementsEnabled);
+          resolve(enabledElements);
+        }
+      }, 100);
+    }).then(enabledElements => {
+      const enabledElement = enabledElements[0].element;
+      let toolData =
+        JSON.parse(localStorage.getItem(this.props.studyInstanceUID)) || {};
+      const { x, y } = toolData;
+      const viewport = cornerstone.getViewport(enabledElement);
+      if (x) viewport.translation.x = x;
+      if (y) viewport.translation.y = y;
+      cornerstone.setViewport(enabledElement, viewport);
+
+      commandsManager.runCommand('setToolActive', {
+        toolName: 'Pan',
+      });
+
+      const isComplete = JSON.parse(
+        localStorage.getItem('radiomicsDone') || 'false'
+      );
+      this.setState({
+        isComplete: isComplete ? true : false,
+      });
+
+      this.handleSidePanelChange('right', 'theta-details-panel');
+      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
+      this.triggerReload();
+    });
   };
 
   componentWillUnmount() {
-    // if (this.props.location.pathname.includes('/edit')) {
-    //   eventBus.dispatch('clearSegmentations', {});
-    // }
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
-
-    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
-    if (enabledElement) {
-      // cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
-      //   enabledElement
-      // );
-      let viewport = cornerstone.getViewport(enabledElement);
-      // if (
-      //   !matchPath(this.props.location.pathname, {
-      //     path:
-      //       '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      //     exact: true,
-      //   })
-      // )
-      localStorage.setItem(
-        this.props.studyInstanceUID,
-        JSON.stringify({
-          voi: viewport.voi,
-          scale: viewport.scale,
-          x: viewport.translation.x,
-          y: viewport.translation.y,
-        })
-      );
-    }
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    if (element)
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
 
     cornerstone.events.removeEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
+    eventBus.remove('fetchscans');
+    eventBus.remove('jobstatus');
   }
 
   retrieveTimepoints = filter => {
@@ -248,77 +289,30 @@ class Viewer extends Component {
         ? activeViewport.displaySetInstanceUID
         : undefined;
 
-      const thumbnails = _mapStudiesToThumbnails(
-        studies,
-        activeDisplaySetInstanceUID
-      );
-
       this.setState({
-        thumbnails,
+        thumbnails: _mapStudiesToThumbnails(
+          studies,
+          activeDisplaySetInstanceUID
+        ),
       });
-
-      this.loadLastActiveStudy(thumbnails);
     }
+    this.registerEventListeners();
+  }
 
-    this.setState({
-      inEditSegmentationMode: matchPath(this.props.location.pathname, {
-        path:
-          '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-        exact: true,
-      })
-        ? true
-        : false,
-    });
-
+  registerEventListeners() {
     cornerstone.events.addEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
+
+    eventBus.on('fetchscans', data => {
+      this.setState({ similarityResultState: data });
+    });
+
+    eventBus.on('jobstatus', data => {
+      this.setState({ job: data });
+    });
   }
-
-  onCornerstageLoaded = enabledEvt => {
-    setTimeout(() => {
-      if (
-        matchPath(this.props.location.pathname, {
-          path:
-            '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-          exact: true,
-        })
-      ) {
-        this.handleSidePanelChange('right', 'xnat-segmentation-panel');
-      }
-    }, 3000);
-
-    setTimeout(() => {
-      // this.loadLastActiveStudy();
-      const enabledElement = enabledEvt.detail.element;
-      let tool_data = null;
-      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : false;
-      if (enabledElement && tool_data) {
-        try {
-          let viewport = cornerstone.getViewport(enabledElement);
-
-          // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
-          if (viewport.scale < 1) return;
-          if (tool_data.x && viewport.translation.x != tool_data.x)
-            viewport.translation.x = tool_data.x;
-          if (tool_data.y && viewport.translation.y != tool_data.y)
-            viewport.translation.y = tool_data.y;
-          if (tool_data.scale && viewport.scale != tool_data.scale)
-            viewport.scale = tool_data.scale;
-          if (tool_data.voi) viewport.voi = tool_data.voi;
-
-          cornerstone.resize(enabledElement, true);
-          cornerstone.setViewport(enabledElement, viewport);
-          cornerstone.fitToWindow(enabledElement);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    }, 2000);
-  };
 
   async handleFetchAndSetSeries(studyInstanceUID) {
     const fetchedSeries = await (async () => {
@@ -347,6 +341,20 @@ class Viewer extends Component {
     });
   }
 
+  triggerReload() {
+    setTimeout(() => {
+      try {
+        document.getElementById('trigger').click();
+      } catch (error) {}
+    }, 5000);
+  }
+
+  handleBack = () => {
+    const location = this.props.location;
+    const pathname = location.pathname.replace('radionics', 'studylist');
+    this.props.history.push(pathname);
+  };
+
   componentDidUpdate(prevProps, prevState) {
     const {
       studies,
@@ -371,20 +379,18 @@ class Viewer extends Component {
       activeViewportIndex !== prevProps.activeViewportIndex ||
       activeDisplaySetInstanceUID !== prevActiveDisplaySetInstanceUID
     ) {
-      const thumbnails = _mapStudiesToThumbnails(
-        studies,
-        activeDisplaySetInstanceUID
-      );
-
       this.setState({
-        thumbnails,
+        thumbnails: _mapStudiesToThumbnails(
+          studies,
+          activeDisplaySetInstanceUID
+        ),
       });
-
-      // this.loadLastActiveStudy(thumbnails);
-
       // if (activeDisplaySetInstanceUID)
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
+      const view_ports = cornerstone.getEnabledElements();
+      const viewports = view_ports[0];
+
       const PatientID = studies[0] && studies[0].PatientID;
       const { currentTimepointId } = this;
 
@@ -395,20 +401,6 @@ class Viewer extends Component {
 
   _getActiveViewport() {
     return this.props.viewports[this.props.activeViewportIndex];
-  }
-
-  loadLastActiveStudy(thumbnails) {
-    // let active_study = JSON.parse(localStorage.getItem('active_study'));
-
-    try {
-      // if (thumbnails[0].thumbnails[2].displaySetInstanceUID)
-      //   this.props.onThumbnailClick(
-      //     thumbnails[0].thumbnails[2].displaySetInstanceUID,
-      //     this.props.studies
-      //   );
-    } catch (error) {
-      console.error(error);
-    }
   }
 
   handleSidePanelChange = (side, selectedPanel) => {
@@ -433,6 +425,177 @@ class Viewer extends Component {
     this.setState(updatedState);
   };
 
+  downloadReportAsPdf = async () => {
+    const base64Images = [];
+    const promises = [];
+    const { UINotificationService } = servicesManager.services;
+
+    const showImages = () => {
+      this.setState({ showImages: true });
+    };
+
+    showImages();
+
+    UINotificationService.show({
+      title: 'Generating Pdf',
+      type: 'info',
+      autoClose: true,
+    });
+
+    // Get images as base64 strings
+    for (let i = 0; i < this.state.similarityResultState.knn.length; i++) {
+      const imageElement = this.imageRefs[i];
+      promises.push(exportComponent(imageElement));
+    }
+
+    try {
+      const imageDatas = await Promise.all(promises);
+      for (const imageData of imageDatas) {
+        base64Images.push(imageData.toDataURL());
+      }
+
+      // Get collage and morphology images as base64 strings
+      let fetchBase64Data = [exportComponent(this.canvas)];
+      if (currentMode == BrainMode) {
+        const customScene = this.componentRef.current.graphRef.current.el.layout
+          .scene;
+        const plotDiv = this.componentRef.current.graphRef.current.el;
+        const { graphDiv } = plotDiv._fullLayout.scene._scene;
+        const divToDownload = {
+          ...graphDiv,
+          layout: { ...graphDiv.layout, scene: customScene },
+        };
+        const morphologyData = Plotly.toImage(divToDownload, {
+          format: 'png',
+          width: 800,
+          height: 600,
+        });
+        fetchBase64Data.push(morphologyData);
+      }
+
+      const imageDatas2 = await Promise.all(fetchBase64Data);
+      const collage = imageDatas2[0];
+      let morphologyBase64;
+      if (currentMode == BrainMode) {
+        morphologyBase64 = imageDatas2[1].toDataURL();
+      }
+
+      const SimilarScans = JSON.parse(
+        localStorage.getItem('print-similarscans') || '{}'
+      );
+      const pdfDefinition = PdfMaker(
+        SimilarScans[0],
+        collage.toDataURL(),
+        base64Images,
+        morphologyBase64
+      );
+
+      this.setState({ showImages: false });
+
+      pdfmake.createPdf(pdfDefinition).download();
+
+      UINotificationService.show({
+        title: 'Pdf Generation Completed',
+        type: 'info',
+        autoClose: true,
+      });
+    } catch (error) {
+      console.log(error);
+      this.setState({ showImages: false });
+    }
+  };
+
+  old_downloadReportAsPdf = () => {
+    const base64 = [];
+    const promises = [];
+    let chart = null;
+    let ohif_image = null;
+
+    this.setState({
+      showImages: true,
+    });
+    const { UINotificationService } = servicesManager.services;
+
+    UINotificationService.show({
+      title: 'Generating Pdf',
+      // message,
+      type: 'info',
+      autoClose: true,
+    });
+
+    // grpah
+    setTimeout(() => {
+      const similarityResultState = this.state.similarityResultState;
+      for (let i = 0; i < similarityResultState.knn.length; i++) {
+        const imageElement = this.imageRefs[i];
+        promises.push(exportComponent(imageElement));
+      }
+
+      Promise.all(promises)
+        .then(data => {
+          data.forEach(element => {
+            base64.push(element.toDataURL());
+          });
+          let fetchBase64Data = [exportComponent(this.canvas)];
+          if (currentMode == BrainMode) {
+            const customScene = this.componentRef.current.graphRef.current.el
+              .layout.scene;
+
+            const plotDiv = this.componentRef.current.graphRef.current.el;
+            const { graphDiv } = plotDiv._fullLayout.scene._scene;
+            // console.log(this.componentRef.current.graphRef.current);
+            const divToDownload = {
+              ...graphDiv,
+              layout: { ...graphDiv.layout, scene: customScene },
+            };
+
+            fetchBase64Data.push(
+              Plotly.toImage(divToDownload, {
+                format: 'png',
+                width: 800,
+                height: 600,
+              })
+            );
+          }
+          return Promise.all(fetchBase64Data);
+        })
+        .then(data => {
+          const collage = data[0];
+          let morphologyBase64;
+          if (currentMode == BrainMode) morphologyBase64 = data[1];
+          // ohif_image = 'data:image/png;base64,' + collage.toDataURL();
+
+          const SimilarScans = JSON.parse(
+            localStorage.getItem('print-similarscans') || '{}'
+          );
+
+          const definition = PdfMaker(
+            SimilarScans[0],
+            collage.toDataURL(),
+            base64,
+            morphologyBase64
+          );
+          this.setState({
+            showImages: false,
+          });
+          pdfmake.createPdf(definition).download();
+
+          UINotificationService.show({
+            title: 'Pdf Generation Completed',
+            // message,
+            type: 'info',
+            autoClose: true,
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({
+            showImages: false,
+          });
+        });
+    }, 500);
+  };
+
   render() {
     if (this.state.loading) {
       return (
@@ -450,22 +613,23 @@ class Viewer extends Component {
       );
     }
 
-    let VisiblePanelLeft, VisiblePanelRight;
+    let SimilarScans, CollageView, extraPanel;
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
     panelExtensions.forEach(panelExt => {
       panelExt.module.components.forEach(comp => {
         if (comp.id === this.state.selectedRightSidePanel) {
-          VisiblePanelRight = comp.component;
+          CollageView = comp.component;
         } else if (comp.id === this.state.selectedLeftSidePanel) {
-          VisiblePanelLeft = comp.component;
+          SimilarScans = comp.component;
         }
       });
     });
 
     const text = '';
+
     return (
-      <>
+      <div style={{}}>
         <JobsContextUtil
           series={
             this.props.studies && this.props.studies.length > 0
@@ -475,92 +639,291 @@ class Viewer extends Component {
           overlay={false}
           instance={text}
         />
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            // display: 'none',
+            display: this.state.isComplete ? 'none' : 'block',
+          }}
+        >
+          {this.state.job && this.state.job.data ? (
+            <div
+              style={{
+                color: 'white',
+                fontSize: '40px',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '40px',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div
+                  className="accordion-title"
+                  style={{
+                    background: 'transparent',
+                  }}
+                >
+                  <div>
+                    <b>Running Collage Job {this.state.job.data.job}</b>
+                  </div>
+                  {/* Not the best way to go about this */}
+                  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                  <div>
+                    {this.state.job.data.status === 'RUNNING' && (
+                      <div>
+                        <FontAwesomeIcon icon={faRunning} />
+                        &nbsp; {this.state.job.data.instances_done}/
+                        {this.state.job.instances}
+                      </div>
+                    )}
+                    {this.state.job.data.status === 'PENDING' && (
+                      <FontAwesomeIcon icon={faSpinner} />
+                    )}
+                    {this.state.job.data.status === 'ERROR' && (
+                      <FontAwesomeIcon
+                        icon={faExclamationTriangle}
+                        // onClick={showError}
+                      />
+                    )}
+                    {this.state.job.data.status === 'DONE' && (
+                      <FontAwesomeIcon icon={faCheckCircle} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p
+              style={{
+                color: 'white',
+                fontSize: '40px',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              Loading...
+            </p>
+          )}
+        </div>
 
-        {/* TOOLBAR */}
-        <ErrorBoundaryDialog context="ToolbarRow">
-          <ToolbarRow
-            activeViewport={
-              this.props.viewports[this.props.activeViewportIndex]
-            }
-            inEditSegmentationMode={this.state.inEditSegmentationMode}
-            isDerivedDisplaySetsLoaded={this.props.isDerivedDisplaySetsLoaded}
-            isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-            isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-            selectedLeftSidePanel={
-              this.state.isLeftSidePanelOpen
-                ? this.state.selectedLeftSidePanel
-                : ''
-            }
-            selectedRightSidePanel={
-              this.state.isRightSidePanelOpen
-                ? this.state.selectedRightSidePanel
-                : ''
-            }
-            handleSidePanelChange={this.handleSidePanelChange}
-            studies={this.props.studies}
-          />
-        </ErrorBoundaryDialog>
+        <div
+          className="printView"
+          // ref={canvas => (this.canvas = canvas)}
+          // ref={el => (this.componentRefNode = el)}
+          style={{
+            paddingBottom: 140,
+            display: this.state.isComplete ? 'block' : 'none',
+          }}
+        >
+          <div className="container">
+            <div className="container-item">
+              <button className="btn btn-danger" onClick={this.handleBack}>
+                Back to Studylist
+              </button>
+            </div>
+          </div>
+          <div className="container">
+            <div className="container-item">
+              <Summary triggerDownload={this.old_downloadReportAsPdf} />
+              {/* RIGHT */}
+              <div
+                style={{
+                  marginTop: '20px',
+                  width: '100%',
+                  borderRadius: '8px',
+                  background: '#000000',
+                  padding: '20px',
+                }}
+              >
+                <div>
+                  <h1
+                    style={{
+                      textAlign: 'left',
+                      margin: 0,
+                    }}
+                  >
+                    Similar Looking Scans
+                  </h1>
+                </div>
 
-        {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
-        {/*<StudyPrefetcher studies={this.props.studies} />*/}
+                <ErrorBoundaryDialog context="RightSidePanel">
+                  <div>
+                    {SimilarScans && (
+                      <SimilarScans
+                        isOpen={true}
+                        viewports={this.props.viewports}
+                        studies={this.props.studies}
+                        activeIndex={this.props.activeViewportIndex}
+                        activeViewport={
+                          this.props.viewports[this.props.activeViewportIndex]
+                        }
+                        getActiveViewport={this._getActiveViewport}
+                      />
+                    )}
+                  </div>
+                </ErrorBoundaryDialog>
+              </div>
+            </div>
+            <div className="container-item-extra">
+              {/* VIEWPORTS + SIDEPANELS */}
+              <div
+                style={{
+                  width: '100%',
+                  background: '#000000',
+                  borderRadius: '8px',
+                  padding: '20px',
+                }}
+              >
+                <div>
+                  <h1
+                    style={{
+                      textAlign: 'left',
+                      margin: 0,
+                    }}
+                  >
+                    Collage
+                  </h1>
+                </div>
 
-        {/* VIEWPORTS + SIDEPANELS */}
-        <div className="FlexboxLayout">
-          {/* LEFT */}
-          <ErrorBoundaryDialog context="LeftSidePanel">
-            <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-              {VisiblePanelLeft ? (
-                <VisiblePanelLeft
-                  viewports={this.props.viewports}
-                  studies={this.props.studies}
-                  activeIndex={this.props.activeViewportIndex}
-                />
-              ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
-            </SidePanel>
-          </ErrorBoundaryDialog>
+                {/* MAIN */}
+                <div className="container">
+                  <div className="container-item-extra">
+                    <div
+                      className={classNames('main-content')}
+                      ref={this.canvas}
+                    >
+                      <ErrorBoundaryDialog context="ViewerMain">
+                        <ConnectedViewerMain
+                          studies={_removeUnwantedSeries(
+                            this.props.studies,
+                            this.source_series_ref
+                          )}
+                          isStudyLoaded={this.props.isStudyLoaded}
+                        />
+                      </ErrorBoundaryDialog>
 
-          {/* MAIN */}
-          <div className={classNames('main-content')}>
-            <ErrorBoundaryDialog context="ViewerMain">
-              <ConnectedViewerMain
-                studies={_removeUnwantedSeries(
-                  this.props.studies,
-                  this.source_series_ref
-                )}
-                isStudyLoaded={this.props.isStudyLoaded}
-              />
-            </ErrorBoundaryDialog>
+                      <div></div>
+                    </div>
+                  </div>
+
+                  <div className="container-item">
+                    <ErrorBoundaryDialog context="RightSidePanel">
+                      <div>
+                        {CollageView && (
+                          <CollageView
+                            isOpen={true}
+                            viewports={this.props.viewports}
+                            studies={this.props.studies}
+                            activeIndex={this.props.activeViewportIndex}
+                            activeViewport={
+                              this.props.viewports[
+                                this.props.activeViewportIndex
+                              ]
+                            }
+                            getActiveViewport={this._getActiveViewport}
+                          />
+                        )}
+                      </div>
+                    </ErrorBoundaryDialog>{' '}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT */}
-          <ErrorBoundaryDialog context="RightSidePanel">
-            <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
-              {VisiblePanelRight && (
-                <VisiblePanelRight
-                  isOpen={this.state.isRightSidePanelOpen}
-                  viewports={this.props.viewports}
-                  studies={this.props.studies}
-                  activeIndex={this.props.activeViewportIndex}
-                  activeViewport={
-                    this.props.viewports[this.props.activeViewportIndex]
-                  }
-                  getActiveViewport={this._getActiveViewport}
+          {currentMode == BrainMode && (
+            <div className="container">
+              <div className="container-item">
+                <Morphology3DComponent
+                  chartRef={this.chartRef}
+                  ref={this.componentRef}
                 />
-              )}
-            </SidePanel>
-          </ErrorBoundaryDialog>
+              </div>
+            </div>
+          )}
+
+          <div className="container">
+            <div
+              id="resetrow"
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                marginTop: '700px',
+                display: this.state.showImages ? 'flex' : 'none',
+              }}
+            >
+              {this.state.similarityResultState.knn.map((data, index) => {
+                this.imageRefs[index] = React.createRef();
+                return (
+                  // <>
+                  <div
+                    key={index}
+                    ref={this.imageRefs[index]}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 500,
+                        height: 500,
+                        position: 'relative',
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: data.region_rectangle.x,
+                          top: data.region_rectangle.y,
+                          width: data.region_rectangle.w,
+                          height: data.region_rectangle.h,
+                          border: data.malignant
+                            ? '3px solid red'
+                            : '3px solid blue',
+                        }}
+                      />
+                      <img
+                        crossOrigin=""
+                        src={data.image_url}
+                        style={{
+                          flex: 1,
+                          marginBottom: 20,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  // </>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </>
+        {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
+        {/*<StudyPrefetcher studies={this.props.studies} />*/}
+        {/* VIEWPORTS + SIDEPANELS */}
+        <div className="FlexboxLayout">{/* LEFT */}</div>
+      </div>
     );
   }
 }
 
-export default withRouter(withDialog(Viewer));
+export default withRouter(withDialog(Radiomics));
 
 /**
  * Async function to check if there are any inconsistences in the series.
@@ -843,7 +1206,6 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         displaySet,
         studies
       );
-
       const active = _isDisplaySetActive(
         displaySet,
         studies,

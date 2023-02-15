@@ -6,6 +6,7 @@ import TriggerAlgorithm from './components/AITrigger';
 import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
+import store from '@ohif/viewer/src/store';
 const scroll = cornerstoneTools.import('util/scroll');
 const scrollTo = cornerstoneTools.import('util/scrollToIndex');
 
@@ -65,9 +66,20 @@ const commandsModule = ({ servicesManager }) => {
     },
     resetViewport: ({ viewports }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+      const preset = 5;
+      const state = store.getState();
+      const { preferences = {} } = state;
+      const { window, level } =
+        preferences.windowLevelData && preferences.windowLevelData[preset];
 
       if (enabledElement) {
         cornerstone.reset(enabledElement);
+        let viewport = cornerstone.getViewport(enabledElement);
+        viewport.voi = {
+          windowWidth: Number(window),
+          windowCenter: Number(level),
+        };
+        cornerstone.setViewport(enabledElement, viewport);
       }
     },
     invertViewport: ({ viewports }) => {
@@ -85,6 +97,10 @@ const commandsModule = ({ servicesManager }) => {
       if (!toolName) {
         console.warn('No toolname provided to setToolActive command');
       }
+
+      localStorage.setItem('setToolActive', toolName);
+
+      console.log('setoolactive', toolName);
       cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
     },
     clearAnnotations: ({ viewports }) => {

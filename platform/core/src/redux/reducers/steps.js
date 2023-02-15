@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash.clonedeep';
 
-export const ApplicationSteps = {
+export const BrainApplicationSteps = {
   1: {
     step: 1,
     title: 'StudyLists ',
@@ -38,6 +38,40 @@ export const ApplicationSteps = {
     icon: 'radiomic',
   },
 };
+
+export const LungApplicationSteps = {
+  1: {
+    step: 1,
+    title: 'StudyLists ',
+    href: '/studylist',
+    icon: 'studylist',
+  },
+  2: {
+    step: 2,
+    title: 'Viewer',
+    href: '/view',
+    icon: 'view',
+  },
+  3: {
+    step: 3,
+    title: 'Segmentations',
+    href: '/edit',
+    icon: 'segmentation',
+  },
+  4: {
+    step: 4,
+    title: 'Mask Selection',
+    href: '/selectmask',
+    icon: 'mask',
+  },
+  5: {
+    step: 5,
+    title: 'Radionics',
+    href: '/radionics',
+    icon: 'radiomic',
+  },
+};
+
 const defaultState = {
   activeStep: {},
 };

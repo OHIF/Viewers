@@ -55,7 +55,12 @@ const exportComponent = node => {
   });
 };
 
-const generateTemplate = (SimilarScans, ohif_image, chart, chart2) => {
+const generateTemplate = (
+  SimilarScans,
+  ohif_image,
+  chart,
+  morphologyBase64
+) => {
   const contents = [];
   const images = {};
   // add radcad
@@ -171,17 +176,18 @@ const generateTemplate = (SimilarScans, ohif_image, chart, chart2) => {
     } else contents.push({ text: '', pageBreak: 'before' });
   });
 
-  contents.push(
-    {
-      text: 'Morphology',
-      style: 'header',
-      pageBreak: 'before',
-    },
-    {
-      image: chart2,
-      fit: [518, 500],
-    }
-  );
+  if (morphologyBase64)
+    contents.push(
+      {
+        text: 'Morphology',
+        style: 'header',
+        pageBreak: 'before',
+      },
+      {
+        image: morphologyBase64,
+        fit: [518, 500],
+      }
+    );
 
   return {
     content: contents,
@@ -788,16 +794,16 @@ class Radiomics extends Component {
 
     // grpah
     setTimeout(() => {
-      const customScene = this.componentRef.current.graphRef.current.el.layout
-        .scene;
+      // const customScene = this.componentRef.current.graphRef.current.el.layout
+      //   .scene;
 
-      const plotDiv = this.componentRef.current.graphRef.current.el;
-      const { graphDiv } = plotDiv._fullLayout.scene._scene;
-      console.log(this.componentRef.current.graphRef.current);
-      const divToDownload = {
-        ...graphDiv,
-        layout: { ...graphDiv.layout, scene: customScene },
-      };
+      // const plotDiv = this.componentRef.current.graphRef.current.el;
+      // const { graphDiv } = plotDiv._fullLayout.scene._scene;
+      // console.log(this.componentRef.current.graphRef.current);
+      // const divToDownload = {
+      //   ...graphDiv,
+      //   layout: { ...graphDiv.layout, scene: customScene },
+      // };
       // end of grah
 
       const similarityResultState = this.state.similarityResultState;
@@ -819,18 +825,18 @@ class Radiomics extends Component {
 
           return Promise.all([
             exportComponent(this.canvas),
-            Plotly.toImage(divToDownload, {
-              format: 'png',
-              width: 800,
-              height: 600,
-            }),
+            // Plotly.toImage(divToDownload, {
+            //   format: 'png',
+            //   width: 800,
+            //   height: 600,
+            // }),
           ]);
         })
         .then(data => {
-          const canvas = data[0];
+          const collage = data[0];
 
-          const gsdsad = data[1];
-          // ohif_image = 'data:image/png;base64,' + canvas.toDataURL();
+          // const morphologyBase64 = data[1];
+          // ohif_image = 'data:image/png;base64,' + collage.toDataURL();
 
           const SimilarScans = JSON.parse(
             localStorage.getItem('print-similarscans') || '{}'
@@ -838,9 +844,9 @@ class Radiomics extends Component {
 
           const definition = generateTemplate(
             SimilarScans[0],
-            canvas.toDataURL(),
+            collage.toDataURL(),
             base64,
-            gsdsad
+            // morphologyBase64
           );
           this.setState({
             showImages: false,
@@ -910,6 +916,7 @@ class Radiomics extends Component {
           style={{
             width: '100vw',
             height: '100vh',
+            // display: 'none',
             display: this.state.isComplete ? 'none' : 'block',
           }}
         >
@@ -933,9 +940,14 @@ class Radiomics extends Component {
                   alignItems: 'center',
                 }}
               >
-                <div className="accordion-title">
+                <div
+                  className="accordion-title"
+                  style={{
+                    background: 'transparent',
+                  }}
+                >
                   <div>
-                    <b>Running Job {this.state.job.data.job}</b>
+                    <b>Running Collage Job {this.state.job.data.job}</b>
                   </div>
                   {/* Not the best way to go about this */}
                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -1016,7 +1028,7 @@ class Radiomics extends Component {
                       margin: 0,
                     }}
                   >
-                    Similarity Looking Scans
+                    Similar Looking Scans
                   </h1>
                 </div>
 
@@ -1104,14 +1116,14 @@ class Radiomics extends Component {
               </div>
             </div>
           </div>
-          <div className="container">
+          {/* <div className="container">
             <div className="container-item">
               <Morphology3DComponent
                 chartRef={this.chartRef}
                 ref={this.componentRef}
               />
             </div>
-          </div>
+          </div> */}
 
           <div className="container">
             <div

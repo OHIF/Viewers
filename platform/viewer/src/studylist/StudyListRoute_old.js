@@ -8,7 +8,6 @@ import {
   PageToolbar,
   TablePagination,
   useDebounce,
-  withModal,
   useMedia,
 } from '@ohif/ui';
 import * as RoutesUtil from '../routes/routesUtil';
@@ -20,7 +19,6 @@ import filesToStudies from '../lib/filesToStudies.js';
 
 // Contexts
 import AppContext from '../context/AppContext';
-import PreferenceButton from '../components/Header/PreferenceButton';
 
 const { urlUtil: UrlUtil } = OHIF.utils;
 
@@ -231,9 +229,9 @@ function StudyListRoute(props) {
 
       <div className="study-list-header print">
         <div className="header">
-          <h1 style={{ fontWeight: 700, fontSize: '24px' }}>
+          {/* <h1 style={{ fontWeight: 700, fontSize: '24px' }}>
             {t('StudyList')}
-          </h1>
+          </h1> */}
         </div>
         <div className="actions">
           <div className="form-inline btn-group pull-right">
@@ -244,7 +242,6 @@ function StudyListRoute(props) {
               {t('Import IDC')}
             </button>
           </div>
-          <PreferenceButton />
 
           {studyListFunctionsEnabled && healthCareApiButtons}
           {/* {studyListFunctionsEnabled && (

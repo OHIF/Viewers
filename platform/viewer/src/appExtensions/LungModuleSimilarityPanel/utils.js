@@ -21,6 +21,7 @@ const reconstructSegs = ({ arr, rows, cols, slices, isNnunet }) => {
   // if (isNnunet) reshaped = reshape(arr, [rows, cols * slices]);
   // else reshaped = reshape(arr, [slices, rows * cols]);
   reshaped = reshape(arr, [slices, rows * cols]);
+
   console.log({ reshaped });
   return reshaped;
 };
@@ -34,9 +35,6 @@ export const uncompress = ({ segmentation, shape, isNnunet }) => {
   const data = Pako.inflate(binData);
   const dataArr = Array.from(data);
   console.log('starting uncompress');
-  console.log('-------------------------------------------');
-  console.log('-------------------------------------------');
-
   console.log({
     isNnunet,
     shape,
@@ -143,6 +141,7 @@ export const getUpdatedSegments = ({
     segmentation,
     currPixelData,
   });
+
   const segmentsOnLabelmap = Array(segmentIndex + 1)
     .fill(0)
     .map((_, index) => {
@@ -150,7 +149,6 @@ export const getUpdatedSegments = ({
       return index;
     });
 
-  console.log({ segmentsOnLabelmap });
   return segmentation.map((item, i) => {
     const updatedPixelData = mergePixelData({
       currPixelData: currPixelData[i] ? currPixelData[i].pixelData : false,
@@ -158,7 +156,6 @@ export const getUpdatedSegments = ({
       segmentIndex,
     });
 
-    // console.log({ updatedPixelData });
     return {
       pixelData: updatedPixelData,
       segmentsOnLabelmap,

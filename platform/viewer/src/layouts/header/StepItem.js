@@ -21,28 +21,13 @@ const StepItem = ({ className, href, open, title, icon, ...rest }) => {
               alignItems: 'center',
             }}
           >
-            <span
-              className="stepper-head-icon"
-              style={
-                {
-                  // margin: '1.5rem 0.5rem 1.5rem 0',
-                }
-              }
-            >
+            <span className="stepper-head-icon">
               <Icon name={icon} style={{ fontSize: '15px' }} />
             </span>
             <span className="stepper-head-text">{title}</span>
           </div>
         </a>
       </li>
-
-      // <div
-      //   className={classNames('steps', {
-      //     active: openProp,
-      //   })}
-      // >
-      //   <div className="title">{title}</div>
-      // </div>
     );
   else
     return (
@@ -61,14 +46,7 @@ const StepItem = ({ className, href, open, title, icon, ...rest }) => {
               alignItems: 'center',
             }}
           >
-            <span
-              className="stepper-head-icon"
-              style={
-                {
-                  // margin: '1.5rem 0.5rem 1.5rem 0',
-                }
-              }
-            >
+            <span className="stepper-head-icon">
               <Icon name={icon} style={{ fontSize: '15px' }} />
             </span>
             <span className="stepper-head-text">{title}</span>

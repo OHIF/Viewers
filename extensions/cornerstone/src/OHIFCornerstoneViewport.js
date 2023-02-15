@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import OHIFCornerstoneViewportOverlay from './components/OHIFCornerstoneViewportOverlay'
+import OHIFCornerstoneViewportOverlay from './components/OHIFCornerstoneViewportOverlay';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
@@ -138,6 +138,9 @@ class OHIFCornerstoneViewport extends Component {
   };
 
   setStateFromProps() {
+    console.log({
+      setStateFromProps: this.props,
+    });
     const { studies, displaySet } = this.props.viewportData;
     const {
       StudyInstanceUID,
@@ -221,6 +224,11 @@ class OHIFCornerstoneViewport extends Component {
       const { displaySet } = this.props.viewportData;
       const { StudyInstanceUID } = displaySet;
 
+      console.log({
+        currentImageIdIndex,
+        StudyInstanceUID,
+      });
+
       if (currentImageIdIndex > 0) {
         this.props.onNewImage({
           StudyInstanceUID,
@@ -232,7 +240,12 @@ class OHIFCornerstoneViewport extends Component {
     };
 
     const warningsOverlay = props => {
-      return <OHIFCornerstoneViewportOverlay {...props} inconsistencyWarnings={inconsistencyWarnings} />
+      return (
+        <OHIFCornerstoneViewportOverlay
+          {...props}
+          inconsistencyWarnings={inconsistencyWarnings}
+        />
+      );
     };
 
     return (

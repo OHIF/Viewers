@@ -61,8 +61,8 @@ const Jobs = ({
     }
 
     if (statusRef.current === 'RUNNING' && data.status === 'DONE') {
-      cornerstone.imageCache.purgeCache();
       localStorage.setItem('radiomicsDone', JSON.stringify(1));
+      cornerstone.imageCache.purgeCache();
       window.location.reload();
     }
   }, [data.status]);

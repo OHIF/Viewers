@@ -200,7 +200,7 @@ class RadiomicsToolbarRow extends Component {
   };
 
   removeToolBarButton = buttons => {
-    const buttonsToRemove = ['AiTrigger'];
+    const buttonsToRemove = ['AiTrigger', 'Reset', 'Zoom', 'Pan'];
     // remove from button where key is in buttonsToRemove
     buttons = buttons.filter(button => buttonsToRemove.includes(button.key));
     return buttons;

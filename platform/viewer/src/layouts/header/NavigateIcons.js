@@ -1,133 +1,143 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
 import classNames from 'classnames';
 import cornerstone from 'cornerstone-core';
 import { Icon } from '../../../../ui/src/elements/Icon';
 import { servicesManager } from '../../App';
 import ReactTooltip from 'react-tooltip';
+import { JobsContext } from '../../context/JobsContext';
+import { BrainMode, lungMode } from '../../utils/constants';
+
+const currentMode = BrainMode;
 
 const NavigateIcons = () => {
   const { UINotificationService } = servicesManager.services;
-
+  const { isloading } = useContext(JobsContext);
   const history = useHistory();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(true);
-  const handleNext = () => {
-    let pathname = null;
-    if (activeStep === 1) pathname = location.pathname.replace('view', 'edit');
-    else if (activeStep === 2)
-      pathname = location.pathname.replace('view', 'nnunet');
-    else if (activeStep === 3)
-      pathname = location.pathname.replace('nnunet', 'edit');
-    else if (activeStep === 4)
-      pathname = location.pathname.replace('edit', 'selectmask');
-    else if (activeStep === 5) {
-      let tool_data = localStorage.getItem('mask');
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      if (tool_data)
-        pathname = location.pathname.replace('selectmask', 'radionics');
-      else {
-        // notify user here
+  const isBrainMode = currentMode == BrainMode;
 
+  const selectMaskStep = isBrainMode ? 5 : 4;
+  const handleNext = () => {
+    const paths =
+      currentMode == BrainMode
+        ? {
+            1: 'edit',
+            2: 'nnunet',
+            3: 'edit',
+            4: 'selectmask',
+          }
+        : {
+            1: 'viewer',
+            2: 'edit',
+            3: 'selectmask',
+          };
+
+    if (activeStep === selectMaskStep) {
+      const toolData = JSON.parse(localStorage.getItem('mask') || '{}');
+
+      if (toolData) {
+        history.push(location.pathname.replace('selectmask', 'radionics'));
+      } else {
         UINotificationService.show({
           title: 'Draw mask region to proceed to Radiomics',
-          // message,
           type: 'error',
           autoClose: true,
         });
       }
+    } else {
+      const newPathname = location.pathname.replace(
+        /(view|edit|nnunet|selectmask)/,
+        paths[activeStep]
+      );
+      history.push(newPathname);
     }
-    if (pathname) history.push(pathname);
   };
 
   const handleBack = () => {
-    let pathname = '';
-    if (activeStep === 2) pathname = '/studylist';
-    else if (activeStep === 3)
-      pathname = location.pathname.replace('nnunet', 'view');
-    // pathname = location.pathname.replace('nnunet', 'selectmask');
-    else if (activeStep === 4)
-      pathname = location.pathname.replace('edit', 'nnunet');
-    else if (activeStep === 5)
-      pathname = location.pathname.replace('selectmask', 'edit');
-    // pathname = location.pathname.replace('selectmask', 'view');
-    else if (activeStep === 6) {
-      pathname = location.pathname.replace('radionics', 'selectmask');
-    }
-    if (pathname) history.push(pathname);
+    const paths =
+      currentMode == BrainMode
+        ? {
+            2: '/studylist',
+            3: 'view',
+            4: 'nnunet',
+            5: 'edit',
+            6: 'selectmask',
+          }
+        : {
+            2: '/studylist',
+            3: 'view',
+            4: 'edit',
+            5: 'selectmask',
+          };
+
+    const newPathname = location.pathname.replace(
+      /(view|edit|nnunet|selectmask|radionics)/,
+      paths[activeStep]
+    );
+    history.push(newPathname);
   };
 
-  const onCornerstageLoaded = ev => {
-    setLoading(false);
-  };
+  const onCornerstoneLoaded = () => setLoading(false);
 
   useEffect(() => {
     cornerstone.events.addEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
-      onCornerstageLoaded
+      onCornerstoneLoaded
     );
     return () =>
       cornerstone.events.removeEventListener(
         cornerstone.EVENTS.ELEMENT_ENABLED,
-        onCornerstageLoaded
+        onCornerstoneLoaded
       );
   }, []);
 
   useEffect(() => {
+    const increment = isBrainMode ? 1 : 0;
     if (location.pathname.includes('/studylist')) {
       setActiveStep(1);
     } else if (location.pathname.includes('/view')) {
       setActiveStep(2);
       localStorage.setItem('direction', 'forward');
-    } else if (location.pathname.includes('/nnunet')) {
+    } else if (location.pathname.includes('/nnunet') && isBrainMode) {
       setActiveStep(3);
       setLoading(false);
     } else if (location.pathname.includes('/edit')) {
       localStorage.setItem('direction', 'back');
-      setActiveStep(4);
+      setActiveStep(3 + increment);
     } else if (location.pathname.includes('/selectmask')) {
-      setActiveStep(5);
+      setActiveStep(4 + increment);
     } else if (location.pathname.includes('/radionics')) {
-      setActiveStep(6);
+      setActiveStep(5 + increment);
     }
   }, [location.pathname]);
 
+  const isForNavigationDisabled =
+    [1].includes(activeStep) || loading || isloading;
+
+  const isBackNavigationDisabled =
+    [isBrainMode ? 6 : 5].includes(activeStep) || loading || isloading;
+
   return (
     <footer className="">
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-        }}
-      >
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div
-          style={{
-            marginRight: '10px',
-          }}
+          style={{ marginRight: '10px' }}
           className={classNames('stepper-head-icon2', {
-            'nav-opacity': activeStep === 1 || loading,
+            'nav-opacity': isForNavigationDisabled,
           })}
         >
           <button
-            data-tip data-for={`back`}
+            data-tip
+            data-for="back"
             className="btn"
-            style={{
-              backgroundColor: 'transparent',
-            }}
-            disabled={activeStep === 1 || loading}
+            style={{ backgroundColor: 'transparent' }}
+            disabled={isForNavigationDisabled}
             onClick={handleBack}
           >
-            
-            <ReactTooltip
-              id={`back`}
-              delayShow={250}
-              // place="right"
-              border={true}
-              // type="light"
-            >
+            <ReactTooltip id={`back`} delayShow={250} border={true}>
               <span>Back</span>
             </ReactTooltip>
             <Icon name="chevron-back" style={{ fontSize: '16px' }} />
@@ -136,29 +146,23 @@ const NavigateIcons = () => {
 
         <div
           className={classNames('stepper-head-icon2', {
-            'nav-opacity': activeStep === 1 || activeStep == 6 || loading,
+            'nav-opacity': isBackNavigationDisabled,
           })}
         >
           <button
-           data-tip data-for={`forward`}
+            data-tip
+            data-for={`forward`}
             className="btn"
             style={{
               backgroundColor: 'transparent',
             }}
-            disabled={activeStep === 1 || activeStep == 6 || loading}
+            disabled={isBackNavigationDisabled}
             onClick={handleNext}
           >
-          <ReactTooltip
-              id={`forward`}
-              delayShow={250}
-              // place="right"
-              border={true}
-              // type="light"
-            >
+            <ReactTooltip id={`forward`} delayShow={250} border={true}>
               <span>Forward</span>
             </ReactTooltip>
-            <Icon          
- name="chevron-forward" style={{ fontSize: '16px' }} />
+            <Icon name="chevron-forward" style={{ fontSize: '16px' }} />
           </button>
         </div>
       </div>

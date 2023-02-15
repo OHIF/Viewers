@@ -1,10 +1,16 @@
 import React, { useContext, useEffect } from 'react';
 import { JobsContext } from '../context/JobsContext';
 
-export default function JobsContextUtil({ series, overlay, instance }) {
+export default function JobsContextUtil({
+  series,
+  overlay,
+  instance,
+  isLoading = false,
+}) {
   const { allSeriesState, setSeries } = useContext(JobsContext);
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
   const { isInstance, setIsInstance } = useContext(JobsContext);
+  const { setLoading } = useContext(JobsContext);
   // const { opacityStatus, setOpacityStatus } = useContext(JobsContext);
   // const { colorMapStatus, setColorMapStatus } = useContext(JobsContext);
 
@@ -19,6 +25,10 @@ export default function JobsContextUtil({ series, overlay, instance }) {
   useEffect(() => {
     setIsInstance(instance);
   }, [instance]);
+
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
 
   // useEffect(() => {
   //   setOpacityStatus(opacity);

@@ -33,9 +33,6 @@ const JobParameters = props => {
   const [layers, setLayers] = React.useState([]);
   const [acLayer, setAcLayer] = React.useState('');
   const colors = cornerstone.colors.getColormapsList();
-  const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
-  const { opacityStatus, setOpacityStatus } = useContext(JobsContext);
-  const { colorMapStatus, setColorMapStatus } = useContext(JobsContext);
   const { UINotificationService } = servicesManager.services;
 
   const access_token = user.access_token;
@@ -169,8 +166,10 @@ const JobParameters = props => {
   };
 
   const sendParams = data => {
-    const series_uid = data.SeriesInstanceUID;
-    const study_uid = data.StudyInstanceUID;
+
+    const series_uid =
+      data.SeriesInstanceUID || JSON.parse(localStorage.getItem('series_uid'));
+    const study_uid = data.StudyInstanceUID || JSON.parse(localStorage.getItem('studyInstanceUID'));
     const email = user.profile.email;
     // const email = 'nick.fragakis@thetatech.ai';
 
@@ -240,104 +239,9 @@ const JobParameters = props => {
     });
   };
 
-  // function for changing opacity of active layer
-  const onHandleOpacuty = event => {
-    setOpacity(event.target.value);
-    const all_layers = cornerstone.getLayers(element);
-    if (all_layers.length > 1) {
-      const layer = cornerstone.getLayer(element, all_layers[1].layerId);
-
-      // setting prefered opacity for active layer
-      layer.options.opacity = event.target.value;
-
-      setOpacityStatus(event.target.value);
-
-      // update the element to apply new settings
-      cornerstone.updateImage(element);
-    }
-  };
-
-  // function for changing the colormap for an active layer
-  const onHandleColorChange = event => {
-    // console.log(event.target.value);
-    setColorMap(event.target.value);
-
-    // getting all active layers in the current element
-    const all_layers = cornerstone.getLayers(element);
-
-    if (all_layers.length > 1) {
-      const layer = cornerstone.getLayer(element, all_layers[1].layerId);
-
-      // setting colormap to selected color
-      layer.viewport.colormap = event.target.value;
-
-      setColorMapStatus(event.target.value);
-
-      // update the element to apply new settings
-      cornerstone.updateImage(element);
-    }
-  };
-
   return (
     <div className="component">
-      {/* <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          width: '100%',
-          justifyContent: 'space-around',
-          // flexWrap: 'wrap',
-        }}
-      >
-        <div
-          className={classNames('btn', {
-            'btn-primary': true,
-          })}
-          onClick={() => setActiveTab(!activeTab)}
-        >
-          {activeTab ? ' Hide Layout Parameter' : ' Show Layout Parameter'}
-        </div>
-      </div> */}
-
-      {/* {activeTab && (
-        <>
-          <div className="title-header">Layer Controls</div>
-
-          <h4>Opacity Settings</h4>
-          <form>
-            <label>
-              <input
-                id="imageOpacity"
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={opacity}
-                onChange={onHandleOpacuty}
-                disabled={overlayStatus === true ? false : true}
-              />
-            </label>
-
-            <h4>Color Maps</h4>
-            <label>
-              <select
-                id="colormaps"
-                className="select-container"
-                onChange={onHandleColorChange}
-                value={colorMap}
-                disabled={overlayStatus === true ? false : true}
-              >
-                {colors.map((color, index) => (
-                  <option key={index} value={color.id}>
-                    {color.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </form>
-        </>
-      )} */}
-
+  
       {Object.keys(toolData).length > 0 && (
         <div>
           <label>

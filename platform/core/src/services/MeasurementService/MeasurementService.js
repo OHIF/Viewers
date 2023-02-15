@@ -204,6 +204,13 @@ class MeasurementService {
     );
   }
 
+
+  clearMeasurements() {
+    this.measurements = {};
+    this._jumpToMeasurementCache = {};
+    // this.publish(this.EVENTS.MEASUREMENTS_CLEARED);
+  }
+
   /**
    * Get annotation for specific source.
    *
@@ -370,6 +377,8 @@ class MeasurementService {
       );
     }
   }
+
+  
 
   /**
    * Get measurement mapping function if matching criteria.

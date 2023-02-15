@@ -1,31 +1,351 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './Radiomics.css';
-import { withRouter, matchPath } from 'react-router';
+import { withRouter } from 'react-router';
 import cornerstoneTools from 'cornerstone-tools';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import ErrorBoundaryDialog from '../components/ErrorBoundaryDialog';
-import { commandsManager, extensionManager } from '../App.js';
-import { ReconstructionIssues } from '../../../core/src/enums.js';
+import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
+import { commandsManager, extensionManager } from './../App.js';
+import { ReconstructionIssues } from './../../../core/src/enums.js';
 import '../googleCloud/googleCloud.css';
 // import Lottie from 'lottie-react';
 import cornerstone from 'cornerstone-core';
-import csTools from 'cornerstone-tools';
+import * as Plotly from 'plotly.js';
+import ReactDOM from 'react-dom';
+import html2canvas from 'html2canvas';
 
 import './Viewer.css';
 import JobsContextUtil from './JobsContextUtil.js';
-import ToolbarRow from './RadiomicsToolbarRow';
-import SidePanel from '../components/SidePanel';
-import ConnectedStudyBrowser from './ConnectedStudyBrowser';
-import { radcadapi } from '../utils/constants';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
+import eventBus from '../lib/eventBus';
+import { Icon } from '../../../ui/src/elements/Icon';
+import { radcadapi } from '../utils/constants';
+import { Morphology3DComponent } from '../components/3DSegmentation/3D';
+import pdfmake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 
-class SelectMask extends Component {
+pdfmake.vfs = pdfFonts.pdfMake.vfs;
+
+const exportComponent = node => {
+  if (!node.current) {
+    throw new Error("'node' must be a RefObject");
+  }
+
+  const element = ReactDOM.findDOMNode(node.current);
+
+  return html2canvas(element, {
+    scrollY: -window.scrollY,
+    allowTaint: true,
+    useCORS: true,
+  });
+};
+
+const generateTemplate = (SimilarScans, ohif_image, chart, chart2) => {
+  const contents = [];
+  const images = {};
+  // add radcad
+
+  contents.push(
+    {
+      stack: [
+        {
+          text: 'RadCard Report Summary',
+          style: 'header',
+        },
+      ],
+      style: 'header',
+      background: 'lightgray',
+    },
+    {
+      alignment: 'left',
+      columns: ['Patient Id : ', 'ab123'],
+    },
+    {
+      alignment: 'left',
+      columns: ['Classifier : ', 'ResNet -18'],
+    },
+    {
+      alignment: 'left',
+      columns: ['Prediction : ', 'Nescrosis'],
+    },
+    {
+      alignment: 'left',
+      columns: ['Confidence : ', '81%'],
+    }
+  );
+
+  contents.push(
+    {
+      text: 'Collage Radiomics',
+      style: 'header',
+    },
+    {
+      image: ohif_image,
+      width: 520,
+      height: 500,
+    }
+  );
+
+  contents.push({
+    text: 'Similar looking Scans',
+    style: 'header',
+    pageBreak: 'before',
+  });
+  images['query'] = SimilarScans.query;
+
+  SimilarScans.knn.forEach((data, index) => {
+    const imageIndex = 'img' + index;
+    images[imageIndex + 'thumb'] = data.region_thumbnail_url;
+    images[imageIndex] = data.image_url;
+    const malignant = data.malignant ? ' Yes' : 'No';
+    if (index == 0)
+      contents.push({
+        margin: [0, 10],
+        stack: [
+          {
+            image: 'query',
+            fit: [150, 150],
+          },
+          {
+            text: 'Original Query',
+            fontsize: 14,
+          },
+        ],
+      });
+
+    contents.push({
+      alignment: 'right',
+      // pageBreak: 'before',
+      columns: [
+        {
+          alignment: 'left',
+          fontSize: 14,
+          stack: [
+            {
+              image: imageIndex + 'thumb',
+              fit: [150, 150],
+            },
+            'Similarity:' + data.similarity_score,
+            'Dataset:' + data.dataset,
+            'Dataset Id:' + data.data_id,
+            'Malignant: ' + malignant,
+          ],
+        },
+        {
+          width: 400,
+          stack: [
+            // {
+            //   image: imageIndex,
+            //   fit: [300, 300],
+            // },
+            {
+              image: chart[index],
+              fit: [300, 300],
+              // relativePosition: {
+              //   y: -355,
+              //   x: -15,
+              // },
+              // opacity: 0.2,
+            },
+          ],
+        },
+      ],
+    });
+    contents.push({ text: '', margin: [0, 10] });
+    if (index % 2 == 0) {
+    } else contents.push({ text: '', pageBreak: 'before' });
+  });
+
+  // contents.push(
+  //   {
+  //     text: 'Morphology',
+  //     style: 'header',
+  //     pageBreak: 'before',
+  //   },
+  //   {
+  //     image: chart2,
+  //     fit: [518, 500],
+  //   }
+  // );
+
+  return {
+    content: contents,
+    defaultStyle: {
+      fontSize: 14,
+    },
+    styles: {
+      header: {
+        background: 'lightgray',
+        fontSize: 28,
+        bold: true,
+        margin: [0, 20],
+      },
+      normal: {
+        fontSize: 22,
+      },
+    },
+    images,
+  };
+};
+
+const RadiomicSummary = props => {
+  useEffect(() => {
+    localStorage.setItem(
+      'summary',
+      JSON.stringify({
+        name: 'sadsad',
+        name2: 'sadsad',
+        name3: 'sadsad',
+      })
+    );
+  }, []);
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        background: '#000000',
+        borderRadius: '8px',
+        padding: '20px',
+      }}
+    >
+      <div
+        style={{
+          paddingBottom: '40px',
+        }}
+      >
+        <h1
+          style={{
+            textAlign: 'left',
+            margin: 0,
+          }}
+        >
+          RadCard Report Summary
+        </h1>
+      </div>
+
+      <div
+        style={{
+          height: '100%',
+          flex: 1,
+        }}
+      >
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Patient ID :{' '}
+          </h2>
+          <h2>abc123 </h2>
+        </div>
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            marginTop: 12,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Classifier:{' '}
+          </h2>
+          <h2>Resnet-18 </h2>
+        </div>
+
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            marginTop: 12,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Prediction:{' '}
+          </h2>
+          <h2>Necrosis</h2>
+        </div>
+
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            marginTop: 12,
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Confidence:{' '}
+          </h2>
+          <h2>81%</h2>
+        </div>
+
+        <div
+          className=""
+          style={{
+            marginTop: 12,
+          }}
+        >
+          <button
+            onClick={props.triggerDownload}
+            // style={{
+            //   marginTop: '20px',
+            //   border: '1px yellow solid',
+            //   fontSize: '24px',
+            //   background: 'black',
+            //   color: 'white',
+            //   padding: '12px',
+            // }}
+            className="btn btn-primary btn-large"
+          >
+            Print To PDF
+          </button>
+        </div>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+        }}
+      ></div>
+    </div>
+  );
+};
+
+class Radiomics extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
       PropTypes.shape({
@@ -66,7 +386,27 @@ class SelectMask extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      loading: true,
+      showSegments: true,
+      isLeftSidePanelOpen: false,
+      selectedLeftSidePanel: '', // TODO: Don't hardcode this
+      isRightSidePanelOpen: false,
+      selectedRightSidePanel: '',
+      selectedExtraPanel: '',
+      // selectedRightSidePanel: 'xnat-segmentation-panel',
+      thumbnails: [],
+      imageRefs: [],
+      similarityResultState: {},
+      isEditSelection: true,
+    };
+
+    this.canvas = React.createRef(null);
+    this.chartRef = React.createRef(null);
     this.componentRef = React.createRef();
+    this.componentRefNode = React.createRef();
+    this.imageRefs = [];
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
 
@@ -91,30 +431,29 @@ class SelectMask extends Component {
     this._getActiveViewport = this._getActiveViewport.bind(this);
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
+
+    // this.canvas = this.canvas.bind(this);
+    // this.componentRef = this.componentRef.bind(this);
   }
 
-  state = {
-    loading: true,
-    isLeftSidePanelOpen: false,
-    selectedLeftSidePanel: '', // TODO: Don't hardcode this
-    isRightSidePanelOpen: false,
-    selectedRightSidePanel: '',
-    // selectedRightSidePanel: 'xnat-segmentation-panel',
-    thumbnails: [],
-    isEditSelection: false,
-  };
+  loadLastActiveStudy() {
+    // let active_study = JSON.parse(localStorage.getItem('active_study'));
+
+    if (this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID)
+      this.props.onThumbnailClick(
+        this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID,
+        this.props.studies
+      );
+  }
 
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
-      // this.loadLastActiveStudy();
-      
-      const options = {
-        type: 'click',
-      };
-
-      commandsManager.runCommand('triggerAlgorithm', options);
-      
       const enabledElement = enabledEvt.detail.element;
+
+      commandsManager.runCommand('setToolActive', {
+        toolName: 'Pan',
+      });
+
       let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
         tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
@@ -126,30 +465,41 @@ class SelectMask extends Component {
         if (tool_data.voi) viewport.voi = tool_data.voi;
         cornerstone.setViewport(enabledElement, viewport);
       }
-      // this.handleSidePanelChange('right', 'lung-module-similarity-panel');
-      // this.handleSidePanelChange('left', 'theta-details-panel');
-    }, 5);
+
+      this.handleSidePanelChange('right', 'theta-details-panel');
+      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
+
+      //  handle radiomicsDone
+      const radiomicsDone = JSON.parse(
+        localStorage.getItem('radiomicsDone') || 0
+      );
+      this.setState({
+        isComplete: radiomicsDone == 1 ? true : false,
+      });
+      this.triggerReload();
+    }, 5000);
+    setTimeout(() => {
+      let similarityResultState = JSON.parse(
+        localStorage.getItem('print-similarscans') || { knn: [] }
+      );
+      similarityResultState = similarityResultState[0];
+
+      console.log({ similarityResultState });
+      this.setState({
+        similarityResultState,
+      });
+    }, 10000);
   };
 
   componentWillUnmount() {
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
-    // const { EVENTS } = cornerstoneTools;
-    // const view_ports = cornerstone.getEnabledElements();
-    // const viewports = view_ports[0];
-
-    // const element = getEnabledElement(view_ports.indexOf(viewports));
-    // if (element) {
-    //   element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
-    //     console.log('measurement completed', event);
-    //   });
-    // }
-    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
-    if (enabledElement)
-      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
-        enabledElement
-      );
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    if (element)
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
 
     cornerstone.events.removeEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
@@ -228,8 +578,6 @@ class SelectMask extends Component {
     const currentTimepointId = 'TimepointId';
 
     this.handleFetchAndSetSeries(rest.studyInstanceUIDs[0]);
-    localStorage.setItem('radiomicsDone', JSON.stringify(0));
-    localStorage.setItem('mask', null);
 
     const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated,
@@ -268,8 +616,6 @@ class SelectMask extends Component {
       });
     }
 
-    localStorage.setItem('radiomicsDone', JSON.stringify(0));
-
     cornerstone.events.addEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
@@ -305,8 +651,10 @@ class SelectMask extends Component {
 
   triggerReload() {
     setTimeout(() => {
-      // document.getElementById('trigger').click();
-    }, 2000);
+      try {
+        document.getElementById('trigger').click();
+      } catch (error) {}
+    }, 5000);
     // if (window && window.parent) {
     //   window.parent.postMessage(
     //     {
@@ -317,9 +665,9 @@ class SelectMask extends Component {
     // }
   }
 
-  handleGoRadionics = () => {
+  handleBack = () => {
     const location = this.props.location;
-    const pathname = location.pathname.replace('selectmask', 'radionics');
+    const pathname = location.pathname.replace('radionics', 'studylist');
     this.props.history.push(pathname);
   };
 
@@ -367,16 +715,6 @@ class SelectMask extends Component {
     }
   }
 
-  loadLastActiveStudy() {
-    // let active_study = JSON.parse(localStorage.getItem('active_study'));
-
-    if (this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID)
-      this.props.onThumbnailClick(
-        this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID,
-        this.props.studies
-      );
-  }
-
   _getActiveViewport() {
     return this.props.viewports[this.props.activeViewportIndex];
   }
@@ -403,126 +741,326 @@ class SelectMask extends Component {
     this.setState(updatedState);
   };
 
-  render() {
-    if (this.state.loading) {
-      return (
-        <div
-          style={{
-            width: '100vw',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <p style={{ color: 'white', fontSize: '40px' }}>Loading...</p>
-        </div>
-      );
-    }
+  downloadReportAsPdf = () => {
+    const base64 = [];
+    const promises = [];
+    let chart = null;
+    let ohif_image = null;
 
-    let VisiblePanelLeft, VisiblePanelRight;
+    let similarityResultState = JSON.parse(
+      localStorage.getItem('print-similarscans') || { knn: [] }
+    );
+    similarityResultState = similarityResultState[0];
+
+    for (let i = 0; i < similarityResultState.knn.length; i++) {
+      const imageElement = this.imageRefs[i];
+      promises.push(exportComponent(imageElement));
+    }
+    // grpah
+
+    // const customScene = this.componentRef.current.graphRef.current.el.layout
+    //   .scene;
+
+    // const plotDiv = this.componentRef.current.graphRef.current.el;
+    // const { graphDiv } = plotDiv._fullLayout.scene._scene;
+    // console.log(this.componentRef.current.graphRef.current);
+    // const divToDownload = {
+    //   ...graphDiv,
+    //   layout: { ...graphDiv.layout, scene: customScene },
+    // };
+    // end of grah
+
+    Promise.all(promises)
+      .then(data => {
+        data.forEach(element => {
+          base64.push(element.toDataURL());
+        });
+
+        return Promise.all([
+          exportComponent(this.canvas),
+          //   Plotly.toImage(divToDownload, {
+          //     format: 'png',
+          //     width: 800,
+          //     height: 600,
+          //   }),
+        ]);
+      })
+      .then(data => {
+        const canvas = data[0];
+
+        // const gsdsad = data[1];
+        // ohif_image = 'data:image/png;base64,' + canvas.toDataURL();
+
+        const SimilarScans = JSON.parse(
+          localStorage.getItem('print-similarscans') || '{}'
+        );
+
+        const definition = generateTemplate(
+          SimilarScans[0],
+          canvas.toDataURL(),
+          base64
+          // gsdsad
+        );
+        pdfmake.createPdf(definition).download();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  render() {
+    // if (this.state.loading) {
+    //   return (
+    //     <div
+    //       style={{
+    //         width: '100vw',
+    //         height: '100vh',
+    //         display: 'flex',
+    //         justifyContent: 'center',
+    //         alignItems: 'center',
+    //       }}
+    //     >
+    //       <p style={{ color: 'white', fontSize: '40px' }}>Loading...</p>
+    //     </div>
+    //   );
+    // }
+
+    let SimilarScans, CollageView, extraPanel;
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
     panelExtensions.forEach(panelExt => {
       panelExt.module.components.forEach(comp => {
         if (comp.id === this.state.selectedRightSidePanel) {
-          VisiblePanelRight = comp.component;
+          CollageView = comp.component;
         } else if (comp.id === this.state.selectedLeftSidePanel) {
-          VisiblePanelLeft = comp.component;
+          SimilarScans = comp.component;
         }
       });
     });
 
     const text = '';
+    let similarityResultState = JSON.parse(
+      localStorage.getItem('print-similarscans') || { knn: [] }
+    );
+
+    similarityResultState = similarityResultState[0];
+
+    if (similarityResultState && similarityResultState.knn) {
+    } else similarityResultState = { knn: [] };
+
+    // const imageRefs = [];
+
     return (
-      <>
+      <div style={{}}>
         <JobsContextUtil
           series={
             this.props.studies && this.props.studies.length > 0
               ? this.props.studies[0].series
-              : []
+              : { k: [] }
           }
           overlay={false}
           instance={text}
         />
-        {/* layout */}
-
-        <div>
+        {/* <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            display: this.state.isComplete ? 'none' : 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <p style={{ color: 'white', fontSize: '40px' }}>Loading...</p>
+        </div> */}
+        <div
+          className="printView"
+          // ref={canvas => (this.canvas = canvas)}
+          // ref={el => (this.componentRefNode = el)}
+          style={{
+            paddingBottom: 140,
+            // display: this.state.isComplete ? 'block' : 'none',
+          }}
+        >
           <div className="container">
-            {/* VIEWPORTS + SIDEPANELS */}
-            <div
-              style={{
-                width: '100%',
-                padding: '20px',
-              }}
-            >
+            <div className="container-item">
+              <button className="btn btn-danger" onClick={this.handleBack}>
+                Back to Studylist
+              </button>
+            </div>
+          </div>
+          <div className="container">
+            <div className="container-item">
+              <RadiomicSummary triggerDownload={this.downloadReportAsPdf} />
+              {/* RIGHT */}
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  marginTop: '20px',
+                  width: '100%',
+                  borderRadius: '8px',
+                  background: '#000000',
+                  padding: '20px',
                 }}
               >
                 <div>
-                  <h2
+                  <h1
                     style={{
                       textAlign: 'left',
+                      margin: 0,
                     }}
                   >
-                    Edit Selection
-                  </h2>
+                    Similarity Looking Scans
+                  </h1>
                 </div>
-                {/* <div>
-                  <button
-                    className="btn btn-primary"
-                    onClick={this.handleGoRadionics}
-                  >
-                    Generate
-                  </button>
-                </div> */}
-              </div>
 
-              <ErrorBoundaryDialog context="ToolbarRow">
-                <ToolbarRow
-                  activeViewport={
-                    this.props.viewports[this.props.activeViewportIndex]
-                  }
-                  inEditSegmentationMode={this.state.inEditSegmentationMode}
-                  isDerivedDisplaySetsLoaded={
-                    this.props.isDerivedDisplaySetsLoaded
-                  }
-                  isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-                  isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-                  selectedLeftSidePanel={
-                    this.state.isLeftSidePanelOpen
-                      ? this.state.selectedLeftSidePanel
-                      : ''
-                  }
-                  selectedRightSidePanel={
-                    this.state.isRightSidePanelOpen
-                      ? this.state.selectedRightSidePanel
-                      : ''
-                  }
-                  handleSidePanelChange={this.handleSidePanelChange}
-                  studies={this.props.studies}
-                />
-              </ErrorBoundaryDialog>
-
-              {/* MAIN */}
-              <div
-                className={classNames('main-content')}
-                ref={this.componentRef}
-              >
-                <ErrorBoundaryDialog context="ViewerMain">
-                  <ConnectedViewerMain
-                    studies={_removeUnwantedSeries(
-                      this.props.studies,
-                      this.source_series_ref
+                <ErrorBoundaryDialog context="RightSidePanel">
+                  <div>
+                    {SimilarScans && (
+                      <SimilarScans
+                        isOpen={true}
+                        viewports={this.props.viewports}
+                        studies={this.props.studies}
+                        activeIndex={this.props.activeViewportIndex}
+                        activeViewport={
+                          this.props.viewports[this.props.activeViewportIndex]
+                        }
+                        getActiveViewport={this._getActiveViewport}
+                      />
                     )}
-                    isStudyLoaded={this.props.isStudyLoaded}
-                  />
+                  </div>
                 </ErrorBoundaryDialog>
               </div>
+            </div>
+            <div className="container-item-extra">
+              {/* VIEWPORTS + SIDEPANELS */}
+              <div
+                style={{
+                  width: '100%',
+                  background: '#000000',
+                  borderRadius: '8px',
+                  padding: '20px',
+                }}
+              >
+                <div>
+                  <h1
+                    style={{
+                      textAlign: 'left',
+                      margin: 0,
+                    }}
+                  >
+                    Collage
+                  </h1>
+                </div>
+
+                {/* MAIN */}
+                <div className="container">
+                  <div className="container-item-extra">
+                    <div
+                      className={classNames('main-content')}
+                      ref={this.canvas}
+                    >
+                      <ErrorBoundaryDialog context="ViewerMain">
+                        <ConnectedViewerMain
+                          studies={_removeUnwantedSeries(
+                            this.props.studies,
+                            this.source_series_ref
+                          )}
+                          isStudyLoaded={this.props.isStudyLoaded}
+                        />
+                      </ErrorBoundaryDialog>
+
+                      <div></div>
+                    </div>
+                  </div>
+
+                  <div className="container-item">
+                    <ErrorBoundaryDialog context="RightSidePanel">
+                      <div>
+                        {CollageView && (
+                          <CollageView
+                            isOpen={true}
+                            viewports={this.props.viewports}
+                            studies={this.props.studies}
+                            activeIndex={this.props.activeViewportIndex}
+                            activeViewport={
+                              this.props.viewports[
+                                this.props.activeViewportIndex
+                              ]
+                            }
+                            getActiveViewport={this._getActiveViewport}
+                          />
+                        )}
+                      </div>
+                    </ErrorBoundaryDialog>{' '}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="container">
+            <div className="container-item">
+              <Morphology3DComponent
+                chartRef={this.chartRef}
+                ref={this.componentRef}
+              />
+            </div>
+          </div>
+
+          <div className="container">
+            <div
+              id="resetrow"
+              style={{
+                width: '100%',
+                display: 'flex',
+                // flexDirection: 'column',
+                flexWrap: 'wrap',
+                marginTop: '700',
+              }}
+            >
+              {similarityResultState.knn.map((data, index) => {
+                this.imageRefs[index] = React.createRef();
+                return (
+                  <>
+                    <div
+                      ref={this.imageRefs[index]}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 500,
+                          height: 500,
+                          position: 'relative',
+                        }}
+                      >
+                        <div
+                          style={{
+                            position: 'absolute',
+                            left: data.region_rectangle.x,
+                            top: data.region_rectangle.y,
+                            width: data.region_rectangle.w,
+                            height: data.region_rectangle.h,
+                            border: data.malignant
+                              ? '3px solid red'
+                              : '3px solid blue',
+                          }}
+                        />
+                        <img
+                          crossOrigin="anonymous"
+                          src={data.image_url}
+                          style={{
+                            flex: 1,
+                            marginBottom: 20,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -531,30 +1069,13 @@ class SelectMask extends Component {
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
 
         {/* VIEWPORTS + SIDEPANELS */}
-        <div className="FlexboxLayout">
-          {/* LEFT */}
-          <ErrorBoundaryDialog context="LeftSidePanel">
-            <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-              {VisiblePanelLeft ? (
-                <VisiblePanelLeft
-                  viewports={this.props.viewports}
-                  studies={this.props.studies}
-                  activeIndex={this.props.activeViewportIndex}
-                />
-              ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
-            </SidePanel>
-          </ErrorBoundaryDialog>
-        </div>
-      </>
+        <div className="FlexboxLayout">{/* LEFT */}</div>
+      </div>
     );
   }
 }
-export default withRouter(withDialog(SelectMask));
+
+export default withRouter(withDialog(Radiomics));
 
 /**
  * Async function to check if there are any inconsistences in the series.
