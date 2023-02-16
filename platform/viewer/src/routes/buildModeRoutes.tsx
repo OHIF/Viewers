@@ -68,6 +68,7 @@ export default function buildModeRoutes({
       routes.push({
         path,
         children,
+        private: true,
       });
     });
 
