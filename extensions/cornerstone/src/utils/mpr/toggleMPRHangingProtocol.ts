@@ -59,7 +59,7 @@ export default function toggleMPRHangingProtocol({
     viewports[activeViewportIndex].displaySetInstanceUIDs;
 
   // What is the current active protocol and stage number to restore later
-  const { protocol, stage } = hangingProtocolService.getActiveProtocol();
+  const { protocol, stageIndex } = hangingProtocolService.getActiveProtocol();
 
   const restoreErrorCallback = error => {
     console.error(error);
@@ -81,14 +81,14 @@ export default function toggleMPRHangingProtocol({
       toolOptions,
     } = _getViewportsInfo({
       protocol,
-      stage,
+      stageIndex,
       viewports,
       servicesManager,
     });
 
     setCachedState(
       protocol,
-      stage,
+      stageIndex,
       viewportMatchDetails,
       viewportStructure,
       toolOptions

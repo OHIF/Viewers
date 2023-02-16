@@ -6,7 +6,7 @@ import { Icon } from '../';
 import { StringNumber } from '../../types';
 
 /**
- *
+ * Display a thumbnail for a display set.
  */
 const Thumbnail = ({
   displaySetInstanceUID,
@@ -16,11 +16,12 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  countIcon,
   dragData,
   isActive,
   onClick,
   onDoubleClick,
-}) => {
+}): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
   // specified item.
@@ -73,7 +74,8 @@ const Thumbnail = ({
             {seriesNumber}
           </div>
           <div className="flex flex-row items-center flex-1">
-            <Icon name="group-layers" className="w-3 mr-2" /> {numInstances}
+            <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
+            {` ${numInstances}`}
           </div>
         </div>
         <div className="text-base text-white break-all">{description}</div>

@@ -27,18 +27,6 @@ function _createButton(type, id, icon, label, commands, tooltip, uiType) {
   };
 }
 
-function _createCommands(commandName, toolName, toolGroupIds) {
-  return toolGroupIds.map(toolGroupId => ({
-    /* It's a command that is being run when the button is clicked. */
-    commandName,
-    commandOptions: {
-      toolName,
-      toolGroupId,
-    },
-    context: 'CORNERSTONE',
-  }));
-}
-
 const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
@@ -312,9 +300,11 @@ const toolbarButtons = [
       label: 'MPR',
       commands: [
         {
-          commandName: 'toggleMPR',
-          commandOptions: {},
-          context: 'CORNERSTONE',
+          commandName: 'toggleHangingProtocol',
+          commandOptions: {
+            protocolId: 'mpr',
+          },
+          context: 'DEFAULT',
         },
       ],
     },
@@ -330,8 +320,8 @@ const toolbarButtons = [
         {
           commandName: 'setToolActive',
           commandOptions: {
-            toolGroupId: 'mpr',
             toolName: 'Crosshairs',
+            toolGroupId: 'mpr',
           },
           context: 'CORNERSTONE',
         },

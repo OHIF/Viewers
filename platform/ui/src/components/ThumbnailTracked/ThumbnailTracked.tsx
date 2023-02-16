@@ -13,6 +13,7 @@ const ThumbnailTracked = ({
   description,
   seriesNumber,
   numInstances,
+  countIcon,
   dragData,
   onClick,
   onDoubleClick,
@@ -117,6 +118,7 @@ const ThumbnailTracked = ({
         description={description}
         seriesNumber={seriesNumber}
         numInstances={numInstances}
+        countIcon={countIcon}
         isActive={isActive}
         onClick={onClick}
         onDoubleClick={onDoubleClick}

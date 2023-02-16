@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import OHIF, { utils } from '@ohif/core';
+import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
+import { PublicViewportOptions } from '@ohif/extension-cornerstone';
 
 import {
   Icon,
@@ -27,6 +28,7 @@ function OHIFCornerstoneSRViewport(props) {
     dataSource,
     displaySets,
     viewportIndex,
+    viewportOptions,
     viewportLabel,
     servicesManager,
     extensionManager,
@@ -215,6 +217,7 @@ function OHIFCornerstoneSRViewport(props) {
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
         viewportOptions={{
+          ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
         }}
         onElementEnabled={onElementEnabled}
@@ -419,6 +422,9 @@ OHIFCornerstoneSRViewport.propTypes = {
   dataSource: PropTypes.object,
   children: PropTypes.node,
   customProps: PropTypes.object,
+  viewportOptions: PropTypes.instanceOf(PublicViewportOptions),
+  servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
+  extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
 
 OHIFCornerstoneSRViewport.defaultProps = {

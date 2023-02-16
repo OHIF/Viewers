@@ -14,6 +14,41 @@ validate.validators.doesNotEqual = function(value, options, key) {
   }
 };
 
+// Ignore case contains.
+// options testValue MUST be in lower case already, otherwise it won't match
+validate.validators.containsI = function (value, options, key) {
+  const testValue = options?.value ?? options;
+  if (Array.isArray(value)) {
+    if (
+      value.some(
+        item => !validate.validators.containsI(item.toLowerCase(), options, key)
+      )
+    ) {
+      return undefined;
+    }
+    return `No item of ${value.join(',')} contains ${JSON.stringify(
+      testValue
+    )}`;
+  }
+  if (Array.isArray(testValue)) {
+    if (
+      testValue.some(
+        subTest => !validate.validators.containsI(value, subTest, key)
+      )
+    ) {
+      return;
+    }
+    return `${key} must contain at least one of ${testValue.join(',')}`;
+  }
+  if (
+    testValue &&
+    value.indexOf &&
+    value.toLowerCase().indexOf(testValue) === -1
+  ) {
+    return key + 'must contain any case of' + testValue;
+  }
+};
+
 validate.validators.contains = function(value, options, key) {
   const testValue = options?.value ?? options;
   if (Array.isArray(value)) {
