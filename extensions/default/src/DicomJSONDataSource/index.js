@@ -206,8 +206,10 @@ function createDicomJSONApi(dicomJsonConfig) {
                 url: instance.url,
                 imageId: instance.url,
                 ...series,
+                ...study,
               };
               delete obj.instances;
+              delete obj.series;
               return obj;
             });
             storeInstances(instances);
