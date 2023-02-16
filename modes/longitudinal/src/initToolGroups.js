@@ -35,6 +35,8 @@ function initDefaultToolGroup(
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
+      { toolName: toolNames.CobbAngle },
+      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
     ],
@@ -173,6 +175,8 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
+      { toolName: toolNames.CobbAngle },
+      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
     ],
     disabled: [
