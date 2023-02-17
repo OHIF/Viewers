@@ -1407,10 +1407,10 @@
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.3.1.tgz#50cfaf3de3c5a55f22f7fae1a9f6584a1c343ffa"
-  integrity sha512-+tqMLVYeSZjzwtzbAPqRMq5iI47nrtXz4f3GQ1jKUSmZqQyvgWRzAizcfnl6OEIrgjeg/2MHdSGOEWu12H8M+w==
+"@cornerstonejs/adapters@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.3.2.tgz#1d3775d750525cb36704a8f313b2820d908920d3"
+  integrity sha512-spyNyTg+Uo6NxF7B61JrsERrjAwvJnhTLjSvnTCv/Hr0ZyCknDzHVa5ZKVkSf/dovIpNrYsjnqAQoi4iOIMOEg==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     dcmjs "^0.29.4"
@@ -1451,14 +1451,6 @@
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/core@^0.30.1":
-  version "0.30.1"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.30.1.tgz#6cb7088260641e7e55de2edb11979b1a0c00c794"
-  integrity sha512-A7t6WtPut17uLGpv3cUfk1gSzEvWiFcCg1K3H0WGySdZsf4tIinb5xA+9oD2eaBPbvTXmIef4HWFIAsN3kAEgg==
-  dependencies:
-    detect-gpu "^4.0.45"
-    lodash.clonedeep "4.5.0"
-
 "@cornerstonejs/core@^0.31.0":
   version "0.31.0"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.31.0.tgz#087731cc9c1745f02e8936a55956c4ca5d52f3d9"
@@ -1475,10 +1467,10 @@
     "@cornerstonejs/core" "^0.25.1"
     cornerstone-wado-image-loader "^4.7.0"
 
-"@cornerstonejs/tools@^0.44.0":
-  version "0.44.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.44.0.tgz#7bec3dbcd25fce648cab49021c67ca2e3a80b1f1"
-  integrity sha512-/LfxjXwR4o1qzsByk4pf3vgRK+4BJGkth1G+dqYLj06iUsDYX724kR6AodEFZniwXUiSCZO7JDYOyns6fk7+GQ==
+"@cornerstonejs/tools@^0.45.1":
+  version "0.45.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.45.1.tgz#1d151df9018869207183a766dcb60ed5027529be"
+  integrity sha512-x1edtc9RHGsFvAELeHtMPR5V+NlK9SToVkt0I5n3LbvH/XPgD3373PCC+lNLdvIM21AiA27N02qSpa83okXW7Q==
   dependencies:
     "@cornerstonejs/core" "^0.31.0"
     lodash.clonedeep "4.5.0"
