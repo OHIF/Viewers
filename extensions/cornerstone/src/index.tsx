@@ -25,6 +25,7 @@ import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
+import { measurementMappingUtils } from './utils/measurementServiceMappings';
 
 const Component = React.lazy(() => {
   return import(
@@ -62,10 +63,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   },
 
   /**
+   * Register the Cornerstone 3D services and set them up for use.
    *
-   *
-   * @param {object} [configuration={}]
-   * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
+   * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
   async preRegistration({
     servicesManager,
@@ -151,3 +151,4 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export default cornerstoneExtension;
+export { measurementMappingUtils };

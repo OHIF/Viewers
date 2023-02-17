@@ -284,7 +284,7 @@ function OHIFCornerstoneSRViewport(props) {
    * isHydratable check, the outcome for the isHydrated state here is always FALSE
    * since we don't do the hydration here. Todo: can't we just set it as false? why
    * we are changing the state here? isHydrated is always false at this stage, and
-   * if it is hydrated we don't event use the SR viewport.
+   * if it is hydrated we don't even use the SR viewport.
    */
   useEffect(() => {
     if (!srDisplaySet.isLoaded) {

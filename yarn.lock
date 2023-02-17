@@ -1407,10 +1407,10 @@
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/adapters/-/adapters-0.3.0.tgz#c0a2a904c92ebfae77520eba4fc64c07ebd06db4"
-  integrity sha512-o3GIrccNM0q/QF0//ueVIXeRltUmtTBkTR47qPgIY9gdi+3sYEFHEW6RTXe3OOtDDXOWgM88Jp3mWWUK4ZeXxg==
+"@cornerstonejs/adapters@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.3.1.tgz#50cfaf3de3c5a55f22f7fae1a9f6584a1c343ffa"
+  integrity sha512-+tqMLVYeSZjzwtzbAPqRMq5iI47nrtXz4f3GQ1jKUSmZqQyvgWRzAizcfnl6OEIrgjeg/2MHdSGOEWu12H8M+w==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     dcmjs "^0.29.4"
@@ -1443,7 +1443,15 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@0.30.1", "@cornerstonejs/core@^0.30.1":
+"@cornerstonejs/core@^0.25.1":
+  version "0.25.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.25.1.tgz#7e5c70858018d99417b61965ac606754542f77ad"
+  integrity sha512-/Ve9qwGyRRK1uUCrefh9cVG3OIaaS9LQoTUk9YMUbsoWxd6JitXh31XVHjlvNtBYGMRVdz+uGPS2zSxq1vi4aA==
+  dependencies:
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/core@^0.30.1":
   version "0.30.1"
   resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.30.1.tgz#6cb7088260641e7e55de2edb11979b1a0c00c794"
   integrity sha512-A7t6WtPut17uLGpv3cUfk1gSzEvWiFcCg1K3H0WGySdZsf4tIinb5xA+9oD2eaBPbvTXmIef4HWFIAsN3kAEgg==
@@ -1451,28 +1459,28 @@
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/core@^0.28.0":
-  version "0.28.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.28.0.tgz#bc5114dfd332fcc5caf4ab049bcb08f6457e5f97"
-  integrity sha512-DSAdH2+8h/rRCTR6WbbGkY+vqnAVVZH47+GgGQQHscEwDD/K3ZO62JMl4LgcgkDzI0LIIZAk6CgAtok31yG/3Q==
+"@cornerstonejs/core@^0.31.0":
+  version "0.31.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.31.0.tgz#087731cc9c1745f02e8936a55956c4ca5d52f3d9"
+  integrity sha512-qJmR2JpPPuSJsIDW7seH+bJrhE/e5QNwuk2T8EzlWtHR3QcB2lSq/o7cX6kGOJDwn4KrE1p/9QZAJ4GaFlBoyQ==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.11.2":
-  version "0.11.8"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.11.8.tgz#79dc9bf7f00a3277d9880f919c324cdeda2c28d6"
-  integrity sha512-fp+mmCUMWQQFzx9AzzmOJO1ntBStHQmxK3Zbi/sMs9TYcue+Zw14oA+qcuJ/7UZayb+c99unfWjhafjBiHWNeg==
+"@cornerstonejs/streaming-image-volume-loader@^0.8.2":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.8.3.tgz#9370f1a609c5d83b3be59af2a0f44c57f68efdb0"
+  integrity sha512-p4kQisqQM/hD5yr/TZKSlq2Ux6eOJteuJrJRNaub46bGklU5M2J0TPShEkwpMDPIJeir9hNeQyg7q8fy5IoH+A==
   dependencies:
-    "@cornerstonejs/core" "^0.30.1"
-    cornerstone-wado-image-loader "^4.8.0"
+    "@cornerstonejs/core" "^0.25.1"
+    cornerstone-wado-image-loader "^4.7.0"
 
-"@cornerstonejs/tools@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.39.0.tgz#7d9bac4c55bc19145c2051f7c7150b34570849e4"
-  integrity sha512-xDR51lOEuNIDaTJltZvxDK+BIdIbznXUsWt+OpYiiygCQYt1Lt2eHufO2wVFVPrMgvm0dryF+WQbRVwtWvx4yA==
+"@cornerstonejs/tools@^0.44.0":
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.44.0.tgz#7bec3dbcd25fce648cab49021c67ca2e3a80b1f1"
+  integrity sha512-/LfxjXwR4o1qzsByk4pf3vgRK+4BJGkth1G+dqYLj06iUsDYX724kR6AodEFZniwXUiSCZO7JDYOyns6fk7+GQ==
   dependencies:
-    "@cornerstonejs/core" "^0.28.0"
+    "@cornerstonejs/core" "^0.31.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -8544,7 +8552,7 @@ cornerstone-math@^0.1.9:
   resolved "https://registry.npmjs.org/cornerstone-math/-/cornerstone-math-0.1.10.tgz#a3f99db64d73c5adee61ae0d570128eca1682d07"
   integrity sha512-23XSAyP7t70ANvhFyqwvva+zFd1bQ2d5GL7tg9qKE932WmImjA2Y9tiy5n0iTtnf51W/78Png8Lia2o4dCdJaQ==
 
-cornerstone-wado-image-loader@^4.2.1, cornerstone-wado-image-loader@^4.8.0:
+cornerstone-wado-image-loader@^4.2.1, cornerstone-wado-image-loader@^4.7.0:
   version "4.9.1"
   resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.9.1.tgz#442eeca78ff0bcf9f9cbde04e8c429f35b31c55a"
   integrity sha512-l0HRxGAupfufnHjT9uFpwAtafvuGMKKB9SCL8dHUwCK+7jwNeVigy8s6+Oki2nycaJUzy2TRQaauO78mIf3grg==
@@ -9259,12 +9267,12 @@ dateformat@^3.0.0:
   resolved "https://registry.npmjs.org/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dayjs@^1.10.4, dayjs@^1.11.6:
+dayjs@^1.10.4:
   version "1.11.7"
   resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.7.tgz#4b296922642f70999544d1144a2c25730fce63e2"
   integrity sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==
 
-dcmjs@0.29.4, dcmjs@^0.29.4:
+dcmjs@^0.29.4:
   version "0.29.4"
   resolved "https://registry.npmjs.org/dcmjs/-/dcmjs-0.29.4.tgz#3fb13945611979f756bc91b3f199fd87b4eabdb4"
   integrity sha512-PzD6C4oB7v/AVTIPbkS6D6hjgVcSW7+T+DsxFpkD1xcEgU4qjGM16WGEHH3ZAPDBF0Xgm2d9FXUu/lXZIyfmow==
@@ -9649,10 +9657,10 @@ dicom-parser@^1.8.9:
   resolved "https://registry.npmjs.org/dicom-parser/-/dicom-parser-1.8.20.tgz#e5ef817d80d2fbc093ffd8c2a73a1cb5b47f50bd"
   integrity sha512-R8NXEcaqXu7Qe5exY662aXiJCbiE6fEF8+QpSkVcXTTecFzfIaW8KJ2tSwYvt0UMHP0AUBW13VxQSXfKv/0FUA==
 
-dicomweb-client@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/dicomweb-client/-/dicomweb-client-0.6.0.tgz#5e35ada52fe0155af1cc1f0e84f9c7f76477f92d"
-  integrity sha512-VAkBg4W6odIo2XsFxqjN/rptd7bQ8oHpRuKH5d46E9BUIPzRschazE8Dx1xg7/l3N3f1M70jB7yJ339arAXiDQ==
+dicomweb-client@^0.8.4:
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.8.4.tgz#3da814cedb9415facb50bc5f43af8d961a991c74"
+  integrity sha512-/6oY3/Fg9JyAlbTWuJOYbVqici3+nlZt43+Z/Y47RNiqLc028JcxNlY28u4VQqksxfB59f1hhNbsqsHyDT4vhw==
 
 didyoumean@^1.2.2:
   version "1.2.2"

@@ -51,13 +51,17 @@ const RELATIONSHIP_TYPE = {
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
 /**
- * Basic SOPClassHandler:
- * - For all Image types that are stackable, create
- *   a displaySet with a stack of images
+ * DICOM SR SOP Class Handler
+ * For all referenced images in the TID 1500/300 sections, add an image to the
+ * display (this is TODO - it is not the actual behaviour below unfortunately)
  *
- * @param {Array} sopClassHandlerModules List of SOP Class Modules
- * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
- * @returns {Array} The list of display sets created for the given series object
+ * This will only display and rehydrate the latest DICOM SR in the given series
+ * It would be possible to add the ability to view older series rehydrations
+ * in the future.
+ *
+ * @param instances is a set of instances all from the same series
+ * @param servicesManager is the services that can be used for creating
+ * @returns The list of display sets created for the given instances object
  */
 function _getDisplaySetsFromSeries(
   instances,
@@ -69,7 +73,8 @@ function _getDisplaySetsFromSeries(
     throw new Error('No instances were provided');
   }
 
-  const instance = instances[0];
+  utils.sortStudyInstances(instances);
+  const instance = instances[instances.length - 1];
 
   const {
     StudyInstanceUID,
@@ -85,10 +90,10 @@ function _getDisplaySetsFromSeries(
   if (
     !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-      CodeNameCodeSequenceValues.ImagingMeasurementReport
+    CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
-    console.warn(
-      'Only support Imaging Measurement Report SRs (TID1500) for now'
+    console.log(
+      'Only support Imaging Measurement Report SRs (TID1500) for this renderer.'
     );
     return [];
   }
@@ -105,6 +110,9 @@ function _getDisplaySetsFromSeries(
     StudyInstanceUID,
     SOPClassHandlerId,
     SOPClassUID,
+    instances,
+    // Others is a historical value used for instances which is deprecated and will be removed
+    others: instances,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,
@@ -313,13 +321,13 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     MeasurementGroups
   );
 
-  let measurements = [];
+  const measurements = [];
 
   Object.keys(mergedContentSequencesByTrackingUniqueIdentifiers).forEach(
     trackingUniqueIdentifier => {
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[
-          trackingUniqueIdentifier
+        trackingUniqueIdentifier
         ];
 
       const measurement = _processMeasurement(mergedContentSequence);
@@ -359,7 +367,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
 
     if (
       mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
+      trackingUniqueIdentifier
       ] === undefined
     ) {
       // Add the full ContentSequence
@@ -474,9 +482,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   const FindingSites = mergedContentSequence.filter(
     item =>
       item.ConceptNameCodeSequence.CodingSchemeDesignator ===
-        CodingSchemeDesignators.SRT &&
+      CodingSchemeDesignators.SRT &&
       item.ConceptNameCodeSequence.CodeValue ===
-        CodeNameCodeSequenceValues.FindingSite
+      CodeNameCodeSequenceValues.FindingSite
   );
 
   const measurement = {
@@ -493,7 +501,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       Finding.ConceptCodeSequence.CodingSchemeDesignator
     ) &&
     Finding.ConceptCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.CornerstoneFreeText
+    CodeNameCodeSequenceValues.CornerstoneFreeText
   ) {
     measurement.labels.push({
       label: CORNERSTONE_FREETEXT_CODE_VALUE,
@@ -509,7 +517,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
           FindingSite.ConceptCodeSequence.CodingSchemeDesignator
         ) &&
         FindingSite.ConceptCodeSequence.CodeValue ===
-          CodeNameCodeSequenceValues.CornerstoneFreeText
+        CodeNameCodeSequenceValues.CornerstoneFreeText
     );
 
     if (cornerstoneFreeTextFindingSite) {

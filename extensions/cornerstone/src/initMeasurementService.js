@@ -1,6 +1,6 @@
 import { eventTarget } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, MeasurementService } from '@ohif/core';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
@@ -23,6 +23,10 @@ const initMeasurementService = (
     Bidirectional,
     EllipticalROI,
     ArrowAnnotate,
+    Angle,
+    CobbAngle,
+    RectangleROI,
+    PlanarFreehandROI,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -64,6 +68,38 @@ const initMeasurementService = (
     ArrowAnnotate.matchingCriteria,
     ArrowAnnotate.toAnnotation,
     ArrowAnnotate.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'CobbAngle',
+    CobbAngle.matchingCriteria,
+    CobbAngle.toAnnotation,
+    CobbAngle.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'Angle',
+    Angle.matchingCriteria,
+    Angle.toAnnotation,
+    Angle.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'RectangleROI',
+    RectangleROI.matchingCriteria,
+    RectangleROI.toAnnotation,
+    RectangleROI.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'PlanarFreehandROI',
+    PlanarFreehandROI.matchingCriteria,
+    PlanarFreehandROI.toAnnotation,
+    PlanarFreehandROI.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;
