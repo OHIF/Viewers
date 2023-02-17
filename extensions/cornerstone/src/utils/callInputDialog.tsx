@@ -59,6 +59,7 @@ function callInputDialog(
                 autoFocus
                 className="mt-2 bg-black border-primary-main"
                 type="text"
+                id="annotation"
                 containerClassName="mr-2"
                 value={value.label}
                 onChange={event => {

@@ -18,6 +18,7 @@ export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="MoreTools-split-button-secondary"]').as('moreBtnSecondary');
   cy.get('[data-cy="Layout"]').as('layoutBtn');
   cy.get('.cornerstone-viewport-element').as('viewport');
+  cy.get('[data-cy="MPR"]').as('mprBtn');
 }
 
 //Creating aliases for Common page elements
@@ -49,9 +50,16 @@ export function initCommonElementsAliases() {
 
 //Creating aliases for Routes
 export function initRouteAliases() {
-  cy.server();
-  cy.route('GET', '**/series**').as('getStudySeries');
-  cy.route('GET', '**/studies**').as('getStudies');
+  cy.intercept('GET', '**/series**', { statusCode: 200, body: [] }).as(
+    'getStudySeries'
+  );
+
+  // Todo: for some reason cypress does not redirect to the correct url
+  // so we intercept the request and redirect it to the correct url
+  cy.intercept('/studies?limit*', req => {
+    const url = req.url.replace(/\/studies\?/, '/studies/?limit');
+    req.url = url;
+  });
 }
 
 //Creating aliases for Study List page elements on Desktop experience

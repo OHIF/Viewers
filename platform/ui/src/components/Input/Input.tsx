@@ -57,6 +57,7 @@ const Input = ({
 };
 
 Input.propTypes = {
+  id: PropTypes.string,
   label: PropTypes.string,
   containerClassName: PropTypes.string,
   labelClassName: PropTypes.string,
@@ -70,7 +71,7 @@ Input.propTypes = {
   readOnly: PropTypes.bool,
   onKeyPress: PropTypes.func,
   onKeyDown: PropTypes.func,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 
 export default Input;

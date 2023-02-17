@@ -95,7 +95,11 @@ const ThumbnailTracked = ({
           >
             <Icon name={trackedIcon} className="w-4 mb-2 text-primary-light" />
           </Tooltip>
-          <div className="text-xl leading-tight text-white text-center">
+
+          <div
+            className="text-xl leading-tight text-white text-center"
+            data-cy={'thumbnail-viewport-labels'}
+          >
             {renderViewportLabels()}
           </div>
         </div>
