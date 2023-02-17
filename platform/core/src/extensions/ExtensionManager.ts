@@ -161,11 +161,18 @@ export default class ExtensionManager {
     // but currently since some extensions need to be registered before
     // others, we need to run them sequentially. We need a postInit hook
     // to avoid this sequential async registration
-    for (const extension of extensions) {
+    for (let i = 0; i < extensions.length; i++) {
+      const extension = extensions[i];
       const hasConfiguration = Array.isArray(extension);
       try {
         if (hasConfiguration) {
-          const [ohifExtension, configuration] = extension;
+          // Important: for some reason in the line below the type
+          // of extension is not recognized as [ExtensionRegister,
+          // ExtensionConfiguration] by babel DON"T CHANGE IT
+          // Same for the for loop above don't use
+          // for (const extension of extensions)
+          const ohifExtension = extension[0];
+          const configuration = extension[1];
           await this.registerExtension(
             ohifExtension,
             configuration,

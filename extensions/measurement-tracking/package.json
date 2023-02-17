@@ -44,7 +44,7 @@
     "@ohif/ui": "^2.0.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3",
+    "@babel/runtime": "^7.20.13",
     "@ohif/ui": "^2.0.0",
     "@xstate/react": "^0.8.1",
     "xstate": "^4.10.0"

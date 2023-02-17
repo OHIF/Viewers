@@ -42,7 +42,7 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@babel/runtime": "7.7.6",
+    "@babel/runtime": "^7.20.13",
     "react-color": "^2.19.3"
   },
   "devDependencies": {

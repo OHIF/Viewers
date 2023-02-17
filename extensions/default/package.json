@@ -42,7 +42,7 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3",
+    "@babel/runtime": "^7.20.13",
     "@cornerstonejs/calculate-suv": "^1.0.3"
   }
 }
