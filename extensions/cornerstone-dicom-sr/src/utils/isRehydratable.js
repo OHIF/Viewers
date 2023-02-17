@@ -1,6 +1,8 @@
 import { adaptersSR } from '@cornerstonejs/adapters';
 
-const cornerstoneAdapters = adaptersSR.Cornerstone3D;
+const cornerstoneAdapters =
+  adaptersSR.Cornerstone3D.MeasurementReport
+    .CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
 
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;
@@ -37,7 +39,7 @@ export default function isRehydratable(displaySet, mappings) {
   });
 
   for (let i = 0; i < measurements.length; i++) {
-    const TrackingIdentifier = measurements[i].TrackingIdentifier;
+    const { TrackingIdentifier } = measurements[i] || {};
     const hydratable = adapters.some(adapter => {
       let [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
       if (supportedLegacyCornerstoneTags.includes(cornerstoneTag)) {
@@ -54,7 +56,13 @@ export default function isRehydratable(displaySet, mappings) {
     if (hydratable) {
       return true;
     }
+    console.log(
+      'Measurement is not rehydratable',
+      TrackingIdentifier,
+      measurements[i]
+    );
   }
 
+  console.log('No measurements found which were rehydratable');
   return false;
 }

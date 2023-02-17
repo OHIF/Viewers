@@ -53,7 +53,12 @@ const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 /**
  * DICOM SR SOP Class Handler
  * For all referenced images in the TID 1500/300 sections, add an image to the
- * display.
+ * display (this is TODO - it is not the actual behaviour below unfortunately)
+ *
+ * This will only display and rehydrate the latest DICOM SR in the given series
+ * It would be possible to add the ability to view older series rehydrations
+ * in the future.
+ *
  * @param instances is a set of instances all from the same series
  * @param servicesManager is the services that can be used for creating
  * @returns The list of display sets created for the given instances object

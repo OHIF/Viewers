@@ -1407,7 +1407,7 @@
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^0.3.0":
+"@cornerstonejs/adapters@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.3.1.tgz#50cfaf3de3c5a55f22f7fae1a9f6584a1c343ffa"
   integrity sha512-+tqMLVYeSZjzwtzbAPqRMq5iI47nrtXz4f3GQ1jKUSmZqQyvgWRzAizcfnl6OEIrgjeg/2MHdSGOEWu12H8M+w==

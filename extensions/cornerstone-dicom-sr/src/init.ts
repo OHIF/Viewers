@@ -26,7 +26,10 @@ export default function init({
   addToolInstance(toolNames.SREllipticalROI, EllipticalROITool);
   addToolInstance(toolNames.SRArrowAnnotate, ArrowAnnotateTool);
   addToolInstance(toolNames.SRAngle, AngleTool);
+  // TODO - fix the SR display of Cobb Angle, as it joins the two lines
   addToolInstance(toolNames.SRCobbAngle, CobbAngleTool);
+  // TODO - fix the rehydration of Freehand, as it throws an exception
+  // on a missing polyline. The fix is probably in CS3D
   addToolInstance(toolNames.SRPlanarFreehandROI, PlanarFreehandROITool);
 
   // Modify annotation tools to use dashed lines on SR
