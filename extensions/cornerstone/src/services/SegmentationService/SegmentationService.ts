@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
 
 import { pubSubServiceInterface } from '@ohif/core';
 import {
@@ -13,11 +14,12 @@ import {
   cache,
   utilities as csUtils,
   volumeLoader,
-  Types,
+  Types as csTypes,
   metaData,
   getEnabledElementByIds,
+  geometryLoader,
+  Enums as csEnums,
 } from '@cornerstonejs/core';
-import isEqual from 'lodash.isequal';
 import { easeInOutBell } from '../../utils/transitions';
 import { Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 
@@ -37,9 +39,10 @@ const EVENTS = {
   // fired when the configuration for the segmentation is changed (e.g., brush size, render fill, outline thickness, etc.)
   SEGMENTATION_CONFIGURATION_CHANGED:
     'event::segmentation_configuration_changed',
-  SEGMENT_PIXEL_DATA_CREATED: 'event::segment_pixel_data_created',
+  // fired when the active segment is loaded in SEG or RTSTRUCT
+  SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
   // for all segments
-  SEGMENTATION_PIXEL_DATA_CREATED: 'event::segmentation_pixel_data_created',
+  SEGMENTATION_LOADING_COMPLETE: 'event::segmentation_loading_complete',
 };
 
 const VALUE_TYPES = {};
@@ -102,7 +105,7 @@ class SegmentationService {
     toolGroupId?: string,
     properties?: {
       label?: string;
-      color?: Types.Point3;
+      color?: csTypes.Point3;
       opacity?: number;
       visibility?: boolean;
       isLocked?: boolean;
@@ -314,7 +317,7 @@ class SegmentationService {
   public setSegmentColor(
     segmentationId: string,
     segmentIndex: number,
-    color: Types.Point3,
+    color: csTypes.Point3,
     toolGroupId?: string
   ): void {
     this._setSegmentColor(segmentationId, segmentIndex, color, toolGroupId);
@@ -452,34 +455,34 @@ class SegmentationService {
       return segmentationId;
     }
 
-    // Add the segmentation otherwise
+    const representationType = segmentation.type;
+    const representationData =
+      segmentation.representationData[representationType];
     cstSegmentation.addSegmentations([
       {
         segmentationId,
         representation: {
-          type: LABELMAP,
-          // Todo: need to be generalized
+          type: representationType,
           data: {
-            volumeId: segmentationId,
+            ...representationData,
           },
         },
       },
     ]);
 
     // Define a new color LUT and associate it with this segmentation.
-
     // Todo: need to be generalized to accept custom color LUTs
     const newColorLUT = this.generateNewColorLUT();
     const newColorLUTIndex = this.getNextColorLUTIndex();
 
     cstSegmentation.config.color.addColorLUT(newColorLUT, newColorLUTIndex);
 
-    if (segmentation.label === undefined || segmentation.label === '') {
-      segmentation.label = 'Segmentation';
-    }
-
     this.segmentations[segmentationId] = {
       ...segmentation,
+      label:
+        segmentation.label !== undefined || segmentation.label !== ''
+          ? segmentation.label
+          : 'Segmentation',
       segments: segmentation.segments || [null],
       activeSegmentIndex: segmentation.activeSegmentIndex ?? null,
       segmentCount: segmentation.segmentCount ?? 0,
@@ -504,260 +507,23 @@ class SegmentationService {
     return cachedSegmentation.id;
   }
 
-  public async createSegmentationForDisplaySet(
-    segDisplaySet,
-    segmentationId?: string,
-    suppressEvents = false
-  ): Promise<string> {
-    segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
-    const { segments, referencedVolumeId } = segDisplaySet;
-
-    if (!segments || !referencedVolumeId) {
-      throw new Error(
-        'To create the segmentation from SEG displaySet, the displaySet should be loaded first, you can perform segDisplaySet.load() before calling this method.'
-      );
-    }
-
-    const segmentation: Segmentation = {
-      id: segmentationId,
-      displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
-      activeSegmentIndex: 1,
-      cachedStats: {},
-      label: '',
-      segmentsLocked: [],
-      type: LABELMAP,
-      displayText: [],
-      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
-      segmentCount: 0,
-      isVisible: true,
-      isActive: false,
-      segments: [],
-      colorLUTIndex: 0,
-      representationData: {
-        LABELMAP: {
-          volumeId: segmentationId,
-          referencedVolumeId: segDisplaySet.referencedVolumeURI,
-        },
-      },
-    };
-
-    const labelmap = this.getLabelmapVolume(segmentationId);
-    const cachedSegmentation = this.getSegmentation(segmentationId);
-
-    if (labelmap && cachedSegmentation) {
-      // if the labelmap with the same segmentationId already exists, we can
-      // just assume that the segmentation is already created and move on with
-      // updating the state
-      return this.addOrUpdateSegmentation(
-        Object.assign(segmentation, cachedSegmentation),
-        suppressEvents
-      );
-    }
-
-    // if the labelmap doesn't exist, we need to create it first from the
-    // DICOM SEG displaySet data
-
-    const referencedVolume = cache.getVolume(referencedVolumeId);
-
-    if (!referencedVolume) {
-      throw new Error(
-        `No volume found for referencedVolumeId: ${referencedVolumeId}`
-      );
-    }
-
-    // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
-    // it is easily compressible in worker thread.
-    const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(
-      referencedVolumeId,
-      {
-        volumeId: segmentationId,
-        targetBuffer: {
-          type: 'Uint8Array',
-          sharedArrayBuffer: true,
-        },
-      }
-    );
-    const [rows, columns] = derivedVolume.dimensions;
-    const derivedVolumeScalarData = derivedVolume.scalarData;
-
-    const { imageIds } = referencedVolume;
-    const sopUIDImageIdIndexMap = imageIds.reduce((acc, imageId, index) => {
-      const { sopInstanceUid } = metaData.get('generalImageModule', imageId);
-      acc[sopInstanceUid] = index;
-      return acc;
-    }, {} as { [sopUID: string]: number });
-
-    const numSegments = Object.keys(segments).length;
-    // Note: ideally we could use the TypedArray set method, but since each
-    // slice can have multiple segments, we need to loop over each slice and
-    // set the segment value for each segment.
-    let overlappingSegments = false;
-
-    const _segmentInfoUpdate = (segmentInfo, segmentIndex) => {
-      const { pixelData: segPixelData } = segmentInfo;
-
-      let segmentX = 0;
-      let segmentY = 0;
-      let segmentZ = 0;
-      let count = 0;
-
-      for (const [
-        functionalGroupIndex,
-        functionalGroup,
-      ] of segmentInfo.functionalGroups.entries()) {
-        const {
-          ReferencedSOPInstanceUID,
-        } = functionalGroup.DerivationImageSequence.SourceImageSequence;
-
-        const imageIdIndex = sopUIDImageIdIndexMap[ReferencedSOPInstanceUID];
-
-        if (imageIdIndex === -1) {
-          return;
-        }
-
-        const step = rows * columns;
-
-        // we need a faster way to get the pixel data for the current
-        // functional group, which we use typed array view
-
-        const functionGroupPixelData = new Uint8Array(
-          segPixelData.buffer,
-          functionalGroupIndex * step,
-          step
-        );
-
-        const functionalGroupStartIndex = imageIdIndex * step;
-        const functionalGroupEndIndex = (imageIdIndex + 1) * step;
-
-        // Note: this for loop is not optimized, since DICOM SEG stores
-        // each segment as a separate labelmap so if there is a slice
-        // that has multiple segments, we will have to loop over each
-        // segment and we cannot use the TypedArray set method.
-        for (
-          let i = functionalGroupStartIndex, j = 0;
-          i < functionalGroupEndIndex;
-          i++, j++
-        ) {
-          if (functionGroupPixelData[j] !== 0) {
-            if (derivedVolumeScalarData[i] !== 0) {
-              overlappingSegments = true;
-            }
-
-            derivedVolumeScalarData[i] = segmentIndex;
-
-            // centroid calculations
-            segmentX += i % columns;
-            segmentY += Math.floor(i / columns) % rows;
-            segmentZ += Math.floor(i / (columns * rows));
-            count++;
-          }
-        }
-      }
-
-      // centroid calculations
-      const x = Math.floor(segmentX / count);
-      const y = Math.floor(segmentY / count);
-      const z = Math.floor(segmentZ / count);
-
-      const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
-
-      segmentation.cachedStats = {
-        ...segmentation.cachedStats,
-        segmentCenter: {
-          ...segmentation.cachedStats.segmentCenter,
-          [segmentIndex]: {
-            center: {
-              image: [x, y, z],
-              world: centerWorld,
-            },
-            modifiedTime: Date.now(),
-          },
-        },
-      };
-
-      this._broadcastEvent(EVENTS.SEGMENT_PIXEL_DATA_CREATED, {
-        segmentIndex: Number(segmentIndex),
-        numSegments,
-      });
-    };
-
-    for (const segmentIndex in segments) {
-      const segmentInfo = segments[segmentIndex];
-
-      // Important: we need a non-blocking way to update the segmentation
-      // state, otherwise the UI will freeze and the user will not be able
-      // to interact with the app or progress bars will not be updated.
-      const promise = new Promise<void>((resolve, reject) => {
-        setTimeout(() => {
-          _segmentInfoUpdate(segmentInfo, segmentIndex);
-          resolve();
-        }, 0);
-      });
-
-      await promise;
-    }
-
-    segmentation.segmentCount = Object.keys(segments).length;
-    segmentation.segments = [null]; // segment 0
-
-    Object.keys(segments).forEach(segmentIndex => {
-      const segmentInfo = segments[segmentIndex];
-      const segIndex = Number(segmentIndex);
-
-      segmentation.segments[segIndex] = {
-        label: segmentInfo.label || `Segment ${segIndex}`,
-        segmentIndex: Number(segmentIndex),
-        color: [
-          segmentInfo.color[0],
-          segmentInfo.color[1],
-          segmentInfo.color[2],
-        ],
-        opacity: segmentInfo.color[3],
-        isVisible: true,
-        isLocked: false,
-      };
-    });
-
-    segDisplaySet.isLoaded = true;
-
-    this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
-      segmentationId,
-      segDisplaySet,
-      overlappingSegments,
-    });
-
-    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
-  }
-
   public async createSegmentationForSEGDisplaySet(
     segDisplaySet,
     segmentationId?: string,
     suppressEvents = false
   ): Promise<string> {
-    segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
-    const { segments, referencedVolumeId } = segDisplaySet;
+    // Todo: we only support creating labelmap for SEG displaySets for now
+    const representationType = LABELMAP;
 
-    if (!segments || !referencedVolumeId) {
-      throw new Error(
-        'To create the segmentation from SEG displaySet, the displaySet should be loaded first, you can perform segDisplaySet.load() before calling this method.'
-      );
-    }
+    segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
+
+    const defaultScheme = this._getDefaultSegmentationScheme();
 
     const segmentation: Segmentation = {
+      ...defaultScheme,
       id: segmentationId,
       displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
-      activeSegmentIndex: 1,
-      cachedStats: {},
-      label: '',
-      segmentsLocked: [],
-      type: LABELMAP,
-      displayText: [],
-      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
-      segmentCount: 0,
-      segments: [],
-      isVisible: true,
-      isActive: false,
-      colorLUTIndex: 0,
+      type: representationType,
       representationData: {
         [LABELMAP]: {
           volumeId: segmentationId,
@@ -768,7 +534,6 @@ class SegmentationService {
 
     const labelmap = this.getLabelmapVolume(segmentationId);
     const cachedSegmentation = this.getSegmentation(segmentationId);
-
     if (labelmap && cachedSegmentation) {
       // if the labelmap with the same segmentationId already exists, we can
       // just assume that the segmentation is already created and move on with
@@ -779,9 +544,16 @@ class SegmentationService {
       );
     }
 
+    const { segments, referencedVolumeId } = segDisplaySet;
+
+    if (!segments || !referencedVolumeId) {
+      throw new Error(
+        'To create the segmentation from SEG displaySet, the displaySet should be loaded first, you can perform segDisplaySet.load() before calling this method.'
+      );
+    }
+
     // if the labelmap doesn't exist, we need to create it first from the
     // DICOM SEG displaySet data
-
     const referencedVolume = cache.getVolume(referencedVolumeId);
 
     if (!referencedVolume) {
@@ -900,7 +672,7 @@ class SegmentationService {
         },
       };
 
-      this._broadcastEvent(EVENTS.SEGMENT_PIXEL_DATA_CREATED, {
+      this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
         segmentIndex: Number(segmentIndex),
         numSegments,
       });
@@ -945,10 +717,144 @@ class SegmentationService {
 
     segDisplaySet.isLoaded = true;
 
-    this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
+    this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
       segDisplaySet,
       overlappingSegments,
+    });
+
+    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
+  }
+
+  public async createSegmentationForRTDisplaySet(
+    rtDisplaySet,
+    segmentationId?: string,
+    suppressEvents = false
+  ): Promise<string> {
+    // Todo: we currently only have support for contour representation for initial
+    // RT display
+    const representationType = CONTOUR;
+    segmentationId = segmentationId ?? rtDisplaySet.displaySetInstanceUID;
+    const { structureSet } = rtDisplaySet;
+
+    if (!structureSet) {
+      throw new Error(
+        'To create the contours from RT displaySet, the displaySet should be loaded first, you can perform rtDisplaySet.load() before calling this method.'
+      );
+    }
+
+    const defaultScheme = this._getDefaultSegmentationScheme();
+    const geometryId = `${rtDisplaySet.displaySetInstanceUID}-contour`;
+
+    const segmentation: Segmentation = {
+      ...defaultScheme,
+      id: segmentationId,
+      displaySetInstanceUID: rtDisplaySet.displaySetInstanceUID,
+      type: representationType,
+      representationData: {
+        [CONTOUR]: {
+          geometryId,
+        },
+      },
+    };
+
+    const cachedSegmentation = this.getSegmentation(segmentationId);
+
+    if (cachedSegmentation) {
+      // if the labelmap with the same segmentationId already exists, we can
+      // just assume that the segmentation is already created and move on with
+      // updating the state
+      return this.addOrUpdateSegmentation(
+        Object.assign(segmentation, cachedSegmentation),
+        suppressEvents
+      );
+    }
+
+    if (!structureSet.ROIContours || !structureSet.ROIContours.length) {
+      throw new Error(
+        'The structureSet does not contain any ROIContours, please make sure that the structureSet is loaded first.'
+      );
+    }
+
+    // Todo: make this readable
+    const rtStructData = structureSet.ROIContours.reduce((acc, ROIContour) => {
+      const { contourPoints, ROINumber, ROIName, colorArray } = ROIContour;
+      const data = contourPoints.reduce((acc, pointsObj) => {
+        const flatPoints = pointsObj.points.reduce((acc, point) => {
+          acc.push([point.x, point.y, point.z]);
+          return acc;
+        }, []);
+
+        acc = acc.concat({
+          ...pointsObj,
+          points: flatPoints,
+        });
+
+        return acc;
+      }, []);
+
+      acc.push({
+        data,
+        id: ROIName || ROINumber,
+        color: colorArray,
+      });
+
+      return acc;
+    }, []);
+
+    debugger;
+    const contours = await geometryLoader.createAndCacheGeometry(
+      `${rtDisplaySet.displaySetInstanceUID}-contour`,
+      {
+        data: rtStructData,
+        type: csEnums.GeometryType.CONTOUR,
+      }
+    );
+
+    if (!contours || !contours.data || !contours.data.length) {
+      throw new Error(
+        'Failed to create the contours from the RT displaySet, please make sure that the structureSet is loaded first.'
+      );
+    }
+
+    segmentation.segmentCount = contours.data.length;
+
+    const _initializeContour = (contours, i) => {
+      const contour = contours.data[i];
+
+      segmentation.segments[i] = {
+        label: contour.geometryId,
+        segmentIndex: i,
+        color: contour.color,
+        opacity: 255,
+        isVisible: true,
+        isLocked: false,
+      };
+
+      // Todo: add cached Stats for the center of contour to enabled jumping to
+      // the center of the contour
+      this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
+        segmentIndex: Number(i),
+        numSegments: segmentation.segmentCount,
+      });
+    };
+
+    for (let i = 0; i < contours.data.length; i++) {
+      const promise = new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          _initializeContour(contours, i);
+          resolve();
+        }, 0);
+      });
+
+      await promise;
+    }
+
+    rtDisplaySet.isLoaded = true;
+
+    this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
+      segmentationId,
+      rtDisplaySet,
     });
 
     return this.addOrUpdateSegmentation(segmentation, suppressEvents);
@@ -1092,9 +998,11 @@ class SegmentationService {
     options?: {
       segmentationId: string;
       label: string;
-      representationType?: string;
     }
   ): Promise<string> => {
+    // Todo: we currently only support labelmap for segmentation for a displaySet
+    const representationType = LABELMAP;
+
     const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
     const volumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`; // VolumeId with loader id + volume id
 
@@ -1110,21 +1018,16 @@ class SegmentationService {
       },
     });
 
+    const defaultScheme = this._getDefaultSegmentationScheme();
+
     const segmentation: Segmentation = {
+      ...defaultScheme,
       id: segmentationId,
       displaySetInstanceUID,
-      activeSegmentIndex: 1,
-      cachedStats: {},
       label: options?.label,
-      segmentsLocked: [],
-      displayText: [],
-      hydrated: false,
-      segmentCount: 0,
-      segments: [],
+      // We should set it as active by default, as it created for display
       isActive: true,
-      isVisible: true,
-      colorLUTIndex: 0,
-      type: options?.representationType || LABELMAP,
+      type: representationType,
       representationData: {
         LABELMAP: {
           volumeId: segmentationId,
@@ -1314,19 +1217,24 @@ class SegmentationService {
 
   public removeSegmentationRepresentationFromToolGroup(
     toolGroupId: string,
-    segmentationIds?: string[]
+    segmentationRepresentationUIDsIds?: string[]
   ): void {
-    segmentationIds =
-      segmentationIds ??
-      cstSegmentation.state
-        .getSegmentationRepresentations(toolGroupId)
-        .map(rep => rep.segmentationRepresentationUID);
+    const uids = segmentationRepresentationUIDsIds || [];
+    if (!uids.length) {
+      const representations = cstSegmentation.state.getSegmentationRepresentations(
+        toolGroupId
+      );
 
-    cstSegmentation.removeSegmentationsFromToolGroup(
-      toolGroupId,
-      segmentationIds,
-      true // immediate render
-    );
+      if (!representations || !representations.length) {
+        return;
+      }
+
+      uids.push(
+        ...representations.map(rep => rep.segmentationRepresentationUID)
+      );
+    }
+
+    cstSegmentation.removeSegmentationsFromToolGroup(toolGroupId, uids);
   }
 
   /**
@@ -1547,6 +1455,7 @@ class SegmentationService {
       });
     }
   }
+
   public shouldRenderSegmentation(
     viewportDisplaySetInstanceUIDs,
     segDisplaySetInstanceUID
@@ -1586,6 +1495,22 @@ class SegmentationService {
     });
 
     return shouldDisplaySeg;
+  }
+
+  private _getDefaultSegmentationScheme() {
+    return {
+      activeSegmentIndex: 1,
+      cachedStats: {},
+      label: '',
+      segmentsLocked: [],
+      displayText: [],
+      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
+      segmentCount: 0,
+      segments: [],
+      isVisible: true,
+      isActive: false,
+      colorLUTIndex: 0,
+    };
   }
 
   private _setActiveSegmentationForToolGroup(
@@ -1684,7 +1609,7 @@ class SegmentationService {
   private _setSegmentColor = (
     segmentationId: string,
     segmentIndex: number,
-    color: Types.Point3,
+    color: csTypes.Point3,
     toolGroupId?: string,
     suppressEvents = false
   ) => {
@@ -2005,20 +1930,21 @@ class SegmentationService {
       return;
     }
 
-    if (!Object.keys(segmentationState.representationData).includes(LABELMAP)) {
-      throw new Error('Non-labelmap representations are not supported yet');
-    }
-
     const {
       activeSegmentIndex,
       cachedStats,
       segmentsLocked,
-      representationData,
       label,
       type,
     } = segmentationState;
 
-    const labelmapRepresentationData = representationData[LABELMAP];
+    if (![LABELMAP, CONTOUR].includes(type)) {
+      throw new Error(
+        `Unsupported segmentation type: ${type}. Only ${LABELMAP} and ${CONTOUR} are supported.`
+      );
+    }
+
+    const representationData = segmentationState.representationData[type];
 
     // TODO: handle other representations when available in cornerstone3D
     const segmentationSchema = {
@@ -2031,8 +1957,8 @@ class SegmentationService {
       segmentsLocked,
       type,
       representationData: {
-        LABELMAP: {
-          ...labelmapRepresentationData,
+        [type]: {
+          ...representationData,
         },
       },
     };
