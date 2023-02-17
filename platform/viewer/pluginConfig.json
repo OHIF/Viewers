@@ -31,6 +31,10 @@
     {
       "packageName": "@ohif/extension-cornerstone-dicom-seg",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-cornerstone-dicom-rt",
+      "version": "0.0.1"
     }
   ],
   "modes": [

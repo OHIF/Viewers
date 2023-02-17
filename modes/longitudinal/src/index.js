@@ -5,7 +5,7 @@ import initToolGroups from './initToolGroups.js';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
+const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -45,6 +45,12 @@ const dicomSeg = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
+const dicomRt = {
+  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -52,6 +58,7 @@ const extensionDependencies = {
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-rt': '^0.0.1',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
 };
@@ -211,6 +218,10 @@ function modeFactory() {
                   namespace: dicomSeg.viewport,
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
                 },
+                {
+                  namespace: dicomRt.viewport,
+                  displaySetsToDisplay: [dicomRt.sopClassHandler],
+                },
               ],
             },
           };
@@ -230,6 +241,7 @@ function modeFactory() {
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
+      dicomRt.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
