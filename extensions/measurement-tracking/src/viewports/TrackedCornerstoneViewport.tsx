@@ -10,6 +10,7 @@ import {
   useViewportDialog,
   Tooltip,
   Icon,
+  CinePlayer,
 } from '@ohif/ui';
 
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,7 @@ function TrackedCornerstoneViewport(props) {
   const {
     measurementService,
     cornerstoneViewportService,
+    toolbarService,
   } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
@@ -194,6 +196,20 @@ function TrackedCornerstoneViewport(props) {
   const cine = cines[viewportIndex];
   const isPlaying = (cine && cine.isPlaying) || false;
 
+  const handleCineClose = () => {
+    toolbarService.recordInteraction({
+      groupId: 'MoreTools',
+      itemId: 'cine',
+      interactionType: 'toggle',
+      commands: [
+        {
+          commandName: 'toggleCine',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
+      ],
+    });
+  };
   return (
     <>
       <ViewportActionBar
@@ -210,9 +226,7 @@ function TrackedCornerstoneViewport(props) {
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName)
-              : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
@@ -242,6 +256,25 @@ function TrackedCornerstoneViewport(props) {
             />
           )}
         </div>
+        {isCineEnabled && (
+          <CinePlayer
+            className="absolute left-1/2 -translate-x-1/2 bottom-3"
+            isPlaying={isPlaying}
+            onClose={handleCineClose}
+            onPlayPauseChange={isPlaying =>
+              cineService.setCine({
+                id: activeViewportIndex,
+                isPlaying,
+              })
+            }
+            onFrameRateChange={frameRate =>
+              cineService.setCine({
+                id: activeViewportIndex,
+                frameRate,
+              })
+            }
+          />
+        )}
       </div>
     </>
   );

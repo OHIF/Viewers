@@ -13,6 +13,15 @@ const ActiveSegmentationConfig = ({
   setFillAlpha,
   usePercentage,
 }) => {
+  const [
+    useOutlineOpacityPercentage,
+    setUseOutlineOpacityPercentage,
+  ] = useState(usePercentage);
+
+  const [useFillAlphaPercentage, setUseFillAlphaPercentage] = useState(
+    usePercentage
+  );
+
   return (
     <div className="flex justify-between text-[12px] pt-[13px] px-2">
       <div className="flex flex-col items-start">
@@ -57,9 +66,12 @@ const ActiveSegmentationConfig = ({
           minValue={0}
           maxValue={usePercentage ? 100 : 1}
           value={
-            usePercentage ? config.outlineOpacity * 100 : config.outlineOpacity
+            useOutlineOpacityPercentage
+              ? config.outlineOpacity * 100
+              : config.outlineOpacity
           }
           onChange={value => {
+            setUseOutlineOpacityPercentage(false);
             dispatch({
               type: 'SET_OUTLINE_OPACITY',
               payload: {
@@ -78,8 +90,11 @@ const ActiveSegmentationConfig = ({
         <InputRange
           minValue={0}
           maxValue={usePercentage ? 100 : 1}
-          value={usePercentage ? config.fillAlpha * 100 : config.fillAlpha}
+          value={
+            useFillAlphaPercentage ? config.fillAlpha * 100 : config.fillAlpha
+          }
           onChange={value => {
+            setUseFillAlphaPercentage(false);
             dispatch({
               type: 'SET_FILL_ALPHA',
               payload: {
@@ -125,6 +140,11 @@ const InactiveSegmentationConfig = ({
   setFillAlphaInactive,
   usePercentage,
 }) => {
+  const [
+    useFillAlphaInactivePercentage,
+    setUseFillInactivePercentage,
+  ] = useState(usePercentage);
+
   return (
     <div className="px-2">
       <CheckBox
@@ -150,11 +170,12 @@ const InactiveSegmentationConfig = ({
           minValue={0}
           maxValue={usePercentage ? 100 : 1}
           value={
-            usePercentage
+            useFillAlphaInactivePercentage
               ? config.fillAlphaInactive * 100
               : config.fillAlphaInactive
           }
           onChange={value => {
+            setUseFillInactivePercentage(false);
             dispatch({
               type: 'SET_FILL_ALPHA_INACTIVE',
               payload: {

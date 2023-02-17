@@ -3,6 +3,8 @@ import React from 'react';
 
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import arrowLeft from './../../assets/icons/arrow-left.svg';
+import arrowLeftSmall from './../../assets/icons/arrow-left-small.svg';
+import arrowRightSmall from './../../assets/icons/arrow-right-small.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import clipboard from './../../assets/icons/clipboard.svg';
@@ -47,8 +49,11 @@ import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
 import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
 import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
+import iconClose from './../../assets/icons/icon-close.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
 import iconNext from './../../assets/icons/icon-next.svg';
+import iconPlay from './../../assets/icons/icon-play.svg';
+import iconPause from './../../assets/icons/icon-pause.svg';
 import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
 import iconPrev from './../../assets/icons/icon-prev.svg';
 import navigationPanelRightHide from './../../assets/icons/navigation-panel-right-hide.svg';
@@ -114,6 +119,8 @@ import oldStop from './../../assets/icons/old-stop.svg';
 const ICONS = {
   'arrow-down': arrowDown,
   'arrow-left': arrowLeft,
+  'arrow-left-small': arrowLeftSmall,
+  'arrow-right-small': arrowRightSmall,
   calendar: calendar,
   cancel: cancel,
   clipboard: clipboard,
@@ -130,6 +137,9 @@ const ICONS = {
   'external-link': externalLink,
   'group-layers': groupLayers,
   info: info,
+  'icon-close': iconClose,
+  'icon-play': iconPlay,
+  'icon-pause': iconPause,
   'info-action': infoAction,
   'info-link': infoLink,
   'arrow-left': arrowLeft,

@@ -465,7 +465,7 @@ function _getStatusComponent({
   sendTrackedMeasurementsEvent,
 }) {
   const handleMouseUp = () => {
-    sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
+    sendTrackedMeasurementsEvent('HYDRATE_SR', {
       displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
       viewportIndex,
     });

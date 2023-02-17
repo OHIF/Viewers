@@ -7,6 +7,7 @@ import {
 } from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
+import hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
 
 const { formatDate } = utils;
@@ -300,16 +301,15 @@ function OHIFCornerstoneSEGViewport(props) {
     SeriesNumber,
   } = referencedDisplaySetRef.current.metadata;
 
-  const onStatusClick = () => {
-    promptHydrateSEG({
-      servicesManager,
-      viewportIndex,
+  const onStatusClick = async () => {
+    const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
-    }).then(isHydrated => {
-      if (isHydrated) {
-        setIsHydrated(true);
-      }
+      viewportIndex,
+      toolGroupId,
+      servicesManager,
     });
+
+    setIsHydrated(isHydrated);
   };
 
   return (

@@ -2,7 +2,7 @@ import AboutModal from './AboutModal';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import ContextMenu from './ContextMenu';
-import LegacyCinePlayer from './LegacyCinePlayer';
+import CinePlayer from './CinePlayer';
 import DateRange from './DateRange';
 import Dialog from './Dialog';
 import Dropdown from './Dropdown';
@@ -18,6 +18,8 @@ import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
 import LayoutSelector from './LayoutSelector';
+import LegacyCinePlayer from './LegacyCinePlayer';
+import LegacyViewportActionBar from './LegacyViewportActionBar';
 import MeasurementTable from './MeasurementTable';
 import Modal from './Modal';
 import NavBar from './NavBar';
@@ -53,7 +55,6 @@ import Tooltip from './Tooltip';
 import TooltipClipboard from './TooltipClipboard';
 import Typography from './Typography';
 import Viewport from './Viewport';
-import LegacyViewportActionBar from './LegacyViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
@@ -78,8 +79,9 @@ export {
   HotkeysPreferences,
   Button,
   ButtonGroup,
-  ContextMenu,
   CheckBox,
+  CinePlayer,
+  ContextMenu,
   DateRange,
   Dialog,
   Dropdown,
