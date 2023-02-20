@@ -34,332 +34,16 @@ import JobsContextUtil from './JobsContextUtil.js';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
 import eventBus from '../lib/eventBus';
 import { Icon } from '../../../ui/src/elements/Icon';
-import { radcadapi } from '../utils/constants';
-import { Morphology3DComponent } from '../components/3DSegmentation/3D';
+import { BrainMode, radcadapi } from '../utils/constants';
+import { Morphology3DComponent } from '../components/3DSegmentation/3D_old';
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import exportComponent from '../lib/ExportComponent';
+import Summary from '../components/Summary';
+import PdfMaker from '../lib/PdfMaker';
 
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
-
-const exportComponent = node => {
-  if (!node.current) {
-    throw new Error("'node' must be a RefObject");
-  }
-
-  const element = ReactDOM.findDOMNode(node.current);
-
-  return html2canvas(element, {
-    scrollY: -window.scrollY,
-    allowTaint: false,
-    useCORS: true,
-  });
-};
-
-const generateTemplate = (
-  SimilarScans,
-  ohif_image,
-  chart,
-  morphologyBase64
-) => {
-  const contents = [];
-  const images = {};
-  // add radcad
-
-  contents.push(
-    {
-      stack: [
-        {
-          text: 'RadCard Report Summary',
-          style: 'header',
-        },
-      ],
-      style: 'header',
-      background: 'lightgray',
-    },
-    {
-      alignment: 'left',
-      columns: ['Patient Id : ', 'ab123'],
-    },
-    {
-      alignment: 'left',
-      columns: ['Classifier : ', 'ResNet -18'],
-    },
-    {
-      alignment: 'left',
-      columns: ['Prediction : ', 'Nescrosis'],
-    },
-    {
-      alignment: 'left',
-      columns: ['Confidence : ', '81%'],
-    }
-  );
-
-  contents.push(
-    {
-      text: 'Collage Radiomics',
-      style: 'header',
-    },
-    {
-      image: ohif_image,
-      width: 520,
-      height: 500,
-    }
-  );
-
-  contents.push({
-    text: 'Similar looking Scans',
-    style: 'header',
-    pageBreak: 'before',
-  });
-  images['query'] = SimilarScans.query;
-
-  SimilarScans.knn.forEach((data, index) => {
-    const imageIndex = 'img' + index;
-    images[imageIndex + 'thumb'] = data.region_thumbnail_url;
-    images[imageIndex] = data.image_url;
-    const malignant = data.malignant ? ' Yes' : 'No';
-    if (index == 0)
-      contents.push({
-        margin: [0, 10],
-        stack: [
-          {
-            image: 'query',
-            fit: [150, 150],
-          },
-          {
-            text: 'Original Query',
-            fontsize: 14,
-          },
-        ],
-      });
-
-    contents.push({
-      alignment: 'right',
-      // pageBreak: 'before',
-      columns: [
-        {
-          alignment: 'left',
-          fontSize: 14,
-          stack: [
-            {
-              image: imageIndex + 'thumb',
-              fit: [150, 150],
-            },
-            'Similarity:' + data.similarity_score,
-            'Dataset:' + data.dataset,
-            'Dataset Id:' + data.data_id,
-            'Malignant: ' + malignant,
-          ],
-        },
-        {
-          width: 400,
-          stack: [
-            // {
-            //   image: imageIndex,
-            //   fit: [300, 300],
-            // },
-            {
-              image: chart[index],
-              fit: [300, 300],
-              // relativePosition: {
-              //   y: -355,
-              //   x: -15,
-              // },
-              // opacity: 0.2,
-            },
-          ],
-        },
-      ],
-    });
-    contents.push({ text: '', margin: [0, 10] });
-    if (index % 2 == 0) {
-    } else contents.push({ text: '', pageBreak: 'before' });
-  });
-
-  if (morphologyBase64)
-    contents.push(
-      {
-        text: 'Morphology',
-        style: 'header',
-        pageBreak: 'before',
-      },
-      {
-        image: morphologyBase64,
-        fit: [518, 500],
-      }
-    );
-
-  return {
-    content: contents,
-    defaultStyle: {
-      fontSize: 14,
-    },
-    styles: {
-      header: {
-        background: 'lightgray',
-        fontSize: 28,
-        bold: true,
-        margin: [0, 20],
-      },
-      normal: {
-        fontSize: 22,
-      },
-    },
-    images,
-  };
-};
-
-const RadiomicSummary = props => {
-  useEffect(() => {
-    localStorage.setItem(
-      'summary',
-      JSON.stringify({
-        name: 'sadsad',
-        name2: 'sadsad',
-        name3: 'sadsad',
-      })
-    );
-  }, []);
-
-  return (
-    <div
-      style={{
-        width: '100%',
-        background: '#000000',
-        borderRadius: '8px',
-        padding: '20px',
-      }}
-    >
-      <div
-        style={{
-          paddingBottom: '40px',
-        }}
-      >
-        <h1
-          style={{
-            textAlign: 'left',
-            margin: 0,
-          }}
-        >
-          RadCard Report Summary
-        </h1>
-      </div>
-
-      <div
-        style={{
-          height: '100%',
-          flex: 1,
-        }}
-      >
-        <div
-          className=""
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <h2
-            className="cad"
-            style={{
-              color: '#00c7ee',
-            }}
-          >
-            Patient ID :{' '}
-          </h2>
-          <h2>abc123 </h2>
-        </div>
-        <div
-          className=""
-          style={{
-            display: 'flex',
-            marginTop: 12,
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <h2
-            className="cad"
-            style={{
-              color: '#00c7ee',
-            }}
-          >
-            Classifier:{' '}
-          </h2>
-          <h2>Resnet-18 </h2>
-        </div>
-
-        <div
-          className=""
-          style={{
-            display: 'flex',
-            marginTop: 12,
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <h2
-            className="cad"
-            style={{
-              color: '#00c7ee',
-            }}
-          >
-            Prediction:{' '}
-          </h2>
-          <h2>Necrosis</h2>
-        </div>
-
-        <div
-          className=""
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            marginTop: 12,
-            justifyContent: 'flex-start',
-          }}
-        >
-          <h2
-            className="cad"
-            style={{
-              color: '#00c7ee',
-            }}
-          >
-            Confidence:{' '}
-          </h2>
-          <h2>81%</h2>
-        </div>
-
-        <div
-          className=""
-          style={{
-            marginTop: 12,
-          }}
-        >
-          <button
-            onClick={props.triggerDownload}
-            // style={{
-            //   marginTop: '20px',
-            //   border: '1px yellow solid',
-            //   fontSize: '24px',
-            //   background: 'black',
-            //   color: 'white',
-            //   padding: '12px',
-            // }}
-            className="btn btn-primary btn-large"
-          >
-            Print To PDF
-          </button>
-        </div>
-      </div>
-
-      <div
-        style={{
-          flex: 1,
-        }}
-      ></div>
-    </div>
-  );
-};
+const currentMode = BrainMode;
 
 class Radiomics extends Component {
   static propTypes = {
@@ -764,17 +448,6 @@ class Radiomics extends Component {
   };
 
   downloadReportAsPdf = () => {
-    this.setState(
-      {
-        showImages: true,
-      },
-      () => {
-        // this.downloadReportAsPdfa();
-      }
-    );
-  };
-
-  downloadReportAsPdf = () => {
     const base64 = [];
     const promises = [];
     let chart = null;
@@ -787,25 +460,12 @@ class Radiomics extends Component {
 
     UINotificationService.show({
       title: 'Generating Pdf',
-      // message,
       type: 'info',
       autoClose: true,
     });
 
     // grpah
     setTimeout(() => {
-      // const customScene = this.componentRef.current.graphRef.current.el.layout
-      //   .scene;
-
-      // const plotDiv = this.componentRef.current.graphRef.current.el;
-      // const { graphDiv } = plotDiv._fullLayout.scene._scene;
-      // console.log(this.componentRef.current.graphRef.current);
-      // const divToDownload = {
-      //   ...graphDiv,
-      //   layout: { ...graphDiv.layout, scene: customScene },
-      // };
-      // end of grah
-
       const similarityResultState = this.state.similarityResultState;
 
       console.log({
@@ -823,14 +483,28 @@ class Radiomics extends Component {
             base64.push(element.toDataURL());
           });
 
-          return Promise.all([
-            exportComponent(this.canvas),
-            // Plotly.toImage(divToDownload, {
-            //   format: 'png',
-            //   width: 800,
-            //   height: 600,
-            // }),
-          ]);
+          const fetchBase64Data = [exportComponent(this.canvas)];
+          if (currentMode === BrainMode) {
+            const customScene = this.componentRef.current.graphRef.current.el
+              .layout.scene;
+
+            const plotDiv = this.componentRef.current.graphRef.current.el;
+            const { graphDiv } = plotDiv._fullLayout.scene._scene;
+            console.log(this.componentRef.current.graphRef.current);
+            const divToDownload = {
+              ...graphDiv,
+              layout: { ...graphDiv.layout, scene: customScene },
+            };
+
+            fetchBase64Data.push(
+              Plotly.toImage(divToDownload, {
+                format: 'png',
+                width: 800,
+                height: 600,
+              })
+            );
+          }
+          return Promise.all(fetchBase64Data);
         })
         .then(data => {
           const collage = data[0];
@@ -842,10 +516,10 @@ class Radiomics extends Component {
             localStorage.getItem('print-similarscans') || '{}'
           );
 
-          const definition = generateTemplate(
+          const definition = PdfMaker(
             SimilarScans[0],
             collage.toDataURL(),
-            base64,
+            base64
             // morphologyBase64
           );
           this.setState({
@@ -916,8 +590,8 @@ class Radiomics extends Component {
           style={{
             width: '100vw',
             height: '100vh',
-            // display: 'none',
-            display: this.state.isComplete ? 'none' : 'block',
+            display: 'none',
+            // display: this.state.isComplete ? 'none' : 'block',
           }}
         >
           {this.state.job && this.state.job.data ? (
@@ -994,11 +668,9 @@ class Radiomics extends Component {
 
         <div
           className="printView"
-          // ref={canvas => (this.canvas = canvas)}
-          // ref={el => (this.componentRefNode = el)}
           style={{
             paddingBottom: 140,
-            display: this.state.isComplete ? 'block' : 'none',
+            // display: this.state.isComplete ? 'block' : 'none',
           }}
         >
           <div className="container">
@@ -1010,7 +682,7 @@ class Radiomics extends Component {
           </div>
           <div className="container">
             <div className="container-item">
-              <RadiomicSummary triggerDownload={this.downloadReportAsPdf} />
+              <Summary triggerDownload={this.downloadReportAsPdf} />
               {/* RIGHT */}
               <div
                 style={{
@@ -1116,14 +788,17 @@ class Radiomics extends Component {
               </div>
             </div>
           </div>
-          {/* <div className="container">
-            <div className="container-item">
-              <Morphology3DComponent
-                chartRef={this.chartRef}
-                ref={this.componentRef}
-              />
+
+          {currentMode === BrainMode && (
+            <div className="container">
+              <div className="container-item">
+                <Morphology3DComponent
+                  chartRef={this.chartRef}
+                  ref={this.componentRef}
+                />
+              </div>
             </div>
-          </div> */}
+          )}
 
           <div className="container">
             <div

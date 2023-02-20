@@ -204,35 +204,28 @@ class ToolbarRow extends Component {
   };
 
   removeForView = buttons => {
-    const buttonsToRemove = [
-      'Length',
-      'Cine',
-      'Angle',
-      'ArrowAnnotate',
-      // 'Reset',
-      '2DMPR',
-      'More',
-      'AiTrigger',
-      'brushTools',
-    ];
+    // const buttonsToRemove = [
+    //   'Length',
+    //   'Cine',
+    //   'Angle',
+    //   'ArrowAnnotate',
+    //   // 'Reset',
+    //   '2DMPR',
+    //   'More',
+    //   'AiTrigger',
+    //   'brushTools',
+    // ];
+
+    const buttonsToRemove = ['Wwwc', 'Reset', 'Zoom', 'Pan'];
+
     // remove from button where key is in buttonsToRemove
-    buttons = buttons.filter(button => !buttonsToRemove.includes(button.key));
+    buttons = buttons.filter(button => buttonsToRemove.includes(button.key));
     return buttons;
   };
   removeForEdit = buttons => {
-    const buttonsToRemove = [
-      'Length',
-      'Cine',
-      'Angle',
-      '2DMPR',
-      'ArrowAnnotate',
-      // 'Reset',
-      'More',
-      'AiTrigger',
-      // 'brushTools',
-    ];
-    // remove from button where key is in buttonsToRemove
-    buttons = buttons.filter(button => !buttonsToRemove.includes(button.key));
+    const buttonsToRemove = ['Wwwc', 'brushTools', 'Reset', 'Zoom', 'Pan'];
+
+    buttons = buttons.filter(button => buttonsToRemove.includes(button.key));
     return buttons;
   };
 
@@ -264,7 +257,7 @@ class ToolbarRow extends Component {
             />
           </div> */}
           {buttonComponents}
-          {inEditSegmentationMode && <ConnectedLayoutButton />}
+          {/* {inEditSegmentationMode && <ConnectedLayoutButton />} */}
           <div
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}
