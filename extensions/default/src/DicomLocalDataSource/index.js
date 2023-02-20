@@ -155,7 +155,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 StudyInstanceUID,
                 SeriesInstanceUID,
                 SOPInstanceUID,
-                frameIndex: isMultiframe ? index : undefined,
+                frameIndex: isMultiframe ? index : 1,
               });
             });
 
