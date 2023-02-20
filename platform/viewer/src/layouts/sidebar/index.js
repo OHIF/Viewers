@@ -6,6 +6,8 @@ import classNames from 'classnames';
 
 import NavItem from './NavItem';
 import UserManagerContext from '../../context/UserManagerContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrainMode, lungMode } from '../../utils/constants';
 
 export const navConfig = [
   {
@@ -55,6 +57,8 @@ const renderNavItems = ({ items, pathname, depth = 0 }) => {
 const Sidebar = ({ onMobileClose, onMobileNavOpen, openMobile }) => {
   const location = useLocation();
   const userManager = useContext(UserManagerContext);
+  const { active: currentMode } = useSelector(state => state && state.mode);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (openMobile && onMobileClose) {
@@ -66,6 +70,15 @@ const Sidebar = ({ onMobileClose, onMobileNavOpen, openMobile }) => {
   const toggleMenu = () => {
     if (openMobile) onMobileClose();
     else onMobileNavOpen();
+  };
+
+  const toggleMode = () => {
+    onMobileClose();
+    const action = {
+      type: 'SET_APPLICATION_MODE',
+      mode: currentMode === BrainMode ? lungMode : BrainMode,
+    };
+    dispatch(action);
   };
 
   const handleLogout = () => userManager.signoutRedirect();
@@ -106,11 +119,20 @@ const Sidebar = ({ onMobileClose, onMobileNavOpen, openMobile }) => {
             </div>
           </RouterLink>
         </div>
+
         <div>
           {renderNavItems({
             items: navConfig,
             pathname: location.pathname,
           })}
+        </div>
+        <div>
+          <button
+            onClick={toggleMode}
+            className="btn btn-small btn-primary pull-left"
+          >
+            Toggle Mode
+          </button>
         </div>
       </div>
 

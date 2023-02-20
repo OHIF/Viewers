@@ -1,5 +1,8 @@
 import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
+import cornerstoneTools, {
+  clearToolState,
+  getToolState,
+} from 'cornerstone-tools';
 import OHIF from '@ohif/core';
 import TriggerAlgorithm from './components/AITrigger';
 
@@ -7,8 +10,11 @@ import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 import store from '@ohif/viewer/src/store';
+import { BrainMode } from '@ohif/viewer/src/utils/constants';
 const scroll = cornerstoneTools.import('util/scroll');
 const scrollTo = cornerstoneTools.import('util/scrollToIndex');
+
+// const currentMode = BrainMode;
 
 const { studyMetadataManager } = OHIF.utils;
 const { setViewportSpecificData } = OHIF.redux.actions;
@@ -66,8 +72,9 @@ const commandsModule = ({ servicesManager }) => {
     },
     resetViewport: ({ viewports }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
-      const preset = 5;
+
       const state = store.getState();
+      const preset = state.mode.active === BrainMode ? 5 : 2;
       const { preferences = {} } = state;
       const { window, level } =
         preferences.windowLevelData && preferences.windowLevelData[preset];
@@ -80,6 +87,9 @@ const commandsModule = ({ servicesManager }) => {
           windowCenter: Number(level),
         };
         cornerstone.setViewport(enabledElement, viewport);
+
+        // clearToolState(enabledElement, 'brushTools');
+        // cornerstone.updateImage(enabledElement);
       }
     },
     invertViewport: ({ viewports }) => {

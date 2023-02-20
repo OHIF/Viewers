@@ -10,12 +10,13 @@ import {
 } from '../../../../core/src/redux/reducers/steps';
 import NavigateIcons from './NavigateIcons';
 import { BrainMode, lungMode } from '../../utils/constants';
+import { useSelector } from 'react-redux';
 
-const currentMode = BrainMode;
+// const currentMode = lungMode;
 
-export const navConfig = Object.values(
-  currentMode == BrainMode ? BrainApplicationSteps : LungApplicationSteps
-);
+// export const navConfig = Object.values(
+//   currentMode == BrainMode ? BrainApplicationSteps : LungApplicationSteps
+// );
 
 const reduceChildRoutes = ({ acc, pathname, item, depth }) => {
   const key = item.title + depth;
@@ -52,7 +53,7 @@ const renderNavItems = ({ items, pathname, depth = 0 }) => {
 
 const Header = ({ onMobileClose, openMobile }) => {
   const location = useLocation();
-
+  const { active: currentMode } = useSelector(state => state && state.mode);
   useEffect(() => {
     if (openMobile && onMobileClose) {
       onMobileClose();
@@ -70,7 +71,11 @@ const Header = ({ onMobileClose, openMobile }) => {
       }}
     >
       {renderNavItems({
-        items: navConfig,
+        items: Object.values(
+          currentMode == BrainMode
+            ? BrainApplicationSteps
+            : LungApplicationSteps
+        ),
         pathname: location.pathname,
       })}
     </section>

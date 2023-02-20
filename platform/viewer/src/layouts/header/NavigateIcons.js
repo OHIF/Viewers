@@ -7,11 +7,13 @@ import { servicesManager } from '../../App';
 import ReactTooltip from 'react-tooltip';
 import { JobsContext } from '../../context/JobsContext';
 import { BrainMode, lungMode } from '../../utils/constants';
+import { useSelector } from 'react-redux';
 
-const currentMode = BrainMode;
+// const currentMode = BrainMode;
 
 const NavigateIcons = () => {
   const { UINotificationService } = servicesManager.services;
+  const { active: currentMode } = useSelector(state => state && state.mode);
   const { isloading } = useContext(JobsContext);
   const history = useHistory();
   const location = useLocation();
@@ -19,7 +21,7 @@ const NavigateIcons = () => {
   const [loading, setLoading] = useState(true);
   const isBrainMode = currentMode == BrainMode;
 
-  const selectMaskStep = isBrainMode ? 5 : 4;
+  const selectMaskStep = isBrainMode ? 5 : 3;
   const handleNext = () => {
     const paths =
       currentMode == BrainMode
@@ -31,8 +33,7 @@ const NavigateIcons = () => {
           }
         : {
             1: 'viewer',
-            2: 'edit',
-            3: 'selectmask',
+            2: 'selectmask', // if active is viewer goto select mask 
           };
 
     if (activeStep === selectMaskStep) {
@@ -67,10 +68,9 @@ const NavigateIcons = () => {
             6: 'selectmask',
           }
         : {
-            2: '/studylist',
+            2: 'studylist',
             3: 'view',
-            4: 'edit',
-            5: 'selectmask',
+            4: 'selectmask',
           };
 
     const newPathname = location.pathname.replace(
@@ -95,7 +95,6 @@ const NavigateIcons = () => {
   }, []);
 
   useEffect(() => {
-    const increment = isBrainMode ? 1 : 0;
     if (location.pathname.includes('/studylist')) {
       setActiveStep(1);
     } else if (location.pathname.includes('/view')) {
@@ -104,13 +103,15 @@ const NavigateIcons = () => {
     } else if (location.pathname.includes('/nnunet') && isBrainMode) {
       setActiveStep(3);
       setLoading(false);
-    } else if (location.pathname.includes('/edit')) {
+    } else if (location.pathname.includes('/edit') && isBrainMode) {
       localStorage.setItem('direction', 'back');
-      setActiveStep(3 + increment);
+      setActiveStep(4);
     } else if (location.pathname.includes('/selectmask')) {
-      setActiveStep(4 + increment);
+      if (isBrainMode) setActiveStep(5);
+      else setActiveStep(3);
     } else if (location.pathname.includes('/radionics')) {
-      setActiveStep(5 + increment);
+      if (isBrainMode) setActiveStep(6);
+      else setActiveStep(4);
     }
   }, [location.pathname]);
 
@@ -118,7 +119,7 @@ const NavigateIcons = () => {
     [1].includes(activeStep) || loading || isloading;
 
   const isBackNavigationDisabled =
-    [isBrainMode ? 6 : 5].includes(activeStep) || loading || isloading;
+    [isBrainMode ? 6 : 4].includes(activeStep) || loading || isloading;
 
   return (
     <footer className="">

@@ -52,20 +52,20 @@ export const LungApplicationSteps = {
     href: '/view',
     icon: 'view',
   },
+  // 3: {
+  //   step: 3,
+  //   title: 'Segmentations',
+  //   href: '/edit',
+  //   icon: 'segmentation',
+  // },
   3: {
     step: 3,
-    title: 'Segmentations',
-    href: '/edit',
-    icon: 'segmentation',
-  },
-  4: {
-    step: 4,
     title: 'Mask Selection',
     href: '/selectmask',
     icon: 'mask',
   },
-  5: {
-    step: 5,
+  4: {
+    step: 4,
     title: 'Radionics',
     href: '/radionics',
     icon: 'radiomic',

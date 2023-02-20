@@ -39,10 +39,11 @@ const store = createStore(
 store.subscribe(() => {
   localStorage.saveState({
     preferences: store.getState().preferences,
+    mode: store.getState().mode,
   });
   sessionStorage.saveState({
     servers: store.getState().servers,
-    mode: store.getState().mode,
+    // mode: store.getState().mode,
   });
 });
 
