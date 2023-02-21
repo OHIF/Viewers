@@ -9,8 +9,6 @@ import { JobsContext } from '../../context/JobsContext';
 import { BrainMode, lungMode } from '../../utils/constants';
 import { useSelector } from 'react-redux';
 
-// const currentMode = BrainMode;
-
 const NavigateIcons = () => {
   const { UINotificationService } = servicesManager.services;
   const { active: currentMode } = useSelector(state => state && state.mode);
@@ -61,7 +59,7 @@ const NavigateIcons = () => {
     const paths =
       currentMode == BrainMode
         ? {
-            2: '/studylist',
+            2: 'studylist',
             3: 'view',
             4: 'nnunet',
             5: 'edit',
