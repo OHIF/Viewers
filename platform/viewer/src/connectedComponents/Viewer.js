@@ -302,13 +302,25 @@ class Viewer extends Component {
 
           // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
           if (viewport.scale < 1) return;
-          if (tool_data.x && viewport.translation.x != tool_data.x)
-            viewport.translation.x = tool_data.x;
-          if (tool_data.y && viewport.translation.y != tool_data.y)
-            viewport.translation.y = tool_data.y;
-          if (tool_data.scale && viewport.scale != tool_data.scale)
-            viewport.scale = tool_data.scale;
-          if (tool_data.voi) viewport.voi = tool_data.voi;
+          var image = enabledElement.image;
+          var widthScale = tool_data.x;
+          var heightScale = tool_data.x;
+          if (image.rowPixelSpacing < image.columnPixelSpacing) {
+            widthScale =
+              widthScale * (image.columnPixelSpacing / image.rowPixelSpacing);
+          } else if (image.columnPixelSpacing < image.rowPixelSpacing) {
+            heightScale =
+              heightScale * (image.rowPixelSpacing / image.columnPixelSpacing);
+          }
+          viewport.scale = widthScale;
+
+          // if (tool_data.x && viewport.translation.x != tool_data.x)
+          //   viewport.translation.x = tool_data.x;
+          // if (tool_data.y && viewport.translation.y != tool_data.y)
+          //   viewport.translation.y = tool_data.y;
+          // if (tool_data.scale && viewport.scale != tool_data.scale)
+          //   viewport.scale = tool_data.scale;
+          // if (tool_data.voi) viewport.voi = tool_data.voi;
 
           cornerstone.resize(enabledElement, true);
           cornerstone.setViewport(enabledElement, viewport);
