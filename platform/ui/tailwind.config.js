@@ -7,11 +7,6 @@ module.exports = {
   // }),
   content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
   theme: {
-    extend: {
-      spacing: {
-        '1.5': '0.375rem',
-      },
-    },
     screens: {
       sm: '640px',
       md: '768px',

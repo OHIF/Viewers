@@ -1,12 +1,10 @@
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import OHIF, { utils } from '@ohif/core';
 import {
   LoadingIndicatorProgress, Notification, useViewportDialog, useViewportGrid, ViewportActionBar
 } from '@ohif/ui';
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-
-import { useTranslation } from 'react-i18next';
-
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';

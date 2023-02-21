@@ -1,7 +1,7 @@
-import OHIF, { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import OHIF, { utils } from '@ohif/core';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import {

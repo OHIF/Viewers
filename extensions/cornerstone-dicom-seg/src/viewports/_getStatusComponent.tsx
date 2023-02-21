@@ -1,6 +1,6 @@
-import { Icon, Tooltip } from '@ohif/ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Icon, Tooltip } from '@ohif/ui';
 
 
 export default function _getStatusComponent({ isHydrated, onStatusClick }) {

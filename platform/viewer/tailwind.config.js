@@ -18,11 +18,6 @@ module.exports = {
     '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,css, ts,tsx}',
   ],
   theme: {
-    extend: {
-      spacing: {
-        '1.5': '0.375rem',
-      },
-    },
     screens: {
       sm: '640px',
       md: '768px',
