@@ -33,6 +33,7 @@ import { useLocation } from 'react-router';
 import { radcadapi } from '../../utils/constants';
 import { JobsContext } from '../../context/JobsContext';
 import { servicesManager } from '../../App';
+const { UINotificationService } = servicesManager.services;
 
 const { loadAndCacheDerivedDisplaySets, studyMetadataManager } = utils;
 
@@ -82,7 +83,6 @@ const ViewportGrid = function(props) {
   );
 
   const [fetchedSegmentations, setFetchedSegmentations] = useState('idle');
-  const { UINotificationService } = servicesManager.services;
 
   const removeSegments = () => {
     const view_ports = cornerstone.getEnabledElements();

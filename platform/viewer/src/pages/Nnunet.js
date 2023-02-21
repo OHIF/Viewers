@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash';
 import { servicesManager } from '../App';
 import { CSSTransition } from 'react-transition-group';
 import { radcadapi } from '../utils/constants';
-const { UIDialogService } = servicesManager.services;
+const { UIDialogService, UINotificationService } = servicesManager.services;
 
 function useIsMountedRef() {
   const isMounted = useRef(true);
@@ -97,6 +97,7 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
   const location = useLocation();
   const history = useHistory();
   const isMountedRef = useIsMountedRef();
+  const [loading, setLoading] = useState(true);
 
   const handleOnSuccess = () => {
     let direction = localStorage.getItem('direction');
@@ -142,18 +143,8 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
 
   const checkExistingSegmentations = async () => {
     try {
-      // const segmentations = await fetchSegmentations();
       const series_uid = JSON.parse(localStorage.getItem('series_uid') || '');
-      console.log('checkExistingSegmentations----------');
-      console.log(series_uid);
-      // const series_uid = seriesInstanceUIDs;
-      // const series_uid = viewportData[0].SeriesInstanceUID;
-      // const email = 'nick.fragakis%40thetatech.ai';
       const email = user.profile.email;
-      const body = {
-        email: email, //'nick.fragakis@thetatech.ai',
-      };
-
       var requestOptions = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -167,12 +158,6 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
         segmentations = await segmentations.json();
       else segmentations = {};
 
-      // let segmentations = await client.get(
-      //   `/segmentations?series=${series_uid}&email=${email}`,
-      //   body
-      // );
-      console.log({ segmentations });
-      // segmentations = segmentations.data;
       let has_nnunet = false;
       const segmentationsList = Object.keys(segmentations) || [];
       for (const segment_label_name of segmentationsList) {
@@ -183,15 +168,12 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
       }
 
       if (isEmpty(segmentationsList)) {
-        // no segmentations exist - autorun nnunet
         await startNNunetProcess();
       } else if (has_nnunet) {
-        // ask if they want to force rerun
         showloadSegmentationDailog(
           'Nnunet segmentations exist, do you re-run nnunet segmentation ?'
         );
       } else {
-        // non-nnunet segmentations exist. ask the user
         showloadSegmentationDailog(
           'Non-nnunet segmentations exist, do you run nnunet segmentation ?'
         );
@@ -230,29 +212,15 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
       UIDialogService.dismiss({ id: 'ForceRerun' });
       const series_uid = JSON.parse(localStorage.getItem('series_uid'));
 
-      // const series_uid = seriesInstanceUIDs;
       const study_uid = studyInstanceUIDs;
       const email = user.profile.email;
       const state = window.store.getState();
 
       const body = {
-        // study_uid:
-        //   '1.3.6.1.4.1.32722.99.99.100855571832074152951605738408734618579',
-        // series_uid:
-        //   '1.3.6.1.4.1.32722.99.99.71621653125201582124240564508842688465',
-        // email: 'nick.fragakis@thetatech.ai',
         parameters: {},
         study_uid: study_uid[0],
         series_uid: series_uid,
         email: email,
-        // parameters: {
-        //   FLAIR:
-        //     '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-        //   T1:
-        //     '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-        //   T2:
-        //     '1.3.6.1.4.1.14519.5.2.1.6450.4012.137394205856739469389144102217',
-        // },
       };
 
       var requestOptions = {
@@ -280,9 +248,61 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
   }, 16000);
 
   useEffect(() => {
-    // showloadSegmentationDailog('sample');
-    // startNNunetProcess();
-    checkExistingSegmentations();
+    const interval = setInterval(() => {
+      fetch(radcadapi + '/endpoint-status', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (
+            data['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
+            data['nnUNet-4D-Brain-lite-3modality-endpoint'] === 'RUNNING' &&
+            data['cbir-encoder'] === 'RUNNING'
+          ) {
+            setLoading(false);
+            clearInterval(interval);
+            checkExistingSegmentations();
+          } else {
+            UINotificationService.show({
+              title: 'Endpoint warming up',
+              type: 'error',
+              autoClose: true,
+            });
+          }
+        })
+        .catch(error => console.error(error));
+    }, 60000);
+
+    fetch(radcadapi + '/endpoint-status', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (
+          data['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
+          data['nnUNet-4D-Brain-lite-3modality-endpoint'] === 'RUNNING' &&
+          data['cbir-encoder'] === 'RUNNING'
+        ) {
+          setLoading(false);
+          clearInterval(interval);
+          checkExistingSegmentations();
+        } else {
+          UINotificationService.show({
+            title: 'Endpoint warming up',
+            type: 'error',
+            autoClose: true,
+          });
+        }
+      })
+      .catch(error => console.error(error));
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadingIcon = (
