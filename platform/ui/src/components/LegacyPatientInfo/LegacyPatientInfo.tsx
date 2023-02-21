@@ -11,7 +11,7 @@ const classes = {
   row: 'flex flex-col ml-4',
 };
 
-function PatientInfo({
+function LegacyPatientInfo({
   patientName,
   patientSex,
   patientAge,
@@ -119,16 +119,22 @@ function PatientInfo({
           )
         }
       >
-        <Icon
-          className="cursor-pointer text-white hover:text-primary-light"
-          name="info-action"
-        />
+        <div className="relative flex justify-end cursor-pointer">
+          <div className="relative">
+            <Icon name="profile" className="w-5 text-white" />
+            <Icon
+              name="info-link"
+              className="absolute w-5 text-white bg-black"
+              style={{ right: -7, bottom: -10 }}
+            />
+          </div>
+        </div>
       </Tooltip>
     </div>
   );
 }
 
-PatientInfo.propTypes = {
+LegacyPatientInfo.propTypes = {
   patientName: PropTypes.string,
   patientSex: PropTypes.string,
   patientAge: PropTypes.string,
@@ -140,4 +146,4 @@ PatientInfo.propTypes = {
   showPatientInfoRef: PropTypes.object,
 };
 
-export default PatientInfo;
+export default LegacyPatientInfo;

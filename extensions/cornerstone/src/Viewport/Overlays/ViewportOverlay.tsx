@@ -129,7 +129,7 @@ function CornerstoneViewportOverlay({
       }
 
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">W:</span>
           <span className="ml-1 mr-2 font-light">{windowWidth.toFixed(0)}</span>
           <span className="mr-1">L:</span>
@@ -140,7 +140,7 @@ function CornerstoneViewportOverlay({
 
     if (activeTools.includes('Zoom')) {
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">Zoom:</span>
           <span className="font-light">{scale.toFixed(2)}x</span>
         </div>
@@ -174,7 +174,7 @@ function CornerstoneViewportOverlay({
     }
 
     return (
-      <div className="flex flex-row">
+      <div className="flex flex-row text-base">
         <span className="mr-1">I:</span>
         <span className="font-light">
           {instanceNumber !== undefined
