@@ -53,11 +53,16 @@ module.exports = {
 
       customgreen: {
         100: '#05D97C',
+        200: '#0FD97C',
       },
 
       customblue: {
         100: '#c4fdff',
         200: '#38daff',
+      },
+
+      customgray: {
+        100: '#262943',
       },
 
       gray: {

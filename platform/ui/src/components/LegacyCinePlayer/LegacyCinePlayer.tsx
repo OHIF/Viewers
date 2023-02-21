@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { IconButton, Icon } from '../';
 
-import './CinePlayerCustomInputRange.css';
+import './LegacyCinePlayerCustomInputRange.css';
 
-const CinePlayer = ({
+const LegacyCinePlayer = ({
   isPlaying,
   minFrameRate,
   maxFrameRate,
@@ -32,7 +32,7 @@ const CinePlayer = ({
   };
 
   return (
-    <div className="flex flex-row items-center justify-center h-10 border rounded-full CinePlayer border-primary-light">
+    <div className="flex flex-row items-center justify-center h-10 border rounded-full LegacyCinePlayer border-primary-light">
       <IconButton
         variant="text"
         color="inherit"
@@ -70,7 +70,7 @@ const CinePlayer = ({
 
 const noop = () => {};
 
-CinePlayer.defaultProps = {
+LegacyCinePlayer.defaultProps = {
   isPlaying: false,
   minFrameRate: 1,
   maxFrameRate: 90,
@@ -81,7 +81,7 @@ CinePlayer.defaultProps = {
   onClose: noop,
 };
 
-CinePlayer.propTypes = {
+LegacyCinePlayer.propTypes = {
   /** Minimum value for range slider */
   minFrameRate: PropTypes.number.isRequired,
   /** Maximum value for range slider */
@@ -96,4 +96,4 @@ CinePlayer.propTypes = {
   onClose: PropTypes.func,
 };
 
-export default CinePlayer;
+export default LegacyCinePlayer;
