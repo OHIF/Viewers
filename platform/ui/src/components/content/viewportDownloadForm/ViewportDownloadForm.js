@@ -150,12 +150,14 @@ const ViewportDownloadForm = ({
 
   const onKeepAspectToggle = () => {
     const { width, height } = dimensions;
-    const aspectMultiplier = { ...aspectMultiplier };
     if (!keepAspect) {
-      const base = Math.min(width, height);
-      aspectMultiplier.width = width / base;
-      aspectMultiplier.height = height / base;
-      setAspectMultiplier(aspectMultiplier);
+      setAspectMultiplier(oldAspectMultiplier => {
+        const aspectMultiplier = { ...oldAspectMultiplier };
+        const base = Math.min(width, height);
+        aspectMultiplier.width = width / base;
+        aspectMultiplier.height = height / base;
+        return aspectMultiplier;
+      });
     }
 
     setKeepAspect(!keepAspect);
