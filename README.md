@@ -271,6 +271,8 @@ Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
 under a
 [grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
 
+This project is tested with BrowserStack. Thank you for supporting open source
+
 ## License
 
 MIT © [OHIF](https://github.com/OHIF)
