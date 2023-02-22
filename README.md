@@ -227,7 +227,7 @@ These projects comprise the
 
 ### Extensions
 
-This is a list of Extensions maintained by the OHIF Core team. It's possible to
+This is a list of Extensions maintained by the OHIF Core team. It is possible to
 customize and configure these extensions, and you can even create your own. You
 can [read more about extensions here][ohif-extensions].
 
