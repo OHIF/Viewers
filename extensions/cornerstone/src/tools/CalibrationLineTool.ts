@@ -50,7 +50,7 @@ function calculateLength3(pos1, pos2) {
 export default CalibrationLineTool;
 
 export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
-  const { UIDialogService, ViewportGridService } = servicesManager.services;
+  const { uiDialogService, viewportGridService } = servicesManager.services;
 
   // calculate length (mm) with the current Pixel Spacing
   const annotationAddedEventDetail = csToolsEvent.detail;
@@ -58,7 +58,7 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
     annotation: { metadata, data: annotationData },
   } = annotationAddedEventDetail;
   const { referencedImageId: imageId } = metadata;
-  const enabledElement = getActiveViewportEnabledElement(ViewportGridService);
+  const enabledElement = getActiveViewportEnabledElement(viewportGridService);
   const { viewport } = enabledElement;
 
   const length =
@@ -95,13 +95,13 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
   };
 
   return new Promise((resolve, reject) => {
-    if (!UIDialogService) {
+    if (!uiDialogService) {
       reject('UIDialogService is not initiated');
       return;
     }
 
     callInputDialog(
-      UIDialogService,
+      uiDialogService,
       {
         text: '',
         label: `${length}`,
