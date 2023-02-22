@@ -144,7 +144,10 @@ const connectToolsToMeasurementService = servicesManager => {
       } = annotationAddedEventDetail;
       const { toolName } = metadata;
 
-      if (toolName === toolNames.CalibrationLine) {
+      if (
+        csToolsEvent.type === completedEvt &&
+        toolName === toolNames.CalibrationLine
+      ) {
         // show modal to input the measurement (mm)
         onCompletedCalibrationLine(servicesManager, csToolsEvent)
           .then(

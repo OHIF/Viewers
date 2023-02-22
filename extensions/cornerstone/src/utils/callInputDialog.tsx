@@ -20,7 +20,7 @@ function callInputDialog(
   isArrowAnnotateInputDialog = true,
   dialogConfig: any = {}
 ) {
-  const dialogId = 'enter-annotation';
+  const dialogId = 'dialog-enter-annotation';
   const label = data
     ? isArrowAnnotateInputDialog
       ? data.text
