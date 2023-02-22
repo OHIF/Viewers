@@ -24,12 +24,6 @@ import {
  * @param {object[]} defaultExtensions - array of extension objects
  */
 async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
-  const appConfig = {
-    ...(typeof appConfigOrFunc === 'function'
-      ? appConfigOrFunc({ servicesManager })
-      : appConfigOrFunc),
-  };
-
   const commandsManagerConfig = {
     getAppState: () => {},
   };
@@ -37,6 +31,13 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const commandsManager = new CommandsManager(commandsManagerConfig);
   const servicesManager = new ServicesManager(commandsManager);
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
+
+  const appConfig = {
+    ...(typeof appConfigOrFunc === 'function'
+      ? appConfigOrFunc({ servicesManager })
+      : appConfigOrFunc),
+  };
+
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
