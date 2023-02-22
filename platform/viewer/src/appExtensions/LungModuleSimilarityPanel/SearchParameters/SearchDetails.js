@@ -353,7 +353,7 @@ const SearchDetails = props => {
       };
 
       let response = await fetch(
-        `${radcadapi}/similarity?instance=${instance_uid}&email=razakwasiu@gmail.com`,
+        `${radcadapi}/similarity?instance=${instance_uid}&email=${email}`,
         requestOptions
       );
       response = await response.json();
@@ -401,8 +401,8 @@ const SearchDetails = props => {
     const study_uid =
       data.StudyInstanceUID ||
       JSON.parse(localStorage.getItem('studyInstanceUID'));
-    const email = user.profile.email;
-    // const email = 'nick.fragakis@thetatech.ai';
+    // const email = user.profile.email;
+    const email = 'nick.fragakis@thetatech.ai';
 
     // get current image
     const image = cornerstone.getImage(element);
@@ -415,8 +415,7 @@ const SearchDetails = props => {
     const body = {
       study_uid: study_uid,
       series_uid: series_uid,
-      email: 'razakwasiu@gmail.com',
-      // email,
+      email,
       instance_uid,
       parameters: {
         rectangle: {

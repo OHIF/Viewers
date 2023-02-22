@@ -43,7 +43,7 @@ import Summary from '../components/Summary';
 import PdfMaker from '../lib/PdfMaker';
 
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
-const currentMode = BrainMode;
+// const currentMode = BrainMode;
 
 class Radiomics extends Component {
   static propTypes = {
@@ -82,6 +82,7 @@ class Radiomics extends Component {
     activeViewportIndex: PropTypes.number.isRequired,
     isStudyLoaded: PropTypes.bool,
     dialog: PropTypes.object,
+    currentMode: PropTypes.string,
   };
 
   constructor(props) {
@@ -484,34 +485,48 @@ class Radiomics extends Component {
           });
 
           const fetchBase64Data = [exportComponent(this.canvas)];
-          if (currentMode === BrainMode) {
-            const customScene = this.componentRef.current.graphRef.current.el
-              .layout.scene;
+          try {
+            if (this.props.currentMode === BrainMode) {
+              const customScene = this.componentRef.current.graphRef.current.el
+                .layout.scene;
 
-            const plotDiv = this.componentRef.current.graphRef.current.el;
-            const { graphDiv } = plotDiv._fullLayout.scene._scene;
-            console.log(this.componentRef.current.graphRef.current);
-            const divToDownload = {
-              ...graphDiv,
-              layout: { ...graphDiv.layout, scene: customScene },
-            };
+              const plotDiv = this.componentRef.current.graphRef.current.el;
+              const { graphDiv } = plotDiv._fullLayout.scene._scene;
+              console.log(this.componentRef.current.graphRef.current);
+              const divToDownload = {
+                ...graphDiv,
+                layout: { ...graphDiv.layout, scene: customScene },
+              };
 
-            fetchBase64Data.push(
-              Plotly.toImage(divToDownload, {
-                format: 'png',
-                width: 800,
-                height: 600,
-              })
+              fetchBase64Data.push(
+                Plotly.toImage(divToDownload, {
+                  format: 'png',
+                  width: 800,
+                  height: 600,
+                })
+              );
+            }
+          } catch (error) {
+            console.log(
+              'Error occurred while setting morphologyBase64:',
+              error
             );
           }
+
           return Promise.all(fetchBase64Data);
         })
         .then(data => {
           const collage = data[0];
-
-          // const morphologyBase64 = data[1];
-          // ohif_image = 'data:image/png;base64,' + collage.toDataURL();
-
+          let morphologyBase64 = null;
+          try {
+            if (this.props.currentMode === BrainMode)
+              morphologyBase64 = data[1];
+          } catch (error) {
+            console.log(
+              'Error occurred while setting morphologyBase64:',
+              error
+            );
+          }
           const SimilarScans = JSON.parse(
             localStorage.getItem('print-similarscans') || '{}'
           );
@@ -519,8 +534,8 @@ class Radiomics extends Component {
           const definition = PdfMaker(
             SimilarScans[0],
             collage.toDataURL(),
-            base64
-            // morphologyBase64
+            base64,
+            morphologyBase64
           );
           this.setState({
             showImages: false,
@@ -789,7 +804,7 @@ class Radiomics extends Component {
             </div>
           </div>
 
-          {currentMode === BrainMode && (
+          {this.props.currentMode === BrainMode && (
             <div className="container">
               <div className="container-item">
                 <Morphology3DComponent

@@ -20,6 +20,7 @@ const mapStateToProps = state => {
     activeViewportIndex: viewports.activeViewportIndex,
     activeServer: getActiveServer(servers),
     user: oidc.user,
+    currentMode: state.mode.active,
   };
 };
 
