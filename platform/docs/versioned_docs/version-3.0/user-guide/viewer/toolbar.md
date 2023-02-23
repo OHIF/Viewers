@@ -24,6 +24,7 @@ The basic viewer comes with the following default measurement tools:
 - Bidirectional Tool: Creates a measurement of the longest diameter (LD) and longest perpendicular diameter (LPD) in *mm*
 - Annotation: Used to create a qualitative marker with a freetext label
 - Ellipse: Measures an elliptical area in *mm<sup>2</sup>* and Hounsfield Units (HU)
+- Calibration Tool: Calibrate (or override) the Pixel Spacing Attribute (Physical distance in the patient between the center of each pixel, specified by a numeric pair - adjacent row spacing (delimiter) adjacent column spacing in mm)
 
 When a measurement tool is selected from the toolbar, it becomes the `active` tool. Use the caret to expand the measurement tools and select another tool.
 <!-- We should add a smaller screenshot for each measurement tool. Maybe have a matrix with 4 identical sized screenshots in a box? Also we should make sure the screenshots have more realistic measurements -->

@@ -227,6 +227,7 @@ Button.propTypes = {
   /** Button corner roundness  */
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained', 'disabled']),
+  /* color prop must have all the possible keys of variants defined above */
   color: PropTypes.oneOf([
     'default',
     'primary',

@@ -9,23 +9,35 @@ import { Input, Dialog } from '@ohif/ui';
  * @param {*} event
  * @param {*} callback
  * @param {*} isArrowAnnotateInputDialog
+ * @param {*} dialogConfig
+ * @param {string?} dialogConfig.dialogTitle - title of the input dialog
+ * @param {string?} dialogConfig.inputLabel - show label above the input
  */
 function callInputDialog(
   uiDialogService,
   data,
   callback,
-  isArrowAnnotateInputDialog = true
+  isArrowAnnotateInputDialog = true,
+  dialogConfig: any = {}
 ) {
-  const dialogId = 'enter-annotation';
+  const dialogId = 'dialog-enter-annotation';
   const label = data
     ? isArrowAnnotateInputDialog
       ? data.text
       : data.label
     : '';
+  const {
+    dialogTitle = 'Enter your annotation',
+    inputLabel = '',
+    validateFunc = value => true,
+  } = dialogConfig;
 
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save':
+        if (typeof validateFunc === 'function' && !validateFunc(value.label))
+          return;
+
         callback(value.label, action.id);
         break;
       case 'cancel':
@@ -43,7 +55,7 @@ function callInputDialog(
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: dialogTitle,
         value: { label },
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
@@ -61,6 +73,8 @@ function callInputDialog(
                 type="text"
                 id="annotation"
                 containerClassName="mr-2"
+                label={inputLabel}
+                labelClassName="text-primary-light"
                 value={value.label}
                 onChange={event => {
                   event.persist();
