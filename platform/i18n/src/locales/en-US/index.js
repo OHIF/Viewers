@@ -9,6 +9,7 @@ import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
+import ViewportDownloadForm from './ViewportDownloadForm.json';
 
 export default {
   'en-US': {
@@ -23,5 +24,6 @@ export default {
     StudyBrowser,
     StudyList,
     UserPreferencesModal,
+    ViewportDownloadForm,
   },
 };
