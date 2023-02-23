@@ -34,7 +34,7 @@ function OHIFCornerstoneRTViewport(props) {
   const {
     DisplaySetService,
     ToolGroupService,
-    SegmentationService,
+    segmentationService,
     UINotificationService,
   } = servicesManager.services;
 
@@ -126,7 +126,7 @@ function OHIFCornerstoneRTViewport(props) {
     direction => {
       direction = direction === 'left' ? -1 : 1;
       const segmentationId = rtDisplaySet.displaySetInstanceUID;
-      const segmentation = SegmentationService.getSegmentation(segmentationId);
+      const segmentation = segmentationService.getSegmentation(segmentationId);
 
       const { segments } = segmentation;
 
@@ -140,7 +140,7 @@ function OHIFCornerstoneRTViewport(props) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      SegmentationService.jumpToSegmentCenter(
+      segmentationService.jumpToSegmentCenter(
         segmentationId,
         newSelectedSegmentIndex,
         toolGroupId
@@ -167,8 +167,8 @@ function OHIFCornerstoneRTViewport(props) {
   }, [servicesManager, viewportIndex, rtDisplaySet, rtIsLoading]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
         if (
           evt.rtDisplaySet.displaySetInstanceUID ===
@@ -194,8 +194,8 @@ function OHIFCornerstoneRTViewport(props) {
   }, [rtDisplaySet]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
       ({ segmentIndex, numSegments }) => {
         setProcessingProgress({
           segmentIndex,
@@ -250,7 +250,7 @@ function OHIFCornerstoneRTViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+      segmentationService.removeSegmentationRepresentationFromToolGroup(
         toolGroupId
       );
 
@@ -263,7 +263,7 @@ function OHIFCornerstoneRTViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+      segmentationService.removeSegmentationRepresentationFromToolGroup(
         toolGroupId
       );
       referencedDisplaySetRef.current = null;

@@ -771,12 +771,16 @@ class SegmentationService {
       return acc;
     }, []);
 
-    const geometryIds = rtStructData.map(struct => struct.id);
+    const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
+
+    const geometryIds = rtStructData.map(
+      struct => `${rtDisplaySetUID}:${struct.id}`
+    );
 
     const segmentation: Segmentation = {
       ...defaultScheme,
       id: segmentationId,
-      displaySetInstanceUID: rtDisplaySet.displaySetInstanceUID,
+      displaySetInstanceUID: rtDisplaySetUID,
       type: representationType,
       representationData: {
         [CONTOUR]: {
@@ -1471,11 +1475,13 @@ class SegmentationService {
       segDisplaySetInstanceUID
     );
 
-    const segFrameOfReferenceUID = segDisplaySet.instance?.FrameOfReferenceUID;
+    const segFrameOfReferenceUID = this._getFrameOfReferenceUIDForSeg(
+      segDisplaySet
+    );
 
-    viewportDisplaySetInstanceUIDs.forEach(displaySetInstanceUID => {
-      // check if the displaySet is sharing the same frameOfReferenceUID
-      // with the new segmentation
+    // check if the displaySet is sharing the same frameOfReferenceUID
+    // with the new segmentation
+    for (const displaySetInstanceUID of viewportDisplaySetInstanceUIDs) {
       const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
@@ -1487,8 +1493,9 @@ class SegmentationService {
         displaySet?.images?.[0]?.FrameOfReferenceUID === segFrameOfReferenceUID
       ) {
         shouldDisplaySeg = true;
+        break;
       }
-    });
+    }
 
     return shouldDisplaySeg;
   }
@@ -2111,6 +2118,22 @@ class SegmentationService {
     );
 
     return toolGroupIds;
+  }
+
+  private _getFrameOfReferenceUIDForSeg(displaySet) {
+    const frameOfReferenceUID = displaySet.instance?.FrameOfReferenceUID;
+
+    if (frameOfReferenceUID) {
+      return frameOfReferenceUID;
+    }
+
+    // if not found we should try the ReferencedFrameOfReferenceSequence
+    const referencedFrameOfReferenceSequence =
+      displaySet.instance?.ReferencedFrameOfReferenceSequence;
+
+    if (referencedFrameOfReferenceSequence) {
+      return referencedFrameOfReferenceSequence.FrameOfReferenceUID;
+    }
   }
 
   private _getFirstToolGroupId = () => {

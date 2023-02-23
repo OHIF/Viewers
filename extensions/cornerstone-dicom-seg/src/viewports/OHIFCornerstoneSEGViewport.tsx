@@ -162,8 +162,8 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
         if (
           evt.segDisplaySet.displaySetInstanceUID ===
@@ -189,8 +189,8 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [segDisplaySet]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
       ({ segmentIndex, numSegments }) => {
         setProcessingProgress({
           segmentIndex,
