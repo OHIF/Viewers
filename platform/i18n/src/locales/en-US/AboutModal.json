@@ -1,14 +1,14 @@
 {
-  "Browser": "Navegador",
-  "Build Number": "Número de compilación",
-  "Latest Master Commits": "Últimos Master Commits",
-  "More details": "Más detalles",
-  "Name": "Nombre",
-  "OHIF Viewer - About": "Sobre OHIF Viewer",
-  "OS": "SO",
-  "Report an issue": "Informar un problema",
-  "Repository URL": "URL del repositorio",
-  "Value": "Valor",
-  "Version Information": "Información de la versión",
-  "Visit the forum": "Visita el foro"
+  "Browser": "Browser",
+  "Build Number": "Build Number",
+  "Latest Master Commits": "Latest Master Commits",
+  "More details": "More details",
+  "Name": "Name",
+  "OHIF Viewer - About": "OHIF Viewer - About",
+  "OS": "OS",
+  "Report an issue": "Report an issue",
+  "Repository URL": "Repository URL",
+  "Value": "Value",
+  "Version Information": "Version Information",
+  "Visit the forum": "Visit the forum"
 }
