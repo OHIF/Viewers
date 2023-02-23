@@ -32,6 +32,7 @@ const Modal = ({
           <Typography
             variant="h4"
             className="flex grow text-primary-light font-light"
+            data-cy="modal-header"
           >
             {title}
           </Typography>

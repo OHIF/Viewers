@@ -185,7 +185,11 @@ class HangingProtocolService {
    * @param protocolId - the id of the protocol
    * @returns protocol - the protocol with the given id
    */
-  public getProtocolById(id: string): HangingProtocol.Protocol {
+  public getProtocolById(id: string): HangingProtocol.Protocol | undefined {
+    if (!id) {
+      return;
+    }
+
     const protocol = this.protocols.get(id);
 
     if (protocol instanceof Function) {
@@ -233,7 +237,7 @@ class HangingProtocolService {
    * If active protocols ids is null right now, then the specified
    * protocol will become the only active protocol.
    */
-  public addActiveProtocol(id: string): void {
+  public addActiveProtocolId(id: string): void {
     if (!id) {
       return;
     }
@@ -247,17 +251,17 @@ class HangingProtocolService {
    * Sets the active hanging protocols to use, by name.  If the value is empty,
    * then resets the active protocols to all the named items.
    */
-  public setActiveProtocols(hangingProtocol?: string[] | string): void {
-    if (!hangingProtocol || !hangingProtocol.length) {
+  public setActiveProtocolIds(protocolId?: string[] | string): void {
+    if (!protocolId || !protocolId.length) {
       this.activeProtocolIds = null;
       console.log('No active protocols, setting all to active');
       return;
     }
-    if (typeof hangingProtocol === 'string') {
-      this.setActiveProtocols([hangingProtocol]);
+    if (typeof protocolId === 'string') {
+      this.setActiveProtocolIds([protocolId]);
       return;
     }
-    this.activeProtocolIds = [...hangingProtocol];
+    this.activeProtocolIds = [...protocolId];
   }
 
   /**
@@ -272,7 +276,6 @@ class HangingProtocolService {
    * @param params.displaySets is the list of display sets associated with
    *        the studies to display in viewports.
    * @param protocol is a specific protocol to apply.
-   * @returns
    */
   public run({ studies, displaySets, activeStudy }, protocolId) {
     this.studies = [...studies];

@@ -198,6 +198,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
             <div className="p-4 bg-primary-dark">
               <Input
                 autoFocus
+                id="annotation"
                 className="mt-2 bg-black border-primary-main"
                 type="text"
                 containerClassName="mr-2"

@@ -133,6 +133,7 @@ Typography.propTypes = {
     'primaryActive',
     'secondary',
     'error',
+    'primaryActive',
   ]),
   className: PropTypes.string,
   children: PropTypes.node,

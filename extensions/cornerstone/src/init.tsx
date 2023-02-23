@@ -12,6 +12,7 @@ import {
   volumeLoader,
   imageLoadPoolManager,
   Settings,
+  utilities as csUtilities,
 } from '@cornerstonejs/core';
 import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
@@ -77,7 +78,10 @@ export default async function init({
 
   window.services = servicesManager.services;
 
-  if (!window.crossOriginIsolated) {
+  if (
+    appConfig.showWarningMessageForCrossOrigin &&
+    !window.crossOriginIsolated
+  ) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
@@ -86,7 +90,10 @@ export default async function init({
     });
   }
 
-  if (cornerstone.getShouldUseCPURendering()) {
+  if (
+    appConfig.showCPUFallbackMessage &&
+    cornerstone.getShouldUseCPURendering()
+  ) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
@@ -120,6 +127,12 @@ export default async function init({
   );
   hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
+  // add metadata providers
+  metaData.addProvider(
+    csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
+      csUtilities.calibratedPixelSpacingMetadataProvider
+    )
+  ); // this provider is required for Calibration tool
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
   imageLoadPoolManager.maxNumRequests = {
@@ -132,9 +145,7 @@ export default async function init({
 
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
-    measurementService,
-    displaySetService,
-    cornerstoneViewportService
+    servicesManager
   );
 
   initCineService(cineService);

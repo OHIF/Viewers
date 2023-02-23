@@ -71,6 +71,7 @@ const EVENTS = {
 };
 
 const VALUE_TYPES = {
+  ANGLE: 'value_type::polyline',
   POLYLINE: 'value_type::polyline',
   POINT: 'value_type::point',
   BIDIRECTIONAL: 'value_type::shortAxisLongAxis', // TODO -> Discuss with Danny. => just using SCOORD values isn't enough here.
@@ -103,18 +104,15 @@ class MeasurementService extends PubSubService {
     },
   };
 
+  public static VALUE_TYPES = VALUE_TYPES;
+  public readonly VALUE_TYPES = VALUE_TYPES;
+
   constructor() {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
     this.measurements = {};
     this._jumpToMeasurementCache = {};
-    Object.defineProperty(this, 'VALUE_TYPES', {
-      value: VALUE_TYPES,
-      writable: false,
-      enumerable: true,
-      configurable: false,
-    });
   }
 
   /**
@@ -529,6 +527,7 @@ class MeasurementService extends PubSubService {
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
+      console.log('Failed to map', error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
       );

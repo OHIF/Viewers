@@ -82,6 +82,7 @@ import toolReset from './../../assets/icons/tool-reset.svg';
 import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
+import toolCalibration from './../../assets/icons/tool-calibration.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 import panelGroupMore from './../../assets/icons/panel-group-more.svg';
 import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
@@ -185,6 +186,7 @@ const ICONS = {
   'tool-rectangle': toolRectangle,
   'tool-fusion-color': toolFusionColor,
   'tool-create-threshold': toolCreateThreshold,
+  'tool-calibration': toolCalibration,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,
