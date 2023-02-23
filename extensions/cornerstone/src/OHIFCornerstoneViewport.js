@@ -230,6 +230,7 @@ class OHIFCornerstoneViewport extends Component {
       });
 
       if (currentImageIdIndex > 0) {
+        localStorage.setItem('currentImageIdIndex', currentImageIdIndex + '');
         this.props.onNewImage({
           StudyInstanceUID,
           SOPInstanceUID: sopInstanceUid,

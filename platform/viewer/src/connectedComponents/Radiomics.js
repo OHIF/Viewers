@@ -42,6 +42,9 @@ import exportComponent from '../lib/ExportComponent';
 import Summary from '../components/Summary';
 import PdfMaker from '../lib/PdfMaker';
 
+const toolImport = cornerstoneTools.import;
+const scrollToIndex = toolImport('util/scrollToIndex');
+
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 // const currentMode = BrainMode;
 
@@ -144,9 +147,17 @@ class Radiomics extends Component {
     // setTimeout(() => {}, 2000);
 
     setTimeout(() => {
+      const enabledElement = enabledEvt.detail.element;
+
       commandsManager.runCommand('setToolActive', {
         toolName: 'Pan',
       });
+
+      let currentImageIdIndex = localStorage.getItem('currentImageIdIndex');
+      scrollToIndex(enabledElement,parseInt(currentImageIdIndex));
+      // commandsManager.runCommand('scrollToIndex', {
+      //   currentImageIdIndex,
+      // });
 
       const radiomicsDone = JSON.parse(
         localStorage.getItem('radiomicsDone') || 0
@@ -155,7 +166,6 @@ class Radiomics extends Component {
         isComplete: radiomicsDone == 1 ? true : false,
       });
 
-      const enabledElement = enabledEvt.detail.element;
       let tool_data = localStorage.getItem(this.props.studyInstanceUID);
       tool_data =
         tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
@@ -193,6 +203,7 @@ class Radiomics extends Component {
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
+
     eventBus.remove('fetchscans');
     eventBus.remove('jobstatus');
   }
