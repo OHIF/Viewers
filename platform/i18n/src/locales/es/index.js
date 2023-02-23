@@ -1,6 +1,8 @@
+import AboutModal from './AboutModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
+import DatePicker from './DatePicker.json';
 import Header from './Header.json';
 import MeasurementTable from './MeasurementTable.json';
 import SidePanel from './SidePanel.json';
@@ -10,9 +12,11 @@ import UserPreferencesModal from './UserPreferencesModal.json';
 
 export default {
   es: {
+    AboutModal,
     Buttons,
     CineDialog,
     Common,
+    DatePicker,
     Header,
     MeasurementTable,
     SidePanel,
