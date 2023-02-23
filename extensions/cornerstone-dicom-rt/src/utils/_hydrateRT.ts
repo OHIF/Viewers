@@ -5,9 +5,9 @@ async function _hydrateRTDisplaySet({
   servicesManager,
 }) {
   const {
-    SegmentationService,
-    HangingProtocolService,
-    ViewportGridService,
+    segmentationService,
+    hangingProtocolService,
+    viewportGridService,
   } = servicesManager.services;
 
   const displaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
@@ -17,22 +17,22 @@ async function _hydrateRTDisplaySet({
   // We need the hydration to notify panels about the new segmentation added
   const suppressEvents = false;
 
-  segmentationId = await SegmentationService.createSegmentationForRTDisplaySet(
+  segmentationId = await segmentationService.createSegmentationForRTDisplaySet(
     rtDisplaySet,
     segmentationId,
     suppressEvents
   );
 
-  SegmentationService.hydrateSegmentation(rtDisplaySet.displaySetInstanceUID);
+  segmentationService.hydrateSegmentation(rtDisplaySet.displaySetInstanceUID);
 
-  const { viewports } = ViewportGridService.getState();
+  const { viewports } = viewportGridService.getState();
 
-  const updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+  const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
     viewportIndex,
     displaySetInstanceUID
   );
 
-  ViewportGridService.setDisplaySetsForViewports(updatedViewports);
+  viewportGridService.setDisplaySetsForViewports(updatedViewports);
 
   // Todo: fix this after we have a better way for stack viewport segmentations
 
@@ -45,13 +45,13 @@ async function _hydrateRTDisplaySet({
       return;
     }
 
-    const shouldDisplaySeg = SegmentationService.shouldRenderSegmentation(
+    const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
       viewport.displaySetInstanceUIDs,
       rtDisplaySet.displaySetInstanceUID
     );
 
     if (shouldDisplaySeg) {
-      ViewportGridService.setDisplaySetsForViewport({
+      viewportGridService.setDisplaySetsForViewport({
         viewportIndex: index,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {

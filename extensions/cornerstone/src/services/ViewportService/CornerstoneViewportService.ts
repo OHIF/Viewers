@@ -568,8 +568,7 @@ class CornerstoneViewportService extends PubSubService
     presentations
   ) {
     const {
-      displaySetService,
-      segmentationService,
+      DisplaySetService,
       toolGroupService,
     } = this.servicesManager.services;
 
@@ -580,7 +579,7 @@ class CornerstoneViewportService extends PubSubService
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
 
     const segDisplaySet = displaySetInstanceUIDs
-      .map(displaySetService.getDisplaySetByUID)
+      .map(DisplaySetService.getDisplaySetByUID)
       .find(displaySet => displaySet && displaySet.Modality === 'SEG');
 
     const rtssDisplaySet = displaySetInstanceUIDs
@@ -610,7 +609,7 @@ class CornerstoneViewportService extends PubSubService
     }
 
     const viewportInfo = this.getViewportInfo(viewport.id);
-    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
 
     const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
@@ -629,14 +628,14 @@ class CornerstoneViewportService extends PubSubService
     viewport: any
   ) {
     const {
-      SegmentationService,
-      ToolGroupService,
+      segmentationService,
+      toolGroupService,
     } = this.servicesManager.services;
 
-    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
 
     // this only returns hydrated segmentations
-    const segmentations = SegmentationService.getSegmentations();
+    const segmentations = segmentationService.getSegmentations();
 
     for (const segmentation of segmentations) {
       const toolGroupSegmentationRepresentations =
@@ -656,7 +655,7 @@ class CornerstoneViewportService extends PubSubService
 
       // otherwise, check if the hydrated segmentations are in the same FOR
       // as the primary displaySet, if so add the representation (since it was not there)
-      const { id: segDisplaySetInstanceUID } = segmentation;
+      const { id: segDisplaySetInstanceUID, type } = segmentation;
       const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
         segDisplaySetInstanceUID
       );
@@ -678,21 +677,22 @@ class CornerstoneViewportService extends PubSubService
         return;
       }
 
-          segmentationService.addSegmentationRepresentationToToolGroup(
-            toolGroup.id,
-            segmentation.id
-          );
-        }
-      }
+      segmentationService.addSegmentationRepresentationToToolGroup(
+        toolGroup.id,
+        segmentation.id,
+        false, // already hydrated,
+        segmentation.type
+      );
     }
+  }
 
   private _addSegmentationRepresentationForSEGDisplaySet(
     segDisplaySet: any,
     viewport: any
   ) {
     const {
-      SegmentationService,
-      ToolGroupService,
+      segmentationService,
+      toolGroupService,
     } = this.servicesManager.services;
 
     const { referencedVolumeId } = segDisplaySet;
@@ -700,10 +700,9 @@ class CornerstoneViewportService extends PubSubService
     const segmentationId = segDisplaySet.displaySetInstanceUID;
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
-    csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
 
     if (referencedVolume) {
-      SegmentationService.addSegmentationRepresentationToToolGroup(
+      segmentationService.addSegmentationRepresentationToToolGroup(
         toolGroup.id,
         segmentationId
       );
@@ -714,13 +713,13 @@ class CornerstoneViewportService extends PubSubService
     viewport: any
   ) {
     const {
-      SegmentationService,
-      ToolGroupService,
+      segmentationService,
+      toolGroupService,
     } = this.servicesManager.services;
 
     const segmentationId = rtDisplaySet.displaySetInstanceUID;
 
-    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     console.debug(
       'adding contour representation for toolGroup',
       toolGroup.id,
@@ -728,7 +727,7 @@ class CornerstoneViewportService extends PubSubService
       segmentationId,
       ''
     );
-    SegmentationService.addSegmentationRepresentationToToolGroup(
+    segmentationService.addSegmentationRepresentationToToolGroup(
       toolGroup.id,
       segmentationId,
       false, // hydrate
@@ -923,6 +922,11 @@ class CornerstoneViewportService extends PubSubService
     if (displaySet.Modality === 'SEG') {
       const { instance } = displaySet;
       return instance.FrameOfReferenceUID;
+    }
+
+    if (displaySet.Modality === 'RTSTRUCT') {
+      const { instance } = displaySet;
+      return instance.ReferencedFrameOfReferenceSequence.FrameOfReferenceUID;
     }
 
     const { images } = displaySet;
