@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
 import ThumbnailType from './ThumbnailType';
+import * as ContextMenus from '../components/ContextMenu/types';
 import { PresentationIds } from '../contextProviders/getPresentationIds';
 
 // A few miscellaneous types declared inline here.
+
+export * from './Predicate';
 
 /**
  * StringNumber often comes back from DICOMweb for integer valued items.
@@ -15,4 +18,4 @@ const StringNumber = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
  */
 const StringArray = PropTypes.oneOfType([PropTypes.string, PropTypes.array]);
 
-export { StringNumber, StringArray, ThumbnailType, PresentationIds };
+export { StringNumber, StringArray, ThumbnailType, ContextMenus, PresentationIds };

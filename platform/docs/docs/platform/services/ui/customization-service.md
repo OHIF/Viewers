@@ -210,8 +210,8 @@ example (this example comes from the context menu customizations as that one
 uses commands lists):
 
 ```ts
-   cornerstoneContextMenu = uiConfigurationService.getModeCustomization("cornerstoneContextMenu", defaultMenu);
-   uiConfigurationService.recordInteraction(cornerstoneContextMenu, extraProps);
+   cornerstoneContextMenu = uiConfigurationService.get("cornerstoneContextMenu", defaultMenu);
+   commandsManager.run(cornerstoneContextMenu, extraProps);
 ```
 
 ### Global Customizations
@@ -229,7 +229,7 @@ This allows for having strong typing when declaring customizations, for example:
 ```ts
 import { Types } from '@ohif/ui';
 
-const customContextMenu: Types.UIContextMenu =
+const customContextMenu: Types.ContextMenu.Menu =
     {
       id: 'cornerstoneContextMenu',
       customizationType: 'ohif.contextMenu',
@@ -260,7 +260,7 @@ getCustomizationModule = () => ([
 ```
 
 defines an overlay item which has a React content object as the render value.
-This can then be used by specifying a customizationType of `ohif.overlayItem`, for example:
+This can then be used by specifying a `customizationType` of `ohif.overlayItem`, for example:
 
 ```js
 const overlayItem: Types.UIOverlayItem = {
@@ -275,6 +275,50 @@ const overlayItem: Types.UIOverlayItem = {
 
 This section can be used to specify various customization capabilities.
 
+## Context Menus
+The context menu customization is a relatively complex one, with two layers.
+The first layer is the choice of the command to run to display the context menu.
+For the case of the cornerstone viewer context menu, this is specified by a
+customization called `showViewerContextMenu`.  Then, the actual menu is chosen
+by the menuName as specified in the showViewerContextMenu, OR by the actual
+items list in thew viewer context menu.
+
+### Show Context Menu Customization
+The command to show the viewer context menu can be overridden in order to
+show alternate dialogs on right click/context menu views, for example,
+to show the label dialog automatically for the arrow annotation, or to show a
+different type of context menu, such as a circular menu.  The example below
+shows the configuration for that:
+
+```js
+   customizationService.addCustomizations([{
+    id: 'showContextMenu',
+    commands: [
+      {
+        commandName: 'showCircularContextMenu',
+        commandOptions: {
+          menuName: 'cornerstoneContextMenu',
+        }
+      }
+    ],
+   }])
+```
+
+### Menu Contents Customizations
+The contents of the menu can be customized by defining lists of menu items,
+for example, the default set of items might be:
+
+```js
+  {
+    id: 'cornerstoneContextMenu',
+    menus: [
+      {
+        id: 'defaultCornerstoneMenu',
+        items: [... list of MenuEntry items]
+      }
+    ],
+  }
+```
 
 ## Text color for StudyBrowser tabs
 
