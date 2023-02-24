@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, {
   A11y,
   Controller,
+  Navigation,
   Pagination,
   Scrollbar,
-  Navigation,
 } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Button, Icon, IconButton, Tooltip } from '../';
 
@@ -203,7 +203,7 @@ const SidePanel = ({
               />
               {/* Todo: ass secondary label here */}
               <span className="text-primary-active">
-                {tabs.length === 1 && t(tabs[activeTabIndex].label) as string}
+                {tabs.length === 1 && (t(tabs[activeTabIndex].label) as string)}
               </span>
             </Button>
           </div>
