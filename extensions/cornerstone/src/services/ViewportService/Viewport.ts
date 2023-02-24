@@ -48,6 +48,7 @@ export type PublicDisplaySetOptions = {
   blendMode?: string;
   slabThickness?: number;
   colormap?: string;
+  presetName?: string;
 };
 
 export type DisplaySetOptions = {
@@ -56,6 +57,7 @@ export type DisplaySetOptions = {
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
   colormap?: string;
+  presetName?: string;
 };
 
 type VOI = {
@@ -263,6 +265,7 @@ class ViewportInfo {
         colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
+        presetName: option.presetName,
       });
     });
 
