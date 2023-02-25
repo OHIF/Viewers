@@ -34,6 +34,19 @@ if [ -n "${PORT}" ]
     sed -i -e "s/listen 80/listen ${PORT}/g" /etc/nginx/conf.d/default.conf
 fi
 
+if [ -n "$ORTHANC_NAME" ] && [ -n "$ORTHANC_URI" ]
+  then
+    echo "Orthanc config has been provided:"
+    echo "name: $ORTHANC_NAME"
+    echo "uri: $ORTHANC_URI"
+
+    sed -i -e "s+name: 'DCM4CHEE'+name: '$ORTHANC_NAME'+g" /usr/share/nginx/html/app-config.js
+    sed -i -e "s+wadoUriRoot:.*,+wadoUriRoot: '$ORTHANC_URI/wado',+g" /usr/share/nginx/html/app-config.js 
+    sed -i -e "s+qidoRoot:.*,+qidoRoot: '$ORTHANC_URI/dicom-web',+g" /usr/share/nginx/html/app-config.js
+    sed -i -e "s+wadoRoot:.*,+wadoRoot: '$ORTHANC_URI/dicom-web',+g" /usr/share/nginx/html/app-config.js
+
+fi
+
 echo "Starting Nginx to serve the OHIF Viewer..."
 
 exec "$@"
