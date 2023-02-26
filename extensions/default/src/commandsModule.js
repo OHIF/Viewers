@@ -47,18 +47,17 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         title: 'DICOM Tag Browser',
       });
     },
+
+    /**
+     * Toggle viewport overlay (the information panel shown on the four corners
+     * of the viewport)
+     * @see ViewportOverlay and CustomizableViewportOverlay components
+     */
     toggleOverlays: () => {
       const overlays = document.getElementsByClassName('viewport-overlay');
-      let onoff = false; // true if this will toggle on
       for (let i = 0; i < overlays.length; i++) {
-        if (i === 0) onoff = overlays.item(0).classList.contains('hidden');
         overlays.item(i).classList.toggle('hidden');
       }
-      UINotificationService.show({
-        title: 'Overlays Toggle',
-        message: 'Overlays are toggled ' + (onoff ? 'on' : 'off'),
-        type: 'success',
-      });
     },
   };
 
