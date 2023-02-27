@@ -38,6 +38,8 @@ const InputRange: React.FC<{
   showLabel = true,
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
+
+  // Allow for the value property to update the range value.
   useEffect(() => setRangeValue(value), [value]);
 
   const handleChange = useCallback(

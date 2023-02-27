@@ -6,7 +6,7 @@ import { Icon, Tooltip, InputRange } from '../';
 import './CinePlayer.css';
 import classNames from 'classnames';
 
-const CinePlayer: React.FC<{
+export type CinePlayerProps = {
   className: string;
   isPlaying: boolean;
   minFrameRate: number;
@@ -16,7 +16,12 @@ const CinePlayer: React.FC<{
   onFrameRateChange: (value: number) => void;
   onPlayPauseChange: (value: boolean) => void;
   onClose: () => void;
-}> = ({
+};
+
+const fpsButtonClassNames =
+  'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 w-4 flex items-center justify-center';
+
+const CinePlayer: React.FC<CinePlayerProps> = ({
   className,
   isPlaying,
   minFrameRate,
@@ -27,25 +32,10 @@ const CinePlayer: React.FC<{
   onPlayPauseChange,
   onClose,
 }) => {
-  const fpsButtonClassNames =
-    'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 w-4 flex items-center justify-center';
-
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = debounce(onFrameRateChange, 300);
 
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
-
-  const handlePlayPauseClick = () => {
-    onPlayPauseChange(!isPlaying);
-  };
-
-  const handleFPSMoreClick = () => {
-    handleSetFrameRate(frameRate + 1);
-  };
-
-  const handleFPSLessClick = () => {
-    handleSetFrameRate(frameRate - 1);
-  };
 
   const handleSetFrameRate = (frameRate: number) => {
     if (frameRate < minFrameRate || frameRate > maxFrameRate) {
@@ -53,10 +43,6 @@ const CinePlayer: React.FC<{
     }
     setFrameRate(frameRate);
     debouncedSetFrameRate(frameRate);
-  };
-
-  const handleCloseClick = () => {
-    onClose();
   };
 
   return (
@@ -69,12 +55,12 @@ const CinePlayer: React.FC<{
       <Icon
         name={getPlayPauseIconName()}
         className="cursor-pointer text-white active:text-primary-light hover:bg-customblue-300 hover:rounded"
-        onClick={handlePlayPauseClick}
+        onClick={() => onPlayPauseChange(!isPlaying)}
       />
       <div className="border border-secondary-light flex h-6 items-stretch rounded gap-1">
         <div
           className={`${fpsButtonClassNames} rounded-l`}
-          onClick={handleFPSLessClick}
+          onClick={() => handleSetFrameRate(frameRate - 1)}
         >
           <Icon name="arrow-left-small" />
         </div>
@@ -101,7 +87,7 @@ const CinePlayer: React.FC<{
         </Tooltip>
         <div
           className={`${fpsButtonClassNames} rounded-r`}
-          onClick={handleFPSMoreClick}
+          onClick={() => handleSetFrameRate(frameRate + 1)}
         >
           <Icon name="arrow-right-small" />
         </div>
@@ -109,7 +95,7 @@ const CinePlayer: React.FC<{
       <Icon
         name="icon-close"
         className="cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 hover:rounded"
-        onClick={handleCloseClick}
+        onClick={onClose}
       />
     </div>
   );
