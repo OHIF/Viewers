@@ -31,7 +31,7 @@ const StudyListFilter = ({
             <div className="flex flex-row justify-between px-12 mb-5">
               <div className="flex flex-row">
                 <Typography variant="h4" className="mr-6 text-primary-light">
-                  {t('Study list')}
+                  {t('StudyList')}
                 </Typography>
               </div>
               <div className="flex flex-row">
@@ -45,7 +45,7 @@ const StudyListFilter = ({
                     startIcon={<Icon name="cancel" />}
                     onClick={clearFilters}
                   >
-                    {t('Clear filters')}
+                    {t('ClearFilters')}
                   </Button>
                 )}
                 <Typography
@@ -84,7 +84,7 @@ const StudyListFilter = ({
           <div className="container m-auto">
             <div className="py-1 text-base text-center rounded-b bg-primary-main">
               <p className="text-white">
-                {t('Filter list to 100 studies or less to enable sorting')}
+                {t('NumOfStudiesHiggerThan100Message')}
               </p>
             </div>
           </div>
