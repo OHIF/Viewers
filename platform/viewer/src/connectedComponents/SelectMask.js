@@ -24,6 +24,11 @@ import SidePanel from '../components/SidePanel';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 import { radcadapi } from '../utils/constants';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state';
+import {
+  handleRestoreToolState,
+  handleSaveToolState,
+} from '../utils/syncrhonizeToolState';
+import handleScrolltoIndex from '../utils/handleScrolltoIndex';
 
 class SelectMask extends Component {
   static propTypes = {
@@ -106,29 +111,40 @@ class SelectMask extends Component {
 
   onCornerstageLoaded = enabledEvt => {
     setTimeout(() => {
-      // this.loadLastActiveStudy();
-      
       const options = {
         type: 'click',
       };
 
       commandsManager.runCommand('triggerAlgorithm', options);
-      
+    }, 500);
+
+    setTimeout(() => {
+      // this.loadLastActiveStudy();
+
       const enabledElement = enabledEvt.detail.element;
-      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      if (enabledElement && tool_data) {
-        let viewport = cornerstone.getViewport(enabledElement);
-        if (tool_data.x) viewport.translation.x = tool_data.x;
-        if (tool_data.y) viewport.translation.y = tool_data.y;
-        if (tool_data.scale) viewport.scale = tool_data.scale;
-        if (tool_data.voi) viewport.voi = tool_data.voi;
-        cornerstone.setViewport(enabledElement, viewport);
+
+      try {
+        const image = cornerstone.getImage(enabledElement);
+        const instance_uid = image.imageId.split('/')[14];
+
+        handleScrolltoIndex(enabledElement);
+        handleRestoreToolState(cornerstone, enabledElement, instance_uid);
+      } catch (error) {
+        console.error(error);
       }
-      // this.handleSidePanelChange('right', 'lung-module-similarity-panel');
-      // this.handleSidePanelChange('left', 'theta-details-panel');
-    }, 5);
+
+      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      // tool_data =
+      //   tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      // if (enabledElement && tool_data) {
+      //   let viewport = cornerstone.getViewport(enabledElement);
+      //   if (tool_data.x) viewport.translation.x = tool_data.x;
+      //   if (tool_data.y) viewport.translation.y = tool_data.y;
+      //   if (tool_data.scale) viewport.scale = tool_data.scale;
+      //   if (tool_data.voi) viewport.voi = tool_data.voi;
+      //   cornerstone.setViewport(enabledElement, viewport);
+      // }
+    }, 1000);
   };
 
   componentWillUnmount() {
@@ -146,10 +162,17 @@ class SelectMask extends Component {
     //   });
     // }
     const enabledElement = getEnabledElement(this.props.activeViewportIndex);
-    if (enabledElement)
+    if (enabledElement) {
+      let viewport = cornerstone.getViewport(enabledElement);
+
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+      handleSaveToolState(instance_uid, viewport);
+
       cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
         enabledElement
       );
+    }
 
     cornerstone.events.removeEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,

@@ -24,6 +24,11 @@ import JobsContextUtil from './JobsContextUtil.js';
 import eventBus from '../lib/eventBus.js';
 import { getEnabledElement } from '../../../../extensions/cornerstone/src/state.js';
 import { radcadapi } from '../utils/constants.js';
+import handleScrolltoIndex from '../utils/handleScrolltoIndex.js';
+import {
+  handleRestoreToolState,
+  handleSaveToolState,
+} from '../utils/syncrhonizeToolState.js';
 
 const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
@@ -110,9 +115,6 @@ class Viewer extends Component {
   };
 
   componentWillUnmount() {
-    // if (this.props.location.pathname.includes('/edit')) {
-    //   eventBus.dispatch('clearSegmentations', {});
-    // }
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
@@ -123,22 +125,10 @@ class Viewer extends Component {
       //   enabledElement
       // );
       let viewport = cornerstone.getViewport(enabledElement);
-      // if (
-      //   !matchPath(this.props.location.pathname, {
-      //     path:
-      //       '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-      //     exact: true,
-      //   })
-      // )
-      localStorage.setItem(
-        this.props.studyInstanceUID,
-        JSON.stringify({
-          voi: viewport.voi,
-          scale: viewport.scale,
-          x: viewport.translation.x,
-          y: viewport.translation.y,
-        })
-      );
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+
+      handleSaveToolState(instance_uid, viewport);
     }
 
     cornerstone.events.removeEventListener(
@@ -292,43 +282,48 @@ class Viewer extends Component {
     setTimeout(() => {
       // this.loadLastActiveStudy();
       const enabledElement = enabledEvt.detail.element;
-      let tool_data = null;
-      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : false;
-      if (enabledElement && tool_data) {
-        try {
-          let viewport = cornerstone.getViewport(enabledElement);
 
-          // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
-          if (viewport.scale < 1) return;
-          var image = enabledElement.image;
-          var widthScale = tool_data.x;
-          var heightScale = tool_data.x;
-          if (image.rowPixelSpacing < image.columnPixelSpacing) {
-            widthScale =
-              widthScale * (image.columnPixelSpacing / image.rowPixelSpacing);
-          } else if (image.columnPixelSpacing < image.rowPixelSpacing) {
-            heightScale =
-              heightScale * (image.rowPixelSpacing / image.columnPixelSpacing);
-          }
-          viewport.scale = widthScale;
+      // let tool_data = null;
+      // // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      // tool_data =
+      //   tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : false;
+      // if (enabledElement && tool_data) {
+      try {
+        // get current image
+        const image = cornerstone.getImage(enabledElement);
+        const instance_uid = image.imageId.split('/')[14];
 
-          // if (tool_data.x && viewport.translation.x != tool_data.x)
-          //   viewport.translation.x = tool_data.x;
-          // if (tool_data.y && viewport.translation.y != tool_data.y)
-          //   viewport.translation.y = tool_data.y;
-          // if (tool_data.scale && viewport.scale != tool_data.scale)
-          //   viewport.scale = tool_data.scale;
-          // if (tool_data.voi) viewport.voi = tool_data.voi;
+        handleScrolltoIndex(enabledElement);
+        handleRestoreToolState(cornerstone, enabledElement, instance_uid);
 
-          cornerstone.resize(enabledElement, true);
-          cornerstone.setViewport(enabledElement, viewport);
-          cornerstone.fitToWindow(enabledElement);
-        } catch (error) {
-          console.error(error);
-        }
+        // let viewport = cornerstone.getViewport(enabledElement);
+        // // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
+        // if (viewport.scale < 1) return;
+        // var image = enabledElement.image;
+        // var widthScale = tool_data.x;
+        // var heightScale = tool_data.x;
+        // if (image.rowPixelSpacing < image.columnPixelSpacing) {
+        //   widthScale =
+        //     widthScale * (image.columnPixelSpacing / image.rowPixelSpacing);
+        // } else if (image.columnPixelSpacing < image.rowPixelSpacing) {
+        //   heightScale =
+        //     heightScale * (image.rowPixelSpacing / image.columnPixelSpacing);
+        // }
+        // viewport.scale = widthScale;
+        // if (tool_data.x && viewport.translation.x != tool_data.x)
+        //   viewport.translation.x = tool_data.x;
+        // if (tool_data.y && viewport.translation.y != tool_data.y)
+        //   viewport.translation.y = tool_data.y;
+        // // if (tool_data.scale && viewport.scale != tool_data.scale)
+        // //   viewport.scale = tool_data.scale;
+        // if (tool_data.voi) viewport.voi = tool_data.voi;
+        // cornerstone.resize(enabledElement, true);
+        // cornerstone.setViewport(enabledElement, viewport);
+        // cornerstone.fitToWindow(enabledElement);
+      } catch (error) {
+        console.error(error);
       }
+      // }
     }, 2000);
   };
 

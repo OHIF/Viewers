@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import OHIF from '@ohif/core';
-import Nnunet from '../pages/Nnunet.js';
+import Nnunet from '../pages/Nnunet_old';
 
 const { clearViewportSpecificData, setStudyData } = OHIF.redux.actions;
 const isActive = a => a.active === true;

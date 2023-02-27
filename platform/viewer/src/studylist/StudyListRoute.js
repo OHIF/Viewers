@@ -265,7 +265,11 @@ function StudyListRoute(props) {
         // Rows
         studies={studies}
         onSelectItem={studyInstanceUID => {
-          localStorage.setItem('studyInstanceUID', JSON.stringify(studyInstanceUID));
+          localStorage.setItem('currentImageIdIndex', 0);
+          localStorage.setItem(
+            'studyInstanceUID',
+            JSON.stringify(studyInstanceUID)
+          );
           // dispatch the studyId here
           const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
             studyInstanceUIDs: studyInstanceUID,

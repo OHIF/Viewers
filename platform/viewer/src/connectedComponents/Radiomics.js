@@ -41,6 +41,8 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import exportComponent from '../lib/ExportComponent';
 import Summary from '../components/Summary';
 import PdfMaker from '../lib/PdfMaker';
+import handleScrolltoIndex from '../utils/handleScrolltoIndex';
+import { handleRestoreToolState } from '../utils/syncrhonizeToolState';
 
 const toolImport = cornerstoneTools.import;
 const scrollToIndex = toolImport('util/scrollToIndex');
@@ -153,8 +155,16 @@ class Radiomics extends Component {
         toolName: 'Pan',
       });
 
-      let currentImageIdIndex = localStorage.getItem('currentImageIdIndex');
-      scrollToIndex(enabledElement,parseInt(currentImageIdIndex));
+      handleScrolltoIndex(enabledElement);
+
+      handleRestoreToolState(
+        cornerstone,
+        enabledElement,
+        this.props.studyInstanceUID
+      );
+
+      // let currentImageIdIndex = localStorage.getItem('currentImageIdIndex');
+      // scrollToIndex(enabledElement, parseInt(currentImageIdIndex));
       // commandsManager.runCommand('scrollToIndex', {
       //   currentImageIdIndex,
       // });
@@ -166,18 +176,18 @@ class Radiomics extends Component {
         isComplete: radiomicsDone == 1 ? true : false,
       });
 
-      let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      tool_data =
-        tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      if (enabledElement && tool_data) {
-        let viewport = cornerstone.getViewport(enabledElement);
-        if (tool_data.x) viewport.translation.x = tool_data.x;
-        if (tool_data.y) viewport.translation.y = tool_data.y;
-        // if (tool_data.scale) viewport.scale = tool_data.scale;
-        // if (tool_data.voi) viewport.voi = tool_data.voi;
-        // cornerstone.resize(enabledElement, true);
-        cornerstone.setViewport(enabledElement, viewport);
-      }
+      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
+      // tool_data =
+      //   tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+      // if (enabledElement && tool_data) {
+      //   let viewport = cornerstone.getViewport(enabledElement);
+      //   if (tool_data.x) viewport.translation.x = tool_data.x;
+      //   if (tool_data.y) viewport.translation.y = tool_data.y;
+      //   // if (tool_data.scale) viewport.scale = tool_data.scale;
+      //   // if (tool_data.voi) viewport.voi = tool_data.voi;
+      //   // cornerstone.resize(enabledElement, true);
+      //   cornerstone.setViewport(enabledElement, viewport);
+      // }
 
       //  handle radiomicsDone
 
