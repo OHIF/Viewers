@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
 import Typography from '../Typography';
 import './InputRange.css';
@@ -23,6 +23,7 @@ const InputRange: React.FC<{
   inputClassName?: string;
   labelClassName?: string;
   labelVariant?: string;
+  showLabel: boolean;
 }> = ({
   value,
   onChange,
@@ -34,12 +35,16 @@ const InputRange: React.FC<{
   inputClassName,
   labelClassName,
   labelVariant,
+  showLabel = true,
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
 
+  // Allow for the value property to update the range value.
+  useEffect(() => setRangeValue(value), [value]);
+
   const handleChange = useCallback(
     e => {
-      const rangeValue = e.target.value;
+      const rangeValue = Number(e.target.value);
       setRangeValue(rangeValue);
       onChange(rangeValue);
     },
@@ -71,14 +76,16 @@ const InputRange: React.FC<{
         id="myRange"
         step={step}
       />
-      <Typography
-        variant={labelVariant ?? 'subtitle'}
-        component="p"
-        className={classNames('w-8', labelClassName ?? 'text-white')}
-      >
-        {rangeValue}
-        {unit}
-      </Typography>
+      {showLabel && (
+        <Typography
+          variant={labelVariant ?? 'subtitle'}
+          component="p"
+          className={classNames('w-8', labelClassName ?? 'text-white')}
+        >
+          {rangeValue}
+          {unit}
+        </Typography>
+      )}
     </div>
   );
 };

@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ViewportActionBar, Notification } from '../';
+import { LegacyViewportActionBar, Notification } from '../';
 
 const Viewport = ({ viewportIndex, onArrowsClick, studyData, children }) => {
   return (
     <div className="relative flex flex-col h-full">
       <div className="absolute top-0 left-0 w-full">
-        <ViewportActionBar
+        <LegacyViewportActionBar
           onArrowsClick={onArrowsClick}
           studyData={studyData}
         />
