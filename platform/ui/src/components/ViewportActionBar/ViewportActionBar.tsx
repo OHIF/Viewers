@@ -88,7 +88,7 @@ const ViewportActionBar = ({
    * Handles what gets hidden and what gets shown during a resize of the viewport.
    */
   const resizeCallback = useCallback(() => {
-    if (!componentRootElemRef) {
+    if (!componentRootElemRef || !componentRootElemRef.current) {
       return;
     }
 

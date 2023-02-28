@@ -5,8 +5,6 @@ import OHIF, { utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
-  useCine,
-  useViewportGrid,
   useViewportDialog,
   Tooltip,
   Icon,
@@ -14,7 +12,6 @@ import {
 
 import { useTranslation } from 'react-i18next';
 
-import { eventTarget, Enums } from '@cornerstonejs/core';
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 
@@ -43,12 +40,9 @@ function TrackedCornerstoneViewport(props) {
   const displaySet = displaySets[0];
 
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex }] = useViewportGrid();
-  const [{ isCineEnabled, cines }, cineService] = useCine();
   const [viewportDialogState] = useViewportDialog();
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
-  const [element, setElement] = useState(null);
 
   const { trackedSeries } = trackedMeasurements.context;
   const viewportId = viewportOptions.viewportId;
@@ -70,26 +64,6 @@ function TrackedCornerstoneViewport(props) {
     SpacingBetweenSlices,
     ManufacturerModelName,
   } = displaySet.images[0];
-
-  const cineHandler = () => {
-    if (!cines || !cines[viewportIndex] || !element) {
-      return;
-    }
-
-    const cine = cines[viewportIndex];
-    const isPlaying = cine.isPlaying || false;
-    const frameRate = cine.frameRate || 24;
-
-    const validFrameRate = Math.max(frameRate, 1);
-
-    if (isPlaying) {
-      cineService.playClip(element, {
-        framesPerSecond: validFrameRate,
-      });
-    } else {
-      cineService.stopClip(element);
-    }
-  };
 
   useEffect(() => {
     if (isTracked) {
@@ -119,49 +93,9 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
-  // unmount cleanup
-  useEffect(() => {
-    eventTarget.addEventListener(
-      Enums.Events.STACK_VIEWPORT_NEW_STACK,
-      cineHandler
-    );
-
-    return () => {
-      cineService.setCine({ id: viewportIndex, isPlaying: false });
-      eventTarget.removeEventListener(
-        Enums.Events.STACK_VIEWPORT_NEW_STACK,
-        cineHandler
-      );
-    };
-  }, [element]);
-
-  useEffect(() => {
-    if (!cines || !cines[viewportIndex] || !element) {
-      return;
-    }
-
-    cineHandler();
-
-    return () => {
-      if (element && cines?.[viewportIndex]?.isPlaying) {
-        cineService.stopClip(element);
-      }
-    };
-  }, [cines, viewportIndex, cineService, element, cineHandler]);
-
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
   }
-
-  /**
-   * OnElementEnabled callback which is called after the cornerstoneExtension
-   * has enabled the element. Note: we delegate all the image rendering to
-   * cornerstoneExtension, so we don't need to do anything here regarding
-   * the image rendering, element enabling etc.
-   */
-  const onElementEnabled = evt => {
-    setElement(evt.detail.element);
-  };
 
   function switchMeasurement(direction) {
     const newTrackedMeasurementUID = _getNextMeasurementUID(
@@ -188,11 +122,8 @@ function TrackedCornerstoneViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    return <Component {...props} onElementEnabled={onElementEnabled} />;
+    return <Component {...props} />;
   };
-
-  const cine = cines[viewportIndex];
-  const isPlaying = (cine && cine.isPlaying) || false;
 
   return (
     <>
@@ -210,9 +141,7 @@ function TrackedCornerstoneViewport(props) {
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName)
-              : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',

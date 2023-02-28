@@ -12,6 +12,7 @@ import promptTrackNewSeries from './promptTrackNewSeries';
 import promptTrackNewStudy from './promptTrackNewStudy';
 import promptSaveReport from './promptSaveReport';
 import promptHydrateStructuredReport from './promptHydrateStructuredReport';
+import hydrateStructuredReport from './hydrateStructuredReport';
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -103,6 +104,10 @@ function TrackedMeasurementsContextProvider(
       extensionManager,
     }),
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
+      servicesManager,
+      extensionManager,
+    }),
+    hydrateStructuredReport: hydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
     }),
