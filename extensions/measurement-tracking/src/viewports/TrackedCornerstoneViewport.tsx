@@ -194,17 +194,25 @@ function _getNextMeasurementUID(
   trackedMeasurementId,
   trackedMeasurements
 ) {
-  const { measurementService } = servicesManager.services;
+  const { measurementService, viewportGridService } = servicesManager.services;
   const measurements = measurementService.getMeasurements();
+
+  const { activeViewportIndex, viewports } = viewportGridService.getState();
+  const {
+    displaySetInstanceUIDs: activeViewportDisplaySetInstanceUIDs,
+  } = viewports[activeViewportIndex];
 
   const { trackedSeries } = trackedMeasurements.context;
 
-  // Get the potentially trackable measurements for this series,
+  // Get the potentially trackable measurements for the series of the
+  // active viewport.
   // The measurements to jump between are the same
   // regardless if this series is tracked or not.
 
-  const filteredMeasurements = measurements.filter(m =>
-    trackedSeries.includes(m.referenceSeriesUID)
+  const filteredMeasurements = measurements.filter(
+    m =>
+      trackedSeries.includes(m.referenceSeriesUID) &&
+      activeViewportDisplaySetInstanceUIDs.includes(m.displaySetInstanceUID)
   );
 
   if (!filteredMeasurements.length) {

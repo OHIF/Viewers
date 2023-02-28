@@ -52,7 +52,9 @@ const ViewportActionBar = ({
   const arrowClasses =
     'cursor-pointer shrink-0 mr-2 text-white hover:text-primary-light';
 
-  const componentRootElemRef = useRef<HTMLDivElement>(null);
+  const componentRootElemRef = (elem: HTMLElement) => {
+    setComponentRootElem(elem);
+  };
   const studyDateElemRef = useRef<HTMLElement>(null);
   const seriesDescElemRef = useRef<HTMLElement>(null);
   const showPatientInfoElemRef = useRef<HTMLElement>(null);
@@ -63,6 +65,7 @@ const ViewportActionBar = ({
   const [showPatientInfo, setShowPatientInfo] = useState(false);
   const [showSeriesDesc, setShowSeriesDesc] = useState(true);
   const [showArrows, setShowArrows] = useState(true);
+  const [componentRootElem, setComponentRootElem] = useState(null);
 
   const studyDateClasses = () =>
     `text-white ${showSeriesDesc ? '' : `mr-1 ${textEllipsisClasses}`}`;
@@ -88,14 +91,14 @@ const ViewportActionBar = ({
    * Handles what gets hidden and what gets shown during a resize of the viewport.
    */
   const resizeCallback = useCallback(() => {
-    if (!componentRootElemRef || !componentRootElemRef.current) {
+    if (!componentRootElem) {
       return;
     }
 
-    const parentElemRefBBox = componentRootElemRef.current.getBoundingClientRect();
+    const componentRootElemBBox = componentRootElem.getBoundingClientRect();
 
     // Show or hide the arrows based on the viewport/root element width.
-    if (parentElemRefBBox.width < arrowsPresentViewportMinWidth) {
+    if (componentRootElemBBox.width < arrowsPresentViewportMinWidth) {
       setShowArrows(false);
     } else {
       setShowArrows(true);
@@ -113,9 +116,9 @@ const ViewportActionBar = ({
     } else {
       setShowSeriesDesc(true);
     }
-  }, []);
+  }, [componentRootElem]);
 
-  useResizeObserver(componentRootElemRef?.current, resizeCallback);
+  useResizeObserver(componentRootElem, resizeCallback);
 
   return (
     <div

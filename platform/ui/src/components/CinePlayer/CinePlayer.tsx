@@ -57,41 +57,41 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
         className="cursor-pointer text-white active:text-primary-light hover:bg-customblue-300 hover:rounded"
         onClick={() => onPlayPauseChange(!isPlaying)}
       />
-      <div className="border border-secondary-light flex h-6 items-stretch rounded gap-1">
-        <div
-          className={`${fpsButtonClassNames} rounded-l`}
-          onClick={() => handleSetFrameRate(frameRate - 1)}
-        >
-          <Icon name="arrow-left-small" />
-        </div>
-        <Tooltip
-          position="top"
-          className="group/fps cine-fps-range-tooltip"
-          tight={true}
-          content={
-            <InputRange
-              containerClassName="h-9 px-2"
-              inputClassName="w-40"
-              value={frameRate}
-              minValue={minFrameRate}
-              maxValue={maxFrameRate}
-              step={stepFrameRate}
-              onChange={handleSetFrameRate}
-              showLabel={false}
-            />
-          }
-        >
+      <Tooltip
+        position="top"
+        className="group/fps cine-fps-range-tooltip"
+        tight={true}
+        content={
+          <InputRange
+            containerClassName="h-9 px-2"
+            inputClassName="w-40"
+            value={frameRate}
+            minValue={minFrameRate}
+            maxValue={maxFrameRate}
+            step={stepFrameRate}
+            onChange={handleSetFrameRate}
+            showLabel={false}
+          />
+        }
+      >
+        <div className="border border-secondary-light flex h-6 items-stretch rounded gap-1">
+          <div
+            className={`${fpsButtonClassNames} rounded-l`}
+            onClick={() => handleSetFrameRate(frameRate - 1)}
+          >
+            <Icon name="arrow-left-small" />
+          </div>
           <div className="w-11 text-sm text-white text-center group-hover/fps:text-primary-light leading-[22px]">
             {`${frameRate} FPS`}
           </div>
-        </Tooltip>
-        <div
-          className={`${fpsButtonClassNames} rounded-r`}
-          onClick={() => handleSetFrameRate(frameRate + 1)}
-        >
-          <Icon name="arrow-right-small" />
+          <div
+            className={`${fpsButtonClassNames} rounded-r`}
+            onClick={() => handleSetFrameRate(frameRate + 1)}
+          >
+            <Icon name="arrow-right-small" />
+          </div>
         </div>
-      </div>
+      </Tooltip>
       <Icon
         name="icon-close"
         className="cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 hover:rounded"
