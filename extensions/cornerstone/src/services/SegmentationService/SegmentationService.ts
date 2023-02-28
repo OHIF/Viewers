@@ -745,31 +745,20 @@ class SegmentationService {
 
     const defaultScheme = this._getDefaultSegmentationScheme();
 
-    // Todo: make this readable
-    const rtStructData = structureSet.ROIContours.reduce((acc, ROIContour) => {
-      const { contourPoints, ROINumber, ROIName, colorArray } = ROIContour;
-      const data = contourPoints.reduce((acc, pointsObj) => {
-        const flatPoints = pointsObj.points.reduce((acc, point) => {
-          acc.push([point.x, point.y, point.z]);
-          return acc;
-        }, []);
+    const rtStructData = structureSet.ROIContours.map(
+      ({ contourPoints, ROINumber, ROIName, colorArray }) => {
+        const data = contourPoints.map(({ points, ...rest }) => ({
+          ...rest,
+          points: points.map(({ x, y, z }) => [x, y, z]),
+        }));
 
-        acc = acc.concat({
-          ...pointsObj,
-          points: flatPoints,
-        });
-
-        return acc;
-      }, []);
-
-      acc.push({
-        data,
-        id: ROIName || ROINumber,
-        color: colorArray,
-      });
-
-      return acc;
-    }, []);
+        return {
+          data,
+          id: ROIName || ROINumber,
+          color: colorArray,
+        };
+      }
+    );
 
     const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
 
@@ -807,23 +796,29 @@ class SegmentationService {
       );
     }
 
-    const _initializeContour = async i => {
+    const initializeContour = async (
+      rtStructData,
+      geometryLoader,
+      geometryIds,
+      segmentation,
+      index
+    ) => {
       const contourSet = await geometryLoader.createAndCacheGeometry(
-        geometryIds[i],
+        geometryIds[index],
         {
           geometryData: {
-            data: rtStructData[i].data,
+            data: rtStructData[index].data,
             frameOfReferenceUID: structureSet.frameOfReferenceUID,
-            id: rtStructData[i].id,
-            color: rtStructData[i].color,
+            id: rtStructData[index].id,
+            color: rtStructData[index].color,
           },
           type: csEnums.GeometryType.CONTOUR,
         }
       );
 
-      segmentation.segments[i] = {
-        label: contourSet.id,
-        segmentIndex: i,
+      segmentation.segments[index] = {
+        label: rtStructData[index].id,
+        segmentIndex: index,
         color: contourSet.data.color,
         opacity: 255,
         isVisible: true,
@@ -833,16 +828,23 @@ class SegmentationService {
       // Todo: add cached Stats for the center of contour to enabled jumping to
       // the center of the contour
       this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
-        segmentIndex: Number(i),
-        numSegments: segmentation.segmentCount,
+        segmentIndex: Number(index),
+        numSegments: geometryIds.length,
       });
     };
 
     for (let i = 0; i < rtStructData.length; i++) {
       const promise = new Promise<void>((resolve, reject) => {
         setTimeout(() => {
-          _initializeContour(i);
-          resolve();
+          initializeContour(
+            rtStructData,
+            geometryLoader,
+            geometryIds,
+            segmentation,
+            i
+          ).then(() => {
+            resolve();
+          });
         }, 0);
       });
 
