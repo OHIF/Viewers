@@ -1,17 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import Page from "../components/Page";
-import { withRouter, useLocation, useHistory } from "react-router-dom";
-import { Icon } from "../../../ui/src/elements/Icon";
-import { useSelector } from "react-redux";
-import { isEmpty } from "lodash";
-import { servicesManager } from "../App";
-import { CSSTransition } from "react-transition-group";
-import { radcadapi } from "../utils/constants";
+import React, { useEffect, useRef, useState } from 'react';
+import Page from '../components/Page';
+import { withRouter, useLocation, useHistory } from 'react-router-dom';
+import { Icon } from '../../../ui/src/elements/Icon';
+import { useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
+import { servicesManager } from '../App';
+import { CSSTransition } from 'react-transition-group';
+import { radcadapi } from '../utils/constants';
 
 const { UIDialogService, UINotificationService } = servicesManager.services;
 
 const transitionDuration = 500;
-const transitionClassName = "labelling";
+const transitionClassName = 'labelling';
 const transitionOnAppear = true;
 
 function useInterval(callback, delay) {
@@ -34,17 +34,17 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 
-export const getExistingSegmentations = async (userEmail) => {
+export const getExistingSegmentations = async userEmail => {
   try {
     const response = await fetch(`${radcadapi}/segmentations/${userEmail}`, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error getting existing segmentations: ", error);
+    console.error('Error getting existing segmentations: ', error);
     return null;
   }
 };
@@ -56,18 +56,18 @@ export const startNnunetProcess = async (
   user
 ) => {
   try {
-    UIDialogService.dismiss({ id: "ForceRerun" });
+    UIDialogService.dismiss({ id: 'ForceRerun' });
 
-    const url = radcadapi + "/nnunet/start";
+    const url = radcadapi + '/nnunet/start';
     const body = JSON.stringify({
       studyInstanceUID: studyInstanceUID,
       seriesInstanceUID: seriesInstanceUID,
       userEmail: user.profile.email,
     });
     const response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${user.access_token}`,
       },
       body: body,
@@ -75,25 +75,25 @@ export const startNnunetProcess = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error starting nnUNet process: ", error);
+    console.error('Error starting nnUNet process: ', error);
   }
 };
 
 // checkJobStatus function
-export const checkJobStatus = async (userEmail) => {
+export const checkJobStatus = async userEmail => {
   try {
     const url = radcadapi + `/nnunet/job-status?user_email=${userEmail}`;
     const response = await fetch(url, {
-      method: "GET",
+      method: 'GET',
     });
     const data = await response.json();
     return data.status;
   } catch (error) {
-    console.error("Error checking nnUNet job status: ", error);
+    console.error('Error checking nnUNet job status: ', error);
   }
 };
 
-const ForceRerun = (props) => {
+const ForceRerun = props => {
   return (
     <CSSTransition
       // in={this.props.displayComponent}
@@ -105,16 +105,16 @@ const ForceRerun = (props) => {
       <div
         className="importModalContainer"
         style={{
-          position: "relative",
-          padding: "1em",
-          zIndex: "999",
-          transition: "all 200ms linear",
-          maxHeight: "500px",
-          background: "var(--ui-gray-darkest)",
+          position: 'relative',
+          padding: '1em',
+          zIndex: '999',
+          transition: 'all 200ms linear',
+          maxHeight: '500px',
+          background: 'var(--ui-gray-darkest)',
         }}
       >
         <div className="seriesTitle">{props.message}</div>
-        <div className="footer" style={{ justifyContent: "flex-end" }}>
+        <div className="footer" style={{ justifyContent: 'flex-end' }}>
           <div>
             <button
               onClick={props.onClose}
@@ -140,39 +140,39 @@ const ForceRerun = (props) => {
 function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
   const [processStarted, setProcessStarted] = useState(false);
   const [count, setCount] = useState(1);
-  const user = useSelector((state) => state.oidc.user);
+  const user = useSelector(state => state.oidc.user);
   const location = useLocation();
   const history = useHistory();
   const [loading, setLoading] = useState(true);
 
   const handleOnSuccess = () => {
-    const direction = localStorage.getItem("direction");
+    const direction = localStorage.getItem('direction');
     const pathname =
-      direction && direction === "back"
-        ? location.pathname.replace("nnunet", "view")
-        : location.pathname.replace("nnunet", "edit");
+      direction && direction === 'back'
+        ? location.pathname.replace('nnunet', 'view')
+        : location.pathname.replace('nnunet', 'edit');
 
     history.push(pathname);
   };
 
   const handleOnExist = () => {
-    let direction = localStorage.getItem("direction");
+    let direction = localStorage.getItem('direction');
     let pathname;
-    if (direction && direction == "back")
-      pathname = location.pathname.replace("nnunet", "view");
-    else pathname = location.pathname.replace("nnunet", "edit");
-    UIDialogService.dismiss({ id: "ForceRerun" });
+    if (direction && direction == 'back')
+      pathname = location.pathname.replace('nnunet', 'view');
+    else pathname = location.pathname.replace('nnunet', 'edit');
+    UIDialogService.dismiss({ id: 'ForceRerun' });
     history.push(pathname);
   };
 
-  const showLoadSegmentationDialog = (message) => {
+  const showLoadSegmentationDialog = message => {
     if (!UIDialogService) {
-      console.warn("Unable to show dialog; no UI Dialog Service available.");
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
 
     UIDialogService.create({
-      id: "ForceRerun",
+      id: 'ForceRerun',
       isDraggable: false,
       showOverlay: true,
       centralize: true,
@@ -182,7 +182,7 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
         onConfirm: async () => {
           await startNnunetProcess(
             studyInstanceUIDs[0],
-            JSON.parse(localStorage.getItem("series_uid")),
+            JSON.parse(localStorage.getItem('series_uid')),
             user
           );
         },
@@ -195,23 +195,23 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
     if (processStarted) {
       const status = await checkJobStatus(user.profile.email);
 
-      if (status === "DONE" || status === "ERROR") {
+      if (status === 'DONE' || status === 'ERROR') {
         handleOnSuccess();
       }
     }
   }, 16000);
 
-  useEffect(() => {
+  useEffect(async () => {
     const checkEndpointsInterval = setInterval(async () => {
-      const endpointStatus = await fetch(radcadapi + "/endpoint-status").then(
-        (response) => response.json()
+      const endpointStatus = await fetch(radcadapi + '/endpoint-status').then(
+        response => response.json()
       );
 
       if (
-        endpointStatus["nnUNet-3d-fullres-lung-endpoint"] === "RUNNING" &&
-        endpointStatus["nnUNet-4D-Brain-lite-3modality-endpoint"] ===
-          "RUNNING" &&
-        endpointStatus["cbir-encoder"] === "RUNNING"
+        endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
+        endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] ===
+          'RUNNING' &&
+        endpointStatus['cbir-encoder'] === 'PENGING'
       ) {
         setLoading(false);
         clearInterval(checkEndpointsInterval);
@@ -222,40 +222,94 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
         if (isEmpty(segmentationsList)) {
           await startNnunetProcess(
             studyInstanceUIDs[0],
-            JSON.parse(localStorage.getItem("series_uid")),
+            JSON.parse(localStorage.getItem('series_uid')),
             user
           );
           setProcessStarted(true);
         } else {
           showLoadSegmentationDialog(
-            segmentationsList.includes("nnunet")
-              ? "Nnunet segmentations exist, do you re-run nnunet segmentation?"
-              : "Non-nnunet segmentations exist, do you run nnunet segmentation?"
+            segmentationsList.includes('nnunet')
+              ? 'Nnunet segmentations exist, do you re-run nnunet segmentation?'
+              : 'Non-nnunet segmentations exist, do you run nnunet segmentation?'
           );
         }
+      } else {
+        UINotificationService.show({
+          title: 'Endpoint API is still warming',
+          type: 'info',
+          autoClose: true,
+        });
       }
     }, 16000);
+
+    const endpointStatus = await fetch(radcadapi + '/endpoint-status').then(
+      response => response.json()
+    );
+
+    if (
+      endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
+      endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] === 'RUNNING' &&
+      endpointStatus['cbir-encoder'] === 'RUNNING'
+    ) {
+      setLoading(false);
+      clearInterval(checkEndpointsInterval);
+
+      const segmentationsList = await getExistingSegmentations(
+        user.profile.email
+      );
+      if (isEmpty(segmentationsList)) {
+        await startNnunetProcess(
+          studyInstanceUIDs[0],
+          JSON.parse(localStorage.getItem('series_uid')),
+          user
+        );
+        setProcessStarted(true);
+      } else {
+        showLoadSegmentationDialog(
+          segmentationsList.includes('nnunet')
+            ? 'Nnunet segmentations exist, do you re-run nnunet segmentation?'
+            : 'Non-nnunet segmentations exist, do you run nnunet segmentation?'
+        );
+      }
+    } else {
+      UINotificationService.show({
+        title: 'Endpoint API is still warming',
+        type: 'error',
+        autoClose: true,
+      });
+    }
 
     return () => clearInterval(checkEndpointsInterval);
   }, []);
 
+  const loadingIcon = (
+    <Icon name="circle-notch" className="loading-icon-spin loading-icon" />
+  );
+
   return (
-    <div className="page-container">
-      <div className="nnunet-page__header">
-        <Icon name="nnunet" className="nnunet-page__icon" />
-        <h1 className="nnunet-page__title">nnU-Net Segmentation</h1>
+    <Page>
+      <div
+        style={{
+          width: '100%',
+          height: '70vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {loading && (
+          <>
+            <div className="nnunet-page__header">
+              <h1 className="nnunet-page__title">
+                Loading nnU-Net Segmentation
+              </h1>
+            </div>
+            {loadingIcon}
+          </>
+        )}
       </div>
-      {loading && (
-        <CSSTransition
-          in={loading}
-          timeout={300}
-          classNames="fade"
-          unmountOnExit
-        >
-          <div className="nnunet-page__loading">Loading...</div>
-        </CSSTransition>
-      )}
-    </div>
+    </Page>
   );
 }
 export default withRouter(NnunetPage);

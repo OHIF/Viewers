@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash';
 import { servicesManager } from '../App';
 import { CSSTransition } from 'react-transition-group';
 import { radcadapi } from '../utils/constants';
-
+const { UIDialogService, UINotificationService } = servicesManager.services;
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();

@@ -35,7 +35,8 @@ import { getEnabledElement } from '../../../../extensions/cornerstone/src/state'
 import eventBus from '../lib/eventBus';
 import { Icon } from '../../../ui/src/elements/Icon';
 import { BrainMode, radcadapi } from '../utils/constants';
-import { Morphology3DComponent } from '../components/3DSegmentation/3D_old';
+import { Morphology3DComponent } from '../components/3DSegmentation/3D';
+// import { Morphology3DComponent } from '../components/3DSegmentation/3D_old';
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import exportComponent from '../lib/ExportComponent';
@@ -508,12 +509,12 @@ class Radiomics extends Component {
           const fetchBase64Data = [exportComponent(this.canvas)];
           try {
             if (this.props.currentMode === BrainMode) {
-              const customScene = this.componentRef.current.graphRef.current.el
-                .layout.scene;
+            // if (currentMode === BrainMode) {
+              const customScene = this.componentRef.current.el.layout.scene;
 
-              const plotDiv = this.componentRef.current.graphRef.current.el;
+              const plotDiv = this.componentRef.current.el;
               const { graphDiv } = plotDiv._fullLayout.scene._scene;
-              console.log(this.componentRef.current.graphRef.current);
+              console.log(this.componentRef.current);
               const divToDownload = {
                 ...graphDiv,
                 layout: { ...graphDiv.layout, scene: customScene },
@@ -540,8 +541,7 @@ class Radiomics extends Component {
           const collage = data[0];
           let morphologyBase64 = null;
           try {
-            if (this.props.currentMode === BrainMode)
-              morphologyBase64 = data[1];
+            if (this.props.currentMode === BrainMode) morphologyBase64 = data[1];
           } catch (error) {
             console.log(
               'Error occurred while setting morphologyBase64:',
@@ -829,6 +829,7 @@ class Radiomics extends Component {
             <div className="container">
               <div className="container-item">
                 <Morphology3DComponent
+                  // ref={childRef}
                   chartRef={this.chartRef}
                   ref={this.componentRef}
                 />

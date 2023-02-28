@@ -114,8 +114,7 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
       ],
     });
     contents.push({ text: '', margin: [0, 10] });
-    if (index % 2 == 0) {
-    } else contents.push({ text: '', pageBreak: 'before' });
+    contents.push({ text: '', pageBreak: 'before' });
   });
 
   if (morphologyBase64)
