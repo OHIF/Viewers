@@ -22,15 +22,13 @@ export default function createReportDialogPrompt(uiDialogService) {
     const _handleFormSubmit = ({ action, value }) => {
       switch (action.id) {
         case 'save':
-          // Only save if description is not blank otherwise alert
+          // Only save if description is not blank otherwise ignore
           if (value.label && value.label.trim() !== '') {
             resolve({
               action: RESPONSE.CREATE_REPORT,
               value: value.label.trim(),
             });
             UIDialogService.dismiss({ id: dialogId });
-          } else {
-            alert('Please provide a description');
           }
           break;
         case 'cancel':
