@@ -41,7 +41,7 @@
     "@ohif/extension-measurement-tracking": "^3.0.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3"
+    "@babel/runtime": "^7.20.13"
   },
   "devDependencies": {
     "webpack": "^5.50.0",

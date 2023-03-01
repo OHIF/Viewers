@@ -1,12 +1,9 @@
 describe('OHIF Cornerstone Toolbar', () => {
-  before(() => {
+  beforeEach(() => {
     cy.checkStudyRouteInViewer(
       '1.2.840.113619.2.5.1762583153.215519.978957063.78'
     );
     cy.expectMinimumThumbnails(3);
-  });
-
-  beforeEach(() => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
 
@@ -16,8 +13,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //const expectedText = 'Ser: 1';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
-
-    cy.resetViewport();
   });
 
   it('checks if all primary buttons are being displayed', () => {

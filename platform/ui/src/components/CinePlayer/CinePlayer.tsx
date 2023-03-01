@@ -1,11 +1,28 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { IconButton, Icon } from '../';
+import { Icon, Tooltip, InputRange } from '../';
 
-import './CinePlayerCustomInputRange.css';
+import './CinePlayer.css';
+import classNames from 'classnames';
 
-const CinePlayer = ({
+export type CinePlayerProps = {
+  className: string;
+  isPlaying: boolean;
+  minFrameRate: number;
+  maxFrameRate: number;
+  stepFrameRate: number;
+  frameRate: number;
+  onFrameRateChange: (value: number) => void;
+  onPlayPauseChange: (value: boolean) => void;
+  onClose: () => void;
+};
+
+const fpsButtonClassNames =
+  'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 w-4 flex items-center justify-center';
+
+const CinePlayer: React.FC<CinePlayerProps> = ({
+  className,
   isPlaying,
   minFrameRate,
   maxFrameRate,
@@ -18,52 +35,68 @@ const CinePlayer = ({
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = debounce(onFrameRateChange, 300);
 
-  const onFrameRateChangeHandler = ({ target }) => {
-    const frameRate = parseFloat(target.value);
-    debouncedSetFrameRate(frameRate);
+  const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
+
+  const handleSetFrameRate = (frameRate: number) => {
+    if (frameRate < minFrameRate || frameRate > maxFrameRate) {
+      return;
+    }
     setFrameRate(frameRate);
-  };
-
-  const onPlayPauseChangeHandler = () => onPlayPauseChange(!isPlaying);
-
-  const action = {
-    false: { icon: 'old-play' },
-    true: { icon: 'old-stop' },
+    debouncedSetFrameRate(frameRate);
   };
 
   return (
-    <div className="flex flex-row items-center justify-center h-10 border rounded-full CinePlayer border-primary-light">
-      <IconButton
-        variant="text"
-        color="inherit"
-        size="initial"
-        className="ml-4 mr-3 text-primary-active"
-        onClick={onPlayPauseChangeHandler}
+    <div
+      className={classNames(
+        className,
+        'select-none flex items-center gap-2 px-2 py-2 rounded border border-secondary-light/60 bg-primary-dark'
+      )}
+    >
+      <Icon
+        name={getPlayPauseIconName()}
+        className="cursor-pointer text-white active:text-primary-light hover:bg-customblue-300 hover:rounded"
+        onClick={() => onPlayPauseChange(!isPlaying)}
+      />
+      <Tooltip
+        position="top"
+        className="group/fps cine-fps-range-tooltip"
+        tight={true}
+        content={
+          <InputRange
+            containerClassName="h-9 px-2"
+            inputClassName="w-40"
+            value={frameRate}
+            minValue={minFrameRate}
+            maxValue={maxFrameRate}
+            step={stepFrameRate}
+            onChange={handleSetFrameRate}
+            showLabel={false}
+          />
+        }
       >
-        <Icon width="15px" height="15px" name={action[isPlaying].icon} />
-      </IconButton>
-      <div className="flex flex-col justify-center h-full pt-2 pl-1 pr-1 mr-3">
-        <input
-          type="range"
-          name="frameRate"
-          min={minFrameRate}
-          max={maxFrameRate}
-          step={stepFrameRate}
-          value={frameRate}
-          onChange={onFrameRateChangeHandler}
-        />
-        <p className="-mt-2 text-sm text-primary-light">{`${frameRate.toFixed(
-          1
-        )} fps`}</p>
-      </div>
-      <IconButton
-        color="inherit"
-        size="initial"
-        className="mr-3 border rounded-full text-primary-active border-primary-active"
+        <div className="border border-secondary-light flex h-6 items-stretch rounded gap-1">
+          <div
+            className={`${fpsButtonClassNames} rounded-l`}
+            onClick={() => handleSetFrameRate(frameRate - 1)}
+          >
+            <Icon name="arrow-left-small" />
+          </div>
+          <div className="w-11 text-sm text-white text-center group-hover/fps:text-primary-light leading-[22px]">
+            {`${frameRate} FPS`}
+          </div>
+          <div
+            className={`${fpsButtonClassNames} rounded-r`}
+            onClick={() => handleSetFrameRate(frameRate + 1)}
+          >
+            <Icon name="arrow-right-small" />
+          </div>
+        </div>
+      </Tooltip>
+      <Icon
+        name="icon-close"
+        className="cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 hover:rounded"
         onClick={onClose}
-      >
-        <Icon name="close" width="15px" height="15px" />
-      </IconButton>
+      />
     </div>
   );
 };

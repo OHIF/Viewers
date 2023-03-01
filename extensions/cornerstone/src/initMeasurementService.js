@@ -1,6 +1,8 @@
 import { eventTarget } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
+import { toolNames } from './initCornerstoneTools';
+import { onCompletedCalibrationLine } from './tools/CalibrationLineTool';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
@@ -23,6 +25,10 @@ const initMeasurementService = (
     Bidirectional,
     EllipticalROI,
     ArrowAnnotate,
+    Angle,
+    CobbAngle,
+    RectangleROI,
+    PlanarFreehandROI,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -66,14 +72,57 @@ const initMeasurementService = (
     ArrowAnnotate.toMeasurement
   );
 
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'CobbAngle',
+    CobbAngle.matchingCriteria,
+    CobbAngle.toAnnotation,
+    CobbAngle.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'Angle',
+    Angle.matchingCriteria,
+    Angle.toAnnotation,
+    Angle.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'RectangleROI',
+    RectangleROI.matchingCriteria,
+    RectangleROI.toAnnotation,
+    RectangleROI.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'PlanarFreehandROI',
+    PlanarFreehandROI.matchingCriteria,
+    PlanarFreehandROI.toAnnotation,
+    PlanarFreehandROI.toMeasurement
+  );
+
+  // On the UI side, the Calibration Line tool will work almost the same as the
+  // Length tool
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'CalibrationLine',
+    Length.matchingCriteria,
+    Length.toAnnotation,
+    Length.toMeasurement
+  );
+
   return csTools3DVer1MeasurementSource;
 };
 
-const connectToolsToMeasurementService = (
-  measurementService,
-  displaySetService,
-  cornerstoneViewportService
-) => {
+const connectToolsToMeasurementService = servicesManager => {
+  const {
+    measurementService,
+    displaySetService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
     displaySetService,
@@ -95,15 +144,38 @@ const connectToolsToMeasurementService = (
       } = annotationAddedEventDetail;
       const { toolName } = metadata;
 
-      // To force the measurementUID be the same as the annotationUID
-      // Todo: this should be changed when a measurement can include multiple annotations
-      // in the future
-      annotationAddedEventDetail.uid = annotationUID;
-      annotationToMeasurement(toolName, annotationAddedEventDetail);
+      if (
+        csToolsEvent.type === completedEvt &&
+        toolName === toolNames.CalibrationLine
+      ) {
+        // show modal to input the measurement (mm)
+        onCompletedCalibrationLine(servicesManager, csToolsEvent)
+          .then(
+            () => {
+              console.log('calibration applied');
+            },
+            () => true
+          )
+          .finally(() => {
+            // we don't need the calibration line lingering around, remove the
+            // annotation from the display
+            removeAnnotation(annotationUID);
+            removeMeasurement(csToolsEvent);
+            // this will ensure redrawing of annotations
+            cornerstoneViewportService.resize();
+          });
+      } else {
+        // To force the measurementUID be the same as the annotationUID
+        // Todo: this should be changed when a measurement can include multiple annotations
+        // in the future
+        annotationAddedEventDetail.uid = annotationUID;
+        annotationToMeasurement(toolName, annotationAddedEventDetail);
+      }
     } catch (error) {
       console.warn('Failed to update measurement:', error);
     }
   }
+
   function updateMeasurement(csToolsEvent) {
     try {
       const annotationModifiedEventDetail = csToolsEvent.detail;

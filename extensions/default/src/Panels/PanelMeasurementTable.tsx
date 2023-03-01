@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { utils, ServicesManager } from '@ohif/core';
 import { MeasurementTable, Dialog, Input, useViewportGrid } from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
-import { utils } from '@ohif/core';
 import createReportDialogPrompt, {
   CREATE_REPORT_DIALOG_RESPONSE,
 } from './createReportDialogPrompt';
 import createReportAsync from '../Actions/createReportAsync';
-import getNextSRSeriesNumber from '../utils/getNextSRSeriesNumber';
+import findSRWithSameSeriesDescription from '../utils/findSRWithSameSeriesDescription';
 
 const { downloadCSVReport } = utils;
 
@@ -17,7 +17,7 @@ export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
   extensionManager,
-}) {
+}): React.FunctionComponent {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportIndex, viewports } = viewportGrid;
   const {
@@ -25,7 +25,7 @@ export default function PanelMeasurementTable({
     uiDialogService,
     uiNotificationService,
     displaySetService,
-  } = servicesManager.services;
+  } = (servicesManager as ServicesManager).services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function PanelMeasurementTable({
     measurementService.clearMeasurements();
   }
 
-  async function createReport() {
+  async function createReport(): Promise<any> {
     // filter measurements that are added to the active study
     const activeViewport = viewports[activeViewportIndex];
     const measurements = measurementService.getMeasurements();
@@ -109,17 +109,19 @@ export default function PanelMeasurementTable({
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
+      // Re-use an existing series having the same series description to avoid
+      // creating too many series instances.
+      const options = findSRWithSameSeriesDescription(
+        SeriesDescription,
+        displaySetService
+      );
 
-      const displaySetInstanceUIDs = await createReportAsync(
+      return createReportAsync(
         servicesManager,
         commandsManager,
         dataSource,
         trackedMeasurements,
-        {
-          SeriesDescription,
-          SeriesNumber,
-        }
+        options
       );
     }
   }
@@ -176,6 +178,7 @@ export default function PanelMeasurementTable({
             <div className="p-4 bg-primary-dark">
               <Input
                 autoFocus
+                id="annotation"
                 className="mt-2 bg-black border-primary-main"
                 type="text"
                 containerClassName="mr-2"
@@ -232,16 +235,7 @@ export default function PanelMeasurementTable({
 }
 
 PanelMeasurementTable.propTypes = {
-  servicesManager: PropTypes.shape({
-    services: PropTypes.shape({
-      measurementService: PropTypes.shape({
-        getMeasurements: PropTypes.func.isRequired,
-        subscribe: PropTypes.func.isRequired,
-        EVENTS: PropTypes.object.isRequired,
-        VALUE_TYPES: PropTypes.object.isRequired,
-      }).isRequired,
-    }).isRequired,
-  }).isRequired,
+  servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
 };
 
 function _getMappedMeasurements(measurementService) {

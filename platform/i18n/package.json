@@ -36,7 +36,7 @@
     "react-i18next": "^10.11.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3",
+    "@babel/runtime": "^7.20.13",
     "i18next-locize-backend": "^2.0.0",
     "locize-editor": "^2.0.0",
     "locize-lastused": "^1.1.0"

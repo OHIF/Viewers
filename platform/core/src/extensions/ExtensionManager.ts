@@ -35,6 +35,7 @@ export interface ExtensionParams extends ExtensionConstructor {
  * have more values than this.
  */
 export interface Extension {
+  id: string;
   preRegistration?: (p: ExtensionParams) => void;
 }
 
@@ -160,11 +161,18 @@ export default class ExtensionManager {
     // but currently since some extensions need to be registered before
     // others, we need to run them sequentially. We need a postInit hook
     // to avoid this sequential async registration
-    for (const extension of extensions) {
+    for (let i = 0; i < extensions.length; i++) {
+      const extension = extensions[i];
       const hasConfiguration = Array.isArray(extension);
       try {
         if (hasConfiguration) {
-          const [ohifExtension, configuration] = extension;
+          // Important: for some reason in the line below the type
+          // of extension is not recognized as [ExtensionRegister,
+          // ExtensionConfiguration] by babel DON"T CHANGE IT
+          // Same for the for loop above don't use
+          // for (const extension of extensions)
+          const ohifExtension = extension[0];
+          const configuration = extension[1];
           await this.registerExtension(
             ohifExtension,
             configuration,
@@ -357,7 +365,7 @@ export default class ExtensionManager {
   };
 
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
-    const { UserAuthenticationService } = this._servicesManager.services;
+    const { userAuthenticationService } = this._servicesManager.services;
     dataSources.forEach(dataSource => {
       this.dataSourceDefs[dataSource.sourceName] = dataSource;
     });
@@ -369,7 +377,7 @@ export default class ExtensionManager {
         if (dataSource.namespace === namespace) {
           const dataSourceInstance = element.createDataSource(
             dataSource.configuration,
-            UserAuthenticationService
+            userAuthenticationService
           );
 
           if (this.dataSourceMap[dataSource.sourceName]) {

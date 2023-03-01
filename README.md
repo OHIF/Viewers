@@ -227,7 +227,7 @@ These projects comprise the
 
 ### Extensions
 
-This is a list of Extensions maintained by the OHIF Core team. It's possible to
+This is a list of Extensions maintained by the OHIF Core team. It is possible to
 customize and configure these extensions, and you can even create your own. You
 can [read more about extensions here][ohif-extensions].
 
@@ -270,6 +270,8 @@ This work is supported primarily by the National Institutes of Health, National
 Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
 under a
 [grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
+
+This project is tested with BrowserStack. Thank you for supporting open source
 
 ## License
 

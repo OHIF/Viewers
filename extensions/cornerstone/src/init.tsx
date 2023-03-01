@@ -12,6 +12,7 @@ import {
   volumeLoader,
   imageLoadPoolManager,
   Settings,
+  utilities as csUtilities,
 } from '@cornerstonejs/core';
 import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
@@ -62,11 +63,11 @@ export default async function init({
   );
 
   const {
-    UserAuthenticationService,
+    userAuthenticationService,
     measurementService,
     displaySetService,
     uiDialogService,
-    UIModalService,
+    uiModalService,
     uiNotificationService,
     cineService,
     cornerstoneViewportService,
@@ -77,7 +78,10 @@ export default async function init({
 
   window.services = servicesManager.services;
 
-  if (!window.crossOriginIsolated) {
+  if (
+    appConfig.showWarningMessageForCrossOrigin &&
+    !window.crossOriginIsolated
+  ) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
@@ -86,8 +90,11 @@ export default async function init({
     });
   }
 
-  if (cornerstone.getShouldUseCPURendering()) {
-    _showCPURenderingModal(UIModalService, hangingProtocolService);
+  if (
+    appConfig.showCPUFallbackMessage &&
+    cornerstone.getShouldUseCPURendering()
+  ) {
+    _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
   const labelmapRepresentation =
@@ -120,6 +127,12 @@ export default async function init({
   );
   hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
+  // add metadata providers
+  metaData.addProvider(
+    csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
+      csUtilities.calibratedPixelSpacingMetadataProvider
+    )
+  ); // this provider is required for Calibration tool
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
   imageLoadPoolManager.maxNumRequests = {
@@ -128,13 +141,11 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(UserAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig);
 
   /* Measurement Service */
   const measurementServiceSource = connectToolsToMeasurementService(
-    measurementService,
-    displaySetService,
-    cornerstoneViewportService
+    servicesManager
   );
 
   initCineService(cineService);
@@ -403,10 +414,10 @@ function CPUModal() {
   );
 }
 
-function _showCPURenderingModal(UIModalService, hangingProtocolService) {
+function _showCPURenderingModal(uiModalService, hangingProtocolService) {
   const callback = progress => {
     if (progress === 100) {
-      UIModalService.show({
+      uiModalService.show({
         content: CPUModal,
         title: 'OHIF Fell Back to CPU Rendering',
       });

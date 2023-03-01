@@ -1,5 +1,4 @@
 import guid from '../../utils/guid';
-import * as Types from '../../Types';
 
 /**
  * Consumer must implement:

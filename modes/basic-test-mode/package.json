@@ -1,5 +1,5 @@
 {
-  "name": "mode-basic-test-mode",
+  "name": "@ohif/mode-test",
   "version": "0.0.1",
   "description": "Basic mode for testing",
   "author": "OHIF",
@@ -38,10 +38,11 @@
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
     "@ohif/extension-dicom-pdf": "^3.0.1",
     "@ohif/extension-dicom-video": "^3.0.1",
-    "@ohif/extension-measurement-tracking": "^3.0.0"
+    "@ohif/extension-measurement-tracking": "^3.0.0",
+    "@ohif/extension-test": "0.0.1"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3"
+    "@babel/runtime": "^7.20.13"
   },
   "devDependencies": {
     "webpack": "^5.50.0",

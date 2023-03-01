@@ -55,11 +55,17 @@ module.exports = {
 
       customgreen: {
         100: '#05D97C',
+        200: '#0FD97C',
       },
 
       customblue: {
         100: '#c4fdff',
         200: '#38daff',
+        300: '#1D204D',
+      },
+
+      customgray: {
+        100: '#262943',
       },
 
       gray: {
@@ -257,14 +263,15 @@ module.exports = {
       full: '100%',
       screen: '100vh',
     }),
-    inset: {
+    inset: theme => ({
+      ...theme('spacing'),
       '0': '0',
       auto: 'auto',
       full: '100%',
       viewport: '0.5rem',
       '1/2': '50%',
       'viewport-scrollbar': '1.3rem',
-    },
+    }),
     letterSpacing: {
       tighter: '-0.05em',
       tight: '-0.025em',

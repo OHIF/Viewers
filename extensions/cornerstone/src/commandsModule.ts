@@ -12,12 +12,12 @@ import {
 } from '@cornerstonejs/tools';
 import { ServicesManager } from '@ohif/core';
 
-import { getEnabledElement as OHIFgetEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleMPRHangingProtocol from './utils/mpr/toggleMPRHangingProtocol';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
+import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
 const commandsModule = ({ servicesManager }) => {
   const {
@@ -32,10 +32,7 @@ const commandsModule = ({ servicesManager }) => {
   } = (servicesManager as ServicesManager).services;
 
   function _getActiveViewportEnabledElement() {
-    const { activeViewportIndex } = viewportGridService.getState();
-    const { element } = OHIFgetEnabledElement(activeViewportIndex) || {};
-    const enabledElement = getEnabledElement(element);
-    return enabledElement;
+    return getActiveViewportEnabledElement(viewportGridService);
   }
 
   function _getToolGroup(toolGroupId) {
@@ -196,15 +193,15 @@ const commandsModule = ({ servicesManager }) => {
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();
-      const { UIModalService } = servicesManager.services;
+      const { uiModalService } = servicesManager.services;
 
-      if (UIModalService) {
-        UIModalService.show({
+      if (uiModalService) {
+        uiModalService.show({
           content: CornerstoneViewportDownloadForm,
           title: 'Download High Quality Image',
           contentProps: {
             activeViewportIndex,
-            onClose: UIModalService.hide,
+            onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
         });

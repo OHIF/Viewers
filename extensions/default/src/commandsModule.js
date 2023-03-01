@@ -34,15 +34,15 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
       const displaySets = displaySetService.activeDisplaySets;
-      const { UIModalService } = servicesManager.services;
+      const { uiModalService } = servicesManager.services;
 
       const displaySetInstanceUID = displaySetInstanceUIDs[0];
-      UIModalService.show({
+      uiModalService.show({
         content: DicomTagBrowser,
         contentProps: {
           displaySets,
           displaySetInstanceUID,
-          onClose: UIModalService.hide,
+          onClose: uiModalService.hide,
         },
         title: 'DICOM Tag Browser',
       });

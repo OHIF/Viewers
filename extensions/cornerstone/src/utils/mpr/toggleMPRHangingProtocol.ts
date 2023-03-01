@@ -58,18 +58,19 @@ export default function toggleMPRHangingProtocol({
   const viewportDisplaySetInstanceUIDs =
     viewports[activeViewportIndex].displaySetInstanceUIDs;
 
-  const errorCallback = error => {
+  // What is the current active protocol and stage number to restore later
+  const { protocol, stage } = hangingProtocolService.getActiveProtocol();
+
+  const restoreErrorCallback = error => {
+    console.error(error);
     uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
-        'Cannot create MPR for this DisplaySet since it is not reconstructable.',
+        'Something went wrong while trying to restore the previous layout.',
       type: 'info',
       duration: 3000,
     });
   };
-
-  // What is the current active protocol and stage number to restore later
-  const { protocol, stage } = hangingProtocolService.getActiveProtocol();
 
   if (toggledState) {
     resetCachedState();
@@ -102,6 +103,23 @@ export default function toggleMPRHangingProtocol({
       getToolGroup
     );
 
+    const errorCallback = error => {
+      // Unable to create MPR, so be sure to return to the cached/original protocol.
+      hangingProtocolService.setProtocol(
+        cachedState.protocol.id,
+        viewportMatchDetails,
+        restoreErrorCallback
+      );
+
+      uiNotificationService.show({
+        title: 'Multiplanar reconstruction (MPR) ',
+        message:
+          'Cannot create MPR for this DisplaySet since it is not reconstructable.',
+        type: 'info',
+        duration: 3000,
+      });
+    };
+
     hangingProtocolService.setProtocol(
       MPR_TOOLGROUP_ID,
       matchDetails,
@@ -109,16 +127,6 @@ export default function toggleMPRHangingProtocol({
     );
     return;
   }
-
-  const restoreErrorCallback = error => {
-    uiNotificationService.show({
-      title: 'Multiplanar reconstruction (MPR) ',
-      message:
-        'Something went wrong while trying to restore the previous layout.',
-      type: 'info',
-      duration: 3000,
-    });
-  };
 
   _disableCrosshairs([MPR_TOOLGROUP_ID], getToolGroup);
 
@@ -276,13 +284,17 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
     .filter(Boolean);
 
   if (viewportIds.length) {
-    toolOptions = viewportIds.map(viewportId => {
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-      return {
-        toolGroupId: toolGroup.id,
-        toolOptions: toolGroup.toolOptions,
-      };
-    });
+    toolOptions = viewportIds
+      .map(viewportId => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        return toolGroup
+          ? {
+              toolGroupId: toolGroup.id,
+              toolOptions: toolGroup.toolOptions,
+            }
+          : null;
+      })
+      .filter(Boolean);
   }
 
   return { viewportMatchDetails, viewportStructure, toolOptions };

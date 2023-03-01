@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
-import { useDebounce, useQuery } from '@hooks';
+import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys } from '@ohif/core';
 
 import {
@@ -54,10 +54,10 @@ function WorkList({
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
-  const query = useQuery();
+  const searchParams = useSearchParams();
   const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
-  const queryFilterValues = _getQueryFilterValues(query);
+  const queryFilterValues = _getQueryFilterValues(searchParams);
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
     ...queryFilterValues,
@@ -503,7 +503,7 @@ const defaultFilterValues = {
 
 function _tryParseInt(str, defaultValue) {
   let retValue = defaultValue;
-  if (str !== null) {
+  if (str != null) {
     if (str.length > 0) {
       if (!isNaN(str)) {
         retValue = parseInt(str);
@@ -513,24 +513,24 @@ function _tryParseInt(str, defaultValue) {
   return retValue;
 }
 
-function _getQueryFilterValues(query) {
+function _getQueryFilterValues(params) {
   const queryFilterValues = {
-    patientName: query.get('patientName'),
-    mrn: query.get('mrn'),
+    patientName: params.get('patientname'),
+    mrn: params.get('mrn'),
     studyDate: {
-      startDate: query.get('startDate'),
-      endDate: query.get('endDate'),
+      startDate: params.get('startdate') || null,
+      endDate: params.get('enddate') || null,
     },
-    description: query.get('description'),
-    modalities: query.get('modalities')
-      ? query.get('modalities').split(',')
+    description: params.get('description'),
+    modalities: params.get('modalities')
+      ? params.get('modalities').split(',')
       : [],
-    accession: query.get('accession'),
-    sortBy: query.get('sortBy'),
-    sortDirection: query.get('sortDirection'),
-    pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
-    resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
-    datasources: query.get('datasources'),
+    accession: params.get('accession'),
+    sortBy: params.get('sortby'),
+    sortDirection: params.get('sortdirection'),
+    pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
+    resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
+    datasources: params.get('datasources'),
   };
 
   // Delete null/undefined keys
