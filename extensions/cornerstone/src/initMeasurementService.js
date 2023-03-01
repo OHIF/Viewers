@@ -366,7 +366,7 @@ const connectMeasurementServiceToTools = (
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
 
-      const annotationManager = annotation.state.getDefaultAnnotationManager();
+      const annotationManager = annotation.state.getAnnotationManager();
       annotationManager.addAnnotation({
         annotationUID: measurement.uid,
         highlighted: false,

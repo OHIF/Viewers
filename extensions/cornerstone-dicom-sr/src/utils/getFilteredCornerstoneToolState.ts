@@ -67,7 +67,7 @@ function getFilteredCornerstoneToolState(
   const uidFilter = measurementData.map(md => md.uid);
   const uids = uidFilter.slice();
 
-  const annotationManager = annotation.state.getDefaultAnnotationManager();
+  const annotationManager = annotation.state.getAnnotationManager();
   const framesOfReference = annotationManager.getFramesOfReference();
 
   for (let i = 0; i < framesOfReference.length; i++) {
