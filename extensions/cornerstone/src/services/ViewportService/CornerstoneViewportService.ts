@@ -357,7 +357,23 @@ class CornerstoneViewportService implements IViewportService {
     }
 
     const { index, preset } = initialImageOptions;
-    return this._getInitialImageIndex(imageIds.length, index, preset);
+    const viewportType = viewportInfo.getViewportType();
+
+    let numberOfSlices;
+    if (viewportType === csEnums.ViewportType.STACK) {
+      numberOfSlices = imageIds.length;
+    } else if (viewportType === csEnums.ViewportType.ORTHOGRAPHIC) {
+      const viewport = this.getCornerstoneViewport(
+        viewportInfo.getViewportId()
+      );
+      ({ numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
+        viewport as Types.IVolumeViewport
+      ));
+    } else {
+      return;
+    }
+
+    return this._getInitialImageIndex(numberOfSlices, index, preset);
   }
 
   _getInitialImageIndex(
