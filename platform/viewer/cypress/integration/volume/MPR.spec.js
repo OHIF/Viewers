@@ -99,7 +99,7 @@ describe('OHIF MPR', () => {
     cy.window()
       .its('cornerstoneTools')
       .then(cornerstoneTools => {
-        const state = cornerstoneTools.annotation.state.getDefaultAnnotationManager();
+        const state = cornerstoneTools.annotation.state.getAnnotationManager();
 
         const fORMap = state.annotations;
         // it should not have crosshairs yet
@@ -117,7 +117,7 @@ describe('OHIF MPR', () => {
     cy.window()
       .its('cornerstoneTools')
       .then(cornerstoneTools => {
-        const state = cornerstoneTools.annotation.state.getDefaultAnnotationManager();
+        const state = cornerstoneTools.annotation.state.getAnnotationManager();
 
         const fORMap = state.annotations;
         const fOR = Object.keys(fORMap)[0];
