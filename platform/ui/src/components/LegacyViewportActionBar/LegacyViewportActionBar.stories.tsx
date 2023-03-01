@@ -1,14 +1,14 @@
 import React from 'react';
-import ViewportActionBar from './ViewportActionBar';
+import LegacyViewportActionBar from './LegacyViewportActionBar';
 
 export default {
-  component: ViewportActionBar,
-  title: 'Components/ViewportActionBar',
+  component: LegacyViewportActionBar,
+  title: 'Components/LegacyViewportActionBar',
 };
 
 export const Default = () => (
   <div className="w-1/2 p-4 h-64">
-    <ViewportActionBar
+    <LegacyViewportActionBar
       onArrowsClick={direction => alert(`Series ${direction}`)}
       studyData={{
         label: 'A',
