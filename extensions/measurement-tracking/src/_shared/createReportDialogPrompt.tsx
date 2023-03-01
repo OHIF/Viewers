@@ -28,11 +28,11 @@ export default function createReportDialogPrompt(uiDialogService) {
               action: RESPONSE.CREATE_REPORT,
               value: value.label.trim(),
             });
-            UIDialogService.dismiss({ id: dialogId });
+            uiDialogService.dismiss({ id: dialogId });
           }
           break;
         case 'cancel':
-          UIDialogService.dismiss({ id: dialogId });
+          uiDialogService.dismiss({ id: dialogId });
           resolve({ action: RESPONSE.CANCEL, value: undefined });
           break;
       }
