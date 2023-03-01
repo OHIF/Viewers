@@ -370,10 +370,9 @@ class CornerstoneViewportService implements IViewportService {
       const viewport = this.getCornerstoneViewport(
         viewportInfo.getViewportId()
       );
-      const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(
-        viewport
-      );
-      numberOfSlices = imageSliceData.length;
+      ({ numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
+        viewport as Types.IVolumeViewport
+      ));
     } else {
       return;
     }
