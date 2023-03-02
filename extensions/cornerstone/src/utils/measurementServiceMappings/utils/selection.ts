@@ -30,10 +30,7 @@ function getFirstAnnotationSelected(element) {
     cs3dToolAnnotationUtils.selection.getAnnotationsSelected() || [];
 
   if (selectedAnnotationUID) {
-    return cs3dToolAnnotationUtils.state.getAnnotation(
-      selectedAnnotationUID,
-      element
-    );
+    return cs3dToolAnnotationUtils.state.getAnnotation(selectedAnnotationUID);
   }
 }
 

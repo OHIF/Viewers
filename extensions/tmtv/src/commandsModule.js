@@ -432,7 +432,7 @@ const commandsModule = ({
     },
     createTMTVRTReport: () => {
       // get all Rectangle ROI annotation
-      const stateManager = csTools.annotation.state.getDefaultAnnotationManager();
+      const stateManager = csTools.annotation.state.getAnnotationManager();
 
       const annotations = [];
 
