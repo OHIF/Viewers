@@ -9,6 +9,7 @@ export * from './AppConfig';
 export * from './Consumer';
 export * from './Command';
 export * from './StudyMetadata';
+export * from './PanelModule';
 
 /**
  * Export the types used within the various services and managers, but

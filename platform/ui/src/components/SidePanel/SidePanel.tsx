@@ -67,15 +67,20 @@ const position = {
 };
 
 const SidePanel = ({
+  servicesManager,
   side,
   className,
   activeTabIndex: activeTabIndexProp,
   tabs,
+  openWhenContentReady,
 }) => {
   const { t } = useTranslation('SidePanel');
 
+  const [hasBeenOpened, setHasBeenOpened] = useState(
+    activeTabIndexProp !== null
+  );
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
-  const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp || 0);
+  const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
   const swiperRef = useRef() as any;
   const [swiper, setSwiper] = useState<any>();
 
@@ -102,6 +107,37 @@ const SidePanel = ({
     }
   }, [swiper]);
 
+  const updatePanelOpen = (panelOpen: boolean) => {
+    setPanelOpen(panelOpen);
+    if (panelOpen) {
+      setHasBeenOpened(true);
+    }
+  };
+
+  const updateActiveTabIndex = (activeTabIndex: number) => {
+    setActiveTabIndex(activeTabIndex);
+    updatePanelOpen(true);
+  };
+
+  useEffect(() => {
+    if (openWhenContentReady && !hasBeenOpened) {
+      tabs?.forEach((tab, tabIndex) =>
+        tab?.setContentReadyCallback?.call(
+          null,
+          () => updateActiveTabIndex(tabIndex),
+          servicesManager
+        )
+      );
+    }
+
+    return () => {
+      tabs?.forEach(tab =>
+        // calling setContentReadyCallback with a null callback clears and unsubscribes the former callback.
+        tab?.setContentReadyCallback?.call(null, null, servicesManager)
+      );
+    };
+  }, [tabs, openWhenContentReady, hasBeenOpened]);
+
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
     return (
@@ -112,7 +148,7 @@ const SidePanel = ({
             side === 'left' ? 'pr-2 justify-end' : 'pl-2 justify-start'
           )}
           onClick={() => {
-            setPanelOpen(prev => !prev);
+            updatePanelOpen(prev => !prev);
           }}
           data-cy={`side-panel-header-${side}`}
         >
@@ -142,8 +178,7 @@ const SidePanel = ({
                 size="initial"
                 className="text-primary-active"
                 onClick={() => {
-                  setActiveTabIndex(index);
-                  setPanelOpen(true);
+                  updateActiveTabIndex(index);
                 }}
               >
                 <Icon
@@ -180,7 +215,7 @@ const SidePanel = ({
               tabs.length === 1 && 'mb-1'
             )}
             onClick={() => {
-              setPanelOpen(prev => !prev);
+              updatePanelOpen(prev => !prev);
               // slideToActivePanel();
             }}
             data-cy={`side-panel-header-${side}`}
@@ -215,8 +250,7 @@ const SidePanel = ({
               nextRef,
               tabs,
               activeTabIndex,
-              setActiveTabIndex,
-              setPanelOpen
+              updateActiveTabIndex
             )}
           {/** carousel navigation with the arrows */}
           {/** only show carousel nav if tabs are more than 3 tabs */}
@@ -273,8 +307,7 @@ function _getMoreThanOneTabLayout(
   nextRef: React.MutableRefObject<undefined>,
   tabs: any,
   activeTabIndex: any,
-  setActiveTabIndex: React.Dispatch<any>,
-  setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateActiveTabIndex
 ) {
   return (
     <div
@@ -309,8 +342,7 @@ function _getMoreThanOneTabLayout(
                 )}
                 key={index}
                 onClick={() => {
-                  setActiveTabIndex(index);
-                  setPanelOpen(true);
+                  updateActiveTabIndex(index);
                 }}
                 data-cy={`${obj.name}-btn`}
               >

@@ -161,8 +161,15 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
+              // leftPanelDefaultState: {
+              //   closed: true,
+              //   openWhenContentReady: true,
+              // },
               rightPanels: [dicomSeg.panel, tracked.measurements],
-              // rightPanelDefaultClosed: true, // optional prop to start with collapse panels
+              rightPanelDefaultState: {
+                closed: true,
+                openWhenContentReady: true,
+              },
               viewports: [
                 {
                   namespace: tracked.viewport,

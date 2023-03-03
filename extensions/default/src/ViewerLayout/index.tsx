@@ -14,11 +14,16 @@ import {
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
+import { hotkeys, Types } from '@ohif/core';
 import { useAppConfig } from '@state';
 import Toolbar from '../Toolbar/Toolbar';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+
+const defaultSidePanelState: Types.PanelDefaultState = {
+  closed: false,
+  openWhenContentReady: false,
+};
 
 function ViewerLayout({
   // From Extension Module Params
@@ -31,8 +36,8 @@ function ViewerLayout({
   ViewportGridComp,
   leftPanels = [],
   rightPanels = [],
-  leftPanelDefaultClosed = false,
-  rightPanelDefaultClosed = false,
+  leftPanelDefaultState = defaultSidePanelState,
+  rightPanelDefaultState = defaultSidePanelState,
 }) {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
@@ -162,6 +167,7 @@ function ViewerLayout({
       iconLabel: entry.iconLabel,
       label: entry.label,
       name: entry.name,
+      setContentReadyCallback: entry.setContentReadyCallback,
       content,
     };
   };
@@ -225,8 +231,12 @@ function ViewerLayout({
             <ErrorBoundary context="Left Panel">
               <SidePanel
                 side="left"
-                activeTabIndex={leftPanelDefaultClosed ? null : 0}
+                activeTabIndex={leftPanelDefaultState.closed ? null : 0}
                 tabs={leftPanelComponents}
+                servicesManager={servicesManager}
+                openWhenContentReady={
+                  leftPanelDefaultState.openWhenContentReady
+                }
               />
             </ErrorBoundary>
           ) : null}
@@ -246,8 +256,12 @@ function ViewerLayout({
             <ErrorBoundary context="Right Panel">
               <SidePanel
                 side="right"
-                activeTabIndex={rightPanelDefaultClosed ? null : 0}
+                activeTabIndex={rightPanelDefaultState.closed ? null : 0}
                 tabs={rightPanelComponents}
+                servicesManager={servicesManager}
+                openWhenContentReady={
+                  rightPanelDefaultState.openWhenContentReady
+                }
               />
             </ErrorBoundary>
           ) : null}
@@ -266,8 +280,8 @@ ViewerLayout.propTypes = {
   // From modes
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
-  leftPanelDefaultClosed: PropTypes.bool.isRequired,
-  rightPanelDefaultClosed: PropTypes.bool.isRequired,
+  leftPanelDefaultState: PropTypes.any.isRequired,
+  rightPanelDefaultState: PropTypes.any.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
 };

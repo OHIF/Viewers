@@ -2,7 +2,8 @@ import { id } from './id';
 import React from 'react';
 
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import PanelSegmentation from './panels/PanelSegmentation';
+import PanelSegmentation, { setSegmentationPanelContentReadyCallback } from './panels/PanelSegmentation';
+import { Types } from '@ohif/core';
 
 const Component = React.lazy(() => {
   return import(
@@ -45,7 +46,7 @@ const extension = {
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({ servicesManager, commandsManager, extensionManager }) => {
+  getPanelModule: ({ servicesManager, commandsManager, extensionManager }): Types.Panel[] => {
     const wrappedPanelSegmentation = () => {
       return (
         <PanelSegmentation
@@ -63,6 +64,7 @@ const extension = {
         iconLabel: 'Segmentation',
         label: 'Segmentation',
         component: wrappedPanelSegmentation,
+        setContentReadyCallback: setSegmentationPanelContentReadyCallback,
       },
     ];
   },

@@ -5,6 +5,37 @@ import callInputDialog from './callInputDialog';
 
 import { useTranslation } from 'react-i18next';
 import callColorPickerDialog from './callColorPickerDialog';
+import { ServicesManager, Types } from '@ohif/core';
+
+let segmentationEventSubscriptions = [];
+
+/**
+ * Sets the given callback to be invoked whenever the first segmentation pixel
+ * data is created.
+ * @param callback - the callback
+ * @param servicesManager - the ServicesManager
+ */
+export const setSegmentationPanelContentReadyCallback = (callback: Types.PanelContentReadyCallback, servicesManager: ServicesManager): void => {
+  const { segmentationService } = servicesManager.services;
+  const segmentationAddedEvents = [
+    segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+  ];
+
+  segmentationEventSubscriptions.forEach(subscription => subscription.unsubscribe());
+
+  segmentationEventSubscriptions = []
+
+  if(!callback) {
+    return;
+  }
+
+  segmentationEventSubscriptions = segmentationAddedEvents.map(event =>
+    segmentationService.subscribe(event, () => {
+      segmentationEventSubscriptions.forEach(subscription => subscription.unsubscribe());
+      callback();
+    })
+  );
+};
 
 export default function PanelSegmentation({
   servicesManager,

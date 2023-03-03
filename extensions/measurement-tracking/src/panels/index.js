@@ -1,4 +1,10 @@
 import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
-import PanelMeasurementTableTracking from './PanelMeasurementTableTracking';
+import PanelMeasurementTableTracking, {
+  setMeasurementPanelContentReadyCallback,
+} from './PanelMeasurementTableTracking';
 
-export { PanelMeasurementTableTracking, PanelStudyBrowserTracking };
+export {
+  PanelMeasurementTableTracking,
+  PanelStudyBrowserTracking,
+  setMeasurementPanelContentReadyCallback,
+};

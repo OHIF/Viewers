@@ -25,6 +25,14 @@ optionally provide its own `context` value.
 The `getPanelModule` receives an object containing the `ExtensionManager`'s
 associated `ServicesManager` and `CommandsManager`.
 
+A `Panel` may also optionally specify a method to add a callback to notify its
+parent/ancestor container when the `Panel` is ready to be shown. See
+[Consuming Panels Inside Modes](#consuming-panels-inside-modes) for an example
+of how this is used. To prevent memory leaks, the method to add the callback must
+remove/unsubscribe any previous callback prior to adding the new callback.
+In the code snippet below, the measurement panel invokes such a callback
+whenever the first measurement is added.
+
 ```jsx
 import PanelMeasurementTable from './PanelMeasurementTable.js';
 
@@ -42,6 +50,41 @@ function getPanelModule({
     );
   };
 
+  let measurementEventSubscriptions = [];
+
+  const setMeasurementPanelContentReadyCallback = (
+    callback: Types.PanelContentReadyCallback,
+    servicesManager: ServicesManager
+  ): void => {
+    const { measurementService } = servicesManager.services;
+    const measurementAddedEvents = [
+      measurementService.EVENTS.MEASUREMENT_ADDED,
+      measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+    ];
+
+    // Unsubscribe the previous callback.
+    measurementEventSubscriptions.forEach(subscription =>
+      subscription.unsubscribe()
+    );
+    measurementEventSubscriptions = [];
+
+    if (!callback) {
+      return;
+    }
+
+    measurementEventSubscriptions = measurementAddedEvents.map(event =>
+      measurementService.subscribe(event, () => {
+        // Once the first measurement is added there is no need to continue
+        // listening because the panel is ready to show.
+        measurementEventSubscriptions.forEach(subscription =>
+          subscription.unsubscribe()
+        );
+        measurementEventSubscriptions = [];
+        callback();
+      })
+    );
+  };
+
   return [
     {
       name: 'measure',
@@ -50,6 +93,7 @@ function getPanelModule({
       label: 'Measurements',
       isDisabled: studies => {}, // optional
       component: wrappedMeasurementPanel,
+      setContentReadyCallback: setMeasurementPanelContentReadyCallback,
     },
   ];
 }
@@ -64,7 +108,14 @@ providing the component with its.
 
 New: You can easily add multiple panels to the left/right side of the viewer
 using the mode configuration. As seen below, the `leftPanels` and `rightPanels`
-accept an `Array` of the `IDs`.
+accept an `Array` of the `IDs`. The default state of either/both the left and
+right side panels may also be specified. The default state includes whether the side
+panel should be closed initially and if closed initially, whether the side panel
+should open as soon as one of its child panels is ready to be shown. In the code
+snippet below, the right side panel is closed initially and opened whenever the
+measurement panel is ready to show. Note however that once a side panel has
+been opened once, no subsequent action is taken whenever one of its child
+panels is ready to be shown.
 
 ```js
 
@@ -94,6 +145,10 @@ function modeFactory({ modeConfiguration }) {
               rightPanels: [
                 '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
               ],
+              rightPanelDefaultState: {
+                closed: true,
+                openWhenContentReady: true,
+              },
               viewports,
             },
           };

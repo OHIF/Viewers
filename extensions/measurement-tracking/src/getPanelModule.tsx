@@ -1,4 +1,6 @@
+import { Types } from '@ohif/core';
 import {
+  setMeasurementPanelContentReadyCallback,
   PanelMeasurementTableTracking,
   PanelStudyBrowserTracking,
 } from './panels';
@@ -11,7 +13,7 @@ function getPanelModule({
   commandsManager,
   extensionManager,
   servicesManager,
-}) {
+}): Types.Panel[] {
   return [
     {
       name: 'seriesList',
@@ -29,6 +31,7 @@ function getPanelModule({
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurements',
+      setContentReadyCallback: setMeasurementPanelContentReadyCallback,
       component: PanelMeasurementTableTracking.bind(null, {
         commandsManager,
         extensionManager,
