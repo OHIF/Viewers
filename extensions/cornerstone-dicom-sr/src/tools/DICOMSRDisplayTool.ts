@@ -48,8 +48,8 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const { element } = viewport;
 
     let annotations = annotation.state.getAnnotations(
-      element,
-      this.getToolName()
+      this.getToolName(),
+      element
     );
 
     // Todo: We don't need this anymore, filtering happens in triggerAnnotationRender
