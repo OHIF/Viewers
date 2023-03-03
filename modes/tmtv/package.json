@@ -1,0 +1,50 @@
+{
+  "name": "@ohif/mode-tmtv",
+  "version": "3.0.0",
+  "description": "Total Metabolic Tumor Volume Workflow",
+  "author": "OHIF",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "engines": {
+    "node": ">=14",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "ohif-mode"
+  ],
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev:cornerstone": "yarn run dev",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "start": "yarn run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^3.0.0",
+    "@ohif/extension-default": "^3.0.0",
+    "@ohif/extension-cornerstone": "^3.0.0",
+    "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
+    "@ohif/extension-dicom-pdf": "^3.0.1",
+    "@ohif/extension-dicom-video": "^3.0.1",
+    "@ohif/extension-measurement-tracking": "^3.0.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.13"
+  },
+  "devDependencies": {
+    "webpack": "^5.50.0",
+    "webpack-merge": "^5.7.3"
+  }
+}

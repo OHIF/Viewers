@@ -13,10 +13,27 @@
   transform: translateX(-50%);
 }
 
+.tooltip.tooltip-top .tooltip-box::before {
+  @apply absolute z-10 bg-primary-dark;
+  content: '';
+  width: 14px;
+  height: 1px;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .tooltip.tooltip-bottom {
   @apply pt-2 mt-1;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.tooltip.tooltip-top {
+  @apply pb-2 mb-1;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100%;
 }
 
 .tooltip.tooltip-bottom-left {

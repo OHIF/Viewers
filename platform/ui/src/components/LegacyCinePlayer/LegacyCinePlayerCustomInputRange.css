@@ -1,0 +1,107 @@
+/*
+ * This is a custom input style scoped specifically to LegacyCinePlayer
+ * written in plain CSS with color variables from tailwind
+ * to avoid complex compatibility configuration.
+ */
+.LegacyCinePlayer input[type='range'] {
+  -webkit-appearance: none;
+  background: transparent;
+  width: 100%;
+  height: 20px;
+  z-index: 5;
+}
+
+.LegacyCinePlayer input[type='range']:focus {
+  outline: none;
+}
+
+.LegacyCinePlayer input[type='range']::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000;
+  @apply bg-primary-light;
+  border-radius: 5px;
+  border: 0px solid #000000;
+}
+
+.LegacyCinePlayer input[type='range']::-webkit-slider-thumb {
+  box-shadow: 0px 0px 0px #000000;
+  border: 4px solid #000000;
+  height: 18px;
+  width: 17px;
+  border-radius: 50px;
+  @apply bg-primary-light;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -9px;
+}
+
+.LegacyCinePlayer input[type='range']:focus::-webkit-slider-runnable-track {
+  @apply bg-primary-light;
+}
+
+.LegacyCinePlayer input[type='range']::-moz-range-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000;
+  @apply bg-primary-light;
+  border-radius: 5px;
+  border: 0px solid #000000;
+}
+
+.LegacyCinePlayer input[type='range']::-moz-range-thumb {
+  box-shadow: 0px 0px 0px #000000;
+  border: 2px solid #000000;
+  height: 12px;
+  width: 12px;
+  border-radius: 50px;
+  @apply bg-primary-light;
+  cursor: pointer;
+}
+
+.LegacyCinePlayer input[type='range']::-ms-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  animate: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+.LegacyCinePlayer input[type='range']::-ms-fill-lower {
+  @apply bg-primary-light;
+  border: 0px solid #000000;
+  border-radius: 10px;
+  box-shadow: 0px 0px 0px #000000;
+}
+
+.LegacyCinePlayer input[type='range']::-ms-fill-upper {
+  @apply bg-primary-light;
+  border: 0px solid #000000;
+  border-radius: 10px;
+  box-shadow: 0px 0px 0px #000000;
+}
+
+.LegacyCinePlayer input[type='range']::-ms-thumb {
+  margin-top: 1px;
+  box-shadow: 0px 0px 0px #000000;
+  border: 4px solid #000000;
+  height: 18px;
+  width: 17px;
+  border-radius: 50px;
+  @apply bg-primary-light;
+  cursor: pointer;
+}
+
+.LegacyCinePlayer input[type='range']:focus::-ms-fill-lower {
+  @apply bg-primary-light;
+}
+
+.LegacyCinePlayer input[type='range']:focus::-ms-fill-upper {
+  @apply bg-primary-light;
+}

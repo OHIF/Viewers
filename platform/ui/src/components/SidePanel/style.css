@@ -1,0 +1,27 @@
+.swiper-button-next.swiper-button-disabled {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.swiper-button-prev.swiper-button-disabled {
+  pointer-events: none;
+  opacity: 0;
+}
+.swiper-button-prev {
+  pointer-events: none;
+  opacity: 0;
+}
+.swiper-button-next {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.swiper-button-next-custom.swiper-button-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.swiper-button-prev-custom.swiper-button-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

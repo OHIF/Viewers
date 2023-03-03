@@ -56,6 +56,8 @@ class ImageSet {
     }
   }
 
+  getNumImages = () => this.images.length
+
   getImage(index) {
     return this.images[index];
   }

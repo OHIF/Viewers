@@ -3,10 +3,15 @@ window.config = {
   showStudyList: true,
   extensions: [],
   modes: [],
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  showLoadingIndicator: true,
   dataSources: [
     {
       friendlyName: 'DCM4CHEE Server',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
@@ -15,6 +20,7 @@ window.config = {
         wadoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
+        enableStudyLazyLoad: true,
         thumbnailRendering: 'wadors',
         requestOptions: {
           auth: 'admin:admin',

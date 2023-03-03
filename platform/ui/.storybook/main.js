@@ -2,7 +2,11 @@ const path = require('path');
 
 module.exports = {
   stories: ['../src/**/*.stories.@(mdx)'],
-  addons: ['@storybook/addon-links', '@storybook/addon-essentials', '@storybook/addon-google-analytics'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-google-analytics',
+  ],
   core: {
     builder: 'webpack5',
   },
@@ -11,8 +15,19 @@ module.exports = {
     // `configType` has a value of 'DEVELOPMENT' or 'PRODUCTION'
     // You can change the configuration based on that.
     // 'PRODUCTION' is used when building the static version of storybook.
+
     // config.module.rules[0].use[0].options.plugins[1] = [
     //   '@babel/plugin-proposal-class-properties',
+    //   { loose: true },
+    // ];
+
+    // config.module.rules[0].use[0].options.plugins[3] = [
+    //   '@babel/plugin-proposal-private-methods',
+    //   { loose: true },
+    // ];
+
+    // config.module.rules[0].use[0].options.plugins[4] = [
+    //   '@babel/plugin-proposal-private-property-in-object',
     //   { loose: true },
     // ];
 
@@ -29,8 +44,6 @@ module.exports = {
       rule => rule.test && rule.test.test('.svg')
     );
     fileLoaderRule.exclude = /\.svg$/;
-
-    // console.log(JSON.stringify(config.module.rules, null, 2));
 
     config.module.rules.push({
       test: /\.svg$/,

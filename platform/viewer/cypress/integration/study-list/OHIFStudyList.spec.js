@@ -1,12 +1,10 @@
 //We are keeping the hardcoded results values for the study list tests
 //this is intended to be running in a controled docker environment with test data.
-describe('OHIF Study List', function () {
-  context('Desktop resolution', function () {
-    before(function () {
+describe('OHIF Study List', function() {
+  context('Desktop resolution', function() {
+    beforeEach(function() {
       cy.openStudyList();
-    });
 
-    beforeEach(function () {
       cy.viewport(1750, 720);
       cy.initStudyListAliasesOnDesktop();
       //Clear all text fields
@@ -14,14 +12,9 @@ describe('OHIF Study List', function () {
       cy.get('@MRN').clear();
       cy.get('@AccessionNumber').clear();
       cy.get('@StudyDescription').clear();
-
-      // TODO: Find out how to clear this input
-      // select-2 / react-select has some specific ways
-      // to trigger things
-      //cy.get('@modalities')
     });
 
-    it('Displays several studies initially', function () {
+    it('Displays several studies initially', function() {
       cy.waitStudyList();
       cy.get('@searchResult2').should($list => {
         expect($list.length).to.be.greaterThan(1);
@@ -30,7 +23,7 @@ describe('OHIF Study List', function () {
       });
     });
 
-    it('searches Patient Name with exact string', function () {
+    it('searches Patient Name with exact string', function() {
       cy.get('@PatientName').type('Juno');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -40,8 +33,7 @@ describe('OHIF Study List', function () {
       });
     });
 
-    /* TODO - re-enable this once the test server is fixed to allow searching by mrn
-    it('searches MRN with exact string', function () {
+    it('searches MRN with exact string', function() {
       cy.get('@MRN').type('0000003');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -50,31 +42,17 @@ describe('OHIF Study List', function () {
         expect($list).to.contain('0000003');
       });
     });
-    */
 
-    it('searches Accession with exact string', function () {
-      cy.get('@AccessionNumber').type('0000155811');
+    it('searches Accession with exact string', function() {
+      cy.get('@AccessionNumber').type('321');
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult2').should($list => {
         expect($list.length).to.be.eq(1);
-        expect($list).to.contain('0000155811');
+        expect($list).to.contain('321');
       });
     });
 
-    // TODO: need to be able to programmatically change react-select
-    /*it('searches Modality with camel case', function() {
-      cy.get('@modalities').type('Ct');
-      //Wait result list to be displayed
-      cy.waitStudyList();
-      cy.get('@searchResult2').should($list => {
-        expect($list.length).to.be.greaterThan(1);
-        expect($list).to.contain('CT');
-      });
-    });*/
-
-    /*
-    TODO: Currently broken in dicomweb-server
     it('searches Description with exact string', function() {
       cy.get('@StudyDescription').type('PETCT');
       //Wait result list to be displayed
@@ -84,10 +62,19 @@ describe('OHIF Study List', function () {
         expect($list).to.contain('PETCT');
       });
     });
-     */
 
-    // TODO: need to be able to programmatically change react-select
-    /*it('changes Rows per page and checks the study count', function() {
+    /* Todo: fix react select
+     it('searches Modality with camel case', function() {
+       cy.get('@modalities').type('Ct');
+       // Wait result list to be displayed
+       cy.waitStudyList();
+       cy.get('@searchResult2').should($list => {
+         expect($list.length).to.be.greaterThan(1);
+         expect($list).to.contain('CT');
+       });
+     });
+
+    it('changes Rows per page and checks the study count', function() {
       //Show Rows per page options
       const pageRows = [25, 50, 100];
 

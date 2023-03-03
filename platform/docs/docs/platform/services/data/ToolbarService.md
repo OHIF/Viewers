@@ -7,7 +7,7 @@ sidebar_label: Toolbar Service
 
 ## Overview
 
-`ToolbarService` handles the toolbar section buttons, and what happens when a
+`ToolBarService` handles the toolbar section buttons, and what happens when a
 button is clicked by the user.
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
@@ -19,12 +19,12 @@ button is clicked by the user.
 | Event                   | Description                                                            |
 | ----------------------- | ---------------------------------------------------------------------- |
 | TOOL_BAR_MODIFIED       | Fires when a button is added/removed to the toolbar                    |
-| TOOL_BAR_STATE_MODIFIED | Fires when an interaction happens and ToolbarService state is modified |
+| TOOL_BAR_STATE_MODIFIED | Fires when an interaction happens and ToolBarService state is modified |
 
 ## API
 
 - `recordInteraction(interaction)`: executes the provided interaction which is
-  an object providing the following properties to the ToolbarService:
+  an object providing the following properties to the ToolBarService:
 
   - `interactionType`: can be `tool`, `toggle` and `action`. We will discuss
     more each type below.
@@ -47,7 +47,7 @@ button is clicked by the user.
 
 ## State
 
-ToolbarService has an internal state that gets updated per tool interaction and
+ToolBarService has an internal state that gets updated per tool interaction and
 tracks the active toolId, state of the buttons that have toggled state, and the
 group buttons and which tool in each group is active.
 
@@ -70,10 +70,10 @@ interaction object.
 
 - `tool`: setting a tool to be active; e.g., measurement tools
 - `toggle`: toggling state of a tool; e.g., viewport link (sync)
-- `action`: performs a registered action outside of the ToolbarService; e.g.,
+- `action`: performs a registered action outside of the ToolBarService; e.g.,
   capture
 
-A _simplified_ implementation of the ToolbarService is:
+A _simplified_ implementation of the ToolBarService is:
 
 ```js
 export default class ToolBarService {
@@ -115,25 +115,32 @@ The simplest toolbarButtons definition has the following properties:
 
 ```js
 {
-  id: 'Zoom',
-  type: 'ohif.radioGroup',
-  props: {
-    type: 'tool',
-    icon: 'tool-zoom',
-    label: 'Zoom',
-    commandOptions: { toolName: 'Zoom' },
-  },
-},
+  "id": "Zoom",
+  "type": "ohif.radioGroup",
+  "props": {
+    "type": "tool",
+    "icon": "tool-zoom",
+    "label": "Zoom",
+    "commands": [
+      {
+        "commandName": "setToolActive",
+        "commandOptions": {
+          "toolName": "Zoom"
+        },
+        "context": "CORNERSTONE"
+      }
+    ]
+  }
+}
 ```
 
 | property         | description                                                       | values                                      |
 | ---------------- | ----------------------------------------------------------------- | ------------------------------------------- |
 | `id`             | Unique string identifier for the definition                       | \*                                          |
-| `label`          | User/display friendly to show in UI                               | \*                                          |
-| `icon`           | A string name for an icon supported by the consuming application. | \*                                          |
 | `type`           | Used to determine the button's behaviour                          | "tool", "toggle", "action"                  |
-| `commandName`    | (optional) The command to run when the button is used.            | Any command registered by a `CommandModule` |
-| `commandOptions` | (optional) Options to pass the target `commandName`               | \*                                          |
+| `icon`           | A string name for an icon supported by the consuming application. | \*                                          |
+| `label`          | User/display friendly to show in UI                               | \*                                          |
+| `commands`       | (optional) The commands to run when the button is used. It include a commandName, commandOptions, and/or a context            | Any command registered by a `CommandModule` |
 
 There are three main types of toolbar buttons:
 
@@ -159,58 +166,91 @@ to create `MeasurementTools` nested button
 
 ```js title="modes/longitudinal/src/toolbarButtons.js"
 {
-  id: 'MeasurementTools',
-  type: 'ohif.splitButton',
-  props: {
-    groupId: 'MeasurementTools',
-    isRadio: true,
-    primary: {
-      id: 'Length',
-      icon: 'tool-length',
-      label: 'Length',
-      type: 'tool',
-      commandOptions: {
-        toolName: 'Length',
-      }
+  "id": "MeasurementTools",
+  "type": "ohif.splitButton",
+  "props": {
+    "groupId": "MeasurementTools",
+    "isRadio": true,
+    "primary": {
+      "id": "Length",
+      "icon": "tool-length",
+      "label": "Length",
+      "type": "tool",
+      "commands": [
+        {
+          "commandName": "setToolActive",
+          "commandOptions": {
+            "toolName": "Length"
+          },
+          "context": "CORNERSTONE"
+        },
+        {
+          "commandName": "setToolActive",
+          "commandOptions": {
+            "toolName": "SRLength",
+            "toolGroupId": "SRToolGroup"
+          },
+          "context": "CORNERSTONE"
+        }
+      ],
+      "tooltip": "Length"
     },
-    secondary: {
-      icon: 'chevron-down',
-      label: '',
-      isActive: true,
-      tooltip: 'More Measure Tools',
+    "secondary": {
+      "icon": "chevron-down",
+      "label": "",
+      "isActive": true,
+      "tooltip": "More Measure Tools"
     },
-    items: [
-      // Length tool
+    "items": [
       {
-        id: 'Length',
-        icon: 'tool-length',
-        label: 'Length',
-        type: 'tool',
-        commandOptions: {
-          toolName: 'Length',
-        }
+        "id": "Bidirectional",
+        "icon": "tool-bidirectional",
+        "label": "Bidirectional",
+        "type": "tool",
+        "commands": [
+          {
+            "commandName": "setToolActive",
+            "commandOptions": {
+              "toolName": "Bidirectional"
+            },
+            "context": "CORNERSTONE"
+          },
+          {
+            "commandName": "setToolActive",
+            "commandOptions": {
+              "toolName": "SRBidirectional",
+              "toolGroupId": "SRToolGroup"
+            },
+            "context": "CORNERSTONE"
+          }
+        ],
+        "tooltip": "Bidirectional Tool"
       },
-      // Bidirectional tool
       {
-        id: 'Bidirectional',
-        icon: 'tool-bidirectional',
-        label: 'Length',
-        type: 'tool',
-        commandOptions: {
-          toolName: 'Bidirectional',
-        }
+        "id": "ArrowAnnotate",
+        "icon": "tool-annotate",
+        "label": "Annotation",
+        "type": "tool",
+        "commands": [
+          {
+            "commandName": "setToolActive",
+            "commandOptions": {
+              "toolName": "ArrowAnnotate"
+            },
+            "context": "CORNERSTONE"
+          },
+          {
+            "commandName": "setToolActive",
+            "commandOptions": {
+              "toolName": "SRArrowAnnotate",
+              "toolGroupId": "SRToolGroup"
+            },
+            "context": "CORNERSTONE"
+          }
+        ],
+        "tooltip": "Arrow Annotate"
       },
-      // Ellipse tool
-      {
-        id: 'EllipticalRoi',
-        icon: 'tool-elipse',
-        label: 'Ellipse',
-        type: 'tool',
-        commandOptions: {
-          toolName: 'EllipticalRoi',
-        }
-      },
-    ],
-  },
+    ]
+  }
 }
 ```

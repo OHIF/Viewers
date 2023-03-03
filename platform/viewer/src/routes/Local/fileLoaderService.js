@@ -1,5 +1,4 @@
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import { DicomMetadataStore } from '@ohif/core';
 
 import FileLoader from './fileLoader';
 import PDFFileLoader from './pdfFileLoader';

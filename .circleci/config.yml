@@ -18,17 +18,17 @@ executors:
   # Custom executor to override Cypress config
   deploy-to-prod-executor:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.14
         environment:
           CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
   chrome-and-pacs:
     docker:
       # Primary container image where all steps run.
-      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
+      - image: 'cypress/browsers:node16.14.2-slim-chrome103-ff102'
 
 defaults: &defaults
   docker:
-    - image: cimg/node:14.18-browsers
+    - image: cimg/node:16.14-browsers
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -181,7 +181,7 @@ jobs:
 
   DEPLOY_TO_DEV:
     docker:
-      - image: circleci/node:14.15.0
+      - image: circleci/node:16.14.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
@@ -196,7 +196,7 @@ jobs:
 
   DEPLOY_TO_STAGING:
     docker:
-      - image: circleci/node:14.15.0
+      - image: circleci/node:16.14.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
@@ -211,7 +211,7 @@ jobs:
 
   DEPLOY_TO_PRODUCTION:
     docker:
-      - image: circleci/node:14.15.0
+      - image: circleci/node:16.14.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
@@ -263,7 +263,7 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run: npx lerna version
       - run: yarn run build:package-all
-      - run: npx lerna publish from-package
+      - run: yarn run lerna:publish
       - run: npx lerna run ci:generateSuccessVersion --stream
       - persist_to_workspace:
           root: ~/repo
@@ -367,12 +367,13 @@ workflows:
           executor: cypress/browsers-chrome76
           browser: chrome
           pre-steps:
-            - run: 'rm -rf ~/.yarn && yarn -v && yarn global
-                add wait-on'
+            - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build
+          build:
+            yarn test:data && npx cross-env QUICK_BUILD=true
+            APP_CONFIG=config/dicomweb-server.js yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
@@ -434,7 +435,9 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run build
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run
+            build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'

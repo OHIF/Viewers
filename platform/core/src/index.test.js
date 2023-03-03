@@ -1,4 +1,4 @@
-import * as OHIF from './index.js';
+import * as OHIF from './index';
 
 describe('Top level exports', () => {
   test('have not changed', () => {
@@ -21,23 +21,25 @@ describe('Top level exports', () => {
       'object',
       'log',
       'DICOMWeb',
-      'DICOMSR',
       'OHIF',
       //
       'CineService',
+      'CustomizationService',
       'UIDialogService',
       'UIModalService',
       'UINotificationService',
       'UIViewportDialogService',
       'DisplaySetService',
       'MeasurementService',
-      'ToolBarService',
+      'ToolbarService',
+      'Types',
       'ViewportGridService',
       'HangingProtocolService',
       'UserAuthenticationService',
       'IWebApiDataSource',
       'DicomMetadataStore',
       'pubSubServiceInterface',
+      'PubSubService',
     ].sort();
 
     const exports = Object.keys(OHIF).sort();

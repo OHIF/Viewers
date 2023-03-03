@@ -1,0 +1,38 @@
+.ViewportOrientationMarkers {
+  --marker-width: 100px;
+  --marker-height: 100px;
+  --scrollbar-width: 20px;
+  pointer-events: none;
+  font-size: 15px;
+  line-height: 18px;
+}
+.ViewportOrientationMarkers .orientation-marker {
+  position: absolute;
+}
+.ViewportOrientationMarkers .top-mid {
+  top: 0.6rem;
+  left: 50%;
+}
+.ViewportOrientationMarkers .left-mid {
+  top: 47%;
+  left: 5px;
+}
+.ViewportOrientationMarkers .right-mid {
+  top: 47%;
+  left: calc(100% - var(--marker-width) - var(--scrollbar-width));
+}
+.ViewportOrientationMarkers .bottom-mid {
+  top: calc(100% - var(--marker-height) - 0.6rem);
+  left: 47%;
+}
+.ViewportOrientationMarkers .right-mid .orientation-marker-value {
+  display: flex;
+  justify-content: flex-end;
+  min-width: var(--marker-width);
+}
+.ViewportOrientationMarkers .bottom-mid .orientation-marker-value {
+  display: flex;
+  justify-content: flex-start;
+  min-height: var(--marker-height);
+  flex-direction: column-reverse;
+}

@@ -1,7 +1,7 @@
 const filtersMeta = [
   {
     name: 'patientName',
-    displayName: 'Patient Name',
+    displayName: 'PatientName',
     inputType: 'Text',
     isSortable: true,
     gridCol: 4,
@@ -15,14 +15,14 @@ const filtersMeta = [
   },
   {
     name: 'studyDate',
-    displayName: 'Study date',
+    displayName: 'StudyDate',
     inputType: 'DateRange',
     isSortable: true,
     gridCol: 5,
   },
   {
     name: 'description',
-    displayName: 'Description',
+    displayName: 'StudyDescription',
     inputType: 'Text',
     isSortable: true,
     gridCol: 4,
@@ -110,7 +110,7 @@ const filtersMeta = [
   },
   {
     name: 'accession',
-    displayName: 'Accession',
+    displayName: 'AccessionNumber',
     inputType: 'Text',
     isSortable: true,
     gridCol: 3,

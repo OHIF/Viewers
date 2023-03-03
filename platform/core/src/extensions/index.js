@@ -1,9 +1,11 @@
 import ExtensionManager from './ExtensionManager';
-import MODULE_TYPES from './MODULE_TYPES.js';
+import MODULE_TYPES from './MODULE_TYPES';
 
-export default {
+const DEFAULT_EXPORTS = {
   ExtensionManager,
   MODULE_TYPES,
 };
+
+export default DEFAULT_EXPORTS;
 
 export { ExtensionManager, MODULE_TYPES };

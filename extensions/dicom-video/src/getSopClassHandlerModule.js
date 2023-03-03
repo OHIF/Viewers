@@ -1,7 +1,5 @@
-import { SOPClassHandlerName, SOPClassHandlerId } from './id';
-import { utils, classes } from '@ohif/core';
-
-const { ImageSet } = classes;
+import { SOPClassHandlerId } from './id';
+import { utils } from '@ohif/core';
 
 const SOP_CLASS_UIDS = {
   VIDEO_MICROSCOPIC_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.2.1',
@@ -27,18 +25,33 @@ const SupportedTransferSyntaxes = {
 
 const supportedTransferSyntaxUIDs = Object.values(SupportedTransferSyntaxes);
 
-const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
+const _getDisplaySetsFromSeries = (
+  instances,
+  servicesManager,
+  extensionManager
+) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
   return instances
     .filter(metadata => {
-      const tsuid = metadata.AvailableTransferSyntaxUID ||
-        metadata.TransferSyntaxUID || metadata['00083002'];
+      const tsuid =
+        metadata.AvailableTransferSyntaxUID ||
+        metadata.TransferSyntaxUID ||
+        metadata['00083002'];
       return supportedTransferSyntaxUIDs.includes(tsuid);
     })
     .map(instance => {
-      const { Modality, FrameOfReferenceUID, SOPInstanceUID } = instance;
-      const { SeriesDescription, ContentDate, ContentTime } = instance;
-      const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames } = instance;
+      const {
+        Modality,
+        SOPInstanceUID,
+        SeriesDescription = 'VIDEO',
+      } = instance;
+      const {
+        SeriesNumber,
+        SeriesDate,
+        SeriesInstanceUID,
+        StudyInstanceUID,
+        NumberOfFrames,
+      } = instance;
       const displaySet = {
         //plugin: id,
         Modality,
@@ -52,9 +65,18 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SOPClassHandlerId,
         referencedImages: null,
         measurements: null,
-        videoUrl: dataSource.retrieve.directURL({ instance }),
+        videoUrl: dataSource.retrieve.directURL({
+          instance,
+          singlepart: 'video',
+          tag: 'PixelData',
+        }),
         others: [instance],
-        thumbnailSrc: dataSource.retrieve.directURL({ instance, defaultPath: "/thumbnail", defaultType: "image/jpeg", tag: "Absent" }),
+        thumbnailSrc: dataSource.retrieve.directURL({
+          instance,
+          defaultPath: '/thumbnail',
+          defaultType: 'image/jpeg',
+          tag: 'Absent',
+        }),
         isDerivedDisplaySet: true,
         isLoaded: false,
         sopClassUids,
@@ -65,7 +87,10 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     });
 };
 
-export default function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+export default function getSopClassHandlerModule({
+  servicesManager,
+  extensionManager,
+}) {
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(
       instances,
@@ -76,7 +101,7 @@ export default function getSopClassHandlerModule({ servicesManager, extensionMan
 
   return [
     {
-      name: SOPClassHandlerName,
+      name: 'dicom-video',
       sopClassUids,
       getDisplaySetsFromSeries,
     },

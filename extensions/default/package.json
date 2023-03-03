@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "1.0.1",
+  "version": "3.0.0",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -11,13 +11,16 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=10",
+    "node": ">=14",
     "npm": ">=6",
     "yarn": ">=1.18.0"
   },
   "files": [
     "dist",
     "README.md"
+  ],
+  "keywords": [
+    "ohif-extension"
   ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
@@ -27,20 +30,19 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^0.50.0",
-    "@ohif/i18n": "^0.52.8",
-    "dcmjs": "0.16.1",
-    "dicomweb-client": "^0.6.0",
+    "@ohif/core": "^3.0.0",
+    "@ohif/i18n": "^1.0.0",
+    "dcmjs": "^0.29.4",
+    "dicomweb-client": "^0.8.4",
     "prop-types": "^15.6.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-i18next": "^10.11.0",
-    "react-router": "next",
-    "react-router-dom": "next",
     "webpack": "^5.50.0",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3"
+    "@babel/runtime": "^7.20.13",
+    "@cornerstonejs/calculate-suv": "^1.0.3"
   }
 }

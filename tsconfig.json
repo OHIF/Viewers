@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "checkJs": true,
+    // Ensure that Babel can safely transpile files in the TypeScript project
+    "isolatedModules": true,
+    "emitDeclarationOnly": true,
+    "jsx": "react",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "paths": {
+      "@ohif/core": ["platform/core/src"],
+      "@ohif/ui": ["platform/ui/src"],
+      "@ohif/i18n": ["platform/i18n/src"],
+      "@ohif/viewer": ["platform/viewer/src"]
+    }
+  },
+  "include": [
+    "platform/**/src/**/*",
+    "extensions/**/src/**/*",
+    "modes/**/src/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,5 +1,7 @@
 const { merge } = require('webpack-merge');
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
 
@@ -11,7 +13,6 @@ module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
   return merge(commonConfig, {
-    devtool: 'source-map',
     stats: {
       colors: true,
       hash: true,
@@ -37,5 +38,11 @@ module.exports = (env, argv) => {
       react: 'React',
       'react-dom': 'ReactDOM',
     },
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: `./dist/[name].css`,
+        chunkFilename: `./dist/[id].css`,
+      }),
+    ],
   });
 };

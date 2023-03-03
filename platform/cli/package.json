@@ -1,0 +1,43 @@
+{
+  "name": "@ohif/cli",
+  "version": "2.0.7",
+  "description": "A CLI to bootstrap new OHIF extension or mode",
+  "type": "module",
+  "main": "src/index.js",
+  "private": true,
+  "bin": {
+    "ohif-cli": "src/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "ohif"
+  ],
+  "author": "OHIF Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.13.10",
+    "chalk": "^5.0.0",
+    "commander": "^8.3.0",
+    "axios": "^0.26.1",
+    "execa": "^6.0.0",
+    "gitignore": "^0.7.0",
+    "inquirer": "^8.2.0",
+    "listr": "^0.14.3",
+    "mustache": "^4.2.0",
+    "ncp": "^2.0.0",
+    "node-fetch": "^3.1.1",
+    "pkg-install": "^1.0.0",
+    "registry-url": "^6.0.0",
+    "spdx-license-list": "^6.4.0",
+    "util": "^0.12.4",
+    "yarn-programmatic": "^0.1.2"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/"
+  ]
+}

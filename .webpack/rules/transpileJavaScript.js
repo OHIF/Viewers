@@ -4,7 +4,6 @@ function transpileJavaScript(mode) {
   const exclude =
     mode === 'production'
       ? excludeNodeModulesExcept([
-          'vtk.js',
           // 'dicomweb-client',
           // https://github.com/react-dnd/react-dnd/blob/master/babel.config.js
           'react-dnd',
@@ -21,7 +20,8 @@ function transpileJavaScript(mode) {
       : excludeNodeModulesExcept([]);
 
   return {
-    test: /\.(mjs|js|jsx)?$/,
+    // Include mjs, ts, tsx, js, and jsx files.
+    test: /\.(mjs|ts|js)x?$/,
     // These are packages that are not transpiled to our lowest supported
     // JS version (currently ES5). Most of these leverage ES6+ features,
     // that we need to transpile to a different syntax.

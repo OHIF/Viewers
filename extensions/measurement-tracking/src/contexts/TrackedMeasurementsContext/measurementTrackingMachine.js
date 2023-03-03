@@ -1,3 +1,4 @@
+import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 import { assign } from 'xstate';
 
 const RESPONSE = {
@@ -44,7 +45,8 @@ const machineConfiguration = {
           target: 'promptHydrateStructuredReport',
           cond: 'hasNotIgnoredSRSeriesForHydration',
         },
-        RESTORE_PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport'
+        RESTORE_PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
+        HYDRATE_SR: 'hydrateStructuredReport',
       },
     },
     promptBeginTracking: {
@@ -224,7 +226,25 @@ const machineConfiguration = {
           {
             target: 'idle',
             actions: ['ignoreHydrationForSRSeries'],
-            cond: 'shouldIgnoreHydrationForSR'
+            cond: 'shouldIgnoreHydrationForSR',
+          },
+        ],
+        onError: {
+          target: 'idle',
+        },
+      },
+    },
+    hydrateStructuredReport: {
+      invoke: {
+        src: 'hydrateStructuredReport',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: [
+              'setTrackedStudyAndMultipleSeries',
+              'jumpToFirstMeasurementInActiveViewport',
+              'setIsDirtyToClean',
+            ],
           },
         ],
         onError: {
@@ -308,7 +328,10 @@ const defaultOptions = {
       ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
     })),
     ignoreHydrationForSRSeries: assign((ctx, evt) => ({
-      ignoredSRSeriesForHydration: [...ctx.ignoredSRSeriesForHydration, evt.data.srSeriesInstanceUID],
+      ignoredSRSeriesForHydration: [
+        ...ctx.ignoredSRSeriesForHydration,
+        evt.data.srSeriesInstanceUID,
+      ],
     })),
     addTrackedSeries: assign((ctx, evt) => ({
       prevTrackedSeries: [...ctx.trackedSeries],
@@ -376,7 +399,7 @@ const defaultOptions = {
       ctx.trackedSeries.length > 1 ||
       !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
     hasNotIgnoredSRSeriesForHydration: (ctx, evt) => {
-      return !ctx.ignoredSRSeriesForHydration.includes(evt.SeriesInstanceUID)
+      return !ctx.ignoredSRSeriesForHydration.includes(evt.SeriesInstanceUID);
     },
     isNewStudy: (ctx, evt) =>
       !ctx.ignoredSeries.includes(evt.SeriesInstanceUID) &&

@@ -1,4 +1,4 @@
-import hydrateStructuredReport from './_hydrateStructuredReport.js';
+import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -10,10 +10,19 @@ const RESPONSE = {
   HYDRATE_REPORT: 5,
 };
 
-function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIViewportDialogService, DisplaySetService } = servicesManager.services;
+function promptHydrateStructuredReport(
+  { servicesManager, extensionManager },
+  ctx,
+  evt
+) {
+  const {
+    UIViewportDialogService,
+    displaySetService,
+  } = servicesManager.services;
   const { viewportIndex, displaySetInstanceUID } = evt;
-  const srDisplaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
+  const srDisplaySet = displaySetService.getDisplaySetByUID(
+    displaySetInstanceUID
+  );
 
   return new Promise(async function(resolve, reject) {
     const promptResult = await _askTrackMeasurements(
@@ -81,4 +90,4 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
   });
 }
 
-export default promptUser;
+export default promptHydrateStructuredReport;

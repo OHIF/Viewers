@@ -58,8 +58,7 @@ async function defaultRouteInit({
   const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.SERIES_ADDED,
     ({ StudyInstanceUID }) => {
-      const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-      HangingProtocolService.run(studyMetadata);
+      HangingProtocolService.run({studies, displaySets, activeStudy});
     }
   );
   unsubscriptions.push(seriesAddedUnsubscribe);
@@ -88,11 +87,6 @@ export default function ModeRoute(/**..**/) {
 
     extensionManager.onModeEnter();
     mode?.onModeEnter({ servicesManager, extensionManager });
-
-    hangingProtocols.forEach(extentionProtocols => {
-      const { protocols } = extensionManager.getModuleEntry(extentionProtocols);
-      HangingProtocolService.addProtocols(protocols);
-    });
 
     const setupRouteInit = async () => {
       if (route.init) {

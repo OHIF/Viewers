@@ -1,0 +1,17 @@
+input[type='text'] {
+  -webkit-appearance: none;
+}
+
+input[type='text']:focus {
+  border: none;
+  outline: none;
+}
+
+.up-arrowsize svg {
+  width: 7px;
+  height: 7px;
+}
+
+.up-arrowsize svg path {
+  fill: #726f7e;
+}

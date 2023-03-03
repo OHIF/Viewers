@@ -1,3 +1,3 @@
-import StudySummary from './StudySummary.jsx';
+import StudySummary from './StudySummary.tsx';
 
 export default StudySummary;

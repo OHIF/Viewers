@@ -1,31 +1,51 @@
+import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
+import React from 'react';
+
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
-    MeasurementService,
-    ViewportGridService,
-    ToolBarService,
-    HangingProtocolService,
-    CineService,
+    measurementService,
+    hangingProtocolService,
+    uiNotificationService,
+    viewportGridService,
+    displaySetService,
   } = servicesManager.services;
 
   const actions = {
-    clearMeasurements: () => {
-      MeasurementService.clear();
+    displayNotification: ({ text, title, type }) => {
+      uiNotificationService.show({
+        title: title,
+        message: text,
+        type: type,
+      });
     },
-    toggleCine: () => {
-      const { viewports } = ViewportGridService.getState();
-      const { isCineEnabled } = CineService.getState();
-      CineService.setIsCineEnabled(!isCineEnabled);
-      ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
-      viewports.forEach((_, index) =>
-        CineService.setCine({ id: index, isPlaying: false })
-      );
+    clearMeasurements: () => {
+      measurementService.clear();
     },
     nextStage: () => {
       // next stage in hanging protocols
-      HangingProtocolService.nextProtocolStage();
+      hangingProtocolService.nextProtocolStage();
     },
     previousStage: () => {
-      HangingProtocolService.previousProtocolStage();
+      hangingProtocolService.previousProtocolStage();
+    },
+    openDICOMTagViewer() {
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
+
+      const displaySets = displaySetService.activeDisplaySets;
+      const { uiModalService } = servicesManager.services;
+
+      const displaySetInstanceUID = displaySetInstanceUIDs[0];
+      uiModalService.show({
+        content: DicomTagBrowser,
+        contentProps: {
+          displaySets,
+          displaySetInstanceUID,
+          onClose: uiModalService.hide,
+        },
+        title: 'DICOM Tag Browser',
+      });
     },
   };
 
@@ -35,8 +55,8 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       storeContexts: [],
       options: {},
     },
-    toggleCine: {
-      commandFn: actions.toggleCine,
+    displayNotification: {
+      commandFn: actions.displayNotification,
       storeContexts: [],
       options: {},
     },
@@ -49,6 +69,9 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       commandFn: actions.previousStage,
       storeContexts: [],
       options: {},
+    },
+    openDICOMTagViewer: {
+      commandFn: actions.openDICOMTagViewer,
     },
   };
 
