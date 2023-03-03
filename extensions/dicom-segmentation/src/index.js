@@ -6,6 +6,7 @@ import toolbarModule from './toolbarModule.js';
 import getSopClassHandlerModule from './getOHIFDicomSegSopClassHandler.js';
 import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
 import { version } from '../package.json';
+import commandsModule from './commandsModule.js';
 const { studyMetadataManager } = OHIF.utils;
 
 export default {
@@ -32,12 +33,18 @@ export default {
 
     const ExtendedSegmentationPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();
-
       const onDisplaySetLoadFailureHandler = error => {
-        LoggerService.error({ error, message: error.message });
+        const message =
+          error.message.includes('orthogonal') ||
+          error.message.includes('oblique')
+            ? 'The segmentation has been detected as non coplanar,\
+              If you really think it is coplanar,\
+              please adjust the tolerance in the segmentation panel settings (at your own peril!)'
+            : error.message;
+        LoggerService.error({ error, message });
         UINotificationService.show({
           title: 'DICOM Segmentation Loader',
-          message: error.message,
+          message,
           type: 'error',
           autoClose: false,
         });
@@ -78,6 +85,7 @@ export default {
           onConfigurationChange={onConfigurationChangeHandler}
           onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
           onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
+          servicesManager={servicesManager}
         />
       );
     };
@@ -113,6 +121,15 @@ export default {
         target: 'segmentation-panel',
       });
     };
+
+    const onSegmentationsCompletelyLoaded = () => {
+      commandsManager.runCommand('jumpToFirstSegment');
+    };
+
+    document.addEventListener(
+      'segseriesselected',
+      onSegmentationsCompletelyLoaded
+    );
 
     document.addEventListener(
       'extensiondicomsegmentationsegloaded',
@@ -174,6 +191,9 @@ export default {
       ],
       defaultContext: ['VIEWER'],
     };
+  },
+  getCommandsModule({ commandsManager, servicesManager }) {
+    return commandsModule({ commandsManager, servicesManager });
   },
   getSopClassHandlerModule,
 };
