@@ -2,7 +2,7 @@ import { id } from './id';
 import React from 'react';
 
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import PanelSegmentation, { setSegmentationPanelContentReadyCallback } from './panels/PanelSegmentation';
+import PanelSegmentation from './panels/PanelSegmentation';
 import { Types } from '@ohif/core';
 
 const Component = React.lazy(() => {
@@ -47,6 +47,10 @@ const extension = {
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
   getPanelModule: ({ servicesManager, commandsManager, extensionManager }): Types.Panel[] => {
+    const segmentationPanelId = '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation';
+
+    const {segmentationService, panelService} = servicesManager.services;
+
     const wrappedPanelSegmentation = () => {
       return (
         <PanelSegmentation
@@ -57,14 +61,25 @@ const extension = {
       );
     };
 
+    // ActivatePanel event trigger for when a segmentation is added.
+    // Do not force activation so as to respect the state the user may have left the UI in.
+    panelService.addActivatePanelTriggers(
+      segmentationPanelId,
+      false,
+      segmentationService,
+      [
+        segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+      ]
+    );
+
     return [
       {
+        id: segmentationPanelId,
         name: 'panelSegmentation',
         iconName: 'tab-segmentation',
         iconLabel: 'Segmentation',
         label: 'Segmentation',
         component: wrappedPanelSegmentation,
-        setContentReadyCallback: setSegmentationPanelContentReadyCallback,
       },
     ];
   },

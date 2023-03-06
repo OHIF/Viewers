@@ -17,6 +17,7 @@ import UserAuthenticationService from './UserAuthenticationService';
 import CustomizationService from './CustomizationService';
 
 import Services from '../types/Services';
+import PanelService from './PanelService';
 
 export {
   Services,
@@ -36,4 +37,5 @@ export {
   pubSubServiceInterface,
   PubSubService,
   UserAuthenticationService,
+  PanelService,
 };

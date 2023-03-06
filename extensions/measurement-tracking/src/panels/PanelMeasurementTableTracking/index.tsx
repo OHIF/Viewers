@@ -7,7 +7,7 @@ import {
   Input,
   useViewportGrid,
 } from '@ohif/ui';
-import { DicomMetadataStore, ServicesManager, Types, utils } from '@ohif/core';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';

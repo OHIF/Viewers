@@ -163,12 +163,12 @@ function modeFactory() {
               leftPanels: [tracked.thumbnailList],
               // leftPanelDefaultState: {
               //   closed: true,
-              //   openWhenContentReady: true,
+              //   openWhenPanelActivated: true,
               // },
               rightPanels: [dicomSeg.panel, tracked.measurements],
               rightPanelDefaultState: {
                 closed: true,
-                openWhenContentReady: true,
+                openWhenPanelActivated: true,
               },
               viewports: [
                 {

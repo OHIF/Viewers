@@ -22,7 +22,7 @@ const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 const defaultSidePanelState: Types.PanelDefaultState = {
   closed: false,
-  openWhenContentReady: false,
+  openWhenPanelActivated: false,
 };
 
 function ViewerLayout({
@@ -163,11 +163,11 @@ function ViewerLayout({
     const { content, entry } = getComponent(id);
 
     return {
+      id: entry.id,
       iconName: entry.iconName,
       iconLabel: entry.iconLabel,
       label: entry.label,
       name: entry.name,
-      setContentReadyCallback: entry.setContentReadyCallback,
       content,
     };
   };
@@ -234,8 +234,8 @@ function ViewerLayout({
                 activeTabIndex={leftPanelDefaultState.closed ? null : 0}
                 tabs={leftPanelComponents}
                 servicesManager={servicesManager}
-                openWhenContentReady={
-                  leftPanelDefaultState.openWhenContentReady
+                openWhenPanelActivated={
+                  leftPanelDefaultState.openWhenPanelActivated
                 }
               />
             </ErrorBoundary>
@@ -259,8 +259,8 @@ function ViewerLayout({
                 activeTabIndex={rightPanelDefaultState.closed ? null : 0}
                 tabs={rightPanelComponents}
                 servicesManager={servicesManager}
-                openWhenContentReady={
-                  rightPanelDefaultState.openWhenContentReady
+                openWhenPanelActivated={
+                  rightPanelDefaultState.openWhenPanelActivated
                 }
               />
             </ErrorBoundary>

@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SwiperCore, {
   A11y,
@@ -16,6 +16,7 @@ import { Button, Icon, IconButton, Tooltip } from '../';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import './style.css';
+import { PanelService, PubSubService, Types } from '@ohif/core';
 
 const borderSize = 4;
 const expandedWidth = 248;
@@ -72,8 +73,10 @@ const SidePanel = ({
   className,
   activeTabIndex: activeTabIndexProp,
   tabs,
-  openWhenContentReady,
+  openWhenPanelActivated,
 }) => {
+  const panelService: PanelService = servicesManager.services.panelService;
+
   const { t } = useTranslation('SidePanel');
 
   const [hasBeenOpened, setHasBeenOpened] = useState(
@@ -107,36 +110,48 @@ const SidePanel = ({
     }
   }, [swiper]);
 
-  const updatePanelOpen = (panelOpen: boolean) => {
+  const updatePanelOpen = useCallback((panelOpen: boolean) => {
     setPanelOpen(panelOpen);
     if (panelOpen) {
       setHasBeenOpened(true);
     }
-  };
+  }, []);
 
-  const updateActiveTabIndex = (activeTabIndex: number) => {
-    setActiveTabIndex(activeTabIndex);
-    updatePanelOpen(true);
-  };
+  const updateActiveTabIndex = useCallback(
+    (activeTabIndex: number) => {
+      setActiveTabIndex(activeTabIndex);
+      updatePanelOpen(true);
+    },
+    [updatePanelOpen]
+  );
 
   useEffect(() => {
-    if (openWhenContentReady && !hasBeenOpened) {
-      tabs?.forEach((tab, tabIndex) =>
-        tab?.setContentReadyCallback?.call(
-          null,
-          () => updateActiveTabIndex(tabIndex),
-          servicesManager
+    const panelSubscriptions: Types.Subscription[] = tabs?.map(
+      (tab: Types.Panel, tabIndex) =>
+        panelService.subscribe(
+          panelService.EVENTS.ACTIVATE_PANEL,
+          panelEvent => {
+            if (
+              panelEvent.panelId === tab.id &&
+              (panelEvent.forceActivate ||
+                (openWhenPanelActivated && !hasBeenOpened))
+            ) {
+              updateActiveTabIndex(tabIndex);
+            }
+          }
         )
-      );
-    }
+    );
 
     return () => {
-      tabs?.forEach(tab =>
-        // calling setContentReadyCallback with a null callback clears and unsubscribes the former callback.
-        tab?.setContentReadyCallback?.call(null, null, servicesManager)
-      );
+      panelSubscriptions.forEach(sub => sub.unsubscribe());
     };
-  }, [tabs, openWhenContentReady, hasBeenOpened]);
+  }, [
+    tabs,
+    openWhenPanelActivated,
+    hasBeenOpened,
+    panelService,
+    updateActiveTabIndex,
+  ]);
 
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];

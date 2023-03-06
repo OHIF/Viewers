@@ -1,6 +1,5 @@
 import { Types } from '@ohif/core';
 import {
-  setMeasurementPanelContentReadyCallback,
   PanelMeasurementTableTracking,
   PanelStudyBrowserTracking,
 } from './panels';
@@ -14,8 +13,26 @@ function getPanelModule({
   extensionManager,
   servicesManager,
 }): Types.Panel[] {
+  const trackedMeasurementsPanelId =
+    '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements';
+
+  const { PanelService, MeasurementService } = servicesManager.services;
+
+  // ActivatePanel event trigger for when measurements are added.
+  // Do not force activation so as to respect the state the user may have left the UI in.
+  PanelService.addActivatePanelTriggers(
+    trackedMeasurementsPanelId,
+    false,
+    MeasurementService,
+    [
+      MeasurementService.EVENTS.MEASUREMENT_ADDED,
+      MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+    ]
+  );
+
   return [
     {
+      id: '@ohif/extension-measurement-tracking.panelModule.seriesList',
       name: 'seriesList',
       iconName: 'group-layers',
       iconLabel: 'Studies',
@@ -26,12 +43,13 @@ function getPanelModule({
         servicesManager,
       }),
     },
+
     {
+      id: trackedMeasurementsPanelId,
       name: 'trackedMeasurements',
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurements',
-      setContentReadyCallback: setMeasurementPanelContentReadyCallback,
       component: PanelMeasurementTableTracking.bind(null, {
         commandsManager,
         extensionManager,
