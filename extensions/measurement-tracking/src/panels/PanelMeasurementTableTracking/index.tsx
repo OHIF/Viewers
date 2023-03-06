@@ -22,48 +22,6 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-let measurementEventSubscriptions = [];
-
-/**
- * Sets the given callback to be invoked whenever the first measurement is
- * added to the MeasurementService.
- * @param callback the callback
- * @param servicesManager the ServicesManager
- */
-export const setMeasurementPanelContentReadyCallback = (
-  callback: Types.PanelContentReadyCallback,
-  servicesManager: ServicesManager
-): void => {
-  const { measurementService } = servicesManager.services;
-  const measurementAddedEvents = [
-    measurementService.EVENTS.MEASUREMENT_ADDED,
-    measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-  ];
-
-  // Unsubscribe the previous callback.
-  measurementEventSubscriptions.forEach(subscription =>
-    subscription.unsubscribe()
-  );
-
-  measurementEventSubscriptions = [];
-
-  if (!callback) {
-    return;
-  }
-
-  measurementEventSubscriptions = measurementAddedEvents.map(event =>
-    measurementService.subscribe(event, () => {
-      // Once the first measurement is added there is no need to continue
-      // listening because the panel is ready to show.
-      measurementEventSubscriptions.forEach(subscription =>
-        subscription.unsubscribe()
-      );
-      measurementEventSubscriptions = [];
-      callback();
-    })
-  );
-};
-
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
