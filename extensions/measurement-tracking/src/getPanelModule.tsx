@@ -22,7 +22,6 @@ function getPanelModule({
   // Do not force activation so as to respect the state the user may have left the UI in.
   PanelService.addActivatePanelTriggers(
     trackedMeasurementsPanelId,
-    false,
     MeasurementService,
     [
       MeasurementService.EVENTS.MEASUREMENT_ADDED,

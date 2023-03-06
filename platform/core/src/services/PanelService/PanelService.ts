@@ -48,7 +48,7 @@ export default class PanelService extends PubSubService {
    * @param panelId the panel's id
    * @param forceActive flag indicating if the panel should be forced to be activated or not
    */
-  activatePanel(panelId: string, forceActive: boolean): void {
+  activatePanel(panelId: string, forceActive = false): void {
     this._broadcastEvent(EVENTS.ACTIVATE_PANEL, { panelId, forceActive });
   }
 
@@ -62,9 +62,9 @@ export default class PanelService extends PubSubService {
    */
   addActivatePanelTriggers(
     panelId: string,
-    forceActive: boolean,
     sourcePubService: PubSubService,
-    sourceTriggerEvents: string[]
+    sourceTriggerEvents: string[],
+    forceActive = false
   ): void {
     const activatePanelBound = this.activatePanel.bind(
       this,

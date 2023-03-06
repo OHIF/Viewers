@@ -65,7 +65,6 @@ const extension = {
     // Do not force activation so as to respect the state the user may have left the UI in.
     panelService.addActivatePanelTriggers(
       segmentationPanelId,
-      false,
       segmentationService,
       [
         segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
