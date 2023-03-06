@@ -430,48 +430,46 @@ function WorkList({
   }
 
   return (
-    <div
-      className={classnames('bg-black h-full', {
-        'h-screen': !hasStudies,
-      })}
-    >
+    <div className="bg-black h-screen flex flex-col ">
       <Header
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <StudyListFilter
-        numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-        filtersMeta={filtersMeta}
-        filterValues={{ ...filterValues, ...defaultSortValues }}
-        onChange={setFilterValues}
-        clearFilters={() => setFilterValues(defaultFilterValues)}
-        isFiltering={isFiltering(filterValues, defaultFilterValues)}
-      />
-      {hasStudies ? (
-        <>
-          <StudyListTable
-            tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-            numOfStudies={numOfStudies}
-            filtersMeta={filtersMeta}
-          />
-          <StudyListPagination
-            onChangePage={onPageNumberChange}
-            onChangePerPage={onResultsPerPageChange}
-            currentPage={pageNumber}
-            perPage={resultsPerPage}
-          />
-        </>
-      ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          {appConfig.showLoadingIndicator && isLoadingData ? (
-            <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
-          ) : (
-            <EmptyStudies />
-          )}
-        </div>
-      )}
+      <div className="overflow-y-auto ohif-scrollbar">
+        <StudyListFilter
+          numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
+          filtersMeta={filtersMeta}
+          filterValues={{ ...filterValues, ...defaultSortValues }}
+          onChange={setFilterValues}
+          clearFilters={() => setFilterValues(defaultFilterValues)}
+          isFiltering={isFiltering(filterValues, defaultFilterValues)}
+        />
+        {hasStudies ? (
+          <>
+            <StudyListTable
+              tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
+              numOfStudies={numOfStudies}
+              filtersMeta={filtersMeta}
+            />
+            <StudyListPagination
+              onChangePage={onPageNumberChange}
+              onChangePerPage={onResultsPerPageChange}
+              currentPage={pageNumber}
+              perPage={resultsPerPage}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center pt-48">
+            {appConfig.showLoadingIndicator && isLoadingData ? (
+              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+            ) : (
+              <EmptyStudies />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
