@@ -10,7 +10,7 @@ type Panel = {
 };
 
 type PanelDefaultState = {
-  closed: boolean; // indicates if default state of panel should be hidden/closed
+  closed: boolean; // indicates if the default state of the panel should be hidden/closed
   openWhenPanelActivated: boolean; // if the default state is closed, indicates if panel should be shown when it requests to be activated
 }
 
