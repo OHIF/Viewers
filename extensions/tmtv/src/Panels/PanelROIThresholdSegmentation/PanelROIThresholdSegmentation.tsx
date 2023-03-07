@@ -10,14 +10,16 @@ import ROIThresholdConfiguration, {
   ROI_STAT,
 } from './ROIThresholdConfiguration';
 
-const LOWER_THRESHOLD_DEFAULT = 0;
-const UPPER_THRESHOLD_DEFAULT = 100;
+const LOWER_CT_THRESHOLD_DEFAULT = -100;
+const UPPER_CT_THRESHOLD_DEFAULT = 50;
+const LOWER_PT_THRESHOLD_DEFAULT = 0;
+const UPPER_PT_THRESHOLD_DEFAULT = 5;
 const WEIGHT_DEFAULT = 0.41; // a default weight for suv max often used in the literature
 const DEFAULT_STRATEGY = ROI_STAT;
 
 function reducer(state, action) {
   const { payload } = action;
-  const { strategy, lower, upper, weight } = payload;
+  const { strategy, ctLower, ctUpper, ptLower, ptUpper, weight } = payload;
 
   switch (action.type) {
     case 'setStrategy':
@@ -28,8 +30,10 @@ function reducer(state, action) {
     case 'setThreshold':
       return {
         ...state,
-        lower: lower ? lower : state.lower,
-        upper: upper ? upper : state.upper,
+        ctLower: ctLower ? ctLower : state.ctLower,
+        ctUpper: ctUpper ? ctUpper : state.ctUpper,
+        ptLower: ptLower ? ptLower : state.ptLower,
+        ptUpper: ptUpper ? ptUpper : state.ptUpper,
       };
     case 'setWeight':
       return {
@@ -57,8 +61,10 @@ export default function PanelRoiThresholdSegmentation({
 
   const [config, dispatch] = useReducer(reducer, {
     strategy: DEFAULT_STRATEGY,
-    lower: LOWER_THRESHOLD_DEFAULT,
-    upper: UPPER_THRESHOLD_DEFAULT,
+    ctLower: LOWER_CT_THRESHOLD_DEFAULT,
+    ctUpper: UPPER_CT_THRESHOLD_DEFAULT,
+    ptLower: LOWER_PT_THRESHOLD_DEFAULT,
+    ptUpper: UPPER_PT_THRESHOLD_DEFAULT,
     weight: WEIGHT_DEFAULT,
   });
 

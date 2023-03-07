@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Select, Button, ButtonGroup } from '@ohif/ui';
+import { Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';
@@ -78,40 +78,104 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
         />
       )}
       {config.strategy !== ROI_STAT && (
-        <div className="flex justify-between">
-          <Input
-            label={t('Lower')}
-            labelClassName="text-white"
-            className="mt-2 bg-black border-primary-main"
-            type="text"
-            containerClassName="mr-2"
-            value={config.lower}
-            onChange={e => {
-              dispatch({
-                type: 'setThreshold',
-                payload: {
-                  lower: e.target.value,
-                },
-              });
-            }}
-          />
-          <Input
-            label={t('Upper')}
-            labelClassName="text-white"
-            className="mt-2 bg-black border-primary-main"
-            type="text"
-            containerClassName="mr-2"
-            value={config.upper}
-            onChange={e => {
-              dispatch({
-                type: 'setThreshold',
-                payload: {
-                  upper: e.target.value,
-                },
-              });
-            }}
-          />
-        </div>
+        <>
+          <table>
+            <tr>
+              <td
+                style={{
+                  textAlign: 'left',
+                  width: '50px',
+                  verticalAlign: 'bottom',
+                }}
+              >
+                <Label className="text-white" text="CT"></Label>
+              </td>
+              <td>
+                <div className="flex justify-between">
+                  <Input
+                    label={t('Lower')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ctLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                  <Input
+                    label={t('Upper')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ctUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style={{
+                  textAlign: 'left',
+                  width: '50px',
+                  verticalAlign: 'bottom',
+                }}
+              >
+                <Label className="text-white" text="PT"></Label>
+              </td>
+              <td>
+                <div className="flex justify-between">
+                  <Input
+                    label={t('')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ptLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                  <Input
+                    label={t('')}
+                    labelClassName="text-white"
+                    className="mt-2 bg-black border-primary-main"
+                    type="text"
+                    containerClassName="mr-2"
+                    value={config.ptUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </td>
+            </tr>
+          </table>
+        </>
       )}
     </div>
   );
