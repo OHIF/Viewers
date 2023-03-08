@@ -1,5 +1,3 @@
-import { ServicesManager } from "../services";
-
 type Panel = {
   id: string;
   name: string;
@@ -14,7 +12,17 @@ type PanelDefaultState = {
   openWhenPanelActivated: boolean; // if the default state is closed, indicates if panel should be shown when it requests to be activated
 }
 
+interface PanelEvent {
+  panelId: string;
+}
+
+interface ActivatePanelEvent extends PanelEvent {
+  forceActive: boolean;
+}
+
 export type {
+  ActivatePanelEvent,
   Panel,
+  PanelEvent,
   PanelDefaultState,
 };

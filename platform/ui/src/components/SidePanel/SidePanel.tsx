@@ -16,7 +16,7 @@ import { Button, Icon, IconButton, Tooltip } from '../';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import './style.css';
-import { PanelService, PubSubService, Types } from '@ohif/core';
+import { PanelService, ServicesManager, Types } from '@ohif/core';
 
 const borderSize = 4;
 const expandedWidth = 248;
@@ -126,24 +126,23 @@ const SidePanel = ({
   );
 
   useEffect(() => {
-    const panelSubscriptions: Types.Subscription[] = tabs?.map(
-      (tab: Types.Panel, tabIndex) =>
-        panelService.subscribe(
-          panelService.EVENTS.ACTIVATE_PANEL,
-          panelEvent => {
-            if (
-              panelEvent.panelId === tab.id &&
-              (panelEvent.forceActivate ||
-                (openWhenPanelActivated && !hasBeenOpened))
-            ) {
-              updateActiveTabIndex(tabIndex);
-            }
+    const activatePanelSubscriptions = tabs.map((tab, tabIndex) =>
+      panelService.subscribe(
+        panelService.EVENTS.ACTIVATE_PANEL,
+        tab.id,
+        (panelEvent: Types.ActivatePanelEvent): void => {
+          if (
+            (openWhenPanelActivated && !hasBeenOpened) ||
+            panelEvent.forceActive
+          ) {
+            updateActiveTabIndex(tabIndex);
           }
-        )
+        }
+      )
     );
 
     return () => {
-      panelSubscriptions.forEach(sub => sub.unsubscribe());
+      activatePanelSubscriptions.forEach(sub => sub.unsubscribe());
     };
   }, [
     tabs,
@@ -299,6 +298,7 @@ SidePanel.defaultProps = {
 };
 
 SidePanel.propTypes = {
+  servicesManager: PropTypes.instanceOf(ServicesManager),
   side: PropTypes.oneOf(['left', 'right']).isRequired,
   className: PropTypes.string,
   activeTabIndex: PropTypes.number,

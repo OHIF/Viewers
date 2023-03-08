@@ -19,6 +19,10 @@ const OHIFCornerstoneSEGViewport = props => {
   );
 };
 
+const segmentationPanelId = '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation';
+
+let _activatePanelTriggersSubscriptions: Types.Subscription[] = [];
+
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -40,17 +44,30 @@ const extension = {
     commandsManager,
     configuration = {},
   }) => {},
-  /**
+  onModeEnter: ({servicesManager}) => {
+    const {segmentationService, panelService} = servicesManager.services;
+
+    // ActivatePanel event trigger for when a segmentation is added.
+    // Do not force activation so as to respect the state the user may have left the UI in.
+    _activatePanelTriggersSubscriptions = panelService.addActivatePanelTriggers(
+      segmentationPanelId,
+      segmentationService,
+      [
+        segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+      ]
+    );
+  },
+  onModeExit: () => {
+    _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
+    _activatePanelTriggersSubscriptions = [];
+ },
+ /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
   getPanelModule: ({ servicesManager, commandsManager, extensionManager }): Types.Panel[] => {
-    const segmentationPanelId = '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation';
-
-    const {segmentationService, panelService} = servicesManager.services;
-
     const wrappedPanelSegmentation = () => {
       return (
         <PanelSegmentation
@@ -60,16 +77,6 @@ const extension = {
         />
       );
     };
-
-    // ActivatePanel event trigger for when a segmentation is added.
-    // Do not force activation so as to respect the state the user may have left the UI in.
-    panelService.addActivatePanelTriggers(
-      segmentationPanelId,
-      segmentationService,
-      [
-        segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
-      ]
-    );
 
     return [
       {

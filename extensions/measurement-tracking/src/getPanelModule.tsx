@@ -1,8 +1,11 @@
-import { Types } from '@ohif/core';
+import { ServicesManager, Types } from '@ohif/core';
 import {
   PanelMeasurementTableTracking,
   PanelStudyBrowserTracking,
 } from './panels';
+
+const trackedMeasurementsPanelId =
+  '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements';
 
 // TODO:
 // - No loading UI exists yet
@@ -13,22 +16,6 @@ function getPanelModule({
   extensionManager,
   servicesManager,
 }): Types.Panel[] {
-  const trackedMeasurementsPanelId =
-    '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements';
-
-  const { PanelService, MeasurementService } = servicesManager.services;
-
-  // ActivatePanel event trigger for when measurements are added.
-  // Do not force activation so as to respect the state the user may have left the UI in.
-  PanelService.addActivatePanelTriggers(
-    trackedMeasurementsPanelId,
-    MeasurementService,
-    [
-      MeasurementService.EVENTS.MEASUREMENT_ADDED,
-      MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-    ]
-  );
-
   return [
     {
       id: '@ohif/extension-measurement-tracking.panelModule.seriesList',
@@ -56,6 +43,23 @@ function getPanelModule({
       }),
     },
   ];
+}
+
+export function addActivatePanelTriggers(
+  servicesManager: ServicesManager
+): Types.Subscription[] {
+  const { panelService, measurementService } = servicesManager.services;
+
+  // ActivatePanel event trigger for when measurements are added.
+  // Do not force activation so as to respect the state the user may have left the UI in.
+  return panelService.addActivatePanelTriggers(
+    trackedMeasurementsPanelId,
+    measurementService,
+    [
+      measurementService.EVENTS.MEASUREMENT_ADDED,
+      measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+    ]
+  );
 }
 
 export default getPanelModule;
