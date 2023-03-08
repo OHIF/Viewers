@@ -14,16 +14,11 @@ import {
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 import i18n from '@ohif/i18n';
-import { hotkeys, Types } from '@ohif/core';
+import { hotkeys } from '@ohif/core';
 import { useAppConfig } from '@state';
 import Toolbar from '../Toolbar/Toolbar';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
-
-const defaultSidePanelState: Types.PanelDefaultState = {
-  closed: false,
-  openWhenPanelActivated: false,
-};
 
 function ViewerLayout({
   // From Extension Module Params
@@ -36,8 +31,8 @@ function ViewerLayout({
   ViewportGridComp,
   leftPanels = [],
   rightPanels = [],
-  leftPanelDefaultState = defaultSidePanelState,
-  rightPanelDefaultState = defaultSidePanelState,
+  leftPanelDefaultClosed = false,
+  rightPanelDefaultClosed = false,
 }) {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
@@ -231,12 +226,9 @@ function ViewerLayout({
             <ErrorBoundary context="Left Panel">
               <SidePanel
                 side="left"
-                activeTabIndex={leftPanelDefaultState.closed ? null : 0}
+                activeTabIndex={leftPanelDefaultClosed ? null : 0}
                 tabs={leftPanelComponents}
                 servicesManager={servicesManager}
-                openWhenPanelActivated={
-                  leftPanelDefaultState.openWhenPanelActivated
-                }
               />
             </ErrorBoundary>
           ) : null}
@@ -256,12 +248,9 @@ function ViewerLayout({
             <ErrorBoundary context="Right Panel">
               <SidePanel
                 side="right"
-                activeTabIndex={rightPanelDefaultState.closed ? null : 0}
+                activeTabIndex={rightPanelDefaultClosed ? null : 0}
                 tabs={rightPanelComponents}
                 servicesManager={servicesManager}
-                openWhenPanelActivated={
-                  rightPanelDefaultState.openWhenPanelActivated
-                }
               />
             </ErrorBoundary>
           ) : null}
@@ -280,8 +269,8 @@ ViewerLayout.propTypes = {
   // From modes
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
-  leftPanelDefaultState: PropTypes.any.isRequired,
-  rightPanelDefaultState: PropTypes.any.isRequired,
+  leftPanelDefaultClosed: PropTypes.bool.isRequired,
+  rightPanelDefaultClosed: PropTypes.bool.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
 };

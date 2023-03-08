@@ -39,9 +39,11 @@ unsubscribe to the returned subscriptions. For example, a panel
 for tracking measurements might get activated every time the
 `MeasurementService` fires a `MEASUREMENT_ADDED` event like this:
     ```js
-    panelService.addActivatePanelTriggers('measurement-tracking-panel-id', measurementService, [mesasurementService.MEASUREMENT_ADDED]);
+    panelService.addActivatePanelTriggers('measurement-tracking-panel-id', [
+        sourcePubService: measurementService,
+        sourceTriggerEventNames: [
+            measurementService.EVENTS.MEASUREMENT_ADDED,
+            measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+        ],
+    ]);
     ```
-
-### Event Subscribing
-
-- `subscribe`: Subscribes to a particular event for a particular panel (id).

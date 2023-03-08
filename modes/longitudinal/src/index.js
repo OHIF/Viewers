@@ -125,23 +125,27 @@ function modeFactory() {
         'MoreTools',
       ]);
 
-      // ActivatePanel event trigger for when a segmentation or measurement is added.
-      // Do not force activation so as to respect the state the user may have left the UI in.
-      _activatePanelTriggersSubscriptions = [
-        ...panelService.addActivatePanelTriggers(
-          dicomSeg.panel,
-          segmentationService,
-          [segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED]
-        ),
-        ...panelService.addActivatePanelTriggers(
-          tracked.measurements,
-          measurementService,
-          [
-            measurementService.EVENTS.MEASUREMENT_ADDED,
-            measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-          ]
-        ),
-      ];
+      // // ActivatePanel event trigger for when a segmentation or measurement is added.
+      // // Do not force activation so as to respect the state the user may have left the UI in.
+      // _activatePanelTriggersSubscriptions = [
+      //   ...panelService.addActivatePanelTriggers(dicomSeg.panel, [
+      //     {
+      //       sourcePubService: segmentationService,
+      //       sourceTriggerEventNames: [
+      //         segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+      //       ],
+      //     },
+      //   ]),
+      //   ...panelService.addActivatePanelTriggers(tracked.measurements, [
+      //     {
+      //       sourcePubService: measurementService,
+      //       sourceTriggerEventNames: [
+      //         measurementService.EVENTS.MEASUREMENT_ADDED,
+      //         measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+      //       ],
+      //     },
+      //   ]),
+      // ];
     },
     onModeExit: ({ servicesManager }) => {
       const {
@@ -185,15 +189,8 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              // leftPanelDefaultState: {
-              //   closed: true,
-              //   openWhenPanelActivated: true,
-              // },
               rightPanels: [dicomSeg.panel, tracked.measurements],
-              rightPanelDefaultState: {
-                closed: true,
-                openWhenPanelActivated: true,
-              },
+              rightPanelDefaultClosed: true,
               viewports: [
                 {
                   namespace: tracked.viewport,

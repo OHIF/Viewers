@@ -74,7 +74,6 @@ const SidePanel = ({
   className,
   activeTabIndex: activeTabIndexProp,
   tabs,
-  openWhenPanelActivated,
 }) => {
   const panelService: PanelService = servicesManager.services.panelService;
 
@@ -129,31 +128,24 @@ const SidePanel = ({
   );
 
   useEffect(() => {
-    const activatePanelSubscriptions = tabs.map((tab, tabIndex) =>
-      panelService.subscribe(
-        panelService.EVENTS.ACTIVATE_PANEL,
-        tab.id,
-        (panelEvent: Types.ActivatePanelEvent): void => {
-          if (
-            (openWhenPanelActivated && !hasBeenOpened) ||
-            panelEvent.forceActive
-          ) {
+    const activatePanelSubscription = panelService.subscribe(
+      panelService.EVENTS.ACTIVATE_PANEL,
+      (activatePanelEvent: Types.ActivatePanelEvent) => {
+        if (!hasBeenOpened || activatePanelEvent.forceActive) {
+          const tabIndex = tabs.findIndex(
+            tab => tab.id === activatePanelEvent.panelId
+          );
+          if (tabIndex !== -1) {
             updateActiveTabIndex(tabIndex);
           }
         }
-      )
+      }
     );
 
     return () => {
-      activatePanelSubscriptions.forEach(sub => sub.unsubscribe());
+      activatePanelSubscription.unsubscribe();
     };
-  }, [
-    tabs,
-    openWhenPanelActivated,
-    hasBeenOpened,
-    panelService,
-    updateActiveTabIndex,
-  ]);
+  }, [tabs, hasBeenOpened, panelService, updateActiveTabIndex]);
 
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
