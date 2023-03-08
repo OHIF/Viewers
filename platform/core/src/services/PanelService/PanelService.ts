@@ -57,7 +57,6 @@ export default class PanelService {
   /**
    * Adds a mapping of events (sourceTriggerEvents) broadcasted by sourcePubService that
    * when fired/broadcasted must in turn activate the panel with the given id.
-   * <p>
    * The subscriptions created are returned such that they can be managed and unsubscribed
    * as appropriate.
    * @param panelId the id of the panel to activate

@@ -17,7 +17,7 @@ The following events are published in `PanelService`.
 
 | Event                 | Description                                            |
 | --------------------- | ------------------------------------------------------ |
-| ACTIVATE__PANEL       | Fires a `ActivatePanelEvent` when a particular panel should be activated.     |
+| ACTIVATE__PANEL       | Fires a `ActivatePanelEvent` when a particular panel should be activated (i.e. shown).     |
 
 
 ## API
@@ -25,17 +25,22 @@ The following events are published in `PanelService`.
 ### Panel Activation
 
 - `activatePanel`: Fires the `ACTIVATE_PANEL` event for a particular panel (id).
-An optional `forceActive` flag can be passed that when `true` forces the
-panel to activate. Ultimately, it is up to the panel's container whether it
-is appropriate to activate the panel. For instance, if the user opened and then
-closed the panel, the container may decide the user knows best and will not
-open the panel.
+An optional `forceActive` flag can be passed that when `true` "forces" a
+panel to show. Ultimately, it is up to a panel's container whether it
+is appropriate to activate/show the panel. For instance, if the user opened and then
+closed a side panel that contains the panel to activate, that side panel
+may decide that the user knows best and will not open the panel (again).
 
 - `addActivatePanelTriggers`: Creates and returns event subscriptions that when
 fired will activate the specified panel with an optional `forceActive` flag
 (see `activatePanel`). This allows for panel activation to be directly triggered
 by some other event(s). When the triggers are no longer needed, simply
-unsubscribe to the returned subscriptions.
+unsubscribe to the returned subscriptions. For example, a panel
+for tracking measurements might get activated every time the
+`MeasurementService` fires a `MEASUREMENT_ADDED` event like this:
+    ```js
+    panelService.addActivatePanelTriggers('measurement-tracking-panel-id', measurementService, [mesasurementService.MEASUREMENT_ADDED]);
+    ```
 
 ### Event Subscribing
 

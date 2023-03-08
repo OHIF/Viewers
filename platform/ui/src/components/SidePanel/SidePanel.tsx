@@ -11,12 +11,13 @@ import SwiperCore, {
 } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
+import { PanelService, ServicesManager, Types } from '@ohif/core';
+
 import { Button, Icon, IconButton, Tooltip } from '../';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import './style.css';
-import { PanelService, ServicesManager, Types } from '@ohif/core';
 
 const borderSize = 4;
 const expandedWidth = 248;
@@ -79,6 +80,8 @@ const SidePanel = ({
 
   const { t } = useTranslation('SidePanel');
 
+  // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
+  // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
   const [hasBeenOpened, setHasBeenOpened] = useState(
     activeTabIndexProp !== null
   );

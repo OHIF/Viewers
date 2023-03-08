@@ -69,7 +69,14 @@ providing the component with its.
 New: You can easily add multiple panels to the left/right side of the viewer
 using the mode configuration. As seen below, the `leftPanels` and `rightPanels`
 accept an `Array` of the `IDs`. The default state of either/both the left and
-right side panels may also be specified. The default state includes whether the side
+right side panels may also be specified.
+```js
+type PanelDefaultState = {
+  closed: boolean; // indicates if the default state of the panel should be hidden/closed
+  openWhenPanelActivated: boolean; // if the default state is closed, indicates if the panel should be shown when it requests to be activated
+}
+```
+The default state includes whether the side
 panel should be closed initially and if closed initially, whether the side panel
 should open as soon as one of its child panels requests to activate via a
 `PanelService.EVENTS.ACTIVATE_PANEL` event. In the code

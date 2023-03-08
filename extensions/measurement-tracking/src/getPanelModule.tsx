@@ -1,4 +1,4 @@
-import { ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 import {
   PanelMeasurementTableTracking,
   PanelStudyBrowserTracking,
@@ -43,23 +43,6 @@ function getPanelModule({
       }),
     },
   ];
-}
-
-export function addActivatePanelTriggers(
-  servicesManager: ServicesManager
-): Types.Subscription[] {
-  const { panelService, measurementService } = servicesManager.services;
-
-  // ActivatePanel event trigger for when measurements are added.
-  // Do not force activation so as to respect the state the user may have left the UI in.
-  return panelService.addActivatePanelTriggers(
-    trackedMeasurementsPanelId,
-    measurementService,
-    [
-      measurementService.EVENTS.MEASUREMENT_ADDED,
-      measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-    ]
-  );
 }
 
 export default getPanelModule;
