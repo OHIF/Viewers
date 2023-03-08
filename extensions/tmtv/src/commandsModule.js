@@ -175,8 +175,7 @@ const commandsModule = ({
       const { representationData } = segmentation;
       const {
         displaySetMatchDetails: matchDetails,
-      } = HangingProtocolService.getMatchDetails();
-      console.log(matchDetails);
+      } = hangingProtocolService.getMatchDetails();
       const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
 
       const ctDisplaySet = matchDetails.get('ctDisplaySet');
