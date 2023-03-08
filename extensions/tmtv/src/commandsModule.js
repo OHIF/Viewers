@@ -173,12 +173,20 @@ const commandsModule = ({
       );
 
       const { representationData } = segmentation;
-      const { volumeId: segVolumeId } = representationData[LABELMAP];
+      const {
+        displaySetMatchDetails: matchDetails,
+      } = hangingProtocolService.getMatchDetails();
+      const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
 
+      const ctDisplaySet = matchDetails.get('ctDisplaySet');
+      const ctVolumeId = `${volumeLoaderScheme}:${ctDisplaySet.displaySetInstanceUID}`; // VolumeId with loader id + volume id
+
+      const { volumeId: segVolumeId } = representationData[LABELMAP];
       const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
 
       const labelmapVolume = cs.cache.getVolume(segmentationId);
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+      const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
 
       if (!referencedVolume) {
         throw new Error('No Reference volume found');
@@ -201,23 +209,20 @@ const commandsModule = ({
         return;
       }
 
-      const { lower, upper } = getThresholdValues(
+      const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
         annotationUIDs,
-        referencedVolume,
+        [referencedVolume, ctReferencedVolume],
         config
       );
-
-      const configToUse = {
-        lower,
-        upper,
-        overwrite: true,
-      };
 
       return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
-        [referencedVolume],
-        configToUse
+        [
+          { volume: referencedVolume, lower: ptLower, upper: ptUpper },
+          { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
+        ],
+        { overwrite: true }
       );
     },
     calculateSuvPeak: ({ labelmap }) => {
