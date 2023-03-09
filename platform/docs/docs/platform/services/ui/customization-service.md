@@ -17,7 +17,100 @@ This service is a UI service in that part of the registration allows for registe
 UI components and types to deal with, but it does not directly provide an UI
 displayable elements unless customized to do so.
 
-## Registering Customizations
+<b>Note:</b> Customization Service itself doesn't implement the actual customization,
+but rather just provide mechanism to register reusable prototypes, to configure
+those prototypes with actual configurations, and to use the configured objects
+(components, data, whatever).
+Actual implementation of the customization is totally up to the component that
+supports customization. (for example, `CustomizableViewportOverlay` component uses
+`CustomizationService` to implement viewport overlay that is easily customizable
+from configuration.)
+
+## Registering customizable modules (or defining customization prototypes)
+
+Extensions and Modes can register customization templates they support.
+It is done by adding `getCustomizationModule()` in the extension or mode definition.
+
+Below is the protocol of the `getCustomizationModule()`, if defined in Typescript.
+
+```typescript
+  getCustomizationModule() : { name: string, value: any }[]
+```
+
+If the name is 'default', it is the Default customization, which is loaded
+automatically when the extension or mode is loaded.
+
+For example, customization module definition below defines a single customization,
+which is the default customization and has simple data. :
+
+```js
+  getCustomizationModule: () => [
+    {
+      name: 'default',
+      value: {
+        id: 'customIcons',
+        backArrow: 'https://customIcons.org/backArrow.svg',
+      },
+    },
+  ],
+```
+
+In the `value` of each customizations, you will define customization prototype(s).
+These customization prototype(s) can be considered like "Prototype" in Javascript.
+These can be used to extend the customization definitions from configurations.
+Default cutomizations will be often used to define all the customization prototypes,
+as they will be loaded automatically along with the defining extension or mode.
+
+
+For example, the `@ohif/extension-default` extension defines,
+
+```js
+  getCustomizationModule: () => [
+    //...
+
+    {
+      name: 'default',
+      value: [
+        {
+          id: 'ohif.overlayItem',
+          uiType: 'uiType',
+          content: function (props) {
+            if (this.condition && !this.condition(props)) return null;
+
+            const { instance } = props;
+            const value =
+              instance && this.attribute
+                ? instance[this.attribute]
+                : this.contentF && typeof this.contentF === 'function'
+                ? this.contentF(props)
+                : null;
+            if (!value) return null;
+
+            return (
+              <span
+                className="overlay-item flex flex-row"
+                style={{ color: this.color || undefined }}
+                title={this.title || ''}
+              >
+                {this.label && (
+                  <span className="mr-1 shrink-0">{this.label}</span>
+                )}
+                <span className="font-light">{value}</span>
+              </span>
+            );
+          },
+        },
+      ],
+    },
+
+    //...
+  ],
+```
+
+And this `ohif.overlayItem` object will be used as a prototype to define items
+to be displayed on `CustomizableViewportOverlay`. See the next section.
+
+## Configuring customizations
 
 There are several ways to register customizations.  The
 `APP_CONFIG.customizationService`
@@ -39,123 +132,63 @@ window.config = {
 }
 ```
 
-As well, extensions can register default customizations by providing a 'default'
-name key within the extension.  These are simply customizations loaded when
-the extension is loaded.   For example, the previous customization could have
-been added in an extension as:
+NOTE that these definitions from APP_CONFIG will be loaded by default, just like
+extension/modes default customization.
+
+
+Below is the example configuration for `CustomizableViewportOverlay` component
+customization, using the customization prototype `ohif.overlayItem` defined in
+`ohif/extension-defaul` extension.:
 
 ```js
-  getCustomizationModule: () => [
-    {
-      name: 'default',
-      value: {
-        id: 'customIcons',
-        backArrow: 'https://customIcons.org/backArrow.svg',
-      },
+{
+  //...
+
+  // in the APP_CONFIG file set the top right area to show the patient name
+  // using PN: as a prefix when the study has a non-empty patient name.
+  customizationService: {
+    cornerstoneOverlayTopRight: {
+      id: 'cornerstoneOverlayTopRight',
+      customizationType: 'ohif.cornerstoneOverlay',
+      items: [
+        {
+          id: 'PatientNameOverlay',
+          // Note the overlayItem as a parent type - this provides the
+          // rendering functionality to read the attribute and use the label.
+          customizationType: 'ohif.overlayItem',
+          attribute: 'PatientName',
+          label: 'PN:',
+          title: 'Patient Name',
+          color: 'yellow',
+          condition: ({ instance }) =>
+            instance &&
+            instance.PatientName &&
+            instance.PatientName.Alphabetic,
+          contentF: ({ instance, formatters: { formatPN } }) =>
+            formatPN(instance.PatientName.Alphabetic) +
+            ' ' +
+            (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
+        },
+      ],
     },
-  ],
+  },
+
+  //...
+}
 ```
 
-Note the name of this is default (thus loaded automatically instead of by
-reference), and the value is a customization of customIcons.
+In the customization configuration, you can use `customizationType` fields to
+define the prototype that customization object should inherit from.
+The `customizationType` field is simply the id of another customization object.
 
-The type and parameters of a customization are defined by the user of the
-customization, based on the customization id.  For example, `cornerstoneOverlay`
-is a customization that is a React component, so it requires a react content,
-and optionally contentProps which are used to supply values to the content.
 
-The extension can also supply a default parent instance to inherit values from.
-This allows the content or other parameters to be pre-filled, and only the
-required values changed.  The parent to use is specified by the `customizationType` field,
-and is simply the id of another customization object.  An example of this might
-be a demographics overlay field, where the base version needs an actual component,
-while the typed version just needs the attribute and label to use.
+## Implementing customization using CustomizationService
 
-```js
-   getCustomizationModule: () => [
-    {
-      name: 'default',
-      value: [
-        // This first value defines the base type
-        {
-          id: imageDemographicOverlay,
-          content: function({image}) {
-            return (<p>{image[this.attribute]}</p>);
-          }
-        },
-        // The second one defines an instance.
-        // It may or may not use the previous type definition - it will use it
-        // if nothing replaces the previous definition, otherwise it will use the new one.
-        {
-          id: PatientIDOverlayItem,
-          customizationType: 'imageDemographicOverlay',
-          attribute: 'PatientID',
-        },
-      ]
-    }
-   ]
-```
+### Mode Customizations
 
 Mode-specific customizations are no different from the global ones,
 except that the mode customizations are cleared before the mode `onModeEnter`
 is called, and they can have new values registered in the `onModeEnter`
-
-The following example shows first the registration of the default instances,
-and then shows how they might be used.
-
-```js
-// In the cornerstone extension  getCustomizationModule:
-const getCustomizationModule = () => ([
-  {
-    name: 'default',
-    value: [
-      {
-        id: 'ohif.cornerstoneOverlay',
-        content: CornerstoneOverlay,
-        // Requires items on instances
-       },
-      {
-        id: 'ohif.overlayItem',
-        content: CornerstoneOverlayItem,
-        // Requires attribute and label on instances
-      },
-    ],
-  },
-]);
-```
-
-Then, in the configuration file one might have a custom overlay definition:
-
-```js
-// in the APP_CONFIG file set the top right area to show the patient name
-// using PN: as a prefix when the study has a non-empty patient name.
-customizationService: {
-  cornerstoneOverlayTopRight: {
-    id: 'cornerstoneOverlayTopRight',
-    customizationType: 'ohif.cornerstoneOverlay',
-    items: [
-      {
-        id: 'PatientNameOverlay',
-        // Note the overlayItem as a parent type - this provides the
-        // rendering functionality to read the attribute and use the label.
-        customizationType: 'ohif.overlayItem',
-        attribute: 'PatientName',
-        label: 'PN:',
-        title: 'Patient Name',
-        color: 'yellow',
-        condition: ({ instance }) =>
-          instance &&
-          instance.PatientName &&
-          instance.PatientName.Alphabetic,
-        contentF: ({ instance, formatters: { formatPN } }) =>
-          formatPN(instance.PatientName.Alphabetic) +
-          ' ' +
-          (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
-      },
-    ],
-  },
-},
-```
 
 In the mode customization, the overlay is then further customized
 with a bottom-right overlay, which extends the customizationService configuration.
@@ -180,8 +213,6 @@ onModeEnter() {
     };
   customizationService.addModeCustomizations(bottomRight);
 ```
-
-## Mode Customizations
 
 The mode customizations are retrieved via the `getModeCustomization` function,
 providing an id, and optionally a default value.  The retrieval will return,
@@ -213,11 +244,13 @@ uses commands lists):
    uiConfigurationService.recordInteraction(cornerstoneContextMenu, extraProps);
 ```
 
-## Global Customizations
+### Global Customizations
+
 Global customizations are retrieved in the same was as mode customizations, except
 that the `getGlobalCustomization` is called instead of the mode call.
 
-## Types
+### Types
+
 Some types for the customization service are provided by the `@ohif/ui` types
 export.  Additionally, extensions can provide a Types export with custom
 typing, allowing for better typing for the extension specific capabilities.
@@ -235,7 +268,7 @@ const customContextMenu: Types.UIContextMenu =
     },
 ```
 
-## Inheritance
+### Inheritance
 
 JavaScript  property inheritance can be supplied by defining customizations
 with id corresponding to the customizationType value.  For example:
