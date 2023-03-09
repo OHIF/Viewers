@@ -18,6 +18,7 @@ UI components and types to deal with, but it does not directly provide an UI
 displayable elements unless customized to do so.
 
 ## Registering Customizations
+
 There are several ways to register customizations.  The
 `APP_CONFIG.customizationService`
 field is used as a per-configuration entry.  This object can list single
@@ -181,6 +182,7 @@ onModeEnter() {
 ```
 
 ## Mode Customizations
+
 The mode customizations are retrieved via the `getModeCustomization` function,
 providing an id, and optionally a default value.  The retrieval will return,
 in order:
@@ -234,6 +236,7 @@ const customContextMenu: Types.UIContextMenu =
 ```
 
 ## Inheritance
+
 JavaScript  property inheritance can be supplied by defining customizations
 with id corresponding to the customizationType value.  For example:
 
@@ -266,10 +269,12 @@ const overlayItem: Types.UIOverlayItem = {
 ```
 
 # Customizations
+
 This section can be used to specify various customization capabilities.
 
 
 ## Text color for StudyBrowser tabs
+
 This is the recommended pattern for deep customization of class attributes,
 making it fine grained, and have it apply a set of attributes, mostly from
 tailwind.  In this case it is a double indirection, as the buttons class
@@ -319,6 +324,156 @@ customizationService: [
     '@ohif/extension-default.customizationModule.helloPage',
 ],
 ```
+
+## Customizable Viewport Overlay
+
+Below is the full example configuration of the customizable viewport overlay and the screenshot of the result overlay.
+
+```javascript
+// this is one of the configuration files in `platform/viewer/public/config/*.js`
+{
+  // ...
+
+  customizationService: {
+    cornerstoneOverlayTopLeft: {
+      id: 'cornerstoneOverlayTopLeft',
+      customizationType: 'ohif.cornerstoneOverlay',
+      items: [
+        {
+          id: 'WindowLevel',
+          customizationType: 'ohif.overlayItem.windowLevel',
+        },
+        {
+          id: 'PatientName',
+          customizationType: 'ohif.overlayItem',
+          label: '',
+          color: 'green',
+          background: 'white',
+          condition: ({ instance }) =>
+            instance && instance.PatientName && instance.PatientName.Alphabetic,
+          contentF: ({ instance, formatters: { formatPN } }) =>
+            formatPN(instance.PatientName.Alphabetic) +
+            ' ' +
+            (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
+        },
+        {
+          id: 'Species',
+          customizationType: 'ohif.overlayItem',
+          label: 'Species:',
+          condition: ({ instance }) =>
+            instance && instance.PatientSpeciesDescription,
+          contentF: ({ instance }) =>
+            instance.PatientSpeciesDescription +
+            '/' +
+            instance.PatientBreedDescription,
+        },
+        {
+          id: 'PID',
+          customizationType: 'ohif.overlayItem',
+          label: 'PID:',
+          title: 'Patient PID',
+          condition: ({ instance }) => instance && instance.PatientID,
+          contentF: ({ instance }) => instance.PatientID,
+        },
+        {
+          id: 'PatientBirthDate',
+          customizationType: 'ohif.overlayItem',
+          label: 'DOB:',
+          title: "Patient's Date of birth",
+          condition: ({ instance }) => instance && instance.PatientBirthDate,
+          contentF: ({ instance }) => instance.PatientBirthDate,
+        },
+        {
+          id: 'OtherPid',
+          customizationType: 'ohif.overlayItem',
+          label: 'Other PID:',
+          title: 'Other Patient IDs',
+          condition: ({ instance }) => instance && instance.OtherPatientIDs,
+          contentF: ({ instance, formatters: { formatPN } }) =>
+            formatPN(instance.OtherPatientIDs),
+        },
+      ],
+    },
+    cornerstoneOverlayTopRight: {
+      id: 'cornerstoneOverlayTopRight',
+      customizationType: 'ohif.cornerstoneOverlay',
+
+      items: [
+        {
+          id: 'InstanceNmber',
+          customizationType: 'ohif.overlayItem.instanceNumber',
+        },
+        {
+          id: 'StudyDescription',
+          customizationType: 'ohif.overlayItem',
+          label: '',
+          title: ({ instance }) =>
+            instance &&
+            instance.StudyDescription &&
+            `Study Description: ${instance.StudyDescription}`,
+          condition: ({ instance }) => instance && instance.StudyDescription,
+          contentF: ({ instance }) => instance.StudyDescription,
+        },
+        {
+          id: 'StudyDate',
+          customizationType: 'ohif.overlayItem',
+          label: '',
+          title: 'Study date',
+          condition: ({ instance }) => instance && instance.StudyDate,
+          contentF: ({ instance, formatters: { formatDate } }) =>
+            formatDate(instance.StudyDate),
+        },
+        {
+          id: 'StudyTime',
+          customizationType: 'ohif.overlayItem',
+          label: '',
+          title: 'Study time',
+          condition: ({ instance }) => instance && instance.StudyTime,
+          contentF: ({ instance, formatters: { formatTime } }) =>
+            formatTime(instance.StudyTime),
+        },
+      ],
+    },
+    cornerstoneOverlayBottomLeft: {
+      id: 'cornerstoneOverlayBottomLeft',
+      customizationType: 'ohif.cornerstoneOverlay',
+
+      items: [
+        {
+          id: 'SeriesNumber',
+          customizationType: 'ohif.overlayItem',
+          label: 'Ser:',
+          title: 'Series Number',
+          condition: ({ instance }) => instance && instance.SeriesNumber,
+          contentF: ({ instance }) => instance.SeriesNumber,
+        },
+        {
+          id: 'SliceLocation',
+          customizationType: 'ohif.overlayItem',
+          label: 'Loc:',
+          title: 'Slice Location',
+          condition: ({ instance }) => instance && instance.SliceLocation,
+          contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
+            formatNumberPrecision(instance.SliceLocation, 2) + ' mm',
+        },
+        {
+          id: 'SliceThickness',
+          customizationType: 'ohif.overlayItem',
+          label: 'Thick:',
+          title: 'Slice Thickness',
+          condition: ({ instance }) => instance && instance.SliceThickness,
+          contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
+            formatNumberPrecision(instance.SliceThickness, 2) + ' mm',
+        },
+      ],
+    },
+  },
+
+  // ...
+}
+```
+
+<img src="../../../assets/img/customizable-overlay.png" />
 
 > 3rd Party implementers may be added to this table via pull requests.
 
