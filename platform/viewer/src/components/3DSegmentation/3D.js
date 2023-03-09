@@ -26,7 +26,6 @@ const Morphology3DComponent = React.forwardRef((props, ref) => {
       const series_uid = JSON.parse(localStorage.getItem('series_uid'));
       setSeriesUid(series_uid);
       await loadSegmentations(series_uid);
-      setLoadingApp(false);
     };
     fetchData();
   }, []);
@@ -61,6 +60,7 @@ const Morphology3DComponent = React.forwardRef((props, ref) => {
       );
       setSegmentationLabels(segmentationLabels);
       setCurrentSegmentationLabel(segmentationLabels[0]);
+      setLoadingApp(false);
       await load3DData(segmentationLabels[0], series_uid);
     } catch (error) {}
   };

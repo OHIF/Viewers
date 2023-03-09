@@ -179,7 +179,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     scrollToIndex: ({ viewports }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
-      scrollTo(enabledElement, 4);
+      scrollTo(enabledElement, 8);
     },
     getActiveViewportEnabledElement: ({ viewports }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);

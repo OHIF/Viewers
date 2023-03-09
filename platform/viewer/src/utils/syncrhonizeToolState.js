@@ -1,13 +1,20 @@
 import store from '../store';
+import { BrainMode } from './constants';
 
 export const handleRestoreToolState = (
   cornerstone,
   enabledElement,
-  studyInstanceUID
+  studyInstanceUID,
+  resize = false
 ) => {
   let tool_data = localStorage.getItem(studyInstanceUID);
   tool_data =
-    tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
+    tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : null;
+
+  console.log('handleRestoreToolState::tool_data', {
+    tool_data,
+    studyInstanceUID,
+  });
   if (enabledElement && tool_data) {
     let viewport = cornerstone.getViewport(enabledElement);
     if (tool_data.x) viewport.translation.x = tool_data.x;
@@ -15,9 +22,14 @@ export const handleRestoreToolState = (
     if (tool_data.scale) viewport.scale = tool_data.scale;
     if (tool_data.voi) viewport.voi = tool_data.voi;
 
-    // cornerstone.resize(enabledElement, true);
+    if (resize) cornerstone.fitToWindow(enabledElement);
+    if (resize) cornerstone.resize(enabledElement, true);
+
+    console.log('handleRestoreToolState::update::viewport', {
+      viewport,
+    });
+
     cornerstone.setViewport(enabledElement, viewport);
-    // cornerstone.fitToWindow(enabledElement);
   } else {
     const state = store.getState();
     const preset = state.mode.active === BrainMode ? 5 : 2;
@@ -32,11 +44,18 @@ export const handleRestoreToolState = (
         windowCenter: Number(level),
       };
       cornerstone.setViewport(enabledElement, viewport);
+      console.log('handleRestoreToolState::reset::viewport', {
+        viewport,
+      });
     }
   }
 };
 
 export const handleSaveToolState = (studyInstanceUID, viewport) => {
+  console.log('handleSaveToolState', {
+    studyInstanceUID,
+    viewport,
+  });
   localStorage.setItem(
     studyInstanceUID,
     JSON.stringify({

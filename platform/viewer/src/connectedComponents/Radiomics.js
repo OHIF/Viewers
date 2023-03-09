@@ -150,6 +150,20 @@ class Radiomics extends Component {
     // setTimeout(() => {}, 2000);
 
     setTimeout(() => {
+      const radiomicsDone = JSON.parse(
+        localStorage.getItem('radiomicsDone') || 0
+      );
+      this.setState({
+        isComplete: radiomicsDone == 1 ? true : false,
+      });
+
+      this.handleSidePanelChange('right', 'theta-details-panel');
+      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
+
+      this.triggerReload();
+    }, 2000);
+
+    setTimeout(() => {
       const enabledElement = enabledEvt.detail.element;
 
       commandsManager.runCommand('setToolActive', {
@@ -158,46 +172,11 @@ class Radiomics extends Component {
 
       handleScrolltoIndex(enabledElement);
 
-      handleRestoreToolState(
-        cornerstone,
-        enabledElement,
-        this.props.studyInstanceUID
-      );
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
 
-      // let currentImageIdIndex = localStorage.getItem('currentImageIdIndex');
-      // scrollToIndex(enabledElement, parseInt(currentImageIdIndex));
-      // commandsManager.runCommand('scrollToIndex', {
-      //   currentImageIdIndex,
-      // });
-
-      const radiomicsDone = JSON.parse(
-        localStorage.getItem('radiomicsDone') || 0
-      );
-      this.setState({
-        isComplete: radiomicsDone == 1 ? true : false,
-      });
-
-      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      // tool_data =
-      //   tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      // if (enabledElement && tool_data) {
-      //   let viewport = cornerstone.getViewport(enabledElement);
-      //   if (tool_data.x) viewport.translation.x = tool_data.x;
-      //   if (tool_data.y) viewport.translation.y = tool_data.y;
-      //   // if (tool_data.scale) viewport.scale = tool_data.scale;
-      //   // if (tool_data.voi) viewport.voi = tool_data.voi;
-      //   // cornerstone.resize(enabledElement, true);
-      //   cornerstone.setViewport(enabledElement, viewport);
-      // }
-
-      //  handle radiomicsDone
-
-      this.handleSidePanelChange('right', 'theta-details-panel');
-      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
-
-      //  handle radiomicsDone
-      this.triggerReload();
-    }, 2000);
+      handleRestoreToolState(cornerstone, enabledElement, instance_uid);
+    }, 3000);
   };
 
   componentWillUnmount() {
@@ -509,7 +488,7 @@ class Radiomics extends Component {
           const fetchBase64Data = [exportComponent(this.canvas)];
           try {
             if (this.props.currentMode === BrainMode) {
-            // if (currentMode === BrainMode) {
+              // if (currentMode === BrainMode) {
               const customScene = this.componentRef.current.el.layout.scene;
 
               const plotDiv = this.componentRef.current.el;
@@ -534,14 +513,14 @@ class Radiomics extends Component {
               error
             );
           }
-
           return Promise.all(fetchBase64Data);
         })
         .then(data => {
           const collage = data[0];
           let morphologyBase64 = null;
           try {
-            if (this.props.currentMode === BrainMode) morphologyBase64 = data[1];
+            if (this.props.currentMode === BrainMode)
+              morphologyBase64 = data[1];
           } catch (error) {
             console.log(
               'Error occurred while setting morphologyBase64:',

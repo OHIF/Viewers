@@ -19,6 +19,8 @@ class CallbackPage extends Component {
             sessionStorage.getItem('ohif-redirect-to')
           );
 
+          localStorage.setItem('warmupStatus', JSON.stringify(0));
+
           const state = window.store.getState();
           console.log({ oidc: state.oidc });
 

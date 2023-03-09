@@ -274,7 +274,9 @@ function StudyListRoute(props) {
           const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
             studyInstanceUIDs: studyInstanceUID,
           });
-          history.push(viewerPath);
+          window.location.href = viewerPath;
+
+          // history.push(viewerPath);
         }}
         // Table Header
         sort={sort}

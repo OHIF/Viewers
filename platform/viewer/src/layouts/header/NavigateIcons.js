@@ -6,8 +6,10 @@ import { Icon } from '../../../../ui/src/elements/Icon';
 import { servicesManager } from '../../App';
 import ReactTooltip from 'react-tooltip';
 import { JobsContext } from '../../context/JobsContext';
-import { BrainMode, lungMode } from '../../utils/constants';
+import { BrainMode, lungMode, radcadapi } from '../../utils/constants';
 import { useSelector } from 'react-redux';
+
+let checkEndpointsInterval;
 
 const NavigateIcons = () => {
   const { UINotificationService } = servicesManager.services;
@@ -16,6 +18,9 @@ const NavigateIcons = () => {
   const history = useHistory();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState(1);
+  const [warming, setWarming] = useState(
+    JSON.parse(localStorage.getItem('warmupStatus') || 0) == 1 ? false : true
+  );
   const [loading, setLoading] = useState(true);
   const isBrainMode = currentMode == BrainMode;
 
@@ -31,14 +36,15 @@ const NavigateIcons = () => {
           }
         : {
             1: 'viewer',
-            2: 'selectmask', // if active is viewer goto select mask 
+            2: 'selectmask', // if active is viewer goto select mask
           };
 
     if (activeStep === selectMaskStep) {
       const toolData = JSON.parse(localStorage.getItem('mask') || '{}');
 
       if (toolData) {
-        history.push(location.pathname.replace('selectmask', 'radionics'));
+        // history.push(location.pathname.replace('selectmask', 'radionics'));
+        window.location.href = location.pathname.replace('selectmask', 'radionics');
       } else {
         UINotificationService.show({
           title: 'Draw mask region to proceed to Radiomics',
@@ -51,7 +57,10 @@ const NavigateIcons = () => {
         /(view|edit|nnunet|selectmask)/,
         paths[activeStep]
       );
-      history.push(newPathname);
+
+      if (activeStep === 2) cornerstone.imageCache.purgeCache();
+      window.location.href = newPathname;
+      // history.push(newPathname);
     }
   };
 
@@ -75,10 +84,11 @@ const NavigateIcons = () => {
       /(view|edit|nnunet|selectmask|radionics)/,
       paths[activeStep]
     );
-    history.push(newPathname);
-  };
 
-  const onCornerstoneLoaded = () => setLoading(false);
+    if (activeStep === 2) cornerstone.imageCache.purgeCache();
+    window.location.href = newPathname;
+    // history.push(newPathname);
+  };
 
   useEffect(() => {
     cornerstone.events.addEventListener(
@@ -91,6 +101,71 @@ const NavigateIcons = () => {
         onCornerstoneLoaded
       );
   }, []);
+
+  // useEffect(() => {
+  //   if (!warming) clearInterval(checkEndpointsInterval);
+  //   checkEndpointsInterval = setInterval(() => {
+  //     fetch(radcadapi + '/endpoint-status')
+  //       .then(response => response.json())
+  //       .then(endpointStatus => {
+  //         if (
+  //           endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
+  //           endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] ===
+  //             'RUNNING' &&
+  //           endpointStatus['cbir-encoder'] === 'PENGING'
+  //         ) {
+  //           setWarming(false);
+  //           localStorage.setItem('warmupStatus', JSON.stringify(1));
+  //           clearInterval(checkEndpointsInterval);
+  //         } else {
+  //           UINotificationService.show({
+  //             title: 'Endpoint API is still warming',
+  //             type: 'info',
+  //             message:
+  //               'Please wait while the Endpoint API is warming up. This process can take a few minutes.',
+  //           });
+  //         }
+  //       })
+  //       .catch(() => {});
+  //   }, 50000);
+
+  //   return () => clearInterval(checkEndpointsInterval);
+  // }, [warming]);
+
+  // useEffect(() => {
+  //   if (warming)
+  //     fetch(radcadapi + '/endpoint-status')
+  //       .then(response => response.json())
+  //       .then(endpointStatus => {
+  //         if (
+  //           endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
+  //           endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] ===
+  //             'RUNNING' &&
+  //           endpointStatus['cbir-encoder'] === 'RUNNING'
+  //         ) {
+  //           setWarming(false);
+  //           localStorage.setItem('warmupStatus', JSON.stringify(1));
+  //           clearInterval(checkEndpointsInterval);
+  //         } else {
+  //           UINotificationService.show({
+  //             title: 'Endpoint API is still warming',
+  //             type: 'error',
+  //             message:
+  //               'Please wait while the Endpoint API is warming up. This process can take a few minutes.',
+  //           });
+  //         }
+  //       })
+  //       .catch(() => {});
+  // }, []);
+
+  const onCornerstoneLoaded = () => {
+    setLoading(false);
+  };
+
+  // if (warming)
+  //   return (
+  //     <Icon name="circle-notch" className="loading-icon-spin loading-icon" />
+  //   );
 
   useEffect(() => {
     if (location.pathname.includes('/studylist')) {
@@ -137,7 +212,7 @@ const NavigateIcons = () => {
             onClick={handleBack}
           >
             <ReactTooltip id={`back`} delayShow={250} border={true}>
-              <span>Back</span>
+              {/* <span>Back</span> */}
             </ReactTooltip>
             <Icon name="chevron-back" style={{ fontSize: '16px' }} />
           </button>
@@ -159,7 +234,7 @@ const NavigateIcons = () => {
             onClick={handleNext}
           >
             <ReactTooltip id={`forward`} delayShow={250} border={true}>
-              <span>Forward</span>
+              {/* <span>Forward</span> */}
             </ReactTooltip>
             <Icon name="chevron-forward" style={{ fontSize: '16px' }} />
           </button>

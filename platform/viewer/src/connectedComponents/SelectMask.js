@@ -486,7 +486,7 @@ class SelectMask extends Component {
                   alignItems: 'center',
                 }}
               >
-                <div>
+                {/* <div>
                   <h2
                     style={{
                       textAlign: 'left',
@@ -494,7 +494,7 @@ class SelectMask extends Component {
                   >
                     Edit Selection
                   </h2>
-                </div>
+                </div> */}
                 {/* <div>
                   <button
                     className="btn btn-primary"
@@ -554,8 +554,8 @@ class SelectMask extends Component {
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
 
         {/* VIEWPORTS + SIDEPANELS */}
-        <div className="FlexboxLayout">
           {/* LEFT */}
+        {/* <div className="FlexboxLayout">
           <ErrorBoundaryDialog context="LeftSidePanel">
             <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
               {VisiblePanelLeft ? (
@@ -572,7 +572,7 @@ class SelectMask extends Component {
               )}
             </SidePanel>
           </ErrorBoundaryDialog>
-        </div>
+        </div> */}
       </>
     );
   }

@@ -293,6 +293,12 @@ class Viewer extends Component {
         const image = cornerstone.getImage(enabledElement);
         const instance_uid = image.imageId.split('/')[14];
 
+        const resize = matchPath(this.props.location.pathname, {
+          path:
+            '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+          exact: true,
+        });
+
         handleScrolltoIndex(enabledElement);
         handleRestoreToolState(cornerstone, enabledElement, instance_uid);
 
@@ -324,7 +330,7 @@ class Viewer extends Component {
         console.error(error);
       }
       // }
-    }, 2000);
+    }, 4000);
   };
 
   async handleFetchAndSetSeries(studyInstanceUID) {
