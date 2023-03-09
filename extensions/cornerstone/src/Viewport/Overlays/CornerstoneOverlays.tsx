@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
 import ViewportImageScrollbar from './ViewportImageScrollbar';
-import ViewportOverlay from './ViewportOverlay';
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
 
 function CornerstoneOverlays(props) {
   const { viewportIndex, element, scrollbarHeight, servicesManager } = props;
-  const {
-    cornerstoneViewportService,
-    customizationService,
-  } = servicesManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
     numberOfSlices: 0,
@@ -40,9 +36,8 @@ function CornerstoneOverlays(props) {
   }
 
   if (viewportData) {
-    const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-      viewportIndex
-    );
+    const viewportInfo =
+      cornerstoneViewportService.getViewportInfoByIndex(viewportIndex);
 
     if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
       return null;
