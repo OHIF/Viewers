@@ -12,7 +12,7 @@ const ThumbnailList = ({
   activeDisplaySetInstanceUIDs = [],
 }) => {
   return (
-    <div className="py-3 bg-black overflow-y-hidden ohif-scrollbar">
+    <div className="py-3 bg-black overflow-y-hidden ohif-scrollbar study-min-height">
       {thumbnails.map(
         ({
           displaySetInstanceUID,
