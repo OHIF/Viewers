@@ -1,5 +1,5 @@
 import { Types } from '@ohif/ui';
-import { Menu, CheckProps, MenuItem, ContextMenuProps } from './types';
+import { Menu, SelectorProps, MenuItem, ContextMenuProps } from './types';
 
 /**
  * Context menu items builder is a collection of classes to help determine
@@ -26,7 +26,7 @@ export function findMenuByMenuId(menus, menuId): Menu {
  * the list of menus until it finds the first one which
  * has no selector, OR has the selector, when applied to the
  * check props, return true.
- * The checkProps are a set of provided properties which can be
+ * The selectorProps are a set of provided properties which can be
  * passed into the selector function to determine when to display a menu.
  * For example, a selector function of:
  * `({displayset}) => displaySet?.SeriesDescription?.indexOf?.('Left')!==-1
@@ -41,7 +41,7 @@ export function findMenuDefault(menus: Menu[], subProps: Types.IProps): Menu {
     return null;
   }
   return menus.find(
-    menu => !menu.selector || menu.selector(subProps.checkProps)
+    menu => !menu.selector || menu.selector(subProps.selectorProps)
   );
 }
 
@@ -91,8 +91,8 @@ export function findMenu(
  * Returns the menu from a list of possible menus, based on the actual state of component props and tool data nearby.
  * This uses the findMenu command above to first find the appropriate
  * menu, and then it chooses the actual contents of that menu.
- * A menu item can be optional by implementing the 'checkFunction',
- * which will be called with the checkProps, and if it does not return true,
+ * A menu item can be optional by implementing the 'selector',
+ * which will be called with the selectorProps, and if it does not return true,
  * then the item is excluded.
  *
  * Other menus can be delegated to by setting the delegating value to
@@ -107,21 +107,21 @@ export function findMenu(
  * incorporating additional information from translation sources.
  * See the `test-mode` examples for details.
  *
- * @param checkProps
+ * @param selectorProps
  * @param {*} event event that originates the context menu
  * @param {*} menus List of menus
  * @param {*} menuIdFilter
  * @returns
  */
 export function getMenuItems(
-  checkProps: Types.IProps,
+  selectorProps: Types.IProps,
   event: Event,
   menus: Menu[],
   menuIdFilter?: string
 ): MenuItem[] | void {
   // Include both the check props and the ...check props as one is used
   // by the child menu and the other used by the selector function
-  const subProps = { checkProps, event };
+  const subProps = { selectorProps, event };
 
   const menu = findMenu(menus, subProps, menuIdFilter);
 
@@ -136,13 +136,13 @@ export function getMenuItems(
 
   let menuItems = [];
   menu.items.forEach(item => {
-    const { delegating, checkFunction, subMenu } = item;
+    const { delegating, selector, subMenu } = item;
 
-    if (!checkFunction || checkFunction(checkProps)) {
+    if (!selector || selector(selectorProps)) {
       if (delegating) {
         menuItems = [
           ...menuItems,
-          ...getMenuItems(checkProps, event, menus, subMenu),
+          ...getMenuItems(selectorProps, event, menus, subMenu),
         ];
       } else {
         const toAdd = adaptItem(item, subProps);
@@ -171,7 +171,7 @@ export function adaptItem(
 ): UIMenuItem {
   const newItem = item.adaptItem?.(item, subProps) || {
     ...item,
-    value: subProps.checkProps?.value,
+    value: subProps.selectorProps?.value,
   };
 
   if (!item.action) {

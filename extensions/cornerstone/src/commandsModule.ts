@@ -96,7 +96,12 @@ function commandsModule({ servicesManager, commandsManager }) {
         ?.element;
 
       const optionsToUse = { ...options };
-      const { useSelectedAnnotation, nearbyToolData, menuName } = optionsToUse;
+      const {
+        useSelectedAnnotation,
+        nearbyToolData,
+        menuName,
+        event,
+      } = optionsToUse;
 
       if (menuName) {
         Object.assign(
@@ -126,12 +131,13 @@ function commandsModule({ servicesManager, commandsManager }) {
         }
       }
 
-      // TODO - make the checkProps richer by including the study metadata and display set.
-      optionsToUse.checkProps = {
+      // TODO - make the selectorProps richer by including the study metadata and display set.
+      optionsToUse.selectorProps = {
         toolName: optionsToUse.nearbyToolData?.metadata?.toolName,
         value: optionsToUse.nearbyToolData,
         uid: optionsToUse.nearbyToolData?.annotationUID,
         nearbyToolData: optionsToUse.nearbyToolData,
+        event,
       };
 
       let defaultPointsPosition = [];

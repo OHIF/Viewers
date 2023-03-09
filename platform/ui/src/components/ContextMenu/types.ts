@@ -1,23 +1,32 @@
 import { Types } from '@ohif/core';
 
 /**
- * The check props are used to check if a given menu is applicable in any
- * given situation.  The actual contents of the check props is defined
- * by the type of context menu.  For example, Cornerstone context menus
- * include items such as the display set information, the nearest/active
- * measurement and related information.  This allows context menus to
- * be much more context sensitive, and show up in various situations such
- * as only for certain body parts.  This reduces the amount of effort required
- * for a user to figure out where to go in the context menu.
+ * The selector props are provided to the various selector functions
+ * used to enable or disable menus and menu items.
+ * This enabled more context specific menus to be shown.
+ * For example, the selector for Cornerstone context menus
+ * includes items such as the display set information, the nearest/active
+ * measurement and related information, and that, in turn allows for
+ * simpler menus that are easier to navigate.  (See Bill Wallace's masters thesis
+ * for measurements on complexity of user menus).
  */
-export interface CheckProps {
+export interface SelectorProps {
   // If the context menu is invoked in the context of a measurement, then it
   // will contain the nearby tool data.
   nearbyToolData?: Record<string, unknown>;
 
+  // The tool name for the nearby tool
+  toolName?: string;
+
+  // An annotation UID - this will be present if nearyToolData is present.
+  uid?: string;
+
   // If the context menu is invoked on an active viewport, then it will contain
   // the first display set.
   displaySet?: Record<string, unknown>;
+
+  // The triggering event - can be used to determine key modifiers
+  event?: Event;
 
   // Any other properties
   [propertyName: string]: unknown;
@@ -47,16 +56,18 @@ export interface MenuItem {
   label?: string;
 
   // Delegating items are used to include other sub-menus inline within
-  // this menu.  That allows sharing part of the menu structure.
+  // this menu.  That allows sharing part of the menu structure, but also,
+  // more importantly to use a single selector function to include/exclude
+  // and entire section of sub-menu.
   delegating?: boolean;
 
   // A sub-menu is shown when this item is selected or is delegating.
   //  This item gives the name of the sub-menu.
   subMenu?: string;
 
-  // The checkFunction is used to determine if this menu entry will be shown
+  // The selector is used to determine if this menu entry will be shown
   // or more importantly, if the delegating subMenu will be included.
-  checkFunction?: (props: CheckProps) => boolean;
+  selector?: (props: SelectorProps) => boolean;
 
   /** Adapts the item by filling in additional properties as requried */
   adaptItem?: (item: MenuItem, props: ContextMenuProps) => UIMenuItem;
@@ -69,7 +80,7 @@ export interface MenuItem {
  * A menu is a list of menu items, plus a selector.
  * The selector is used to determine whether the menu should be displayed
  * in a given context.  The parameters passed to the selector come from
- * the 'checkProps' value in the options, and are intended to be context
+ * the 'selectorProps' value in the options, and are intended to be context
  * specific values containing things like the selected object, the currently
  * displayed study etc so that the context menu can dynamically choose which
  * view to show.
@@ -102,5 +113,5 @@ export type ContextMenuProps = {
   menus: Menu[];
 
   /** The properties used to decide the menu type */
-  checkProps: CheckProps;
+  selectorProps: SelectorProps;
 };

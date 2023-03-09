@@ -43,27 +43,23 @@ function initContextMenu({
     );
   };
 
-  /* The show context menu as a command is the action taken to cause the
-   * menu to display.  This can be customized by replacing the 'showContextMenu'
-   * customization with an alternate set of command manager run values to
-   * display a completely different type of menu.
-   * If this is still the context menus defined here, then this object will also
-   * contain a set of context menus to apply.
+  /**
+   * Shows the context menu by calling the showContextMenu customization commands.
+   * This allows configuring what data is available to the context menu for the
+   * selector props, as well as completely replacing the type of context menu,
+   * or replacing the context menu with an alternate view entirely such as a dialog.
+   *
+   * Looks up CustomizationService `showContextMenu` and retrieves the value
+   * as a Command[] object, and then runs it with the nearby tool data.
+   * The default is to run the command showViewerContextMenu in the CORNERSTONE
+   * context.
    */
-  const getShowContextMenu = (): Types.UICommand =>
-    customizationService.get('showContextMenu') || showContextMenuDefault;
-
-  // Just a helper function to invoke the show context menu command
-  const showContextMenu = (contextMenuProps): void => {
-    commandsManager.run(getShowContextMenu(), contextMenuProps);
-  };
-
-  const onRightClick = event => {
+  const showContextMenu = event => {
     const nearbyToolData = findNearbyToolData(event);
-    showContextMenu({
-      event,
-      nearbyToolData,
-    });
+    commandsManager.run(
+      customizationService.get('showContextMenu') || showContextMenuDefault,
+      { event, nearbyToolData }
+    );
   };
 
   // TODO No CS3D support yet
@@ -88,7 +84,9 @@ function initContextMenu({
     const mouseUpEvent = evt.detail.event;
     const isRightClick = mouseUpEvent.which === 3;
 
-    const clickMethodHandler = isRightClick ? onRightClick : resetContextMenu;
+    const clickMethodHandler = isRightClick
+      ? showContextMenu
+      : resetContextMenu;
     clickMethodHandler(evt);
   };
 
