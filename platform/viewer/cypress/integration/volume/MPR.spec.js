@@ -27,9 +27,10 @@ describe('OHIF MPR', () => {
   });
 
   it('should render correctly the MPR', () => {
-    cy.wait(1000);
+    cy.wait(250);
 
     cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.wait(250);
     cy.get('[data-cy="MPR"]').click();
 
     cy.get('[data-cy="thumbnail-viewport-labels"]').should('have.length', 3);
