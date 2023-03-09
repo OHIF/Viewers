@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
@@ -117,11 +117,8 @@ function CustomizableViewportOverlay({
   viewportIndex,
   servicesManager,
 }) {
-  const {
-    toolbarService,
-    cornerstoneViewportService,
-    customizationService,
-  } = servicesManager.services;
+  const { toolbarService, cornerstoneViewportService, customizationService } =
+    servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -140,17 +137,24 @@ function CustomizableViewportOverlay({
     'cornerstoneOverlayBottomRight'
   );
 
-  let instance, instanceNumber;
-  if (viewportData != null) {
-    instance = _getViewportInstance(viewportData, imageIndex);
-
-    instanceNumber = _getInstanceNumber(
-      viewportData,
-      viewportIndex,
-      imageIndex,
-      cornerstoneViewportService
-    );
-  }
+  const instance = useMemo(() => {
+    if (viewportData != null) {
+      return _getViewportInstance(viewportData, imageIndex);
+    } else {
+      return null;
+    }
+  }, [viewportData, imageIndex]);
+  const instanceNumber = useMemo(() => {
+    if (viewportData != null) {
+      return _getInstanceNumber(
+        viewportData,
+        viewportIndex,
+        imageIndex,
+        cornerstoneViewportService
+      );
+    }
+    return null;
+  }, [viewportData, viewportIndex, imageIndex, cornerstoneViewportService]);
 
   /**
    * Initial toolbar state
@@ -197,9 +201,10 @@ function CustomizableViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-          viewportIndex
-        );
+        const viewport =
+          cornerstoneViewportService.getCornerstoneViewportByIndex(
+            viewportIndex
+          );
 
         if (!viewport) {
           return;
@@ -263,7 +268,7 @@ function CustomizableViewportOverlay({
           formatTime: formatDICOMTime,
           formatNumberPrecision: formatNumberPrecision,
         },
-        instance: instance,
+        instance,
         // calculated
         voi,
         scale,
@@ -312,19 +317,7 @@ function CustomizableViewportOverlay({
         ))}
       </>
     );
-  }, [
-    topLeftCustomization,
-    element,
-    viewportData,
-    imageSliceData,
-    viewportIndex,
-    servicesManager,
-    customizationService,
-    instance,
-    voi,
-    scale,
-    instanceNumber,
-  ]);
+  }, [topLeftCustomization, _renderOverlayItem]);
 
   const getTopRightContent = useCallback(() => {
     const items = topRightCustomization?.items || [
@@ -340,19 +333,7 @@ function CustomizableViewportOverlay({
         ))}
       </>
     );
-  }, [
-    topRightCustomization,
-    element,
-    viewportData,
-    imageSliceData,
-    viewportIndex,
-    servicesManager,
-    customizationService,
-    instance,
-    voi,
-    scale,
-    instanceNumber,
-  ]);
+  }, [topRightCustomization, _renderOverlayItem]);
 
   const getBottomLeftContent = useCallback(() => {
     const items = bottomLeftCustomization?.items || [];
@@ -365,19 +346,7 @@ function CustomizableViewportOverlay({
         ))}
       </>
     );
-  }, [
-    bottomLeftCustomization,
-    element,
-    viewportData,
-    imageSliceData,
-    viewportIndex,
-    servicesManager,
-    customizationService,
-    instance,
-    voi,
-    scale,
-    instanceNumber,
-  ]);
+  }, [bottomLeftCustomization, _renderOverlayItem]);
 
   const getBottomRightContent = useCallback(() => {
     const items = bottomRightCustomization?.items || [];
@@ -390,19 +359,7 @@ function CustomizableViewportOverlay({
         ))}
       </>
     );
-  }, [
-    bottomRightCustomization,
-    element,
-    viewportData,
-    imageSliceData,
-    viewportIndex,
-    servicesManager,
-    customizationService,
-    instance,
-    voi,
-    scale,
-    instanceNumber,
-  ]);
+  }, [bottomRightCustomization, _renderOverlayItem]);
 
   return (
     <ViewportOverlay
@@ -492,9 +449,8 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-    viewportIndex
-  );
+  const cornerstoneViewport =
+    cornerstoneViewportService.getCornerstoneViewportByIndex(viewportIndex);
 
   if (!cornerstoneViewport) {
     return;
