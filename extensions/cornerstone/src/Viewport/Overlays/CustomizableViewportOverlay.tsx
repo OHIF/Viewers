@@ -144,6 +144,7 @@ function CustomizableViewportOverlay({
       return null;
     }
   }, [viewportData, imageIndex]);
+
   const instanceNumber = useMemo(() => {
     if (viewportData != null) {
       return _getInstanceNumber(
@@ -234,7 +235,7 @@ function CustomizableViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
     };
-  }, [viewportIndex, viewportData]);
+  }, [viewportIndex, viewportData, cornerstoneViewportService, element]);
 
   /**
    * Updating the active tools when the toolbar changes
