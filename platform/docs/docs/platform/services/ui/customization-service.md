@@ -116,32 +116,17 @@ There are several ways to register customizations.  The
 `APP_CONFIG.customizationService`
 field is used as a per-configuration entry.  This object can list single
 configurations by id, or it can list sets of customizations by referring to
-the `customizationModule` in an extension.  For example, the fictitious
-customization 'customIcons' might be defined as below in the APP_CONFIG:
-
-```js
-window.config = {
-  ...,
-  customizationService: [
-    {
-      id: 'customIcons',
-      backArrow: 'https://customIcons.org/backArrow.svg',
-    },
-  ],
-  ...
-}
-```
+the `customizationModule` in an extension.
 
 NOTE that these definitions from APP_CONFIG will be loaded by default, just like
 extension/modes default customization.
-
 
 Below is the example configuration for `CustomizableViewportOverlay` component
 customization, using the customization prototype `ohif.overlayItem` defined in
 `ohif/extension-defaul` extension.:
 
 ```js
-{
+window.config = {
   //...
 
   // in the APP_CONFIG file set the top right area to show the patient name
@@ -364,7 +349,7 @@ Below is the full example configuration of the customizable viewport overlay and
 
 ```javascript
 // this is one of the configuration files in `platform/viewer/public/config/*.js`
-{
+window.config = {
   // ...
 
   customizationService: {
