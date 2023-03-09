@@ -101,6 +101,7 @@ function initContextMenu({
   function elementEnabledHandler(evt) {
     const { viewportId, element } = evt.detail;
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+    if (!viewportInfo) return;
     const viewportIndex = viewportInfo.getViewportIndex();
     // TODO check update upstream
     setEnabledElement(viewportIndex, element);
