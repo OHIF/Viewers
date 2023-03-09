@@ -40,21 +40,6 @@ Below is the protocol of the `getCustomizationModule()`, if defined in Typescrip
 If the name is 'default', it is the Default customization, which is loaded
 automatically when the extension or mode is loaded.
 
-For example, customization module definition below defines a single customization,
-which is the default customization and has simple data. :
-
-```js
-  getCustomizationModule: () => [
-    {
-      name: 'default',
-      value: {
-        id: 'customIcons',
-        backArrow: 'https://customIcons.org/backArrow.svg',
-      },
-    },
-  ],
-```
-
 In the `value` of each customizations, you will define customization prototype(s).
 These customization prototype(s) can be considered like "Prototype" in Javascript.
 These can be used to extend the customization definitions from configurations.
