@@ -83,7 +83,7 @@ export default function getCustomizationModule() {
         {
           id: 'ohif.overlayItem',
           uiType: 'uiType',
-          content: function(props) {
+          content: function (props) {
             if (this.condition && !this.condition(props)) return null;
 
             const { instance } = props;
