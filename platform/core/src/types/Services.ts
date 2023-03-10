@@ -27,4 +27,5 @@ export default interface Services {
   syncGroupService?: Record<string, unknown>;
   cornerstoneCacheService?: Record<string, unknown>;
   segmentationService?: Record<string, unknown>;
+  panelService?: Record<string, unknown>;
 }

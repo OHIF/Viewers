@@ -158,6 +158,7 @@ function ViewerLayout({
     const { content, entry } = getComponent(id);
 
     return {
+      id: entry.id,
       iconName: entry.iconName,
       iconLabel: entry.iconLabel,
       label: entry.label,
@@ -227,6 +228,7 @@ function ViewerLayout({
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
                 tabs={leftPanelComponents}
+                servicesManager={servicesManager}
               />
             </ErrorBoundary>
           ) : null}
@@ -248,6 +250,7 @@ function ViewerLayout({
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
                 tabs={rightPanelComponents}
+                servicesManager={servicesManager}
               />
             </ErrorBoundary>
           ) : null}

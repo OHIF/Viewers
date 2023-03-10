@@ -40,6 +40,7 @@ describe('Top level exports', () => {
       'DicomMetadataStore',
       'pubSubServiceInterface',
       'PubSubService',
+      'PanelService',
     ].sort();
 
     const exports = Object.keys(OHIF).sort();

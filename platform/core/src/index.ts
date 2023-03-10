@@ -29,6 +29,7 @@ import {
   PubSubService,
   UserAuthenticationService,
   CustomizationService,
+  PanelService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -74,6 +75,7 @@ const OHIF = {
   DicomMetadataStore,
   pubSubServiceInterface,
   PubSubService,
+  PanelService,
 };
 
 export {
@@ -112,6 +114,7 @@ export {
   pubSubServiceInterface,
   PubSubService,
   Types,
+  PanelService,
 };
 
 export { OHIF };

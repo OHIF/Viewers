@@ -4,7 +4,6 @@ import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
 
 import { useTranslation } from 'react-i18next';
-import callColorPickerDialog from './callColorPickerDialog';
 
 export default function PanelSegmentation({
   servicesManager,
