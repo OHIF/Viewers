@@ -23,6 +23,7 @@ export default interface Services {
   toolGroupService?: Record<string, unknown>;
   uiNotificationService?: Record<string, unknown>;
   uiModalService?: Record<string, unknown>;
+  uiViewportDialogService?: Record<string, unknown>;
   viewportGridService?: ViewportGridService;
   syncGroupService?: Record<string, unknown>;
   cornerstoneCacheService?: Record<string, unknown>;

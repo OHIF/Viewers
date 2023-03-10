@@ -35,7 +35,7 @@ const setHeaders = (res, path) => {
   }
   if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
-  } else if (path.indexOf('/frames') !== -1) {
+  } else if (path.indexOf('frames') !== -1) {
     res.setHeader('Content-Type', 'multipart/related');
   } else {
     res.setHeader('Content-Type', 'application/json');

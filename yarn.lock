@@ -1407,10 +1407,10 @@
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.3.1.tgz#50cfaf3de3c5a55f22f7fae1a9f6584a1c343ffa"
-  integrity sha512-+tqMLVYeSZjzwtzbAPqRMq5iI47nrtXz4f3GQ1jKUSmZqQyvgWRzAizcfnl6OEIrgjeg/2MHdSGOEWu12H8M+w==
+"@cornerstonejs/adapters@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.4.1.tgz#fedab0d9cfea609f5219950c86e546198ad0f3c8"
+  integrity sha512-DQabSBdTN/A5tsncnDLdsb6LI5I/FTG3gSmNpDAkc9fAZY6Ljj0lCLt9KHB5OA1Gbvrlcab/DGJ/2YW6Z7ifRg==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     dcmjs "^0.29.4"
@@ -1443,28 +1443,36 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.32.0":
-  version "0.32.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.32.0.tgz#75fb782cc30c82642d6085d7900ec91df51aee36"
-  integrity sha512-Ep7b+jUO5OtRuEYRlb2Q386ZZfndAdgkDApPoTOYR+BzrwVfMF8/BEmP7UagT/bpAFk5lp5PHt/akN0qM2KR/Q==
+"@cornerstonejs/core@^0.33.1":
+  version "0.33.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.33.1.tgz#dfbcad81239141c2702fd2ab0a3edbe408e7bfad"
+  integrity sha512-QXrnKZBEMharA/FIYqtvkTXD8JeEf742yHybNmehB1cJU1hrsjRJ1JuqXXu6IHWJFx3cAsCaWk4oZyA09OB7OQ==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.13.0.tgz#0b27bde776585274b6f5ab98eb2366711f8fc878"
-  integrity sha512-js+qaw+I5en0FR/SzJVwGY5WKfldPiVfoJvMuZb7/mNoeoi+N/U47W9WzKlCPqM81xb1mlnjXPyhVdxQ78F36Q==
+"@cornerstonejs/core@^0.33.2":
+  version "0.33.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.33.2.tgz#63aea3eb9787622be0c75052696119a0e58117e6"
+  integrity sha512-iRHq7WIcZOUxOIMV9KEY7iJjTpcpk7vJPAIZM5tqVvTIbcfaACmxpTlpc2NPqT52o0shRQImIkMFiotUKx0Pug==
   dependencies:
-    "@cornerstonejs/core" "^0.32.0"
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/streaming-image-volume-loader@^0.14.1":
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.14.1.tgz#9830e1cbb65aa0e050336b7f5cb9c81d23e09fc5"
+  integrity sha512-4m2efDbv00pFQfL/ZjnWjo4RJ3yo4ibv4J/8oro7ZrzhXUJl9L4mwdA1HYCAkS+rZQndZba138AO6b+g4nrmXQ==
+  dependencies:
+    "@cornerstonejs/core" "^0.33.1"
     cornerstone-wado-image-loader "^4.10.0"
 
-"@cornerstonejs/tools@^0.48.0":
-  version "0.48.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.48.0.tgz#c881866a58dd7fe5338256166630e3de633b14e7"
-  integrity sha512-uMrfY84m1bzVQ8I6HAkmKjZDuB3cHy9T7SWiOhXqfQGdcftkEJXYzXA6WbXDbsG8LpslnSv79Ovbx1uvH2GrWQ==
+"@cornerstonejs/tools@^0.50.2":
+  version "0.50.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.50.2.tgz#0134b21016ec64290b8f9a43ac1a485654ed86eb"
+  integrity sha512-MedGsiisDjd2eOewhojwPpWReKM13x1krKIhPNL3hi8rZjV57T8RTpWfztxSjuUpOvapmlJXutrDPuLSUXs01g==
   dependencies:
-    "@cornerstonejs/core" "^0.32.0"
+    "@cornerstonejs/core" "^0.33.2"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -6438,11 +6446,6 @@ array-union@^2.1.0:
   resolved "https://registry.npmjs.org/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
   integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
-array-union@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/array-union/-/array-union-3.0.1.tgz#da52630d327f8b88cfbfb57728e2af5cd9b6b975"
-  integrity sha512-1OvF9IbWwaeiM9VhzYXVQacMibxpXOMYVNIvMtKRyX9SImBXpKcFr8XvFDeEslCyuH/t6KRt7HEO94AlP8Iatw==
-
 array-uniq@^1.0.1:
   version "1.0.3"
   resolved "https://registry.npmjs.org/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
@@ -8462,18 +8465,6 @@ copy-text-to-clipboard@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/copy-text-to-clipboard/-/copy-text-to-clipboard-3.0.1.tgz#8cbf8f90e0a47f12e4a24743736265d157bce69c"
   integrity sha512-rvVsHrpFcL4F2P8ihsoLdFHmd404+CMg71S756oRSeQgqk51U3kicGdnvfkrxva0xXH92SjGS62B0XIJsbh+9Q==
-
-copy-webpack-plugin@^10.2.0:
-  version "10.2.4"
-  resolved "https://registry.npmjs.org/copy-webpack-plugin/-/copy-webpack-plugin-10.2.4.tgz#6c854be3fdaae22025da34b9112ccf81c63308fe"
-  integrity sha512-xFVltahqlsRcyyJqQbDY6EYTtyQZF9rf+JPjwHObLdPFMEISqkFkr7mFoVOC6BfYS/dNThyoQKvziugm+OnwBg==
-  dependencies:
-    fast-glob "^3.2.7"
-    glob-parent "^6.0.1"
-    globby "^12.0.2"
-    normalize-path "^3.0.0"
-    schema-utils "^4.0.0"
-    serialize-javascript "^6.0.0"
 
 copy-webpack-plugin@^11.0.0:
   version "11.0.0"
@@ -12013,18 +12004,6 @@ globby@^11.0.1, globby@^11.0.2, globby@^11.0.3, globby@^11.0.4, globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-globby@^12.0.2:
-  version "12.2.0"
-  resolved "https://registry.npmjs.org/globby/-/globby-12.2.0.tgz#2ab8046b4fba4ff6eede835b29f678f90e3d3c22"
-  integrity sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA==
-  dependencies:
-    array-union "^3.0.1"
-    dir-glob "^3.0.1"
-    fast-glob "^3.2.7"
-    ignore "^5.1.9"
-    merge2 "^1.4.1"
-    slash "^4.0.0"
-
 globby@^13.1.1:
   version "13.1.3"
   resolved "https://registry.npmjs.org/globby/-/globby-13.1.3.tgz#f62baf5720bcb2c1330c8d4ef222ee12318563ff"
@@ -12757,7 +12736,7 @@ ignore@^4.0.3, ignore@^4.0.6:
   resolved "https://registry.npmjs.org/ignore/-/ignore-4.0.6.tgz#750e3db5862087b4737ebac8207ffd1ef27b25fc"
   integrity sha512-cyFDKrqc/YdcWFniJhzI42+AzS+gNwmUzOSFcRCQYwySuBBBy/KjuxWLZ/FHEH6Moq1NizMOBWyTcv8O4OZIMg==
 
-ignore@^5.0.0, ignore@^5.1.1, ignore@^5.1.8, ignore@^5.1.9, ignore@^5.2.0:
+ignore@^5.0.0, ignore@^5.1.1, ignore@^5.1.8, ignore@^5.2.0:
   version "5.2.4"
   resolved "https://registry.npmjs.org/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"
   integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==

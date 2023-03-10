@@ -203,7 +203,7 @@ export default function PanelSegmentation({
           showAddSegmentation={false}
           segmentations={segmentations}
           isMinimized={isMinimized}
-          activeSegmentationId={selectedSegmentationId}
+          activeSegmentationId={selectedSegmentationId || ''}
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
           onSegmentationEdit={onSegmentationEdit}
