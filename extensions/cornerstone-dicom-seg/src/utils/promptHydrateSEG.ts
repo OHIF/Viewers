@@ -10,7 +10,6 @@ function promptHydrateSEG({
   servicesManager,
   segDisplaySet,
   viewportIndex,
-  toolGroupId,
 }) {
   const { uiViewportDialogService } = servicesManager.services;
 
@@ -24,7 +23,6 @@ function promptHydrateSEG({
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
         viewportIndex,
-        toolGroupId,
         servicesManager,
       });
 
