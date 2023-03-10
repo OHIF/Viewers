@@ -9,10 +9,10 @@ import ROIThresholdConfiguration, {
   ROI_STAT,
 } from './ROIThresholdConfiguration';
 
-const LOWER_CT_THRESHOLD_DEFAULT = -1000;
-const UPPER_CT_THRESHOLD_DEFAULT = 500;
-const LOWER_PT_THRESHOLD_DEFAULT = 5;
-const UPPER_PT_THRESHOLD_DEFAULT = 50;
+const LOWER_CT_THRESHOLD_DEFAULT = -1024;
+const UPPER_CT_THRESHOLD_DEFAULT = 1024;
+const LOWER_PT_THRESHOLD_DEFAULT = 2.5;
+const UPPER_PT_THRESHOLD_DEFAULT = 100;
 const WEIGHT_DEFAULT = 0.41; // a default weight for suv max often used in the literature
 const DEFAULT_STRATEGY = ROI_STAT;
 
