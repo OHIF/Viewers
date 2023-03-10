@@ -33,8 +33,8 @@ export default class PanelService extends PubSubService {
   }
 
   /**
-   * Adds a mapping of events (activatePanelTriggers.sourceTriggerEventNames) broadcast by
-   * activatePanelTrigger.sourcePubService that
+   * Adds a mapping of events (activatePanelTriggers.sourceEvents) broadcast by
+   * activatePanelTrigger.sourcePubSubService that
    * when fired/broadcasted must in turn activate the panel with the given id.
    * The subscriptions created are returned such that they can be managed and unsubscribed
    * as appropriate.
@@ -50,8 +50,8 @@ export default class PanelService extends PubSubService {
   ): Subscription[] {
     return activatePanelTriggers
       .map(trigger =>
-        trigger.sourceTriggerEventNames.map(eventName =>
-          trigger.sourcePubService.subscribe(eventName, () =>
+        trigger.sourceEvents.map(eventName =>
+          trigger.sourcePubSubService.subscribe(eventName, () =>
             this.activatePanel(panelId, forceActive)
           )
         )

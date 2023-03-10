@@ -1,7 +1,7 @@
 import { PubSubService } from "../services";
 
 type Panel = {
-  id: string;
+  id?: string;
   name: string;
   iconName: string;
   iconLabel: string;
@@ -10,8 +10,8 @@ type Panel = {
 };
 
 type ActivatePanelTriggers = {
-  sourcePubService: PubSubService;
-  sourceTriggerEventNames: string[]
+  sourcePubSubService: PubSubService;
+  sourceEvents: string[]
 }
 
 interface PanelEvent {

@@ -4,9 +4,6 @@ import {
   PanelStudyBrowserTracking,
 } from './panels';
 
-const trackedMeasurementsPanelId =
-  '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements';
-
 // TODO:
 // - No loading UI exists yet
 // - cancel promises when component is destroyed
@@ -18,7 +15,6 @@ function getPanelModule({
 }): Types.Panel[] {
   return [
     {
-      id: '@ohif/extension-measurement-tracking.panelModule.seriesList',
       name: 'seriesList',
       iconName: 'group-layers',
       iconLabel: 'Studies',
@@ -31,7 +27,6 @@ function getPanelModule({
     },
 
     {
-      id: trackedMeasurementsPanelId,
       name: 'trackedMeasurements',
       iconName: 'tab-linear',
       iconLabel: 'Measure',

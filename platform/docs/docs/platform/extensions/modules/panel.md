@@ -123,8 +123,8 @@ function modeFactory({ modeConfiguration }) {
       _activatePanelTriggersSubscriptions = [
         ...panelService.addActivatePanelTriggers('@ohif/extension-measurement-tracking.panelModule.trackedMeasurements', [
           {
-            sourcePubService: measurementService,
-            sourceTriggerEventNames: [
+            sourcePubSubService: measurementService,
+            sourceEvents: [
               measurementService.EVENTS.MEASUREMENT_ADDED,
               measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
             ],

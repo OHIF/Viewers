@@ -40,8 +40,8 @@ for tracking measurements might get activated every time the
 `MeasurementService` fires a `MEASUREMENT_ADDED` event like this:
     ```js
     panelService.addActivatePanelTriggers('measurement-tracking-panel-id', [
-        sourcePubService: measurementService,
-        sourceTriggerEventNames: [
+        sourcePubSubService: measurementService,
+        sourceEvents: [
             measurementService.EVENTS.MEASUREMENT_ADDED,
             measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
         ],

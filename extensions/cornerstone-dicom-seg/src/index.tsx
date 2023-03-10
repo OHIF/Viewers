@@ -20,8 +20,6 @@ const OHIFCornerstoneSEGViewport = props => {
   );
 };
 
-const segmentationPanelId = '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation';
-
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -62,7 +60,6 @@ const extension = {
 
     return [
       {
-        id: segmentationPanelId,
         name: 'panelSegmentation',
         iconName: 'tab-segmentation',
         iconLabel: 'Segmentation',

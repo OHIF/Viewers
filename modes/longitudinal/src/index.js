@@ -130,16 +130,16 @@ function modeFactory() {
       // _activatePanelTriggersSubscriptions = [
       //   ...panelService.addActivatePanelTriggers(dicomSeg.panel, [
       //     {
-      //       sourcePubService: segmentationService,
-      //       sourceTriggerEventNames: [
+      //       sourcePubSubService: segmentationService,
+      //       sourceEvents: [
       //         segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
       //       ],
       //     },
       //   ]),
       //   ...panelService.addActivatePanelTriggers(tracked.measurements, [
       //     {
-      //       sourcePubService: measurementService,
-      //       sourceTriggerEventNames: [
+      //       sourcePubSubService: measurementService,
+      //       sourceEvents: [
       //         measurementService.EVENTS.MEASUREMENT_ADDED,
       //         measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
       //       ],
