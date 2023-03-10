@@ -1,7 +1,6 @@
 async function _hydrateSEGDisplaySet({
   segDisplaySet,
   viewportIndex,
-  toolGroupId,
   servicesManager,
 }) {
   const {
@@ -55,8 +54,6 @@ async function _hydrateSEGDisplaySet({
         viewportIndex: index,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
-          viewportType: 'volume',
-          toolGroupId,
           initialImageOptions: {
             preset: 'middle',
           },
