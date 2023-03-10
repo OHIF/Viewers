@@ -50,10 +50,9 @@ function getThresholdValues(
   );
 
   const ptValue = getRoiStats(referencedVolumes[0], annotations);
-  const ctValue = getRoiStats(referencedVolumes[1], annotations);
 
   return {
-    ctLower: weight * ctValue,
+    ctLower: -Infinity,
     ctUpper: +Infinity,
     ptLower: weight * ptValue,
     ptUpper: +Infinity,
