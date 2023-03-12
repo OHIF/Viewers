@@ -39,33 +39,38 @@ export default function toggleMPRHangingProtocol({
   getToolGroup,
 }) {
   const {
-    UINotificationService,
-    HangingProtocolService,
-    ViewportGridService,
-    ToolBarService,
+    uiNotificationService,
+    hangingProtocolService,
+    viewportGridService,
+    toolbarService,
   } = servicesManager.services;
+
+  // TODO Introduce a service to persist the state of the current hanging protocol/app.
+  // So all of the code to persist the state here will no longer be needed. Perhaps
+  // just the id of the current hanging protocol to toggle MPR off is needed.
 
   const {
     activeViewportIndex,
     viewports,
     numRows,
     numCols,
-  } = ViewportGridService.getState();
+  } = viewportGridService.getState();
   const viewportDisplaySetInstanceUIDs =
     viewports[activeViewportIndex].displaySetInstanceUIDs;
 
-  const errorCallback = error => {
-    UINotificationService.show({
+  // What is the current active protocol and stage number to restore later
+  const { protocol, stage } = hangingProtocolService.getActiveProtocol();
+
+  const restoreErrorCallback = error => {
+    console.error(error);
+    uiNotificationService.show({
       title: 'Multiplanar reconstruction (MPR) ',
       message:
-        'Cannot create MPR for this DisplaySet since it is not reconstructable.',
+        'Something went wrong while trying to restore the previous layout.',
       type: 'info',
       duration: 3000,
     });
   };
-
-  // What is the current active protocol and stage number to restore later
-  const { protocol, stage } = HangingProtocolService.getActiveProtocol();
 
   if (toggledState) {
     resetCachedState();
@@ -98,23 +103,30 @@ export default function toggleMPRHangingProtocol({
       getToolGroup
     );
 
-    HangingProtocolService.setProtocol(
+    const errorCallback = error => {
+      // Unable to create MPR, so be sure to return to the cached/original protocol.
+      hangingProtocolService.setProtocol(
+        cachedState.protocol.id,
+        viewportMatchDetails,
+        restoreErrorCallback
+      );
+
+      uiNotificationService.show({
+        title: 'Multiplanar reconstruction (MPR) ',
+        message:
+          'Cannot create MPR for this DisplaySet since it is not reconstructable.',
+        type: 'info',
+        duration: 3000,
+      });
+    };
+
+    hangingProtocolService.setProtocol(
       MPR_TOOLGROUP_ID,
       matchDetails,
       errorCallback
     );
     return;
   }
-
-  const restoreErrorCallback = error => {
-    UINotificationService.show({
-      title: 'Multiplanar reconstruction (MPR) ',
-      message:
-        'Something went wrong while trying to restore the previous layout.',
-      type: 'info',
-      duration: 3000,
-    });
-  };
 
   _disableCrosshairs([MPR_TOOLGROUP_ID], getToolGroup);
 
@@ -126,7 +138,7 @@ export default function toggleMPRHangingProtocol({
   // cached protocol and stage. However, for the default protocol, we need
   // to also apply the layout type and properties.
   if (cachedState.protocol.id !== 'default') {
-    HangingProtocolService.setProtocol(
+    hangingProtocolService.setProtocol(
       cachedState.protocol.id,
       viewportMatchDetails,
       restoreErrorCallback
@@ -135,14 +147,14 @@ export default function toggleMPRHangingProtocol({
     return;
   }
 
-  HangingProtocolService.setProtocol(
+  hangingProtocolService.setProtocol(
     'default',
     viewportMatchDetails,
     restoreErrorCallback
   );
 
   if (numRows !== properties.rows || numCols !== properties.columns) {
-    ViewportGridService.setLayout({
+    viewportGridService.setLayout({
       numRows: properties.rows,
       numCols: properties.columns,
       layoutType,
@@ -165,7 +177,7 @@ export default function toggleMPRHangingProtocol({
         viewportOptions,
         displaySetsInfo,
       } = viewportMatchDetailsForViewport;
-      ViewportGridService.setDisplaySetsForViewport({
+      viewportGridService.setDisplaySetsForViewport({
         viewportIndex,
         displaySetInstanceUIDs: displaySetsInfo.map(
           displaySetInfo => displaySetInfo.displaySetInstanceUID
@@ -173,7 +185,7 @@ export default function toggleMPRHangingProtocol({
         viewportOptions,
       });
     } else {
-      ViewportGridService.setDisplaySetsForViewport({
+      viewportGridService.setDisplaySetsForViewport({
         viewportIndex,
         displaySetInstanceUIDs: [],
         viewportOptions: {},
@@ -181,7 +193,7 @@ export default function toggleMPRHangingProtocol({
     }
   });
 
-  ToolBarService.recordInteraction({
+  toolbarService.recordInteraction({
     groupId: 'WindowLevel',
     itemId: 'WindowLevel',
     interactionType: 'tool',
@@ -213,15 +225,15 @@ function _disableCrosshairs(toolGroupIds, getToolGroup) {
 
 function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
   // here we need to use the viewports and try to map it into the
-  // viewportMatchDetails and displaySetMatch that HangingProtocolService
+  // viewportMatchDetails and displaySetMatch that hangingProtocolService
   // expects
   const {
-    ViewportGridService,
-    HangingProtocolService,
-    ToolGroupService,
+    viewportGridService,
+    hangingProtocolService,
+    toolGroupService,
   } = servicesManager.services;
 
-  const { numRows, numCols } = ViewportGridService.getState();
+  const { numRows, numCols } = viewportGridService.getState();
 
   let viewportMatchDetails = new Map();
 
@@ -257,7 +269,7 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
       }
     });
   } else {
-    ({ viewportMatchDetails } = HangingProtocolService.getMatchDetails());
+    ({ viewportMatchDetails } = hangingProtocolService.getMatchDetails());
   }
 
   // get the toolGroup state for viewports
@@ -272,13 +284,17 @@ function _getViewportsInfo({ protocol, stage, viewports, servicesManager }) {
     .filter(Boolean);
 
   if (viewportIds.length) {
-    toolOptions = viewportIds.map(viewportId => {
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
-      return {
-        toolGroupId: toolGroup.id,
-        toolOptions: toolGroup.toolOptions,
-      };
-    });
+    toolOptions = viewportIds
+      .map(viewportId => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        return toolGroup
+          ? {
+              toolGroupId: toolGroup.id,
+              toolOptions: toolGroup.toolOptions,
+            }
+          : null;
+      })
+      .filter(Boolean);
   }
 
   return { viewportMatchDetails, viewportStructure, toolOptions };

@@ -44,7 +44,7 @@ function ViewerLayout({
     const search =
       dataSourceIdx === -1
         ? undefined
-        : `datasourcename=${pathname.substring(dataSourceIdx + 1)}`;
+        : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
     navigate({
       pathname: '/',
       search,
@@ -58,7 +58,7 @@ function ViewerLayout({
     appConfig.showLoadingIndicator
   );
 
-  const { HangingProtocolService } = servicesManager.services;
+  const { hangingProtocolService } = servicesManager.services;
 
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
@@ -158,6 +158,7 @@ function ViewerLayout({
     const { content, entry } = getComponent(id);
 
     return {
+      id: entry.id,
       iconName: entry.iconName,
       iconLabel: entry.iconLabel,
       label: entry.label,
@@ -167,11 +168,11 @@ function ViewerLayout({
   };
 
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
 
       // Todo: right now to set the loading indicator to false, we need to wait for the
-      // HangingProtocolService to finish applying the viewport matching to each viewport,
+      // hangingProtocolService to finish applying the viewport matching to each viewport,
       // however, this might not be the only approach to set the loading indicator to false. we need to explore this further.
       ({ progress }) => {
         if (progress === 100) {
@@ -183,7 +184,7 @@ function ViewerLayout({
     return () => {
       unsubscribe();
     };
-  }, [HangingProtocolService]);
+  }, [hangingProtocolService]);
 
   const getViewportComponentData = viewportComponent => {
     const { entry } = getComponent(viewportComponent.namespace);
@@ -227,6 +228,7 @@ function ViewerLayout({
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
                 tabs={leftPanelComponents}
+                servicesManager={servicesManager}
               />
             </ErrorBoundary>
           ) : null}
@@ -248,6 +250,7 @@ function ViewerLayout({
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
                 tabs={rightPanelComponents}
+                servicesManager={servicesManager}
               />
             </ErrorBoundary>
           ) : null}

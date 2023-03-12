@@ -29,6 +29,11 @@ export default function isDisplaySetReconstructable(instances) {
     return { value: false };
   }
 
+  // Can't reconstruct if all instances don't have the ImagePositionPatient.
+  if (!instances.every(instance => !!instance.ImagePositionPatient)) {
+    return { value: false };
+  }
+
   const sortedInstances = sortInstancesByPosition(instances);
 
   if (isMultiframe) {
@@ -38,9 +43,50 @@ export default function isDisplaySetReconstructable(instances) {
   }
 }
 
-function processMultiframe(instance) {
-  //TODO: deal with multriframe checks! return false for now as can't reconstruct.
-  return { value: false };
+function processMultiframe(multiFrameInstance) {
+  const {
+    PerFrameFunctionalGroupsSequence,
+    SharedFunctionalGroupsSequence,
+  } = multiFrameInstance;
+
+  // If we don't have the PixelMeasuresSequence, then the pixel spacing and
+  // slice thickness isn't specified or is changing and we can't reconstruct
+  // the dataset.
+  if (
+    !SharedFunctionalGroupsSequence ||
+    !SharedFunctionalGroupsSequence[0].PixelMeasuresSequence
+  ) {
+    return { value: false };
+  }
+
+  // Check that the orientation is either shared or with the allowed
+  // difference amount
+  const {
+    PlaneOrientationSequence: sharedOrientation,
+  } = SharedFunctionalGroupsSequence;
+
+  if (!sharedOrientation) {
+    const {
+      PlaneOrientationSequence: firstOrientation,
+    } = PerFrameFunctionalGroupsSequence[0];
+
+    if (!firstOrientation) {
+      console.log('No orientation information');
+      return { value: false };
+    }
+    // TODO - check orientation consistency
+  }
+
+  const frame0 = PerFrameFunctionalGroupsSequence[0];
+  const firstPosition =
+    frame0.PlanePositionSequence || frame0.CTPositionSequence;
+  if (!firstPosition) {
+    console.log('No image position information, not reconstructable');
+    return { value: false };
+  }
+  // TODO - check spacing consistency
+
+  return { value: true };
 }
 
 function processSingleframe(instances) {

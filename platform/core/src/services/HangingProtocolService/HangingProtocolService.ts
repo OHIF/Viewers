@@ -16,9 +16,17 @@ const EVENTS = {
     'event::hanging_protocol_applied_for_viewport',
 };
 
-type Protocol = HangingProtocol.Protocol;
+type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
 class HangingProtocolService {
+  public static REGISTRATION = {
+    name: 'hangingProtocolService',
+    altName: 'HangingProtocolService',
+    create: ({ configuration = {}, commandsManager, servicesManager }) => {
+      return new HangingProtocolService(commandsManager, servicesManager);
+    },
+  };
+
   studies: StudyMetadata[];
   // stores all the protocols (object or function that returns an object) in a map
   protocols: Map<string, Protocol>;
@@ -177,10 +185,28 @@ class HangingProtocolService {
    * @param protocolId - the id of the protocol
    * @returns protocol - the protocol with the given id
    */
-  public getProtocolById(id: string): HangingProtocol.Protocol {
+  public getProtocolById(id: string): HangingProtocol.Protocol | undefined {
+    if (!id) {
+      return;
+    }
+
     const protocol = this.protocols.get(id);
 
-    return protocol;
+    if (protocol instanceof Function) {
+      try {
+        const { protocol: generatedProtocol } = this._getProtocolFromGenerator(
+          protocol
+        );
+
+        return generatedProtocol;
+      } catch (error) {
+        console.warn(
+          `Error while executing protocol generator for protocol ${id}: ${error}`
+        );
+      }
+    } else {
+      return this._validateProtocol(protocol);
+    }
   }
 
   /**
@@ -211,7 +237,7 @@ class HangingProtocolService {
    * If active protocols ids is null right now, then the specified
    * protocol will become the only active protocol.
    */
-  public addActiveProtocol(id: string): void {
+  public addActiveProtocolId(id: string): void {
     if (!id) {
       return;
     }
@@ -225,17 +251,17 @@ class HangingProtocolService {
    * Sets the active hanging protocols to use, by name.  If the value is empty,
    * then resets the active protocols to all the named items.
    */
-  public setActiveProtocols(hangingProtocol?: string[] | string): void {
-    if (!hangingProtocol || !hangingProtocol.length) {
+  public setActiveProtocolIds(protocolId?: string[] | string): void {
+    if (!protocolId || !protocolId.length) {
       this.activeProtocolIds = null;
       console.log('No active protocols, setting all to active');
       return;
     }
-    if (typeof hangingProtocol === 'string') {
-      this.setActiveProtocols([hangingProtocol]);
+    if (typeof protocolId === 'string') {
+      this.setActiveProtocolIds([protocolId]);
       return;
     }
-    this.activeProtocolIds = [...hangingProtocol];
+    this.activeProtocolIds = [...protocolId];
   }
 
   /**
@@ -250,7 +276,6 @@ class HangingProtocolService {
    * @param params.displaySets is the list of display sets associated with
    *        the studies to display in viewports.
    * @param protocol is a specific protocol to apply.
-   * @returns
    */
   public run({ studies, displaySets, activeStudy }, protocolId) {
     this.studies = [...studies];
@@ -434,6 +459,23 @@ class HangingProtocolService {
     return protocol;
   }
 
+  private _getProtocolFromGenerator(
+    protocolGenerator: HangingProtocol.ProtocolGenerator
+  ): {
+    protocol: HangingProtocol.Protocol;
+  } {
+    const { protocol } = protocolGenerator({
+      servicesManager: this._servicesManager,
+      commandsManager: this._commandsManager,
+    });
+
+    const validatedProtocol = this._validateProtocol(protocol);
+
+    return {
+      protocol: validatedProtocol,
+    };
+  }
+
   getViewportsRequireUpdate(viewportIndex, displaySetInstanceUID) {
     const newDisplaySetInstanceUID = displaySetInstanceUID;
     const protocol = this.protocol;
@@ -464,6 +506,12 @@ class HangingProtocolService {
     // If there is no displaySet, then we can assume that the viewport
     // is empty and we can just add the new displaySet to it
     if (protocolViewport.displaySets.length === 0) {
+      return defaultReturn;
+    }
+
+    // If the viewport options says to allow any instance, then we can assume
+    // it just updates this viewport
+    if (protocolViewport.viewportOptions.allowUnmatchedView) {
       return defaultReturn;
     }
 
@@ -821,13 +869,13 @@ class HangingProtocolService {
     protocol: Protocol,
     options: HangingProtocol.SetProtocolOptions
   ) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
 
     if (options.displaySetInstanceUIDs) {
       this._updateGlobalMatchByOptions(
         options as HangingProtocol.GlobalProtocolOptions,
         protocol,
-        DisplaySetService
+        displaySetService
       );
       return;
     }
@@ -848,7 +896,7 @@ class HangingProtocolService {
     options: HangingProtocol.ViewportSpecificProtocolOptions,
     protocol: HangingProtocol.Protocol
   ) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
     const { displaySetSelectors = {} } = protocol;
     const protocolViewports = protocol.stages[this.stage].viewports;
 
@@ -869,7 +917,7 @@ class HangingProtocolService {
 
         displaySetAndViewportOptions.displaySetInstanceUIDs.forEach(
           (displaySetInstanceUID, index) => {
-            const displaySet = DisplaySetService.getDisplaySetByUID(
+            const displaySet = displaySetService.getDisplaySetByUID(
               displaySetInstanceUID
             );
 
@@ -923,7 +971,7 @@ class HangingProtocolService {
 
         displaySetAndViewportOptions?.displaySetInstanceUIDs?.forEach(
           (displaySetInstanceUID, index) => {
-            const displaySet = DisplaySetService.getDisplaySetByUID(
+            const displaySet = displaySetService.getDisplaySetByUID(
               displaySetInstanceUID
             );
 
@@ -954,7 +1002,7 @@ class HangingProtocolService {
     protocolViewport: HangingProtocol.Viewport,
     displaySetSelectors: Record<string, HangingProtocol.DisplaySetSelector>
   ) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
     const protocolViewportDisplaySets = protocolViewport.displaySets;
     const numDisplaySetsToSet =
       displaySetAndViewportOptions.displaySetInstanceUIDs.length;
@@ -970,7 +1018,7 @@ class HangingProtocolService {
 
     displaySetAndViewportOptions.displaySetInstanceUIDs.forEach(
       displaySetInstanceUID => {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           displaySetInstanceUID
         );
 
@@ -991,7 +1039,7 @@ class HangingProtocolService {
   private _updateGlobalMatchByOptions(
     options: HangingProtocol.GlobalProtocolOptions,
     protocol: Protocol,
-    DisplaySetService: any
+    displaySetService: any
   ) {
     const { displaySetSelectors = {} } = protocol;
     const protocolViewports = protocol.stages[this.stage].viewports;
@@ -1000,7 +1048,7 @@ class HangingProtocolService {
     // we need to check each displaySetInstanceUIDs to see if it satisfies the
     // seriesMatching criteria
     options.displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 
@@ -1031,7 +1079,7 @@ class HangingProtocolService {
     Array.from(newDisplaySetIds).forEach((displaySetId, index) => {
       const displaySetInstanceUID = options.displaySetInstanceUIDs[index];
 
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 
@@ -1070,7 +1118,7 @@ class HangingProtocolService {
         });
 
         remainingDisplaySetMatches.forEach(({ displaySetInstanceUID }) => {
-          const displaySet = DisplaySetService.getDisplaySetByUID(
+          const displaySet = displaySetService.getDisplaySetByUID(
             displaySetInstanceUID
           );
 
@@ -1098,10 +1146,9 @@ class HangingProtocolService {
   ) {
     const { seriesMatchingRules } = displaySetSelector;
 
-    if (seriesMatchingRules.length) {
-      // only match the required rules
-      const requiredRules = seriesMatchingRules.filter(rule => rule.required);
-
+    // only match the required rules
+    const requiredRules = seriesMatchingRules.filter(rule => rule.required);
+    if (requiredRules.length) {
       const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
 
       if (!matched || matched.score === 0) {
@@ -1113,13 +1160,13 @@ class HangingProtocolService {
   }
 
   _validateOptions(options: HangingProtocol.SetProtocolOptions) {
-    const { DisplaySetService } = this._servicesManager.services;
+    const { displaySetService } = this._servicesManager.services;
 
     if (options.displaySetInstanceUIDs) {
       options = options as HangingProtocol.GlobalProtocolOptions;
 
       options.displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           displaySetInstanceUID
         );
 

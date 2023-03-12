@@ -1,13 +1,12 @@
 async function _hydrateSEGDisplaySet({
   segDisplaySet,
   viewportIndex,
-  toolGroupId,
   servicesManager,
 }) {
   const {
-    SegmentationService,
-    HangingProtocolService,
-    ViewportGridService,
+    segmentationService,
+    hangingProtocolService,
+    viewportGridService,
   } = servicesManager.services;
 
   const displaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
@@ -17,22 +16,22 @@ async function _hydrateSEGDisplaySet({
   // We need the hydration to notify panels about the new segmentation added
   const suppressEvents = false;
 
-  segmentationId = await SegmentationService.createSegmentationForSEGDisplaySet(
+  segmentationId = await segmentationService.createSegmentationForSEGDisplaySet(
     segDisplaySet,
     segmentationId,
     suppressEvents
   );
 
-  SegmentationService.hydrateSegmentation(segDisplaySet.displaySetInstanceUID);
+  segmentationService.hydrateSegmentation(segDisplaySet.displaySetInstanceUID);
 
-  const { viewports } = ViewportGridService.getState();
+  const { viewports } = viewportGridService.getState();
 
-  const updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+  const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
     viewportIndex,
     displaySetInstanceUID
   );
 
-  ViewportGridService.setDisplaySetsForViewports(updatedViewports);
+  viewportGridService.setDisplaySetsForViewports(updatedViewports);
 
   // Todo: fix this after we have a better way for stack viewport segmentations
 
@@ -45,18 +44,16 @@ async function _hydrateSEGDisplaySet({
       return;
     }
 
-    const shouldDisplaySeg = SegmentationService.shouldRenderSegmentation(
+    const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
       viewport.displaySetInstanceUIDs,
       segDisplaySet.displaySetInstanceUID
     );
 
     if (shouldDisplaySeg) {
-      ViewportGridService.setDisplaySetsForViewport({
+      viewportGridService.setDisplaySetsForViewport({
         viewportIndex: index,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
-          viewportType: 'volume',
-          toolGroupId,
           initialImageOptions: {
             preset: 'middle',
           },

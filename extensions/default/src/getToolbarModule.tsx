@@ -4,8 +4,6 @@ import ToolbarLayoutSelector from './Toolbar/ToolbarLayoutSelector.tsx';
 import ToolbarSplitButton from './Toolbar/ToolbarSplitButton.tsx';
 
 export default function getToolbarModule({ commandsManager, servicesManager }) {
-  const toolbarService = servicesManager.services.ToolBarService;
-
   return [
     {
       name: 'ohif.divider',
@@ -35,27 +33,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.toggle',
       defaultComponent: ToolbarButton,
-      requiredConfig: [],
-      optionalConfig: [],
-      requiredProps: [],
-      optionalProps: [],
-      clickHandler: (evt, clickedBtn, btnSectionName) => {
-        const { props } = clickedBtn;
-        const allButtons = toolbarService.getButtons();
-        const thisButton = allButtons[clickedBtn.id];
-
-        // Set our clicked button to active
-        thisButton.props.isActive = !thisButton.props.isActive;
-
-        // Run button logic/command
-        commandsManager.runCommand(props.commandName, props.commandOptions);
-
-        // What if just toggled "content"?
-        // commandName OR content?
-
-        // Set buttons & trigger notification
-        toolbarService.setButtons(allButtons);
-      },
+      clickHandler: () => {},
     },
   ];
 }

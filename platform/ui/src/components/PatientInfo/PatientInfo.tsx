@@ -119,16 +119,10 @@ function PatientInfo({
           )
         }
       >
-        <div className="relative flex justify-end cursor-pointer">
-          <div className="relative">
-            <Icon name="profile" className="w-5 text-white" />
-            <Icon
-              name="info-link"
-              className="absolute w-5 text-white bg-black"
-              style={{ right: -7, bottom: -10 }}
-            />
-          </div>
-        </div>
+        <Icon
+          className="cursor-pointer text-white hover:text-primary-light"
+          name="info-action"
+        />
       </Tooltip>
     </div>
   );

@@ -57,19 +57,18 @@ validate.validators.endsWith = function(value, options, key) {
   }
 };
 
+const getTestValue = options => options?.value ?? options;
+
 validate.validators.greaterThan = function(value, options, key) {
-  const testValue = options?.value ?? options;
-  if (testValue !== undefined && value <= testValue) {
+  const testValue = getTestValue(options);
+  if (value === undefined || value === null || value <= testValue) {
     return key + 'with value ' + value + ' must be greater than ' + testValue;
   }
 };
 
 validate.validators.range = function(value, options, key) {
-  const testValue = options?.value ?? options;
-  if (
-    (testValue !== undefined && value < testValue[0]) ||
-    value > testValue[1]
-  ) {
+  const testValue = getTestValue(options);
+  if (value === undefined || value < testValue[0] || value > testValue[1]) {
     return (
       key +
       'with value ' +

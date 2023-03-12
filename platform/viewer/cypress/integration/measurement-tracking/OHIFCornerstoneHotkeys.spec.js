@@ -1,5 +1,5 @@
 describe('OHIF Cornerstone Hotkeys', () => {
-  before(() => {
+  beforeEach(() => {
     cy.checkStudyRouteInViewer(
       '1.2.840.113619.2.5.1762583153.215519.978957063.78'
     );
@@ -15,12 +15,8 @@ describe('OHIF Cornerstone Hotkeys', () => {
       });
 
     cy.expectMinimumThumbnails(3);
-  });
-
-  beforeEach(() => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
-    cy.resetViewport();
   });
 
   it('checks if hotkeys "R" and "L" can rotate the image', () => {
@@ -45,11 +41,11 @@ describe('OHIF Cornerstone Hotkeys', () => {
 
   it('checks if hotkeys "V" and "H" can flip the image', () => {
     // Hotkey H
-    cy.get('body').type('H');
+    cy.get('body').type('h');
     cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
     cy.get('@viewportInfoMidTop').should('contains.text', 'A');
     // Hotkey V
-    cy.get('body').type('V');
+    cy.get('body').type('v');
     cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
     cy.get('@viewportInfoMidTop').should('contains.text', 'P');
   });
@@ -73,26 +69,17 @@ describe('OHIF Cornerstone Hotkeys', () => {
   //   cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:1.67x');
   // });
 
-  // it('checks if hotkey "SPACEBAR" can reset the image', () => {
-  //   //Click on button and verify if icon is active on toolbar
-  //   cy.get('@zoomBtn')
-  //     .click()
-  //     .then($zoomBtn => {
-  //       cy.wrap($zoomBtn).should('have.class', 'active');
-  //     });
+  it('checks if hotkey "SPACEBAR" can reset the image', () => {
+    // Press multiples hotkeys
+    cy.get('body').type('v+++i');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'P');
 
-  //   // Press multiples hotkeys
-  //   cy.get('body').type('V+++I');
-  //   cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
-  //   cy.get('@viewportInfoMidTop').should('contains.text', 'A');
-  //   cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:2.30x');
-
-  //   // Hotkey SPACEBAR
-  //   cy.get('body').type(' ');
-  //   cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
-  //   cy.get('@viewportInfoMidTop').should('contains.text', 'A');
-  //   cy.get('@viewportInfoTopLeft').should('contains.text', 'Zoom:1.67x');
-  // });
+    // Hotkey SPACEBAR
+    cy.get('body').type(' ');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+  });
 
   /*
   // TODO: Pretty sure this is not implemented yet

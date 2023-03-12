@@ -7,7 +7,7 @@ import { SyncGroup } from '../SyncGroupService/SyncGroupService';
 import {
   StackViewportData,
   VolumeViewportData,
-} from './CornerstoneCacheService';
+} from '../../types/CornerstoneCacheService';
 
 export type InitialImageOptions = {
   index?: number;
@@ -23,6 +23,11 @@ export type ViewportOptions = {
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
+  /*
+   * Allows drag and drop of display sets not matching viewport options, but
+   * doesn't show them initially.  Displays initially blank if no required match
+   */
+  allowUnmatchedView?: boolean;
 };
 
 export type PublicViewportOptions = {
@@ -34,6 +39,7 @@ export type PublicViewportOptions = {
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
+  allowUnmatchedView?: boolean;
 };
 
 export type PublicDisplaySetOptions = {

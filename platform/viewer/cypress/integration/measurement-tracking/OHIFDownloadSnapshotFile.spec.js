@@ -1,32 +1,17 @@
 describe('OHIF Download Snapshot File', () => {
-  before(() => {
+  beforeEach(() => {
     cy.checkStudyRouteInViewer(
       '1.2.840.113619.2.5.1762583153.215519.978957063.78'
     );
     cy.expectMinimumThumbnails(3);
-  });
-
-  beforeEach(() => {
     cy.openDownloadImageModal();
   });
 
-  /**
-  afterEach(() => {
-    // Close modal
-
-    // TODO: Modal.tsx currently uses Icon instead of IconButton, so
-    // it's not as easy to give it the cypress data attribute.
-    // We should fix that first
-    cy.get('[data-cy="close-button"]')
-      .scrollIntoView()
-      .click();
-  });*/
-
-  /*it('checks displayed information for Desktop experience', function() {
+  it('checks displayed information for Desktop experience', function() {
     // Set Desktop resolution
-    cy.viewport(1750, 720);
+    // cy.viewport(1750, 720);
     // Visual comparison
-    cy.screenshot('Download Image Modal - Desktop experience');
+    // cy.screenshot('Download Image Modal - Desktop experience');
     //Check if all elements are displayed
 
     // TODO: need to add this attribute to the modal
@@ -36,19 +21,19 @@ describe('OHIF Download Snapshot File', () => {
 
     // Check input fields
     // TODO: select2
-    cy.get('[data-cy="file-type"]')
-      .select('png')
-      .should('have.value', 'png')
-      .select('jpg')
-      .should('have.value', 'jpg');
+    // cy.get('[data-cy="file-type"]')
+    //   .select('png')
+    //   .should('have.value', 'png')
+    //   .select('jpg')
+    //   .should('have.value', 'jpg');
 
     // Check image preview
     cy.get('[data-cy="image-preview"]').should('contain.text', 'Image preview');
 
-    TODO: This is a canvas now, not an img with src
-    cy.get('[data-cy="viewport-preview-img"]')
-      .should('have.attr', 'src')
-      .and('include', 'data:image');
+    //TODO: This is a canvas now, not an img with src
+    // cy.get('[data-cy="viewport-preview-img"]')
+    //   .should('have.attr', 'src')
+    //   .and('include', 'data:image');
 
     // Check buttons
     cy.get('[data-cy="cancel-btn"]')
@@ -58,7 +43,6 @@ describe('OHIF Download Snapshot File', () => {
       .scrollIntoView()
       .should('be.visible');
   });
-  */
 
   /*it('cancel changes on download modal', function() {
     //Change Image Width, Filename and File Type
@@ -88,8 +72,7 @@ describe('OHIF Download Snapshot File', () => {
   // TO-DO once issue is fixed: https://github.com/OHIF/Viewers/issues/1217
   // it('checks error messages for empty fields', function() {
   //   //Clear fields Image Width and Filename
-  //   cy.get('[data-cy="image-width"]')
-  //     .clear();
+  //   cy.get('[data-cy="image-width"]').clear();
   //   cy.get('[data-cy="file-name"]').clear();
 
   //   //Click on Download button

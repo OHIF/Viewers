@@ -1,10 +1,10 @@
-import ExtensionManager from './ExtensionManager.js';
-import MODULE_TYPES from './MODULE_TYPES.js';
+import ExtensionManager from './ExtensionManager';
+import MODULE_TYPES from './MODULE_TYPES';
 import log from './../log.js';
 
 jest.mock('./../log.js');
 
-describe('ExtensionManager.js', () => {
+describe('ExtensionManager.ts', () => {
   let extensionManager, commandsManager, servicesManager, appConfig;
 
   beforeEach(() => {
@@ -238,6 +238,9 @@ describe('ExtensionManager.js', () => {
         getCustomizationModule: () => {
           return [{}];
         },
+        getStateSyncModule: () => {
+          return [{}];
+        },
       };
 
       await extensionManager.registerExtension(extension);
@@ -245,7 +248,7 @@ describe('ExtensionManager.js', () => {
       // Registers 1 module per module type
       Object.keys(extensionManager.modules).forEach(moduleType => {
         const modulesForType = extensionManager.modules[moduleType];
-
+        console.log('moduleType', moduleType);
         expect(modulesForType.length).toBe(1);
       });
     });

@@ -3,13 +3,13 @@ import React from 'react';
 import { Dialog, Input } from '@ohif/ui';
 import RESPONSE from './PROMPT_RESPONSES';
 
-export default function createReportDialogPrompt(UIDialogService) {
+export default function createReportDialogPrompt(uiDialogService) {
   return new Promise(function(resolve, reject) {
     let dialogId = undefined;
 
     const _handleClose = () => {
       // Dismiss dialog
-      UIDialogService.dismiss({ id: dialogId });
+      uiDialogService.dismiss({ id: dialogId });
       // Notify of cancel action
       resolve({ action: RESPONSE.CANCEL, value: undefined });
     };
@@ -20,7 +20,7 @@ export default function createReportDialogPrompt(UIDialogService) {
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      UIDialogService.dismiss({ id: dialogId });
+      uiDialogService.dismiss({ id: dialogId });
       switch (action.id) {
         case 'save':
           resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
@@ -31,7 +31,7 @@ export default function createReportDialogPrompt(UIDialogService) {
       }
     };
 
-    dialogId = UIDialogService.create({
+    dialogId = uiDialogService.create({
       centralize: true,
       isDraggable: false,
       content: Dialog,
@@ -55,7 +55,7 @@ export default function createReportDialogPrompt(UIDialogService) {
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              UIDialogService.dismiss({ id: dialogId });
+              uiDialogService.dismiss({ id: dialogId });
               resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
             }
           };

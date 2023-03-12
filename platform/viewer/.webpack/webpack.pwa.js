@@ -29,18 +29,18 @@ const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
-    res.setHeader('Content-Encoding', 'gzip')
+    res.setHeader('Content-Encoding', 'gzip');
   } else if (path.indexOf('.br') !== -1) {
-    res.setHeader('Content-Encoding', 'br')
+    res.setHeader('Content-Encoding', 'br');
   }
   if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
-  } else if (path.indexOf('/frames') !== -1) {
-    res.setHeader('Content-Type', 'multipart/related')
+  } else if (path.indexOf('frames') !== -1) {
+    res.setHeader('Content-Type', 'multipart/related');
   } else {
-    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('Content-Type', 'application/json');
   }
-}
+};
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
@@ -55,7 +55,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function (info) {
+      devtoolModuleFilenameTemplate: function(info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -146,12 +146,12 @@ module.exports = (env, argv) => {
       proxy: {
         '/dicomweb': 'http://localhost:5000',
       },
-      'static': [
+      static: [
         {
           directory: '../../testdata',
           staticOptions: {
             extensions: ['gz', 'br'],
-            index: "index.json.gz",
+            index: ['index.json.gz', 'index.mht.gz'],
             redirect: true,
             setHeaders,
           },

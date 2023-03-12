@@ -3,9 +3,9 @@ import { useParams, useLocation } from 'react-router';
 
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
-import { useQuery } from '@hooks';
+import { useQuery, useSearchParams } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
@@ -20,11 +20,11 @@ import Compose from './Compose';
  */
 function defaultRouteInit(
   { servicesManager, studyInstanceUIDs, dataSource, filters },
-  hangingProtocol
+  hangingProtocolId
 ) {
   const {
-    DisplaySetService,
-    HangingProtocolService,
+    displaySetService,
+    hangingProtocolService,
   } = servicesManager.services;
 
   const unsubscriptions = [];
@@ -38,7 +38,7 @@ function defaultRouteInit(
         SeriesInstanceUID
       );
 
-      DisplaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
     }
   );
 
@@ -58,7 +58,7 @@ function defaultRouteInit(
   // until we run the hanging protocol matching service.
 
   Promise.allSettled(allRetrieves).then(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
+    const displaySets = displaySetService.getActiveDisplaySets();
 
     if (!displaySets || !displaySets.length) {
       return;
@@ -84,9 +84,9 @@ function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    HangingProtocolService.run(
+    hangingProtocolService.run(
       { studies, activeStudy, displaySets },
-      hangingProtocol
+      hangingProtocolId
     );
   });
 
@@ -105,7 +105,9 @@ export default function ModeRoute({
   const location = useLocation();
   const query = useQuery();
   const params = useParams();
+  const searchParams = useSearchParams();
 
+  const runTimeHangingProtocolId = searchParams.get('hangingprotocolid');
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
@@ -119,9 +121,9 @@ export default function ModeRoute({
   }
 
   const {
-    DisplaySetService,
-    HangingProtocolService: hangingProtocolService,
-  } = servicesManager.services;
+    displaySetService,
+    hangingProtocolService,
+  } = (servicesManager as ServicesManager).services;
 
   const { extensions, sopClassHandlers, hotkeys, hangingProtocol } = mode;
 
@@ -242,29 +244,43 @@ export default function ModeRoute({
     // Extension
 
     // Add SOPClassHandlers to a new SOPClassManager.
-    DisplaySetService.init(extensionManager, sopClassHandlers);
+    displaySetService.init(extensionManager, sopClassHandlers);
 
     extensionManager.onModeEnter({
       servicesManager,
       extensionManager,
       commandsManager,
     });
+
+    // use the URL hangingProtocolId if it exists, otherwise use the one
+    // defined in the mode configuration
+    const hangingProtocolIdToUse = hangingProtocolService.getProtocolById(
+      runTimeHangingProtocolId
+    )
+      ? runTimeHangingProtocolId
+      : hangingProtocol;
+
     // Sets the active hanging protocols - if hangingProtocol is undefined,
     // resets to default.  Done before the onModeEnter to allow the onModeEnter
     // to perform custom hanging protocol actions
-    hangingProtocolService.setActiveProtocols(hangingProtocol);
-    mode?.onModeEnter({ servicesManager, extensionManager, commandsManager });
+    hangingProtocolService.setActiveProtocolIds(hangingProtocolIdToUse);
+
+    mode?.onModeEnter({
+      servicesManager,
+      extensionManager,
+      commandsManager,
+    });
 
     const setupRouteInit = async () => {
       /**
        * The next line should get all the query parameters provided by the URL
-       * - except the StudyInstaceUIDs - and create an object called filters
+       * - except the StudyInstanceUIDs - and create an object called filters
        * used to filtering the study as the user wants otherwise it will return
        * a empty object.
        *
        * Example:
        * const filters = {
-       *   seriesInstaceUID: 1.2.276.0.7230010.3.1.3.1791068887.5412.1620253993.114611
+       *   seriesInstanceUID: 1.2.276.0.7230010.3.1.3.1791068887.5412.1620253993.114611
        * }
        */
       const filters =
@@ -272,7 +288,10 @@ export default function ModeRoute({
           (acc: Record<string, string>, val: string) => {
             if (val !== 'StudyInstanceUIDs') {
               if (['seriesInstanceUID', 'SeriesInstanceUID'].includes(val)) {
-                return { ...acc, seriesInstanceUID: query.get(val) };
+                return {
+                  ...acc,
+                  seriesInstanceUID: query.get(val),
+                };
               }
 
               return { ...acc, [val]: query.get(val) };
@@ -291,7 +310,7 @@ export default function ModeRoute({
             dataSource,
             filters,
           },
-          hangingProtocol
+          hangingProtocolIdToUse
         );
       }
 
@@ -302,7 +321,7 @@ export default function ModeRoute({
           dataSource,
           filters,
         },
-        hangingProtocol
+        hangingProtocolIdToUse
       );
     };
 
@@ -316,7 +335,10 @@ export default function ModeRoute({
       // information, and must be in a try/catch to ensure subscriptions
       // are unsubscribed.
       try {
-        mode?.onModeExit?.({ servicesManager, extensionManager });
+        mode?.onModeExit?.({
+          servicesManager,
+          extensionManager,
+        });
       } catch (e) {
         console.warn('mode exit failure', e);
       }

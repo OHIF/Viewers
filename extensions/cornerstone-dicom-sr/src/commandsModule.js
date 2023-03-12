@@ -2,10 +2,11 @@ import { metaData, utilities } from '@cornerstonejs/core';
 
 import OHIF from '@ohif/core';
 import dcmjs from 'dcmjs';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 
-const { MeasurementReport } = dcmjs.adapters.Cornerstone3D;
+const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
 
 /**
@@ -29,13 +30,17 @@ const _generateReport = (
   const report = MeasurementReport.generateReport(
     filteredToolState,
     metaData,
-    utilities.worldToImageCoords
+    utilities.worldToImageCoords,
+    options
   );
 
   const { dataset } = report;
 
-  // Add in top level series options
-  Object.assign(dataset, options);
+  // Set the default character set as UTF-8
+  // https://dicom.innolitics.com/ciods/nm-image/sop-common/00080005
+  if (typeof dataset.SpecificCharacterSet === 'undefined') {
+    dataset.SpecificCharacterSet = 'ISO_IR 192';
+  }
 
   return dataset;
 };
@@ -82,7 +87,7 @@ const commandsModule = ({}) => {
       additionalFindingTypes,
       options = {},
     }) => {
-      // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
+      // Use the @cornerstonejs adapter for converting to/from DICOM
       // But it is good enough for now whilst we only have cornerstone as a datasource.
       log.info('[DICOMSR] storeMeasurements');
 

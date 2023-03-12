@@ -21,13 +21,15 @@ import {
   //
   DicomMetadataStore,
   DisplaySetService,
-  ToolBarService,
+  ToolbarService,
   MeasurementService,
   ViewportGridService,
   HangingProtocolService,
   pubSubServiceInterface,
+  PubSubService,
   UserAuthenticationService,
-  CustomizationServiceRegistration,
+  CustomizationService,
+  PanelService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -58,20 +60,22 @@ const OHIF = {
   viewer: {},
   //
   CineService,
-  CustomizationServiceRegistration,
+  CustomizationService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  ToolBarService, // TODO: TYPO
+  ToolbarService,
   ViewportGridService,
   HangingProtocolService,
   UserAuthenticationService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
+  PubSubService,
+  PanelService,
 };
 
 export {
@@ -94,21 +98,23 @@ export {
   DICOMWeb,
   //
   CineService,
-  CustomizationServiceRegistration,
+  CustomizationService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  ToolBarService,
+  ToolbarService,
   ViewportGridService,
   HangingProtocolService,
   UserAuthenticationService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
+  PubSubService,
   Types,
+  PanelService,
 };
 
 export { OHIF };

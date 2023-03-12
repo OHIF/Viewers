@@ -738,7 +738,7 @@ class SegmentationService {
     highlightHideOthers = false,
     highlightFunctionType: 'ease-in-out' // todo: make animation functions configurable from outside
   ): void {
-    const { ToolGroupService } = this.servicesManager.services;
+    const { toolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
 
     const { world } = center;
@@ -751,10 +751,10 @@ class SegmentationService {
 
     if (Array.isArray(toolGroupId)) {
       toolGroupId.forEach(toolGroup => {
-        toolGroups.push(ToolGroupService.getToolGroup(toolGroup));
+        toolGroups.push(toolGroupService.getToolGroup(toolGroup));
       });
     } else {
-      toolGroups.push(ToolGroupService.getToolGroup(toolGroupId));
+      toolGroups.push(toolGroupService.getToolGroup(toolGroupId));
     }
 
     toolGroups.forEach(toolGroup => {
@@ -1240,9 +1240,9 @@ class SegmentationService {
     }
 
     // if (brushSize !== undefined) {
-    //   const { ToolGroupService } = this.servicesManager.services;
+    //   const { toolGroupService } = this.servicesManager.services;
 
-    //   const toolGroupIds = ToolGroupService.getToolGroupIds();
+    //   const toolGroupIds = toolGroupService.getToolGroupIds();
 
     //   toolGroupIds.forEach(toolGroupId => {
     //     cstUtils.segmentation.setBrushSizeForToolGroup(toolGroupId, brushSize);
@@ -1250,9 +1250,9 @@ class SegmentationService {
     // }
 
     // if (brushThresholdGate !== undefined) {
-    //   const { ToolGroupService } = this.servicesManager.services;
+    //   const { toolGroupService } = this.servicesManager.services;
 
-    //   const toolGroupIds = ToolGroupService.getFirstToolGroupIds();
+    //   const toolGroupIds = toolGroupService.getFirstToolGroupIds();
 
     //   toolGroupIds.forEach(toolGroupId => {
     //     cstUtils.segmentation.setBrushThresholdForToolGroup(
@@ -1324,11 +1324,11 @@ class SegmentationService {
       return false;
     }
 
-    const { DisplaySetService } = this.servicesManager.services;
+    const { displaySetService } = this.servicesManager.services;
 
     let shouldDisplaySeg = false;
 
-    const segDisplaySet = DisplaySetService.getDisplaySetByUID(
+    const segDisplaySet = displaySetService.getDisplaySetByUID(
       segDisplaySetInstanceUID
     );
 
@@ -1337,7 +1337,7 @@ class SegmentationService {
     viewportDisplaySetInstanceUIDs.forEach(displaySetInstanceUID => {
       // check if the displaySet is sharing the same frameOfReferenceUID
       // with the new segmentation
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 
@@ -1710,7 +1710,7 @@ class SegmentationService {
   }
 
   private _setLabelmapConfigValue = (property, value) => {
-    const { CornerstoneViewportService } = this.servicesManager.services;
+    const { cornerstoneViewportService } = this.servicesManager.services;
 
     const config = cstSegmentation.config.getGlobalConfig();
 
@@ -1719,8 +1719,8 @@ class SegmentationService {
     // Todo: add non global (representation specific config as well)
     cstSegmentation.config.setGlobalConfig(config);
 
-    const renderingEngine = CornerstoneViewportService.getRenderingEngine();
-    const viewportIds = CornerstoneViewportService.getViewportIds();
+    const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+    const viewportIds = cornerstoneViewportService.getViewportIds();
 
     renderingEngine.renderViewports(viewportIds);
   };
@@ -1953,8 +1953,8 @@ class SegmentationService {
   }
 
   private _getFirstToolGroupId = () => {
-    const { ToolGroupService } = this.servicesManager.services;
-    const toolGroupIds = ToolGroupService.getToolGroupIds();
+    const { toolGroupService } = this.servicesManager.services;
+    const toolGroupIds = toolGroupService.getToolGroupIds();
 
     return toolGroupIds[0];
   };

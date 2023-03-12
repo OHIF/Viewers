@@ -17,8 +17,9 @@ function constructLines(input, categoryName) {
   if (!input) return lines;
 
   input.forEach(entry => {
-    const packageName = entry.packageName;
+    if (entry.default === false) return;
 
+    const packageName = entry.packageName;
     const defaultImportName = `${categoryName}${pluginCount}`;
 
     lines.importLines.push(
@@ -66,7 +67,23 @@ function getRuntimeLoadModesExtensions() {
     ' for(const modeFactory of modesFactory) {\n' +
     '  const newModes = await modeFactory(modes,extensions);\n' +
     '  newModes.forEach(newMode => modes.push(newMode));\n' +
-    '}\n}\n'
+    '}\n}\n\n\n' +
+    'async function loadRuntimeImports(config) {\n' +
+    '  if (config && config.modes && config.modes.length) {\n' +
+    '    for (const modeName of config.modes) {\n' +
+    '      const existingMode = modes.find(mode => mode.id === modeName);\n' +
+    '      if (!existingMode) {\n' +
+    '        if (modeName === `@ohif/mode-test`) {\n' +
+    '          const mode = await import(`@ohif/mode-test`);\n' +
+    '          window.modes.push(mode.default);\n' +
+    '          const extension = await import(`@ohif/extension-test`);\n' +
+    '          window.extensions.push(extension.default);\n' +
+    '        }\n' +
+    '      }\n' +
+    '    };\n' +
+    '  }\n' +
+    '}\n' +
+    'export { loadRuntimeImports };\n\n'
   );
 }
 
@@ -201,11 +218,12 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     'dist'
   );
 
-  console.log('copy plugins', [...copyPluginPublicToDistBuild,
-  ...copyPluginPublicToDistLink,
-  ...copyPluginDistToDistBuild,
-  ...copyPluginDistToDistLink,
-  ])
+  console.log('copy plugins', [
+    ...copyPluginPublicToDistBuild,
+    ...copyPluginPublicToDistLink,
+    ...copyPluginDistToDistBuild,
+    ...copyPluginDistToDistLink,
+  ]);
   return [
     ...copyPluginPublicToDistBuild,
     ...copyPluginPublicToDistLink,

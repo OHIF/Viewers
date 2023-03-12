@@ -3,6 +3,8 @@ import React from 'react';
 
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import arrowLeft from './../../assets/icons/arrow-left.svg';
+import arrowLeftSmall from './../../assets/icons/arrow-left-small.svg';
+import arrowRightSmall from './../../assets/icons/arrow-right-small.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import clipboard from './../../assets/icons/clipboard.svg';
@@ -11,6 +13,8 @@ import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
+import chevronNext from './../../assets/icons/chevron-next.svg';
+import chevronPrev from './../../assets/icons/chevron-prev.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
 import eyeVisible from './../../assets/icons/eye-visible.svg';
 import eyeHidden from './../../assets/icons/eye-hidden.svg';
@@ -18,6 +22,7 @@ import exclamation from './../../assets/icons/exclamation.svg';
 import externalLink from './../../assets/icons/external-link.svg';
 import groupLayers from './../../assets/icons/group-layers.svg';
 import info from './../../assets/icons/info.svg';
+import infoAction from './../../assets/icons/info-action.svg';
 import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
 import launchInfo from './../../assets/icons/launch-info.svg';
@@ -36,12 +41,19 @@ import settings from './../../assets/icons/settings.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
+import statusAlert from './../../assets/icons/status-alert.svg';
+import statusLocked from './../../assets/icons/status-locked.svg';
+import statusTracked from './../../assets/icons/status-tracked.svg';
+import statusUntracked from './../../assets/icons/status-untracked.svg';
 import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
 import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
 import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
+import iconClose from './../../assets/icons/icon-close.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
 import iconNext from './../../assets/icons/icon-next.svg';
+import iconPlay from './../../assets/icons/icon-play.svg';
+import iconPause from './../../assets/icons/icon-pause.svg';
 import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
 import iconPrev from './../../assets/icons/icon-prev.svg';
 import navigationPanelRightHide from './../../assets/icons/navigation-panel-right-hide.svg';
@@ -82,6 +94,7 @@ import toolReset from './../../assets/icons/tool-reset.svg';
 import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
+import toolCalibration from './../../assets/icons/tool-calibration.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 import panelGroupMore from './../../assets/icons/panel-group-more.svg';
 import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
@@ -106,6 +119,9 @@ import oldStop from './../../assets/icons/old-stop.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
+  'arrow-left': arrowLeft,
+  'arrow-left-small': arrowLeftSmall,
+  'arrow-right-small': arrowRightSmall,
   calendar: calendar,
   cancel: cancel,
   clipboard: clipboard,
@@ -114,12 +130,18 @@ const ICONS = {
   'circled-checkmark': circledCheckmark,
   'chevron-down': chevronDown,
   'chevron-left': chevronLeft,
+  'chevron-next': chevronNext,
+  'chevron-prev': chevronPrev,
   'chevron-right': chevronRight,
   'eye-visible': eyeVisible,
   'eye-hidden': eyeHidden,
   'external-link': externalLink,
   'group-layers': groupLayers,
   info: info,
+  'icon-close': iconClose,
+  'icon-play': iconPlay,
+  'icon-pause': iconPause,
+  'info-action': infoAction,
   'info-link': infoLink,
   'arrow-left': arrowLeft,
   'launch-arrow': launchArrow,
@@ -139,6 +161,10 @@ const ICONS = {
   settings: settings,
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
+  'status-alert': statusAlert,
+  'status-locked': statusLocked,
+  'status-tracked': statusTracked,
+  'status-untracked': statusUntracked,
   sorting: sorting,
   tracked: tracked,
   unlink: unlink,
@@ -185,6 +211,7 @@ const ICONS = {
   'tool-rectangle': toolRectangle,
   'tool-fusion-color': toolFusionColor,
   'tool-create-threshold': toolCreateThreshold,
+  'tool-calibration': toolCalibration,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,

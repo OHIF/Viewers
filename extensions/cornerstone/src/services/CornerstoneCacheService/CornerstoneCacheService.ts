@@ -1,5 +1,5 @@
+import { ServicesManager } from '@ohif/core';
 import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
-import { utils } from '@ohif/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import {
@@ -7,10 +7,19 @@ import {
   VolumeViewportData,
 } from '../../types/CornerstoneCacheService';
 
-const VOLUME_IMAGE_LOADER_SCHEME = 'streaming-wadors';
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class CornerstoneCacheService {
+  static REGISTRATION = (serviceManager: ServicesManager) => {
+    return {
+      name: 'cornerstoneCacheService',
+      altName: 'CornerstoneCacheService',
+      create: ({ configuration = {} }) => {
+        return new CornerstoneCacheService(serviceManager);
+      },
+    };
+  };
+
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
 
@@ -70,7 +79,7 @@ class CornerstoneCacheService {
     viewportData: VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
-    DisplaySetService
+    displaySetService
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
       throw new Error('Invalidation of StackViewport is not supported yet');
@@ -86,7 +95,7 @@ class CornerstoneCacheService {
     }
 
     const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
-      DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
+      displaySetService.getDisplaySetByUID(displaySetInstanceUID)
     );
 
     const newViewportData = await this._getVolumeViewportData(
@@ -148,8 +157,8 @@ class CornerstoneCacheService {
       // getSOPClassHandler method
 
       if (displaySet.load && displaySet.load instanceof Function) {
-        const { UserAuthenticationService } = this.servicesManager.services;
-        const headers = UserAuthenticationService.getAuthorizationHeader();
+        const { userAuthenticationService } = this.servicesManager.services;
+        const headers = userAuthenticationService.getAuthorizationHeader();
         await displaySet.load({ headers });
 
         volumeData.push({
@@ -204,7 +213,7 @@ class CornerstoneCacheService {
   }
 
   private _shouldRenderSegmentation(displaySets) {
-    const { SegmentationService } = this.servicesManager.services;
+    const { segmentationService } = this.servicesManager.services;
 
     const viewportDisplaySetInstanceUIDs = displaySets.map(
       ({ displaySetInstanceUID }) => displaySetInstanceUID
@@ -212,12 +221,12 @@ class CornerstoneCacheService {
 
     // check inside segmentations if any of them are referencing the displaySets
     // that are about to be displayed
-    const segmentations = SegmentationService.getSegmentations();
+    const segmentations = segmentationService.getSegmentations();
 
     for (const segmentation of segmentations) {
       const segDisplaySetInstanceUID = segmentation.displaySetInstanceUID;
 
-      const shouldDisplaySeg = SegmentationService.shouldRenderSegmentation(
+      const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
         viewportDisplaySetInstanceUIDs,
         segDisplaySetInstanceUID
       );
@@ -238,14 +247,7 @@ class CornerstoneCacheService {
       dataSource
     );
 
-    if (stackImageIds[0].startsWith('dicomfile')) {
-      return stackImageIds;
-    }
-
-    return stackImageIds.map(imageId => {
-      const imageURI = utils.imageIdToURI(imageId);
-      return `${VOLUME_IMAGE_LOADER_SCHEME}:${imageURI}`;
-    });
+    return stackImageIds;
   }
 }
 

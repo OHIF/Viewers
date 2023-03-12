@@ -245,7 +245,7 @@ class MetadataProvider {
 
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
-        const { WindowCenter, WindowWidth } = instance;
+        const { WindowCenter, WindowWidth, VOILUTFunction } = instance;
         if (WindowCenter === undefined || WindowWidth === undefined) {
           return;
         }
@@ -259,6 +259,7 @@ class MetadataProvider {
         metadata = {
           windowCenter: toNumber(windowCenter),
           windowWidth: toNumber(windowWidth),
+          voiLUTFunction: VOILUTFunction,
         };
 
         break;
@@ -419,10 +420,7 @@ class MetadataProvider {
     //   SOPInstanceUID,
     // })
     // somewhere else
-    if (
-      imageId.startsWith('wadors:') ||
-      imageId.startsWith('streaming-wadors:')
-    ) {
+    if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
 

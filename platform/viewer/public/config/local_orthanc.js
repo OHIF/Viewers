@@ -6,6 +6,8 @@ window.config = {
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
   showLoadingIndicator: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
   // filterQueryParam: false,
   dataSources: [
     {

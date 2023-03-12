@@ -1,6 +1,5 @@
 import Consumer from './Consumer';
 
-
 export default interface IPubSub {
   subscribe: (eventName: string, callback: Consumer) => void;
   _broadcastEvent: (
@@ -10,3 +9,7 @@ export default interface IPubSub {
   _unsubscribe: (eventName: string, listenerId: string) => void;
   _isValidEvent: (eventName: string) => boolean;
 }
+
+export type Subscription = {
+  unsubscribe: () => void;
+};

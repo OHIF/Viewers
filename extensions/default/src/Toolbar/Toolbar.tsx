@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import classnames from 'classnames';
 
 export default function Toolbar({ servicesManager }) {
-  const { ToolBarService } = servicesManager.services;
+  const { toolbarService } = servicesManager.services;
   const [toolbarButtons, setToolbarButtons] = useState([]);
   const [buttonState, setButtonState] = useState({
     primaryToolId: '',
@@ -11,20 +12,20 @@ export default function Toolbar({ servicesManager }) {
 
   // Could track buttons and state separately...?
   useEffect(() => {
-    const { unsubscribe: unsub1 } = ToolBarService.subscribe(
-      ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
-      () => setToolbarButtons(ToolBarService.getButtonSection('primary'))
+    const { unsubscribe: unsub1 } = toolbarService.subscribe(
+      toolbarService.EVENTS.TOOL_BAR_MODIFIED,
+      () => setToolbarButtons(toolbarService.getButtonSection('primary'))
     );
-    const { unsubscribe: unsub2 } = ToolBarService.subscribe(
-      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => setButtonState({ ...ToolBarService.state })
+    const { unsubscribe: unsub2 } = toolbarService.subscribe(
+      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
+      () => setButtonState({ ...toolbarService.state })
     );
 
     return () => {
       unsub1();
       unsub2();
     };
-  }, [ToolBarService]);
+  }, [toolbarService]);
 
   return (
     <>
@@ -46,15 +47,18 @@ export default function Toolbar({ servicesManager }) {
         // These can... Trigger toolbar events based on updates?
         // Then sync using useEffect, or simply modify the state here?
         return (
-          <Component
-            key={id}
-            id={id}
-            {...componentProps}
-            bState={buttonState}
-            isActive={isActive}
-            onInteraction={args => ToolBarService.recordInteraction(args)}
-            servicesManager={servicesManager}
-          />
+          // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
+          // This allows for the individual items to be included in other UI components where perhaps alternative margins are desired.
+          <div key={id} className={classnames('mr-1')}>
+            <Component
+              id={id}
+              {...componentProps}
+              bState={buttonState}
+              isActive={isActive}
+              onInteraction={args => toolbarService.recordInteraction(args)}
+              servicesManager={servicesManager}
+            />
+          </div>
         );
       })}
     </>

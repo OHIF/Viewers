@@ -1,21 +1,26 @@
-import pubSubServiceInterface from './../_shared/pubSubServiceInterface';
+import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 const EVENTS = {
   ACTIVE_VIEWPORT_INDEX_CHANGED: 'event::activeviewportindexchanged',
 };
 
-class ViewportGridService {
+class ViewportGridService extends PubSubService {
+  public static REGISTRATION = {
+    name: 'viewportGridService',
+    altName: 'ViewportGridService',
+    create: ({ configuration = {} }) => {
+      return new ViewportGridService();
+    },
+  };
+
   serviceImplementation = {};
-  EVENTS: { [key: string]: string };
-  listeners = {};
 
   constructor() {
-    Object.assign(this, pubSubServiceInterface);
+    super(EVENTS);
     this.serviceImplementation = {};
-    this.EVENTS = EVENTS;
   }
 
-  setServiceImplementation({
+  public setServiceImplementation({
     getState: getStateImplementation,
     setActiveViewportIndex: setActiveViewportIndexImplementation,
     setDisplaySetsForViewport: setDisplaySetsForViewportImplementation,
@@ -26,7 +31,8 @@ class ViewportGridService {
     reset: resetImplementation,
     onModeExit: onModeExitImplementation,
     set: setImplementation,
-  }) {
+    getNumViewportPanes: getNumViewportPanesImplementation,
+  }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
@@ -56,6 +62,9 @@ class ViewportGridService {
     }
     if (setImplementation) {
       this.serviceImplementation._set = setImplementation;
+    }
+    if (getNumViewportPanesImplementation) {
+      this.serviceImplementation._getNumViewportPanes = getNumViewportPanesImplementation;
     }
   }
 
@@ -117,11 +126,10 @@ class ViewportGridService {
   public set(state) {
     this.serviceImplementation._set(state);
   }
+
+  public getNumViewportPanes() {
+    return this.serviceImplementation._getNumViewportPanes();
+  }
 }
 
-export default {
-  name: 'ViewportGridService',
-  create: ({ configuration = {} }) => {
-    return new ViewportGridService();
-  },
-};
+export default ViewportGridService;

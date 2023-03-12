@@ -19,8 +19,9 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | `setActiveViewportIndex(index)`                                       | Sets the active viewport index in the app           |
 | `getState()`                                                          | Gets the states of the viewport (see below)         |
 | `setDisplaySetsForViewport({ viewportIndex, displaySetInstanceUID })` | Sets displaySet for viewport based on displaySet Id |
-| `setLayout({numCols, numRows})`                                       | Sets rows and columns                               |
+| `setLayout({numCols, numRows, keepExtraViewports})`                   | Sets rows and columns. When the total number of viewports decreases, optionally keep the extra/offscreen viewports.                               |
 | `reset()`                                                             | Resets the default states                           |
+| `getNumViewportPanes()`                                               | Gets the number of visible viewport panes           |
 
 ## Implementations
 

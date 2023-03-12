@@ -151,6 +151,9 @@ type Protocol = {
   syncDataForViewports?: boolean;
 };
 
+type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
+  protocol: Protocol;
+};
 
 export type {
   SetProtocolOptions,
@@ -171,6 +174,6 @@ export type {
   DisplaySetInfo,
   GlobalProtocolOptions,
   ViewportSpecificProtocolOptions,
-  DisplaySetAndViewportOptions
-
+  DisplaySetAndViewportOptions,
+  ProtocolGenerator,
 };

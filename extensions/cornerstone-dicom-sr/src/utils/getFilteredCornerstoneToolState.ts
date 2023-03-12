@@ -39,7 +39,7 @@ function getFilteredCornerstoneToolState(
     const findingSites = [];
 
     // NOTE -> We use the CORNERSTONEJS coding schemeDesignator which we have
-    // defined in the dcmjs adapters
+    // defined in the @cornerstonejs/adapters
     if (measurementDataI.label) {
       if (additionalFindingTypes.includes(toolType)) {
         finding = {
@@ -67,7 +67,7 @@ function getFilteredCornerstoneToolState(
   const uidFilter = measurementData.map(md => md.uid);
   const uids = uidFilter.slice();
 
-  const annotationManager = annotation.state.getDefaultAnnotationManager();
+  const annotationManager = annotation.state.getAnnotationManager();
   const framesOfReference = annotationManager.getFramesOfReference();
 
   for (let i = 0; i < framesOfReference.length; i++) {

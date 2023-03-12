@@ -11,7 +11,7 @@
  * @property {string} [customClassName=null] The custom class to style the modal.
  */
 
-const name = 'UIModalService';
+const name = 'uiModalService';
 
 const publicAPI = {
   name,
@@ -79,9 +79,13 @@ function setServiceImplementation({
   }
 }
 
+// TODO - export TS Type
 export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+  REGISTRATION: {
+    name,
+    altName: 'UIModalService',
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };

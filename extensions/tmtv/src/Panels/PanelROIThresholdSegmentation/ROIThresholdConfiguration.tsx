@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Select, Button, ButtonGroup } from '@ohif/ui';
+import { Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';
@@ -14,9 +14,9 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
   const { t } = useTranslation('ROIThresholdConfiguration');
 
   return (
-    <div className="flex flex-col px-4 space-y-4 bg-primary-dark">
+    <div className="flex flex-col px-4 space-y-4 bg-primary-dark py-2">
       <div className="flex items-end space-x-2">
-        <div className="flex flex-col w-1/2 mt-2 ">
+        <div className="flex flex-col w-1/2">
           <Select
             label={t('Strategy')}
             closeMenuOnSelect={true}
@@ -78,39 +78,101 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
         />
       )}
       {config.strategy !== ROI_STAT && (
-        <div className="flex justify-between">
-          <Input
-            label={t('Lower')}
-            labelClassName="text-white"
-            className="mt-2 bg-black border-primary-main"
-            type="text"
-            containerClassName="mr-2"
-            value={config.lower}
-            onChange={e => {
-              dispatch({
-                type: 'setThreshold',
-                payload: {
-                  lower: e.target.value,
-                },
-              });
-            }}
-          />
-          <Input
-            label={t('Upper')}
-            labelClassName="text-white"
-            className="mt-2 bg-black border-primary-main"
-            type="text"
-            containerClassName="mr-2"
-            value={config.upper}
-            onChange={e => {
-              dispatch({
-                type: 'setThreshold',
-                payload: {
-                  upper: e.target.value,
-                },
-              });
-            }}
-          />
+        <div className="text-sm mr-2">
+          <table>
+            <tbody>
+              <tr className="mt-2">
+                <td className="pr-4 pt-2" colSpan="3">
+                  <Label
+                    className="text-white"
+                    text="Lower & Upper Ranges"
+                  ></Label>
+                </td>
+              </tr>
+              <tr className="mt-2">
+                <td className="text-center pr-4 pt-2">
+                  <Label className="text-white" text="CT"></Label>
+                </td>
+                <td>
+                  <div className="flex justify-between">
+                    <Input
+                      label={t('')}
+                      labelClassName="text-white"
+                      className="mt-2 bg-black border-primary-main"
+                      type="text"
+                      containerClassName="mr-2"
+                      value={config.ctLower}
+                      onChange={e => {
+                        dispatch({
+                          type: 'setThreshold',
+                          payload: {
+                            ctLower: e.target.value,
+                          },
+                        });
+                      }}
+                    />
+                    <Input
+                      label={t('')}
+                      labelClassName="text-white"
+                      className="mt-2 bg-black border-primary-main"
+                      type="text"
+                      containerClassName="mr-2"
+                      value={config.ctUpper}
+                      onChange={e => {
+                        dispatch({
+                          type: 'setThreshold',
+                          payload: {
+                            ctUpper: e.target.value,
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td className="text-center pr-4 pt-2">
+                  <Label className="text-white" text="PT"></Label>
+                </td>
+                <td>
+                  <div className="flex justify-between">
+                    <Input
+                      label={t('')}
+                      labelClassName="text-white"
+                      className="mt-2 bg-black border-primary-main"
+                      type="text"
+                      containerClassName="mr-2"
+                      value={config.ptLower}
+                      onChange={e => {
+                        dispatch({
+                          type: 'setThreshold',
+                          payload: {
+                            ptLower: e.target.value,
+                          },
+                        });
+                      }}
+                    />
+                    <Input
+                      label={t('')}
+                      labelClassName="text-white"
+                      className="mt-2 bg-black border-primary-main"
+                      type="text"
+                      containerClassName="mr-2"
+                      value={config.ptUpper}
+                      onChange={e => {
+                        dispatch({
+                          type: 'setThreshold',
+                          payload: {
+                            ptUpper: e.target.value,
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )}
     </div>

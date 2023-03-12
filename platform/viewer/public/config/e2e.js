@@ -1,11 +1,13 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
   extensions: [],
-  modes: [],
+  modes: ['@ohif/mode-test'],
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
+  maxNumberOfWebWorkers: 3,
+  showWarningMessageForCrossOrigin: false,
+  showCPUFallbackMessage: false,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -13,7 +15,9 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        name: 'DCM4CHEE',
+        // The most important field to set for static WADO
+        staticWado: true,
+        name: 'StaticWADO',
         wadoUriRoot: '/viewer-testdata',
         qidoRoot: '/viewer-testdata',
         wadoRoot: '/viewer-testdata',
@@ -24,7 +28,6 @@ window.config = {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,
-        staticWado: true,
         singlepart: 'video,thumbnail,pdf',
       },
     },

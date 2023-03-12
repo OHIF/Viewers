@@ -86,6 +86,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           layoutOptions,
           layoutType = 'grid',
+          keepExtraViewports = false,
         } = action.payload;
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
@@ -97,8 +98,14 @@ export function ViewportGridProvider({ children, service }) {
         while (viewports.length < numPanes) {
           viewports.push({});
         }
-        while (viewports.length > numPanes) {
-          viewports.pop();
+
+        // Extra viewports are kept when the grid layout is changed in the UI
+        // because the user populated those viewports and if the viewports were to
+        // return on screen their contents should be maintained.
+        if (!keepExtraViewports) {
+          while (viewports.length > numPanes) {
+            viewports.pop();
+          }
         }
 
         for (let i = 0; i < numPanes; i++) {
@@ -238,7 +245,13 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const setLayout = useCallback(
-    ({ layoutType, numRows, numCols, layoutOptions = [] }) =>
+    ({
+      layoutType,
+      numRows,
+      numCols,
+      layoutOptions = [],
+      keepExtraViewports = false,
+    }) =>
       dispatch({
         type: 'SET_LAYOUT',
         payload: {
@@ -246,6 +259,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           numCols,
           layoutOptions,
+          keepExtraViewports,
         },
       }),
     [dispatch]
@@ -288,6 +302,11 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const getNumViewportPanes = useCallback(() => {
+    const { numCols, numRows, viewports } = viewportGridState;
+    return Math.min(viewports.length, numCols * numRows);
+  }, [viewportGridState]);
+
   /**
    * Sets the implementation of ViewportGridService that can be used by extensions.
    *
@@ -306,6 +325,7 @@ export function ViewportGridProvider({ children, service }) {
         setCachedLayout,
         restoreCachedLayout,
         set,
+        getNumViewportPanes,
       });
     }
   }, [
@@ -319,6 +339,7 @@ export function ViewportGridProvider({ children, service }) {
     setCachedLayout,
     restoreCachedLayout,
     set,
+    getNumViewportPanes,
   ]);
 
   const api = {
@@ -331,6 +352,7 @@ export function ViewportGridProvider({ children, service }) {
     restoreCachedLayout,
     reset,
     set,
+    getNumViewportPanes,
   };
 
   return (

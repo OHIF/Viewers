@@ -5,19 +5,37 @@ import dcmjs from 'dcmjs';
 const metadataProvider = OHIF.classes.MetadataProvider;
 const { EVENTS } = DicomMetadataStore;
 
-// Sorting SR modalities to be at the end of series list
-function customSort(seriesA, seriesB) {
-  const modalityA = seriesA.instances[0].Modality;
-  const modalityB = seriesB.instances[0].Modality;
+const END_MODALITIES = {
+  SR: true,
+  SEG: true,
+  DOC: true,
+};
 
-  if (modalityA === 'SR') {
-    return +1;
+const compareValue = (v1, v2, def = 0) => {
+  if (v1 === v2) return def;
+  if (v1 < v2) return -1;
+  return 1;
+};
+
+// Sorting SR modalities to be at the end of series list
+const customSort = (seriesA, seriesB) => {
+  const instanceA = seriesA.instances[0];
+  const instanceB = seriesB.instances[0];
+  const modalityA = instanceA.Modality;
+  const modalityB = instanceB.Modality;
+
+  const isEndA = END_MODALITIES[modalityA];
+  const isEndB = END_MODALITIES[modalityB];
+
+  if (isEndA && isEndB) {
+    // Compare by series date
+    return compareValue(instanceA.SeriesNumber, instanceB.SeriesNumber);
   }
-  if (modalityB === 'SR') {
-    return -1;
+  if (!isEndA && !isEndB) {
+    return compareValue(instanceB.SeriesNumber, instanceA.SeriesNumber);
   }
-  return 0;
-}
+  return isEndA ? -1 : 1;
+};
 
 function createDicomLocalApi(dicomLocalConfig) {
   const { name } = dicomLocalConfig;

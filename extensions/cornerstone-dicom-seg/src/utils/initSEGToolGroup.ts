@@ -1,5 +1,5 @@
 function createSEGToolGroupAndAddTools(
-  ToolGroupService,
+  toolGroupService,
   toolGroupId,
   extensionManager
 ) {
@@ -28,7 +28,7 @@ function createSEGToolGroupAndAddTools(
     enabled: [{ toolName: toolNames.SegmentationDisplay }],
   };
 
-  return ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
+  return toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
 }
 
 export default createSEGToolGroupAndAddTools;

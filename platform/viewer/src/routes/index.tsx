@@ -13,13 +13,6 @@ import PrivateRoute from './PrivateRoute';
 
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
-  // WORK LIST
-  {
-    path: '/',
-    children: DataSourceWrapper,
-    private: true,
-    props: { children: WorkList },
-  },
   {
     path: '/debug',
     children: Debug,
@@ -81,13 +74,14 @@ const createRoutes = ({
           {...route.props}
           route={route}
           servicesManager={servicesManager}
+          extensionManager={extensionManager}
           hotkeysManager={hotkeysManager}
         />
       </ErrorBoundary>
     );
   }
 
-  const { UserAuthenticationService } = servicesManager.services;
+  const { userAuthenticationService } = servicesManager.services;
 
   // Note: PrivateRoutes in react-router-dom 6.x should be defined within
   // a Route element
@@ -102,7 +96,7 @@ const createRoutes = ({
             element={
               <PrivateRoute
                 handleUnauthenticated={
-                  UserAuthenticationService.handleUnauthenticated
+                  userAuthenticationService.handleUnauthenticated
                 }
               >
                 <RouteWithErrorBoundary route={route} />
