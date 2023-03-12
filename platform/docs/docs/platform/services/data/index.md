@@ -20,6 +20,7 @@ We maintain the following non-ui Services:
 - [Toolbar Service](../data/ToolBarService.md)
 - [Measurement Service](../data/MeasurementService.md)
 - [Customization Service](customization-service.md)
+- [Panel Service](../data/PanelService.md)
 
 ## Service Architecture
 

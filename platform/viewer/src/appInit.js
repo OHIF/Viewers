@@ -16,6 +16,7 @@ import {
   UserAuthenticationService,
   errorHandler,
   CustomizationService,
+  PanelService,
   // utils,
 } from '@ohif/core';
 
@@ -58,6 +59,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     HangingProtocolService.REGISTRATION,
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
+    PanelService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

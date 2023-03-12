@@ -9,7 +9,7 @@ window.config = {
     },
   ],
   extensions: [],
-  modes: [],
+  modes: ['@ohif/mode-test'],
   showStudyList: true,
   maxNumberOfWebWorkers: 4,
   // below flag is for performance reasons, but it might not work for all servers

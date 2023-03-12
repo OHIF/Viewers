@@ -82,30 +82,29 @@ const SegmentationGroupTable = ({
               activeSegmentIndex,
             } = segmentation;
             return (
-                <SegmentationGroup
-                  id={id}
-                  label={label}
-                  isMinimized={isMinimized[id]}
-                  segments={segments}
-                  showAddSegment={showAddSegment}
-                  segmentCount={segmentCount}
-                  isActive={isActive}
-                  isVisible={isVisible}
-                  onSegmentColorClick={onSegmentColorClick}
-                  onSegmentationClick={() => onSegmentationClick(id)}
-                  activeSegmentIndex={activeSegmentIndex}
-                  onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-                  onSegmentationEdit={onSegmentationEdit}
-                  onSegmentationDelete={onSegmentationDelete}
-                  onSegmentClick={onSegmentClick}
-                  onSegmentEdit={onSegmentEdit}
-                  onToggleSegmentVisibility={onToggleSegmentVisibility}
-                  onToggleSegmentationVisibility={
-                    onToggleSegmentationVisibility
-                  }
-                  onSegmentAdd={onSegmentAdd}
-                  showSegmentDelete={false}
-                />
+              <SegmentationGroup
+                id={id}
+                key={id}
+                label={label}
+                isMinimized={isMinimized[id]}
+                segments={segments}
+                showAddSegment={showAddSegment}
+                segmentCount={segmentCount}
+                isActive={isActive}
+                isVisible={isVisible}
+                onSegmentColorClick={onSegmentColorClick}
+                onSegmentationClick={() => onSegmentationClick(id)}
+                activeSegmentIndex={activeSegmentIndex}
+                onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+                onSegmentationEdit={onSegmentationEdit}
+                onSegmentationDelete={onSegmentationDelete}
+                onSegmentClick={onSegmentClick}
+                onSegmentEdit={onSegmentEdit}
+                onToggleSegmentVisibility={onToggleSegmentVisibility}
+                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+                onSegmentAdd={onSegmentAdd}
+                showSegmentDelete={false}
+              />
             );
           })}
       </div>

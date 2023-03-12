@@ -4,6 +4,10 @@
   scrollbar-gutter: stable;
 }
 
+.study-min-height {
+  min-height: 450px;
+}
+
 .ohif-scrollbar:hover {
   overflow-y: auto;
 }

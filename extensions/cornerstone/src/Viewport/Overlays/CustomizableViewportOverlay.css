@@ -1,0 +1,25 @@
+/*
+custom overlay panels: top-left, top-right, bottom-left and bottom-right
+If any text to be displayed on the overlay is too long to hold on a single
+line, it will be truncated with ellipsis in the end.
+*/
+.viewport-overlay {
+  max-width: 40%;
+}
+.viewport-overlay span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewport-overlay.left-viewport {
+  text-align: left;
+}
+
+.viewport-overlay.right-viewport-scrollbar {
+  text-align: right;
+}
+.viewport-overlay.right-viewport-scrollbar .flex.flex-row {
+  justify-content: flex-end;
+}

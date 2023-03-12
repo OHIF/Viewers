@@ -161,6 +161,13 @@ export default class CustomizationService extends PubSubService {
     return this.applyType(customization);
   }
 
+  public hasModeCustomization(customizationId: string) {
+    return (
+      this.globalCustomizations[customizationId] ||
+      this.modeCustomizations[customizationId]
+    );
+  }
+
   /** Applies any inheritance due to UI Type customization */
   public applyType(customization: Customization): Customization {
     if (!customization) return customization;
@@ -227,19 +234,16 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
-   * A single reference is either an an array, or a single customization value,
-   * whose id is the id in the object, or the parent id.
-   * This allows for general use to register customizationModule entries.
+   * A single reference is either an string to be loaded from a module,
+   * or a customization itself.
    */
-  addReference(
-    value?: Obj | Obj[] | string,
-    isGlobal = true,
-    id?: string
-  ): void {
+  addReference(value?: Obj | string, isGlobal = true, id?: string): void {
     if (!value) return;
     if (typeof value === 'string') {
       const extensionValue = this.findExtensionValue(value);
-      this.addReferences(extensionValue);
+      // The child of a reference is only a set of references when an array,
+      // so call the addReference direct.  It could be a secondary reference perhaps
+      this.addReference(extensionValue);
     } else if (Array.isArray(value)) {
       this.addReferences(value, isGlobal);
     } else {
@@ -251,10 +255,10 @@ export default class CustomizationService extends PubSubService {
     }
   }
 
-  /** References are:
-   * list of customizations, added in order
-   * object containing a customization id and value
-   * This format allows for the original whitelist format.
+  /**
+   * Customizations can be specified as an array of strings or customizations,
+   * or as an object whose key is the reference id, and the value is the string
+   * or customization.
    */
   addReferences(references?: Obj | Obj[], isGlobal = true): void {
     if (!references) return;
