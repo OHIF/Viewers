@@ -73,7 +73,12 @@ the stage activate.  The status values are:
 * passive - meaning that the stage can be applied, but might be missing details
 * disabled - meaning that the study has insuffient information for this stage
 
+The default values for no `stageActivation` are to assume that `enabled` has `minViewports` of 1,
+and `passive` has `minViewports=0`.  That is, enable the stage if at least one
+viewport is filled, and make it passive if no viewports are filled.
+
 The setting for these are controlled by the stageActivation property, for example
+the following:
 
 ```javascript
 stageActivation: {
@@ -185,6 +190,33 @@ function protocolGenerator({ servicesManager, commandsManager }) {
 
 See the typescript definitions for more details on the structure of protocols.
 
+## Additional viewports for layout - `defaultViewport`
+Sometimes the user manually selects a layout of a given size, say `2x3`.  The
+hanging protocol can define what viewport options to use for this viewport by
+defining an extra viewport option in `defaultViewport`.  For example:
+
+```javascript
+  defaultViewport: {
+    viewportOptions: {
+      viewportType: 'stack',
+      toolGroupId: 'default',
+      allowUnmatchedView: true,
+    },
+    displaySets: [
+      {
+        id: 'defaultDisplaySetId',
+        matchedDisplaySetsIndex: -1,
+      },
+    ],
+  },
+```
+
+This allows defining the type of additional viewports, what tool group etc they
+are allowed in, and which display set is used to fill them.  In the above case,
+the display set is the same as the other viewports, but the
+`matchedDisplaySetsIndex=-1`, so that means find the next matching display set
+from the display set selector which isn't already filling a view.
+
 ## Custom Attribute
 In some situations, you might want to match based on a custom attribute and not the DICOM tags. For instance,
 if you have assigned a `timepointId` to each study, and you want to match based on it.
@@ -194,7 +226,7 @@ There are various ways that you can let `HangingProtocolService` know of you
 custom attribute. We will show how to add it inside the mode configuration.
 
 ```js
-const deafultProtocol = {
+const defaultProtocol = {
   id: 'defaultProtocol',
   /** ... **/
   protocolMatchingRules: [

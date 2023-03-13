@@ -13,6 +13,16 @@ export type HangingProtocolParams = {
   stageId?: string;
 };
 
+/**
+ * Determine if a command is a hanging protocol one.
+ * For now, just use the two hanging protocol commands that are in this
+ * commands module, but if others get added elsewhere this may need enhancing.
+ */
+const isHangingProtocolCommand = command =>
+  command &&
+  (command.commandName === 'setHangingProtocol' ||
+    command.commandName === 'toggleHangingProtocol');
+
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const {
     measurementService,
@@ -37,8 +47,8 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     },
 
     /**
-     * Toggles off all tools which contain a HP setter and don't match
-     * the HP id/stageId/index.
+     * Toggles off all tools which contain a commandName of setHangingProtocol
+     * or toggleHangingProtocol, and which match/don't match the protocol id/stage
      */
     toggleHpTools: () => {
       const {
@@ -52,23 +62,14 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         if (items) {
           items.forEach(enableListener);
         }
-        const hpCommand = commands?.find?.(
-          it => it?.commandName && it.commandName.indexOf('Hanging') !== -1
-        );
-        if (hpCommand) {
-          const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
-          let isActive = true;
-          if (protocolId !== undefined && protocolId !== protocol.id) {
-            isActive = false;
-          }
-          if (stageIndex !== undefined && stageIndex !== toggleStageIndex) {
-            isActive = false;
-          }
-          if (stageId && stageId !== stage.id) {
-            isActive = false;
-          }
-          toolbarService.setActive(button.id, isActive);
-        }
+        const hpCommand = commands?.find?.(isHangingProtocolCommand);
+        if (!hpCommand) return;
+        const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
+        const isActive =
+          (!protocolId || protocolId === protocol.id) &&
+          (stageIndex === undefined || stageIndex === toggleStageIndex) &&
+          (!stageId || stageId === stage.id);
+        toolbarService.setActive(button.id, isActive);
       };
       Object.values(toolbarService.getButtons()).forEach(enableListener);
     },
@@ -267,27 +268,38 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
+        console.log(
+          'setViewportGridLayout running',
+          onLayoutChange,
+          numRows,
+          numCols
+        );
         // Don't apply the layout if the run command returns false
         return;
       }
-      const state = viewportGridService.getState();
-      const stateReduce = findViewportsByPosition(
-        state,
-        { numRows, numCols },
-        stateSyncService
-      );
-      const findOrCreateViewport = layoutFindOrCreate.bind(
-        null,
-        hangingProtocolService,
-        stateReduce.viewportsByPosition
-      );
 
-      viewportGridService.setLayout({
-        numRows,
-        numCols,
-        findOrCreateViewport,
-      });
-      stateSyncService.store(stateReduce);
+      const completeLayout = () => {
+        const state = viewportGridService.getState();
+        const stateReduce = findViewportsByPosition(
+          state,
+          { numRows, numCols },
+          stateSyncService
+        );
+        const findOrCreateViewport = layoutFindOrCreate.bind(
+          null,
+          hangingProtocolService,
+          stateReduce.viewportsByPosition
+        );
+
+        viewportGridService.setLayout({
+          numRows,
+          numCols,
+          findOrCreateViewport,
+        });
+        stateSyncService.store(stateReduce);
+      };
+      // Need to finish any work in the callback
+      window.setTimeout(completeLayout, 0);
     },
 
     openDICOMTagViewer() {

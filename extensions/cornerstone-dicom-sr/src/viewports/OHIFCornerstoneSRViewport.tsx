@@ -3,7 +3,6 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
-import { PublicViewportOptions } from '@ohif/extension-cornerstone';
 
 import {
   Icon,
@@ -422,7 +421,7 @@ OHIFCornerstoneSRViewport.propTypes = {
   dataSource: PropTypes.object,
   children: PropTypes.node,
   customProps: PropTypes.object,
-  viewportOptions: PropTypes.instanceOf(PublicViewportOptions),
+  viewportOptions: PropTypes.object,
   servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };

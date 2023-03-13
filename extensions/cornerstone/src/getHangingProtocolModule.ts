@@ -11,7 +11,7 @@ const mpr: Types.HangingProtocol.Protocol = {
   // Unknown number of priors referenced - so just match any study
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
-  imageLoadStrategy: 'nth',
+  // imageLoadStrategy: 'nth',
   callbacks: {
     // Switches out of MPR mode when the layout change button is used
     onLayoutChange: [
@@ -24,7 +24,7 @@ const mpr: Types.HangingProtocol.Protocol = {
     // Turns off crosshairs when switching out of MPR mode
     onProtocolExit: [
       {
-        commandName: 'recordInteraction',
+        commandName: 'toolbarServiceRecordInteraction',
         commandOptions: {
           interactionType: 'tool',
           commands: [

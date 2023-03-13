@@ -63,6 +63,7 @@ const defaultProtocol = {
       viewports: [
         {
           viewportOptions: {
+            viewportType: 'stack',
             toolGroupId: 'default',
             // initialImageOptions: {
             //   index: 180,

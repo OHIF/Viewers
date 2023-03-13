@@ -68,6 +68,9 @@ const reuseViewport = (idSet, viewport, stateViewports) => {
     //   },
     // };
   }
+  // Find a viewport instance number different from earlier viewports having
+  // the same presentationId as this one would - will be less than 10k
+  // viewports hopefully :-)
   for (let i = 0; i < 10000; i++) {
     const viewportId = 'viewport-' + i;
     if (idSet[viewportId] || oldIds[viewportId]) continue;
@@ -160,37 +163,36 @@ export function ViewportGridProvider({ children, service }) {
             const pos = col + row * numCols;
             const layoutOption = layoutOptions[pos];
             const positionId = layoutOption?.positionId || `${col}-${row}`;
-            if (!hasOptions || pos < layoutOptions.length) {
-              if (
-                !activeViewportIndex ||
-                state.viewports[pos]?.positionId === positionId
-              ) {
-                activeViewportIndex = pos;
-              }
-              const viewport = findOrCreateViewport(pos, positionId, options);
-              if (!viewport) continue;
-              viewport.positionId = positionId;
-              // Create a new viewport object as it is getting updated here
-              // and it is part of the read only state
-              viewports.push(viewport);
-              let xPos, yPos, w, h;
-
-              if (layoutOptions && layoutOptions[pos]) {
-                ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[
-                  pos
-                ]);
-              } else {
-                w = 1 / numCols;
-                h = 1 / numRows;
-                xPos = col * w;
-                yPos = row * h;
-              }
-
-              viewport.width = w;
-              viewport.height = h;
-              viewport.x = xPos;
-              viewport.y = yPos;
+            if (hasOptions && pos >= layoutOptions.length) {
+              continue;
             }
+            if (
+              !activeViewportIndex ||
+              state.viewports[pos]?.positionId === positionId
+            ) {
+              activeViewportIndex = pos;
+            }
+            const viewport = findOrCreateViewport(pos, positionId, options);
+            if (!viewport) continue;
+            viewport.positionId = positionId;
+            // Create a new viewport object as it is getting updated here
+            // and it is part of the read only state
+            viewports.push(viewport);
+            let xPos, yPos, w, h;
+
+            if (layoutOptions && layoutOptions[pos]) {
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[pos]);
+            } else {
+              w = 1 / numCols;
+              h = 1 / numRows;
+              xPos = col * w;
+              yPos = row * h;
+            }
+
+            viewport.width = w;
+            viewport.height = h;
+            viewport.x = xPos;
+            viewport.y = yPos;
           }
         }
 

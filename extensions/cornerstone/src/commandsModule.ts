@@ -133,7 +133,8 @@ const commandsModule = ({
 
     // Just call the toolbar service record interaction - allows
     // executing a toolbar command as a full toolbar command with side affects
-    recordInteraction: props => {
+    // coming from the ToolbarService itself.
+    toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
 
@@ -450,8 +451,8 @@ const commandsModule = ({
       storeContexts: [],
       options: {},
     },
-    recordInteraction: {
-      commandFn: actions.recordInteraction,
+    toolbarServiceRecordInteraction: {
+      commandFn: actions.toolbarServiceRecordInteraction,
       storeContexts: [],
       options: {},
     },
