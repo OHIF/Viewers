@@ -10,13 +10,15 @@ const OBJECT = 'object';
  * indiscriminately, but this should be changed).
  */
 class ImageSet {
+  private rawImages;
+
   constructor(images) {
     if (Array.isArray(images) !== true) {
       throw new Error('ImageSet expects an array of images');
     }
 
-    // @property "images"
-    Object.defineProperty(this, 'images', {
+    // @property "rawImages"
+    Object.defineProperty(this, 'rawImages', {
       enumerable: false,
       configurable: false,
       writable: false,
@@ -30,6 +32,24 @@ class ImageSet {
       writable: false,
       value: guid(), // Unique ID of the instance
     });
+  }
+
+  get images(): any {
+    /**
+     * Extensions can create arbitrary imagesMapper functions to filter/map
+     * these metadata. For example to only return the first 300 slices
+     * of a large volume, the below can be run in a command.
+     *
+     * const ds = services.DisplaySetService.getDisplaySetByUID(displaySetUID)
+     * ds.sortByImagePositionPatient()
+     * ds.setAttribute('imagesMapper', (ds)=> ds.slice(0, 300))
+     * displaySetService.setDisplaySetMetadataInvalidated(displaySetUID)
+     */
+    const imagesMapper = this.getAttribute('imagesMapper');
+    if (imagesMapper && imagesMapper instanceof Function) {
+      return imagesMapper(this.rawImages);
+    }
+    return this.rawImages;
   }
 
   getUID() {
@@ -48,7 +68,7 @@ class ImageSet {
     if (typeof attributes === OBJECT && attributes !== null) {
       const imageSet = this,
         hasOwn = Object.prototype.hasOwnProperty;
-      for (let attribute in attributes) {
+      for (const attribute in attributes) {
         if (hasOwn.call(attributes, attribute)) {
           imageSet[attribute] = attributes[attribute];
         }
@@ -56,18 +76,18 @@ class ImageSet {
     }
   }
 
-  getNumImages = () => this.images.length
+  getNumImages = () => this.rawImages.length;
 
   getImage(index) {
-    return this.images[index];
+    return this.rawImages[index];
   }
 
   sortBy(sortingCallback) {
-    return this.images.sort(sortingCallback);
+    return this.rawImages.sort(sortingCallback);
   }
 
   sortByImagePositionPatient() {
-    const images = this.images;
+    const images = this.rawImages;
     const referenceImagePositionPatient = _getImagePositionPatient(images[0]);
 
     const refIppVec = new Vector3(
@@ -114,11 +134,11 @@ class ImageSet {
 }
 
 function _getImagePositionPatient(image) {
-  return image.getData().metadata.ImagePositionPatient;
+  return image.ImagePositionPatient;
 }
 
 function _getImageOrientationPatient(image) {
-  return image.getData().metadata.ImageOrientationPatient;
+  return image.ImageOrientationPatient;
 }
 
 export default ImageSet;

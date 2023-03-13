@@ -71,12 +71,14 @@ export default async function init({
     uiNotificationService,
     cineService,
     cornerstoneViewportService,
+    cornerstoneCacheService,
     hangingProtocolService,
     toolGroupService,
     viewportGridService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
+  cornerstoneCacheService.setMaxFramesInVolume(appConfig?.maxFramesInVolume);
 
   if (
     appConfig.showWarningMessageForCrossOrigin &&

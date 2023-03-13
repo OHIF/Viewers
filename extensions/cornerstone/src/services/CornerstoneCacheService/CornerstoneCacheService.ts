@@ -22,9 +22,24 @@ class CornerstoneCacheService {
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
+  maxFramesInVolume = Infinity;
+  servicesManager: ServicesManager;
 
-  constructor(servicesManager) {
+  constructor(servicesManager: ServicesManager) {
     this.servicesManager = servicesManager;
+  }
+
+  public setMaxFramesInVolume(numFrames: number): void {
+    this.maxFramesInVolume = numFrames || Infinity;
+    const { displaySetService } = this.servicesManager.services;
+    const displaySets = displaySetService.getActiveDisplaySets();
+    displaySets.forEach(displaySet =>
+      displaySetService.setDisplaySetMetadataInvalidated(displaySet.getUID())
+    );
+  }
+
+  public getMaxFramesInVolume(): number {
+    return this.maxFramesInVolume;
   }
 
   public getCacheSize() {
@@ -186,9 +201,22 @@ class CornerstoneCacheService {
           displaySet,
           dataSource
         );
+        const distributedCopy = (items, n) => {
+          const elements = [items[0]];
+          const totalItems = items.length - 2;
+          const interval = totalItems / (n - 2);
+          for (let i = 1; i < n - 1; i++) {
+            elements.push(items[Math.floor(i * interval)]);
+          }
+          elements.push(items[items.length - 1]);
+          return elements;
+        };
 
         volume = await volumeLoader.createAndCacheVolume(volumeId, {
-          imageIds: volumeImageIds,
+          imageIds:
+            volumeImageIds.length > this.maxFramesInVolume
+              ? distributedCopy(volumeImageIds, this.maxFramesInVolume)
+              : volumeImageIds,
         });
 
         this.volumeImageIds.set(
@@ -238,6 +266,7 @@ class CornerstoneCacheService {
   }
 
   private _getCornerstoneStackImageIds(displaySet, dataSource): string[] {
+    displaySet.sortByImagePositionPatient();
     return dataSource.getImageIdsForDisplaySet(displaySet);
   }
 
