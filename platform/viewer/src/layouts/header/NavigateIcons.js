@@ -8,12 +8,17 @@ import ReactTooltip from 'react-tooltip';
 import { JobsContext } from '../../context/JobsContext';
 import { BrainMode, lungMode, radcadapi } from '../../utils/constants';
 import { useSelector } from 'react-redux';
+import { getEnabledElement } from '../../../../../extensions/cornerstone/src/state';
+import { handleSaveToolState } from '../../utils/syncrhonizeToolState';
 
 let checkEndpointsInterval;
 
 const NavigateIcons = () => {
   const { UINotificationService } = servicesManager.services;
   const { active: currentMode } = useSelector(state => state && state.mode);
+  const { activeViewportIndex } = useSelector(
+    state => state && state.viewports
+  );
   const { isloading } = useContext(JobsContext);
   const history = useHistory();
   const location = useLocation();
@@ -44,7 +49,11 @@ const NavigateIcons = () => {
 
       if (toolData) {
         // history.push(location.pathname.replace('selectmask', 'radionics'));
-        window.location.href = location.pathname.replace('selectmask', 'radionics');
+        onStoreLastViewState();
+        window.location.href = location.pathname.replace(
+          'selectmask',
+          'radionics'
+        );
       } else {
         UINotificationService.show({
           title: 'Draw mask region to proceed to Radiomics',
@@ -59,6 +68,7 @@ const NavigateIcons = () => {
       );
 
       if (activeStep === 2) cornerstone.imageCache.purgeCache();
+      onStoreLastViewState();
       window.location.href = newPathname;
       // history.push(newPathname);
     }
@@ -86,6 +96,7 @@ const NavigateIcons = () => {
     );
 
     if (activeStep === 2) cornerstone.imageCache.purgeCache();
+    onStoreLastViewState();
     window.location.href = newPathname;
     // history.push(newPathname);
   };
@@ -160,6 +171,18 @@ const NavigateIcons = () => {
 
   const onCornerstoneLoaded = () => {
     setLoading(false);
+  };
+  const onStoreLastViewState = () => {
+    const enabledElement = getEnabledElement(activeViewportIndex);
+    if (enabledElement) {
+      // cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
+      //   enabledElement
+      // );
+      let viewport = cornerstone.getViewport(enabledElement);
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+      handleSaveToolState(instance_uid, viewport);
+    }
   };
 
   // if (warming)
