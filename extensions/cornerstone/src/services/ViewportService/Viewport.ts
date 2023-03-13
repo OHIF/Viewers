@@ -48,11 +48,6 @@ export type PublicViewportOptions = {
   allowUnmatchedView?: boolean;
 };
 
-export type DisplaySetSelector = {
-  id?: string;
-  options?: PublicDisplaySetOptions;
-};
-
 export type PublicDisplaySetOptions = {
   /** The display set options can have an id in order to distinguish
    * it from other similar items.
@@ -153,7 +148,7 @@ class ViewportInfo {
   }
 
   public setPublicDisplaySetOptions(
-    publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
   ): void {
     // map the displaySetOptions and check if they are undefined then set them to default values
     const displaySetOptions = this.mapDisplaySetOptions(
@@ -203,6 +198,10 @@ class ViewportInfo {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     }
 
+    if (!toolGroupId) {
+      toolGroupId = DEFAULT_TOOLGROUP_ID;
+    }
+
     this.setViewportOptions({
       ...viewportOptionsEntry,
       viewportId: this.viewportId,
@@ -228,7 +227,10 @@ class ViewportInfo {
   }
 
   public getSyncGroups(): SyncGroup[] {
-    return this.viewportOptions.syncGroups || [];
+    if (!this.viewportOptions.syncGroups) {
+      this.viewportOptions.syncGroups = [];
+  }
+    return this.viewportOptions.syncGroups;
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {
@@ -255,15 +257,12 @@ class ViewportInfo {
     return this.viewportOptions.initialImageOptions;
   }
 
-  // Handle incoming public display set options or a display set select
-  // with a contained options.
   private mapDisplaySetOptions(
-    options: PublicDisplaySetOptions[] | DisplaySetSelector[] = [{}]
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions> = [{}]
   ): Array<DisplaySetOptions> {
     const displaySetOptions: Array<DisplaySetOptions> = [];
 
-    options.forEach(item => {
-      let option = item?.options || item;
+    publicDisplaySetOptions.forEach(option => {
       if (!option) {
         option = {
           blendMode: undefined,

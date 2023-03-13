@@ -4,28 +4,21 @@ import EVENTS from './EVENTS';
 const displaySetCache = [];
 
 /**
- * Find an instance in a list of instances, comparing by SOP instance UID
+ * Filters the instances set by instances not in
+ * display sets.  Done in O(n) time.
  */
-const findInSet = (instance, list) => {
-  if (!list) return false;
-  for (const elem of list) {
-    if (!elem) continue;
-    if (elem === instance) return true;
-    if (elem.SOPInstanceUID === instance.SOPInstanceUID) return true;
+const filterInstances = (instances, displaySets) => {
+  if (!displaySets?.length) return instances;
+  const sops = {};
+  for (const ds of displaySets) {
+    const dsInstances = ds.images || ds.others || ds.instances;
+    if (!dsInstances) {
+      console.warn('No instances in', ds);
+      continue;
+    }
+    dsInstances.forEach(instance => (sops[instance.SOPInstanceUID] = instance));
   }
-  return false;
-};
-
-/**
- * Find an instance in a display set
- * @returns true if found
- */
-const findInstance = (instance, displaySets) => {
-  for (const displayset of displaySets) {
-    if (findInSet(instance, displayset.images)) return true;
-    if (findInSet(instance, displayset.others)) return true;
-  }
-  return false;
+  return instances.filter(instance => !sops[instance.SOPInstanceUID]);
 };
 
 export default class DisplaySetService extends PubSubService {
@@ -38,6 +31,9 @@ export default class DisplaySetService extends PubSubService {
   };
 
   public activeDisplaySets = [];
+  // Record if the active display sets changed - used to bulk up change events.
+  protected activeChanged = false;
+
   constructor() {
     super(EVENTS);
   }
@@ -62,9 +58,24 @@ export default class DisplaySetService extends PubSubService {
       // become important to do this in an efficient manner for large
       // numbers of display sets.
       if (!activeDisplaySets.includes(displaySet)) {
+        this.activeChanged = true;
         activeDisplaySets.push(displaySet);
       }
     });
+  }
+
+  /**
+   * Adds new display sets
+   */
+  public addDisplaySets(...displaySets): string[] {
+    this._addDisplaySetsToCache(displaySets);
+    this._addActiveDisplaySets(displaySets);
+    this.activeChanged = false;
+    this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
+      displaySetsAdded: displaySets,
+      options: { madeInClient: displaySets[0].madeInClient },
+    });
+    return displaySets;
   }
 
   getDisplaySetCache() {
@@ -118,6 +129,7 @@ export default class DisplaySetService extends PubSubService {
   }
 
   deleteDisplaySet(displaySetInstanceUID) {
+    if (!displaySetInstanceUID) return;
     const { activeDisplaySets } = this;
 
     const displaySetCacheIndex = displaySetCache.findIndex(
@@ -167,7 +179,7 @@ export default class DisplaySetService extends PubSubService {
     }
 
     // If array of instances => One instance.
-    let displaySetsAdded = [];
+    const displaySetsAdded = [];
 
     if (batch) {
       for (let i = 0; i < input.length; i++) {
@@ -177,12 +189,12 @@ export default class DisplaySetService extends PubSubService {
           settings
         );
 
-        displaySetsAdded = [...displaySetsAdded, displaySets];
+        displaySetsAdded.push(...displaySets);
       }
     } else {
       const displaySets = this.makeDisplaySetForInstances(input, settings);
 
-      displaySetsAdded = displaySets;
+      displaySetsAdded.push(...displaySets);
     }
 
     const options = {};
@@ -191,10 +203,13 @@ export default class DisplaySetService extends PubSubService {
       options.madeInClient = true;
     }
 
-    // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
-    // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent unnecessary broadcasts?
-    if (displaySetsAdded && displaySetsAdded.length) {
+    if (this.activeChanged) {
+      this.activeChanged = false;
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    }
+    if (displaySetsAdded?.length) {
+      // The response from displaySetsAdded will only contain newly added
+      // display sets.
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
         displaySetsAdded,
         options,
@@ -215,15 +230,33 @@ export default class DisplaySetService extends PubSubService {
     this.activeDisplaySets.length = 0;
   }
 
-  makeDisplaySetForInstances(instancesSrc, settings) {
-    let instances = instancesSrc;
+  /**
+   * Creates new display sets for the instances contained in instancesSrc
+   * according to the sop class handlers registered.
+   * This is idempotent in that calling it a second time with the
+   * same set of instances will not result in new display sets added.
+   * However, the response for the subsequent call will be empty as the data
+   * is already present.
+   * Calling it with some new instances and some existing instances will
+   * result in the new instances being added to existing display sets if
+   * they support the addInstances call, OR to new instances otherwise.
+   * Only the new instances are returned - the others are updated.
+   *
+   * @param instancesSrc are instances to add
+   * @param settings are settings to add
+   * @returns Array of the display sets added.
+   */
+  public makeDisplaySetForInstances(instancesSrc: [], settings): [] {
+    // Some of the sop class handlers take a direct reference to instances
+    // so make sure it gets copied here so that they have their own ref
+    let instances = [...instancesSrc];
     const instance = instances[0];
 
     const existingDisplaySets =
       this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
 
     const SOPClassHandlerIds = this.SOPClassHandlerIds;
-    let allDisplaySets;
+    const allDisplaySets = [];
 
     for (let i = 0; i < SOPClassHandlerIds.length; i++) {
       const SOPClassHandlerId = SOPClassHandlerIds[i];
@@ -236,34 +269,70 @@ export default class DisplaySetService extends PubSubService {
         );
 
         if (displaySets.length) {
-          this._addActiveDisplaySets(displaySets);
-        } else {
-          displaySets = handler.getDisplaySetsFromSeries(instances);
-
-          if (!displaySets || !displaySets.length) continue;
-
-          // applying hp-defined viewport settings to the displaysets
-          displaySets.forEach(ds => {
-            Object.keys(settings).forEach(key => {
-              ds[key] = settings[key];
-            });
-          });
-
-          this._addDisplaySetsToCache(displaySets);
-          this._addActiveDisplaySets(displaySets);
-
-          instances = instances.filter(
-            instance => !findInstance(instance, displaySets)
-          );
+          instances = filterInstances(instances, displaySets);
+          for (const ds of displaySets) {
+            const addedDs = ds.addInstances?.(instances, this);
+            if (addedDs) {
+              this.activeChanged = true;
+              instances = filterInstances(instances, [ds]);
+              this._addActiveDisplaySets([ds]);
+              this.setDisplaySetMetadataInvalidated(ds.displaySetInstanceUID);
+            }
+            if (!instances.length) return allDisplaySets;
+          }
+          if (instances.length === 0) {
+            // Everything is already added - this is just an update caused
+            // by something else
+            this._addActiveDisplaySets(displaySets);
+            return allDisplaySets;
+          }
+          // There are  still instances to add, and they will get added as
+          // a new display set.
         }
 
-        allDisplaySets = allDisplaySets
-          ? [...allDisplaySets, ...displaySets]
-          : displaySets;
+        displaySets = handler.getDisplaySetsFromSeries(instances);
 
+        if (!displaySets || !displaySets.length) continue;
+
+        // applying hp-defined viewport settings to the displaysets
+        displaySets.forEach(ds => {
+          Object.keys(settings).forEach(key => {
+            ds[key] = settings[key];
+          });
+        });
+
+        this._addDisplaySetsToCache(displaySets);
+        this._addActiveDisplaySets(displaySets);
+
+        instances = filterInstances(instances, displaySets);
+
+        allDisplaySets.push(...displaySets);
         if (!instances.length) return allDisplaySets;
       }
     }
     return allDisplaySets;
+  }
+
+  /**
+   * Iterates over displaysets and invokes comparator for each element.
+   * It returns a list of items that has being succeed by comparator method.
+   *
+   * @param {function} comparator method to be used on the validation
+   * @returns list of displaysets
+   */
+  getDisplaySetsBy(comparator) {
+    const result = [];
+
+    if (typeof comparator !== 'function') {
+      return result;
+    }
+
+    this.getActiveDisplaySets().forEach(displaySet => {
+      if (comparator(displaySet)) {
+        result.push(displaySet);
+      }
+    });
+
+    return result;
   }
 }

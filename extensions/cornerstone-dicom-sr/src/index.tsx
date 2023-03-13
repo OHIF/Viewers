@@ -6,6 +6,7 @@ import init from './init';
 import { id } from './id.js';
 import toolNames from './tools/toolNames';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
+import convertCode from './utils/convertCode';
 
 const Component = React.lazy(() => {
   return import(
@@ -62,6 +63,8 @@ const dicomSRExtension = {
     });
   },
   getSopClassHandlerModule,
+
+  // Include dynmically computed values such as toolNames not known till instantiation
   getUtilityModule({ servicesManager }) {
     return [
       {
@@ -75,4 +78,6 @@ const dicomSRExtension = {
 };
 
 export default dicomSRExtension;
-export { hydrateStructuredReport };
+
+// Put static exports here so they can be type checked
+export { hydrateStructuredReport, convertCode };

@@ -165,15 +165,14 @@ export class CommandsManager {
 
   /**
    * Run one or more commands with specified extra options.
-   * Returns the result of the last command run.
    *
    * @param toRun - A specification of one or more commands
-   * @param options - to include in the commands run beyond
+   * @param extraOptions - to include in the commands run beyond
    *   the commandOptions specified in the base.
    */
   public run(
     toRun: Command | Commands | Command[] | undefined,
-    options?: Record<string, unknown>
+    extraOptions?: Record<string, unknown>
   ): unknown {
     if (!toRun) return;
     const commands =
@@ -186,15 +185,15 @@ export class CommandsManager {
       return;
     }
 
-    let result;
+    let ret;
     (commands as Command[]).forEach(
       ({ commandName, commandOptions, context }) => {
         if (commandName) {
-          result = this.runCommand(
+          ret ||= this.runCommand(
             commandName,
             {
               ...commandOptions,
-              ...options,
+              ...extraOptions,
             },
             context
           );
@@ -204,7 +203,7 @@ export class CommandsManager {
       }
     );
 
-    return result;
+    return ret;
   }
 }
 
