@@ -188,12 +188,14 @@ class ViewerMain extends Component {
         const error = new Error('Source data not present');
         const message = 'Source data not present';
         LoggerService.error({ error, message });
+        //Ocultar mensaje de error visible para el usuario.
+        /*
         UINotificationService.show({
           autoClose: false,
           title: 'Fail to load series',
           message,
           type: 'error',
-        });
+        });*/
       }
     }
 
@@ -201,12 +203,14 @@ class ViewerMain extends Component {
       const error = new Error('Modality not supported');
       const message = 'Modality not supported';
       LoggerService.error({ error, message });
+      //Ocultar mensaje de error visible para el usuario.
+      /*
       UINotificationService.show({
         autoClose: false,
         title: 'Fail to load series',
         message,
         type: 'error',
-      });
+      });*/
     }
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);

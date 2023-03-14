@@ -68,12 +68,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           );
           const message = `Referenced series for ${Modality} dataset not present.`;
           LoggerService.error({ error, message });
+          //Ocultar mensaje de error visible para el usuario.
+          /*
           UINotificationService.show({
             autoClose: false,
             title: 'Fail to load series',
             message,
             type: 'error',
-          });
+          });*/
         }
       }
 
@@ -81,24 +83,28 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         const error = new Error('Source data not present');
         const message = 'Source data not present';
         LoggerService.error({ error, message });
+        //Ocultar mensaje de error visible para el usuario.
+        /*
         UINotificationService.show({
           autoClose: false,
           title: 'Fail to load series',
           message,
           type: 'error',
-        });
+        });*/
       }
 
       if (displaySet.isSOPClassUIDSupported === false) {
         const error = new Error('Modality not supported');
         const message = 'Modality not supported';
         LoggerService.error({ error, message });
+        //Ocultar mensaje de error visible para el usuario.
+        /*
         UINotificationService.show({
           autoClose: false,
           title: 'Fail to load series',
           message,
           type: 'error',
-        });
+        });*/
       }
 
       dispatch(setActiveViewportSpecificData(displaySet));

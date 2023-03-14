@@ -35,14 +35,16 @@ const parseDicomStructuredReport = (
     try {
       parseSCOORD3D({ servicesManager: external.servicesManager, displaySets });
     } catch (error) {
-      const seriesDescription = dataset.SeriesDescription || '';
+      //const seriesDescription = dataset.SeriesDescription || '';
       LoggerService.error({ error, message: error.message });
+      //Ocultar mensaje de error visible para el usuario.
+      /*
       UINotificationService.show({
         title: `Failed to parse ${seriesDescription} SR display set`,
         message: error.message,
         type: 'error',
         autoClose: false,
-      });
+      });*/
       return;
     }
   }
@@ -53,14 +55,16 @@ const parseDicomStructuredReport = (
   try {
     storedMeasurementByToolType = MeasurementReport.generateToolState(dataset);
   } catch (error) {
-    const seriesDescription = dataset.SeriesDescription || '';
+    //const seriesDescription = dataset.SeriesDescription || '';
     LoggerService.error({ error, message: error.message });
+    //Ocultar mensaje de error visible para el usuario.
+    /*
     UINotificationService.show({
       title: `Failed to parse ${seriesDescription} measurement report`,
       message: error.message,
       type: 'error',
       autoClose: false,
-    });
+    });*/
     return;
   }
 
