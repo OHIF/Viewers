@@ -2,7 +2,7 @@ window.config = {
   // default: '/'
   routerBasename: '/',
   extensions: [],
-  showStudyList: true,
+  showStudyList: false,
   filterQueryParam: false,
   disableServersCache: false,
   studyPrefetcher: {
@@ -28,6 +28,17 @@ window.config = {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
       },
+      /*{
+        name: 'Orthanc',
+        wadoUriRoot: '/wadoC',
+        qidoRoot: '/dicom-web',
+        wadoRoot: '/dicom-web',
+        qidoSupportsIncludeField: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+      },*/
     ],
   },
 
@@ -137,4 +148,22 @@ window.config = {
   //  try setting this to even lower value
   // Leave it undefined for no limit, suitable for HTTP/2 enabled servers
   // maxConcurrentMetadataRequests: 5,
+  whiteLabeling: {
+    createLogoComponentFn: (React) => {
+      return React.createElement('a', {
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        className: 'header-brand',
+        href: 'https://clinsis.com',
+        style: {
+          display: 'block',
+          textIndent: '-9999px',
+          background: 'url(../assets/logo.png)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          width: '200px',
+        },
+      });
+    },
+  },
 };

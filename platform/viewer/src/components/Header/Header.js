@@ -91,8 +91,8 @@ function Header(props) {
           )}
         </div>
 
-        <div className="header-menu">
-          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
+        <div className="header-menu" style={{display: "none"}}>
+          <span className="research-use" >{t('INVESTIGATIONAL USE ONLY')}</span>
           <Dropdown title={t('Options')} list={options} align="right" />
         </div>
       </div>

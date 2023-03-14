@@ -16,6 +16,7 @@
   <link rel="manifest" href="<%= PUBLIC_URL %>manifest.json">
 
   <link rel="shortcut icon" href="<%= PUBLIC_URL %>assets/favicon.ico">
+  <!--<link rel="shortcut icon" href="<%= PUBLIC_URL %>assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="16x16" href="<%= PUBLIC_URL %>assets/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="<%= PUBLIC_URL %>assets/favicon-32x32.png">
   <link rel="apple-touch-icon" sizes="57x57" href="<%= PUBLIC_URL %>assets/apple-touch-icon-57x57.png">
@@ -58,7 +59,7 @@
     href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-1496x2048.png">
   <link rel="apple-touch-startup-image"
     media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)"
-    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-1536x2008.png">
+    href="<%= PUBLIC_URL %>assets/apple-touch-startup-image-1536x2008.png">-->
   <link rel="icon" type="image/png" sizes="228x228" href="<%= PUBLIC_URL %>assets/coast-228x228.png">
   <link rel="yandex-tableau-widget" href="<%= PUBLIC_URL %>assets/yandex-browser-manifest.json">
 
@@ -72,7 +73,7 @@
   <script type="text/javascript" src="<%= PUBLIC_URL %>app-config.js"></script>
   <script type="module" src="<%= PUBLIC_URL %>init-service-worker.js"></script>
 
-  <title>OHIF Viewer</title>
+  <title>Clinsis - OHIF Viewer</title>
 
   <!-- WEB FONTS -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700&display=swap" rel="stylesheet" />
@@ -96,7 +97,18 @@
 <body>
   <noscript> You need to enable JavaScript to run this app. </noscript>
 
-  <div id="root"></div>
+  <div id="root" style="margin-bottom: 10px;"></div>
+  <div style="text-align: right; position: absolute; bottom: 0; width: 100%; padding-right: 10px">
+    <a href="https://ohif.org/" target="_blank" style="color : #cccccc;text-decoration:none;">
+      <span style="font-size:xx-small; color: #cccccc">© Open Health Imaging Foundation</span>
+    </a>-
+    <a href="https://www.clinsis.com" target="_blank" style="color : #cccccc;text-decoration:none;">
+      <span style="font-size:xx-small; color: #cccccc">Clinsis - Ing. Cedric Simon, 2005-</span><span style="font-size:xx-small; color: #cccccc" id="year"></span>
+    </a>
+  </div>
+  <script>
+    document.getElementById("year").innerHTML = new Date().getFullYear();
+  </script>
 </body>
 
 </html>

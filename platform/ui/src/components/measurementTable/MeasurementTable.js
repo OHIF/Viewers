@@ -82,6 +82,7 @@ class MeasurementTable extends Component {
             <button
               onClick={this.saveFunction}
               className="saveBtn"
+              style={{ display: 'none' }}
               data-cy="save-measurements-btn"
             >
               <Icon name="save" width="14px" height="14px" />
