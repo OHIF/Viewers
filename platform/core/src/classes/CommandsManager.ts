@@ -1,4 +1,5 @@
 import log from '../log.js';
+import { Command, Commands } from '../types/Command';
 
 /**
  * The definition of a command
@@ -106,7 +107,7 @@ export class CommandsManager {
    * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts
    */
   getCommand = (commandName, contextName) => {
-    let contexts = [];
+    const contexts = [];
 
     if (contextName) {
       const context = this.getContext(contextName);
@@ -140,7 +141,7 @@ export class CommandsManager {
    * @param {Object} [options={}] - Extra options to pass the command. Like a mousedown event
    * @param {String} [contextName]
    */
-  runCommand(commandName, options = {}, contextName) {
+  public runCommand(commandName: string, options = {}, contextName?: string) {
     const definition = this.getCommand(commandName, contextName);
     if (!definition) {
       log.warn(`Command "${commandName}" not found in current context`);
@@ -160,6 +161,50 @@ export class CommandsManager {
     } else {
       return commandFn(commandParams);
     }
+  }
+
+  /**
+   * Run one or more commands with specified extra options.
+   * Returns the result of the last command run.
+   *
+   * @param toRun - A specification of one or more commands
+   * @param options - to include in the commands run beyond
+   *   the commandOptions specified in the base.
+   */
+  public run(
+    toRun: Command | Commands | Command[] | undefined,
+    options?: Record<string, unknown>
+  ): unknown {
+    if (!toRun) return;
+    const commands =
+      (Array.isArray(toRun) && toRun) ||
+      ((toRun as Command).commandName && [toRun]) ||
+      (Array.isArray((toRun as Commands).commands) &&
+        (toRun as Commands).commands);
+    if (!commands) {
+      console.log("Command isn't runnable", toRun);
+      return;
+    }
+
+    let result;
+    (commands as Command[]).forEach(
+      ({ commandName, commandOptions, context }) => {
+        if (commandName) {
+          result = this.runCommand(
+            commandName,
+            {
+              ...commandOptions,
+              ...options,
+            },
+            context
+          );
+        } else {
+          console.warn('No command name supplied in', toRun);
+        }
+      }
+    );
+
+    return result;
   }
 }
 

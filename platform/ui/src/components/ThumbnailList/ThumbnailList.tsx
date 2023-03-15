@@ -23,6 +23,7 @@ const ThumbnailList = ({
           modality,
           componentType,
           seriesDate,
+          countIcon,
           viewportIdentificator,
           isTracked,
           canReject,
@@ -33,7 +34,6 @@ const ThumbnailList = ({
           const isActive = activeDisplaySetInstanceUIDs.includes(
             displaySetInstanceUID
           );
-
           switch (componentType) {
             case 'thumbnail':
               return (
@@ -44,6 +44,7 @@ const ThumbnailList = ({
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
                   viewportIdentificator={viewportIdentificator}
@@ -63,6 +64,7 @@ const ThumbnailList = ({
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
                   viewportIdentificator={viewportIdentificator}

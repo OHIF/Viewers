@@ -63,7 +63,7 @@ export default class CustomizationService extends PubSubService {
 
   modeCustomizations: Record<string, Customization> = {};
   globalCustomizations: Record<string, Customization> = {};
-  configuration: UICustomizationConfiguration;
+  configuration: CustomizationConfiguration;
 
   constructor({ configuration, commandsManager }) {
     super(EVENTS);
@@ -97,36 +97,6 @@ export default class CustomizationService extends PubSubService {
     this.modeCustomizations = {};
   }
 
-  /**
-   *
-   * @param {*} interaction - can be undefined to run nothing
-   * @param {*} extraOptions to include in the commands run
-   */
-  recordInteraction(
-    interaction: Customization | void,
-    extraOptions?: Record<string, unknown>
-  ): void {
-    if (!interaction) return;
-    const commandsManager = this.commandsManager;
-    const { commands = [] } = interaction;
-
-    commands.forEach(({ commandName, commandOptions, context }) => {
-      if (commandName) {
-        commandsManager.runCommand(
-          commandName,
-          {
-            interaction,
-            ...commandOptions,
-            ...extraOptions,
-          },
-          context
-        );
-      } else {
-        console.warn('No command name supplied in', interaction);
-      }
-    });
-  }
-
   public getModeCustomizations(): Record<string, Customization> {
     return this.modeCustomizations;
   }
@@ -143,6 +113,23 @@ export default class CustomizationService extends PubSubService {
       buttons: this.modeCustomizations,
       button: this.modeCustomizations[customizationId],
     });
+  }
+
+  /** This is the preferred getter for all customizations,
+   * getting mode customizations first and otherwise global customizations.
+   *
+   * @param customizationId - the customization id to look for
+   * @param defaultValue - is the default value to return.  Note this value
+   * may have been extended with any customizationType extensions provided,
+   * so you cannot just use `|| defaultValue`
+   * @return A customization to use if one is found, or the default customization,
+   * both enhanced with any customizationType inheritance (see applyType)
+   */
+  public getCustomization(
+    customizationId: string,
+    defaultValue?: Customization
+  ): Customization | void {
+    return this.getModeCustomization(customizationId, defaultValue);
   }
 
   /** Mode customizations are changes to the behaviour of the extensions
@@ -168,12 +155,17 @@ export default class CustomizationService extends PubSubService {
     );
   }
 
-  /** Applies any inheritance due to UI Type customization */
+  /**
+   * Applies any inheritance due to UI Type customization.
+   * This will look for customizationType in the customization object
+   * and if that is found, will assign all iterable values from that
+   * type into the new type, allowing default behaviour to be configured.
+   */
   public applyType(customization: Customization): Customization {
     if (!customization) return customization;
     const { customizationType } = customization;
     if (!customizationType) return customization;
-    const parent = this.getModeCustomization(customizationType);
+    const parent = this.getCustomization(customizationType);
     return parent
       ? Object.assign(Object.create(parent), customization)
       : customization;

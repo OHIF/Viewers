@@ -74,6 +74,7 @@ export default async function init({
     hangingProtocolService,
     toolGroupService,
     viewportGridService,
+    stateSyncService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -96,6 +97,10 @@ export default async function init({
   ) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
+
+  // Stores a map from `presentationId` to a Presentation object so that
+  // an OHIFCornerstoneViewport can be redisplayed with the same attributes
+  stateSyncService.register('presentationSync', { clearOnModeExit: true });
 
   const labelmapRepresentation =
     cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
@@ -369,8 +374,8 @@ export default async function init({
 
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
-    ({ viewportIndex }) => {
-      const viewportId = `viewport-${viewportIndex}`;
+    ({ viewportIndex, viewportId }) => {
+      viewportId = viewportId || `viewport-${viewportIndex}`;
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
@@ -427,9 +432,9 @@ function _showCPURenderingModal(uiModalService, hangingProtocolService) {
   };
 
   const { unsubscribe } = hangingProtocolService.subscribe(
-    hangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
-    ({ progress }) => {
-      const done = callback(progress);
+    hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    () => {
+      const done = callback(100);
 
       if (done) {
         unsubscribe();

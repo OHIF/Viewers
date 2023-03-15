@@ -16,7 +16,7 @@ function promptHydrateStructuredReport(
   evt
 ) {
   const {
-    UIViewportDialogService,
+    uiViewportDialogService,
     displaySetService,
   } = servicesManager.services;
   const { viewportIndex, displaySetInstanceUID } = evt;
@@ -26,7 +26,7 @@ function promptHydrateStructuredReport(
 
   return new Promise(async function(resolve, reject) {
     const promptResult = await _askTrackMeasurements(
-      UIViewportDialogService,
+      uiViewportDialogService,
       viewportIndex
     );
 
@@ -55,7 +55,7 @@ function promptHydrateStructuredReport(
   });
 }
 
-function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
+function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
     const message =
       'Do you want to continue tracking measurements for this study?';
@@ -72,18 +72,18 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
+    uiViewportDialogService.show({
       viewportIndex,
       type: 'info',
       message,
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });

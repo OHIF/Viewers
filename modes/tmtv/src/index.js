@@ -136,13 +136,11 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
-      toolbarService.reset();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();

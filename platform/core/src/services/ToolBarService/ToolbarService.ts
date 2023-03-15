@@ -1,4 +1,6 @@
 import merge from 'lodash.merge';
+import { CommandsManager } from '../../classes';
+import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 const EVENTS = {
@@ -16,37 +18,31 @@ export default class ToolbarService extends PubSubService {
     },
   };
 
-  constructor(commandsManager) {
+  buttons: Record<string, unknown> = {};
+  state: {
+    primaryToolId: string;
+    toggles: Record<string, boolean>;
+    groups: Record<string, unknown>;
+  } = { primaryToolId: 'WindowLevel', toggles: {}, groups: {} };
+  buttonSections: Record<string, unknown> = {
+    /**
+     * primary: ['Zoom', 'Wwwc'],
+     * secondary: ['Length', 'RectangleRoi']
+     */
+  };
+  _commandsManager: CommandsManager;
+  extensionManager: ExtensionManager;
+
+  constructor(commandsManager: CommandsManager) {
     super(EVENTS);
     this._commandsManager = commandsManager;
-    //
-    this.buttons = {};
-    this.unsubscriptions = []; // if tools need to unsubscribe from events
-    this.buttonSections = {
-      /**
-       * primary: ['Zoom', 'Wwwc'],
-       * secondary: ['Length', 'RectangleRoi']
-       */
-    };
-
-    // TODO: Do we need to track per context? Or do we allow for a mixed
-    // definition that adapts based on context?
-    this.state = {
-      primaryToolId: 'WindowLevel',
-      toggles: {
-        /* id: true/false */
-      },
-      groups: {
-        /* track most recent click per group...? */
-      },
-    };
   }
 
-  init(extensionManager) {
+  public init(extensionManager: ExtensionManager): void {
     this.extensionManager = extensionManager;
   }
 
-  reset() {
+  public reset(): void {
     this.unsubscriptions.forEach(unsub => unsub());
     this.state = {
       primaryToolId: 'WindowLevel',
@@ -69,7 +65,7 @@ export default class ToolbarService extends PubSubService {
    *    used for calling the specified interaction.  That is, the command is
    *    called with {...commandOptions,...options}
    */
-  recordInteraction(interaction, options) {
+  recordInteraction(interaction, options?: Record<string, unknown>) {
     if (!interaction) return;
     const commandsManager = this._commandsManager;
     const { groupId, itemId, interactionType, commands } = interaction;
@@ -179,6 +175,15 @@ export default class ToolbarService extends PubSubService {
 
   getActiveTools() {
     return [this.state.primaryToolId, ...Object.keys(this.state.toggles)];
+  }
+
+  /** Sets the toggle state of a button to the isActive state */
+  public setActive(id: string, isActive: boolean): void {
+    if (isActive) {
+      this.state.toggles[id] = true;
+    } else {
+      delete this.state.toggles[id];
+    }
   }
 
   setButton(id, button) {

@@ -140,7 +140,6 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
       } = servicesManager.services;
 
-      toolbarService.reset();
       toolGroupService.destroy();
     },
     validationTags: {

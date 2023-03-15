@@ -54,20 +54,29 @@ Cypress.Commands.add('openStudy', PatientName => {
     .click({ force: true });
 });
 
-Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
-  cy.location('pathname').then($url => {
-    cy.log($url);
-    if ($url == 'blank' || !$url.includes(`/basic-test/${StudyInstanceUID}`)) {
-      cy.openStudyInViewer(StudyInstanceUID);
-      cy.waitDicomImage();
-      cy.wait(2000);
-    }
-  });
-});
+Cypress.Commands.add(
+  'checkStudyRouteInViewer',
+  (StudyInstanceUID, otherParams = '') => {
+    cy.location('pathname').then($url => {
+      cy.log($url);
+      if (
+        $url == 'blank' ||
+        !$url.includes(`/basic-test/${StudyInstanceUID}${otherParams}`)
+      ) {
+        cy.openStudyInViewer(StudyInstanceUID, otherParams);
+        cy.waitDicomImage();
+        cy.wait(2000);
+      }
+    });
+  }
+);
 
-Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
-  cy.visit(`/basic-test?StudyInstanceUIDs=${StudyInstanceUID}`);
-});
+Cypress.Commands.add(
+  'openStudyInViewer',
+  (StudyInstanceUID, otherParams = '') => {
+    cy.visit(`/basic-test?StudyInstanceUIDs=${StudyInstanceUID}${otherParams}`);
+  }
+);
 
 /**
  * Command to search for a Modality and open the study.
