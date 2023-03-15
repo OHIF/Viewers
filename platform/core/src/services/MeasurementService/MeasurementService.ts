@@ -58,6 +58,9 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'longestDiameter',
   'cachedStats',
   'selected',
+  'site',
+  'findingSites',
+  'finding',
 ];
 
 const EVENTS = {
@@ -68,6 +71,7 @@ const EVENTS = {
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
   JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
+  MEASUREMENTS_SAVED: 'event::measurements_saved',
 };
 
 const VALUE_TYPES = {
@@ -107,12 +111,45 @@ class MeasurementService extends PubSubService {
   public static VALUE_TYPES = VALUE_TYPES;
   public readonly VALUE_TYPES = VALUE_TYPES;
 
+  protected seriesDescription = '';
+  protected seriesInstanceUID: string;
+  protected measurementsStored = true;
+
   constructor() {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
     this.measurements = {};
     this._jumpToMeasurementCache = {};
+  }
+
+  /**
+   * The series description is remembered here from the last load so that
+   * it can be re-used for saving to the same series if desired.
+   * Calling this should be done after loading measurements, and will cause
+   * the measurements data to be considered up to date.
+   */
+  public setSeriesDescription(desc: string, uid?: string): void {
+    this.seriesDescription = desc;
+    this.seriesInstanceUID = uid;
+    this.measurementsStored = true;
+    this._broadcastEvent(EVENTS.MEASUREMENTS_SAVED, {
+      SeriesDescription: desc,
+      SeriesInstanceUID: uid,
+    });
+  }
+
+  public getSeriesDescription(): string {
+    return this.seriesDescription;
+  }
+
+  public getSeriesInstanceUID(): string {
+    return this.seriesInstanceUID;
+  }
+
+  /** Indicate if the measurement are stored/up to date with the source data */
+  public isMeasurementsStored(): boolean {
+    return this.measurementsStored;
   }
 
   /**
@@ -173,7 +210,7 @@ class MeasurementService extends PubSubService {
    * @param {string} uid measurement uid
    * @return {Measurement} Measurement instance
    */
-  getMeasurement(measurementUID) {
+  public getMeasurement(measurementUID) {
     let measurement = null;
     const measurements = this.measurements[measurementUID];
 
@@ -184,7 +221,8 @@ class MeasurementService extends PubSubService {
     return measurement;
   }
 
-  setMeasurementSelected(measurementUID, selected) {
+  /** Select a measurement.  This does NOT update the stored measurement values */
+  public setMeasurementSelected(measurementUID, selected) {
     const measurement = this.getMeasurement(measurementUID);
     if (!measurement) {
       return;
@@ -373,7 +411,10 @@ class MeasurementService extends PubSubService {
     }
   }
 
-  update(measurementUID, measurement, notYetUpdatedAtSource = false) {
+  /** Updates a measurement.
+   * This will cause the measurementsStored flag to be set to false.
+   */
+  public update(measurementUID, measurement, notYetUpdatedAtSource = false) {
     if (!this.measurements[measurementUID]) {
       return;
     }
@@ -389,6 +430,7 @@ class MeasurementService extends PubSubService {
     );
 
     this.measurements[measurementUID] = updatedMeasurement;
+    this.measurementsStored = false;
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
@@ -439,6 +481,7 @@ class MeasurementService extends PubSubService {
       measurement = toMeasurementSchema(data);
       measurement.source = source;
     } catch (error) {
+      console.log(error);
       log.warn(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
         error.message
@@ -471,6 +514,8 @@ class MeasurementService extends PubSubService {
     };
 
     if (this.measurements[internalUID]) {
+      // TODO - figure out how to differentiate initial updates from just
+      // checking the mapping on re-render
       this.measurements[internalUID] = newMeasurement;
       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
@@ -579,6 +624,8 @@ class MeasurementService extends PubSubService {
         });
       } else {
         log.info('Measurement added.', newMeasurement);
+        this.measurementsStored = false;
+
         this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
           source,
           measurement: newMeasurement,
@@ -586,6 +633,7 @@ class MeasurementService extends PubSubService {
       }
     } else {
       log.info('Measurement started.', newMeasurement);
+      this.measurementsStored = false;
       this.measurements[internalUID] = newMeasurement;
     }
 
@@ -605,6 +653,7 @@ class MeasurementService extends PubSubService {
     }
 
     delete this.measurements[measurementUID];
+    this.measurementsStored = false;
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
@@ -618,6 +667,10 @@ class MeasurementService extends PubSubService {
     this.measurements = {};
     this._jumpToMeasurementCache = {};
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+    this.seriesDescription = '';
+    this.seriesInstanceUID = '';
+    // The measurements are stored - in this case empty, so nothing to store.
+    this.measurementsStored = true;
   }
 
   /**
