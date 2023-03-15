@@ -60,20 +60,20 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
     images[imageIndex + 'thumb'] = data.region_thumbnail_url;
     images[imageIndex] = data.image_url;
     const malignant = data.malignant ? ' Yes' : 'No';
-    if (index == 0)
-      contents.push({
-        margin: [0, 10],
-        stack: [
-          {
-            image: 'query',
-            fit: [150, 150],
-          },
-          {
-            text: 'Original Query',
-            fontsize: 14,
-          },
-        ],
-      });
+    // if (index == 0)
+    contents.push({
+      margin: [0, 10],
+      stack: [
+        {
+          image: 'query',
+          fit: [150, 150],
+        },
+        {
+          text: 'Original Query',
+          fontsize: 14,
+        },
+      ],
+    });
 
     contents.push({
       alignment: 'right',
