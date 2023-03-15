@@ -32,6 +32,7 @@ function commandsModule({ servicesManager, commandsManager }) {
     uiNotificationService,
     customizationService,
     measurementService,
+    hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
 
   const { measurementServiceSource } = this;
@@ -132,12 +133,15 @@ function commandsModule({ servicesManager, commandsManager }) {
       }
 
       // TODO - make the selectorProps richer by including the study metadata and display set.
+      const { protocol, stage } = hangingProtocolService.getActiveProtocol();
       optionsToUse.selectorProps = {
         toolName: optionsToUse.nearbyToolData?.metadata?.toolName,
         value: optionsToUse.nearbyToolData,
         uid: optionsToUse.nearbyToolData?.annotationUID,
         nearbyToolData: optionsToUse.nearbyToolData,
         event,
+        protocol,
+        stage,
       };
 
       let defaultPointsPosition = [];
@@ -230,7 +234,7 @@ function commandsModule({ servicesManager, commandsManager }) {
      * in the future with ability to set other site information.
      */
     updateMeasurement: props => {
-      const { code, uid, measurementKey = 'finding', textLabel, label } = props;
+      const { code, uid, textLabel, label } = props;
       const measurement = measurementService.getMeasurement(uid);
       const updatedMeasurement = {
         ...measurement,
@@ -241,6 +245,8 @@ function commandsModule({ servicesManager, commandsManager }) {
         updatedMeasurement.label = textLabel;
       }
       if (code !== undefined) {
+        const measurementKey = code.type || 'finding';
+
         if (code.ref && !code.CodeValue) {
           const split = code.ref.indexOf(':');
           code.CodeValue = code.ref.substring(split + 1);
@@ -248,9 +254,27 @@ function commandsModule({ servicesManager, commandsManager }) {
           code.CodingSchemeDesignator = code.ref.substring(0, split);
         }
         updatedMeasurement[measurementKey] = code;
-        if (measurementKey === 'site') {
-          updatedMeasurement.findingSites = code ? [code] : [];
+        // TODO - remove this line once the measurements table customizations are in
+        if (measurementKey !== 'finding') {
+          if (updatedMeasurement.findingSites) {
+            updatedMeasurement.findingSites = updatedMeasurement.findingSites.filter(
+              it => it.type !== measurementKey
+            );
+            updatedMeasurement.findingSites.push(code);
+          } else {
+            updatedMeasurement.findingSites = [code];
+          }
         }
+        // TODO - remove this once measurement items customization is ready
+        const allCodes = [];
+        if (textLabel) allCodes.push(textLabel);
+        if (updatedMeasurement.finding) {
+          allCodes.push(updatedMeasurement.finding.CodeMeaning);
+        }
+        (updatedMeasurement.findingSites || []).forEach(it =>
+          allCodes.push(it.CodeMeaning)
+        );
+        updatedMeasurement.label = allCodes.join(', ');
       }
       measurementService.update(
         updatedMeasurement.uid,
@@ -673,15 +697,10 @@ function commandsModule({ servicesManager, commandsManager }) {
       storeContexts: [],
       options: {},
     },
-    setFinding: {
+    updateMeasurement: {
       commandFn: actions.updateMeasurement,
       storeContexts: [],
-      options: { measurementKey: 'finding' },
-    },
-    setSite: {
-      commandFn: actions.updateMeasurement,
-      storeContexts: [],
-      options: { measurementKey: 'site' },
+      options: {},
     },
 
     setWindowLevel: {

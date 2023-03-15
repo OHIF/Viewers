@@ -41,20 +41,31 @@ export default function getCustomizationModule() {
         ],
       },
     },
-{
-        id: 'ohif.contextMenu',
-        applyType: function (customizationService: CustomizationService) {
-          // Don't modify the children, as those are copied by reference
-          this.menus = [...this.menus];
-          const { menus } = this;
 
-          for (const menu of menus) {
-            const { items } = menu;
-            menu.items = [];
-            for (const item of items) {
-              menu.items.push(customizationService.applyType(item));
+    {
+      name: 'default',
+      value: [
+        {
+          id: 'ohif.contextMenu',
+
+          /** Applies the customizationType to all the menu items */
+          applyType: function (customizationService: CustomizationService) {
+            // Don't modify the children, as those are copied by reference
+            const ret = { ...this };
+            ret.menus = this.menus.map(it => ({ ...it }));
+            const { menus } = ret;
+
+            for (const menu of menus) {
+              const { items } = menu;
+              menu.items = [];
+              for (const item of items) {
+                menu.items.push(customizationService.applyType(item));
+              }
             }
-          }
+            return ret;
+          },
         },
-      },  ];
+      ],
+    },
+  ];
 }

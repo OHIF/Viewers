@@ -102,7 +102,7 @@ export function findMenu(
  * This allows single id menus to be chosen by id, but have varying contents
  * based on the delegated menus.
  *
- * Finally, for each item, the adaptItems call is made.  This allows
+ * Finally, for each item, the adaptItem call is made.  This allows
  * items to modify themselves before being displayed, such as
  * incorporating additional information from translation sources.
  * See the `test-mode` examples for details.
