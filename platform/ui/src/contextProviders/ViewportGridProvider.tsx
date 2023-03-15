@@ -6,17 +6,22 @@ import React, {
   useReducer,
 } from 'react';
 import PropTypes from 'prop-types';
-
+import isEqual from 'lodash.isequal';
 import viewportLabels from '../utils/viewportLabels';
+import getPresentationId from './getPresentationId';
 
 const DEFAULT_STATE = {
-  numRows: null,
-  numCols: null,
-  layoutType: 'grid',
+  activeViewportIndex: 0,
+  layout: {
+    numRows: 0,
+    numCols: 0,
+    layoutType: 'grid',
+  },
   viewports: [
     {
       displaySetInstanceUIDs: [],
       viewportOptions: {},
+      displaySetSelectors: [],
       displaySetOptions: [{}],
       x: 0, // left
       y: 0, // top
@@ -25,20 +30,58 @@ const DEFAULT_STATE = {
       viewportLabel: null,
     },
   ],
-  activeViewportIndex: 0,
-  cachedLayout: {},
 };
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
 /**
- * Given the flatten index, and rows and column, it returns the
- * row and column index
+ * Find a viewport to re-use, and then set the viewportId
+ *
+ * @param idSet
+ * @param viewport
+ * @param stateViewports
+ * @returns
  */
-const unravelIndex = (index, numRows, numCols) => {
-  const row = Math.floor(index / numCols);
-  const col = index % numCols;
-  return { row, col };
+const reuseViewport = (idSet, viewport, stateViewports) => {
+  const oldIds = {};
+  for (const oldViewport of stateViewports) {
+    const { viewportId: oldId } = oldViewport;
+    oldIds[oldId] = true;
+    if (!oldId || idSet[oldId]) continue;
+    if (
+      !isEqual(
+        oldViewport.displaySetInstanceUIDs,
+        viewport.displaySetInstanceUIDs
+      )
+    ) {
+      continue;
+    }
+    idSet[oldId] = true;
+    // TODO re-use viewports once the flickering/wrong size redraw is fixed
+    // return {
+    //   ...oldViewport,
+    //   ...viewport,
+    //   viewportOptions: {
+    //     ...oldViewport.viewportOptions,
+
+    //     viewportId: oldViewport.viewportId,
+    //   },
+    // };
+  }
+  // Find a viewport instance number different from earlier viewports having
+  // the same presentationId as this one would - will be less than 10k
+  // viewports hopefully :-)
+  for (let i = 0; i < 10000; i++) {
+    const viewportId = 'viewport-' + i;
+    if (idSet[viewportId] || oldIds[viewportId]) continue;
+    idSet[viewportId] = true;
+    return {
+      ...viewport,
+      viewportId,
+      viewportOptions: { ...viewport.viewportOptions, viewportId },
+    };
+  }
+  throw new Error('No ID found');
 };
 
 export function ViewportGridProvider({ children, service }) {
@@ -59,26 +102,40 @@ export function ViewportGridProvider({ children, service }) {
         // which might have been a PDF Viewport. The viewport itself
         // will deal with inheritance if required. Here is just a simple
         // provider.
-        const viewportOptions = payload.viewportOptions || {};
-        const displaySetOptions = payload.displaySetOptions || [{}];
+        const viewport = state.viewports[viewportIndex] || {};
+        const viewportOptions = { ...payload.viewportOptions };
+
+        const displaySetOptions = payload.displaySetOptions || [];
+        if (displaySetOptions.length === 0) {
+          // Only copy index 0, as that is all that is currently supported by this
+          // method call.
+          displaySetOptions.push({ ...viewport.displaySetOptions?.[0] });
+        }
 
         const viewports = state.viewports.slice();
 
-        if (!viewportOptions.viewportId) {
-          viewportOptions.viewportId = `viewport-${viewportIndex}`;
-        }
-
-        // merge the displaySetOptions and viewportOptions and displaySetInstanceUIDs
-        // into the viewport object at the given index
-        viewports[viewportIndex] = {
-          ...viewports[viewportIndex],
+        let newView = {
+          ...viewport,
           displaySetInstanceUIDs,
           viewportOptions,
           displaySetOptions,
           viewportLabel: viewportLabels[viewportIndex],
         };
+        viewportOptions.presentationId = getPresentationId(newView, viewports);
 
-        return { ...state, ...{ viewports } };
+        // Make sure we assign a viewport id
+        newView = reuseViewport({}, newView, state.viewports);
+        console.log(
+          'Creating new viewport',
+          viewportIndex,
+          newView.viewportOptions.viewportId,
+          displaySetInstanceUIDs,
+          displaySetOptions
+        );
+
+        viewports[viewportIndex] = newView;
+
+        return { ...state, viewports };
       }
       case 'SET_LAYOUT': {
         const {
@@ -86,108 +143,96 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           layoutOptions,
           layoutType = 'grid',
-          keepExtraViewports = false,
+          findOrCreateViewport,
         } = action.payload;
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
-        const numPanes = layoutOptions.length || numRows * numCols;
-        const viewports = state.viewports.slice();
-        const activeViewportIndex =
-          state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
+        const hasOptions = layoutOptions?.length;
+        const viewports = [];
 
-        while (viewports.length < numPanes) {
-          viewports.push({});
-        }
+        // Options is a temporary state store which can be used by the
+        // findOrCreate to store state about already found viewports.  Typically,
+        // it will be used to store the display set UID's which are already
+        // in view so that the find or create can decide which display sets
+        // haven't been viewed yet, and add them in the appropriate order.
+        const options = {};
 
-        // Extra viewports are kept when the grid layout is changed in the UI
-        // because the user populated those viewports and if the viewports were to
-        // return on screen their contents should be maintained.
-        if (!keepExtraViewports) {
-          while (viewports.length > numPanes) {
-            viewports.pop();
+        let activeViewportIndex;
+        for (let row = 0; row < numRows; row++) {
+          for (let col = 0; col < numCols; col++) {
+            const pos = col + row * numCols;
+            const layoutOption = layoutOptions[pos];
+            const positionId = layoutOption?.positionId || `${col}-${row}`;
+            if (hasOptions && pos >= layoutOptions.length) {
+              continue;
+            }
+            if (
+              !activeViewportIndex ||
+              state.viewports[pos]?.positionId === positionId
+            ) {
+              activeViewportIndex = pos;
+            }
+            const viewport = findOrCreateViewport(pos, positionId, options);
+            if (!viewport) continue;
+            viewport.positionId = positionId;
+            // Create a new viewport object as it is getting updated here
+            // and it is part of the read only state
+            viewports.push(viewport);
+            let xPos, yPos, w, h;
+
+            if (layoutOptions && layoutOptions[pos]) {
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[pos]);
+            } else {
+              w = 1 / numCols;
+              h = 1 / numRows;
+              xPos = col * w;
+              yPos = row * h;
+            }
+
+            viewport.width = w;
+            viewport.height = h;
+            viewport.x = xPos;
+            viewport.y = yPos;
           }
         }
 
-        for (let i = 0; i < numPanes; i++) {
-          let xPos, yPos, w, h;
-
-          if (layoutOptions && layoutOptions[i]) {
-            ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[i]);
-          } else {
-            const { row, col } = unravelIndex(i, numRows, numCols);
-            w = 1 / numCols;
-            h = 1 / numRows;
-            xPos = col * w;
-            yPos = row * h;
+        const viewportIdSet = {};
+        for (
+          let viewportIndex = 0;
+          viewportIndex < viewports.length;
+          viewportIndex++
+        ) {
+          const viewport = reuseViewport(
+            viewportIdSet,
+            viewports[viewportIndex],
+            state.viewports
+          );
+          if (!viewport.viewportOptions.presentationId) {
+            viewport.viewportOptions.presentationId = getPresentationId(
+              viewport,
+              viewports
+            );
           }
-
-          viewports[i].width = w;
-          viewports[i].height = h;
-          viewports[i].x = xPos;
-          viewports[i].y = yPos;
+          viewport.viewportIndex = viewportIndex;
+          viewport.viewportLabel = viewportLabels[viewportIndex];
+          viewports[viewportIndex] = viewport;
         }
 
-        return {
+        const ret = {
           ...state,
-          ...{
-            activeViewportIndex,
+          activeViewportIndex,
+          layout: {
+            ...state.layout,
             numCols,
             numRows,
             layoutType,
-            viewports,
           },
+          viewports,
         };
+        return ret;
       }
       case 'RESET': {
-        return {
-          numCols: null,
-          numRows: null,
-          layoutType: 'grid',
-          activeViewportIndex: 0,
-          viewports: [
-            {
-              displaySetInstanceUIDs: [],
-              displaySetOptions: [],
-              viewportOptions: {},
-              x: 0, // left
-              y: 0, // top
-              width: 100,
-              height: 100,
-            },
-          ],
-          cachedLayout: {},
-        };
-      }
-
-      // The SET_CACHE_LAYOUT action can be used for caching a layout
-      // for instance double clicking a viewport to maximize it.
-      // and then restoring the previous layout when the viewport is
-      // double clicked again.
-      case 'SET_CACHED_LAYOUT': {
-        const { cacheId, cachedLayout } = action.payload;
-
-        // deep copy the cachedLayout into the state
-        return {
-          ...state,
-          cachedLayout: {
-            ...state.cachedLayout,
-            [cacheId]: JSON.parse(JSON.stringify(cachedLayout)),
-          },
-        };
-      }
-
-      case 'RESTORE_CACHED_LAYOUT': {
-        const cacheId = action.payload;
-
-        if (!state.cachedLayout[cacheId]) {
-          console.warn(
-            `No cached layout found for cacheId: ${cacheId}. Ignoring...`
-          );
-          return state;
-        }
-
-        const cachedLayout = state.cachedLayout;
-        return { ...state.cachedLayout[cacheId], cachedLayout };
+        return DEFAULT_STATE;
       }
 
       case 'SET': {
@@ -221,6 +266,7 @@ export function ViewportGridProvider({ children, service }) {
       viewportIndex,
       displaySetInstanceUIDs,
       viewportOptions,
+      displaySetSelectors,
       displaySetOptions,
     }) =>
       dispatch({
@@ -229,6 +275,7 @@ export function ViewportGridProvider({ children, service }) {
           viewportIndex,
           displaySetInstanceUIDs,
           viewportOptions,
+          displaySetSelectors,
           displaySetOptions,
         },
       }),
@@ -250,7 +297,7 @@ export function ViewportGridProvider({ children, service }) {
       numRows,
       numCols,
       layoutOptions = [],
-      keepExtraViewports = false,
+      findOrCreateViewport,
     }) =>
       dispatch({
         type: 'SET_LAYOUT',
@@ -259,7 +306,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           numCols,
           layoutOptions,
-          keepExtraViewports,
+          findOrCreateViewport,
         },
       }),
     [dispatch]
@@ -274,25 +321,6 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
-  const setCachedLayout = useCallback(
-    payload =>
-      dispatch({
-        type: 'SET_CACHED_LAYOUT',
-        payload,
-      }),
-    [dispatch]
-  );
-
-  const restoreCachedLayout = useCallback(
-    cacheId => {
-      dispatch({
-        type: 'RESTORE_CACHED_LAYOUT',
-        payload: cacheId,
-      });
-    },
-    [dispatch]
-  );
-
   const set = useCallback(
     payload =>
       dispatch({
@@ -303,7 +331,8 @@ export function ViewportGridProvider({ children, service }) {
   );
 
   const getNumViewportPanes = useCallback(() => {
-    const { numCols, numRows, viewports } = viewportGridState;
+    const { layout, viewports } = viewportGridState;
+    const { numRows, numCols } = layout;
     return Math.min(viewports.length, numCols * numRows);
   }, [viewportGridState]);
 
@@ -322,8 +351,6 @@ export function ViewportGridProvider({ children, service }) {
         setLayout,
         reset,
         onModeExit: reset,
-        setCachedLayout,
-        restoreCachedLayout,
         set,
         getNumViewportPanes,
       });
@@ -336,8 +363,6 @@ export function ViewportGridProvider({ children, service }) {
     setDisplaySetsForViewports,
     setLayout,
     reset,
-    setCachedLayout,
-    restoreCachedLayout,
     set,
     getNumViewportPanes,
   ]);
@@ -348,8 +373,6 @@ export function ViewportGridProvider({ children, service }) {
     setDisplaySetsForViewport,
     setDisplaySetsForViewports,
     setLayout,
-    setCachedLayout,
-    restoreCachedLayout,
     reset,
     set,
     getNumViewportPanes,

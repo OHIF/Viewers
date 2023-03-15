@@ -26,6 +26,7 @@ import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
+import { PublicViewportOptions } from './services/ViewportService/Viewport';
 
 const Component = React.lazy(() => {
   return import(
@@ -94,12 +95,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       // const onNewImageHandler = jumpData => {
       //   commandsManager.runCommand('jumpToImage', jumpData);
       // };
-      const { ToolbarService } = servicesManager.services;
+      const { toolbarService } = (servicesManager as ServicesManager).services;
 
       return (
         <OHIFCornerstoneViewport
           {...props}
-          ToolbarService={ToolbarService}
+          ToolbarService={toolbarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />
@@ -151,4 +152,4 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export default cornerstoneExtension;
-export { measurementMappingUtils };
+export { measurementMappingUtils, PublicViewportOptions };

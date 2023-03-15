@@ -303,6 +303,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
       seriesDate: ds.SeriesDate,
       seriesTime: ds.SeriesTime,
       numInstances: ds.numImageFrames,
+      countIcon: ds.countIcon,
       StudyInstanceUID: ds.StudyInstanceUID,
       componentType,
       imageSrc,

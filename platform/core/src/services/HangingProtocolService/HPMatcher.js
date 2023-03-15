@@ -29,27 +29,31 @@ const match = (
   let requiredFailed = false;
   let score = 0;
 
+  // Allow for matching against current or prior specifically
+  const prior = options?.studies?.[1];
+  const current = options?.studies?.[0];
+  const instance = (metadataInstance.images || metadataInstance.others)?.[0];
+  const fromSrc = {
+    prior,
+    current,
+    instance,
+    ...options,
+    options,
+    metadataInstance,
+  };
+
   rules.forEach(rule => {
-    const { attribute } = rule;
+    const { attribute, from = 'metadataInstance' } = rule;
     // Do not use the custom attribute from the metadataInstance since it is subject to change
     if (customAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
       readValues[attribute] = customAttributeRetrievalCallbacks[
         attribute
-      ].callback(metadataInstance, options);
+      ].callback.call(rule, metadataInstance, options);
     } else {
       readValues[attribute] =
-        metadataInstance[attribute] ??
-        ((metadataInstance.images || metadataInstance.others || [])[0] || {})[
-          attribute
-        ];
+        fromSrc[from]?.[attribute] ?? instance?.[attribute];
     }
 
-    console.log(
-      'Test',
-      attribute,
-      readValues[attribute],
-      JSON.stringify(rule.constraint)
-    );
     // Format the constraint as required by Validate.js
     const testConstraint = {
       [attribute]: rule.constraint,
@@ -69,6 +73,14 @@ const match = (
     } catch (e) {
       errorMessages = ['Something went wrong during validation.', e];
     }
+
+    console.log(
+      'Test',
+      `${from}.${attribute}`,
+      readValues[attribute],
+      JSON.stringify(rule.constraint),
+      !errorMessages
+    );
 
     if (!errorMessages) {
       // If no errorMessages were returned, then validation passed.

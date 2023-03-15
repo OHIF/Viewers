@@ -14,7 +14,12 @@ import {
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
+import {
+  ServicesManager,
+  HangingProtocolService,
+  hotkeys,
+  CommandsManager,
+} from '@ohif/core';
 import { useAppConfig } from '@state';
 import Toolbar from '../Toolbar/Toolbar';
 
@@ -33,7 +38,7 @@ function ViewerLayout({
   rightPanels = [],
   leftPanelDefaultClosed = false,
   rightPanelDefaultClosed = false,
-}) {
+}): React.FunctionComponent {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
   const location = useLocation();
@@ -169,15 +174,13 @@ function ViewerLayout({
 
   useEffect(() => {
     const { unsubscribe } = hangingProtocolService.subscribe(
-      hangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
+      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
 
       // Todo: right now to set the loading indicator to false, we need to wait for the
       // hangingProtocolService to finish applying the viewport matching to each viewport,
       // however, this might not be the only approach to set the loading indicator to false. we need to explore this further.
-      ({ progress }) => {
-        if (progress === 100) {
-          setShowLoadingIndicator(false);
-        }
+      () => {
+        setShowLoadingIndicator(false);
       }
     );
 
@@ -265,7 +268,8 @@ ViewerLayout.propTypes = {
   extensionManager: PropTypes.shape({
     getModuleEntry: PropTypes.func.isRequired,
   }).isRequired,
-  commandsManager: PropTypes.object,
+  commandsManager: PropTypes.instanceOf(CommandsManager),
+  servicesManager: PropTypes.instanceOf(ServicesManager),
   // From modes
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,

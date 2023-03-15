@@ -39,6 +39,11 @@ const ToolbarButton = ({
 
   const activeClass = isActive ? 'active' : '';
   const shouldShowDropdown = !!isActive && !!dropdownContent;
+  const iconEl = icon ? (
+    <Icon name={icon} />
+  ) : (
+    <div>{label || 'Missing icon and label'}</div>
+  );
 
   return (
     <div key={id}>
@@ -64,7 +69,7 @@ const ToolbarButton = ({
           id={id}
           {...rest}
         >
-          <Icon name={icon} />
+          {iconEl}
         </IconButton>
       </Tooltip>
     </div>

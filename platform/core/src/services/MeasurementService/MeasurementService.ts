@@ -519,9 +519,14 @@ class MeasurementService extends PubSubService {
     let measurement = {};
     try {
       const sourceMappings = this.mappings[source.uid];
-      const { toMeasurementSchema } = sourceMappings.find(
+      const sourceMapping = sourceMappings.find(
         mapping => mapping.annotationType === annotationType
       );
+      if (!sourceMapping) {
+        console.log('No source mapping', source);
+        return;
+      }
+      const { toMeasurementSchema } = sourceMapping;
 
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
