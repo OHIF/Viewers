@@ -226,6 +226,9 @@ const mprAnd3DVolumeViewport = {
           viewportOptions: {
             toolGroupId: 'volume3d',
             viewportType: 'volume3d',
+            customViewportProps: {
+              hideOverlays: true,
+            },
           },
           displaySets: [
             {

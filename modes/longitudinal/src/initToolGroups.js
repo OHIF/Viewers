@@ -228,14 +228,6 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         toolName: toolNames.TrackballRotateTool,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
-      {
-        toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
-      },
-      {
-        toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
-      },
     ],
   };
 
@@ -251,7 +243,7 @@ function initToolGroups(extensionManager, toolGroupService, commandsManager) {
   );
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
-  initVolume3DToolGroup(extensionManager, toolGroupService, commandsManager);
+  initVolume3DToolGroup(extensionManager, toolGroupService);
 }
 
 export default initToolGroups;
