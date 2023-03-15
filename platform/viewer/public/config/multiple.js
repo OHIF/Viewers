@@ -108,18 +108,5 @@ window.config = {
   defaultDataSourceName: 'default',
 
   // Only list the unique hotkeys
-  hotkeys: [
-    {
-      commandName: 'nextStage',
-      context: 'DEFAULT',
-      label: 'Next Stage',
-      keys: ['end'],
-    },
-    {
-      commandName: 'previousStage',
-      context: 'DEFAULT',
-      label: 'Previous Stage',
-      keys: ['home'],
-    },
-  ],
+  hotkeys: [],
 };

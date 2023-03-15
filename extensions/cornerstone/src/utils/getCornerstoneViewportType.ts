@@ -2,15 +2,17 @@ import { Enums } from '@cornerstonejs/core';
 
 const STACK = 'stack';
 const VOLUME = 'volume';
+const ORTHOGRAPHIC = 'orthographic';
 
 export default function getCornerstoneViewportType(
   viewportType: string
 ): Enums.ViewportType {
-  if (viewportType.toLowerCase() === STACK) {
+  const lowerViewportType = viewportType.toLowerCase();
+  if (lowerViewportType === STACK) {
     return Enums.ViewportType.STACK;
   }
 
-  if (viewportType.toLowerCase() === VOLUME) {
+  if (lowerViewportType === VOLUME || lowerViewportType === ORTHOGRAPHIC) {
     return Enums.ViewportType.ORTHOGRAPHIC;
   }
 

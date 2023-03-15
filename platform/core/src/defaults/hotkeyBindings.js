@@ -92,14 +92,14 @@ const bindings = [
     commandName: 'nextStage',
     context: 'DEFAULT',
     label: 'Next Stage',
-    keys: ['ctrl+end'],
+    keys: ['.'],
     isEditable: true,
   },
   {
     commandName: 'previousStage',
     context: 'DEFAULT',
     label: 'Previous Stage',
-    keys: ['ctrl+home'],
+    keys: [','],
     isEditable: true,
   },
   {

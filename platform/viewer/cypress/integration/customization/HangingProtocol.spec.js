@@ -16,13 +16,13 @@ describe('OHIF HP', () => {
   });
 
   it('Should navigate next/previous stage', () => {
-    cy.get('body').type('{ctrl+home}');
+    cy.get('body').type(',');
     cy.wait(250);
     cy.get('[data-cy="viewport-pane"]')
       .its('length')
       .should('be.eq', 4);
 
-    cy.get('body').type('{ctrl+end}{ctrl+end}');
+    cy.get('body').type('..');
     cy.wait(250);
     cy.get('[data-cy="viewport-pane"]')
       .its('length')

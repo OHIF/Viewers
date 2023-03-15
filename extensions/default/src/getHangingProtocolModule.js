@@ -155,7 +155,7 @@ const defaultProtocol = {
     },
 
     // This is an example of a layout with more than one element in it
-    // It can be navigated to using Ctrl+End
+    // It can be navigated to using , and . (prev/next stage)
     {
       name: '1x2',
       // Indicate that the number of viewports needed is 1 filled viewport,
