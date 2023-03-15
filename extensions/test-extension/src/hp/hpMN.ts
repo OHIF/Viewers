@@ -187,7 +187,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
       },
       viewportStructure: {
         layoutType: 'grid',
-        layoutType: 'grid',
         properties: {
           rows: 1,
           columns: 2,
@@ -245,7 +244,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              matchedDisplaySetsIndex: 1,
+              matchedDisplaySetsIndex: 0,
               id: 'defaultDisplaySetId',
             },
           ],

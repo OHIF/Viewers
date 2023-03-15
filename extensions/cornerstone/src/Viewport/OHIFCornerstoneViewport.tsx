@@ -220,15 +220,27 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const currentPresentation = cornerstoneViewportService.getPresentation(
       viewportIndex
     );
-    const { presentationSync } = stateSyncService.getState();
-    if (currentPresentation) {
-      stateSyncService.store({
-        presentationSync: {
-          ...presentationSync,
-          [currentPresentation.id]: currentPresentation,
-        },
-      });
+    if (!currentPresentation || !currentPresentation.presentationIds) return;
+    const {
+      lutPresentationSync,
+      positionPresentationSync,
+    } = stateSyncService.getState();
+    const { presentationIds } = currentPresentation;
+    const { lutPresentationId, positionPresentationId } = presentationIds || {};
+    const storeState = {};
+    if (lutPresentationId) {
+      storeState.lutPresentationSync = {
+        ...lutPresentationSync,
+        [lutPresentationId]: currentPresentation,
+      };
     }
+    if (positionPresentationId) {
+      storeState.positionPresentationSync = {
+        ...positionPresentationSync,
+        [positionPresentationId]: currentPresentation,
+      };
+    }
+    stateSyncService.store(storeState);
   };
 
   const cleanUpServices = useCallback(() => {
@@ -384,18 +396,25 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       storePresentation();
 
-      const { presentationSync } = stateSyncService.getState();
-      const { presentationId } = viewportOptions;
-      const presentation = presentationId
-        ? (presentationSync[presentationId] as Presentation)
-        : null;
+      const {
+        lutPresentationSync,
+        positionPresentationSync,
+      } = stateSyncService.getState();
+      const { presentationIds } = viewportOptions;
+      const presentations = {
+        positionPresentation:
+          positionPresentationSync[presentationIds?.positionPresentationId],
+        lutPresentation:
+          lutPresentationSync[presentationIds?.lutPresentationId],
+      };
+      console.log('Using presentations', presentations);
 
       cornerstoneViewportService.setViewportData(
         viewportIndex,
         viewportData,
         viewportOptions,
         displaySetOptions,
-        presentation
+        presentations
       );
     };
 

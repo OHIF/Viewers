@@ -98,9 +98,15 @@ export default async function init({
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
-  // Stores a map from `presentationId` to a Presentation object so that
-  // an OHIFCornerstoneViewport can be redisplayed with the same attributes
-  stateSyncService.register('presentationSync', { clearOnModeExit: true });
+  // Stores a map from `lutPresentationId` to a Presentation object so that
+  // an OHIFCornerstoneViewport can be redisplayed with the same LUT
+  stateSyncService.register('lutPresentationSync', { clearOnModeExit: true });
+
+  // Stores a map from `positionPresentationId` to a Presentation object so that
+  // an OHIFCornerstoneViewport can be redisplayed with the same position
+  stateSyncService.register('positionPresentationSync', {
+    clearOnModeExit: true,
+  });
 
   const labelmapRepresentation =
     cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
