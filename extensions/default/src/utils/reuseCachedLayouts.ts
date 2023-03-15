@@ -32,11 +32,11 @@ const reuseCachedLayout = (
     ...syncState.hangingProtocolStageIndexMap,
   };
   const displaySetSelectorMap = { ...syncState.displaySetSelectorMap };
-  const { rows, cols } = stage.viewportStructure.properties;
+  const { rows, columns } = stage.viewportStructure.properties;
   const custom =
     stage.viewports.length !== state.viewports.length ||
     state.layout.numRows !== rows ||
-    state.layout.numCols !== cols;
+    state.layout.numCols !== columns;
 
   hangingProtocolStageIndexMap[cacheId] = hpInfo;
 
