@@ -170,7 +170,7 @@ const mprAnd3DVolumeViewport = {
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
-  imageLoadStrategy: 'nth',
+  imageLoadStrategy: 'interleaveTopToBottom',
   displaySetSelectors: {
     mprDisplaySet: {
       seriesMatchingRules: [
@@ -226,6 +226,7 @@ const mprAnd3DVolumeViewport = {
           viewportOptions: {
             toolGroupId: 'volume3d',
             viewportType: 'volume3d',
+            orientation: 'coronal',
             customViewportProps: {
               hideOverlays: true,
             },

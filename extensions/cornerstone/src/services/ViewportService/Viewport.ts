@@ -78,7 +78,6 @@ export type DisplaySet = {
 };
 
 const STACK = 'stack';
-const VOLUME = 'volume';
 const DEFAULT_TOOLGROUP_ID = 'default';
 
 class ViewportInfo {
@@ -192,10 +191,10 @@ class ViewportInfo {
     }
 
     // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
-      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    } else {
+    if (viewportOptionsEntry.viewportType?.toLowerCase() === STACK) {
       orientation = Enums.OrientationAxis.AXIAL;
+    } else {
+      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     }
 
     this.setViewportOptions({
