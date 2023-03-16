@@ -1,6 +1,7 @@
 {
   "Acquired": "已获取",
   "Angle": "角度",
+  "Annotate": "注释",
   "Axial": "轴状面",
   "Bidirectional": "双向",
   "Brush": "橡皮擦",
@@ -10,6 +11,7 @@
   "Clear": "清除",
   "Coronal": "冠状面",
   "Crosshairs": "十字线",
+  "Download": "下载",
   "Ellipse": "椭圆",
   "Elliptical": "椭圆的",
   "Flip H": "左右翻转",
