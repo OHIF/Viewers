@@ -1,84 +1,130 @@
+import { hotkeys } from '@ohif/core';
+import { addIcon } from '@ohif/ui';
+import ConfigPoint from "config-point";
+
 import { id } from './id';
+import toolbarButtons from './toolbarButtons';
+
+import toolCircle from '../public/assets/icons/tool-circle.svg';
+import toolFreehand from '../public/assets/icons/tool-freehand.svg';
+import toolFreehandPolygon from '../public/assets/icons/tool-freehand-polygon.svg';
+import toolPolygon from '../public/assets/icons/tool-polygon.svg';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
+  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
   rightPanel: '@ohif/extension-default.panelModule.measure',
 };
 
-const cornerstone = {
+export const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
 };
 
-/**
- * Just two dependencies to be able to render a viewport with panels in order
- * to make sure that the mode is working.
- */
-const extensionDependencies = {
-  '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone': '^3.0.0',
+const dicomsr = {
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
-function modeFactory({ modeConfiguration }) {
+const dicomvideo = {
+  sopClassHandler:
+    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
+};
+
+const dicompdf = {
+  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
+  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
+};
+
+const extensionDependencies = {
+  // Can derive the versions at least process.env.from npm_package_version
+  '@ohif/extension-default': '^3.0.0',
+  '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
+  '@ohif/extension-dicom-pdf': '^3.0.1',
+  '@ohif/extension-dicom-video': '^3.0.1',
+  '@ohif/extension-dicom-microscopy': '^3.0.0',
+};
+
+function modeFactory() {
   return {
-    /**
-     * Mode ID, which should be unique among modes used by the viewer. This ID
-     * is used to identify the mode in the viewer's state.
-     */
+    // TODO: We're using this as a route segment
+    // We should not be.
     id,
-    routeName: 'template',
+    routeName: 'microscopy',
+    displayName: 'Microscopy',
+
     /**
-     * Mode name, which is displayed in the viewer's UI in the workList, for the
-     * user to select the mode.
+     * Lifecycle hooks
      */
-    displayName: 'Template Mode',
-    /**
-     * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
-     * Services and other resources.
-     */
-    onModeEnter: ({ servicesManager, extensionManager }) => {},
-    /**
-     * Runs when the Mode Route is unmounted from the DOM. Usually used to clean
-     * up resources and states
-     */
-    onModeExit: () => {},
-    /** */
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      const { ToolBarService } = servicesManager.services;
+
+      addIcon('tool-point', toolCircle)
+      addIcon('tool-circle', toolCircle)
+      addIcon('tool-freehand-line', toolFreehand)
+      addIcon('tool-freehand-polygon', toolFreehandPolygon)
+      addIcon('tool-polygon', toolPolygon)
+
+      ToolBarService.init(extensionManager);
+      ToolBarService.addButtons(toolbarButtons);
+      ToolBarService.createButtonSection('primary', [
+        'MeasurementTools',
+        'dragPan',
+      ]);
+    },
+
+    onModeExit: ({ servicesManager }) => {
+      const {
+        MeasurementService,
+        ToolBarService,
+      } = servicesManager.services;
+
+      ToolBarService.reset();
+    },
+
     validationTags: {
       study: [],
       series: [],
     },
-    /**
-     * A boolean return value that indicates whether the mode is valid for the
-     * modalities of the selected studies. For instance a PET/CT mode should be
-     */
-    isValidMode: ({ modalities }) => true,
-    /**
-     * Mode Routes are used to define the mode's behavior. A list of Mode Route
-     * that includes the mode's path and the layout to be used. The layout will
-     * include the components that are used in the layout. For instance, if the
-     * default layoutTemplate is used (id: '@ohif/extension-default.layoutTemplateModule.viewerLayout')
-     * it will include the leftPanels, rightPanels, and viewports. However, if
-     * you define another layoutTemplate that includes a Footer for instance,
-     * you should provide the Footer component here too. Note: We use Strings
-     * to reference the component's ID as they are registered in the internal
-     * ExtensionManager. The template for the string is:
-     * `${extensionId}.{moduleType}.${componentId}`.
-     */
+
+    isValidMode: ({ modalities }) => {
+      const modalities_list = modalities.split('\\');
+
+      // Slide Microscopy and ECG modality not supported by basic mode yet
+      return modalities_list.includes('SM');
+    },
+
     routes: [
       {
-        path: 'template',
+        path: 'microscopy',
+        /*init: ({ servicesManager, extensionManager }) => {
+          //defaultViewerRouteInit
+        },*/
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
-              rightPanels: [ohif.rightPanel],
+              rightPanels: ['@ohif/extension-dicom-microscopy.panelModule.measure'],
               viewports: [
                 {
-                  namespace: cornerstone.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  namespace: "@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom",
+                  displaySetsToDisplay: [
+                    "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler",
+                    "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler",
+                  ],
+                },
+                {
+                  namespace: dicomvideo.viewport,
+                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
+                },
+                {
+                  namespace: dicompdf.viewport,
+                  displaySetsToDisplay: [dicompdf.sopClassHandler],
                 },
               ],
             },
@@ -86,21 +132,30 @@ function modeFactory({ modeConfiguration }) {
         },
       },
     ],
-    /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
-    /** HangingProtocol used by the mode */
-    // hangingProtocol: [''],
-    /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler],
-    /** hotkeys for mode */
-    hotkeys: [''],
+    hangingProtocols: [ohif.hangingProtocols],
+    hangingProtocol: ['default'],
+
+    // Order is important in sop class handlers when two handlers both use
+    // the same sop class under different situations.  In that case, the more
+    // general handler needs to come last.  For this case, the dicomvideo must
+    // come first to remove video transfer syntax before ohif uses images
+    sopClassHandlers: [
+      "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler",
+      "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler",
+      dicomvideo.sopClassHandler,
+      dicompdf.sopClassHandler,
+    ],
+    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 
-const mode = {
+const mode = ConfigPoint.createConfiguration("microscopyMode", {
   id,
   modeFactory,
   extensionDependencies,
-};
+});
+
+console.log('microscopy-mode=', mode)
 
 export default mode;

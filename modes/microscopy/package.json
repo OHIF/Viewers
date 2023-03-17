@@ -2,7 +2,7 @@
   "name": "@ohif/mode-microscopy",
   "version": "3.0.0",
   "description": "OHIF mode for DICOM microscopy",
-  "author": "OHIF, md-prog",
+  "author": "Bill Wallace, md-prog, Radical Imaging",
   "license": "MIT",
   "main": "dist/index.umd.js",
   "files": [
@@ -30,7 +30,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0"
+    "@ohif/core": "^3.0.0",
+    "@ohif/extension-dicom-microscopy": "^3.0.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"
