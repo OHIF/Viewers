@@ -1,14 +1,7 @@
 import { hotkeys } from '@ohif/core';
-import { addIcon } from '@ohif/ui';
-import ConfigPoint from "config-point";
 
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
-
-import toolCircle from '../public/assets/icons/tool-circle.svg';
-import toolFreehand from '../public/assets/icons/tool-freehand.svg';
-import toolFreehandPolygon from '../public/assets/icons/tool-freehand-polygon.svg';
-import toolPolygon from '../public/assets/icons/tool-polygon.svg';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -20,12 +13,6 @@ const ohif = {
 
 export const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-};
-
-const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
-  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
@@ -61,17 +48,11 @@ function modeFactory() {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { ToolBarService } = servicesManager.services;
+      const { toolbarService } = servicesManager.services;
 
-      addIcon('tool-point', toolCircle)
-      addIcon('tool-circle', toolCircle)
-      addIcon('tool-freehand-line', toolFreehand)
-      addIcon('tool-freehand-polygon', toolFreehandPolygon)
-      addIcon('tool-polygon', toolPolygon)
-
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'dragPan',
       ]);
@@ -79,11 +60,10 @@ function modeFactory() {
 
     onModeExit: ({ servicesManager }) => {
       const {
-        MeasurementService,
-        ToolBarService,
+        toolbarService,
       } = servicesManager.services;
 
-      ToolBarService.reset();
+      toolbarService.reset();
     },
 
     validationTags: {
@@ -150,12 +130,10 @@ function modeFactory() {
   };
 }
 
-const mode = ConfigPoint.createConfiguration("microscopyMode", {
+const mode = {
   id,
   modeFactory,
   extensionDependencies,
-});
-
-console.log('microscopy-mode=', mode)
+};
 
 export default mode;

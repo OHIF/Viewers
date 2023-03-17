@@ -6,7 +6,7 @@ import {
   DicomMetadataStore,
 } from '@ohif/core';
 import { MeasurementTable, Icon, ButtonGroup, Button } from '@ohif/ui';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import DEVICE_OBSERVER_UID from '../../utils/DEVICE_OBSERVER_UID';
 import { EVENTS as MicroscopyEvents } from '../../tools/microscopyManager';
 import dcmjs from 'dcmjs';
@@ -61,13 +61,8 @@ function saveByteArray(buffer: ArrayBuffer, filename: string) {
   link.click();
 }
 
-/**
- * Microscopy Measurements Panel Component
- *
- * @param props
- * @returns
- */
-function MicroscopyPanel(props: {
+
+interface IMicroscopyPanelProps extends WithTranslation {
   viewports: PropTypes.array;
   activeViewportIndex: PropTypes.number;
 
@@ -79,10 +74,15 @@ function MicroscopyPanel(props: {
   //
   servicesManager: ServicesManager;
   extensionManager: ExtensionManager;
+}
 
-  // Translator function (injected by withTranslation() below)
-  t: PropTypes.func;
-}) {
+/**
+ * Microscopy Measurements Panel Component
+ *
+ * @param props
+ * @returns
+ */
+function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const microscopyManager: any = props.microscopyManager;
 
   const [studyInstanceUID, setStudyInstanceUID] = useState(
