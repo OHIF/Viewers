@@ -4,7 +4,7 @@
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog, Radical Imaging",
   "license": "MIT",
-  "main": "dist/index.umd.js",
+  "main": "dist/umd/@ohif/extension-dicom-microscopy/index.umd.js",
   "files": [
     "dist/**",
     "public/**",
@@ -29,9 +29,9 @@
   },
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
-    "@ohif/extension-cornerstone": "^3.0.0",
     "@ohif/extension-default": "^3.0.0",
     "@ohif/i18n": "^1.0.0",
+    "@ohif/ui": "^2.0.0",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -43,7 +43,12 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "dicom-microscopy-viewer": "^0.44.0"
+    "@cornerstonejs/codec-charls": "^0.1.1",
+    "@cornerstonejs/codec-libjpeg-turbo-8bit": "^0.0.7",
+    "@cornerstonejs/codec-openjpeg": "^0.1.1",
+    "colormap": "^2.3",
+    "dicom-microscopy-viewer": "^0.44.0",
+    "dicomicc": "^0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",

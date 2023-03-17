@@ -78,6 +78,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       },
     },
     module: {
+      noParse: [/(codec)/, /(dicomicc)/],
       rules: [
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
@@ -89,6 +90,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           },
         },
         cssToJavaScript,
+        {
+          test: /\.wasm/,
+          type: 'asset/resource',
+        },
       ], //.concat(vtkRules),
     },
     resolve: {
@@ -148,6 +153,11 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
+    // enable experimental features, like webAssembly
+    experiments: {
+      asyncWebAssembly: true,
+      syncWebAssembly: true,
+    },
   };
 
   if (isProdBuild) {
