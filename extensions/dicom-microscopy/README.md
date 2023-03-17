@@ -4,7 +4,7 @@
 OHIF extension for DICOM microscopy
 
 ## Author
-OHIF, md-prog
+Bill Wallace, md-prog, Radical Imaging
 
 ## License
 MIT
