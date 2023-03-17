@@ -1,10 +1,9 @@
-import React, { Component, useCallback } from 'react';
+import React, { Component } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
 import microscopyManager from './tools/microscopyManager';
-// import ViewportOverlay from './components/ViewportOverlay';
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
