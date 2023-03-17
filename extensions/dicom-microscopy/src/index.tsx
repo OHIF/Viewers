@@ -38,7 +38,6 @@ export default {
   getViewportModule({ servicesManager, extensionManager }) {
 
     const ExtendedMicroscopyViewport = (props) => {
-      console.log('Creating an extended microscopy viewport');
       const {
         displaySets,
         viewportIndex,

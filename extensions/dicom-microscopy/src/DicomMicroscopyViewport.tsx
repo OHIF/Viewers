@@ -21,7 +21,7 @@ class DicomMicroscopyViewport extends Component {
   overlayElement = React.createRef();
   debouncedResize: () => any;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
 
     this.debouncedResize = debounce(() => {
@@ -93,7 +93,7 @@ class DicomMicroscopyViewport extends Component {
       );
     };
 
-    console.log('Loading viewer metadata', displaySet);
+    console.debug('Loading viewer metadata', displaySet);
     loadViewer(displaySet.others);
   }
 

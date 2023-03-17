@@ -1,11 +1,14 @@
 /**
  * Get referenced SM displaySet from SR displaySet
- * 
- * @param {*} allDisplaySets 
- * @param {*} microscopySRDisplaySet 
- * @returns 
+ *
+ * @param {*} allDisplaySets
+ * @param {*} microscopySRDisplaySet
+ * @returns
  */
-export default function getSourceDisplaySet(allDisplaySets, microscopySRDisplaySet) {
+export default function getSourceDisplaySet(
+  allDisplaySets,
+  microscopySRDisplaySet
+) {
   const { ReferencedFrameOfReferenceUID } = microscopySRDisplaySet;
 
   const otherDisplaySets = allDisplaySets.filter(
@@ -15,17 +18,21 @@ export default function getSourceDisplaySet(allDisplaySets, microscopySRDisplayS
   const referencedDisplaySet = otherDisplaySets.find(
     displaySet =>
       displaySet.Modality === 'SM' &&
-      (displaySet.FrameOfReferenceUID === ReferencedFrameOfReferenceUID
+      (displaySet.FrameOfReferenceUID === ReferencedFrameOfReferenceUID ||
         // sometimes each depth instance has the different FrameOfReferenceID
-        || displaySet.othersFrameOfReferenceUID.includes(ReferencedFrameOfReferenceUID))
+        displaySet.othersFrameOfReferenceUID.includes(
+          ReferencedFrameOfReferenceUID
+        ))
   );
 
   if (!referencedDisplaySet && otherDisplaySets.length == 1) {
-    console.log('No display set with FrameOfReferenceUID',
+    console.warn(
+      'No display set with FrameOfReferenceUID',
       ReferencedFrameOfReferenceUID,
-      'single series, assuming data error, defaulting to only series.')
+      'single series, assuming data error, defaulting to only series.'
+    );
     return otherDisplaySets[0];
   }
 
   return referencedDisplaySet;
-};
+}
