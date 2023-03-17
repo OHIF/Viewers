@@ -8,6 +8,7 @@ import {
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
+  StateSyncService,
   DisplaySetService,
   ToolbarService,
   ViewportGridService,
@@ -60,6 +61,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
+    StateSyncService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

@@ -32,7 +32,6 @@ const ptCT = {
     ctDisplaySet: {
       seriesMatchingRules: [
         {
-          weight: 1,
           attribute: 'Modality',
           constraint: {
             equals: {
@@ -42,7 +41,6 @@ const ptCT = {
           required: true,
         },
         {
-          weight: 1,
           attribute: 'isReconstructable',
           constraint: {
             equals: {
@@ -75,7 +73,6 @@ const ptCT = {
           required: true,
         },
         {
-          weight: 1,
           attribute: 'isReconstructable',
           constraint: {
             equals: {
@@ -105,7 +102,6 @@ const ptCT = {
 
   stages: [
     {
-      id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
         layoutType: 'grid',

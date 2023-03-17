@@ -17,6 +17,7 @@ import UserAuthenticationService from './UserAuthenticationService';
 import CustomizationService from './CustomizationService';
 
 import Services from '../types/Services';
+import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
 
 export {
@@ -24,6 +25,7 @@ export {
   MeasurementService,
   ServicesManager,
   CustomizationService,
+  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,

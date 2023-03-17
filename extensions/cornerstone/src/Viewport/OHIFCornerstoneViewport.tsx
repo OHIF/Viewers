@@ -10,6 +10,7 @@ import {
   utilities as csUtils,
   CONSTANTS,
 } from '@cornerstonejs/core';
+import { Services } from '@ohif/core';
 
 import { setEnabledElement } from '../state';
 
@@ -21,6 +22,9 @@ import {
 } from '@cornerstonejs/core/dist/esm/types';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+
+import { CornerstoneViewportService } from '../services/ViewportService/CornerstoneViewportService';
+import Presentation from '../types/Presentation';
 
 const STACK = 'stack';
 
@@ -128,6 +132,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     cornerstoneViewportService,
     cornerstoneCacheService,
     viewportGridService,
+    stateSyncService,
   } = servicesManager.services;
 
   const cineHandler = () => {
@@ -211,6 +216,21 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
   }, [elementRef]);
 
+  const storePresentation = () => {
+    const currentPresentation = cornerstoneViewportService.getPresentation(
+      viewportIndex
+    );
+    const { presentationSync } = stateSyncService.getState();
+    if (currentPresentation) {
+      stateSyncService.store({
+        presentationSync: {
+          ...presentationSync,
+          [currentPresentation.id]: currentPresentation,
+        },
+      });
+    }
+  };
+
   const cleanUpServices = useCallback(() => {
     const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
@@ -288,6 +308,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
+      storePresentation();
+
       cleanUpServices();
 
       cornerstoneViewportService.disableElement(viewportIndex);
@@ -360,11 +382,20 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIndex
       );
 
+      storePresentation();
+
+      const { presentationSync } = stateSyncService.getState();
+      const { presentationId } = viewportOptions;
+      const presentation = presentationId
+        ? (presentationSync[presentationId] as Presentation)
+        : null;
+
       cornerstoneViewportService.setViewportData(
         viewportIndex,
         viewportData,
         viewportOptions,
-        displaySetOptions
+        displaySetOptions,
+        presentation
       );
     };
 

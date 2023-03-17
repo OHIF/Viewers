@@ -3,9 +3,10 @@ import validate from './validator.js';
 describe('validator', () => {
   const attributeMap = {
     str: 'string',
+    upper: 'UPPER',
     num: 3,
     nullValue: null,
-    list: ['abc', 'def'],
+    list: ['abc', 'def', 'GHI'],
   };
 
   const options = {
@@ -32,6 +33,37 @@ describe('validator', () => {
       expect(
         validate(attributeMap, { list: { contains: ['z'] } }, [options])
       ).not.toBeUndefined();
+    });
+  });
+
+  describe('containsI', () => {
+    it('returns match any list contains case insensitive', () => {
+      expect(
+        validate(attributeMap, { upper: { containsI: ['bye', 'pre'] } }, [
+          options,
+        ])
+      ).not.toBeUndefined();
+      expect(
+        validate(attributeMap, { list: { containsI: 'hi' } }, [options])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { list: { containsI: ['hi', 'bye'] } }, [
+          options,
+        ])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { list: { containsI: ['bye', 'hi'] } }, [
+          options,
+        ])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { list: { containsI: ['ig', 'hi'] } }, [options])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { upper: { containsI: ['bye', 'per'] } }, [
+          options,
+        ])
+      ).toBeUndefined();
     });
   });
 

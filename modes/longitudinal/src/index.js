@@ -159,7 +159,6 @@ function modeFactory() {
       _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
       _activatePanelTriggersSubscriptions = [];
 
-      toolbarService.reset();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();

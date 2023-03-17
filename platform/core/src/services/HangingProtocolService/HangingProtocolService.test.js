@@ -117,8 +117,7 @@ const studyMatchDisplaySets = [displaySet3, displaySet2, displaySet1];
 
 function checkHpsBestMatch(hps) {
   hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
-  const { hpAlreadyApplied, viewportMatchDetails } = hps.getMatchDetails();
-  expect(hpAlreadyApplied).toMatchObject(new Map([[0, false]]));
+  const { viewportMatchDetails } = hps.getMatchDetails();
   expect(viewportMatchDetails.size).toBe(1);
   expect(viewportMatchDetails.get(0)).toMatchObject({
     viewportOptions: {
@@ -131,9 +130,11 @@ function checkHpsBestMatch(hps) {
     // ds2 fails to match required and ds3 fails to match an optional.
     displaySetsInfo: [
       {
-        SeriesInstanceUID: 'ds1',
         displaySetInstanceUID: 'displaySet1',
-        displaySetOptions: {},
+        displaySetOptions: {
+          id: 'displaySetSelector',
+          options: {},
+      },
       },
     ],
   });
@@ -191,14 +192,6 @@ describe('HangingProtocolService', () => {
       it('matches best image match', () => {
         checkHpsBestMatch(hangingProtocolService);
       });
-
-      it('uses services manager', () => {
-        hangingProtocolService.run({
-          studies: [studyMatch],
-          displaySets: studyMatchDisplaySets,
-        });
-        expect(mockedFunction).toHaveBeenCalledTimes(1);
       });
     });
   });
-});

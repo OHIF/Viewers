@@ -25,6 +25,7 @@ describe('Top level exports', () => {
       //
       'CineService',
       'CustomizationService',
+      'StateSyncService',
       'UIDialogService',
       'UIModalService',
       'UINotificationService',
