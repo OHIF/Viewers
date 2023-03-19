@@ -125,6 +125,13 @@
     ]
   },
   "resolutions": {
+    "handlebars": "4.7.7",
+    "json-schema": "0.4.0",
+    "ejs": "3.1.7",
+    "thenify": "3.3.1",
+    "parse-url": "8.1.0",
+    "loader-utils": "1.4.1",
+    "flat": "5.0.1",
     "minimist": "1.2.8",
     "**/node-gyp": "8.4.1",
     "**/@babel/runtime": "7.5.5"

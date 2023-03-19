@@ -40,5 +40,10 @@
   },
   "devDependencies": {
     "gitbook-cli": "^2.3.2"
+  },
+  "resolutions": {
+    "underscore": "1.12.1",
+    "json-schema": "0.4.0",
+    "minimist": "1.2.8"
   }
 }
