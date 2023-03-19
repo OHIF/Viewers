@@ -45,7 +45,7 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "4.5.0",
-    "moment": "2.24.0",
+    "moment": "2.29.4",
     "prop-types": "15.6.2",
     "prop-types-extra": "^1.1.1",
     "react-dates": "21.2.1",
