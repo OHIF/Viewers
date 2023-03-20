@@ -244,7 +244,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              matchedDisplaySetsIndex: 0,
               id: 'defaultDisplaySetId',
             },
           ],

@@ -222,21 +222,21 @@ const OHIFCornerstoneViewport = React.memo(props => {
     );
     if (!currentPresentation || !currentPresentation.presentationIds) return;
     const {
-      lutPresentationSync,
-      positionPresentationSync,
+      lutPresentationStore,
+      positionPresentationStore,
     } = stateSyncService.getState();
     const { presentationIds } = currentPresentation;
     const { lutPresentationId, positionPresentationId } = presentationIds || {};
     const storeState = {};
     if (lutPresentationId) {
-      storeState.lutPresentationSync = {
-        ...lutPresentationSync,
+      storeState.lutPresentationStore = {
+        ...lutPresentationStore,
         [lutPresentationId]: currentPresentation,
       };
     }
     if (positionPresentationId) {
-      storeState.positionPresentationSync = {
-        ...positionPresentationSync,
+      storeState.positionPresentationStore = {
+        ...positionPresentationStore,
         [positionPresentationId]: currentPresentation,
       };
     }
@@ -397,15 +397,15 @@ const OHIFCornerstoneViewport = React.memo(props => {
       storePresentation();
 
       const {
-        lutPresentationSync,
-        positionPresentationSync,
+        lutPresentationStore,
+        positionPresentationStore,
       } = stateSyncService.getState();
       const { presentationIds } = viewportOptions;
       const presentations = {
         positionPresentation:
-          positionPresentationSync[presentationIds?.positionPresentationId],
+          positionPresentationStore[presentationIds?.positionPresentationId],
         lutPresentation:
-          lutPresentationSync[presentationIds?.lutPresentationId],
+          lutPresentationStore[presentationIds?.lutPresentationId],
       };
       console.log('Using presentations', presentations);
 

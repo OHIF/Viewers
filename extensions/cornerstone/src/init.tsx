@@ -100,11 +100,11 @@ export default async function init({
 
   // Stores a map from `lutPresentationId` to a Presentation object so that
   // an OHIFCornerstoneViewport can be redisplayed with the same LUT
-  stateSyncService.register('lutPresentationSync', { clearOnModeExit: true });
+  stateSyncService.register('lutPresentationStore', { clearOnModeExit: true });
 
   // Stores a map from `positionPresentationId` to a Presentation object so that
   // an OHIFCornerstoneViewport can be redisplayed with the same position
-  stateSyncService.register('positionPresentationSync', {
+  stateSyncService.register('positionPresentationStore', {
     clearOnModeExit: true,
   });
 
