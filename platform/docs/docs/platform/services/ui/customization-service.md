@@ -522,6 +522,21 @@ window.config = {
 
 <img src="../../../assets/img/customizable-overlay.png" />
 
+##  Customizable Context Menu
+
+The default cornerstone context menu can be customized by setting the
+`cornerstoneContextMenu`.  For a full example, see `findingsContextMenu`.
+
+## Customizeable Cornerstone Viewport Click Behaviour
+
+The behaviour on clicking on the cornerstone viewport can be customized
+by setting the `cornerstoneViewportClickCommands`.  This is intended to
+support both the cornerstone 3D internal commands as well as things like
+context menus.  Currently it supports buttons 1-3, as well as modifier keys
+by associated a commands list with the button to click.  See `initContextMenu`
+for more details.
+
+## Please add additional customizations above this section
 > 3rd Party implementers may be added to this table via pull requests.
 
 <!--

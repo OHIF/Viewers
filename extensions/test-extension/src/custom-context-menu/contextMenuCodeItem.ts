@@ -6,7 +6,6 @@ const codeMenuItem = {
 
   /** Applies the code value setup for this item */
   applyType: function (customizationService) {
-    console.log('Applying type on', this);
     const { code: codeRef } = this;
     if (!codeRef) throw new Error(`item ${this} has no code ref`);
     const codingValues = customizationService.get('codingValues');
