@@ -107,10 +107,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       if (menuName) {
         Object.assign(
           optionsToUse,
-          customizationService.getModeCustomization(
-            menuName,
-            defaultContextMenu
-          )
+          customizationService.get(menuName, defaultContextMenu)
         );
       }
 
