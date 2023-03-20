@@ -1,4 +1,4 @@
-import { utils } from '@ohif/core';
+import { splitComma } from '../../utils';
 
 /** Indicates if the given display set is the one specified in the
  * displaySet parameter in the URL
@@ -8,7 +8,7 @@ import { utils } from '@ohif/core';
  */
 const isDisplaySetFromUrl = (displaySet): boolean => {
   const params = new URLSearchParams(window.location.search);
-  const displaySetSeriesInstanceUID = utils.splitComma(
+  const displaySetSeriesInstanceUID = splitComma(
     params.getAll('displaySet.SeriesInstanceUID')
   );
   let ret;
@@ -19,7 +19,7 @@ const isDisplaySetFromUrl = (displaySet): boolean => {
     if (foundSeries === -1) return false;
     ret = true;
   }
-  const displaySetSOPInstanceUID = utils.splitComma(
+  const displaySetSOPInstanceUID = splitComma(
     params.getAll('displaySet.SOPInstanceUID')
   );
   if (displaySetSOPInstanceUID.length) {
@@ -38,7 +38,7 @@ function sopInstanceLocation(displaySets) {
   const displaySet = displaySets[0];
   if (!displaySet) return this.defaultValue;
   const params = new URLSearchParams(window.location.search);
-  const displaySetSOPInstanceUID = utils.splitComma(
+  const displaySetSOPInstanceUID = splitComma(
     params.getAll('displaySet.SOPInstanceUID')
   );
   if (displaySetSOPInstanceUID.length === 0 || !displaySet.images) {
