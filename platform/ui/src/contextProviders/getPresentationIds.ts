@@ -20,7 +20,7 @@ const addUniqueIndex = (arr, key, viewports) => {
     const testId = arr.join(JOIN_STR);
     if (
       !viewports.find(
-        it => it.viewportOptions?.presentationIds?.[key] === testId
+        viewport => viewport.viewportOptions?.presentationIds?.[key] === testId
       )
     ) {
       break;
@@ -86,7 +86,7 @@ export type PresentationIds = {
  *         among them must not be re-used in order to have each viewport have it's own presentation ID.
  * @returns PresentationIds
  */
-const getPresentationId = (viewport, viewports): PresentationIds => {
+const getPresentationIds = (viewport, viewports): PresentationIds => {
   if (!viewport) return;
   const {
     viewportOptions,
@@ -117,4 +117,4 @@ const getPresentationId = (viewport, viewports): PresentationIds => {
   return { lutPresentationId, positionPresentationId };
 };
 
-export default getPresentationId;
+export default getPresentationIds;
