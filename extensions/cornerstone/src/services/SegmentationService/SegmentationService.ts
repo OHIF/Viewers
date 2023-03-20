@@ -1591,7 +1591,7 @@ class SegmentationService {
 
     segmentInfo.isVisible = isVisible;
 
-    cstSegmentation.config.visibility.setVisibilityForSegmentIndex(
+    cstSegmentation.config.visibility.setSegmentVisibility(
       toolGroupId,
       segmentationRepresentationUID,
       segmentIndex,

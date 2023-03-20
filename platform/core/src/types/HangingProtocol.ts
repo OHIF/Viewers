@@ -141,8 +141,8 @@ export type initialImageOptions = {
 };
 
 export type ViewportOptions = {
-  toolGroupId: string;
-  viewportType: string;
+  toolGroupId?: string;
+  viewportType?: string;
   id?: string;
   orientation?: string;
   viewportId?: string;

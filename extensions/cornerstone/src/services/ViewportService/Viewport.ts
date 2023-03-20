@@ -1,4 +1,5 @@
 import { Types, Enums } from '@cornerstonejs/core';
+import { Types as UITypes } from '@ohif/ui';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -15,12 +16,13 @@ export type InitialImageOptions = {
 };
 
 export type ViewportOptions = {
+  id?: string;
   viewportType: Enums.ViewportType;
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationId?: string;
-  orientation?: Types.Orientation;
+  presentationIds?: UITypes.PresentationIds;
+  orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
@@ -33,11 +35,12 @@ export type ViewportOptions = {
 };
 
 export type PublicViewportOptions = {
+  id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationId?: string;
+  presentationIds?: UITypes.PresentationIds;
   viewportId?: string;
-  orientation?: string;
+  orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
@@ -51,6 +54,10 @@ export type DisplaySetSelector = {
 };
 
 export type PublicDisplaySetOptions = {
+  /** The display set options can have an id in order to distinguish
+   * it from other similar items.
+   */
+  id?: string;
   voi?: VOI;
   voiInverted?: boolean;
   blendMode?: string;
@@ -59,6 +66,7 @@ export type PublicDisplaySetOptions = {
 };
 
 export type DisplaySetOptions = {
+  id?: string;
   voi?: VOI;
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
@@ -177,7 +185,7 @@ class ViewportInfo {
     let viewportType = viewportOptionsEntry.viewportType;
     const {
       toolGroupId = DEFAULT_TOOLGROUP_ID,
-      presentationId,
+      presentationIds,
     } = viewportOptionsEntry;
     let orientation;
 
@@ -202,7 +210,7 @@ class ViewportInfo {
       viewportType: viewportType as Enums.ViewportType,
       orientation,
       toolGroupId,
-      presentationId,
+      presentationIds,
     });
   }
 

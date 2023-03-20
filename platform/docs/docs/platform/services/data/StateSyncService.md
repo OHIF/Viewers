@@ -60,13 +60,18 @@ clears all states registered with `clearOnModeExit: true`.
 To avoid clearing the state, the mode definition should store any transient
 state in the mode onModeExit and recover it in the `mode.onModeEnter`.
 
-## OHIF Registered State
-There are a number of defined states here.  It is recommended to update this
-list as states are added:
+## OHIF Registered State Sync Stores
+There are a number of defined stores here.  It is recommended to update this
+list as state stores are added:
+
+### Default Extension Stores
 
 * `viewportGridStore` has viewport grid restore information for returning to an earlier grid layout.
 * `reuseIdMap` has a map of names to display sets for preserving user changes to hp display set selections.
 * `hanging` has a map of the hanging protocol stage information applied (HPInfo)
-* `presentationSync` has the cornerstone presentation state information
 * `toggleHangingProtocol` has the previously applied hanging protocol, to toggle an HP off.
-* `querySync` has the previously applied query information.  Not fully implemented yet.
+
+### Cornerstone Extension Stores
+
+* `lutPresentationStore` has the cornerstone LUT (window level) presentation state information
+* `positionPresentationStore` has the cornerstone viewport position (camera, initial image) information

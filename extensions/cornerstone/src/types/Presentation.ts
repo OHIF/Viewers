@@ -1,23 +1,23 @@
 /** Store presentation data for either stack viewports or volume viewports */
 import { Types } from '@cornerstonejs/core';
+import { Types as UITypes } from '@ohif/ui';
 
-export interface BasePresentation {
-  id: string;
-  properties: Record<string, unknown>;
-  initialImageIndex?: number;
+/**
+ * Has information on the presentation of the viewport.
+ */
+export interface Presentation extends Types.StackViewportProperties {
+  presentationIds: UITypes.PresentationIds;
+  viewportType: string;
+  initialImageIndex: number;
   camera: Types.ICamera;
+  properties: Types.StackViewportProperties | Types.VolumeViewportProperties;
+  zoom?: number;
+  pan?: [number, number];
 }
 
-export interface StackPresentation extends BasePresentation {
-  viewportType: 'stack';
-}
-
-export interface VolumePresentation extends BasePresentation {
-  viewportType: 'volume';
-}
-
-// Currently it seems like the entire presentation state can be shared between
-// Stack and Volume, but is setup to allow differences
-export type Presentation = StackPresentation | VolumePresentation;
+export type Presentations = {
+  positionPresentation?: Presentation;
+  lutPresentation?: Presentation;
+};
 
 export default Presentation;
