@@ -115,12 +115,25 @@ Read more in the [Hanging Protocol Module](../platform/extensions/modules/hpModu
 :::
 
 
-### SeriesInstanceUIDs
+### SeriesInstanceUID and displaySet.SeriesInstanceUID
 
-Sometimes you need to only open a specific series in a study, you can do that by
+Sometimes you need to only retrieve a specific series in a study, you can do that by
 
 ```js
 /viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1&SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125095748.1
 ```
 
 This will only open the viewer with one series (one displaySet).
+
+Alternatively, you can open the study on a specified series and/or sop instance
+using:
+`displaySet.SeriesInstanceUID` and/or `displaySet.SOPInstanceUID`
+to select the series to open on, but allowing other
+series to be present in the study browser panel.  This is the same behaviour
+as in OHIF 2.0, albeit on different URL parameters.
+
+### hangingProtocolId
+
+You can select the initial hanging protocol to apply by using the
+hangingProtocolId parameter.  The selected parameter must be available in a
+hangingProtocolModule registration, but does not have to be active.

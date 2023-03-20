@@ -45,6 +45,13 @@ const defaultProtocol = {
             greaterThan: { value: 0 },
           },
         },
+        {
+          attribute: 'isDisplaySetFromUrl',
+          weight: 10,
+          constraint: {
+            equals: true,
+          },
+        },
       ],
       // Can be used to select matching studies
       // studyMatchingRules: [],
@@ -65,7 +72,11 @@ const defaultProtocol = {
           viewportOptions: {
             viewportType: 'stack',
             toolGroupId: 'default',
-            // initialImageOptions: {
+            initialImageOptions: {
+              type: 'custom',
+              attribute: 'sopInstanceLocation',
+            },
+            // Other options for initialImageOptions:
             //   index: 180,
             //   preset: 'middle', // 'first', 'last', 'middle'
             // },

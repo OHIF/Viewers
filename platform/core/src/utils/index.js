@@ -33,6 +33,7 @@ import {
   seriesSortCriteria,
 } from './sortStudy';
 import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGridChange';
+import splitComma from './splitComma';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -71,6 +72,7 @@ const utils = {
   roundNumber,
   downloadCSVReport,
   subscribeToNextViewportGridChange,
+  splitComma,
 };
 
 export {
@@ -100,6 +102,7 @@ export {
   debounce,
   roundNumber,
   downloadCSVReport,
+  splitComma,
 };
 
 export default utils;
