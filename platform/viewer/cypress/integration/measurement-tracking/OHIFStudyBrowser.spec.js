@@ -52,7 +52,7 @@ describe('OHIF Study Viewer Page', function() {
 
   it('performs double-click to load thumbnail in active viewport', () => {
     // Have to finish rendering the image before this works
-    cy.wait(250);
+    cy.wait(350);
     cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
 
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
