@@ -280,52 +280,13 @@ class Viewer extends Component {
     }, 3000);
 
     setTimeout(() => {
-      // this.loadLastActiveStudy();
       const enabledElement = enabledEvt.detail.element;
-
-      // let tool_data = null;
-      // // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      // tool_data =
-      //   tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : false;
-      // if (enabledElement && tool_data) {
       try {
-        // get current image
         const image = cornerstone.getImage(enabledElement);
         const instance_uid = image.imageId.split('/')[14];
 
-        const resize = matchPath(this.props.location.pathname, {
-          path:
-            '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
-          exact: true,
-        });
-
         handleScrolltoIndex(enabledElement);
         handleRestoreToolState(cornerstone, enabledElement, instance_uid);
-
-        // let viewport = cornerstone.getViewport(enabledElement);
-        // // viewport.scale >1 is to counter the issue with edit step initialising to scale to <1
-        // if (viewport.scale < 1) return;
-        // var image = enabledElement.image;
-        // var widthScale = tool_data.x;
-        // var heightScale = tool_data.x;
-        // if (image.rowPixelSpacing < image.columnPixelSpacing) {
-        //   widthScale =
-        //     widthScale * (image.columnPixelSpacing / image.rowPixelSpacing);
-        // } else if (image.columnPixelSpacing < image.rowPixelSpacing) {
-        //   heightScale =
-        //     heightScale * (image.rowPixelSpacing / image.columnPixelSpacing);
-        // }
-        // viewport.scale = widthScale;
-        // if (tool_data.x && viewport.translation.x != tool_data.x)
-        //   viewport.translation.x = tool_data.x;
-        // if (tool_data.y && viewport.translation.y != tool_data.y)
-        //   viewport.translation.y = tool_data.y;
-        // // if (tool_data.scale && viewport.scale != tool_data.scale)
-        // //   viewport.scale = tool_data.scale;
-        // if (tool_data.voi) viewport.voi = tool_data.voi;
-        // cornerstone.resize(enabledElement, true);
-        // cornerstone.setViewport(enabledElement, viewport);
-        // cornerstone.fitToWindow(enabledElement);
       } catch (error) {
         console.error(error);
       }

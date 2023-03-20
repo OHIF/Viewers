@@ -1,3 +1,4 @@
+import { setItem } from '../lib/localStorageUtils';
 import store from '../store';
 import { BrainMode } from './constants';
 
@@ -49,6 +50,9 @@ export const handleRestoreToolState = (
       });
     }
   }
+
+  setItem('canSave', 1);
+
 };
 
 export const handleSaveToolState = (studyInstanceUID, viewport) => {

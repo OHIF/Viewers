@@ -1,3 +1,4 @@
+import { i } from 'mathjs';
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
@@ -36,17 +37,18 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
     }
   );
 
-  contents.push(
-    {
-      text: 'Collage Radiomics',
-      style: 'header',
-    },
-    {
-      image: ohif_image,
-      width: 520,
-      height: 500,
-    }
-  );
+  if (ohif_image)
+    contents.push(
+      {
+        text: 'Collage Radiomics',
+        style: 'header',
+      },
+      {
+        image: ohif_image,
+        width: 520,
+        height: 500,
+      }
+    );
 
   contents.push({
     text: 'Similar looking Scans',
@@ -113,8 +115,9 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
         },
       ],
     });
-    contents.push({ text: '', margin: [0, 10] });
-    contents.push({ text: '', pageBreak: 'before' });
+    // contents.push({ text: '', margin: [0, 10] });
+    if (index !== SimilarScans.knn.length - 1)
+      contents.push({ text: '', pageBreak: 'before' });
   });
 
   if (morphologyBase64)

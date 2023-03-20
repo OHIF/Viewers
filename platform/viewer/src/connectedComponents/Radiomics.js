@@ -180,6 +180,9 @@ class Radiomics extends Component {
   };
 
   componentWillUnmount() {
+    eventBus.remove('fetchscans');
+    eventBus.remove('jobstatus');
+
     if (this.props.dialog) {
       this.props.dialog.dismissAll();
     }
@@ -193,9 +196,6 @@ class Radiomics extends Component {
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
-
-    eventBus.remove('fetchscans');
-    eventBus.remove('jobstatus');
   }
 
   retrieveTimepoints = filter => {
@@ -473,6 +473,13 @@ class Radiomics extends Component {
       console.log({
         similarityResultState,
       });
+
+      if (!similarityResultState) {
+        return;
+      }
+      if (similarityResultState.knn.length < 1) {
+        return;
+      }
 
       for (let i = 0; i < similarityResultState.knn.length; i++) {
         const imageElement = this.imageRefs[i];

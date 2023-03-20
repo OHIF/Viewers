@@ -116,11 +116,9 @@ class SelectMask extends Component {
       };
 
       commandsManager.runCommand('triggerAlgorithm', options);
-    }, 500);
+    }, 2000);
 
     setTimeout(() => {
-      // this.loadLastActiveStudy();
-
       const enabledElement = enabledEvt.detail.element;
 
       try {
@@ -132,19 +130,7 @@ class SelectMask extends Component {
       } catch (error) {
         console.error(error);
       }
-
-      // let tool_data = localStorage.getItem(this.props.studyInstanceUID);
-      // tool_data =
-      //   tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : {};
-      // if (enabledElement && tool_data) {
-      //   let viewport = cornerstone.getViewport(enabledElement);
-      //   if (tool_data.x) viewport.translation.x = tool_data.x;
-      //   if (tool_data.y) viewport.translation.y = tool_data.y;
-      //   if (tool_data.scale) viewport.scale = tool_data.scale;
-      //   if (tool_data.voi) viewport.voi = tool_data.voi;
-      //   cornerstone.setViewport(enabledElement, viewport);
-      // }
-    }, 1000);
+    }, 2000);
   };
 
   componentWillUnmount() {
@@ -326,19 +312,7 @@ class SelectMask extends Component {
     });
   }
 
-  triggerReload() {
-    setTimeout(() => {
-      // document.getElementById('trigger').click();
-    }, 2000);
-    // if (window && window.parent) {
-    //   window.parent.postMessage(
-    //     {
-    //       action: 'triggerExternalReload',
-    //     },
-    //     '*'
-    //   );
-    // }
-  }
+  triggerReload() {}
 
   handleGoRadionics = () => {
     const location = this.props.location;
@@ -554,7 +528,7 @@ class SelectMask extends Component {
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
 
         {/* VIEWPORTS + SIDEPANELS */}
-          {/* LEFT */}
+        {/* LEFT */}
         {/* <div className="FlexboxLayout">
           <ErrorBoundaryDialog context="LeftSidePanel">
             <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>

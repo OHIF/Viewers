@@ -10,6 +10,7 @@ import { BrainMode, lungMode, radcadapi } from '../../utils/constants';
 import { useSelector } from 'react-redux';
 import { getEnabledElement } from '../../../../../extensions/cornerstone/src/state';
 import { handleSaveToolState } from '../../utils/syncrhonizeToolState';
+import { setItem, getItem } from '../../lib/localStorageUtils';
 
 let checkEndpointsInterval;
 
@@ -45,11 +46,12 @@ const NavigateIcons = () => {
           };
 
     if (activeStep === selectMaskStep) {
+      handleWillUnMount();
       const toolData = JSON.parse(localStorage.getItem('mask') || '{}');
 
       if (toolData) {
         // history.push(location.pathname.replace('selectmask', 'radionics'));
-        onStoreLastViewState();
+        cornerstone.imageCache.purgeCache();
         window.location.href = location.pathname.replace(
           'selectmask',
           'radionics'
@@ -62,19 +64,20 @@ const NavigateIcons = () => {
         });
       }
     } else {
+      handleWillUnMount();
       const newPathname = location.pathname.replace(
         /(view|edit|nnunet|selectmask)/,
         paths[activeStep]
       );
 
       if (activeStep === 2) cornerstone.imageCache.purgeCache();
-      onStoreLastViewState();
       window.location.href = newPathname;
       // history.push(newPathname);
     }
   };
 
   const handleBack = () => {
+    handleWillUnMount();
     const paths =
       currentMode == BrainMode
         ? {
@@ -96,12 +99,12 @@ const NavigateIcons = () => {
     );
 
     if (activeStep === 2) cornerstone.imageCache.purgeCache();
-    onStoreLastViewState();
     window.location.href = newPathname;
     // history.push(newPathname);
   };
 
   useEffect(() => {
+    setItem('canSave', 0);
     cornerstone.events.addEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       onCornerstoneLoaded
@@ -172,17 +175,21 @@ const NavigateIcons = () => {
   const onCornerstoneLoaded = () => {
     setLoading(false);
   };
-  const onStoreLastViewState = () => {
-    const enabledElement = getEnabledElement(activeViewportIndex);
-    if (enabledElement) {
-      // cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
-      //   enabledElement
-      // );
-      let viewport = cornerstone.getViewport(enabledElement);
-      const image = cornerstone.getImage(enabledElement);
-      const instance_uid = image.imageId.split('/')[14];
-      handleSaveToolState(instance_uid, viewport);
-    }
+  const handleWillUnMount = () => {
+    try {
+      const canSave = getItem('canSave', 0);
+
+      const enabledElement = getEnabledElement(activeViewportIndex);
+      if (enabledElement && canSave == 1) {
+        // cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
+        //   enabledElement
+        // );
+        let viewport = cornerstone.getViewport(enabledElement);
+        const image = cornerstone.getImage(enabledElement);
+        const instance_uid = image.imageId.split('/')[14];
+        handleSaveToolState(instance_uid, viewport);
+      }
+    } catch (error) {}
   };
 
   // if (warming)

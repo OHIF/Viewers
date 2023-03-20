@@ -17,10 +17,12 @@ import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploa
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 import ImportIdcModal from '../importIdc/ImportIdcModal.js';
 import filesToStudies from '../lib/filesToStudies.js';
+import cornerstone from 'cornerstone-core';
 
 // Contexts
 import AppContext from '../context/AppContext';
 import PreferenceButton from '../components/Header/PreferenceButton';
+import { getItem, setItem } from '../lib/localStorageUtils';
 
 const { urlUtil: UrlUtil } = OHIF.utils;
 
@@ -54,7 +56,7 @@ function StudyListRoute(props) {
   });
   const [showImportIdcModal, setShowImportIdcModal] = useState(false);
   const [activeModalId, setActiveModalId] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(getItem('rowsPerPage', 5));
   const [pageNumber, setPageNumber] = useState(0);
   const appContext = useContext(AppContext);
   // ~~ RESPONSIVE
@@ -214,7 +216,11 @@ function StudyListRoute(props) {
   };
 
   return (
-    <>
+    <div
+      style={{
+        paddingBottom: 100,
+      }}
+    >
       {studyListFunctionsEnabled ? (
         <ConnectedDicomFilesUploader
           isOpen={activeModalId === 'DicomFilesUploader'}
@@ -274,6 +280,8 @@ function StudyListRoute(props) {
           const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
             studyInstanceUIDs: studyInstanceUID,
           });
+
+          cornerstone.imageCache.purgeCache();
           window.location.href = viewerPath;
 
           // history.push(viewerPath);
@@ -301,12 +309,15 @@ function StudyListRoute(props) {
           currentPage={pageNumber}
           nextPageFunc={() => setPageNumber(pageNumber + 1)}
           prevPageFunc={() => setPageNumber(pageNumber - 1)}
-          onRowsPerPageChange={Rows => setRowsPerPage(Rows)}
+          onRowsPerPageChange={Rows => {
+            setItem('rowsPerPage', Rows);
+            setRowsPerPage(Rows);
+          }}
           rowsPerPage={rowsPerPage}
           recordCount={studies.length}
         />
       </div>
-    </>
+    </div>
   );
 }
 

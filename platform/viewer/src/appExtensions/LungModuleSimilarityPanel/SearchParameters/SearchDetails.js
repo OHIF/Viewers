@@ -314,6 +314,7 @@ const SearchDetails = props => {
   };
 
   const initSearchPanel = async el => {
+    
     // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     console.log('init search data start');
 
@@ -337,6 +338,16 @@ const SearchDetails = props => {
     setLoadingState('');
     setSimilarityResultState(result.jobList[0]);
     setResultsList(result.jobList[0]);
+
+    try {
+      if (result.jobList[0].knn.length <= 0) {
+        // UINotificationService.show({
+        //   title: 'Similar looking scans failed to get results',
+        //   type: 'error',
+        //   autoClose: false,
+        // });
+      }
+    } catch (error) {}
   };
 
   const fetchResults = async ({ jobId, res, instance_uid, email }) => {
@@ -516,11 +527,10 @@ const SearchDetails = props => {
         >
           <img
             crossOrigin="anonymous"
-            className="hide-on-print"
             src={similarityResultState.query}
             style={{
-              // width: '100%',
-              // height: 200,
+              width: 100,
+              height: 100,
               marginBottom: 20,
               border: '2.55px solid green',
             }}
