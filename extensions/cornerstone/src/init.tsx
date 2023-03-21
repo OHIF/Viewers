@@ -25,6 +25,7 @@ import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
+import initDoubleClick from './initDoubleClick';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -104,6 +105,12 @@ export default async function init({
     clearOnModeExit: true,
   });
 
+  // Stores the entire ViewportGridService getState when toggling to one up
+  // (e.g. via a double click) so that it can be restored when toggling back.
+  stateSyncService.register('toggleOneUpViewportGridStore', {
+    clearOnModeExit: true,
+  });
+
   const labelmapRepresentation =
     cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
 
@@ -177,6 +184,11 @@ export default async function init({
 
   initContextMenu({
     cornerstoneViewportService,
+    customizationService,
+    commandsManager,
+  });
+
+  initDoubleClick({
     customizationService,
     commandsManager,
   });

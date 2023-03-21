@@ -146,6 +146,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           layoutOptions,
           layoutType = 'grid',
+          activeViewportIndex,
           findOrCreateViewport,
         } = action.payload;
 
@@ -160,7 +161,7 @@ export function ViewportGridProvider({ children, service }) {
         // haven't been viewed yet, and add them in the appropriate order.
         const options = {};
 
-        let activeViewportIndex;
+        let activeViewportIndexToSet = activeViewportIndex;
         for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numCols; col++) {
             const pos = col + row * numCols;
@@ -170,10 +171,11 @@ export function ViewportGridProvider({ children, service }) {
               continue;
             }
             if (
-              !activeViewportIndex ||
-              state.viewports[pos]?.positionId === positionId
+              activeViewportIndexToSet == null &&
+              state.viewports[state.activeViewportIndex]?.positionId ===
+                positionId
             ) {
-              activeViewportIndex = pos;
+              activeViewportIndexToSet = pos;
             }
             const viewport = findOrCreateViewport(pos, positionId, options);
             if (!viewport) continue;
@@ -199,6 +201,8 @@ export function ViewportGridProvider({ children, service }) {
           }
         }
 
+        activeViewportIndexToSet = activeViewportIndexToSet ?? 0;
+
         const viewportIdSet = {};
         for (
           let viewportIndex = 0;
@@ -223,7 +227,7 @@ export function ViewportGridProvider({ children, service }) {
 
         const ret = {
           ...state,
-          activeViewportIndex,
+          activeViewportIndex: activeViewportIndexToSet,
           layout: {
             ...state.layout,
             numCols,
@@ -300,6 +304,7 @@ export function ViewportGridProvider({ children, service }) {
       numRows,
       numCols,
       layoutOptions = [],
+      activeViewportIndex,
       findOrCreateViewport,
     }) =>
       dispatch({
@@ -309,6 +314,7 @@ export function ViewportGridProvider({ children, service }) {
           numRows,
           numCols,
           layoutOptions,
+          activeViewportIndex,
           findOrCreateViewport,
         },
       }),
@@ -375,9 +381,9 @@ export function ViewportGridProvider({ children, service }) {
     setActiveViewportIndex: index => service.setActiveViewportIndex(index), // run it through the service itself since we want to publish events
     setDisplaySetsForViewport,
     setDisplaySetsForViewports,
-    setLayout,
+    setLayout: layout => service.setLayout(layout), // run it through the service itself since we want to publish events
     reset,
-    set,
+    set: gridLayoutState => service.setState(gridLayoutState), // run it through the service itself since we want to publish events
     getNumViewportPanes,
   };
 
