@@ -1,6 +1,9 @@
 import * as cornerstone from '@cornerstonejs/core';
 import { volumeLoader } from '@cornerstonejs/core';
-import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
+import {
+  cornerstoneStreamingImageVolumeLoader,
+  cornerstoneStreamingDynamicImageVolumeLoader,
+} from '@cornerstonejs/streaming-image-volume-loader';
 import cornerstoneWADOImageLoader, {
   webWorkerManager,
 } from 'cornerstone-wado-image-loader';
@@ -43,6 +46,11 @@ export default function initWADOImageLoader(
   registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
     cornerstoneStreamingImageVolumeLoader
+  );
+
+  registerVolumeLoader(
+    'cornerstoneStreamingDynamicImageVolume',
+    cornerstoneStreamingDynamicImageVolumeLoader
   );
 
   cornerstoneWADOImageLoader.configure({

@@ -4,7 +4,39 @@ import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
 
+const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
+const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 const sopClassHandlerName = 'stack';
+let appContext = {};
+
+const getDynamicVolumeInfo = instances => {
+  const { extensionManager } = appContext;
+
+  // DEV ONLY
+  // REMOVE THE RETURN STATEMENT BELOW AS SOON AS CORNERSTONE IS
+  // UPDATED TO A VERSION THAT HAS getDynamicVolumeInfo PUBLISHED
+  const { Modality, SeriesInstanceUID } = instances[0];
+  const seriesInstanceUIDLog = `...${SeriesInstanceUID.slice(-20)}`;
+  const isDynamicVolume =
+    Modality === 'PT' &&
+    SeriesInstanceUID ===
+      '1.3.6.1.4.1.12842.1.1.22.4.20220915.124758.560.4125514885';
+  return { isDynamicVolume };
+
+  if (!extensionManager) {
+    throw new Error('extensionManager is not available');
+  }
+
+  const imageIds = instances.map(({ imageId }) => imageId);
+  const volumeLoaderUtility = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.volumeLoader'
+  );
+  const {
+    getDynamicVolumeInfo: csGetDynamicVolumeInfo,
+  } = volumeLoaderUtility.exports;
+
+  return csGetDynamicVolumeInfo(imageIds);
+};
 
 const isMultiFrame = instance => {
   return instance.NumberOfFrames > 1;
@@ -14,7 +46,14 @@ const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
-  const displayReconstructableInfo = isDisplaySetReconstructable(instances);
+  const { isDynamicVolume } = getDynamicVolumeInfo(instances);
+  // TODO: get 4D volume info and check if one of the time points is reconstructable
+  const displayReconstructableInfo = isDynamicVolume
+    ? { value: true }
+    : isDisplaySetReconstructable(instances);
+  const volumeLoaderSchema = isDynamicVolume
+    ? DYNAMIC_VOLUME_LOADER_SCHEME
+    : DEFAULT_VOLUME_LOADER_SCHEME;
 
   // set appropriate attributes to image set...
   imageSet.setAttributes({
@@ -33,6 +72,7 @@ const makeDisplaySet = instances => {
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
     isReconstructable: displayReconstructableInfo.value,
+    volumeLoaderSchema,
   });
 
   // Sort the images in this series if needed
@@ -84,7 +124,6 @@ function getSopClassUids(instances) {
  * - For all Image types that are stackable, create
  *   a displaySet with a stack of images
  *
- * @param {Array} sopClassHandlerModules List of SOP Class Modules
  * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
  * @returns {Array} The list of display sets created for the given series object
  */
@@ -199,7 +238,9 @@ const sopClassUids = [
   sopClassDictionary.EnhancedUSVolumeStorage,
 ];
 
-function getSopClassHandlerModule() {
+function getSopClassHandlerModule(appContextParam) {
+  appContext = appContextParam;
+
   return [
     {
       name: sopClassHandlerName,
