@@ -16,7 +16,6 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
-import defaultContextMenu from './defaultContextMenu';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
@@ -83,22 +82,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       const element = _getActiveViewportEnabledElement()?.viewport?.element;
 
       const optionsToUse = { ...options, element };
-      const {
-        useSelectedAnnotation,
-        nearbyToolData,
-        event,
-        menuId,
-      } = optionsToUse;
-
-      // Assign the default menu here.
-      if (menuId) {
-        const defaults = customizationService.get(menuId, defaultContextMenu);
-        console.log('Assigning context menu from', menuId, defaults);
-        Object.assign(optionsToUse, defaults);
-        delete optionsToUse.menuId;
-      } else {
-        console.log('NOT adding context menu defaults');
-      }
+      const { useSelectedAnnotation, nearbyToolData, event } = optionsToUse;
 
       // This code is used to invoke the context menu via keyboard shortcuts
       if (useSelectedAnnotation && !nearbyToolData) {
@@ -647,7 +631,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       commandFn: actions.showCornerstoneContextMenu,
       storeContexts: [],
       options: {
-        menuId: 'measurementsContextMenu',
+        menuCustomizationId: 'measurementsContextMenu',
         commands: [
           {
             commandName: 'showContextMenu',

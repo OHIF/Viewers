@@ -1,6 +1,9 @@
 import { ServicesManager, Types } from '@ohif/core';
 
-import { ContextMenuController } from './CustomizeableContextMenu';
+import {
+  ContextMenuController,
+  defaultContextMenu,
+} from './CustomizeableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
@@ -56,7 +59,7 @@ const commandsModule = ({
      */
     showContextMenu: options => {
       const {
-        menuId,
+        menuCustomizationId,
         element,
         event,
         selectorProps,
@@ -65,8 +68,11 @@ const commandsModule = ({
 
       const optionsToUse = { ...options };
 
-      if (menuId) {
-        Object.assign(optionsToUse, customizationService.get(menuId, {}));
+      if (menuCustomizationId) {
+        Object.assign(
+          optionsToUse,
+          customizationService.get(menuCustomizationId, defaultContextMenu)
+        );
       }
 
       // TODO - make the selectorProps richer by including the study metadata and display set.
