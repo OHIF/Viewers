@@ -51,7 +51,7 @@ function PanelStudyBrowser({
       uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          'The selected display sets could not be added to the viewport.',
         type: 'info',
         duration: 3000,
       });

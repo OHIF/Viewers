@@ -192,7 +192,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
         uiNotificationService.show({
           title: 'Apply Hanging Protocol',
-          message: `The hanging protocol could not be applied due to ${e}`,
+          message: 'The hanging protocol could not be applied.',
           type: 'error',
           duration: 3000,
         });
