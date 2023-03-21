@@ -7,6 +7,10 @@ import microscopyManager from './tools/microscopyManager';
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
+import dcmjs from 'dcmjs';
+import deepCopyAndClean from './utils/deepCopyAndClean';
+import { DicomMetadataStore } from '@ohif/core';
+import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
 
 class DicomMicroscopyViewport extends Component {
   state = {
@@ -49,19 +53,81 @@ class DicomMicroscopyViewport extends Component {
   // install the microscopy renderer into the web page.
   // you should only do this once.
   installOpenLayersRenderer(container, displaySet) {
-    const loadViewer = async (metadata) => {
-      metadata = metadata.filter((m) => m);
-
-      const { viewer: DicomMicroscopyViewer } = await import(
+    const loadViewer = async metadata => {
+      const {
+        viewer: DicomMicroscopyViewer,
+        metadata: metadataUtils,
+      } = await import(
         /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
       );
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
       const client = getDicomWebClient();
 
+      // Parse, format, and filter metadata
+      const volumeImages: any[] = [];
+
+      // const retrieveOptions = {
+      //   studyInstanceUID: metadata[0].StudyInstanceUID,
+      //   seriesInstanceUID: metadata[0].SeriesInstanceUID,
+      // };
+      // metadata = await client.retrieveSeriesMetadata(retrieveOptions);
+      // // Parse, format, and filter metadata
+      // metadata.forEach(m => {
+      //   if (
+      //     volumeImages.length > 0 &&
+      //     m['00200052'].Value[0] != volumeImages[0].FrameOfReferenceUID
+      //   ) {
+      //     console.warn(
+      //       'Expected FrameOfReferenceUID of difference instances within a series to be the same, found multiple different values',
+      //       m['00200052'].Value[0]
+      //     );
+      //     m['00200052'].Value[0] = volumeImages[0].FrameOfReferenceUID;
+      //   }
+
+      //   const image = new metadataUtils.VLWholeSlideMicroscopyImage({
+      //     metadata: m,
+      //   });
+      //   const imageFlavor = image.ImageType[2];
+      //   if (imageFlavor === 'VOLUME' || imageFlavor === 'THUMBNAIL') {
+      //     volumeImages.push(image);
+      //   }
+      // });
+
+      metadata.forEach(m => {
+        const inst = cleanDenaturalizedDataset(
+          dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m)
+        );
+        if (!inst['00480105']) {
+          // Optical Path Sequence
+          // no OpticalPathIdentifier?
+          inst['00480105'] = {
+            vr: 'SQ',
+            Value: [
+              {
+                '00480106': {
+                  vr: 'SH',
+                  Value: ['1'],
+                },
+              },
+            ],
+          };
+        }
+        console.log(inst);
+        const image = new metadataUtils.VLWholeSlideMicroscopyImage({
+          metadata: inst,
+        });
+        const imageFlavor = image.ImageType[2];
+        if (imageFlavor === 'VOLUME' || imageFlavor === 'THUMBNAIL') {
+          volumeImages.push(image);
+        }
+      });
+      console.log(volumeImages);
+
+      // format metadata for microscopy-viewer
       const options = {
         client,
-        metadata,
+        metadata: volumeImages,
         retrieveRendered: false,
         controls: ['overview'],
       };
@@ -75,6 +141,8 @@ class DicomMicroscopyViewport extends Component {
       ) {
         this.viewer.addViewportOverlay({
           element: this.overlayElement.current,
+          coordinates: [0, 0], // TODO: dicom-microscopy-viewer documentation says this can be false to be automatically, but it is not.
+          navigate: true,
           className: 'OpenLayersOverlay',
         });
       }
@@ -102,8 +170,15 @@ class DicomMicroscopyViewport extends Component {
     this.installOpenLayersRenderer(this.container.current, displaySet);
   }
 
-  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any): void {
-    if (this.managedViewer && prevProps.displaySets !== this.props.displaySets) {
+  componentDidUpdate(
+    prevProps: Readonly<{}>,
+    prevState: Readonly<{}>,
+    snapshot?: any
+  ): void {
+    if (
+      this.managedViewer &&
+      prevProps.displaySets !== this.props.displaySets
+    ) {
       const { displaySets } = this.props;
       const displaySet = displaySets[0];
 
@@ -122,8 +197,11 @@ class DicomMicroscopyViewport extends Component {
   }
 
   setViewportActiveHandler = () => {
-    const { setViewportActive, viewportIndex, activeViewportIndex } =
-      this.props;
+    const {
+      setViewportActive,
+      viewportIndex,
+      activeViewportIndex,
+    } = this.props;
 
     if (viewportIndex !== activeViewportIndex) {
       setViewportActive(viewportIndex);

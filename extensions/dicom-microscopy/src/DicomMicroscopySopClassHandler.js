@@ -59,10 +59,32 @@ function _getDisplaySetsFromSeries(
     SOPClassUID,
   } = instance;
 
+  instances = instances.map(inst => {
+    // NOTE: According to DICOM standard a series should have a FrameOfReferenceUID
+    // When the Microscopy file was built by certain tool from multiple image files,
+    // each instance's FrameOfReferenceUID is sometimes different.
+    // Let's override this value manuall here.
+    // https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.4.html#sect_C.7.4.1.1.1
+
+    inst.FrameOfReferenceUID = instance.FrameOfReferenceUID;
+
+    // if (inst.ContainerIdentifier === null) {
+    //   // ContainerIdentifier must not be null
+    //   inst.ContainerIdentifier = '0';
+    // }
+    return inst;
+  });
+
   const othersFrameOfReferenceUID = instances
     .filter(v => v)
     .map(inst => inst.FrameOfReferenceUID)
     .filter((value, index, array) => array.indexOf(value) === index);
+  if (othersFrameOfReferenceUID.length > 1) {
+    console.warn(
+      'Expected FrameOfReferenceUID of difference instances within a series to be the same, found multiple different values',
+      othersFrameOfReferenceUID
+    );
+  }
 
   const displaySet = {
     plugin: 'microscopy',

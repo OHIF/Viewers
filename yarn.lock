@@ -9742,10 +9742,10 @@ dezalgo@^1.0.0:
     asap "^2.0.0"
     wrappy "1"
 
-dicom-microscopy-viewer@^0.44.0:
-  version "0.44.0"
-  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.44.0.tgz#d4a9e985acb23c5b82a9aedbe379b39198b8fd55"
-  integrity sha512-7rcm8bXTcOLsXrhBPwWe5gf4Sj1Rz1lRh+ECcaznOEr/uvX6BTAYLqNJNmeAUMoKcadboEeDrmLihCwCteRSJQ==
+dicom-microscopy-viewer@^0.43.2:
+  version "0.43.2"
+  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.43.2.tgz#e789093f6c8173bf4082c7c1db320b1a5e9c0b31"
+  integrity sha512-eDFiumje9bGb3vv2ar2OPZajJk9oDJvmXmKrjr+E0maOg8zrvFj9wAp4eIn65vQMwxFvxZ1nR/AuHZ/fdp8vFA==
   dependencies:
     "@cornerstonejs/codec-charls" "^0.1.1"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^0.0.7"
