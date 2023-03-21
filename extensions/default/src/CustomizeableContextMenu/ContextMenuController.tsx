@@ -84,13 +84,6 @@ export default class ContextMenuController {
         event,
         subMenu,
         eventData: event?.detail,
-        onRunCommands: (item, itemRef, subProps) => {
-          this.commandsManager.run(item, {
-            ...selectorProps,
-            ...itemRef,
-            subProps,
-          });
-        },
 
         onClose: () => {
           this.services.uiDialogService.dismiss({ id: 'context-menu' });
@@ -102,7 +95,7 @@ export default class ContextMenuController {
          * @param {*} itemRef
          * @param {*} subProps
          */
-        onSubMenu: (item, itemRef, subProps) => {
+        onShowSubMenu: (item, itemRef, subProps) => {
           if (!itemRef.subMenu) {
             console.warn('No submenu defined for', item, itemRef, subProps);
             return;
@@ -117,6 +110,7 @@ export default class ContextMenuController {
           );
         },
 
+        // Default is to run the specified commands.
         onDefault: (item, itemRef, subProps) => {
           this.commandsManager.run(item, {
             ...selectorProps,

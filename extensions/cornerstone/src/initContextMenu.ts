@@ -17,7 +17,7 @@ const DEFAULT_CONTEXT_MENU_CLICKS = {
       {
         commandName: 'showCornerstoneContextMenu',
         commandOptions: {
-          menuName: 'cornerstoneContextMenu',
+          menuId: 'cornerstoneContextMenu',
         },
       },
     ],

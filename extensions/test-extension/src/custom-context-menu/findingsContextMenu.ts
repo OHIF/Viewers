@@ -10,13 +10,13 @@ const findingsContextMenu = {
         {
           customizationType: 'ohif.contextSubMenu',
           label: 'Site',
-          actionType: 'SubMenu',
+          actionType: 'ShowSubMenu',
           subMenu: 'siteSelectionSubMenu',
         },
         {
           customizationType: 'ohif.contextSubMenu',
           label: 'Finding',
-          actionType: 'SubMenu',
+          actionType: 'ShowSubMenu',
           subMenu: 'findingSelectionSubMenu',
         },
         {

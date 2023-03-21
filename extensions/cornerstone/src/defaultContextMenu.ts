@@ -11,7 +11,6 @@ const defaultContextMenu: Types.CommandCustomization = {
       items: [
         {
           label: 'Delete measurement',
-          actionType: 'RunCommands',
           commands: [
             {
               commandName: 'deleteMeasurement',
@@ -20,7 +19,6 @@ const defaultContextMenu: Types.CommandCustomization = {
         },
         {
           label: 'Add Label',
-          actionType: 'RunCommands',
           commands: [
             {
               commandName: 'setMeasurementLabel',

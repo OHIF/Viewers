@@ -16,7 +16,7 @@ const menuCategoryBlacklist = ['history'];
  *
  * @returns Menu having the menuId
  */
-export function findMenuByMenuId(menus, menuId): Menu {
+export function findMenuById(menus: Menu[], menuId?: string): Menu {
   if (!menuId) {
     return;
   }
@@ -39,7 +39,10 @@ export function findMenuByMenuId(menus, menuId): Menu {
  * @param {*} subProps
  * @returns
  */
-export function findMenuDefault(menus: Menu[], subProps: Types.IProps): Menu {
+export function findMenuDefault(
+  menus: Menu[],
+  subProps: Record<string, unknown>
+): Menu {
   if (!menus) {
     return null;
   }
@@ -53,11 +56,10 @@ export function findMenuDefault(menus: Menu[], subProps: Types.IProps): Menu {
  * This will first look for a subMenu with the specified subMenuId
  * Next it will look for the first menu whose selector returns true.
  *
- * @param {Object[]} menus List of menus
- * @param {Object} props root props
- * @param {Object} props sub
- * @param {string} [menuIdFilter] menu id identifier (to be considered on selection)
- * @returns
+ * @param menus - List of menus
+ * @param props - root props
+ * @param menuIdFilter - menu id identifier (to be considered on selection)
+ *      This is intended to support other types of filtering in the future.
  */
 export function findMenu(
   menus: Menu[],
@@ -67,7 +69,7 @@ export function findMenu(
   const { subMenu } = props;
 
   function* findMenuIterator() {
-    yield findMenuByMenuId(menus, menuIdFilter || subMenu);
+    yield findMenuById(menus, menuIdFilter || subMenu);
     yield findMenuDefault(menus, props);
   }
 

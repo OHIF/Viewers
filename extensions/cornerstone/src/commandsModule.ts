@@ -87,15 +87,15 @@ function commandsModule({ servicesManager, commandsManager }) {
         useSelectedAnnotation,
         nearbyToolData,
         event,
-        menuName,
+        menuId,
       } = optionsToUse;
 
       // Assign the default menu here.
-      if (menuName) {
-        const defaults = customizationService.get(menuName, defaultContextMenu);
-        console.log('Assigning context menu from', menuName, defaults);
+      if (menuId) {
+        const defaults = customizationService.get(menuId, defaultContextMenu);
+        console.log('Assigning context menu from', menuId, defaults);
         Object.assign(optionsToUse, defaults);
-        delete optionsToUse.menuName;
+        delete optionsToUse.menuId;
       } else {
         console.log('NOT adding context menu defaults');
       }
@@ -104,12 +104,12 @@ function commandsModule({ servicesManager, commandsManager }) {
       if (useSelectedAnnotation && !nearbyToolData) {
         const firstAnnotationSelected = getFirstAnnotationSelected(element);
         // filter by allowed selected tools from config property (if there is any)
-        if (
+        const isToolAllowed =
           !optionsToUse.allowedSelectedTools ||
           optionsToUse.allowedSelectedTools.includes(
             firstAnnotationSelected?.metadata?.toolName
-          )
-        ) {
+          );
+        if (isToolAllowed) {
           optionsToUse.nearbyToolData = firstAnnotationSelected;
         } else {
           return;
@@ -647,7 +647,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       commandFn: actions.showCornerstoneContextMenu,
       storeContexts: [],
       options: {
-        menuName: 'cornerstoneContextMenu',
+        menuId: 'cornerstoneContextMenu',
         commands: [
           {
             commandName: 'showContextMenu',

@@ -48,7 +48,7 @@ const commandsModule = ({
   const actions = {
     /**
      * Show the context menu.
-     * @param options.menuName defines the menu name to lookup, from customizationService
+     * @param options.menuId defines the menu name to lookup, from customizationService
      * @param options.defaultMenu contains the default menu set to use
      * @param options.element is the element to show the menu within
      * @param options.event is the event that caused the context menu
@@ -56,7 +56,7 @@ const commandsModule = ({
      */
     showContextMenu: options => {
       const {
-        menuName,
+        menuId,
         element,
         event,
         selectorProps,
@@ -65,8 +65,8 @@ const commandsModule = ({
 
       const optionsToUse = { ...options };
 
-      if (menuName) {
-        Object.assign(optionsToUse, customizationService.get(menuName, {}));
+      if (menuId) {
+        Object.assign(optionsToUse, customizationService.get(menuId, {}));
       }
 
       // TODO - make the selectorProps richer by including the study metadata and display set.
