@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   StudySummary,
@@ -11,6 +11,7 @@ import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import debounce from 'lodash.debounce';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -45,6 +46,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
+  const measurementsPanelRef = useRef(null);
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
@@ -125,6 +127,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       subscriptions.push(
         measurementService.subscribe(evt, () => {
           setMeasurementsUpdated(Date.now().toString());
+          if (evt === added) {
+            debounce(() => {
+              measurementsPanelRef.current.scrollTop = measurementsPanelRef.current.scrollHeight;
+            }, 300)();
+          }
         }).unsubscribe
       );
     });
@@ -241,6 +248,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     <>
       <div
         className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        ref={measurementsPanelRef}
         data-cy={'trackedMeasurements-panel'}
       >
         {displayStudySummary.key && (
