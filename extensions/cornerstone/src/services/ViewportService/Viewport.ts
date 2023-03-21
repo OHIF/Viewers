@@ -5,10 +5,6 @@ import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import JumpPresets from '../../utils/JumpPresets';
 import { SyncGroup } from '../SyncGroupService/SyncGroupService';
-import {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../types/CornerstoneCacheService';
 
 export type InitialImageOptions = {
   index?: number;

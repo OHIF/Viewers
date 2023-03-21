@@ -171,9 +171,7 @@ const SegmentationGroup = ({
             id={id}
             showAddSegment={showAddSegment}
           />
-          <div
-            className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden"
-          >
+          <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden">
             {!!segments.length &&
               segments.map(segment => {
                 if (segment === undefined || segment === null) {
