@@ -139,9 +139,9 @@ export default class ContextMenuController {
     y: eventDetail && eventDetail.currentPoints.client[1],
   });
 
-  static _getViewerElementDefaultPosition = viewerElement => {
-    if (viewerElement) {
-      const boundingClientRect = viewerElement.getBoundingClientRect();
+  static _getElementDefaultPosition = element => {
+    if (element) {
+      const boundingClientRect = element.getBoundingClientRect();
       return {
         x: boundingClientRect.x,
         y: boundingClientRect.y,
@@ -154,10 +154,8 @@ export default class ContextMenuController {
     };
   };
 
-  static _getCanvasPointsPosition = (points = [], viewerElementOfReference) => {
-    const viewerPos = ContextMenuController._getViewerElementDefaultPosition(
-      viewerElementOfReference
-    );
+  static _getCanvasPointsPosition = (points = [], element) => {
+    const viewerPos = ContextMenuController._getElementDefaultPosition(element);
 
     for (let pointIndex = 0; pointIndex < points.length; pointIndex++) {
       const point = {
@@ -192,9 +190,7 @@ export default class ContextMenuController {
         viewerElement
       );
       yield ContextMenuController._getEventDefaultPosition(eventDetail);
-      yield ContextMenuController._getViewerElementDefaultPosition(
-        viewerElement
-      );
+      yield ContextMenuController._getElementDefaultPosition(viewerElement);
       yield ContextMenuController.getDefaultPosition();
     }
 

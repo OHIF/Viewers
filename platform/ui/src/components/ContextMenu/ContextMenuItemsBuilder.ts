@@ -3,7 +3,10 @@ import { Menu, SelectorProps, MenuItem, ContextMenuProps } from './types';
 
 /**
  * Context menu items builder is a collection of classes to help determine
- * which context menu to show, based on a set of properties.
+ * which context menu to show, and what elements are contained within it.
+ * See ./types for a description of the menu definitions, or see
+ * the test extension `findingsMenu` for a fully worked out example.
+ *
  */
 // menus category to be skipped when doing a depth search.
 const menuCategoryBlacklist = ['history'];

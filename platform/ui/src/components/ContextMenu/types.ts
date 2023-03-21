@@ -1,14 +1,13 @@
 import { Types } from '@ohif/core';
 
 /**
- * The selector props are provided to the various selector functions
- * used to enable or disable menus and menu items.
- * This enabled more context specific menus to be shown.
- * For example, the selector for Cornerstone context menus
- * includes items such as the display set information, the nearest/active
- * measurement and related information, and that, in turn allows for
- * simpler menus that are easier to navigate.  (See Bill Wallace's masters thesis
- * for measurements on complexity of user menus).
+ * SelectorProps are properties used to decide whether to select a manu or
+ * menu item for display.
+ * An instance of SelectorProps is provided to the selector functions, which
+ * return true to include the item or false to exclude it.
+ * The point of this is to allow more specific conext menus which hide
+ * non-relevant menu options, optimizing the speed of selection of menus
+ * (See Bill Wallace's masters thesis for selection time versus complexity of user menus).
  */
 export interface SelectorProps {
   // If the context menu is invoked in the context of a measurement, then it
@@ -42,7 +41,7 @@ export type UIMenuItem = {
 };
 
 /**
- * A MenuEntry is a single line item within a menu, and specifies a selectable
+ * A MenuItem is a single line item within a menu, and specifies a selectable
  * value for the menu.
  */
 export interface MenuItem {
@@ -59,6 +58,8 @@ export interface MenuItem {
   // this menu.  That allows sharing part of the menu structure, but also,
   // more importantly to use a single selector function to include/exclude
   // and entire section of sub-menu.
+  // See the `siteSelectionSubMenu` within the example `findingsMenu`
+  // for an example
   delegating?: boolean;
 
   // A sub-menu is shown when this item is selected or is delegating.
@@ -104,6 +105,11 @@ export type Point = {
   y: number;
 };
 
+/**
+ * ContextMenuProps is the top level argument used to invoke the context menu
+ * itself.  It contains the menus available for display, as well as the event
+ * and selector props used to decide the menu.
+ */
 export type ContextMenuProps = {
   event?: EventTarget;
   subMenu?: string;
