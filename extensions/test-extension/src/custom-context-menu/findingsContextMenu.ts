@@ -1,5 +1,5 @@
 const findingsContextMenu = {
-  id: 'cornerstoneContextMenu',
+  id: 'measurementsContextMenu',
   customizationType: 'ohif.contextMenu',
   menus: [
     {

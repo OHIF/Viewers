@@ -647,7 +647,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       commandFn: actions.showCornerstoneContextMenu,
       storeContexts: [],
       options: {
-        menuId: 'cornerstoneContextMenu',
+        menuId: 'measurementsContextMenu',
         commands: [
           {
             commandName: 'showContextMenu',

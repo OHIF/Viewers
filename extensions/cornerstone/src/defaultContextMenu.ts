@@ -1,7 +1,5 @@
-import { Types } from '@ohif/core';
-
-const defaultContextMenu: Types.CommandCustomization = {
-  id: 'cornerstoneContextMenu',
+const defaultContextMenu = {
+  id: 'measurementsContextMenu',
   customizationType: 'ohif.contextMenu',
   menus: [
     // Get the items from the UI Customization for the menu name (and have a custom name)
