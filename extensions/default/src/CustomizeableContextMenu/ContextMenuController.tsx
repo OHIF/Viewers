@@ -1,5 +1,5 @@
 import * as ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
-import ContextMenu from './ContextMenu';
+import ContextMenu from '../../../../platform/ui/src/components/ContextMenu/ContextMenu';
 import { CommandsManager, ServicesManager, Types } from '@ohif/core';
 import { Menu, MenuItem, Point, ContextMenuProps } from './types';
 
@@ -50,6 +50,7 @@ export default class ContextMenuController {
 
     const { event, subMenu, menuId, menus, selectorProps } = contextMenuProps;
 
+    console.log('Getting items from', menus);
     const items = ContextMenuItemsBuilder.getMenuItems(
       selectorProps || contextMenuProps,
       event,

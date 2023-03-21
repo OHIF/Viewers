@@ -5,7 +5,7 @@ const codeMenuItem = {
   codingValues,
 
   /** Applies the code value setup for this item */
-  applyType: function (customizationService) {
+  transform: function (customizationService) {
     const { code: codeRef } = this;
     if (!codeRef) throw new Error(`item ${this} has no code ref`);
     const codingValues = customizationService.get('codingValues');

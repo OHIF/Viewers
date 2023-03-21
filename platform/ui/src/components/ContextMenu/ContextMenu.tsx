@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography } from '../';
-import ContextMenuController from './ContextMenuController';
+import Typography from '../Typography';
 
 const ContextMenu = ({ items, ...props }) => {
   if (!items) {
@@ -36,8 +35,5 @@ ContextMenu.propTypes = {
     })
   ).isRequired,
 };
-
-// Static element for managing context menus
-ContextMenu.Controller = ContextMenuController;
 
 export default ContextMenu;

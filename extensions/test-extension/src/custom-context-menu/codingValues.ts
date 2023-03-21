@@ -1,3 +1,21 @@
+/**
+ * Coding values is a map of simple string coding values to a set of
+ * attributes associated with the coding value.
+ *
+ * The simple string is in the format `<codingSchemeDesignator>:<codingValue>`
+ * That allows extracting the DICOM attributes from the designator/value, and
+ * allows for passing around the simple string.
+ * The additional attributes contained in the object include:
+ *       * text - this is the coding scheme text display value, and may be language specific
+ *       * type - this defines a named type, typically 'site'.  Different names can be used
+ *                to allow setting different findingSites values in order to define a hierarchy.
+ *       * color - used to apply annotation color
+ * It is also possible to define additional attributes here, used by custom
+ * extensions.
+ *
+ * See https://dicom.nema.org/medical/dicom/current/output/html/part16.html
+ * for definitions of SCT and other code values.
+ */
 const codingValues = {
   id: 'codingValues',
 

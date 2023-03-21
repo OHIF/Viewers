@@ -39,11 +39,18 @@ export interface Extension {
   preRegistration?: (p: ExtensionParams) => Promise<void> | void;
   onModeExit?: () => void;
   getHangingProtocolModule?: (p: ExtensionParams) => unknown;
+  getCommandsModule?: (p: ExtensionParams) => CommandsModule;
 }
 
 export type ExtensionRegister = {
   id: string;
   create: (p: ExtensionParams) => Extension;
+};
+
+export type CommandsModule = {
+  actions: Record<string, unknown>;
+  definitions: Record<string, unknown>;
+  defaultContext?: string;
 };
 
 export default class ExtensionManager {

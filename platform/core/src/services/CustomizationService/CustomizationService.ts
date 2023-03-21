@@ -123,7 +123,7 @@ export default class CustomizationService extends PubSubService {
    * may have been extended with any customizationType extensions provided,
    * so you cannot just use `|| defaultValue`
    * @return A customization to use if one is found, or the default customization,
-   * both enhanced with any customizationType inheritance (see applyType)
+   * both enhanced with any customizationType inheritance (see transform)
    */
   public getCustomization(
     customizationId: string,
@@ -145,7 +145,7 @@ export default class CustomizationService extends PubSubService {
       this.globalCustomizations[customizationId] ??
       this.modeCustomizations[customizationId] ??
       defaultValue;
-    return this.applyType(customization);
+    return this.transform(customization);
   }
 
   public hasModeCustomization(customizationId: string) {
@@ -171,7 +171,7 @@ export default class CustomizationService extends PubSubService {
    * and if that is found, will assign all iterable values from that
    * type into the new type, allowing default behaviour to be configured.
    */
-  public applyType(customization: Customization): Customization {
+  public transform(customization: Customization): Customization {
     if (!customization) return customization;
     const { customizationType } = customization;
     if (!customizationType) return customization;
@@ -180,7 +180,7 @@ export default class CustomizationService extends PubSubService {
       ? Object.assign(Object.create(parent), customization)
       : customization;
     // Execute an nested type information
-    return result.applyType?.(this) || result;
+    return result.transform?.(this) || result;
   }
 
   public addModeCustomizations(modeCustomizations): void {
@@ -207,7 +207,7 @@ export default class CustomizationService extends PubSubService {
     id: string,
     defaultValue?: Customization
   ): Customization | void {
-    return this.applyType(this.globalCustomizations[id] ?? defaultValue);
+    return this.transform(this.globalCustomizations[id] ?? defaultValue);
   }
 
   setGlobalCustomization(id: string, value: Customization): void {

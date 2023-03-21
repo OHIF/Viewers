@@ -11,7 +11,6 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 import { ServicesManager } from '@ohif/core';
-import { ContextMenu } from '@ohif/ui';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
@@ -36,10 +35,6 @@ function commandsModule({ servicesManager, commandsManager }) {
   } = (servicesManager as ServicesManager).services;
 
   const { measurementServiceSource } = this;
-  const contextMenuController = new ContextMenu.Controller(
-    servicesManager,
-    commandsManager
-  );
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
@@ -81,41 +76,33 @@ function commandsModule({ servicesManager, commandsManager }) {
 
   const actions = {
     /**
-     * Show the specified context menu, with viewer specific
-     * information in the checkParams used to determine which
-     * menus are displayed.
-     * See ContextMenuController for definitions of the menu format
-     * and checkParams.
-     * The checkParams contains:
-     *   toolName of the tool currently selected
-     *   uid of the annotation selected
-     *   value of the annotation object of interest
-     *   nearbyToolData for the annotation near the click point (this is often the same as value)
+     * Generates the selector props for the context menu, specific to
+     * the cornerstone viewport, and then runs the context menu.
      */
-    showViewerContextMenu: options => {
-      const viewerElement = _getActiveViewportEnabledElement()?.viewport
-        ?.element;
+    showCornerstoneContextMenu: options => {
+      const element = _getActiveViewportEnabledElement()?.viewport?.element;
 
-      const optionsToUse = { ...options };
+      const optionsToUse = { ...options, element };
       const {
         useSelectedAnnotation,
         nearbyToolData,
-        menuName,
         event,
+        menuName,
       } = optionsToUse;
 
+      // Assign the default menu here.
       if (menuName) {
-        Object.assign(
-          optionsToUse,
-          customizationService.get(menuName, defaultContextMenu)
-        );
+        const defaults = customizationService.get(menuName, defaultContextMenu);
+        console.log('Assigning context menu from', menuName, defaults);
+        Object.assign(optionsToUse, defaults);
+        delete optionsToUse.menuName;
+      } else {
+        console.log('NOT adding context menu defaults');
       }
 
       // This code is used to invoke the context menu via keyboard shortcuts
       if (useSelectedAnnotation && !nearbyToolData) {
-        const firstAnnotationSelected = getFirstAnnotationSelected(
-          viewerElement
-        );
+        const firstAnnotationSelected = getFirstAnnotationSelected(element);
         // filter by allowed selected tools from config property (if there is any)
         if (
           !optionsToUse.allowedSelectedTools ||
@@ -129,36 +116,25 @@ function commandsModule({ servicesManager, commandsManager }) {
         }
       }
 
+      optionsToUse.defaultPointsPosition = [];
+      // if (optionsToUse.nearbyToolData) {
+      //   optionsToUse.defaultPointsPosition = commandsManager.runCommand(
+      //     'getToolDataActiveCanvasPoints',
+      //     { toolData: optionsToUse.nearbyToolData }
+      //   );
+      // }
+
       // TODO - make the selectorProps richer by including the study metadata and display set.
-      const { protocol, stage } = hangingProtocolService.getActiveProtocol();
       optionsToUse.selectorProps = {
         toolName: optionsToUse.nearbyToolData?.metadata?.toolName,
         value: optionsToUse.nearbyToolData,
         uid: optionsToUse.nearbyToolData?.annotationUID,
         nearbyToolData: optionsToUse.nearbyToolData,
         event,
-        protocol,
-        stage,
+        ...optionsToUse.selectorProps,
       };
 
-      let defaultPointsPosition = [];
-      if (options.nearbyToolData) {
-        defaultPointsPosition = commandsManager.runCommand(
-          'getToolDataActiveCanvasPoints',
-          { toolData: optionsToUse.nearbyToolData }
-        );
-      }
-
-      contextMenuController.showContextMenu(
-        optionsToUse,
-        viewerElement,
-        defaultPointsPosition
-      );
-    },
-
-    /** Close a context menu currently displayed */
-    closeContextMenu: () => {
-      contextMenuController.closeContextMenu();
+      commandsManager.run(options, optionsToUse);
     },
 
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
@@ -667,17 +643,19 @@ function commandsModule({ servicesManager, commandsManager }) {
   const definitions = {
     // The command here is to show the viewer context menu, as being the
     // context menu
-    showViewerContextMenu: {
-      commandFn: actions.showViewerContextMenu,
+    showCornerstoneContextMenu: {
+      commandFn: actions.showCornerstoneContextMenu,
       storeContexts: [],
-      options: {},
+      options: {
+        menuName: 'cornerstoneContextMenu',
+        commands: [
+          {
+            commandName: 'showContextMenu',
+          },
+        ],
+      },
     },
 
-    closeContextMenu: {
-      commandFn: actions.closeContextMenu,
-      storeContexts: [],
-      options: {},
-    },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
       storeContexts: [],

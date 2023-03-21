@@ -1,4 +1,4 @@
-import { eventTarget, Types, EVENTS } from '@cornerstonejs/core';
+import { eventTarget, EVENTS } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
 import { setEnabledElement } from './state';
 
@@ -15,11 +15,10 @@ const DEFAULT_CONTEXT_MENU_CLICKS = {
   button3: {
     commands: [
       {
-        commandName: 'showViewerContextMenu',
+        commandName: 'showCornerstoneContextMenu',
         commandOptions: {
           menuName: 'cornerstoneContextMenu',
         },
-        context: 'CORNERSTONE',
       },
     ],
   },
