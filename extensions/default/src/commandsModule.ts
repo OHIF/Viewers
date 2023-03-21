@@ -153,8 +153,8 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
         const restoreProtocol = !!viewportGridStore[storedHanging];
 
         if (
-          protocolId === hpInfo.hangingProtocolId &&
-          useStageIdx === hpInfo.stageIdx &&
+          protocolId === hpInfo.protocolId &&
+          useStageIdx === hpInfo.stageIndex &&
           !activeStudyUID
         ) {
           // Clear the HP setting to reset them

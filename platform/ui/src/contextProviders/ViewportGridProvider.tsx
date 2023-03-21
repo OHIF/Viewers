@@ -8,7 +8,7 @@ import React, {
 import PropTypes from 'prop-types';
 import isEqual from 'lodash.isequal';
 import viewportLabels from '../utils/viewportLabels';
-import getPresentationId from './getPresentationId';
+import getPresentationIds from './getPresentationIds';
 
 const DEFAULT_STATE = {
   activeViewportIndex: 0,
@@ -69,7 +69,7 @@ const reuseViewport = (idSet, viewport, stateViewports) => {
     // };
   }
   // Find a viewport instance number different from earlier viewports having
-  // the same presentationId as this one would - will be less than 10k
+  // the same presentationIds as this one would - will be less than 10k
   // viewports hopefully :-)
   for (let i = 0; i < 10000; i++) {
     const viewportId = 'viewport-' + i;
@@ -121,7 +121,10 @@ export function ViewportGridProvider({ children, service }) {
           displaySetOptions,
           viewportLabel: viewportLabels[viewportIndex],
         };
-        viewportOptions.presentationId = getPresentationId(newView, viewports);
+        viewportOptions.presentationIds = getPresentationIds(
+          newView,
+          viewports
+        );
 
         // Make sure we assign a viewport id
         newView = reuseViewport({}, newView, state.viewports);
@@ -207,8 +210,8 @@ export function ViewportGridProvider({ children, service }) {
             viewports[viewportIndex],
             state.viewports
           );
-          if (!viewport.viewportOptions.presentationId) {
-            viewport.viewportOptions.presentationId = getPresentationId(
+          if (!viewport.viewportOptions.presentationIds) {
+            viewport.viewportOptions.presentationIds = getPresentationIds(
               viewport,
               viewports
             );

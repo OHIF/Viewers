@@ -1,8 +1,9 @@
 import { metaData } from '@cornerstonejs/core';
-import { LengthTool } from '@cornerstonejs/tools';
-import { calibrateImageSpacing } from '@cornerstonejs/tools/dist/esm/utilities';
+import { LengthTool, utilities } from '@cornerstonejs/tools';
 import callInputDialog from '../utils/callInputDialog';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
+
+const { calibrateImageSpacing } = utilities;
 
 /**
  * Calibration Line tool works almost the same as the

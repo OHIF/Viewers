@@ -42,6 +42,12 @@ export default class StateSyncService extends PubSubService {
 
   public init(extensionManager: ExtensionManager): void { }
 
+  /** Registers a new sync store called `id`.  The state
+   * defines how the state is stored, and any default clearing of the
+   * state.
+   * A default store has the lifetime of the application.
+   * The other available store is cleared `onModeExit`
+   */
   public register(id: string, config: StateConfig): void {
     this.registeredStateSets[id] = config;
     this.store({ [id]: {} });

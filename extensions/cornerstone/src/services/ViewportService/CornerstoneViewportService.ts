@@ -21,11 +21,7 @@ import {
   StackViewportData,
   VolumeViewportData,
 } from '../../types/CornerstoneCacheService';
-import {
-  Presentation,
-  StackPresentation,
-  VolumePresentation,
-} from '../../types/Presentation';
+import { Presentation, Presentations } from '../../types/Presentation';
 import {
   setColormap,
   setLowerUpperColorTransferFunction,
@@ -173,23 +169,30 @@ class CornerstoneViewportService extends PubSubService
     this.viewportsById.delete(viewportId);
   }
 
+  public setPresentations(viewport, presentations?: Presentations): void {
+    const properties = presentations.lutPresentation?.properties;
+    if (properties) viewport.setProperties(properties);
+    const camera = presentations.positionPresentation?.camera;
+    if (camera) viewport.setCamera(camera);
+  }
+
   public getPresentation(viewportIndex: number): Presentation {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     if (!viewportInfo) return;
-    const {
-      presentationId: id,
-      viewportType,
-    } = viewportInfo.getViewportOptions();
-    if (!id) return;
+    const { viewportType, presentationIds } = viewportInfo.getViewportOptions();
 
     const csViewport = this.getCornerstoneViewportByIndex(viewportIndex);
     if (!csViewport) return;
 
     const properties = csViewport.getProperties();
+    if (properties.isComputedVOI) {
+      delete properties.voiRange;
+      delete properties.VOILUTFunction;
+    }
     const initialImageIndex = csViewport.getCurrentImageIdIndex();
     const camera = csViewport.getCamera();
     return {
-      id,
+      presentationIds,
       viewportType:
         !viewportType || viewportType === 'stack' ? 'stack' : 'volume',
       properties,
@@ -211,7 +214,7 @@ class CornerstoneViewportService extends PubSubService
     viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[],
-    presentation?: Presentation
+    presentations?: Presentations
   ): void {
     const renderingEngine = this.getRenderingEngine();
     const viewportId =
@@ -276,7 +279,7 @@ class CornerstoneViewportService extends PubSubService
     renderingEngine.enableElement(viewportInput);
 
     const viewport = renderingEngine.getViewport(viewportId);
-    this._setDisplaySets(viewport, viewportData, viewportInfo, presentation);
+    this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
   }
 
   public getCornerstoneViewport(
@@ -340,7 +343,7 @@ class CornerstoneViewportService extends PubSubService
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
     viewportInfo: ViewportInfo,
-    presentation?: StackPresentation
+    presentations: Presentations
   ): void {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
@@ -353,7 +356,8 @@ class CornerstoneViewportService extends PubSubService
     this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
     let initialImageIndexToUse =
-      presentation?.initialImageIndex ?? initialImageIndex;
+      presentations?.positionPresentation?.initialImageIndex ??
+      initialImageIndex;
 
     if (
       initialImageIndexToUse === undefined ||
@@ -363,8 +367,8 @@ class CornerstoneViewportService extends PubSubService
         this._getInitialImageIndexForStackViewport(viewportInfo, imageIds) || 0;
     }
 
-    const properties = presentation?.properties || {};
-    if (!presentation?.properties) {
+    const properties = { ...presentations.lutPresentation?.properties };
+    if (!presentations.lutPresentation?.properties) {
       const { voi, voiInverted } = displaySetOptions[0];
       if (voi && (voi.windowWidth || voi.windowCenter)) {
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(
@@ -385,7 +389,8 @@ class CornerstoneViewportService extends PubSubService
       // The scroll, however, works fine in CS3D
       viewport.scroll(initialImageIndexToUse);
       viewport.setProperties(properties);
-      if (presentation?.camera) viewport.setCamera(presentation.camera);
+      const camera = presentations.positionPresentation?.camera;
+      if (camera) viewport.setCamera(camera);
     });
   }
 
@@ -441,7 +446,7 @@ class CornerstoneViewportService extends PubSubService
     viewport: Types.IVolumeViewport,
     viewportData: VolumeViewportData,
     viewportInfo: ViewportInfo,
-    presentation: VolumePresentation
+    presentations: Presentations
   ): Promise<void> {
     // TODO: We need to overhaul the way data sources work so requests can be made
     // async. I think we should follow the image loader pattern which is async and
@@ -514,10 +519,18 @@ class CornerstoneViewportService extends PubSubService
     });
 
     // This returns the async continuation only
-    return this.setVolumesForViewport(viewport, volumeInputArray, presentation);
+    return this.setVolumesForViewport(
+      viewport,
+      volumeInputArray,
+      presentations
+    );
   }
 
-  public async setVolumesForViewport(viewport, volumeInputArray, presentation) {
+  public async setVolumesForViewport(
+    viewport,
+    volumeInputArray,
+    presentations
+  ) {
     const {
       displaySetService,
       segmentationService,
@@ -525,9 +538,7 @@ class CornerstoneViewportService extends PubSubService
     } = this.servicesManager.services;
 
     await viewport.setVolumes(volumeInputArray);
-    const { properties, camera } = presentation || {};
-    if (properties) viewport.setProperties(properties);
-    if (camera) viewport.setCamera(camera);
+    this.setPresentations(viewport, presentations);
 
     // load any secondary displaySets
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
@@ -703,21 +714,21 @@ class CornerstoneViewportService extends PubSubService
     viewport: StackViewport | VolumeViewport,
     viewportData: StackViewportData | VolumeViewportData,
     viewportInfo: ViewportInfo,
-    presentation?: Presentation
+    presentations: Presentations = {}
   ): void {
     if (viewport instanceof StackViewport) {
       this._setStackViewport(
         viewport,
         viewportData as StackViewportData,
         viewportInfo,
-        presentation as StackPresentation
+        presentations
       );
     } else if (viewport instanceof VolumeViewport) {
       this._setVolumeViewport(
         viewport,
         viewportData as VolumeViewportData,
         viewportInfo,
-        presentation as VolumePresentation
+        presentations
       );
     } else {
       throw new Error('Unknown viewport type');
