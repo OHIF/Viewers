@@ -6,7 +6,10 @@ import {
   getRenderingEngine,
   utilities as csUtils,
   VolumeViewport,
+  VolumeViewport3D,
   cache,
+  utilities,
+  CONSTANTS,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils } from '@cornerstonejs/tools';
@@ -682,7 +685,12 @@ class CornerstoneViewportService extends PubSubService
   }
 
   _getVOICallbacks(volumeId, displaySetOptions) {
-    const { voi, voiInverted: inverted, colormap } = displaySetOptions;
+    const {
+      voi,
+      voiInverted: inverted,
+      colormap,
+      presetName,
+    } = displaySetOptions;
 
     const voiCallbackArray = [];
 
@@ -707,6 +715,16 @@ class CornerstoneViewportService extends PubSubService
       );
     }
 
+    if (presetName) {
+      voiCallbackArray.push(volumeActor => {
+        utilities.applyPreset(
+          volumeActor,
+          CONSTANTS.VIEWPORT_PRESETS.find(preset => {
+            return preset.name === presetName;
+          })
+        );
+      });
+    }
     return voiCallbackArray;
   }
 
@@ -723,7 +741,10 @@ class CornerstoneViewportService extends PubSubService
         viewportInfo,
         presentations
       );
-    } else if (viewport instanceof VolumeViewport) {
+    } else if (
+      viewport instanceof VolumeViewport ||
+      viewport instanceof VolumeViewport3D
+    ) {
       this._setVolumeViewport(
         viewport,
         viewportData as VolumeViewportData,

@@ -23,6 +23,7 @@ import {
   addTool,
   annotation,
   ReferenceLinesTool,
+  TrackballRotateTool,
 } from '@cornerstonejs/tools';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
@@ -51,6 +52,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SegmentationDisplayTool);
   addTool(ReferenceLinesTool);
   addTool(CalibrationLineTool);
+  addTool(TrackballRotateTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -90,6 +92,7 @@ const toolNames = {
   SegmentationDisplay: SegmentationDisplayTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,
   CalibrationLine: CalibrationLineTool.toolName,
+  TrackballRotateTool: TrackballRotateTool.toolName,
 };
 
 export { toolNames };

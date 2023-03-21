@@ -63,6 +63,7 @@ export type PublicDisplaySetOptions = {
   blendMode?: string;
   slabThickness?: number;
   colormap?: string;
+  presetName?: string;
 };
 
 export type DisplaySetOptions = {
@@ -72,6 +73,7 @@ export type DisplaySetOptions = {
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
   colormap?: string;
+  presetName?: string;
 };
 
 type VOI = {
@@ -84,7 +86,6 @@ export type DisplaySet = {
 };
 
 const STACK = 'stack';
-const VOLUME = 'volume';
 const DEFAULT_TOOLGROUP_ID = 'default';
 
 class ViewportInfo {
@@ -198,10 +199,8 @@ class ViewportInfo {
     }
 
     // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
+    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    } else {
-      orientation = Enums.OrientationAxis.AXIAL;
     }
 
     this.setViewportOptions({
@@ -282,6 +281,7 @@ class ViewportInfo {
         colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
+        presetName: option.presetName,
       });
     });
 
