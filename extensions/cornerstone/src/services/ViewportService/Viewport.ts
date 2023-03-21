@@ -191,9 +191,7 @@ class ViewportInfo {
     }
 
     // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() === STACK) {
-      orientation = Enums.OrientationAxis.AXIAL;
-    } else {
+    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     }
 
