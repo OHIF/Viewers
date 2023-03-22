@@ -29,7 +29,7 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "@ohif/ui": "^2.0.0",
-    "cornerstone-wado-image-loader": "^4.2.1",
+    "cornerstone-wado-image-loader": "^4.10.2",
     "dcmjs": "^0.29.4",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",

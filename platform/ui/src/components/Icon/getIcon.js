@@ -13,6 +13,7 @@ import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
+import chevronMenu from './../../assets/icons/chevron-menu.svg';
 import chevronNext from './../../assets/icons/chevron-next.svg';
 import chevronPrev from './../../assets/icons/chevron-prev.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
@@ -130,6 +131,7 @@ const ICONS = {
   'circled-checkmark': circledCheckmark,
   'chevron-down': chevronDown,
   'chevron-left': chevronLeft,
+  'chevron-menu': chevronMenu,
   'chevron-next': chevronNext,
   'chevron-prev': chevronPrev,
   'chevron-right': chevronRight,

@@ -8535,10 +8535,10 @@ cornerstone-wado-image-loader@^4.10.0:
     pako "^2.0.4"
     uuid "^9.0.0"
 
-cornerstone-wado-image-loader@^4.2.1:
-  version "4.9.1"
-  resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.9.1.tgz#442eeca78ff0bcf9f9cbde04e8c429f35b31c55a"
-  integrity sha512-l0HRxGAupfufnHjT9uFpwAtafvuGMKKB9SCL8dHUwCK+7jwNeVigy8s6+Oki2nycaJUzy2TRQaauO78mIf3grg==
+cornerstone-wado-image-loader@^4.10.2:
+  version "4.10.2"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.10.2.tgz#139956654324fd2b01fe5b4900d0f4ed8c52633d"
+  integrity sha512-qj9dThELqYCm3jAZfg9qnUl8d76gngOl55kYJabY5lh/dFeVIxno/hYxy3ydE7RtG2c/TUGXb+EMUl0CJSqKBQ==
   dependencies:
     "@babel/eslint-parser" "^7.19.1"
     "@cornerstonejs/codec-charls" "^1.2.3"

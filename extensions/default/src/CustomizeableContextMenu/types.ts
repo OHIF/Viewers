@@ -1,13 +1,12 @@
 import { Types } from '@ohif/core';
 
 /**
- * SelectorProps are properties used to decide whether to select a manu or
+ * SelectorProps are properties used to decide whether to select a menu or
  * menu item for display.
  * An instance of SelectorProps is provided to the selector functions, which
  * return true to include the item or false to exclude it.
  * The point of this is to allow more specific conext menus which hide
  * non-relevant menu options, optimizing the speed of selection of menus
- * (See Bill Wallace's masters thesis for selection time versus complexity of user menus).
  */
 export interface SelectorProps {
   // If the context menu is invoked in the context of a measurement, then it
@@ -17,7 +16,7 @@ export interface SelectorProps {
   // The tool name for the nearby tool
   toolName?: string;
 
-  // An annotation UID - this will be present if nearyToolData is present.
+  // An annotation UID - this will be present if nearbyToolData is present.
   uid?: string;
 
   // If the context menu is invoked on an active viewport, then it will contain
@@ -112,12 +111,15 @@ export type Point = {
  */
 export type ContextMenuProps = {
   event?: EventTarget;
-  subMenu?: string;
+  menuCustomizationId?: string;
   menuId: string;
+  element?: HTMLElement;
 
   /** A set of menus to choose from for this context menu */
   menus: Menu[];
 
   /** The properties used to decide the menu type */
   selectorProps: SelectorProps;
+
+  defaultPointsPosition?: [number, number] | [];
 };

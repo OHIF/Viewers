@@ -1,8 +1,5 @@
-import codingValues from './codingValues';
-
 const codeMenuItem = {
   id: '@ohif/contextMenuAnnotationCode',
-  codingValues,
 
   /** Applies the code value setup for this item */
   transform: function (customizationService) {

@@ -113,11 +113,14 @@ export default function getCustomizationModule() {
         {
           id: 'ohif.contextMenu',
 
-          /** Applies the customizationType to all the menu items */
+          /** Applies the customizationType to all the menu items.
+           * This function clones the object and child objects to prevent
+           * changes to the original customization object.
+           */
           transform: function (customizationService: CustomizationService) {
             // Don't modify the children, as those are copied by reference
             const clonedObject = { ...this };
-            clonedObject.menus = this.menus.map(it => ({ ...it }));
+            clonedObject.menus = this.menus.map(menu => ({ ...menu }));
 
             for (const menu of clonedObject.menus) {
               const { items: originalItems } = menu;
