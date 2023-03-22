@@ -496,7 +496,7 @@ The behaviour on clicking on the cornerstone viewport can be customized
 by setting the `cornerstoneViewportClickCommands`.  This is intended to
 support both the cornerstone 3D internal commands as well as things like
 context menus.  Currently it supports buttons 1-3, as well as modifier keys
-by associated a commands list with the button to click.  See `initContextMenu`
+by associating a commands list with the button to click.  See `initContextMenu`
 for more details.
 
 ## Please add additional customizations above this section

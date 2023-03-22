@@ -111,7 +111,7 @@ export function findMenu(
  * @returns
  */
 export function getMenuItems(
-  selectorProps: Types.IProps,
+  selectorProps: SelectorProps,
   event: Event,
   menus: Menu[],
   menuIdFilter?: string
@@ -171,7 +171,7 @@ export function adaptItem(
   };
 
   if (item.actionType === 'ShowSubMenu' && !newItem.iconRight) {
-    newItem.iconRight = 'chevron-right';
+    newItem.iconRight = 'chevron-menu';
   }
   if (!item.action) {
     newItem.action = (itemRef, componentProps) => {

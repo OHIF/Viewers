@@ -10,6 +10,8 @@ import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
 
+import { ContextMenuProps } from './CustomizeableContextMenu/types';
+
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;
@@ -57,7 +59,7 @@ const commandsModule = ({
      * @param options.event is the event that caused the context menu
      * @param options.selectorProps is the set of selection properties to use
      */
-    showContextMenu: options => {
+    showContextMenu: (options: ContextMenuProps) => {
       const {
         menuCustomizationId,
         element,
