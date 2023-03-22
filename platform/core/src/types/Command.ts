@@ -4,9 +4,7 @@ export interface Command {
   context?: string;
 }
 
-/**
- * This is the format used within many items for multiple commands
- */
+/** A set of commands, typically contained in a tool item or other configuration */
 export interface Commands {
-  commands: [];
+  commands: Commands[];
 }

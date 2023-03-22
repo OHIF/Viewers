@@ -210,8 +210,8 @@ example (this example comes from the context menu customizations as that one
 uses commands lists):
 
 ```ts
-   cornerstoneContextMenu = uiConfigurationService.getModeCustomization("cornerstoneContextMenu", defaultMenu);
-   uiConfigurationService.recordInteraction(cornerstoneContextMenu, extraProps);
+   cornerstoneContextMenu = uiConfigurationService.get("cornerstoneContextMenu", defaultMenu);
+   commandsManager.run(cornerstoneContextMenu, extraProps);
 ```
 
 ### Global Customizations
@@ -229,7 +229,7 @@ This allows for having strong typing when declaring customizations, for example:
 ```ts
 import { Types } from '@ohif/ui';
 
-const customContextMenu: Types.UIContextMenu =
+const customContextMenu: Types.ContextMenu.Menu =
     {
       id: 'cornerstoneContextMenu',
       customizationType: 'ohif.contextMenu',
@@ -260,7 +260,7 @@ getCustomizationModule = () => ([
 ```
 
 defines an overlay item which has a React content object as the render value.
-This can then be used by specifying a customizationType of `ohif.overlayItem`, for example:
+This can then be used by specifying a `customizationType` of `ohif.overlayItem`, for example:
 
 ```js
 const overlayItem: Types.UIOverlayItem = {
@@ -274,7 +274,6 @@ const overlayItem: Types.UIOverlayItem = {
 # Customizations
 
 This section can be used to specify various customization capabilities.
-
 
 ## Text color for StudyBrowser tabs
 
@@ -478,6 +477,29 @@ window.config = {
 
 <img src="../../../assets/img/customizable-overlay.png" />
 
+## Context Menus
+
+Context menus can be created by defining the menu structure and click
+interaction, as defined in the `ContextMenu/types`.  There are examples
+below specific to the cornerstone context, because the actual click
+handler and attributes used to decide when and how to display the menu
+are specific to the context used for where the menu is displayed.
+
+##  Cornerstone Context Menu
+
+The default cornerstone context menu can be customized by setting the
+`cornerstoneContextMenu`.  For a full example, see `findingsContextMenu`.
+
+## Customizeable Cornerstone Viewport Click Behaviour
+
+The behaviour on clicking on the cornerstone viewport can be customized
+by setting the `cornerstoneViewportClickCommands`.  This is intended to
+support both the cornerstone 3D internal commands as well as things like
+context menus.  Currently it supports buttons 1-3, as well as modifier keys
+by associated a commands list with the button to click.  See `initContextMenu`
+for more details.
+
+## Please add additional customizations above this section
 > 3rd Party implementers may be added to this table via pull requests.
 
 <!--
