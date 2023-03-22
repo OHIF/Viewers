@@ -203,6 +203,10 @@ class ViewportInfo {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     }
 
+    if (!toolGroupId) {
+      toolGroupId = DEFAULT_TOOLGROUP_ID;
+    }
+
     this.setViewportOptions({
       ...viewportOptionsEntry,
       viewportId: this.viewportId,
@@ -228,7 +232,10 @@ class ViewportInfo {
   }
 
   public getSyncGroups(): SyncGroup[] {
-    return this.viewportOptions.syncGroups || [];
+    if (!this.viewportOptions.syncGroups) {
+      this.viewportOptions.syncGroups = [];
+    }
+    return this.viewportOptions.syncGroups;
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {

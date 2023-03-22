@@ -1,5 +1,10 @@
 import { ServicesManager } from '@ohif/core';
-import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
+import {
+  cache as cs3DCache,
+  Enums,
+  volumeLoader,
+  utilities as utils,
+} from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import {
@@ -83,6 +88,14 @@ class CornerstoneCacheService {
     return viewportData;
   }
 
+  /** This is called to compare the data source values */
+  public async invalidateStackViewport(
+    invalidatedDisplaySetInstanceUID: string
+  ): void {
+    // TODO - check the version before/after to see if they are identical
+    this.stackImageIds.delete(invalidatedDisplaySetInstanceUID);
+  }
+
   public async invalidateViewportData(
     viewportData: VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
@@ -90,7 +103,15 @@ class CornerstoneCacheService {
     displaySetService
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      throw new Error('Invalidation of StackViewport is not supported yet');
+      return this._getCornerstoneStackImageIds(
+        dataSource,
+        [
+          displaySetService.getDisplaySetByUID(
+            invalidatedDisplaySetInstanceUID
+          ),
+        ],
+        0
+      );
     }
 
     // Todo: grab the volume and get the id from the viewport itself

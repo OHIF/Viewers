@@ -441,6 +441,7 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
+    if (!imageId) throw new Error('Empty imageId');
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,

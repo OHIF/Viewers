@@ -7,6 +7,7 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
+import { ServicesManager } from '@ohif/core';
 import { Types } from '@ohif/core';
 
 import init from './init';
@@ -99,7 +100,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       return (
         <OHIFCornerstoneViewport
           {...props}
-          ToolbarService={toolbarService}
+          toolbarService={toolbarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />
