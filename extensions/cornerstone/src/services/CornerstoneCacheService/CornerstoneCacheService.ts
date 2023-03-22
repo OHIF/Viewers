@@ -88,14 +88,6 @@ class CornerstoneCacheService {
     return viewportData;
   }
 
-  /** This is called to compare the data source values */
-  public async invalidateStackViewport(
-    invalidatedDisplaySetInstanceUID: string
-  ): void {
-    // TODO - check the version before/after to see if they are identical
-    this.stackImageIds.delete(invalidatedDisplaySetInstanceUID);
-  }
-
   public async invalidateViewportData(
     viewportData: VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
@@ -104,13 +96,8 @@ class CornerstoneCacheService {
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
       return this._getCornerstoneStackImageIds(
-        dataSource,
-        [
-          displaySetService.getDisplaySetByUID(
-            invalidatedDisplaySetInstanceUID
-          ),
-        ],
-        0
+        displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID),
+        dataSource
       );
     }
 

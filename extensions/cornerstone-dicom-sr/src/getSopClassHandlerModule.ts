@@ -25,7 +25,7 @@ const sopClassUids = [
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
-const checkStudyUID = (uid: string, instances): void => {
+const validateSameStudyUID = (uid: string, instances): void => {
   instances.forEach(it => {
     if (it.StudyInstanceUID !== uid) {
       console.warn('Not all instances have the same UID', uid, it);
@@ -120,7 +120,7 @@ function _getDisplaySetsFromSeries(
     ConceptNameCodeSequence,
     SOPClassUID,
   } = instance;
-  checkStudyUID(instance.StudyInstanceUID, instances);
+  validateSameStudyUID(instance.StudyInstanceUID, instances);
 
   if (
     !ConceptNameCodeSequence ||

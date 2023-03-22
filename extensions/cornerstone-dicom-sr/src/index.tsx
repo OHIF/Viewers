@@ -9,6 +9,7 @@ import preRegistration from './init';
 import { id } from './id.js';
 import toolNames from './tools/toolNames';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
+import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
 
 const Component = React.lazy(() => {
   return import(
@@ -73,4 +74,4 @@ const dicomSRExtension = {
 export default dicomSRExtension;
 
 // Put static exports here so they can be type checked
-export { hydrateStructuredReport, srProtocol };
+export { hydrateStructuredReport, srProtocol, createReferencedImageDisplaySet };

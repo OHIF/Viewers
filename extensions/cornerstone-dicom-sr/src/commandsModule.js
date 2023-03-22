@@ -105,6 +105,9 @@ const commandsModule = ({}) => {
         );
 
         const { StudyInstanceUID, ContentSequence } = naturalizedReport;
+        // The content sequence has 5 or more elements, of which
+        // the `[4]` element contains the annotation data, so this is
+        // checking that there is some annotation data present.
         if (!ContentSequence?.[4].ContentSequence?.length) {
           console.log(
             'naturalizedReport missing imaging content',

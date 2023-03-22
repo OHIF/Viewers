@@ -18,9 +18,9 @@ import {
   ViewportActionBar,
 } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
+import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const { formatDate } = utils;
-const { ImageSet } = classes;
 
 const MEASUREMENT_TRACKING_EXTENSION_ID =
   '@ohif/extension-measurement-tracking';
@@ -92,11 +92,9 @@ function OHIFCornerstoneSRViewport(props) {
         { servicesManager, extensionManager },
         displaySetInstanceUID
       );
-      const displaySets =
-        (srDisplaySet.keyImageDisplaySet && [
-          srDisplaySet.keyImageDisplaySet,
-        ]) ||
-        displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
+      const displaySets = srDisplaySet.keyImageDisplaySet
+        ? [srDisplaySet.keyImageDisplaySet]
+        : displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
       if (displaySets.length) {
         viewportGridService.setDisplaySetsForViewport({
           viewportIndex: activeViewportIndex,
@@ -437,73 +435,16 @@ OHIFCornerstoneSRViewport.defaultProps = {
   customProps: {},
 };
 
-const findInstance = (measurement, displaySetService: DisplaySetService) => {
-  const {
-    displaySetInstanceUID,
-    ReferencedSOPInstanceUID: sopUid,
-  } = measurement;
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
-  if (!referencedDisplaySet.images) return;
-  return referencedDisplaySet.images.find(it => it.SOPInstanceUID === sopUid);
-};
-
 async function _getViewportReferencedDisplaySetData(
   displaySet,
   measurementSelected,
   displaySetService
 ) {
-  const { measurements } = displaySet;
-
   if (!displaySet.keyImageDisplaySet) {
-    const findReferences = ds => {
-      const instances = [];
-      const instanceByUrl = {};
-      for (const measurement of ds.measurements) {
-        const instance = findInstance(measurement, displaySetService);
-        if (!instance) {
-          console.log('Measurement', measurement, 'had no instances found');
-          continue;
-        }
-
-        // TODO - find actual URL
-        const { imageId } = measurement;
-        if (!imageId) continue;
-        if (instanceByUrl[imageId]) continue;
-        instanceByUrl[imageId] = instance;
-        instances.push(instance);
-      }
-      return instances;
-    };
-    const instances = findReferences(displaySet);
-    const updateInstances = function () {
-      this.images.splice(0, this.images.length, ...findReferences(displaySet));
-      this.numImageFrames = this.images.length;
-    };
-    const imageSet = new ImageSet(instances);
-    const instance = instances[0];
-    imageSet.setAttributes({
-      displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
-      SeriesDate: instance.SeriesDate,
-      SeriesTime: instance.SeriesTime,
-      SeriesInstanceUID: imageSet.uid,
-      StudyInstanceUID: instance.StudyInstanceUID,
-      SeriesNumber: instance.SeriesNumber || 0,
-      SOPClassUID: instance.SOPClassUID,
-      SeriesDescription: `${displaySet.SeriesDescription} KO ${displaySet.instance.SeriesNumber}`,
-      Modality: 'KO',
-      isMultiFrame: false,
-      numImageFrames: instances.length,
-      SOPClassHandlerId: `@ohif/extension-default.sopClassHandlerModule.stack`,
-      isReconstructable: false,
-      madeInClient: true,
-      updateInstances,
-    });
-
-    displaySetService.addDisplaySets(imageSet);
-
-    displaySet.keyImageDisplaySet = imageSet;
+    displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(
+      displaySetService,
+      displaySet
+    );
   }
 
   const referencedDisplaySet = displaySet.keyImageDisplaySet;
