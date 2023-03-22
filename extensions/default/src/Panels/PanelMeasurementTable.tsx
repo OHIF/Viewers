@@ -262,18 +262,22 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     label: baseLabel,
     type,
     selected,
-    site,
     findingSites,
     finding,
   } = measurement;
 
-  const label = baseLabel || site?.text || finding?.text || '(empty)';
+  const firstSite = findingSites?.[0];
+  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
   let displayText = baseDisplayText || [];
+  if (findingSites) {
+    const siteText = [];
+    findingSites.forEach(site => {
+      if (site?.text !== label) siteText.push(site.text);
+    });
+    displayText = [...siteText, ...displayText];
+  }
   if (finding && finding?.text !== label) {
     displayText = [finding.text, ...displayText];
-  }
-  if (site && site?.text !== label) {
-    displayText = [site.text, ...displayText];
   }
 
   return {
@@ -284,7 +288,6 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     displayText,
     baseDisplayText,
     isActive: selected,
-    site: site || findingSites?.[0],
     finding,
     findingSites,
   };
