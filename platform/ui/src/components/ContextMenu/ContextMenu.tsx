@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from '../Typography';
+import Icon from '../Icon';
 
 const ContextMenu = ({ items, ...props }) => {
   if (!items) {
@@ -20,7 +21,12 @@ const ContextMenu = ({ items, ...props }) => {
           onClick={() => item.action(item, props)}
           className="flex px-4 py-3 cursor-pointer items-center transition duration-300 hover:bg-primary-dark border-b border-primary-dark last:border-b-0"
         >
-          <Typography>{item.label}</Typography>
+          <Typography>
+            {item.label}
+            {item.iconRight && (
+              <Icon name={item.iconRight} className="inline" />
+            )}
+          </Typography>
         </div>
       ))}
     </div>

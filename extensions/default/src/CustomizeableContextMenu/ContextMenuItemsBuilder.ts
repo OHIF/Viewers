@@ -1,15 +1,7 @@
 import { Types } from '@ohif/ui';
 import { Menu, SelectorProps, MenuItem, ContextMenuProps } from './types';
 
-/**
- * Context menu items builder is a collection of classes to help determine
- * which context menu to show, and what elements are contained within it.
- * See ./types for a description of the menu definitions, or see
- * the test extension `findingsMenu` for a fully worked out example.
- *
- */
-// menus category to be skipped when doing a depth search.
-const menuCategoryBlacklist = ['history'];
+type ContextMenuItem = Types.ContextMenuItem;
 
 /**
  * Finds menu by menu id
@@ -161,9 +153,8 @@ export function getMenuItems(
 
 /**
  * Returns item adapted to be consumed by ContextMenu component
- * This calls the item.adaptItem value if present, and then
- * goes through and adds action behaviour for clicking the item.
- * to make it compatible with the default ContextMenu display.
+ * and then goes through the item to add action behaviour for clicking the item,
+ * making it compatible with the default ContextMenu display.
  *
  * @param {Object} item
  * @param {Object} subProps
@@ -173,12 +164,15 @@ export function getMenuItems(
 export function adaptItem(
   item: MenuItem,
   subProps: ContextMenuProps
-): UIMenuItem {
-  const newItem = item.adaptItem?.(item, subProps) || {
+): ContextMenuItem {
+  const newItem: ContextMenuItem = {
     ...item,
     value: subProps.selectorProps?.value,
   };
 
+  if (item.actionType === 'ShowSubMenu' && !newItem.iconRight) {
+    newItem.iconRight = 'chevron-right';
+  }
   if (!item.action) {
     newItem.action = (itemRef, componentProps) => {
       const { event = {} } = componentProps;
