@@ -31,7 +31,7 @@ const addUniqueIndex = (arr, key, viewports) => {
 const getLutId = (ds): string => {
   if (!ds || !ds.options) return DEFAULT;
   if (ds.options.id) return ds.options.id;
-  const arr = Object.entries(ds.options).map(([key, val]) => `${key}=${value}`);
+  const arr = Object.entries(ds.options).map(([key, val]) => `${key}=${val}`);
   if (!arr.length) return DEFAULT;
   return arr.join(JOIN_STR);
 };

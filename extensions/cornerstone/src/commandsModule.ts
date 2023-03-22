@@ -181,6 +181,17 @@ const commandsModule = ({
         return;
       }
 
+      if (!toolGroup.getToolInstance(toolName)) {
+        uiNotificationService.show({
+          title: `${toolName} tool`,
+          message: `The ${toolName} tool is not available in this viewport.`,
+          type: 'info',
+          duration: 3000,
+        });
+
+        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
+      }
+
       const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
 
       if (activeToolName) {

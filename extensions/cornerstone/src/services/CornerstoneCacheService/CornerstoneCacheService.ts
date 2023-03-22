@@ -62,12 +62,20 @@ class CornerstoneCacheService {
       viewportData = await this._getStackViewportData(
         dataSource,
         displaySets,
-        initialImageIndex
+        initialImageIndex,
+        cs3DViewportType
       );
     }
 
-    if (cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-      viewportData = await this._getVolumeViewportData(dataSource, displaySets);
+    if (
+      cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+      cs3DViewportType === Enums.ViewportType.VOLUME_3D
+    ) {
+      viewportData = await this._getVolumeViewportData(
+        dataSource,
+        displaySets,
+        cs3DViewportType
+      );
     }
 
     viewportData.viewportType = cs3DViewportType;
@@ -100,7 +108,8 @@ class CornerstoneCacheService {
 
     const newViewportData = await this._getVolumeViewportData(
       dataSource,
-      displaySets
+      displaySets,
+      viewportData.viewportType
     );
 
     return newViewportData;
@@ -109,7 +118,8 @@ class CornerstoneCacheService {
   private _getStackViewportData(
     dataSource,
     displaySets,
-    initialImageIndex
+    initialImageIndex,
+    viewportType: Enums.ViewportType
   ): StackViewportData {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
@@ -126,7 +136,7 @@ class CornerstoneCacheService {
     const { displaySetInstanceUID, StudyInstanceUID } = displaySet;
 
     const StackViewportData: StackViewportData = {
-      viewportType: Enums.ViewportType.STACK,
+      viewportType,
       data: {
         StudyInstanceUID,
         displaySetInstanceUID,
@@ -143,7 +153,8 @@ class CornerstoneCacheService {
 
   private async _getVolumeViewportData(
     dataSource,
-    displaySets
+    displaySets,
+    viewportType: Enums.ViewportType
   ): Promise<VolumeViewportData> {
     // Todo: Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not
@@ -207,7 +218,7 @@ class CornerstoneCacheService {
     }
 
     return {
-      viewportType: Enums.ViewportType.ORTHOGRAPHIC,
+      viewportType,
       data: volumeData,
     };
   }
