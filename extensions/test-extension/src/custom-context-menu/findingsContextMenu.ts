@@ -52,6 +52,7 @@ const findingsContextMenu = {
 
     {
       id: 'orientationSelectionSubMenu',
+      selector: ({ nearbyToolData }) => false,
       items: [
         {
           customizationType: '@ohif/contextMenuAnnotationCode',
@@ -66,7 +67,7 @@ const findingsContextMenu = {
 
     {
       id: 'findingSelectionSubMenu',
-      selector: ({ nearbyToolData }) => !!nearbyToolData,
+      selector: ({ nearbyToolData }) => false,
       items: [
         {
           customizationType: '@ohif/contextMenuAnnotationCode',
