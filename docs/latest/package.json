@@ -40,5 +40,23 @@
   },
   "devDependencies": {
     "gitbook-cli": "^2.3.2"
+  },
+  "resolutions": {
+    "dot-prop": "4.2.1",
+    "ssri": "6.0.2",
+    "npm-user-validate": "1.0.1",
+    "y18n": "4.0.1",
+    "tar": "4.4.18",
+    "nth-check": "2.0.1",
+    "lodash": "4.17.21",
+    "ansi-regex": "5.0.1",
+    "async": "3.2.2",
+    "hawk": "9.0.1",
+    "npm": "5.7.1",
+    "json5": "2.2.2",
+    "http-cache-semantics": "4.1.1",
+    "underscore": "1.12.1",
+    "json-schema": "0.4.0",
+    "minimist": "1.2.8"
   }
 }
