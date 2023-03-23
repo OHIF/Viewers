@@ -146,8 +146,6 @@ function _getDisplaySetsFromSeries(
     SOPClassHandlerId,
     SOPClassUID,
     instances,
-    // Others is a historical value used for instances which is deprecated and will be removed
-    others: instances,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,
