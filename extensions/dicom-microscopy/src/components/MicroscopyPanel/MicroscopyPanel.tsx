@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   ServicesManager,
   ExtensionManager,
+  CommandsManager,
   DicomMetadataStore,
 } from '@ohif/core';
 import { MeasurementTable, Icon, ButtonGroup, Button } from '@ohif/ui';
@@ -73,6 +74,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
   //
   servicesManager: ServicesManager;
   extensionManager: ExtensionManager;
+  commandsManager: CommandsManager;
 }
 
 /**
@@ -141,20 +143,6 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       );
     };
   }, [studyInstanceUID]);
-
-  const getActionButton = (
-    btnLabel: string,
-    onClickCallback: (evt: any) => {}
-  ) => {
-    return (
-      <button key={btnLabel} className="btnAction" onClick={onClickCallback}>
-        <span style={{ marginRight: '4px' }}>
-          <Icon name="edit" width="14px" height="14px" />
-        </span>
-        <span>{btnLabel}</span>
-      </button>
-    );
-  };
 
   /**
    * On clicking "Save Annotations" button, prompt an input modal for the
@@ -523,21 +511,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     uid: string;
     isActive: boolean;
   }) => {
-    const roiAnnotation = microscopyManager.getAnnotation(uid);
-
-    callInputDialog({
-      uiDialogService,
-      title: 'Enter your annotation',
-      defaultValue: '',
-      callback: (value: string, action: string) => {
-        switch (action) {
-          case 'save': {
-            roiAnnotation.setLabel(value);
-            microscopyManager.triggerRelabel(roiAnnotation);
-          }
-        }
-      },
-    });
+    props.commandsManager.runCommand('setLabel', { uid }, 'MICROSCOPY');
   };
 
   // Convert ROI annotations managed by microscopyManager into our

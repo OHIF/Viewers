@@ -1,6 +1,7 @@
 import microscopyManager from './tools/microscopyManager';
 import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
 import styles from './utils/styles';
+import callInputDialog from './utils/callInputDialog';
 
 export default function getCommandsModule({
   servicesManager,
@@ -21,6 +22,32 @@ export default function getCommandsModule({
   } = servicesManager.services;
 
   const actions = {
+    // Measurement tool commands:
+    deleteMeasurement: ({ uid }) => {
+      if (uid) {
+        const roiAnnotation = microscopyManager.getAnnotation(uid);
+        if (roiAnnotation) microscopyManager.removeAnnotation(roiAnnotation);
+      }
+    },
+
+    setLabel: ({ uid }) => {
+      const roiAnnotation = microscopyManager.getAnnotation(uid);
+
+      callInputDialog({
+        uiDialogService,
+        title: 'Enter your annotation',
+        defaultValue: '',
+        callback: (value: string, action: string) => {
+          switch (action) {
+            case 'save': {
+              roiAnnotation.setLabel(value);
+              microscopyManager.triggerRelabel(roiAnnotation);
+            }
+          }
+        },
+      });
+    },
+
     setToolActive: ({ toolName, toolGroupId = 'MICROSCOPY' }) => {
       if (
         [
@@ -52,6 +79,7 @@ export default function getCommandsModule({
         microscopyManager.activateInteractions([['dragPan']]);
       }
     },
+
     rotateViewport: ({ rotation }) => {},
     flipViewportHorizontal: () => {},
     flipViewportVertical: () => {},
@@ -92,6 +120,16 @@ export default function getCommandsModule({
   };
 
   const definitions = {
+    deleteMeasurement: {
+      commandFn: actions.deleteMeasurement,
+      storeContexts: [] as any[],
+      options: {},
+    },
+    setLabel: {
+      commandFn: actions.setLabel,
+      storeContexts: [] as any[],
+      options: {},
+    },
     setToolActive: {
       commandFn: actions.setToolActive,
       storeContexts: [] as any[],
