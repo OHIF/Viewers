@@ -6,7 +6,7 @@ const vrNumerics = [
   'DS',
   'FL',
   'FD',
-  'OB',
+  'IS',
   'OD',
   'OF',
   'OL',
@@ -34,16 +34,16 @@ export default function cleanDenaturalizedDataset(obj: any): any {
     return obj;
   } else {
     Object.keys(obj).forEach(key => {
-      if (obj[key].Value === null) {
+      if (obj[key].Value === null && obj[key].vr) {
         delete obj[key].Value;
-      } else if (Array.isArray(obj[key].Value)) {
+      } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
         if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
           obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
           delete obj[key].Value;
         } else if (vrNumerics.includes(obj[key].vr)) {
-          obj[key].Value = obj[key].Value.map(v => new Number(v));
+          obj[key].Value = obj[key].Value.map(v => +v);
         } else {
-          obj[key].Value.forEach(cleanDenaturalizedDataset);
+          obj[key].Value = obj[key].Value.map(cleanDenaturalizedDataset);
         }
       }
     });

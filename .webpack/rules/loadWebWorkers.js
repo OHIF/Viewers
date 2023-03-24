@@ -5,11 +5,11 @@
  */
 const loadWebWorkers = {
   test: /\.worker\.js$/,
-  include: /vtk\.js[\/\\]Sources/,
+  include: /vtk\.js[\/\\]Sources|dicom-microscopy-viewer[\/\\]/,
   use: [
     {
       loader: 'worker-loader',
-      options: { inline: true, fallback: false },
+      options: { inline: 'no-fallback' },
     },
   ],
 };

@@ -113,7 +113,6 @@ class DicomMicroscopyViewport extends Component {
             ],
           };
         }
-        console.log(inst);
         const image = new metadataUtils.VLWholeSlideMicroscopyImage({
           metadata: inst,
         });
@@ -122,7 +121,6 @@ class DicomMicroscopyViewport extends Component {
           volumeImages.push(image);
         }
       });
-      console.log(volumeImages);
 
       // format metadata for microscopy-viewer
       const options = {
