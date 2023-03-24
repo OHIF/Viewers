@@ -59,9 +59,7 @@ function modeFactory() {
     },
 
     onModeExit: ({ servicesManager }) => {
-      const {
-        toolbarService,
-      } = servicesManager.services;
+      const { toolbarService } = servicesManager.services;
 
       toolbarService.reset();
     },
@@ -89,13 +87,18 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
-              rightPanels: ['@ohif/extension-dicom-microscopy.panelModule.measure'],
+              leftPanelDefaultClosed: true, // we have problem with rendering thumbnails for microscopy images
+              rightPanelDefaultClosed: true, // we do not have the save microscopy measurements yet
+              rightPanels: [
+                '@ohif/extension-dicom-microscopy.panelModule.measure',
+              ],
               viewports: [
                 {
-                  namespace: "@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom",
+                  namespace:
+                    '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
                   displaySetsToDisplay: [
-                    "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler",
-                    "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler",
+                    '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler',
+                    '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
                   ],
                 },
                 {
@@ -121,8 +124,8 @@ function modeFactory() {
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [
-      "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler",
-      "@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler",
+      '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler',
+      '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
       dicomvideo.sopClassHandler,
       dicompdf.sopClassHandler,
     ],
