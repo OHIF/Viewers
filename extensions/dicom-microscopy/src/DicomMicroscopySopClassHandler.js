@@ -70,10 +70,6 @@ function _getDisplaySetsFromSeries(
 
     inst.FrameOfReferenceUID = instance.FrameOfReferenceUID;
 
-    // if (inst.ContainerIdentifier === null) {
-    //   // ContainerIdentifier must not be null
-    //   inst.ContainerIdentifier = '0';
-    // }
     return inst;
   });
 
