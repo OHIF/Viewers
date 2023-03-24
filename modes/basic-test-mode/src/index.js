@@ -64,6 +64,9 @@ function modeFactory() {
     id,
     routeName: 'basic-test',
     displayName: 'Basic Test Mode',
+    // Don't store the hotkeys for basic-test-mode under the same key
+    // because they get customized by tests
+    hotkeyName: 'basic-test-hotkeys',
     /**
      * Lifecycle hooks
      */
@@ -81,7 +84,6 @@ function modeFactory() {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       // init customizations
-      console.log('* Adding mode customizations');
       customizationService.addModeCustomizations([
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
