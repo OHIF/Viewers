@@ -8,8 +8,6 @@ import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
 import dcmjs from 'dcmjs';
-import deepCopyAndClean from './utils/deepCopyAndClean';
-import { DicomMetadataStore } from '@ohif/core';
 import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
 
 class DicomMicroscopyViewport extends Component {
@@ -67,40 +65,50 @@ class DicomMicroscopyViewport extends Component {
       // Parse, format, and filter metadata
       const volumeImages: any[] = [];
 
-      // const retrieveOptions = {
-      //   studyInstanceUID: metadata[0].StudyInstanceUID,
-      //   seriesInstanceUID: metadata[0].SeriesInstanceUID,
-      // };
-      // metadata = await client.retrieveSeriesMetadata(retrieveOptions);
-      // // Parse, format, and filter metadata
-      // metadata.forEach(m => {
-      //   if (
-      //     volumeImages.length > 0 &&
-      //     m['00200052'].Value[0] != volumeImages[0].FrameOfReferenceUID
-      //   ) {
-      //     console.warn(
-      //       'Expected FrameOfReferenceUID of difference instances within a series to be the same, found multiple different values',
-      //       m['00200052'].Value[0]
-      //     );
-      //     m['00200052'].Value[0] = volumeImages[0].FrameOfReferenceUID;
-      //   }
-
-      //   const image = new metadataUtils.VLWholeSlideMicroscopyImage({
-      //     metadata: m,
+      /**
+       * This block of code is the original way of loading DICOM into dicom-microscopy-viewer
+       * as in their documentation.
+       * But we have the metadata already loaded by our loaders.
+       * As the metadata for microscopy DIOM files tends to be big and we don't
+       * want to double load it, below we have the mechanism to reconstruct the
+       * DICOM JSON structure (denaturalized) from naturalized metadata.
+       * (NOTE: Our loaders cache only naturalized metadata, not the denaturalized.)
+       */
+      // {
+      //   const retrieveOptions = {
+      //     studyInstanceUID: metadata[0].StudyInstanceUID,
+      //     seriesInstanceUID: metadata[0].SeriesInstanceUID,
+      //   };
+      //   metadata = await client.retrieveSeriesMetadata(retrieveOptions);
+      //   // Parse, format, and filter metadata
+      //   metadata.forEach(m => {
+      //     if (
+      //       volumeImages.length > 0 &&
+      //       m['00200052'].Value[0] != volumeImages[0].FrameOfReferenceUID
+      //     ) {
+      //       console.warn(
+      //         'Expected FrameOfReferenceUID of difference instances within a series to be the same, found multiple different values',
+      //         m['00200052'].Value[0]
+      //       );
+      //       m['00200052'].Value[0] = volumeImages[0].FrameOfReferenceUID;
+      //     }
+      //     const image = new metadataUtils.VLWholeSlideMicroscopyImage({
+      //       metadata: m,
+      //     });
+      //     const imageFlavor = image.ImageType[2];
+      //     if (imageFlavor === 'VOLUME' || imageFlavor === 'THUMBNAIL') {
+      //       volumeImages.push(image);
+      //     }
       //   });
-      //   const imageFlavor = image.ImageType[2];
-      //   if (imageFlavor === 'VOLUME' || imageFlavor === 'THUMBNAIL') {
-      //     volumeImages.push(image);
-      //   }
-      // });
+      // }
 
       metadata.forEach(m => {
         const inst = cleanDenaturalizedDataset(
           dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m)
         );
         if (!inst['00480105']) {
-          // Optical Path Sequence
-          // no OpticalPathIdentifier?
+          // Optical Path Sequence, no OpticalPathIdentifier?
+          // NOTE: this is actually a not-well formatted DICOM VL Whole Slide Microscopy Image.
           inst['00480105'] = {
             vr: 'SQ',
             Value: [

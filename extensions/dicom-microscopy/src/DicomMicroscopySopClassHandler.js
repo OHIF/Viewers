@@ -63,7 +63,9 @@ function _getDisplaySetsFromSeries(
     // NOTE: According to DICOM standard a series should have a FrameOfReferenceUID
     // When the Microscopy file was built by certain tool from multiple image files,
     // each instance's FrameOfReferenceUID is sometimes different.
-    // Let's override this value manuall here.
+    // Even though this means the file was not well formatted DICOM VL Whole Slide Microscopy Image,
+    // the case is so often, so let's override this value manually here.
+    //
     // https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.4.html#sect_C.7.4.1.1.1
 
     inst.FrameOfReferenceUID = instance.FrameOfReferenceUID;
