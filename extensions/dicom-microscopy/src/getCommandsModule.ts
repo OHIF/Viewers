@@ -1,14 +1,15 @@
 import microscopyManager from './tools/microscopyManager';
 import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
+import styles from './utils/styles';
 
 export default function getCommandsModule({
   servicesManager,
   commandsManager,
   extensionManager,
-} : {
-  servicesManager: ServicesManager,
-  commandsManager: CommandsManager,
-  extensionManager: ExtensionManager,
+}: {
+  servicesManager: ServicesManager;
+  commandsManager: CommandsManager;
+  extensionManager: ExtensionManager;
 }) {
   const {
     viewportGridService,
@@ -33,22 +34,15 @@ export default function getCommandsModule({
         ].indexOf(toolName) >= 0
       ) {
         // TODO: read from configuration
-        const styleOptions = {
-          stroke: {
-            color: [0, 255, 0, 1],
-            width: 1.2,
-          },
-        };
         let options = {
           geometryType: toolName,
           vertexEnabled: true,
-          styleOptions,
+          styleOptions: styles.default,
         } as any;
         if ('line' === toolName) {
           options.minPoints = 2;
           options.maxPoints = 2;
-        }
-        else if('point' === toolName) {
+        } else if ('point' === toolName) {
           delete options.styleOptions;
           delete options.vertexEnabled;
         }
@@ -79,7 +73,9 @@ export default function getCommandsModule({
 
     toggleOverlays: () => {
       // overlay
-      const overlays = document.getElementsByClassName('microscopy-viewport-overlay');
+      const overlays = document.getElementsByClassName(
+        'microscopy-viewport-overlay'
+      );
       let onoff = false; // true if this will toggle on
       for (let i = 0; i < overlays.length; i++) {
         if (i === 0) onoff = overlays.item(0).classList.contains('hidden');
@@ -92,7 +88,7 @@ export default function getCommandsModule({
     },
     toggleAnnotations: () => {
       microscopyManager.toggleROIsVisibility();
-    }
+    },
   };
 
   const definitions = {
@@ -166,4 +162,4 @@ export default function getCommandsModule({
     definitions,
     defaultContext: 'MICROSCOPY',
   };
-};
+}

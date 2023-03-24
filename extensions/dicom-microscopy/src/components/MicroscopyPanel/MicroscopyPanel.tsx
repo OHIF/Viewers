@@ -16,7 +16,7 @@ import callInputDialog from '../../utils/callInputDialog';
 let saving = false;
 const { datasetToBuffer } = dcmjs.data;
 
-const formatArea = (area) => {
+const formatArea = area => {
   let mult = 1;
   let unit = 'mm';
   if (area > 1000000) {
@@ -60,7 +60,6 @@ function saveByteArray(buffer: ArrayBuffer, filename: string) {
   link.download = filename;
   link.click();
 }
-
 
 interface IMicroscopyPanelProps extends WithTranslation {
   viewports: PropTypes.array;
@@ -108,8 +107,9 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
   useEffect(() => {
     const onAnnotationUpdated = () => {
-      const roiAnnotations =
-        microscopyManager.getAnnotationsForStudy(studyInstanceUID);
+      const roiAnnotations = microscopyManager.getAnnotationsForStudy(
+        studyInstanceUID
+      );
       setRoiAnnotations(roiAnnotations);
     };
 
@@ -163,8 +163,9 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * @returns
    */
   const promptSave = () => {
-    const annotations =
-      microscopyManager.getAnnotationsForStudy(studyInstanceUID);
+    const annotations = microscopyManager.getAnnotationsForStudy(
+      studyInstanceUID
+    );
 
     if (!annotations || saving) {
       return;
@@ -205,8 +206,9 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     const dataSource = extensionManager.getActiveDataSource()[0];
     const { onSaveComplete } = props;
     const imagingMeasurements = [];
-    const annotations =
-      microscopyManager.getAnnotationsForStudy(studyInstanceUID);
+    const annotations = microscopyManager.getAnnotationsForStudy(
+      studyInstanceUID
+    );
 
     saving = true;
 
@@ -216,18 +218,18 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
     const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
     const displaySets = getAllDisplaySets(studyMetadata);
-    const smDisplaySet = displaySets.find((ds) => ds.Modality === 'SM');
+    const smDisplaySet = displaySets.find(ds => ds.Modality === 'SM');
 
     // Get the next available series number after 4700.
 
     const dsWithMetadata = displaySets.filter(
-      (ds) =>
+      ds =>
         ds.metadata &&
         ds.metadata.SeriesNumber &&
         typeof ds.metadata.SeriesNumber === 'number'
     );
 
-    const seriesNumbers = dsWithMetadata.map((ds) => ds.metadata.SeriesNumber);
+    const seriesNumbers = dsWithMetadata.map(ds => ds.metadata.SeriesNumber);
     const maxSeriesNumber = Math.max(...seriesNumbers, 4700);
     const SeriesNumber = maxSeriesNumber + 1;
 
@@ -249,10 +251,11 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
           schemeDesignator: 'DCM',
           meaning: 'Person',
         }),
-        observerIdentifyingAttributes:
-          new dcmjs.sr.templates.PersonObserverIdentifyingAttributes({
+        observerIdentifyingAttributes: new dcmjs.sr.templates.PersonObserverIdentifyingAttributes(
+          {
             name: '@ohif/extension-dicom-microscopy',
-          }),
+          }
+        ),
       }),
       observerDeviceContext: new dcmjs.sr.templates.ObserverContext({
         observerType: new dcmjs.sr.coding.CodedConcept({
@@ -260,10 +263,11 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
           schemeDesignator: 'DCM',
           meaning: 'Device',
         }),
-        observerIdentifyingAttributes:
-          new dcmjs.sr.templates.DeviceObserverIdentifyingAttributes({
+        observerIdentifyingAttributes: new dcmjs.sr.templates.DeviceObserverIdentifyingAttributes(
+          {
             uid: DEVICE_OBSERVER_UID,
-          }),
+          }
+        ),
       }),
       subjectContext: new dcmjs.sr.templates.SubjectContext({
         subjectClass: new dcmjs.sr.coding.CodedConcept({
@@ -271,22 +275,27 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
           schemeDesignator: 'DCM',
           meaning: 'Specimen',
         }),
-        subjectClassSpecificContext:
-          new dcmjs.sr.templates.SubjectContextSpecimen({
+        subjectClassSpecificContext: new dcmjs.sr.templates.SubjectContextSpecimen(
+          {
             uid: SpecimenDescriptionSequence.SpecimenUID,
             identifier:
               SpecimenDescriptionSequence.SpecimenIdentifier ||
               metadata.SeriesInstanceUID,
             containerIdentifier:
               metadata.ContainerIdentifier || metadata.SeriesInstanceUID,
-          }),
+          }
+        ),
       }),
     });
 
     for (let i = 0; i < annotations.length; i++) {
       const { roiGraphic: roi, label } = annotations[i];
-      let { measurements, evaluations, marker, presentationState } =
-        roi.properties;
+      let {
+        measurements,
+        evaluations,
+        marker,
+        presentationState,
+      } = roi.properties;
 
       console.debug('[SR] storing marker...', marker);
       console.debug('[SR] storing measurements...', measurements);
@@ -345,8 +354,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
       debugger;
       const identifier = `ROI #${i + 1}`;
-      const group =
-        new dcmjs.sr.templates.PlanarROIMeasurementsAndQualitativeEvaluations({
+      const group = new dcmjs.sr.templates.PlanarROIMeasurementsAndQualitativeEvaluations(
+        {
           trackingIdentifier: new dcmjs.sr.templates.TrackingIdentifier({
             uid: roi.uid,
             identifier: presentationState
@@ -366,13 +375,15 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
           /** Evaluations will conflict with current tracking identifier */
           /** qualitativeEvaluations: evaluations, */
           measurements,
-        });
+        }
+      );
       imagingMeasurements.push(...group);
     }
 
     const measurementReport = new dcmjs.sr.templates.MeasurementReport({
-      languageOfContentItemAndDescendants:
-        new dcmjs.sr.templates.LanguageOfContentItemAndDescendants({}),
+      languageOfContentItemAndDescendants: new dcmjs.sr.templates.LanguageOfContentItemAndDescendants(
+        {}
+      ),
       observationContext,
       procedureReported: new dcmjs.sr.coding.CodedConcept({
         value: '112703',
@@ -538,21 +549,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     const shortAxisLength = roiAnnotation.roiGraphic.properties.shortAxisLength;
     const isSelected: boolean = selectedAnnotation === roiAnnotation;
 
-    // actions
-    const onRelabel = () => microscopyManager.triggerRelabel(roiAnnotation);
-    const onDelete = () => microscopyManager.triggerDelete(roiAnnotation);
-    const onSelect = () => microscopyManager.selectAnnotation(roiAnnotation);
-
-    const rowActions = [];
-    rowActions.push(getActionButton('Relabels', onRelabel));
-    rowActions.push(getActionButton('Delete', onDelete));
-
     // other events
     const { uid } = roiAnnotation;
-    const onMouseEnter = () =>
-      microscopyManager.setROIStyle(uid, styles.active);
-    const onMouseLeave = () =>
-      microscopyManager.setROIStyle(uid, styles.default);
 
     // display text
     const displayText = [];

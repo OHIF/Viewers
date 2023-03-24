@@ -7,13 +7,13 @@ const emptyFill = {
 };
 
 const defaultStroke = {
-  color: 'black',
-  width: 3,
+  color: 'rgb(0,255,0)',
+  width: 1.5,
 };
 
 const activeStroke = {
-  color: 'white',
-  width: 3,
+  color: 'rgb(255,255,0)',
+  width: 1.5,
 };
 
 const defaultStyle = {

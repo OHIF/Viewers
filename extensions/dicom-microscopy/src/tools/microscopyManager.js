@@ -3,6 +3,7 @@ import ViewerManager, { EVENTS as ViewerEvents } from './viewerManager';
 import RoiAnnotation, {
   EVENTS as AnnotationEvents,
 } from '../utils/RoiAnnotation';
+import styles from '../utils/styles';
 import { DicomMetadataStore } from '@ohif/core';
 
 const EVENTS = {
@@ -39,7 +40,7 @@ class MicroscopyManager extends Publisher {
    * to its initial state
    */
   clear() {
-    this.managedViewers.forEach((managedViewer) => managedViewer.destroy());
+    this.managedViewers.forEach(managedViewer => managedViewer.destroy());
     this.managedViewers.clear();
     for (var key in this.annotations) {
       delete this.annotations[key];
@@ -51,7 +52,7 @@ class MicroscopyManager extends Publisher {
   }
 
   clearAnnotations() {
-    Object.keys(this.annotations).forEach((uid) => {
+    Object.keys(this.annotations).forEach(uid => {
       this.removeAnnotation(this.annotations[uid]);
     });
   }
@@ -90,7 +91,7 @@ class MicroscopyManager extends Publisher {
     if (label !== undefined) {
       roiAnnotation.setLabel(label);
     } else {
-      const onRelabel = (item) =>
+      const onRelabel = item =>
         managedViewer.updateROIProperties({
           uid: roiGraphic.uid,
           properties: { label: item.label, finding: item.finding },
@@ -177,7 +178,7 @@ class MicroscopyManager extends Publisher {
    * @returns {Array} The managed viewers for the given series UID
    */
   _getManagedViewersForSeries(studyInstanceUID, seriesInstanceUID) {
-    const filter = (managedViewer) =>
+    const filter = managedViewer =>
       managedViewer.studyInstanceUID === studyInstanceUID &&
       managedViewer.seriesInstanceUID === seriesInstanceUID;
     return Array.from(this.managedViewers).filter(filter);
@@ -192,7 +193,7 @@ class MicroscopyManager extends Publisher {
    * @returns {Array} The managed viewers for the given series UID
    */
   getManagedViewersForStudy(studyInstanceUID) {
-    const filter = (managedViewer) =>
+    const filter = managedViewer =>
       managedViewer.studyInstanceUID === studyInstanceUID;
     return Array.from(this.managedViewers).filter(filter);
   }
@@ -208,7 +209,7 @@ class MicroscopyManager extends Publisher {
       studyInstanceUID,
       seriesInstanceUID
     );
-    annotations.forEach((roiAnnotation) => {
+    annotations.forEach(roiAnnotation => {
       managedViewer.addRoiGraphic(roiAnnotation.roiGraphic);
     });
   }
@@ -226,7 +227,7 @@ class MicroscopyManager extends Publisher {
    * @param {String} studyInstanceUID The study UID of the loaded image
    * @param {String} seriesInstanceUID The series UID of the loaded image
    * @param {Array} displaySets All displaySets related to the same StudyInstanceUID
-   * 
+   *
    * @returns {ViewerManager} managed viewer
    */
   addViewer(
@@ -234,7 +235,7 @@ class MicroscopyManager extends Publisher {
     viewportIndex,
     container,
     studyInstanceUID,
-    seriesInstanceUID,
+    seriesInstanceUID
   ) {
     const managedViewer = new ViewerManager(
       viewer,
@@ -261,7 +262,7 @@ class MicroscopyManager extends Publisher {
 
   _potentiallyLoadSR(StudyInstanceUID, displaySets) {
     const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
-    const smDisplaySet = displaySets.find((ds) => ds.Modality === 'SM');
+    const smDisplaySet = displaySets.find(ds => ds.Modality === 'SM');
 
     const { FrameOfReferenceUID, othersFrameOfReferenceUID } = smDisplaySet;
 
@@ -271,7 +272,7 @@ class MicroscopyManager extends Publisher {
 
     let derivedDisplaySets = FrameOfReferenceUID
       ? displaySets.filter(
-          (ds) =>
+          ds =>
             ds.ReferencedFrameOfReferenceUID === FrameOfReferenceUID ||
             // sometimes each depth instance has the different FrameOfReferenceID
             othersFrameOfReferenceUID.includes(ds.ReferencedFrameOfReferenceUID)
@@ -282,11 +283,9 @@ class MicroscopyManager extends Publisher {
       return;
     }
 
-    derivedDisplaySets = derivedDisplaySets.filter(
-      (ds) => ds.Modality === 'SR'
-    );
+    derivedDisplaySets = derivedDisplaySets.filter(ds => ds.Modality === 'SR');
 
-    if (derivedDisplaySets.some((ds) => ds.isLoaded === true)) {
+    if (derivedDisplaySets.some(ds => ds.isLoaded === true)) {
       // Don't auto load
       return;
     }
@@ -295,7 +294,7 @@ class MicroscopyManager extends Publisher {
     let recentDateTime = 0;
     let recentDisplaySet = derivedDisplaySets[0];
 
-    derivedDisplaySets.forEach((ds) => {
+    derivedDisplaySets.forEach(ds => {
       const dateTime = Number(`${ds.SeriesDate}${ds.SeriesTime}`);
       if (dateTime > recentDateTime) {
         recentDateTime = dateTime;
@@ -338,12 +337,12 @@ class MicroscopyManager extends Publisher {
    * Hide all ROIs
    */
   hideROIs() {
-    this.managedViewers.forEach((mv) => mv.hideROIs());
+    this.managedViewers.forEach(mv => mv.hideROIs());
   }
 
   /** Show all ROIs */
   showROIs() {
-    this.managedViewers.forEach((mv) => mv.showROIs());
+    this.managedViewers.forEach(mv => mv.showROIs());
   }
 
   /**
@@ -364,7 +363,7 @@ class MicroscopyManager extends Publisher {
    */
   getAnnotations() {
     const annotations = [];
-    Object.keys(this.annotations).forEach((uid) => {
+    Object.keys(this.annotations).forEach(uid => {
       annotations.push(this.getAnnotation(uid));
     });
     return annotations;
@@ -376,7 +375,7 @@ class MicroscopyManager extends Publisher {
    * @param {String} studyInstanceUID UID for the study
    */
   getAnnotationsForStudy(studyInstanceUID) {
-    const filter = (a) => a.studyInstanceUID === studyInstanceUID;
+    const filter = a => a.studyInstanceUID === studyInstanceUID;
     return this.getAnnotations().filter(filter);
   }
 
@@ -388,7 +387,7 @@ class MicroscopyManager extends Publisher {
    * @param {String} seriesInstanceUID UID for the series
    */
   getAnnotationsForSeries(studyInstanceUID, seriesInstanceUID) {
-    const filter = (annotation) =>
+    const filter = annotation =>
       annotation.studyInstanceUID === studyInstanceUID &&
       annotation.seriesInstanceUID === seriesInstanceUID;
     return this.getAnnotations().filter(filter);
@@ -404,14 +403,31 @@ class MicroscopyManager extends Publisher {
   }
 
   /**
+   * Clear current RoiAnnotation selection
+   */
+  clearSelection() {
+    if (this.selectedAnnotation) {
+      this.setROIStyle(this.selectedAnnotation.uid, {
+        stroke: {
+          color: '#00ff00',
+        },
+      });
+    }
+    this.selectedAnnotation = null;
+  }
+
+  /**
    * Selects the given RoiAnnotation instance, publishing an ANNOTATION_SELECTED
    * event to notify all the subscribers
    *
    * @param {RoiAnnotation} roiAnnotation The instance to be selected
    */
   selectAnnotation(roiAnnotation) {
+    if (this.selectedAnnotation) this.clearSelection();
+
     this.selectedAnnotation = roiAnnotation;
     this.publish(EVENTS.ANNOTATION_SELECTED, roiAnnotation);
+    this.setROIStyle(roiAnnotation.uid, styles.active);
   }
 
   /**
@@ -423,7 +439,7 @@ class MicroscopyManager extends Publisher {
   toggleOverviewMap(viewportIndex) {
     const managedViewers = Array.from(this.managedViewers);
     const managedViewer = managedViewers.find(
-      (mv) => mv.viewportIndex === viewportIndex
+      mv => mv.viewportIndex === viewportIndex
     );
     if (managedViewer) {
       managedViewer.toggleOverviewMap();
@@ -438,13 +454,13 @@ class MicroscopyManager extends Publisher {
    */
   removeAnnotation(roiAnnotation) {
     const { uid, studyInstanceUID, seriesInstanceUID } = roiAnnotation;
-    const filter = (managedViewer) =>
+    const filter = managedViewer =>
       managedViewer.studyInstanceUID === studyInstanceUID &&
       managedViewer.seriesInstanceUID === seriesInstanceUID;
 
     const managedViewers = Array.from(this.managedViewers).filter(filter);
 
-    managedViewers.forEach((managedViewer) =>
+    managedViewers.forEach(managedViewer =>
       managedViewer.removeRoiGraphic(uid)
     );
   }
@@ -460,7 +476,7 @@ class MicroscopyManager extends Publisher {
    * @param {Number} viewportIndex Index of the viewport to focus
    */
   focusAnnotation(roiAnnotation, viewportIndex) {
-    const filter = (mv) => mv.viewportIndex === viewportIndex;
+    const filter = mv => mv.viewportIndex === viewportIndex;
     const managedViewer = Array.from(this.managedViewers).find(filter);
     if (managedViewer) {
       managedViewer.setViewStateByExtent(roiAnnotation);
@@ -483,11 +499,11 @@ class MicroscopyManager extends Publisher {
     );
 
     // Prevent infinite loops arrising from updates.
-    managedViewers.forEach((managedViewer) =>
+    managedViewers.forEach(managedViewer =>
       this._removeManagedViewerSubscriptions(managedViewer)
     );
 
-    managedViewers.forEach((managedViewer) => {
+    managedViewers.forEach(managedViewer => {
       if (managedViewer === baseManagedViewer) {
         return;
       }
@@ -497,12 +513,12 @@ class MicroscopyManager extends Publisher {
         seriesInstanceUID
       );
       managedViewer.clearRoiGraphics();
-      annotations.forEach((roiAnnotation) => {
+      annotations.forEach(roiAnnotation => {
         managedViewer.addRoiGraphic(roiAnnotation.roiGraphic);
       });
     });
 
-    managedViewers.forEach((managedViewer) =>
+    managedViewers.forEach(managedViewer =>
       this._addManagedViewerSubscriptions(managedViewer)
     );
   }
@@ -513,7 +529,7 @@ class MicroscopyManager extends Publisher {
    * @param {Array} interactions interactions
    */
   activateInteractions(interactions) {
-    this.managedViewers.forEach((mv) => mv.activateInteractions(interactions));
+    this.managedViewers.forEach(mv => mv.activateInteractions(interactions));
     this.activeInteractions = interactions;
   }
 
@@ -527,7 +543,7 @@ class MicroscopyManager extends Publisher {
   triggerRelabel(roiAnnotation, newAnnotation = false, onRelabel) {
     if (!onRelabel) {
       onRelabel = ({ label }) =>
-        this.managedViewers.forEach((mv) =>
+        this.managedViewers.forEach(mv =>
           mv.updateROIProperties({
             uid: roiAnnotation.uid,
             properties: { label },
@@ -566,7 +582,7 @@ class MicroscopyManager extends Publisher {
    * @param {object*} styleOptions.image - Style options for image
    */
   setROIStyle(uid, styleOptions) {
-    this.managedViewers.forEach((mv) => mv.setROIStyle(uid, styleOptions));
+    this.managedViewers.forEach(mv => mv.setROIStyle(uid, styleOptions));
   }
 }
 

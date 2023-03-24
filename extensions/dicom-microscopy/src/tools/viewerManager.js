@@ -38,9 +38,14 @@ class ViewerManager extends Publisher {
     this.onRoiAdded = this.roiAddedHandler.bind(this);
     this.onRoiModified = this.roiModifiedHandler.bind(this);
     this.onRoiRemoved = this.roiRemovedHandler.bind(this);
+    this.contextMenuCallback = () => {};
 
     this.registerEvents();
     this.activateDefaultInteractions();
+  }
+
+  addContextMenuCallback(callback) {
+    this.contextMenuCallback = callback;
   }
 
   /**
@@ -230,13 +235,16 @@ class ViewerManager extends Publisher {
    */
   activateDefaultInteractions() {
     /** Disable browser's native context menu inside the canvas */
-    document
-      .querySelector('.DicomMicroscopyViewer')
-      .addEventListener(
-        'contextmenu',
-        (event) => event.preventDefault(),
-        false
-      );
+    document.querySelector('.DicomMicroscopyViewer').addEventListener(
+      'contextmenu',
+      event => {
+        event.preventDefault();
+        if (typeof this.contextMenuCallback === 'function') {
+          this.contextMenuCallback(event);
+        }
+      },
+      false
+    );
     const defaultInteractions = [
       [
         'dragPan',
@@ -246,14 +254,14 @@ class ViewerManager extends Publisher {
           },
         },
       ],
-      [
-        'dragZoom',
-        {
-          bindings: {
-            mouseButtons: ['right'],
-          },
-        },
-      ],
+      // [
+      //   'dragZoom',
+      //   {
+      //     bindings: {
+      //       mouseButtons: ['right'],
+      //     },
+      //   },
+      // ],
       ['modify', {}],
     ];
     this.activateInteractions(defaultInteractions);
@@ -266,34 +274,35 @@ class ViewerManager extends Publisher {
    */
   activateInteractions(interactions) {
     const interactionsMap = {
-      draw: (activate) =>
+      draw: activate =>
         activate ? 'activateDrawInteraction' : 'deactivateDrawInteraction',
-      modify: (activate) =>
+      modify: activate =>
         activate ? 'activateModifyInteraction' : 'deactivateModifyInteraction',
-      translate: (activate) =>
+      translate: activate =>
         activate
           ? 'activateTranslateInteraction'
           : 'deactivateTranslateInteraction',
-      snap: (activate) =>
+      snap: activate =>
         activate ? 'activateSnapInteraction' : 'deactivateSnapInteraction',
-      dragPan: (activate) =>
+      dragPan: activate =>
         activate
           ? 'activateDragPanInteraction'
           : 'deactivateDragPanInteraction',
-      dragZoom: (activate) =>
+      dragZoom: activate =>
         activate
           ? 'activateDragZoomInteraction'
           : 'deactivateDragZoomInteraction',
     };
 
     const availableInteractionsName = Object.keys(interactionsMap);
-    availableInteractionsName.forEach((availableInteractionName) => {
+    availableInteractionsName.forEach(availableInteractionName => {
       const interaction = interactions.find(
-        (interaction) => interaction[0] === availableInteractionName
+        interaction => interaction[0] === availableInteractionName
       );
       if (!interaction) {
-        const deactivateInteractionMethod =
-          interactionsMap[availableInteractionName](false);
+        const deactivateInteractionMethod = interactionsMap[
+          availableInteractionName
+        ](false);
         this.viewer[deactivateInteractionMethod]();
       } else {
         const [name, config] = interaction;
@@ -315,7 +324,7 @@ class ViewerManager extends Publisher {
 
   _getMap() {
     const symbols = Object.getOwnPropertySymbols(this.viewer);
-    const _map = symbols.find((s) => String(s) === 'Symbol(map)');
+    const _map = symbols.find(s => String(s) === 'Symbol(map)');
     window['map'] = this.viewer[_map];
     return this.viewer[_map];
   }
@@ -392,7 +401,7 @@ class ViewerManager extends Publisher {
     let minY = Infinity;
     let maxY = -Infinity;
 
-    coordinates.forEach((coord) => {
+    coordinates.forEach(coord => {
       let mappedCoord = coordinateFormatScoord3d2Geometry(coord, pyramid);
 
       const [x, y] = mappedCoord;

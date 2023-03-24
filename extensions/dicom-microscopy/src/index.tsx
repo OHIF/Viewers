@@ -11,7 +11,7 @@ const Component = React.lazy(() => {
   return import('./DicomMicroscopyViewport');
 });
 
-const MicroscopyViewport = (props) => {
+const MicroscopyViewport = props => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Component {...props} />
@@ -36,16 +36,19 @@ export default {
    * that is provided by the Cornerstone extension in OHIF.
    */
   getViewportModule({ servicesManager, extensionManager }) {
-
-    const ExtendedMicroscopyViewport = (props) => {
-      const {
-        displaySets,
-        viewportIndex,
-        viewportLabel,
-        dataSource,
-        viewportOptions,
-        displaySetOptions,
-      } = props;
+    /**
+     *
+     * @param props {*}
+     * @param props.displaySets
+     * @param props.viewportIndex
+     * @param props.viewportLabel
+     * @param props.dataSource
+     * @param props.viewportOptions
+     * @param props.displaySetOptions
+     * @returns
+     */
+    const ExtendedMicroscopyViewport = props => {
+      const { viewportOptions } = props;
 
       const [viewportGrid, viewportGridService] = useViewportGrid();
       const { viewports, activeViewportIndex } = viewportGrid;
@@ -67,7 +70,7 @@ export default {
     return [
       {
         name: 'microscopy-dicom',
-        component: ExtendedMicroscopyViewport
+        component: ExtendedMicroscopyViewport,
       },
     ];
   },
@@ -86,7 +89,7 @@ export default {
     return [
       getDicomMicroscopySopClassHandler({
         servicesManager,
-        extensionManager
+        extensionManager,
       }),
       getDicomMicroscopySRSopClassHandler({
         servicesManager,
