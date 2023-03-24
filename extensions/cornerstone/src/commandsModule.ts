@@ -222,16 +222,6 @@ function commandsModule({ servicesManager, commandsManager }) {
             updatedMeasurement.findingSites = [code];
           }
         }
-        // TODO - remove this once measurement items customization is ready
-        const allCodes = [];
-        if (textLabel) allCodes.push(textLabel);
-        if (updatedMeasurement.finding) {
-          allCodes.push(updatedMeasurement.finding.CodeMeaning);
-        }
-        (updatedMeasurement.findingSites || []).forEach(it =>
-          allCodes.push(it.CodeMeaning)
-        );
-        updatedMeasurement.label = allCodes.join(', ');
       }
       measurementService.update(
         updatedMeasurement.uid,

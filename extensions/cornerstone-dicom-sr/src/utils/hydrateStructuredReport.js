@@ -11,6 +11,25 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
+const convertCode = (codingValues, code) => {
+  if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') return;
+  const ref = `${code.CodingSchemeDesignator}:${code.CodeValue}`;
+  const ret = { ...codingValues[ref], ref, ...code, text: code.CodeMeaning };
+  return ret;
+};
+
+const convertSites = (codingValues, sites) => {
+  if (!sites || !sites.length) return;
+  const ret = [];
+  // Do as a loop to convert away from Proxy instances
+  for (let i = 0; i < sites.length; i++) {
+    // Deal with irregular conversion from dcmjs
+    const site = convertCode(codingValues, sites[i][0] || sites[i]);
+    if (site) ret.push(site);
+  }
+  return (ret.length && ret) || undefined;
+};
+
 /**
  * Hydrates a structured report, for default viewports.
  *
@@ -20,8 +39,16 @@ export default function hydrateStructuredReport(
   displaySetInstanceUID
 ) {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const { measurementService, displaySetService } = servicesManager.services;
+  const {
+    measurementService,
+    displaySetService,
+    customizationService,
+  } = servicesManager.services;
 
+  const codingValues = customizationService.getCustomization(
+    'codingValues',
+    {}
+  );
   const displaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
@@ -171,6 +198,15 @@ export default function hydrateStructuredReport(
         CORNERSTONE_3D_TOOLS_SOURCE_VERSION
       );
       annotation.data.label = getLabelFromDCMJSImportedToolData(toolData);
+      annotation.data.finding = convertCode(
+        codingValues,
+        toolData.finding?.[0]
+      );
+      annotation.data.findingSites = convertSites(
+        codingValues,
+        toolData.findingSites
+      );
+      annotation.data.site = annotation.data.findingSites?.[0];
 
       const matchingMapping = mappings.find(
         m => m.annotationType === annotationType
