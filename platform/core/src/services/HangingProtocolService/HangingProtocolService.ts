@@ -1011,6 +1011,7 @@ export default class HangingProtocolService extends PubSubService {
   ): HangingProtocol.DisplaySetMatchDetails {
     if (!matchDetails) return;
     if (offset === 0) return matchDetails;
+    const { matchingScores = [] } = matchDetails;
     if (offset === -1) {
       const { inDisplay } = options;
       if (!inDisplay) return matchDetails;
@@ -1022,13 +1023,14 @@ export default class HangingProtocolService extends PubSubService {
         ) {
           const match = matchDetails.matchingScores[i];
           return match.matchingScore > 0
-            ? matchDetails.matchingScores[i]
+            ? { matchingScores, ...matchDetails.matchingScores[i] }
             : null;
         }
       }
       return;
     }
-    return matchDetails.matchingScores[offset];
+    const matchFound = matchingScores[offset];
+    return matchFound ? { ...matchFound, matchingScores } : undefined;
   }
 
   protected validateDisplaySetSelectMatch(
@@ -1037,6 +1039,9 @@ export default class HangingProtocolService extends PubSubService {
     displaySetUID: string
   ): void {
     if (match.displaySetInstanceUID === displaySetUID) return;
+    if (!match.matchingScores) {
+      throw new Error('No matchingScores found in ' + match);
+    }
     for (const subMatch of match.matchingScores) {
       if (subMatch.displaySetInstanceUID === displaySetUID) return;
     }
@@ -1085,7 +1090,7 @@ export default class HangingProtocolService extends PubSubService {
       const reuseDisplaySetUID =
         id &&
         displaySetSelectorMap[
-        `${activeStudyUID}:${id}:${matchedDisplaySetsIndex || 0}`
+          `${activeStudyUID}:${id}:${matchedDisplaySetsIndex || 0}`
         ];
       const viewportDisplaySetMain = this.displaySetMatchDetails.get(id);
 
