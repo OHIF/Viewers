@@ -339,7 +339,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         elementEnabledHandler
       );
     };
-  }, []);
+  }, [viewportIndex]);
 
   // subscribe to displaySet metadata invalidation (updates)
   // Currently, if the metadata changes we need to re-render the display set

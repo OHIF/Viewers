@@ -173,9 +173,9 @@ class CornerstoneViewportService extends PubSubService
   }
 
   public setPresentations(viewport, presentations?: Presentations): void {
-    const properties = presentations.lutPresentation?.properties;
+    const properties = presentations?.lutPresentation?.properties;
     if (properties) viewport.setProperties(properties);
-    const camera = presentations.positionPresentation?.camera;
+    const camera = presentations?.positionPresentation?.camera;
     if (camera) viewport.setCamera(camera);
   }
 

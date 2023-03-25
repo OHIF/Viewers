@@ -1459,6 +1459,14 @@
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
+"@cornerstonejs/core@^0.36.5":
+  version "0.36.5"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.36.5.tgz#2e8c2fc2f9d00c2b5a0f1666aa575ab5024f3616"
+  integrity sha512-5Z4GEjpWaYbEbSpbgNc92oiwTcD8TUpVw1TUQ5UC4OkzxBMN4THmkGifRq5kJpxJTahGVsoU4W1S7of+YsULlg==
+  dependencies:
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
 "@cornerstonejs/streaming-image-volume-loader@^0.15.1":
   version "0.15.1"
   resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.15.1.tgz#b9fd0efbebbd232119ef0ae7b63bf8b3498bf539"
