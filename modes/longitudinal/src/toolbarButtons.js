@@ -55,6 +55,26 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
+const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
+
+/**
+ * Creates an array of 'setToolActive' commands for the given toolName - one for
+ * each toolGroupId specified in toolGroupIds.
+ * @param {string} toolName
+ * @returns {Array} an array of 'setToolActive' commands
+ */
+function _createSetToolActiveCommands(toolName) {
+  const temp = toolGroupIds.map(toolGroupId => ({
+    commandName: 'setToolActive',
+    commandOptions: {
+      toolGroupId,
+      toolName,
+    },
+    context: 'CORNERSTONE',
+  }));
+  return temp;
+}
+
 const toolbarButtons = [
   // Measurement
   {
@@ -199,15 +219,7 @@ const toolbarButtons = [
       type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Zoom',
-          },
-          context: 'CORNERSTONE',
-        },
-      ],
+      commands: _createSetToolActiveCommands('Zoom'),
     },
   },
   // Window Level + Presets...
@@ -256,15 +268,7 @@ const toolbarButtons = [
       type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Pan',
-          },
-          context: 'CORNERSTONE',
-        },
-      ],
+      commands: _createSetToolActiveCommands('Pan'),
     },
   },
   {
