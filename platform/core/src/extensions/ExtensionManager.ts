@@ -36,12 +36,21 @@ export interface ExtensionParams extends ExtensionConstructor {
  */
 export interface Extension {
   id: string;
-  preRegistration?: (p: ExtensionParams) => void;
+  preRegistration?: (p: ExtensionParams) => Promise<void> | void;
+  onModeExit?: () => void;
+  getHangingProtocolModule?: (p: ExtensionParams) => unknown;
+  getCommandsModule?: (p: ExtensionParams) => CommandsModule;
 }
 
 export type ExtensionRegister = {
   id: string;
   create: (p: ExtensionParams) => Extension;
+};
+
+export type CommandsModule = {
+  actions: Record<string, unknown>;
+  definitions: Record<string, unknown>;
+  defaultContext?: string;
 };
 
 export default class ExtensionManager {
@@ -331,7 +340,7 @@ export default class ExtensionManager {
     }
 
     try {
-      const extensionModule = getModuleFn({
+      const extensionModule = extension[getModuleFnName]({
         appConfig: this._appConfig,
         commandsManager: this._commandsManager,
         servicesManager: this._servicesManager,
@@ -348,6 +357,7 @@ export default class ExtensionManager {
 
       return extensionModule;
     } catch (ex) {
+      console.log(ex);
       throw new Error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );

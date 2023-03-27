@@ -72,12 +72,19 @@ function modeFactory() {
         measurementService,
         toolbarService,
         toolGroupService,
+        customizationService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
+
+      // init customizations
+      console.log('* Adding mode customizations');
+      customizationService.addModeCustomizations([
+        '@ohif/extension-test.customizationModule.custom-context-menu',
+      ]);
 
       let unsubscribe;
 

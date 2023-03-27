@@ -218,6 +218,7 @@ export default function PanelMeasurementTable({
       >
         <MeasurementTable
           title="Measurements"
+          servicesManager={servicesManager}
           data={displayMeasurements}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
@@ -248,14 +249,46 @@ function _getMappedMeasurements(measurementService) {
   return mappedMeasurements;
 }
 
+/**
+ * Map the measurements to the display text.
+ * Adds finding and site inforamtion to the displayText and/or label,
+ * and provides as 'displayText' and 'label', while providing the original
+ * values as baseDisplayText and baseLabel
+ */
 function _mapMeasurementToDisplay(measurement, index, types) {
-  const { displayText, uid, label, type, selected } = measurement;
+  const {
+    displayText: baseDisplayText,
+    uid,
+    label: baseLabel,
+    type,
+    selected,
+    findingSites,
+    finding,
+  } = measurement;
+
+  const firstSite = findingSites?.[0];
+  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
+  let displayText = baseDisplayText || [];
+  if (findingSites) {
+    const siteText = [];
+    findingSites.forEach(site => {
+      if (site?.text !== label) siteText.push(site.text);
+    });
+    displayText = [...siteText, ...displayText];
+  }
+  if (finding && finding?.text !== label) {
+    displayText = [finding.text, ...displayText];
+  }
 
   return {
     uid,
-    label: label || '(empty)',
+    label,
+    baseLabel,
     measurementType: type,
-    displayText: displayText || [],
+    displayText,
+    baseDisplayText,
     isActive: selected,
+    finding,
+    findingSites,
   };
 }

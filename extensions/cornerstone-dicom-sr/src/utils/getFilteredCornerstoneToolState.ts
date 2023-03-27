@@ -35,7 +35,7 @@ function getFilteredCornerstoneToolState(
     );
     const toolData = imageIdSpecificToolState[toolType].data;
 
-    let finding;
+    let { finding } = measurementDataI;
     const findingSites = [];
 
     // NOTE -> We use the CORNERSTONEJS coding schemeDesignator which we have
@@ -56,6 +56,10 @@ function getFilteredCornerstoneToolState(
       }
     }
 
+    if (measurementDataI.findingSites) {
+      findingSites.push(...measurementDataI.findingSites);
+    }
+
     const measurement = Object.assign({}, annotation, {
       finding,
       findingSites,
@@ -73,7 +77,7 @@ function getFilteredCornerstoneToolState(
   for (let i = 0; i < framesOfReference.length; i++) {
     const frameOfReference = framesOfReference[i];
 
-    const frameOfReferenceAnnotations = annotationManager.getFrameOfReferenceAnnotations(
+    const frameOfReferenceAnnotations = annotationManager.getAnnotations(
       frameOfReference
     );
 

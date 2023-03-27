@@ -3,6 +3,7 @@ import { Types } from '@ohif/core';
 import { id } from './id';
 
 import getHangingProtocolModule from './hp';
+import getCustomizationModule from './getCustomizationModule';
 // import {setViewportZoomPan, storeViewportZoomPan } from './custom-viewport/setViewportZoomPan';
 import sameAs from './custom-attribute/sameAs';
 import numberOfDisplaySets from './custom-attribute/numberOfDisplaySets';
@@ -59,6 +60,9 @@ const testExtension: Types.Extensions.Extension = {
 
   /** Registers some additional hanging protocols.  See hp/index.tsx for more details */
   getHangingProtocolModule,
+
+  /** Registers some customizations */
+  getCustomizationModule,
 };
 
 export default testExtension;
