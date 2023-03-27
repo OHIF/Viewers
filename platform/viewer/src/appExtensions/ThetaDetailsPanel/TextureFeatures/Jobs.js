@@ -14,6 +14,8 @@ import {
 import { JobsContext } from '../../../context/JobsContext';
 import { radcadapi } from '../../../utils/constants';
 import eventBus from '../../../lib/eventBus';
+import { getItem } from '../../../lib/localStorageUtils';
+import { handleRestoreToolState } from '../../../utils/syncrhonizeToolState';
 
 const Jobs = ({
   data,
@@ -213,7 +215,9 @@ const Jobs = ({
   };
 
   // function for loading an image and setting it as an added layer
-  const addImageLayer = async image_id => {
+  const addImageLayer = async (image_id) => {
+    const image = cornerstone.getImage(elementRef.current);
+    const instance_uid2 = image.imageId.split('/')[14];
     await cornerstone
       .loadImage(image_id)
       .then(image => {
@@ -251,6 +255,7 @@ const Jobs = ({
 
         // update the canvase with the all new data
         cornerstone.updateImage(elementRef.current);
+        handleRestoreToolState(cornerstone, elementRef.current, instance_uid2);
       })
       .catch(error => {
         console.log(error);
