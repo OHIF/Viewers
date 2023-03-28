@@ -117,10 +117,12 @@ export default function ModeRoute({
   const {
     extensions,
     sopClassHandlers,
-    hotkeys,
+    hotkeys: hotkeyObj,
     hangingProtocol,
-    hotkeyName = 'hotkey-definitions-v2',
   } = mode;
+  // Preserve the old array interface for hotkeys
+  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
+  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions-v2';
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;

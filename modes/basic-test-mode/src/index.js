@@ -64,9 +64,6 @@ function modeFactory() {
     id,
     routeName: 'basic-test',
     displayName: 'Basic Test Mode',
-    // Don't store the hotkeys for basic-test-mode under the same key
-    // because they get customized by tests
-    hotkeyName: 'basic-test-hotkeys',
     /**
      * Lifecycle hooks
      */
@@ -213,7 +210,12 @@ function modeFactory() {
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    hotkeys: {
+      // Don't store the hotkeys for basic-test-mode under the same key
+      // because they get customized by tests
+      name: 'basic-test-hotkeys',
+      hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    },
   };
 }
 

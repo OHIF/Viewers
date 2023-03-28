@@ -346,11 +346,16 @@ function modeFactory() {
     id: '',
     id: '',
     displayName: '',
-    hotkeyName: 'myHotkeyLocalStorageName',
     /*
     ...
     */
-    hotkeys: [..hotkeys.defaults.hotkeyBindings, ...myHotkeys],
+    hotkeys: {
+      // The name in preferences to use for this set of hotkeys
+      // Allows defining different sets for different modes
+      name: 'custom-hotkey-name',
+      // And the actual custom values here.
+      hotkeys:[..hotkeys.defaults.hotkeyBindings, ...myHotkeys]
+    },
   }
 }
 
