@@ -122,7 +122,6 @@ window.config = {
     { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
     { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
     { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
-    { commandName: 'toggleOneUp', label: 'Toggle One Up', keys: ['w'] },
     // {
     //   commandName: 'previousViewportDisplaySet',
     //   label: 'Previous Series',

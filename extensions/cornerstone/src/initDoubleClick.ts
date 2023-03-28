@@ -1,6 +1,7 @@
 import { eventTarget, EVENTS } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
 import { CommandsManager, CustomizationService, Types } from '@ohif/core';
+import { findNearbyToolData } from './utils/findNearbyToolData';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -18,7 +19,14 @@ function initDoubleClick({
   customizationService,
   commandsManager,
 }: initDoubleClickArgs): void {
-  const cornerstoneViewportHandleDoubleClick = _ => {
+  const cornerstoneViewportHandleDoubleClick = (evt: CustomEvent) => {
+    // Do not allow double click on a tool.
+    const nearbyToolData = findNearbyToolData(commandsManager, evt);
+    if (nearbyToolData) {
+      return;
+    }
+
+    // Allows for the customization of the double click on a viewport.
     const customizations: Types.Command | Types.CommandCustomization =
       (customizationService.get(
         'cornerstoneViewportDoubleClickCommands'
