@@ -155,9 +155,14 @@ class CornerstoneViewportService extends PubSubService
   /**
    * Disables the viewport inside the renderingEngine, if no viewport is left
    * it destroys the renderingEngine.
+   *
+   * This is called when the element goes away entire - with new viewportId's
+   * created for every new viewport, this will be called whenever the set of
+   * viewports is changed, but NOT when the viewport position changes only.
+   *
    * @param viewportIndex
    */
-  public disableElement(viewportIndex: number) {
+  public disableElement(viewportIndex: number): void {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     if (!viewportInfo) {
       return;
@@ -620,6 +625,10 @@ class CornerstoneViewportService extends PubSubService
     }
 
     const viewportInfo = this.getViewportInfo(viewport.id);
+
+    if (!viewportInfo) {
+      console.warn('Viewport info not defined for', viewport.id);
+    }
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);

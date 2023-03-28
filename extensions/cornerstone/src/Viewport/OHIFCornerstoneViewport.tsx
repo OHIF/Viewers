@@ -10,7 +10,6 @@ import {
   utilities as csUtils,
   CONSTANTS,
 } from '@cornerstonejs/core';
-import { Services } from '@ohif/core';
 
 import { setEnabledElement } from '../state';
 
@@ -22,9 +21,6 @@ import {
 } from '@cornerstonejs/core/dist/esm/types';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
-
-import { CornerstoneViewportService } from '../services/ViewportService/CornerstoneViewportService';
-import Presentation from '../types/Presentation';
 
 const STACK = 'stack';
 
@@ -407,7 +403,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
         lutPresentation:
           lutPresentationStore[presentationIds?.lutPresentationId],
       };
-      console.log('Using presentations', presentations);
 
       cornerstoneViewportService.setViewportData(
         viewportIndex,

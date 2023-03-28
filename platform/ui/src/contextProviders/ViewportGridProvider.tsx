@@ -34,6 +34,16 @@ const DEFAULT_STATE = {
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
+const isReuseableViewport = (oldViewport, newViewport) => {
+  return (
+    oldViewport.height === newViewport.height &&
+    oldViewport.width === newViewport.width
+  );
+};
+
+// Holds a global viewport counter - used to assign new id's to viewports
+let viewportCounter = 5000;
+
 /**
  * Find a viewport to re-use, and then set the viewportId
  *
@@ -46,6 +56,7 @@ const reuseViewport = (idSet, viewport, stateViewports) => {
   const oldIds = {};
   for (const oldViewport of stateViewports) {
     const { viewportId: oldId } = oldViewport;
+    if (!oldId) continue;
     oldIds[oldId] = true;
     if (!oldId || idSet[oldId]) continue;
     if (
@@ -56,32 +67,32 @@ const reuseViewport = (idSet, viewport, stateViewports) => {
     ) {
       continue;
     }
+    if (idSet[oldId]) continue;
     idSet[oldId] = true;
-    // TODO re-use viewports once the flickering/wrong size redraw is fixed
-    // return {
-    //   ...oldViewport,
-    //   ...viewport,
-    //   viewportOptions: {
-    //     ...oldViewport.viewportOptions,
+    if (isReuseableViewport(oldViewport, viewport)) {
+      return {
+        ...oldViewport,
+        ...viewport,
+        id: oldViewport.viewportId,
+        viewportOptions: {
+          ...oldViewport.viewportOptions,
 
-    //     viewportId: oldViewport.viewportId,
-    //   },
-    // };
+          viewportId: oldViewport.viewportId,
+        },
+      };
+    }
   }
-  // Find a viewport instance number different from earlier viewports having
-  // the same presentationIds as this one would - will be less than 10k
-  // viewports hopefully :-)
-  for (let i = 0; i < 10000; i++) {
-    const viewportId = 'viewport-' + i;
-    if (idSet[viewportId] || oldIds[viewportId]) continue;
-    idSet[viewportId] = true;
-    return {
-      ...viewport,
-      viewportId,
-      viewportOptions: { ...viewport.viewportOptions, viewportId },
-    };
-  }
-  throw new Error('No ID found');
+  // Find a viewport instance number different from earlier viewports
+  const viewportId = 'viewport-' + viewportCounter;
+  // Loop over viewport counters in case of a really long lived display
+  viewportCounter = (viewportCounter + 1) % 100000;
+
+  return {
+    ...viewport,
+    viewportId,
+    id: viewportId,
+    viewportOptions: { ...viewport.viewportOptions, viewportId },
+  };
 };
 
 export function ViewportGridProvider({ children, service }) {
@@ -90,53 +101,61 @@ export function ViewportGridProvider({ children, service }) {
       case 'SET_ACTIVE_VIEWPORT_INDEX': {
         return { ...state, ...{ activeViewportIndex: action.payload } };
       }
-      case 'SET_DISPLAYSET_FOR_VIEWPORT': {
-        const payload = action.payload;
-        const { viewportIndex, displaySetInstanceUIDs } = payload;
 
-        // Note: there should be no inheritance happening at this level,
-        // we can't assume the new displaySet can inherit the previous
-        // displaySet's or viewportOptions at all. For instance, dragging
-        // and dropping a SEG/RT displaySet without any viewportOptions
-        // or displaySetOptions should not inherit the previous displaySet's
-        // which might have been a PDF Viewport. The viewport itself
-        // will deal with inheritance if required. Here is just a simple
-        // provider.
-        const viewport = state.viewports[viewportIndex] || {};
-        const viewportOptions = { ...payload.viewportOptions };
-
-        const displaySetOptions = payload.displaySetOptions || [];
-        if (displaySetOptions.length === 0) {
-          // Only copy index 0, as that is all that is currently supported by this
-          // method call.
-          displaySetOptions.push({ ...viewport.displaySetOptions?.[0] });
-        }
-
+      /**
+       * Sets the display sets for multiple viewports.
+       * This is a replacement for the older set display set for viewport (single)
+       * because the old one had a race conditions wherein the viewports could
+       * render partially in various ways causing exceptions.
+       */
+      case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
+        const { payload } = action;
         const viewports = state.viewports.slice();
 
-        let newView = {
-          ...viewport,
-          displaySetInstanceUIDs,
-          viewportOptions,
-          displaySetOptions,
-          viewportLabel: viewportLabels[viewportIndex],
-        };
-        viewportOptions.presentationIds = getPresentationIds(
-          newView,
-          viewports
-        );
+        // Don't reuse any viewports here.
+        const idSet = state.viewports.reduce((accumulator, viewport) => {
+          accumulator[viewport.viewportOptions.viewportId] = true;
+          return accumulator;
+        }, {});
 
-        // Make sure we assign a viewport id
-        newView = reuseViewport({}, newView, state.viewports);
-        console.log(
-          'Creating new viewport',
-          viewportIndex,
-          newView.viewportOptions.viewportId,
-          displaySetInstanceUIDs,
-          displaySetOptions
-        );
+        for (const updatedViewport of payload) {
+          // Note: there should be no inheritance happening at this level,
+          // we can't assume the new displaySet can inherit the previous
+          // displaySet's or viewportOptions at all. For instance, dragging
+          // and dropping a SEG/RT displaySet without any viewportOptions
+          // or displaySetOptions should not inherit the previous displaySet's
+          // which might have been a PDF Viewport. The viewport itself
+          // will deal with inheritance if required. Here is just a simple
+          // provider.
+          const { viewportIndex, displaySetInstanceUIDs } = updatedViewport;
+          const previousViewport = viewports[viewportIndex] || {};
+          const viewportOptions = { ...updatedViewport.viewportOptions };
 
-        viewports[viewportIndex] = newView;
+          const displaySetOptions = updatedViewport.displaySetOptions || [];
+          if (displaySetOptions.length === 0) {
+            // Only copy index 0, as that is all that is currently supported by this
+            // method call.
+            displaySetOptions.push({
+              ...previousViewport.displaySetOptions?.[0],
+            });
+          }
+
+          let newView = {
+            ...previousViewport,
+            displaySetInstanceUIDs,
+            viewportOptions,
+            displaySetOptions,
+            viewportLabel: viewportLabels[viewportIndex],
+          };
+          viewportOptions.presentationIds = getPresentationIds(
+            newView,
+            viewports
+          );
+
+          newView = reuseViewport(idSet, newView, state.viewports);
+
+          viewports[viewportIndex] = newView;
+        }
 
         return { ...state, viewports };
       }
@@ -268,34 +287,13 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
-  const setDisplaySetsForViewport = useCallback(
-    ({
-      viewportIndex,
-      displaySetInstanceUIDs,
-      viewportOptions,
-      displaySetSelectors,
-      displaySetOptions,
-    }) =>
+  const setDisplaySetsForViewports = useCallback(
+    viewports =>
       dispatch({
-        type: 'SET_DISPLAYSET_FOR_VIEWPORT',
-        payload: {
-          viewportIndex,
-          displaySetInstanceUIDs,
-          viewportOptions,
-          displaySetSelectors,
-          displaySetOptions,
-        },
+        type: 'SET_DISPLAYSETS_FOR_VIEWPORTS',
+        payload: viewports,
       }),
     [dispatch]
-  );
-
-  const setDisplaySetsForViewports = useCallback(
-    viewports => {
-      viewports.forEach(data => {
-        setDisplaySetsForViewport(data);
-      });
-    },
-    [setDisplaySetsForViewport]
   );
 
   const setLayout = useCallback(
@@ -355,7 +353,6 @@ export function ViewportGridProvider({ children, service }) {
       service.setServiceImplementation({
         getState,
         setActiveViewportIndex,
-        setDisplaySetsForViewport,
         setDisplaySetsForViewports,
         setLayout,
         reset,
@@ -368,7 +365,6 @@ export function ViewportGridProvider({ children, service }) {
     getState,
     service,
     setActiveViewportIndex,
-    setDisplaySetsForViewport,
     setDisplaySetsForViewports,
     setLayout,
     reset,
@@ -379,7 +375,6 @@ export function ViewportGridProvider({ children, service }) {
   const api = {
     getState,
     setActiveViewportIndex: index => service.setActiveViewportIndex(index), // run it through the service itself since we want to publish events
-    setDisplaySetsForViewport,
     setDisplaySetsForViewports,
     setLayout: layout => service.setLayout(layout), // run it through the service itself since we want to publish events
     reset,

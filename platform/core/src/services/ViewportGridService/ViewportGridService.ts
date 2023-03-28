@@ -26,7 +26,6 @@ class ViewportGridService extends PubSubService {
   public setServiceImplementation({
     getState: getStateImplementation,
     setActiveViewportIndex: setActiveViewportIndexImplementation,
-    setDisplaySetsForViewport: setDisplaySetsForViewportImplementation,
     setDisplaySetsForViewports: setDisplaySetsForViewportsImplementation,
     setLayout: setLayoutImplementation,
     reset: resetImplementation,
@@ -39,9 +38,6 @@ class ViewportGridService extends PubSubService {
     }
     if (setActiveViewportIndexImplementation) {
       this.serviceImplementation._setActiveViewportIndex = setActiveViewportIndexImplementation;
-    }
-    if (setDisplaySetsForViewportImplementation) {
-      this.serviceImplementation._setDisplaySetsForViewport = setDisplaySetsForViewportImplementation;
     }
     if (setDisplaySetsForViewportsImplementation) {
       this.serviceImplementation._setDisplaySetsForViewports = setDisplaySetsForViewportsImplementation;
@@ -77,18 +73,8 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
-  public setDisplaySetsForViewport({
-    viewportIndex,
-    displaySetInstanceUIDs,
-    viewportOptions,
-    displaySetOptions,
-  }) {
-    this.serviceImplementation._setDisplaySetsForViewport({
-      viewportIndex,
-      displaySetInstanceUIDs,
-      viewportOptions,
-      displaySetOptions,
-    });
+  public setDisplaySetsForViewport(viewport) {
+    this.serviceImplementation._setDisplaySetsForViewports([viewport]);
   }
 
   public setDisplaySetsForViewports(viewports) {
