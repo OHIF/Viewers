@@ -34,8 +34,16 @@ const DEFAULT_STATE = {
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
+/** A viewport is reuseable if it is the same size as the old
+ * one and has the same display sets.
+ */
 const isReuseableViewport = (oldViewport, newViewport) => {
+  const sameDiplaySets = isEqual(
+    oldViewport.displaySetInstanceUIDs,
+    newViewport.displaySetInstanceUIDs
+  );
   return (
+    sameDiplaySets &&
     oldViewport.height === newViewport.height &&
     oldViewport.width === newViewport.width
   );
@@ -45,43 +53,43 @@ const isReuseableViewport = (oldViewport, newViewport) => {
 let viewportCounter = 5000;
 
 /**
- * Find a viewport to re-use, and then set the viewportId
+ * Find a viewportId to re-use if possible, preserving the existing
+ * viewport information, OR create a new one if the viewport given isn't
+ * compatible with what was there before.
  *
  * @param idSet
  * @param viewport
  * @param stateViewports
  * @returns
  */
-const reuseViewport = (idSet, viewport, stateViewports) => {
-  const oldIds = {};
+const reuseViewportId = (idSet: Set, viewport, stateViewports) => {
   for (const oldViewport of stateViewports) {
     const { viewportId: oldId } = oldViewport;
     if (!oldId) continue;
-    oldIds[oldId] = true;
-    if (!oldId || idSet[oldId]) continue;
-    if (
-      !isEqual(
-        oldViewport.displaySetInstanceUIDs,
-        viewport.displaySetInstanceUIDs
-      )
-    ) {
+    if (idSet.has(oldId)) {
+      // oldId is already used - we can't reuse it
       continue;
     }
-    if (idSet[oldId]) continue;
-    idSet[oldId] = true;
     if (isReuseableViewport(oldViewport, viewport)) {
+      // This means the old and the new viewport are compatible, and
+      // since we have gotten here, the viewport ID isn't used, so we
+      // are good to reuse it.
+      // This will remember the old viewport options, assuming they are unchanging.
       return {
         ...oldViewport,
         ...viewport,
         id: oldViewport.viewportId,
         viewportOptions: {
           ...oldViewport.viewportOptions,
-
+          // Update any viewport options from new
+          ...viewport.viewportOptions,
           viewportId: oldViewport.viewportId,
         },
       };
     }
   }
+
+  // There wasn't an old id found to be reused, so create a new one
   // Find a viewport instance number different from earlier viewports
   const viewportId = 'viewport-' + viewportCounter;
   // Loop over viewport counters in case of a really long lived display
@@ -112,35 +120,38 @@ export function ViewportGridProvider({ children, service }) {
         const { payload } = action;
         const viewports = state.viewports.slice();
 
-        // Don't reuse any viewports here.
-        const idSet = state.viewports.reduce((accumulator, viewport) => {
-          accumulator[viewport.viewportOptions.viewportId] = true;
-          return accumulator;
-        }, {});
+        // Have the initial id set contain all viewports not updated here
+        const idSet = new Set();
+        viewports.forEach((viewport, index) => {
+          if (!viewport.viewportId) return;
+          const isUpdated = payload.find(
+            newViewport => newViewport.viewportIndex === index
+          );
+          if (isUpdated) {
+            return;
+          }
+          idSet.add(viewport.viewportId);
+        });
 
         for (const updatedViewport of payload) {
-          // Note: there should be no inheritance happening at this level,
-          // we can't assume the new displaySet can inherit the previous
-          // displaySet's or viewportOptions at all. For instance, dragging
-          // and dropping a SEG/RT displaySet without any viewportOptions
-          // or displaySetOptions should not inherit the previous displaySet's
-          // which might have been a PDF Viewport. The viewport itself
-          // will deal with inheritance if required. Here is just a simple
-          // provider.
+          // Use the newly provide viewportOptions and display set options
+          // when provided, and otherwise fall back to the previous ones.
+          // That allows for easy updates of just the display set.
           const { viewportIndex, displaySetInstanceUIDs } = updatedViewport;
           const previousViewport = viewports[viewportIndex] || {};
-          const viewportOptions = { ...updatedViewport.viewportOptions };
+          const viewportOptions = {
+            ...(updatedViewport.viewportOptions ||
+              previousViewport.viewportOptions),
+          };
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
           if (displaySetOptions.length === 0) {
-            // Only copy index 0, as that is all that is currently supported by this
-            // method call.
-            displaySetOptions.push({
-              ...previousViewport.displaySetOptions?.[0],
-            });
+            // Copy all the display set options, assuming a full set of displa
+            // set UID's is provided.
+            displaySetOptions.push(...previousViewport.displaySetOptions);
           }
 
-          let newView = {
+          let newViewport = {
             ...previousViewport,
             displaySetInstanceUIDs,
             viewportOptions,
@@ -148,13 +159,13 @@ export function ViewportGridProvider({ children, service }) {
             viewportLabel: viewportLabels[viewportIndex],
           };
           viewportOptions.presentationIds = getPresentationIds(
-            newView,
+            newViewport,
             viewports
           );
 
-          newView = reuseViewport(idSet, newView, state.viewports);
+          newViewport = reuseViewportId(idSet, newViewport, state.viewports);
 
-          viewports[viewportIndex] = newView;
+          viewports[viewportIndex] = newViewport;
         }
 
         return { ...state, viewports };
@@ -222,13 +233,13 @@ export function ViewportGridProvider({ children, service }) {
 
         activeViewportIndexToSet = activeViewportIndexToSet ?? 0;
 
-        const viewportIdSet = {};
+        const viewportIdSet = new Set();
         for (
           let viewportIndex = 0;
           viewportIndex < viewports.length;
           viewportIndex++
         ) {
-          const viewport = reuseViewport(
+          const viewport = reuseViewportId(
             viewportIdSet,
             viewports[viewportIndex],
             state.viewports

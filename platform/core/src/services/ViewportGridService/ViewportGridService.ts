@@ -73,12 +73,13 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
-  public setDisplaySetsForViewport(viewport) {
-    this.serviceImplementation._setDisplaySetsForViewports([viewport]);
+  public setDisplaySetsForViewport(props) {
+    // Just update a single viewport, but use the multi-viewport update for it.
+    this.serviceImplementation._setDisplaySetsForViewports([props]);
   }
 
-  public setDisplaySetsForViewports(viewports) {
-    this.serviceImplementation._setDisplaySetsForViewports(viewports);
+  public setDisplaySetsForViewports(props) {
+    this.serviceImplementation._setDisplaySetsForViewports(props);
   }
 
   /**
