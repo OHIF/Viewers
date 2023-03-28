@@ -18,7 +18,7 @@ window.config = {
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
-    prefetch: 10,
+    prefetch: 25,
   },
   // filterQueryParam: false,
   dataSources: [

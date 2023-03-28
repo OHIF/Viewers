@@ -11,7 +11,7 @@ const mpr: Types.HangingProtocol.Protocol = {
   // Unknown number of priors referenced - so just match any study
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
-  // imageLoadStrategy: 'nth',
+  imageLoadStrategy: 'interleaveTopToBottom',
   callbacks: {
     // Switches out of MPR mode when the layout change button is used
     onLayoutChange: [
@@ -170,7 +170,7 @@ const mprAnd3DVolumeViewport = {
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
-  imageLoadStrategy: 'interleaveTopToBottom',
+  imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
     mprDisplaySet: {
       seriesMatchingRules: [
@@ -180,6 +180,15 @@ const mprAnd3DVolumeViewport = {
           constraint: {
             equals: {
               value: true,
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
             },
           },
           required: true,
