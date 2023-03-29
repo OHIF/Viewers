@@ -167,9 +167,26 @@ export default async function init({
           viewportId
         );
 
+        const ohifViewport = cornerstoneViewportService.getViewportInfo(
+          viewportId
+        );
+
+        const {
+          lutPresentationStore,
+          positionPresentationStore,
+        } = stateSyncService.getState();
+        const { presentationIds } = ohifViewport.getViewportOptions();
+        const presentations = {
+          positionPresentation:
+            positionPresentationStore[presentationIds?.positionPresentationId],
+          lutPresentation:
+            lutPresentationStore[presentationIds?.lutPresentationId],
+        };
+
         cornerstoneViewportService.setVolumesForViewport(
           viewport,
-          volumeInputArray
+          volumeInputArray,
+          presentations
         );
       }
     }

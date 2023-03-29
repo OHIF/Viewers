@@ -173,9 +173,9 @@ class CornerstoneViewportService extends PubSubService
   }
 
   public setPresentations(viewport, presentations?: Presentations): void {
-    const properties = presentations.lutPresentation?.properties;
+    const properties = presentations?.lutPresentation?.properties;
     if (properties) viewport.setProperties(properties);
-    const camera = presentations.positionPresentation?.camera;
+    const camera = presentations?.positionPresentation?.camera;
     if (camera) viewport.setCamera(camera);
   }
 
@@ -506,19 +506,16 @@ class CornerstoneViewportService extends PubSubService
       !hangingProtocolService.customImageLoadPerformed
     ) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      if (
-        hangingProtocolService.runImageLoadStrategy({
-          viewportId: viewport.id,
-          volumeInputArray,
-        })
-      ) {
-        // Fallback to the default strategy if the custom one fails
-        return;
-      }
+      return hangingProtocolService.runImageLoadStrategy({
+        viewportId: viewport.id,
+        volumeInputArray,
+      });
     }
 
     volumeToLoad.forEach(volume => {
-      volume.load();
+      if (!volume.loadStatus.loaded && !volume.loadStatus.loading) {
+        volume.load();
+      }
     });
 
     // This returns the async continuation only
