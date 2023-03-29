@@ -2,6 +2,8 @@ import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 const EVENTS = {
   ACTIVE_VIEWPORT_INDEX_CHANGED: 'event::activeviewportindexchanged',
+  LAYOUT_CHANGED: 'event::layoutChanged',
+  GRID_STATE_CHANGED: 'event::gridStateChanged',
 };
 
 class ViewportGridService extends PubSubService {
@@ -101,11 +103,25 @@ class ViewportGridService extends PubSubService {
    *    options that is initially provided as {} (eg to store intermediate state)
    *    The function returns a viewport object to use at the given position.
    */
-  public setLayout({ numCols, numRows, findOrCreateViewport = undefined }) {
+  public setLayout({
+    numCols,
+    numRows,
+    layoutOptions,
+    layoutType = 'grid',
+    activeViewportIndex = undefined,
+    findOrCreateViewport = undefined,
+  }) {
     this.serviceImplementation._setLayout({
       numCols,
       numRows,
+      layoutOptions,
+      layoutType,
+      activeViewportIndex,
       findOrCreateViewport,
+    });
+    this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
+      numCols,
+      numRows,
     });
   }
 
@@ -125,10 +141,24 @@ class ViewportGridService extends PubSubService {
 
   public set(state) {
     this.serviceImplementation._set(state);
+    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
+      state,
+    });
   }
 
   public getNumViewportPanes() {
     return this.serviceImplementation._getNumViewportPanes();
+  }
+
+  public getLayoutOptionsFromState(state) {
+    return state.viewports.map(viewport => {
+      return {
+        x: viewport.x,
+        y: viewport.y,
+        width: viewport.width,
+        height: viewport.height,
+      };
+    });
   }
 }
 
