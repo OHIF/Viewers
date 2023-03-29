@@ -79,11 +79,6 @@ const reuseViewportId = (idSet: Set, viewport, stateViewports) => {
       // since we have gotten here, the viewport ID isn't used, so we
       // are good to reuse it.
       // This will remember the old viewport options, assuming they are unchanging.
-      console.log(
-        'Reusing viewport',
-        oldId,
-        viewport.viewportOptions.viewportType
-      );
       return {
         ...oldViewport,
         ...viewport,
@@ -106,11 +101,6 @@ const reuseViewportId = (idSet: Set, viewport, stateViewports) => {
   viewportCounter = (viewportCounter + 1) % 100000;
   // viewportOptions is already a copy, so can just update direct
   viewport.viewportOptions.viewportId = viewportId;
-  console.log(
-    'New viewport',
-    viewportId,
-    viewport.viewportOptions.viewportType
-  );
 
   return {
     ...viewport,
