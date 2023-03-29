@@ -32,8 +32,8 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "classnames": "^2.3.2",
-    "@cornerstonejs/core": "^0.37.0",
-    "@cornerstonejs/tools": "^0.57.1",
+    "@cornerstonejs/core": "^0.38.0",
+    "@cornerstonejs/tools": "^0.58.0",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
     "dcmjs": "^0.29.4",
     "lodash.debounce": "^4.17.21",

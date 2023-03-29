@@ -315,7 +315,9 @@ handles creation of the displaySets.
 ### Hotkeys
 
 `hotkeys` is another property in the configuration of a mode that can be defined
-to add the specific hotkeys to the viewer at all routes.
+to add the specific hotkeys to the viewer on the mode route.  Additionally, the
+name under which the hotkeys are stored can be configured as `hotkeyName`.
+This allows user customization of the mode specific hotkeys.
 
 ```js
 // default hotkeys
@@ -347,7 +349,13 @@ function modeFactory() {
     /*
     ...
     */
-    hotkeys: [..hotkeys.defaults.hotkeyBindings, ...myHotkeys],
+    hotkeys: {
+      // The name in preferences to use for this set of hotkeys
+      // Allows defining different sets for different modes
+      name: 'custom-hotkey-name',
+      // And the actual custom values here.
+      hotkeys:[..hotkeys.defaults.hotkeyBindings, ...myHotkeys]
+    },
   }
 }
 

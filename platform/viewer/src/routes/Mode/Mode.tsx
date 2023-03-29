@@ -114,7 +114,15 @@ export default function ModeRoute({
     hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
 
-  const { extensions, sopClassHandlers, hotkeys, hangingProtocol } = mode;
+  const {
+    extensions,
+    sopClassHandlers,
+    hotkeys: hotkeyObj,
+    hangingProtocol,
+  } = mode;
+  // Preserve the old array interface for hotkeys
+  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
+  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions-v2';
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;
@@ -204,14 +212,12 @@ export default function ModeRoute({
 
     hotkeysManager.setDefaultHotKeys(hotkeys);
 
-    const userPreferredHotkeys = JSON.parse(
-      localStorage.getItem('hotkey-definitions')
-    );
+    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
 
     if (userPreferredHotkeys?.length) {
-      hotkeysManager.setHotkeys(userPreferredHotkeys);
+      hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
     } else {
-      hotkeysManager.setHotkeys(hotkeys);
+      hotkeysManager.setHotkeys(hotkeys, hotkeyName);
     }
 
     return () => {
