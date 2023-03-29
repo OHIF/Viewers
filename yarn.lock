@@ -1407,13 +1407,13 @@
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-0.4.1.tgz#fedab0d9cfea609f5219950c86e546198ad0f3c8"
-  integrity sha512-DQabSBdTN/A5tsncnDLdsb6LI5I/FTG3gSmNpDAkc9fAZY6Ljj0lCLt9KHB5OA1Gbvrlcab/DGJ/2YW6Z7ifRg==
+"@cornerstonejs/adapters@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/adapters/-/adapters-0.6.0.tgz#9b2efdabb0d596d53ae4854556956b668cca7535"
+  integrity sha512-bzOwtOX0EfJ/PufPq1mONPU+HmVQf+pA/78+mbHuV8bvznM1IkSzc2h0WYsLXTdVEkZrGwgWCwrOiYGfsNW1tQ==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
-    dcmjs "^0.29.4"
+    dcmjs "^0.29.5"
     gl-matrix "^3.4.3"
     lodash.clonedeep "^4.5.0"
     ndarray "^1.0.19"
@@ -1443,28 +1443,28 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.37.0":
-  version "0.37.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.37.0.tgz#d0cc59116d5393c995e01f9cb58b7d96acd46fa8"
-  integrity sha512-EPKUsEFp9X7ZOhDS5EoNpuJDs4KjlCodDTYYU8ITU9pzW9gJj5j3IivJy5mMI2tDq/rpdxCoL0TSn3KVsJvp5Q==
+"@cornerstonejs/core@^0.38.0":
+  version "0.38.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.38.0.tgz#6ee3341f38f78e98da85d2511ac16f25e9800f18"
+  integrity sha512-4/+qDEtGQRwV6AN5Ze4S6oOFiNH48oT5Mp/YQEzJHO+Zn9ceRHZ6ReTwccVUJ5QY2d5d89CoWJ2sKhdsLFZsNw==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.15.12":
-  version "0.15.12"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.15.12.tgz#f0e534415517a4e1a9f9a9baf1d47e5af152e911"
-  integrity sha512-01UCdu0T2yYilYZS5++RusXnhyKdKpLp4FAQIeSEqSXre+SjawvvS0HjpZCPhX7k38B9tVnDxt3Q7JkoeWSM+g==
+"@cornerstonejs/streaming-image-volume-loader@^0.15.13":
+  version "0.15.13"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.15.13.tgz#d4c6651f5edac0adbc2c4059b78945fb70c38eb5"
+  integrity sha512-o0e+vEr08GmMztjabPs7vHKYhofW0dQvSI8Dy7tb1wKEnf05Tis/5s9sCt6PORNHXweK+Cylja3xy8b469ZuVw==
   dependencies:
-    "@cornerstonejs/core" "^0.37.0"
+    "@cornerstonejs/core" "^0.38.0"
     cornerstone-wado-image-loader "^4.10.2"
 
-"@cornerstonejs/tools@^0.57.1":
-  version "0.57.1"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.57.1.tgz#687e097e0ee8884b0e65ec4b0e8a7afed3f1a5de"
-  integrity sha512-CEBVi+LvYs9vDhItgz1q6KUzQRYb7SX0sPMIXNBMl0Ia5iCx3YOvKnX/ryNVXHZsenNdG3356cGjyexFzPkrSw==
+"@cornerstonejs/tools@^0.58.0":
+  version "0.58.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.58.0.tgz#c9a2ba6a96491a565fe03a2ef1c1403bd70992e4"
+  integrity sha512-sVsX6WGLmHg5UUg7p9iwvwjb8AswUypO2jARyIVtpa3JM3dP16Y0uh1jTWJFG2xWLZgEXDXcFCIhw5nOSohy7A==
   dependencies:
-    "@cornerstonejs/core" "^0.37.0"
+    "@cornerstonejs/core" "^0.38.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -9235,6 +9235,18 @@ dcmjs@^0.29.4:
   version "0.29.4"
   resolved "https://registry.npmjs.org/dcmjs/-/dcmjs-0.29.4.tgz#3fb13945611979f756bc91b3f199fd87b4eabdb4"
   integrity sha512-PzD6C4oB7v/AVTIPbkS6D6hjgVcSW7+T+DsxFpkD1xcEgU4qjGM16WGEHH3ZAPDBF0Xgm2d9FXUu/lXZIyfmow==
+  dependencies:
+    "@babel/runtime-corejs2" "^7.17.8"
+    gl-matrix "^3.1.0"
+    lodash.clonedeep "^4.5.0"
+    loglevelnext "^3.0.1"
+    ndarray "^1.0.19"
+    pako "^2.0.4"
+
+dcmjs@^0.29.5:
+  version "0.29.5"
+  resolved "https://registry.npmjs.org/dcmjs/-/dcmjs-0.29.5.tgz#3e2311fc47aafc70f21e236ad89e2ff9ba6589fd"
+  integrity sha512-CcLo3pwitf9JhhvW3/icCraxUhaIKJRyOys9XJlBBDn5TQskyJzxgveLKejcryHn4DooqlJPeMuM4ixdPFEERQ==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     gl-matrix "^3.1.0"
