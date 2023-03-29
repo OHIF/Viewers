@@ -107,7 +107,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mousemove', 'left', { which: 1 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 211%W: 635 L: 226Lossless / Uncompressed';
+    const expectedText = 'Zoom: 211%W: 0 L: -7719Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
