@@ -35,7 +35,9 @@ const DEFAULT_STATE = {
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
 /** A viewport is reuseable if it is the same size as the old
- * one and has the same display sets.
+ * one and has the same display sets, in the same position.
+ * It SHOULD be possible to re-use them at different positions, but
+ * this causes problems with segmentation.
  */
 const isReuseableViewport = (oldViewport, newViewport) => {
   const sameDiplaySets = isEqual(
@@ -43,6 +45,7 @@ const isReuseableViewport = (oldViewport, newViewport) => {
     newViewport.displaySetInstanceUIDs
   );
   return (
+    oldViewport.viewportIndex === newViewport.viewportIndex &&
     sameDiplaySets &&
     oldViewport.height === newViewport.height &&
     oldViewport.width === newViewport.width
@@ -71,19 +74,25 @@ const reuseViewportId = (idSet: Set, viewport, stateViewports) => {
       continue;
     }
     if (isReuseableViewport(oldViewport, viewport)) {
+      idSet.add(oldId);
       // This means the old and the new viewport are compatible, and
       // since we have gotten here, the viewport ID isn't used, so we
       // are good to reuse it.
       // This will remember the old viewport options, assuming they are unchanging.
+      console.log(
+        'Reusing viewport',
+        oldId,
+        viewport.viewportOptions.viewportType
+      );
       return {
         ...oldViewport,
         ...viewport,
-        id: oldViewport.viewportId,
+        id: oldId,
+        viewportId: oldId,
         viewportOptions: {
-          ...oldViewport.viewportOptions,
           // Update any viewport options from new
           ...viewport.viewportOptions,
-          viewportId: oldViewport.viewportId,
+          viewportId: oldId,
         },
       };
     }
@@ -92,14 +101,21 @@ const reuseViewportId = (idSet: Set, viewport, stateViewports) => {
   // There wasn't an old id found to be reused, so create a new one
   // Find a viewport instance number different from earlier viewports
   const viewportId = 'viewport-' + viewportCounter;
+  idSet.add(viewportId);
   // Loop over viewport counters in case of a really long lived display
   viewportCounter = (viewportCounter + 1) % 100000;
+  // viewportOptions is already a copy, so can just update direct
+  viewport.viewportOptions.viewportId = viewportId;
+  console.log(
+    'New viewport',
+    viewportId,
+    viewport.viewportOptions.viewportType
+  );
 
   return {
     ...viewport,
-    viewportId,
     id: viewportId,
-    viewportOptions: { ...viewport.viewportOptions, viewportId },
+    viewportId,
   };
 };
 
@@ -164,9 +180,28 @@ export function ViewportGridProvider({ children, service }) {
           );
 
           newViewport = reuseViewportId(idSet, newViewport, state.viewports);
+          newViewport.viewportIndex = previousViewport.viewportIndex;
 
           viewports[viewportIndex] = newViewport;
         }
+        viewports.forEach((viewport, index) => {
+          console.log(
+            'Viewport',
+            index,
+            viewport.viewportIndex,
+            state.viewports[index].viewportIndex,
+            viewport.viewportId,
+            state.viewports[index].viewportId
+          );
+          if (
+            viewport.id !== viewport.viewportId ||
+            viewport.id !== viewport.viewportOptions.viewportId
+          ) {
+            throw new Error(
+              `Viewport ${index} ${viewport.id} ${viewport.viewportId}`
+            );
+          }
+        });
 
         return { ...state, viewports };
       }
