@@ -151,10 +151,13 @@ export function ViewportGridProvider({ children, service }) {
           };
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
-          if (displaySetOptions.length === 0) {
+          if (!displaySetOptions.length) {
             // Copy all the display set options, assuming a full set of displa
             // set UID's is provided.
             displaySetOptions.push(...previousViewport.displaySetOptions);
+            if (!displaySetOptions.length) {
+              displaySetOptions.push({});
+            }
           }
 
           let newViewport = {
