@@ -323,7 +323,7 @@ const ptCT = {
 function getHangingProtocolModule() {
   return [
     {
-      id: ptCT.id,
+      name: ptCT.id,
       protocol: ptCT,
     },
   ];

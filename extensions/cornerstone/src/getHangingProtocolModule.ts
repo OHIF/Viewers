@@ -303,11 +303,11 @@ const mprAnd3DVolumeViewport = {
 function getHangingProtocolModule() {
   return [
     {
-      id: 'mpr',
+      name: 'mpr',
       protocol: mpr,
     },
     {
-      id: mprAnd3DVolumeViewport.id,
+      name: mprAnd3DVolumeViewport.id,
       protocol: mprAnd3DVolumeViewport,
     },
   ];
