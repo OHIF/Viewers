@@ -25,6 +25,7 @@ export default function CineProvider({ children, service }) {
     switch (action.type) {
       case 'SET_CINE': {
         const { id, frameRate, isPlaying = undefined } = action.payload;
+        console.warn(`>>>>> SET_CINE :: ${id} :: ${frameRate} :: ${isPlaying}`);
         const cines = state.cines;
 
         if (!cines[id]) cines[id] = { id, ...DEFAULT_CINE };
@@ -35,6 +36,7 @@ export default function CineProvider({ children, service }) {
         return { ...state, ...{ cines } };
       }
       case 'SET_IS_CINE_ENABLED': {
+        console.warn(`>>>>> SET_IS_CINE_ENABLED :: ${action.payload}`);
         return { ...state, ...{ isCineEnabled: action.payload } };
       }
       default:

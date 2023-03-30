@@ -34,6 +34,8 @@ function modeFactory({ modeConfiguration }) {
     routeName: 'dynamic-volume',
     displayName: '4D Volume',
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      console.warn('>>>>> onModeEnter');
+
       const {
         measurementService,
         toolbarService,
@@ -69,6 +71,8 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
+      console.warn('>>>>> onModeExit');
+
       const {
         toolGroupService,
         syncGroupService,

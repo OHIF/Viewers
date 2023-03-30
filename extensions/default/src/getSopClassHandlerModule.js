@@ -9,19 +9,21 @@ const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 const sopClassHandlerName = 'stack';
 let appContext = {};
 
-const getDynamicVolumeInfo = instances => {
-  const { extensionManager } = appContext;
-
-  // DEV ONLY
-  // REMOVE THE RETURN STATEMENT BELOW AS SOON AS CORNERSTONE IS
-  // UPDATED TO A VERSION THAT HAS getDynamicVolumeInfo PUBLISHED
+// DEV ONLY
+// REMOVE THE FUNCTION BELOW AS SOON AS CORNERSTONE IS UPDATED TO A
+// VERSION THAT HAS getDynamicVolumeInfo PUBLISHED
+const getDynamicVolumeInfoDevMode = instances => {
   const { Modality, SeriesInstanceUID } = instances[0];
-  const seriesInstanceUIDLog = `...${SeriesInstanceUID.slice(-20)}`;
   const isDynamicVolume =
     Modality === 'PT' &&
     SeriesInstanceUID ===
       '1.3.6.1.4.1.12842.1.1.22.4.20220915.124758.560.4125514885';
+
   return { isDynamicVolume };
+};
+
+const getDynamicVolumeInfo = instances => {
+  const { extensionManager } = appContext;
 
   if (!extensionManager) {
     throw new Error('extensionManager is not available');
@@ -34,6 +36,13 @@ const getDynamicVolumeInfo = instances => {
   const {
     getDynamicVolumeInfo: csGetDynamicVolumeInfo,
   } = volumeLoaderUtility.exports;
+
+  if (!csGetDynamicVolumeInfo) {
+    console.warn(
+      'getDynamicVolumeInfo not found in cornerstone library! Running in dev mode'
+    );
+    return getDynamicVolumeInfoDevMode(instances);
+  }
 
   return csGetDynamicVolumeInfo(imageIds);
 };

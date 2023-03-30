@@ -140,6 +140,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const cine = cines[viewportIndex];
     const isPlaying = cine.isPlaying || false;
     const frameRate = cine.frameRate || 24;
+    console.warn(
+      `>>>>> OHIFCornerstoneViewport :: cineHandler :: ${isPlaying} :: ${frameRate} fps`
+    );
 
     const validFrameRate = Math.max(frameRate, 1);
 
