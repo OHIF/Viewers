@@ -53,6 +53,7 @@ export default function initWADOImageLoader(
       // Until the default is set to true (which is the case for cornerstone3D),
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
+      use16BitDataType: Boolean(appConfig.use16BitDataType),
     },
     beforeSend: function(xhr) {
       const headers = userAuthenticationService.getAuthorizationHeader();
