@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { getItem } from '../lib/localStorageUtils';
 
 // ----------------------------------------------------------------------
 
 const Summary = props => {
+  const { similarityResultState } = props;
+  const [patientData, setPatientData] = useState({});
+
   useEffect(() => {
     localStorage.setItem(
       'summary',
@@ -13,6 +17,7 @@ const Summary = props => {
         name3: 'sadsad',
       })
     );
+    setPatientData(getItem('selectedStudy'));
   }, []);
 
   return (
@@ -61,8 +66,29 @@ const Summary = props => {
           >
             Patient ID :{' '}
           </h2>
-          <h2>abc123 </h2>
+          <h2> {patientData.PatientID} </h2>
         </div>
+
+        <div
+          className=""
+          style={{
+            display: 'flex',
+            marginTop: 12,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <h2
+            className="cad"
+            style={{
+              color: '#00c7ee',
+            }}
+          >
+            Patient Name :{' '}
+          </h2>
+          <h2> {patientData.PatientName} </h2>
+        </div>
+
         <div
           className=""
           style={{
@@ -84,27 +110,6 @@ const Summary = props => {
         </div>
 
         <div
-          className=""
-          style={{
-            display: 'flex',
-            marginTop: 12,
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <h2
-            className="cad"
-            style={{
-              color: '#00c7ee',
-            }}
-          >
-            Prediction:{' '}
-          </h2>
-          <h2>Necrosis</h2>
-        </div>
-
-        <div
-          className=""
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -118,27 +123,23 @@ const Summary = props => {
               color: '#00c7ee',
             }}
           >
-            Confidence:{' '}
+            Malignant Score :{' '}
           </h2>
-          <h2>81%</h2>
+          <h2>
+            {similarityResultState.score
+              ? similarityResultState.score
+              : ' loading...'}
+          </h2>
         </div>
 
         <div
-          className=""
           style={{
             marginTop: 12,
           }}
         >
           <button
+            disabled={!similarityResultState.score}
             onClick={props.triggerDownload}
-            // style={{
-            //   marginTop: '20px',
-            //   border: '1px yellow solid',
-            //   fontSize: '24px',
-            //   background: 'black',
-            //   color: 'white',
-            //   padding: '12px',
-            // }}
             className="btn btn-primary btn-large"
           >
             Print To PDF

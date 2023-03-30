@@ -704,7 +704,10 @@ class Radiomics extends Component {
           </div>
           <div className="container">
             <div className="container-item">
-              <Summary triggerDownload={this.downloadReportAsPdf} />
+              <Summary
+                similarityResultState={this.state.similarityResultState}
+                triggerDownload={this.downloadReportAsPdf}
+              />
               {/* RIGHT */}
               <div
                 style={{

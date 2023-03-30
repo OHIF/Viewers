@@ -15,6 +15,12 @@ import { useLottie } from 'lottie-react';
 import eventBus from '../../../lib/eventBus';
 import { radcadapi } from '../../../utils/constants';
 
+function getMalignantScore(data) {
+  const knnLength = data.knn.length;
+  const malignantCount = data.knn.filter(item => item.malignant).length;
+  return malignantCount + '/' + knnLength;
+}
+
 const RenderSimilarityResult = ({ data, imgDimensions }) => {
   return (
     <div
@@ -314,7 +320,6 @@ const SearchDetails = props => {
   };
 
   const initSearchPanel = async el => {
-    
     // const tool_data = cornerstoneTools.getToolState(element, 'RectangleRoi');
     console.log('init search data start');
 
@@ -470,7 +475,12 @@ const SearchDetails = props => {
             fetchscans: result.currJob,
           });
 
-          eventBus.dispatch('fetchscans', result.currJob);
+          const score = getMalignantScore(result.currJob);
+
+          eventBus.dispatch('fetchscans', {
+            ...result.currJob,
+            score,
+          });
 
           localStorage.setItem(
             'print-similarscans',

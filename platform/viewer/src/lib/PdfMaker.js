@@ -1,12 +1,20 @@
-import { i } from 'mathjs';
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { getItem } from './localStorageUtils';
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
+
+function getMalignantScore(data) {
+  const knnLength = data.knn.length;
+  const malignantCount = data.knn.filter(item => item.malignant).length;
+  return malignantCount + '/' + knnLength;
+}
 
 const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
   const contents = [];
   const images = {};
-  // add radcad
+
+  const patientData = getItem('selectedStudy');
+  const score = getMalignantScore(SimilarScans);
 
   contents.push(
     {
@@ -21,7 +29,11 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
     },
     {
       alignment: 'left',
-      columns: ['Patient Id : ', 'ab123'],
+      columns: ['Patient Id : ', patientData.PatientID],
+    },
+    {
+      alignment: 'left',
+      columns: ['Patient Name : ', patientData.PatientName],
     },
     {
       alignment: 'left',
@@ -29,11 +41,7 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
     },
     {
       alignment: 'left',
-      columns: ['Prediction : ', 'Nescrosis'],
-    },
-    {
-      alignment: 'left',
-      columns: ['Confidence : ', '81%'],
+      columns: ['Malignant Score : ', score],
     }
   );
 
@@ -88,6 +96,7 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
             {
               image: imageIndex + 'thumb',
               fit: [150, 150],
+              margin: [0, 10],
             },
             'Similarity:' + data.similarity_score,
             'Dataset:' + data.dataset,
@@ -105,6 +114,7 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
             {
               image: chart[index],
               fit: [300, 300],
+              margin: [0, 10],
               // relativePosition: {
               //   y: -355,
               //   x: -15,

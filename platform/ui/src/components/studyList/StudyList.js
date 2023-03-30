@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
 import { useTranslation } from 'react-i18next';
 import TableLabel from './TableLabel';
+import { setItem } from '@ohif/viewer/src/lib/localStorageUtils';
 
 const getContentFromUseMediaValue = (
   displaySize,
@@ -229,9 +230,10 @@ function StudyList(props) {
               studies.map((study, index) => (
                 <TableRow
                   key={`${study.StudyInstanceUID}-${index}`}
-                  onClick={StudyInstanceUID =>
-                    handleSelectItem(StudyInstanceUID)
-                  }
+                  onClick={StudyInstanceUID => {
+                    setItem('selectedStudy', study);
+                    handleSelectItem(StudyInstanceUID);
+                  }}
                   AccessionNumber={study.AccessionNumber || ''}
                   modalities={study.modalities}
                   PatientID={study.PatientID || ''}
