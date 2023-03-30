@@ -53,6 +53,9 @@ const isReuseableViewport = (oldViewport, newViewport) => {
 };
 
 // Holds a global viewport counter - used to assign new id's to viewports
+// Starts at a value above zero so that any of the old viewport id's are
+// immediately obvious and if we get any index generated viewports, they are
+// definitely distinct from these ones.
 let viewportCounter = 5000;
 
 /**
@@ -60,21 +63,24 @@ let viewportCounter = 5000;
  * viewport information, OR create a new one if the viewport given isn't
  * compatible with what was there before.
  *
- * @param idSet
+ * @param viewportIdSet
  * @param viewport
  * @param stateViewports
  * @returns
  */
-const reuseViewportId = (idSet: Set, viewport, stateViewports) => {
+const reuseViewportId = (viewportIdSet: Set, viewport, stateViewports) => {
   for (const oldViewport of stateViewports) {
     const { viewportId: oldId } = oldViewport;
-    if (!oldId) continue;
-    if (idSet.has(oldId)) {
+    if (!oldId) {
+      // This occurs on startup, so skip re-using it
+      continue;
+    }
+    if (viewportIdSet.has(oldId)) {
       // oldId is already used - we can't reuse it
       continue;
     }
     if (isReuseableViewport(oldViewport, viewport)) {
-      idSet.add(oldId);
+      viewportIdSet.add(oldId);
       // This means the old and the new viewport are compatible, and
       // since we have gotten here, the viewport ID isn't used, so we
       // are good to reuse it.
@@ -96,7 +102,7 @@ const reuseViewportId = (idSet: Set, viewport, stateViewports) => {
   // There wasn't an old id found to be reused, so create a new one
   // Find a viewport instance number different from earlier viewports
   const viewportId = 'viewport-' + viewportCounter;
-  idSet.add(viewportId);
+  viewportIdSet.add(viewportId);
   // Loop over viewport counters in case of a really long lived display
   viewportCounter = (viewportCounter + 1) % 100000;
   // viewportOptions is already a copy, so can just update direct
@@ -119,7 +125,7 @@ export function ViewportGridProvider({ children, service }) {
       /**
        * Sets the display sets for multiple viewports.
        * This is a replacement for the older set display set for viewport (single)
-       * because the old one had a race conditions wherein the viewports could
+       * because the old one had race conditions wherein the viewports could
        * render partially in various ways causing exceptions.
        */
       case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
@@ -127,7 +133,7 @@ export function ViewportGridProvider({ children, service }) {
         const viewports = state.viewports.slice();
 
         // Have the initial id set contain all viewports not updated here
-        const idSet = new Set();
+        const viewportIdSet = new Set();
         viewports.forEach((viewport, index) => {
           if (!viewport.viewportId) return;
           const isUpdated = payload.find(
@@ -136,7 +142,7 @@ export function ViewportGridProvider({ children, service }) {
           if (isUpdated) {
             return;
           }
-          idSet.add(viewport.viewportId);
+          viewportIdSet.add(viewport.viewportId);
         });
 
         for (const updatedViewport of payload) {
@@ -172,7 +178,11 @@ export function ViewportGridProvider({ children, service }) {
             viewports
           );
 
-          newViewport = reuseViewportId(idSet, newViewport, state.viewports);
+          newViewport = reuseViewportId(
+            viewportIdSet,
+            newViewport,
+            state.viewports
+          );
           newViewport.viewportIndex = previousViewport.viewportIndex;
 
           viewports[viewportIndex] = newViewport;

@@ -259,12 +259,6 @@ class CornerstoneViewportService extends PubSubService
     viewportInfo.setDisplaySetOptions(displaySetOptions);
     viewportInfo.setViewportData(viewportData);
 
-    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
-      viewportData,
-      viewportIndex,
-      viewportId,
-    });
-
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
     const background = viewportInfo.getBackground();
@@ -288,6 +282,12 @@ class CornerstoneViewportService extends PubSubService
 
     const viewport = renderingEngine.getViewport(viewportId);
     this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
+
+    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+      viewportData,
+      viewportIndex,
+      viewportId,
+    });
   }
 
   public getCornerstoneViewport(
@@ -393,9 +393,7 @@ class CornerstoneViewportService extends PubSubService
 
     // There is a bug in CS3D that the setStack does not
     // navigate to the desired image.
-    viewport.setStack(imageIds, 0).then(() => {
-      // The scroll, however, works fine in CS3D
-      viewport.scroll(initialImageIndexToUse);
+    viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
       const camera = presentations.positionPresentation?.camera;
       if (camera) viewport.setCamera(camera);
