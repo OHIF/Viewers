@@ -14,7 +14,10 @@ import {
   utilities as csUtilities,
 } from '@cornerstonejs/core';
 import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
-import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
+import {
+  cornerstoneStreamingImageVolumeLoader,
+  cornerstoneStreamingDynamicImageVolumeLoader,
+} from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
@@ -122,6 +125,11 @@ export default async function init({
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
     cornerstoneStreamingImageVolumeLoader
+  );
+
+  volumeLoader.registerVolumeLoader(
+    'cornerstoneStreamingDynamicImageVolume',
+    cornerstoneStreamingDynamicImageVolumeLoader
   );
 
   hangingProtocolService.registerImageLoadStrategy(
