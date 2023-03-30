@@ -74,4 +74,4 @@ const dicomSRExtension = {
 export default dicomSRExtension;
 
 // Put static exports here so they can be type checked
-export { hydrateStructuredReport, srProtocol, createReferencedImageDisplaySet };
+export { hydrateStructuredReport, createReferencedImageDisplaySet, srProtocol };
