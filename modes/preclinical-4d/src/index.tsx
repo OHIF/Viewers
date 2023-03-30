@@ -67,6 +67,8 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
+      console.warn('>>>>> onModeExit');
+
       const {
         toolGroupService,
         syncGroupService,
