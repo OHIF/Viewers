@@ -110,6 +110,8 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
         'cornerstone-wado-image-loader':
           'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js',
+        'dicom-microscopy-viewer':
+          'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
       },
       // Which directories to search when resolving modules
       modules: [
@@ -154,10 +156,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       // new BundleAnalyzerPlugin(),
     ],
     // enable experimental features, like webAssembly
-    experiments: {
-      asyncWebAssembly: true,
-      syncWebAssembly: true,
-    },
+    // experiments: {
+    //   asyncWebAssembly: true,
+    //   syncWebAssembly: true,
+    // },
   };
 
   if (isProdBuild) {

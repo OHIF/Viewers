@@ -120,11 +120,20 @@ module.exports = (env, argv) => {
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
       }),
+      // new CopyPlugin({
+      //   patterns: [
+      //     {
+      //       from:
+      //         '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+      //       to: DIST_DIR,
+      //     },
+      //   ],
+      // }),
       new CopyPlugin({
         patterns: [
           {
             from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+              '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
             to: DIST_DIR,
           },
         ],
