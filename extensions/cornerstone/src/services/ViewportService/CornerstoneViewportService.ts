@@ -156,7 +156,7 @@ class CornerstoneViewportService extends PubSubService
    * Disables the viewport inside the renderingEngine, if no viewport is left
    * it destroys the renderingEngine.
    *
-   * This is called when the element goes away entire - with new viewportId's
+   * This is called when the element goes away entirely - with new viewportId's
    * created for every new viewport, this will be called whenever the set of
    * viewports is changed, but NOT when the viewport position changes only.
    *
@@ -283,6 +283,9 @@ class CornerstoneViewportService extends PubSubService
     const viewport = renderingEngine.getViewport(viewportId);
     this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
 
+    // The broadcast event here ensures that listeners have a valid, up to date
+    // viewport to access.  Doing it too early can result in exceptions or
+    // invalid data.
     this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
       viewportData,
       viewportIndex,
@@ -391,8 +394,6 @@ class CornerstoneViewportService extends PubSubService
       }
     }
 
-    // There is a bug in CS3D that the setStack does not
-    // navigate to the desired image.
     viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
       const camera = presentations.positionPresentation?.camera;
