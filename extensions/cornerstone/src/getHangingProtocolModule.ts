@@ -11,7 +11,7 @@ const mpr: Types.HangingProtocol.Protocol = {
   // Unknown number of priors referenced - so just match any study
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
-  imageLoadStrategy: 'interleaveTopToBottom',
+  imageLoadStrategy: 'nth',
   callbacks: {
     // Switches out of MPR mode when the layout change button is used
     onLayoutChange: [
