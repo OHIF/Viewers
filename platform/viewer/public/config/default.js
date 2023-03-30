@@ -1,6 +1,6 @@
 window.config = {
   // default: '/'
-  routerBasename: '/',
+  routerBasename: '/ohif',
   extensions: [],
   showStudyList: false,
   filterQueryParam: false,
@@ -17,7 +17,7 @@ window.config = {
   },
   servers: {
     dicomWeb: [
-      {
+      /*{
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -27,8 +27,8 @@ window.config = {
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
-      },
-      /*{
+      },*/
+      {
         name: 'Orthanc',
         wadoUriRoot: '/wadoC',
         qidoRoot: '/dicom-web',
@@ -38,7 +38,7 @@ window.config = {
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
-      },*/
+      },
     ],
   },
 

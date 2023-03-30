@@ -31,18 +31,38 @@ const ViewerLocalFileData = asyncComponent(() =>
 
 const reload = () => window.location.reload();
 
+async function checkLogin(){
+  try {
+    const req = await fetch("/AjaxPacssisUtils?accion=checkPermisionPacsView");
+    const data = await req.json();
+    return data.success;
+  }catch (e) {
+    return false;
+  }
+}
+
 const ROUTES_DEF = {
   default: {
     viewer: {
-      path: '/viewer/:studyInstanceUIDs',
+      path: ['/viewer/:studyInstanceUIDs', '/'],
+      //path: '/viewer/:studyInstanceUIDs',
       component: ViewerRouting,
+      condition: async appConfig => {
+        /*const login = await checkLogin();
+        if (!login) {
+          location.href = '/403.jsp';
+        }
+        return login;*/
+        return true;
+      },
     },
     standaloneViewer: {
       path: '/viewer',
       component: StandaloneRouting,
     },
     list: {
-      path: ['/studylist', '/'],
+      path: '/studylist',
+      //path: ['/studylist', '/'],
       component: StudyListRouting,
       condition: appConfig => {
         return appConfig.showStudyList;
