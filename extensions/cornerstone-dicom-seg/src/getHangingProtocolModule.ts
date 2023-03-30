@@ -1,10 +1,12 @@
-const srProtocol = {
-  id: '@ohif/sr',
+import { Types } from '@ohif/core';
+
+const segProtocol: Types.HangingProtocol.Protocol = {
+  id: '@ohif/seg',
   // Don't store this hanging protocol as it applies to the currently active
   // display set by default
   // cacheId: null,
   hasUpdatedPriorsInformation: false,
-  name: 'SR Key Images',
+  name: 'Segmentation Load',
   // Just apply this one when specifically listed
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
@@ -22,18 +24,18 @@ const srProtocol = {
     },
     displaySets: [
       {
-        id: 'srDisplaySetId',
+        id: 'segDisplaySetId',
         matchedDisplaySetsIndex: -1,
       },
     ],
   },
   displaySetSelectors: {
-    srDisplaySetId: {
+    segDisplaySetId: {
       seriesMatchingRules: [
         {
           attribute: 'Modality',
           constraint: {
-            equals: 'SR',
+            equals: 'SEG',
           },
         },
       ],
@@ -41,7 +43,7 @@ const srProtocol = {
   },
   stages: [
     {
-      name: 'SR Key Images',
+      name: 'Segmentat',
       viewportStructure: {
         layoutType: 'grid',
         properties: {
@@ -54,7 +56,7 @@ const srProtocol = {
           viewportOptions: { allowUnmatchedView: true },
           displaySets: [
             {
-              id: 'srDisplaySetId',
+              id: 'segDisplaySetId',
             },
           ],
         },
@@ -66,11 +68,11 @@ const srProtocol = {
 function getHangingProtocolModule() {
   return [
     {
-      name: srProtocol.id,
-      protocol: srProtocol,
+      name: segProtocol.id,
+      protocol: segProtocol,
     },
   ];
 }
 
 export default getHangingProtocolModule;
-export { srProtocol };
+export { segProtocol };
