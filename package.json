@@ -146,7 +146,7 @@
     "ansi-html": "0.0.8",
     "lodash": "4.17.21",
     "ansi-regex": "5.0.1",
-    "axios": "0.21.2",
+    "axios": "0.21.4",
     "async": "3.2.2",
     "minimatch": "3.0.5",
     "qs": "6.7.3",
