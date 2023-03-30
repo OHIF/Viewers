@@ -329,7 +329,7 @@ const commandsModule = ({
       uiNotificationService.show({
         title: 'Change Stage',
         message: 'The hanging protocol has no more applicable stages',
-        type: 'error',
+        type: 'info',
         duration: 3000,
       });
     },
