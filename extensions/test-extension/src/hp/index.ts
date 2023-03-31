@@ -2,7 +2,7 @@ import hpMN from './hpMN';
 
 const hangingProtocols = [
   {
-    id: '@ohif/hp-extension.mn',
+    name: '@ohif/hp-extension.mn',
     protocol: hpMN,
   },
 ];

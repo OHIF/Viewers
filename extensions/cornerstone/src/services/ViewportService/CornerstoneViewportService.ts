@@ -155,9 +155,14 @@ class CornerstoneViewportService extends PubSubService
   /**
    * Disables the viewport inside the renderingEngine, if no viewport is left
    * it destroys the renderingEngine.
+   *
+   * This is called when the element goes away entirely - with new viewportId's
+   * created for every new viewport, this will be called whenever the set of
+   * viewports is changed, but NOT when the viewport position changes only.
+   *
    * @param viewportIndex
    */
-  public disableElement(viewportIndex: number) {
+  public disableElement(viewportIndex: number): void {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
     if (!viewportInfo) {
       return;
@@ -254,12 +259,6 @@ class CornerstoneViewportService extends PubSubService
     viewportInfo.setDisplaySetOptions(displaySetOptions);
     viewportInfo.setViewportData(viewportData);
 
-    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
-      viewportData,
-      viewportIndex,
-      viewportId,
-    });
-
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
     const background = viewportInfo.getBackground();
@@ -283,6 +282,15 @@ class CornerstoneViewportService extends PubSubService
 
     const viewport = renderingEngine.getViewport(viewportId);
     this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
+
+    // The broadcast event here ensures that listeners have a valid, up to date
+    // viewport to access.  Doing it too early can result in exceptions or
+    // invalid data.
+    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+      viewportData,
+      viewportIndex,
+      viewportId,
+    });
   }
 
   public getCornerstoneViewport(
@@ -386,11 +394,7 @@ class CornerstoneViewportService extends PubSubService
       }
     }
 
-    // There is a bug in CS3D that the setStack does not
-    // navigate to the desired image.
-    viewport.setStack(imageIds, 0).then(() => {
-      // The scroll, however, works fine in CS3D
-      viewport.scroll(initialImageIndexToUse);
+    viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
       const camera = presentations.positionPresentation?.camera;
       if (camera) viewport.setCamera(camera);
@@ -620,6 +624,10 @@ class CornerstoneViewportService extends PubSubService
     }
 
     const viewportInfo = this.getViewportInfo(viewport.id);
+
+    if (!viewportInfo) {
+      console.warn('Viewport info not defined for', viewport.id);
+    }
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);

@@ -18,7 +18,6 @@ const viewportIdVolumeInputArrayMap = new Map<string, unknown[]>();
 export default function interleaveNthLoader({
   data: { viewportId, volumeInputArray },
   displaySetsMatchDetails,
-  viewportMatchDetails: matchDetails,
 }) {
   viewportIdVolumeInputArrayMap.set(viewportId, volumeInputArray);
 
@@ -29,6 +28,7 @@ export default function interleaveNthLoader({
     const volume = cache.getVolume(volumeId);
 
     if (!volume) {
+      console.log("interleaveNthLoader::No volume, can't load it");
       return;
     }
 
@@ -36,33 +36,6 @@ export default function interleaveNthLoader({
     if (!volumeIdMapsToLoad.has(volumeId)) {
       const { metadata } = volume;
       volumeIdMapsToLoad.set(volumeId, metadata.SeriesInstanceUID);
-    }
-  }
-
-  /**
-   * The following is checking if all the viewports that were matched in the HP has been
-   * successfully created their cornerstone viewport or not. Todo: This can be
-   * improved by not checking it, and as soon as the matched DisplaySets have their
-   * volume loaded, we start the loading, but that comes at the cost of viewports
-   * not being created yet (e.g., in a 10 viewport ptCT fusion, when one ct viewport and one
-   * pt viewport are created we have a guarantee that the volumes are created in the cache
-   * but the rest of the viewports (fusion, mip etc.) are not created yet. So
-   * we can't initiate setting the volumes for those viewports. One solution can be
-   * to add an event when a viewport is created (not enabled element event) and then
-   * listen to it and as the other viewports are created we can set the volumes for them
-   * since volumes are already started loading.
-   */
-  if (matchDetails.size !== viewportIdVolumeInputArrayMap.size) {
-    return;
-  }
-
-  // Check if all the matched volumes are loaded
-  for (const [_, details] of displaySetsMatchDetails.entries()) {
-    const { SeriesInstanceUID } = details;
-
-    // HangingProtocol has matched, but don't have all the volumes created yet, so return
-    if (!Array.from(volumeIdMapsToLoad.values()).includes(SeriesInstanceUID)) {
-      return;
     }
   }
 

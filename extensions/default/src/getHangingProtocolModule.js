@@ -290,7 +290,7 @@ const defaultProtocol = {
 function getHangingProtocolModule() {
   return [
     {
-      id: defaultProtocol.id,
+      name: defaultProtocol.id,
       protocol: defaultProtocol,
     },
   ];
