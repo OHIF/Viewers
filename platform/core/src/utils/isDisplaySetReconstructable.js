@@ -30,8 +30,10 @@ export default function isDisplaySetReconstructable(instances) {
   }
 
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
-  if (!instances.every(instance => !!instance.ImagePositionPatient)) {
-    return { value: false };
+  if (!isMultiframe) {
+    if (!instances.every(instance => !!instance.ImagePositionPatient)) {
+      return { value: false };
+    }
   }
 
   const sortedInstances = sortInstancesByPosition(instances);
@@ -44,17 +46,14 @@ export default function isDisplaySetReconstructable(instances) {
 }
 
 function processMultiframe(multiFrameInstance) {
-  const {
-    PerFrameFunctionalGroupsSequence,
-    SharedFunctionalGroupsSequence,
-  } = multiFrameInstance;
+  const { PerFrameFunctionalGroupsSequence } = multiFrameInstance;
 
   // If we don't have the PixelMeasuresSequence, then the pixel spacing and
   // slice thickness isn't specified or is changing and we can't reconstruct
   // the dataset.
   if (
-    !SharedFunctionalGroupsSequence ||
-    !SharedFunctionalGroupsSequence[0].PixelMeasuresSequence
+    !PerFrameFunctionalGroupsSequence ||
+    !PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence
   ) {
     return { value: false };
   }
@@ -63,7 +62,7 @@ function processMultiframe(multiFrameInstance) {
   // difference amount
   const {
     PlaneOrientationSequence: sharedOrientation,
-  } = SharedFunctionalGroupsSequence;
+  } = PerFrameFunctionalGroupsSequence[0];
 
   if (!sharedOrientation) {
     const {

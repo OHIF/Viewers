@@ -188,7 +188,7 @@ function createDicomLocalApi(dicomLocalConfig) {
           for (let i = 0; i < NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,
-              frame: i,
+              frame: i + 1,
             });
             imageIds.push(imageId);
           }
