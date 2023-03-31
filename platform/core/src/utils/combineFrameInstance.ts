@@ -47,12 +47,18 @@ const combineFrameInstance = (frame, instance) => {
         instance.DetectorInformationSequence[0].ImagePositionPatient;
     }
 
-    return Object.assign(
-      { frameNumber: frameNumber },
-      instance,
-      ...Object.values(shared),
-      ...Object.values(perFrame)
-    );
+    const newInstance = Object.assign(instance, { frameNumber: frameNumber });
+
+    // merge the shared first then the per frame to override
+    [...shared, ...perFrame].forEach(item => {
+      Object.entries(item).forEach(([key, value]) => {
+        newInstance[key] = value;
+      });
+    });
+
+    // Todo: we should cache this combined instance somewhere, maybe add it
+    // back to the dicomMetaStore so we don't have to do this again.
+    return newInstance;
   } else {
     return instance;
   }

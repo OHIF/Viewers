@@ -9226,22 +9226,10 @@ dateformat@^3.0.0:
   resolved "https://registry.npmjs.org/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dayjs@^1.10.4, dayjs@^1.11.6:
+dayjs@^1.10.4:
   version "1.11.7"
   resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.7.tgz#4b296922642f70999544d1144a2c25730fce63e2"
   integrity sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==
-
-dcmjs@^0.28.3:
-  version "0.28.3"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.28.3.tgz#a756ab4b02363d12545c9830b8f97b5141723727"
-  integrity sha512-GZOu+CtNvdWsPv8ga9Ywm/1YadEqT/+FhwcpgsbDAmKDUKe+6uNH+8KbEsRcaN1V5WFQEMwRbF9IRTl2qOoZvA==
-  dependencies:
-    "@babel/runtime-corejs2" "^7.17.8"
-    gl-matrix "^3.1.0"
-    lodash.clonedeep "^4.5.0"
-    loglevelnext "^3.0.1"
-    ndarray "^1.0.19"
-    pako "^2.0.4"
 
 dcmjs@^0.29.4:
   version "0.29.4"

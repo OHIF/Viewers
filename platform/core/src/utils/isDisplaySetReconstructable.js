@@ -30,104 +30,70 @@ export default function isDisplaySetReconstructable(instances) {
   }
 
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
-  if (!isMultiframe) {
-    if (!instances.every(instance => !!instance.ImagePositionPatient)) {
-      return { value: false };
-    }
+  if (
+    !isMultiframe &&
+    !instances.every(instance => instance.ImagePositionPatient)
+  ) {
+    return { value: false };
   }
 
   const sortedInstances = sortInstancesByPosition(instances);
 
-  if (isMultiframe) {
-    return processMultiframe(sortedInstances[0]);
-  } else {
-    return processSingleframe(sortedInstances);
-  }
+  return isMultiframe
+    ? processMultiframe(sortedInstances[0])
+    : processSingleframe(sortedInstances);
 }
 
 function hasPixelMeasurements(multiFrameInstance) {
-  const {
-    SharedFunctionalGroupsSequence,
-    PerFrameFunctionalGroupsSequence,
-  } = multiFrameInstance;
+  const perFrameSequence =
+    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
+  const sharedSequence = multiFrameInstance.SharedFunctionalGroupsSequence;
 
-  let found = false;
-  found =
-    PerFrameFunctionalGroupsSequence &&
-    PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence;
-
-  if (!found) {
-    found =
-      SharedFunctionalGroupsSequence &&
-      SharedFunctionalGroupsSequence.PixelMeasuresSequence;
-  }
-  if (!found) {
-    found =
+  return (
+    Boolean(perFrameSequence?.PixelMeasuresSequence) ||
+    Boolean(sharedSequence?.PixelMeasuresSequence) ||
+    Boolean(
       multiFrameInstance.PixelSpacing &&
-      (multiFrameInstance.SliceThickness ||
-        multiFrameInstance.SpacingBetweenFrames);
-  }
-  return found;
+        (multiFrameInstance.SliceThickness ||
+          multiFrameInstance.SpacingBetweenFrames)
+    )
+  );
 }
 
 function hasOrientation(multiFrameInstance) {
-  const {
-    SharedFunctionalGroupsSequence,
-    PerFrameFunctionalGroupsSequence,
-  } = multiFrameInstance;
+  const sharedSequence = multiFrameInstance.SharedFunctionalGroupsSequence;
+  const perFrameSequence =
+    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
 
-  let found = false;
-  // Check that the orientation is either shared or with the allowed
-  // difference amount
-  found =
-    SharedFunctionalGroupsSequence &&
-    SharedFunctionalGroupsSequence.PlaneOrientationSequence;
-
-  if (!found) {
-    found =
-      PerFrameFunctionalGroupsSequence &&
-      PerFrameFunctionalGroupsSequence.length > 0 &&
-      PerFrameFunctionalGroupsSequence[0].PlaneOrientationSequence;
-  }
-
-  if (!found) {
-    found =
+  return (
+    Boolean(sharedSequence?.PlaneOrientationSequence) ||
+    Boolean(perFrameSequence?.PlaneOrientationSequence) ||
+    Boolean(
       multiFrameInstance.ImageOrientationPatient ||
-      (multiFrameInstance.DetectorInformationSequence &&
-        multiFrameInstance.DetectorInformationSequence[0]
-          .ImageOrientationPatient);
-  }
-
-  return found;
+        multiFrameInstance.DetectorInformationSequence?.[0]
+          ?.ImageOrientationPatient
+    )
+  );
 }
 
 function hasPosition(multiFrameInstance) {
-  const { PerFrameFunctionalGroupsSequence } = multiFrameInstance;
+  const perFrameSequence =
+    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
 
-  let found =
-    PerFrameFunctionalGroupsSequence &&
-    PerFrameFunctionalGroupsSequence.length > 0;
-
-  if (found) {
-    let frame0 = PerFrameFunctionalGroupsSequence[0];
-    found = frame0.PlanePositionSequence || frame0.CTPositionSequence;
-  }
-  if (!found) {
-    found =
+  return (
+    Boolean(perFrameSequence?.PlanePositionSequence) ||
+    Boolean(perFrameSequence?.CTPositionSequence) ||
+    Boolean(
       multiFrameInstance.ImagePositionPatient ||
-      (multiFrameInstance.DetectorInformationSequence &&
-        multiFrameInstance.DetectorInformationSequence[0].ImagePositionPatient);
-  }
-
-  return found;
+        multiFrameInstance.DetectorInformationSequence?.[0]
+          ?.ImagePositionPatient
+    )
+  );
 }
 
 function isNMReconstructable(multiFrameInstance) {
-  if (multiFrameInstance.ImageType.length > 2) {
-    const imageSubType = multiFrameInstance.ImageType[2];
-    return imageSubType === 'RECON TOMO' || imageSubType === 'RECON GATED TOMO';
-  }
-  return false;
+  const imageSubType = multiFrameInstance.ImageType?.[2];
+  return imageSubType === 'RECON TOMO' || imageSubType === 'RECON GATED TOMO';
 }
 
 function processMultiframe(multiFrameInstance) {
@@ -148,10 +114,11 @@ function processMultiframe(multiFrameInstance) {
     return { value: false };
   }
 
-  if (multiFrameInstance.Modality.includes('NM')) {
-    if (!isNMReconstructable(multiFrameInstance)) {
-      return { value: false };
-    }
+  if (
+    multiFrameInstance.Modality.includes('NM') &&
+    !isNMReconstructable(multiFrameInstance)
+  ) {
+    return { value: false };
   }
 
   // TODO - check spacing consistency
