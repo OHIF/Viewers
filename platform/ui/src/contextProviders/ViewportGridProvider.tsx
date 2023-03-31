@@ -187,24 +187,6 @@ export function ViewportGridProvider({ children, service }) {
 
           viewports[viewportIndex] = newViewport;
         }
-        viewports.forEach((viewport, index) => {
-          console.log(
-            'Viewport',
-            index,
-            viewport.viewportIndex,
-            state.viewports[index].viewportIndex,
-            viewport.viewportId,
-            state.viewports[index].viewportId
-          );
-          if (
-            viewport.id !== viewport.viewportId ||
-            viewport.id !== viewport.viewportOptions.viewportId
-          ) {
-            throw new Error(
-              `Viewport ${index} ${viewport.id} ${viewport.viewportId}`
-            );
-          }
-        });
 
         return { ...state, viewports };
       }
