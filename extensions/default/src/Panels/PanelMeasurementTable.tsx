@@ -79,8 +79,9 @@ export default function PanelMeasurementTable({
     const displaySet = displaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]
     );
+    const { StudyInstanceUID: studyUID } = displaySet;
     const trackedMeasurements = measurements.filter(
-      m => displaySet.StudyInstanceUID === m.referenceStudyUID
+      m => studyUID === m.referenceStudyUID
     );
 
     if (trackedMeasurements.length <= 0) {
@@ -95,6 +96,8 @@ export default function PanelMeasurementTable({
 
     const promptResult = await createReportDialogPrompt(uiDialogService, {
       extensionManager,
+      seriesDescription: measurementService.getSeriesInformation(studyUID)
+        ?.SeriesDescription,
     });
 
     if (promptResult.action === CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT) {
@@ -103,15 +106,18 @@ export default function PanelMeasurementTable({
       );
       const dataSource = dataSources[0];
 
+      const seriesInfo = measurementService.getSeriesInformation(studyUID);
+
       const SeriesDescription =
-        // isUndefinedOrEmpty
-        promptResult.value === undefined || promptResult.value === ''
-          ? 'Research Derived Series' // default
-          : promptResult.value; // provided value
+        promptResult.value ||
+        seriesInfo?.SeriesDescription ||
+        measurementService.getDefaultSeriesDescription();
 
       // Re-use an existing series having the same series description to avoid
       // creating too many series instances.
       const options = findSRWithSameSeriesDescription(
+        studyUID,
+        seriesInfo?.SeriesInstanceUID,
         SeriesDescription,
         displaySetService
       );

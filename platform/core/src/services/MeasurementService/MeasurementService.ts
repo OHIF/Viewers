@@ -1,3 +1,4 @@
+import { SeriesMetadata } from '../../Types';
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
@@ -87,6 +88,14 @@ const VALUE_TYPES = {
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
+export type SeriesInformation = {
+  StudyInstanceUID: string;
+  SeriesInstanceUID?: string;
+  SeriesDescription?: string;
+  modified: boolean;
+  [key: string]: unknown;
+};
+
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -111,9 +120,8 @@ class MeasurementService extends PubSubService {
   public static VALUE_TYPES = VALUE_TYPES;
   public readonly VALUE_TYPES = VALUE_TYPES;
 
-  protected seriesDescription = '';
-  protected seriesInstanceUID: string;
-  protected measurementsStored = true;
+  protected defaultSeriesDescription = 'Research Derived Series';
+  protected seriesInformation: Record<string, SeriesInformation> = {};
 
   constructor() {
     super(EVENTS);
@@ -123,33 +131,52 @@ class MeasurementService extends PubSubService {
     this._jumpToMeasurementCache = {};
   }
 
+  public setDefaultSeriesDescription(seriesDescription: string) {
+    this.defaultSeriesDescription = seriesDescription;
+  }
+
   /**
    * The series description is remembered here from the last load so that
    * it can be re-used for saving to the same series if desired.
    * Calling this should be done after loading measurements, and will cause
    * the measurements data to be considered up to date.
    */
-  public setSeriesDescription(desc: string, uid?: string): void {
-    this.seriesDescription = desc;
-    this.seriesInstanceUID = uid;
-    this.measurementsStored = true;
+  public setSeriesInformation(
+    StudyInstanceUID: string,
+    seriesInformation: SeriesMetadata
+  ): void {
+    this.seriesInformation[StudyInstanceUID] = {
+      ...seriesInformation,
+      modified: false,
+    };
     this._broadcastEvent(EVENTS.MEASUREMENTS_SAVED, {
-      SeriesDescription: desc,
-      SeriesInstanceUID: uid,
+      StudyInstanceUID,
+      SeriesInstanceUID: seriesInformation.SeriesInstanceUID,
+      SeriesDescription: seriesInformation.SeriesDescription,
     });
   }
 
-  public getSeriesDescription(): string {
-    return this.seriesDescription;
+  public getDefaultSeriesDescription(): string {
+    return this.defaultSeriesDescription;
   }
 
-  public getSeriesInstanceUID(): string {
-    return this.seriesInstanceUID;
+  public getSeriesInformation(studyUID: string): SeriesInformation {
+    if (!this.seriesInformation[studyUID]) {
+      this.seriesInformation[studyUID] = {
+        StudyInstanceUID: studyUID,
+        modified: false,
+      };
+  }
+    return this.seriesInformation[studyUID];
   }
 
   /** Indicate if the measurement are stored/up to date with the source data */
-  public isMeasurementsStored(): boolean {
-    return this.measurementsStored;
+  public isMeasurementsStored(studyUID: string): boolean {
+    return !this.seriesInformation[studyUID]?.modified;
+  }
+
+  public setMeasurementsModified(studyUID: string): void {
+    this.getSeriesInformation(studyUID).modified = true;
   }
 
   /**
@@ -430,7 +457,7 @@ class MeasurementService extends PubSubService {
     );
 
     this.measurements[measurementUID] = updatedMeasurement;
-    this.measurementsStored = false;
+    this.setMeasurementsModified(measurement.referenceStudyUID);
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
@@ -624,7 +651,7 @@ class MeasurementService extends PubSubService {
         });
       } else {
         log.info('Measurement added.', newMeasurement);
-        this.measurementsStored = false;
+        this.setMeasurementsModified(newMeasurement.referenceStudyUID);
 
         this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
           source,
@@ -633,7 +660,7 @@ class MeasurementService extends PubSubService {
       }
     } else {
       log.info('Measurement started.', newMeasurement);
-      this.measurementsStored = false;
+      this.setMeasurementsModified(newMeasurement.referenceStudyUID);
       this.measurements[internalUID] = newMeasurement;
     }
 
@@ -653,7 +680,6 @@ class MeasurementService extends PubSubService {
     }
 
     delete this.measurements[measurementUID];
-    this.measurementsStored = false;
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
@@ -661,16 +687,38 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  clearMeasurements() {
+  public clearMeasurements(): void {
     // Make a copy of the measurements
     const measurements = { ...this.measurements };
     this.measurements = {};
     this._jumpToMeasurementCache = {};
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
-    this.seriesDescription = '';
-    this.seriesInstanceUID = '';
-    // The measurements are stored - in this case empty, so nothing to store.
-    this.measurementsStored = true;
+    this.seriesInformation = {};
+  }
+
+  /** Clear the measurements for a specific study */
+  public clearStudyMeasurements(studyUID: string): void {
+    // Make a copy of the measurements
+    const allMeasurements = { ...this.measurements };
+    const clearedMeasurements = {};
+    this.measurements = {};
+    this._jumpToMeasurementCache = {};
+
+    Object.entries(allMeasurements).forEach(([key, value]) => {
+      console.log('measurement', value);
+      const { referenceStudyUID } = value;
+      if (!referenceStudyUID) {
+        throw new Error(`No referenceStudyUID ${value}`);
+      }
+      if (referenceStudyUID === studyUID) {
+        clearedMeasurements[key] = value;
+      } else {
+        this.measurements[key] = value;
+      }
+    });
+    delete this.seriesInformation[studyUID];
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, {
+      measurements: clearedMeasurements,
+    });
   }
 
   /**

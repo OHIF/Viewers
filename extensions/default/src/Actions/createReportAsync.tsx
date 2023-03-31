@@ -41,16 +41,17 @@ async function createReportAsync(
       'CORNERSTONE_STRUCTURED_REPORT'
     );
 
-    // The "Mode" route listens for DicomMetadataStore changes
-    // When a new instance is added, it listens and
-    // automatically calls makeDisplaySets
-    DicomMetadataStore.addInstances([naturalizedReport], true);
+    const { SeriesDescription, StudyInstanceUID } = naturalizedReport;
+    measurementService.setSeriesInformation(
+      StudyInstanceUID,
+      naturalizedReport
+    );
 
     const displaySetInstanceUID = displaySetService.getMostRecentDisplaySet();
 
     uiNotificationService.show({
       title: 'Create Report',
-      message: 'Measurements saved successfully',
+      message: `Measurements saved to ${SeriesDescription}`,
       type: 'success',
     });
 

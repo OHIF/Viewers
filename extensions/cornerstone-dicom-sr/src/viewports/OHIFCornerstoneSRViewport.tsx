@@ -87,7 +87,8 @@ function OHIFCornerstoneSRViewport(props) {
     // if no panels from measurement-tracking extension is used, this code will run
     trackedMeasurements = null;
     sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
-      measurementService.clearMeasurements();
+      const { StudyInstanceUID } = srDisplaySet;
+      measurementService.clearStudyMeasurements(StudyInstanceUID);
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
         { servicesManager, extensionManager },
         displaySetInstanceUID
@@ -103,10 +104,7 @@ function OHIFCornerstoneSRViewport(props) {
           displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
         });
       }
-      measurementService.setSeriesDescription(
-        srDisplaySet.SeriesDescription,
-        srDisplaySet.SeriesInstanceUID
-      );
+      measurementService.setSeriesInformation(StudyInstanceUID, srDisplaySet);
     };
   }
 
@@ -481,7 +479,7 @@ async function _getViewportReferencedDisplaySetData(
       return instances;
     };
     const instances = findReferences(displaySet);
-    const updateInstances = function () {
+    const updateInstances = function() {
       this.images.splice(0, this.images.length, ...findReferences(displaySet));
       this.numImageFrames = this.images.length;
     };
