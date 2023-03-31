@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 import {
@@ -9,15 +10,15 @@ import {
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 
-import { useTranslation } from 'react-i18next';
-
 import _hydrateRTdisplaySet from '../utils/_hydrateRT';
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
+import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
 
 const { formatDate } = utils;
+const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
-function OHIFDICOMRTViewport(props) {
+function OHIFCornerstoneRTViewport(props) {
   const {
     children,
     displaySets,
@@ -37,9 +38,9 @@ function OHIFDICOMRTViewport(props) {
     UINotificationService,
   } = servicesManager.services;
 
-  const toolGroupId = 'default';
+  const toolGroupId = `${RT_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
 
-  // SEG viewport will always have a single display set
+  // RT viewport will always have a single display set
   if (displaySets.length > 1) {
     throw new Error('RT viewport should only have a single display set');
   }
@@ -53,13 +54,13 @@ function OHIFDICOMRTViewport(props) {
   const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(1);
 
-  // Hydration means that the SEG is opened and segments are loaded into the
-  // segmentation panel, and SEG is also rendered on any viewport that is in the
-  // same frameOfReferenceUID as the referencedSeriesUID of the SEG. However,
-  // loading basically means SEG loading over network and bit unpacking of the
-  // SEG data.
+  // Hydration means that the RT is opened and segments are loaded into the
+  // segmentation panel, and RT is also rendered on any viewport that is in the
+  // same frameOfReferenceUID as the referencedSeriesUID of the RT. However,
+  // loading basically means RT loading over network and bit unpacking of the
+  // RT data.
   const [isHydrated, setIsHydrated] = useState(rtDisplaySet.isHydrated);
-  const [segIsLoading, setSegIsLoading] = useState(!rtDisplaySet.isLoaded);
+  const [rtIsLoading, setRtIsLoading] = useState(!rtDisplaySet.isLoaded);
   const [element, setElement] = useState(null);
   const [processingProgress, setProcessingProgress] = useState({
     segmentIndex: 1,
@@ -150,7 +151,7 @@ function OHIFDICOMRTViewport(props) {
   );
 
   useEffect(() => {
-    if (segIsLoading) {
+    if (rtIsLoading) {
       return;
     }
 
@@ -163,17 +164,17 @@ function OHIFDICOMRTViewport(props) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportIndex, rtDisplaySet, segIsLoading]);
+  }, [servicesManager, viewportIndex, rtDisplaySet, rtIsLoading]);
 
   useEffect(() => {
     const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+      SegmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
         if (
           evt.rtDisplaySet.displaySetInstanceUID ===
           rtDisplaySet.displaySetInstanceUID
         ) {
-          setSegIsLoading(false);
+          setRtIsLoading(false);
         }
 
         if (evt.overlappingSegments) {
@@ -194,7 +195,7 @@ function OHIFDICOMRTViewport(props) {
 
   useEffect(() => {
     const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENT_PIXEL_DATA_CREATED,
+      SegmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
       ({ segmentIndex, numSegments }) => {
         setProcessingProgress({
           segmentIndex,
@@ -229,6 +230,31 @@ function OHIFDICOMRTViewport(props) {
 
     return () => {
       onDisplaySetsRemovedSubscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    let toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+
+    if (toolGroup) {
+      return;
+    }
+
+    toolGroup = createRTToolGroupAndAddTools(
+      ToolGroupService,
+      toolGroupId,
+      extensionManager
+    );
+
+    setToolGroupCreated(true);
+
+    return () => {
+      // remove the segmentation representations if seg displayset changed
+      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+        toolGroupId
+      );
+
+      ToolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
 
@@ -330,7 +356,7 @@ function OHIFDICOMRTViewport(props) {
       />
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {segIsLoading && (
+        {rtIsLoading && (
           <LoadingIndicatorProgress
             className="w-full h-full"
             progress={
@@ -342,7 +368,7 @@ function OHIFDICOMRTViewport(props) {
             }
             textBlock={
               !processingProgress.totalSegments ? (
-                <span className="text-white text-sm">Loading SEG ...</span>
+                <span className="text-white text-sm">Loading RTSTRUCT ...</span>
               ) : (
                 <span className="text-white text-sm flex items-baseline space-x-2">
                   <div>Loading Segment</div>
@@ -373,7 +399,7 @@ function OHIFDICOMRTViewport(props) {
   );
 }
 
-OHIFDICOMRTViewport.propTypes = {
+OHIFCornerstoneRTViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
   viewportIndex: PropTypes.number.isRequired,
   dataSource: PropTypes.object,
@@ -381,7 +407,7 @@ OHIFDICOMRTViewport.propTypes = {
   customProps: PropTypes.object,
 };
 
-OHIFDICOMRTViewport.defaultProps = {
+OHIFCornerstoneRTViewport.defaultProps = {
   customProps: {},
 };
 
@@ -404,4 +430,4 @@ function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   return referencedDisplaySetMetadata;
 }
 
-export default OHIFDICOMRTViewport;
+export default OHIFCornerstoneRTViewport;

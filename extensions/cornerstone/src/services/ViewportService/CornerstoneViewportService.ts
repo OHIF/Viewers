@@ -11,9 +11,13 @@ import {
   cache,
   utilities,
   CONSTANTS,
+  Enums as csEnums,
 } from '@cornerstonejs/core';
 
-import { utilities as csToolsUtils } from '@cornerstonejs/tools';
+import {
+  utilities as csToolsUtils,
+  Enums as csToolsEnums,
+} from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, {
@@ -386,7 +390,7 @@ class CornerstoneViewportService extends PubSubService
       initialImageIndexToUse === null
     ) {
       initialImageIndexToUse =
-        this._getInitialImageIndexForStackViewport(viewportInfo, imageIds) || 0;
+        this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
     const properties = { ...presentations.lutPresentation?.properties };
@@ -412,7 +416,7 @@ class CornerstoneViewportService extends PubSubService
     });
   }
 
-  private _getInitialImageIndexForStackViewport(
+  private _getInitialImageIndexForViewport(
     viewportInfo: ViewportInfo,
     imageIds?: string[]
   ): number {
@@ -423,7 +427,24 @@ class CornerstoneViewportService extends PubSubService
     }
 
     const { index, preset } = initialImageOptions;
-    return this._getInitialImageIndex(imageIds.length, index, preset);
+    const viewportType = viewportInfo.getViewportType();
+
+    let numberOfSlices;
+    if (viewportType === csEnums.ViewportType.STACK) {
+      numberOfSlices = imageIds.length;
+    } else if (viewportType === csEnums.ViewportType.ORTHOGRAPHIC) {
+      const viewport = this.getCornerstoneViewport(
+        viewportInfo.getViewportId()
+      );
+      const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(
+        viewport
+      );
+      numberOfSlices = imageSliceData.length;
+    } else {
+      return;
+    }
+
+    return this._getInitialImageIndex(numberOfSlices, index, preset);
   }
 
   _getInitialImageIndex(
@@ -562,69 +583,100 @@ class CornerstoneViewportService extends PubSubService
       .map(displaySetService.getDisplaySetByUID)
       .find(displaySet => displaySet && displaySet.Modality === 'SEG');
 
+    const rtssDisplaySet = displaySetInstanceUIDs
+      .map(DisplaySetService.getDisplaySetByUID)
+      .find(displaySet => displaySet && displaySet.Modality === 'RTSTRUCT');
+
     if (segDisplaySet) {
-      const { referencedVolumeId } = segDisplaySet;
-      const referencedVolume = cache.getVolume(referencedVolumeId);
-      const segmentationId = segDisplaySet.displaySetInstanceUID;
-
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
-
-      if (referencedVolume) {
-        segmentationService.addSegmentationRepresentationToToolGroup(
-          toolGroup.id,
-          segmentationId
-        );
-      }
+      this._addSegmentationRepresentationForSEGDisplaySet(
+        segDisplaySet,
+        viewport
+      );
+    } else if (rtssDisplaySet) {
+      this._addSegmentationRepresentationForRTDisplaySet(
+        rtssDisplaySet,
+        viewport
+      );
     } else {
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
+      // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
+      // and we can look into hydrated segmentations to check if any of them are
+      // associated with the primary displaySet
+
+      // get segmentations only returns the hydrated segmentations
+      this._addSegmentationRepresentationToToolGroupIfNecessary(
+        displaySetInstanceUIDs,
+        viewport
+      );
+    }
+
+    const viewportInfo = this.getViewportInfo(viewport.id);
+    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
+
+    const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
+
+    if (imageIndex !== undefined) {
+      csToolsUtils.jumpToSlice(viewport.element, {
+        imageIndex,
+      });
+    }
+
+    viewport.render();
+  }
+
+  private _addSegmentationRepresentationToToolGroupIfNecessary(
+    displaySetInstanceUIDs: string[],
+    viewport: any
+  ) {
+    const {
+      SegmentationService,
+      ToolGroupService,
+    } = this.servicesManager.services;
+
+    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+
+    // this only returns hydrated segmentations
+    const segmentations = SegmentationService.getSegmentations();
+
+    for (const segmentation of segmentations) {
       const toolGroupSegmentationRepresentations =
         segmentationService.getSegmentationRepresentationsForToolGroup(
           toolGroup.id
         ) || [];
 
-      // csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
-      // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
-      // and we can look into hydrated segmentations to check if any of them are
-      // associated with the primary displaySet
-      // get segmentations only returns the hydrated segmentations
-      const segmentations = segmentationService.getSegmentations();
+      // if there is already a segmentation representation for this segmentation
+      // for this toolGroup, don't bother at all
+      const isSegmentationInToolGroup = toolGroupSegmentationRepresentations.find(
+        representation => representation.segmentationId === segmentation.id
+      );
 
-      for (const segmentation of segmentations) {
-        // if there is already a segmentation representation for this segmentation
-        // for this toolGroup, don't bother at all
-        if (
-          toolGroupSegmentationRepresentations.find(
-            representation => representation.segmentationId === segmentation.id
-          )
-        ) {
-          continue;
-        }
+      if (isSegmentationInToolGroup) {
+        continue;
+      }
 
-        // otherwise, check if the hydrated segmentations are in the same FOR
-        // as the primary displaySet, if so add the representation (since it was not there)
-        const { id: segDisplaySetInstanceUID } = segmentation;
+      // otherwise, check if the hydrated segmentations are in the same FOR
+      // as the primary displaySet, if so add the representation (since it was not there)
+      const { id: segDisplaySetInstanceUID } = segmentation;
+      const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
+        segDisplaySetInstanceUID
+      );
 
-        const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
-          segDisplaySetInstanceUID
+      let shouldDisplaySeg = false;
+
+      for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+        const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(
+          displaySetInstanceUID
         );
 
-        let shouldDisplaySeg = false;
-
-        for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-          const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(
-            displaySetInstanceUID
-          );
-
-          if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
-            shouldDisplaySeg = true;
-            break;
-          }
+        if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
+          shouldDisplaySeg = true;
+          break;
         }
+      }
 
-        if (shouldDisplaySeg) {
-          const toolGroup = toolGroupService.getToolGroupForViewport(
-            viewport.id
-          );
+      if (!shouldDisplaySeg) {
+        return;
+      }
 
           segmentationService.addSegmentationRepresentationToToolGroup(
             toolGroup.id,
@@ -634,40 +686,54 @@ class CornerstoneViewportService extends PubSubService
       }
     }
 
-    const viewportInfo = this.getViewportInfo(viewport.id);
+  private _addSegmentationRepresentationForSEGDisplaySet(
+    segDisplaySet: any,
+    viewport: any
+  ) {
+    const {
+      SegmentationService,
+      ToolGroupService,
+    } = this.servicesManager.services;
 
-    if (!viewportInfo) {
-      console.warn('Viewport info not defined for', viewport.id);
-    }
+    const { referencedVolumeId } = segDisplaySet;
+    const referencedVolume = cache.getVolume(referencedVolumeId);
+    const segmentationId = segDisplaySet.displaySetInstanceUID;
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
 
-    const initialImageOptions = viewportInfo.getInitialImageOptions();
-
-    if (
-      initialImageOptions &&
-      (initialImageOptions.preset !== undefined ||
-        initialImageOptions.index !== undefined)
-    ) {
-      const { index, preset } = initialImageOptions;
-
-      const { numberOfSlices } = csUtils.getImageSliceDataForVolumeViewport(
-        viewport
+    if (referencedVolume) {
+      SegmentationService.addSegmentationRepresentationToToolGroup(
+        toolGroup.id,
+        segmentationId
       );
-
-      const imageIndex = this._getInitialImageIndex(
-        numberOfSlices,
-        index,
-        preset
-      );
-
-      csToolsUtils.jumpToSlice(viewport.element, {
-        imageIndex,
-      });
     }
+  }
+  private _addSegmentationRepresentationForRTDisplaySet(
+    rtDisplaySet: any,
+    viewport: any
+  ) {
+    const {
+      SegmentationService,
+      ToolGroupService,
+    } = this.servicesManager.services;
 
-    viewport.render();
+    const segmentationId = rtDisplaySet.displaySetInstanceUID;
+
+    const toolGroup = ToolGroupService.getToolGroupForViewport(viewport.id);
+    console.debug(
+      'adding contour representation for toolGroup',
+      toolGroup.id,
+      'and segmentation',
+      segmentationId,
+      ''
+    );
+    SegmentationService.addSegmentationRepresentationToToolGroup(
+      toolGroup.id,
+      segmentationId,
+      false, // hydrate
+      csToolsEnums.SegmentationRepresentations.Contour
+    );
   }
 
   // Todo: keepCamera is an interim solution until we have a better solution for
