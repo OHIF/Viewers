@@ -1423,40 +1423,20 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/calculate-suv/-/calculate-suv-1.0.3.tgz#6d99a72032c0f90cebf44dc6f0b12a5f1102e884"
   integrity sha512-2SwVJKzC1DzyxdxJtCht9dhTND2GFjLwhhkDyyC7vJq5tIgbhxgPk1CSwovO1pxmoybAXzjOxnaubllxLgoT+w==
 
-"@cornerstonejs/codec-charls@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-charls/-/codec-charls-0.1.1.tgz#e55d4aa908732d0cc902888b7f3856c5a996df7f"
-  integrity sha512-Y250DGVzmownJ7WgpHxNqWvfTnv4/malaKm/tWm0xE1FxhQE8iErMWFpKxpNDk3MdfXO4/98piVsUwmJMiWoDQ==
-
 "@cornerstonejs/codec-charls@^1.2.3":
   version "1.2.3"
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-charls/-/codec-charls-1.2.3.tgz#6952c420486822ac8404409ae0ed5a559aff6e25"
   integrity sha512-qKUe6DN0dnGzhhfZLYhH9UZacMcudjxcaLXCrpxJImT/M/PQvZCT2rllu6VGJbWKJWG+dMVV2zmmleZcdJ7/cA==
-
-"@cornerstonejs/codec-libjpeg-turbo-8bit@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-libjpeg-turbo-8bit/-/codec-libjpeg-turbo-8bit-0.0.7.tgz#2ea9b575eed19e6e7e3701b7a50a4ae0ffbef0c4"
-  integrity sha512-qgm6BuVAy5mNP8SJ+A6+VbmPnqgj8jPvJrw4HbUoAzndmf9/VHjTYwawn3kmZWya5ErFAsXQ6c0U0noB1LKAiA==
 
 "@cornerstonejs/codec-libjpeg-turbo-8bit@^1.2.2":
   version "1.2.2"
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-libjpeg-turbo-8bit/-/codec-libjpeg-turbo-8bit-1.2.2.tgz#ae384b149d6655e3dd6e18b9891fab479ab5e144"
   integrity sha512-aAUMK2958YNpOb/7G6e2/aG7hExTiFTASlMt/v90XA0pRHdWiNg5ny4S5SAju0FbIw4zcMnR0qfY+yW3VG2ivg==
 
-"@cornerstonejs/codec-openjpeg@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-0.1.1.tgz#5bd1c52a33a425299299e970312731fa0cc2711b"
-  integrity sha512-HOMMOLV6xy8O/agNGGvrl0a8DwShpBvWxAzEzv2pqq12d3r5z/3MyIgNA3Oj/8bIBVvvVXxh9RX7rMDRHJdowg==
-
 "@cornerstonejs/codec-openjpeg@^1.2.2":
   version "1.2.2"
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-1.2.2.tgz#f0b524235b5551426b46db197a37b06f8ac805d7"
   integrity sha512-b1O7lZacKXelgeV9n8XWZ7pTw3i4Bq4qQ26G5ahBjWoOw4QNcCrb5hPxWBxNB/I8AoNbJxAe+lyLtyQGfdrTbw==
-
-"@cornerstonejs/codec-openjph@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-1.0.3.tgz#4c82642e8a6beb0d263f5a263723aec4225e5300"
-  integrity sha512-PK+9N/JL7ZMGum6OKuReRGGhWXpWjRC9WnltQ6aEzRKEQPMg+3WFiQPZowKCCG1I4whv35DYFRi6wu7RyRaEMQ==
 
 "@cornerstonejs/codec-openjph@^2.4.2":
   version "2.4.2"
@@ -1485,22 +1465,6 @@
   integrity sha512-sVsX6WGLmHg5UUg7p9iwvwjb8AswUypO2jARyIVtpa3JM3dP16Y0uh1jTWJFG2xWLZgEXDXcFCIhw5nOSohy7A==
   dependencies:
     "@cornerstonejs/core" "^0.38.0"
-    lodash.clonedeep "4.5.0"
-
-"@cornerstonejs/streaming-image-volume-loader@^0.11.2":
-  version "0.11.8"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.11.8.tgz#79dc9bf7f00a3277d9880f919c324cdeda2c28d6"
-  integrity sha512-fp+mmCUMWQQFzx9AzzmOJO1ntBStHQmxK3Zbi/sMs9TYcue+Zw14oA+qcuJ/7UZayb+c99unfWjhafjBiHWNeg==
-  dependencies:
-    "@cornerstonejs/core" "^0.30.1"
-    cornerstone-wado-image-loader "^4.8.0"
-
-"@cornerstonejs/tools@0.45.1":
-  version "0.45.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.45.1.tgz#1d151df9018869207183a766dcb60ed5027529be"
-  integrity sha512-x1edtc9RHGsFvAELeHtMPR5V+NlK9SToVkt0I5n3LbvH/XPgD3373PCC+lNLdvIM21AiA27N02qSpa83okXW7Q==
-  dependencies:
-    "@cornerstonejs/core" "^0.31.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 

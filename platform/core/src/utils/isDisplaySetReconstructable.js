@@ -122,6 +122,14 @@ function hasPosition(multiFrameInstance) {
   return found;
 }
 
+function isNMReconstructable(multiFrameInstance) {
+  if (multiFrameInstance.ImageType.length > 2) {
+    const imageSubType = multiFrameInstance.ImageType[2];
+    return imageSubType === 'RECON TOMO' || imageSubType === 'RECON GATED TOMO';
+  }
+  return false;
+}
+
 function processMultiframe(multiFrameInstance) {
   // If we don't have the PixelMeasuresSequence, then the pixel spacing and
   // slice thickness isn't specified or is changing and we can't reconstruct
@@ -138,6 +146,12 @@ function processMultiframe(multiFrameInstance) {
   if (!hasPosition(multiFrameInstance)) {
     console.log('No image position information, not reconstructable');
     return { value: false };
+  }
+
+  if (multiFrameInstance.Modality.includes('NM')) {
+    if (!isNMReconstructable(multiFrameInstance)) {
+      return { value: false };
+    }
   }
 
   // TODO - check spacing consistency
