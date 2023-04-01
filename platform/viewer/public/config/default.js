@@ -15,6 +15,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,

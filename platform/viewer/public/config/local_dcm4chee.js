@@ -8,6 +8,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   dataSources: [
     {
       friendlyName: 'DCM4CHEE Server',

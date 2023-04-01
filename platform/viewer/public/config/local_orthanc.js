@@ -8,6 +8,7 @@ window.config = {
   showLoadingIndicator: true,
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
+  strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   dataSources: [
     {
