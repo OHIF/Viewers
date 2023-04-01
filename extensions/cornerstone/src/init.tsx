@@ -43,6 +43,14 @@ export default async function init({
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+  cornerstone.setConfiguration({
+    ...cornerstone.getConfiguration(),
+    rendering: {
+      ...cornerstone.getConfiguration().rendering,
+      strictZSpacingForVolumeViewport:
+        appConfig.strictZSpacingForVolumeViewport,
+    },
+  });
 
   // For debugging large datasets
   const MAX_CACHE_SIZE_1GB = 1073741824;
