@@ -6,5 +6,5 @@ export interface Command {
 
 /** A set of commands, typically contained in a tool item or other configuration */
 export interface Commands {
-  commands: Commands[];
+  commands: Command[];
 }

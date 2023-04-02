@@ -283,6 +283,11 @@ export default class ExtensionManager {
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
             extensionModule.forEach(element => {
+              if (!element.name) {
+                throw new Error(
+                  `Extension ID ${extensionId} module ${moduleType} element has no name`
+                );
+              }
               const id = `${extensionId}.${moduleType}.${element.name}`;
               element.id = id;
               this.modulesMap[id] = element;
@@ -366,10 +371,10 @@ export default class ExtensionManager {
 
   _initHangingProtocolsModule = (extensionModule, extensionId) => {
     const { hangingProtocolService } = this._servicesManager.services;
-    extensionModule.forEach(({ id, protocol }) => {
+    extensionModule.forEach(({ name, protocol }) => {
       if (protocol) {
         // Only auto-register if protocol specified, otherwise let mode register
-        hangingProtocolService.addProtocol(id, protocol);
+        hangingProtocolService.addProtocol(name, protocol);
       }
     });
   };
