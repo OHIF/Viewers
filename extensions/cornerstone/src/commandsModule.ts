@@ -1,4 +1,5 @@
 import {
+  getEnabledElementByIds,
   getEnabledElement,
   StackViewport,
   VolumeViewport,
@@ -9,6 +10,7 @@ import {
   Enums,
   utilities as cstUtils,
   ReferenceLinesTool,
+  CrosshairsTool,
 } from '@cornerstonejs/tools';
 import { ServicesManager } from '@ohif/core';
 
@@ -471,6 +473,29 @@ function commandsModule({ servicesManager, commandsManager }) {
 
       viewport.render();
     },
+    resetToolGroupVolumeViewports: ({ toolGroupId }) => {
+      const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+      const viewportsInfo = toolGroup.viewportsInfo;
+      viewportsInfo.forEach(({ viewportId, renderingEngineId }) => {
+        const enabledElement = getEnabledElementByIds(
+          viewportId,
+          renderingEngineId
+        );
+        const { viewport } = enabledElement;
+        if (!(viewport instanceof VolumeViewport)) return;
+        const defaultOrientation = viewport.defaultOptions.orientation;
+        viewport.setOrientation(defaultOrientation);
+        viewport.setSlabThickness(0.05);
+        viewport.render();
+      });
+      const toolsInGroup = Object.values(toolGroup._toolInstances);
+      const crosshairsToolInstance = toolsInGroup.find(
+        tool => tool instanceof CrosshairsTool
+      );
+      if (crosshairsToolInstance) {
+        crosshairsToolInstance.resetAnnotations();
+      }
+    },
     scaleViewport: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
       const scaleFactor = direction > 0 ? 0.9 : 1.1;
@@ -702,6 +727,11 @@ function commandsModule({ servicesManager, commandsManager }) {
     },
     resetViewport: {
       commandFn: actions.resetViewport,
+      storeContexts: [],
+      options: {},
+    },
+    resetToolGroupVolumeViewports: {
+      commandFn: actions.resetToolGroupVolumeViewports,
       storeContexts: [],
       options: {},
     },
