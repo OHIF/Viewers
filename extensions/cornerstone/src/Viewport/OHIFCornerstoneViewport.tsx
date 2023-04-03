@@ -390,8 +390,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIndex
       );
 
-      storePresentation();
-
       const {
         lutPresentationStore,
         positionPresentationStore,
