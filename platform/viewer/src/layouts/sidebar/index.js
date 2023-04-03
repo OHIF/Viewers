@@ -17,6 +17,12 @@ export const navConfig = [
   {
     title: 'Upload Dicom',
     href: '/uplouder',
+    onClick: () => {
+      window.open(
+        'https://production.d22vmj66kp0f97.amplifyapp.com/',
+        '_blank'
+      );
+    },
   },
   {
     title: 'User',
@@ -24,7 +30,7 @@ export const navConfig = [
   },
 ];
 
-const reduceChildRoutes = ({ acc, pathname, item, depth }) => {
+const reduceChildRoutes = ({ acc, pathname, item, onMobileClose, depth }) => {
   const key = item.title + depth;
   const open = matchPath(pathname, {
     path: item.href,
@@ -37,17 +43,20 @@ const reduceChildRoutes = ({ acc, pathname, item, depth }) => {
       href={item.href}
       key={key}
       title={item.title}
+      onClick={item.onClick}
+      onMobileClose={onMobileClose}
     />
   );
 
   return acc;
 };
 
-const renderNavItems = ({ items, pathname, depth = 0 }) => {
+const renderNavItems = ({ items, pathname, onMobileClose, depth = 0 }) => {
   return (
     <div>
       {items.reduce(
-        (acc, item) => reduceChildRoutes({ acc, item, pathname, depth }),
+        (acc, item) =>
+          reduceChildRoutes({ acc, item, pathname, depth, onMobileClose }),
         []
       )}
     </div>
@@ -124,6 +133,7 @@ const Sidebar = ({ onMobileClose, onMobileNavOpen, openMobile }) => {
           {renderNavItems({
             items: navConfig,
             pathname: location.pathname,
+            onMobileClose,
           })}
         </div>
         <div>
