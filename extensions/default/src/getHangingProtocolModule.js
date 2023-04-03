@@ -1,3 +1,5 @@
+import hpMN from './hpMN';
+
 const defaultProtocol = {
   id: 'default',
   locked: true,
@@ -92,211 +94,6 @@ const defaultProtocol = {
       ],
       createdDate: '2021-02-23T18:32:42.850Z',
     },
-
-    // This is an example of a 2x2 layout that requires at least 2 viewports
-    // filled to be navigatable to
-    {
-      name: '2x2',
-      // Indicate that the number of viewports needed is 2 filled viewports,
-      // but that 4 viewports are preferred.
-      stageActivation: {
-        enabled: {
-          minViewportsMatched: 4,
-        },
-        passive: {
-          minViewportsMatched: 2,
-        },
-      },
-
-      viewportStructure: {
-        layoutType: 'grid',
-        properties: {
-          rows: 2,
-          columns: 2,
-        },
-      },
-      viewports: [
-        {
-          viewportOptions: {
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              matchedDisplaySetsIndex: 3,
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              matchedDisplaySetsIndex: 2,
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              matchedDisplaySetsIndex: 1,
-            },
-          ],
-        },
-        {
-          viewportOptions: {},
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              matchedDisplaySetsIndex: 0,
-            },
-          ],
-        },
-      ],
-    },
-
-    {
-      name: '3x1',
-      // Indicate that the number of viewports needed is 2 filled viewports,
-      // but that 4 viewports are preferred.
-      stageActivation: {
-        enabled: {
-          minViewportsMatched: 3,
-        },
-      },
-
-      viewportStructure: {
-        layoutType: 'grid',
-        properties: {
-          rows: 1,
-          columns: 3,
-        },
-      },
-      viewports: [
-        {
-          viewportOptions: {
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              matchedDisplaySetsIndex: 2,
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            toolGroupId: 'default',
-          },
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              matchedDisplaySetsIndex: 1,
-            },
-          ],
-        },
-        {
-          viewportOptions: {},
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-            },
-          ],
-        },
-      ],
-    },
-
-    // This is an example of a layout with more than one element in it
-    // It can be navigated to using , and . (prev/next stage)
-    {
-      name: '2x1',
-      // Indicate that the number of viewports needed is 1 filled viewport,
-      // but that 2 viewports are preferred.
-      stageActivation: {
-        enabled: {
-          minViewportsMatched: 3,
-        },
-      },
-
-      viewportStructure: {
-        layoutType: 'grid',
-        properties: {
-          rows: 1,
-          columns: 2,
-        },
-      },
-      viewports: [
-        {
-          viewportOptions: {
-            toolGroupId: 'default',
-            // initialImageOptions: {
-            //   index: 180,
-            //   preset: 'middle', // 'first', 'last', 'middle'
-            // },
-          },
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              // Shows the second index of this image set
-              matchedDisplaySetsIndex: 1,
-            },
-          ],
-        },
-        {
-          viewportOptions: {},
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-            },
-          ],
-        },
-      ],
-    },
-
-    {
-      name: '2x1',
-      // Indicate that the number of viewports needed is 1 filled viewport,
-      // but that 2 viewports are preferred.
-      stageActivation: {
-        enabled: {
-          minViewportsMatched: 3,
-        },
-      },
-
-      viewportStructure: {
-        layoutType: 'grid',
-        properties: {
-          rows: 2,
-          columns: 1,
-        },
-      },
-      viewports: [
-        {
-          viewportOptions: {},
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-              // Shows the second index of this image set
-              matchedDisplaySetsIndex: 1,
-            },
-          ],
-        },
-        {
-          viewportOptions: {},
-          displaySets: [
-            {
-              id: 'defaultDisplaySetId',
-            },
-          ],
-        },
-      ],
-    },
   ],
 };
 
@@ -305,6 +102,11 @@ function getHangingProtocolModule() {
     {
       name: defaultProtocol.id,
       protocol: defaultProtocol,
+    },
+    // Create a MxN hanging protocol available by default
+    {
+      name: hpMN.id,
+      protocol: hpMN,
     },
   ];
 }
