@@ -390,6 +390,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIndex
       );
 
+      // The presentation state will have been stored previously by closing
+      // a viewport.  Otherwise, this viewport will be unchanged and the
+      // presentation information will be directly carried over.
       const {
         lutPresentationStore,
         positionPresentationStore,
