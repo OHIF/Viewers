@@ -30,11 +30,11 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
   const stack = tool_data;
 
   // Add our tool, and set it's mode
-  if (!stack) {
+  // if (!stack) {
     cornerstoneTools.setToolActive('RectangleRoi', {
       mouseButtonMask: 1,
     });
-  }
+  // }
   // Pull event from cornerstone-tools
   const { EVENTS } = cornerstoneTools;
 
@@ -74,20 +74,20 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
     const toolState =
       cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
-    // if (Object.keys(toolState).length > 0) {
-    //   if (count === 1) {
-    //     return;
-    //   } else {
-    //     UINotificationService.show({
-    //       title: 'Overwrite Alert',
-    //       message:
-    //         'Taking new dimensions would remove previously selected ones',
-    //       type: 'warning',
-    //       duration: 7000,
-    //     });
-    //     count++;
-    //   }
-    // }
+    if (Object.keys(toolState).length > 0) {
+      if (count === 1) {
+        return;
+      } else {
+        UINotificationService.show({
+          title: 'Overwrite Alert',
+          message:
+            'Taking new dimensions would remove previously selected ones',
+          type: 'warning',
+          duration: 7000,
+        });
+        count++;
+      }
+    }
   });
 };
 

@@ -288,7 +288,7 @@ class Viewer extends Component {
         handleScrolltoIndex(enabledElement);
         handleRestoreToolState(cornerstone, enabledElement, instance_uid);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
       // }
     }, 4000);
@@ -309,7 +309,7 @@ class Viewer extends Component {
         const result = await response.json();
         return result.series;
       } catch (error) {
-        console.error('fetcheSeries caught', { error });
+        console.log('fetcheSeries caught', { error });
         return [];
       }
     })();

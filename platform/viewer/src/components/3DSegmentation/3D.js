@@ -123,7 +123,7 @@ const Morphology3DComponent = React.forwardRef((props, ref) => {
       );
       setCurrentImage(imageData);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 

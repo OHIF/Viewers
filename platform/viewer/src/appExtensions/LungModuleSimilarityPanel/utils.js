@@ -63,7 +63,7 @@ export const compressSeg = data => {
 
     Zlib.deflate(array, async (err, buffer) => {
       if (err) {
-        console.error('An error occurred:', err);
+        console.log('An error occurred:', err);
         process.exitCode = 1;
       }
 

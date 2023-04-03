@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import classNames from 'classnames';
 import cornerstone from 'cornerstone-core';
 import { Icon } from '../../../../ui/src/elements/Icon';
@@ -12,8 +12,6 @@ import { getEnabledElement } from '../../../../../extensions/cornerstone/src/sta
 import { handleSaveToolState } from '../../utils/syncrhonizeToolState';
 import { setItem, getItem } from '../../lib/localStorageUtils';
 
-let checkEndpointsInterval;
-
 const NavigateIcons = () => {
   const { UINotificationService } = servicesManager.services;
   const { active: currentMode } = useSelector(state => state && state.mode);
@@ -21,16 +19,16 @@ const NavigateIcons = () => {
     state => state && state.viewports
   );
   const { isloading } = useContext(JobsContext);
-  const history = useHistory();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState(1);
-  const [warming, setWarming] = useState(
-    JSON.parse(localStorage.getItem('warmupStatus') || 0) == 1 ? false : true
-  );
+  const [endpointsRunning, setEndpointsRunning] = useState(false);
   const [loading, setLoading] = useState(true);
   const isBrainMode = currentMode == BrainMode;
 
   const selectMaskStep = isBrainMode ? 5 : 3;
+
+  const intervalId = setInterval(checkEndpointStatus, 60000);
+
   const handleNext = () => {
     const paths =
       currentMode == BrainMode
@@ -116,61 +114,52 @@ const NavigateIcons = () => {
       );
   }, []);
 
-  // useEffect(() => {
-  //   if (!warming) clearInterval(checkEndpointsInterval);
-  //   checkEndpointsInterval = setInterval(() => {
-  //     fetch(radcadapi + '/endpoint-status')
-  //       .then(response => response.json())
-  //       .then(endpointStatus => {
-  //         if (
-  //           endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
-  //           endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] ===
-  //             'RUNNING' &&
-  //           endpointStatus['cbir-encoder'] === 'PENGING'
-  //         ) {
-  //           setWarming(false);
-  //           localStorage.setItem('warmupStatus', JSON.stringify(1));
-  //           clearInterval(checkEndpointsInterval);
-  //         } else {
-  //           UINotificationService.show({
-  //             title: 'Endpoint API is still warming',
-  //             type: 'info',
-  //             message:
-  //               'Please wait while the Endpoint API is warming up. This process can take a few minutes.',
-  //           });
-  //         }
-  //       })
-  //       .catch(() => {});
-  //   }, 50000);
+  useEffect(() => {
+    const storedEndpointsRunning = localStorage.getItem('endpointsRunning');
+    if (storedEndpointsRunning !== null) {
+      setEndpointsRunning(storedEndpointsRunning === 'true');
+    }
 
-  //   return () => clearInterval(checkEndpointsInterval);
-  // }, [warming]);
+    checkEndpointStatus();
+    const intervalId = setInterval(checkEndpointStatus, 60000);
 
-  // useEffect(() => {
-  //   if (warming)
-  //     fetch(radcadapi + '/endpoint-status')
-  //       .then(response => response.json())
-  //       .then(endpointStatus => {
-  //         if (
-  //           endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
-  //           endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] ===
-  //             'RUNNING' &&
-  //           endpointStatus['cbir-encoder'] === 'RUNNING'
-  //         ) {
-  //           setWarming(false);
-  //           localStorage.setItem('warmupStatus', JSON.stringify(1));
-  //           clearInterval(checkEndpointsInterval);
-  //         } else {
-  //           UINotificationService.show({
-  //             title: 'Endpoint API is still warming',
-  //             type: 'error',
-  //             message:
-  //               'Please wait while the Endpoint API is warming up. This process can take a few minutes.',
-  //           });
-  //         }
-  //       })
-  //       .catch(() => {});
-  // }, []);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  const checkEndpointStatus = async () => {
+    try {
+      const response = await fetch(
+        'https://dev-radcadapi.thetatech.ai/endpoint-status'
+      );
+      const data = await response.json();
+
+      if (
+        data['cbir-encoder'] === 'RUNNING'
+        // data['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
+        // data['nnUNet-4D-Brain-lite-3modality-endpoint'] === 'RUNNING'
+      ) {
+        clearInterval(intervalId);
+        setEndpointsRunning(true);
+        localStorage.setItem('endpointsRunning', 'true');
+      } else {
+        setEndpointsRunning(false);
+        localStorage.setItem('endpointsRunning', 'false');
+      }
+
+      // if (
+      //   data["cbir-encoder"] === "OFF" &&
+      //   data["nnUNet-3d-fullres-lung-endpoint"] === "RUNNING" &&
+      //   data["nnUNet-4D-Brain-lite-3modality-endpoint"] === "PENDING"
+      // ) {
+      // }
+    } catch (error) {
+      console.log('Error fetching endpoint status:', error);
+      setEndpointsRunning(false);
+      localStorage.setItem('endpointsRunning', 'false');
+    }
+  };
 
   const onCornerstoneLoaded = () => {
     setLoading(false);
@@ -191,11 +180,6 @@ const NavigateIcons = () => {
       }
     } catch (error) {}
   };
-
-  // if (warming)
-  //   return (
-  //     <Icon name="circle-notch" className="loading-icon-spin loading-icon" />
-  //   );
 
   useEffect(() => {
     if (location.pathname.includes('/studylist')) {
@@ -223,6 +207,11 @@ const NavigateIcons = () => {
 
   const isBackNavigationDisabled =
     [isBrainMode ? 6 : 4].includes(activeStep) || loading || isloading;
+
+  // if (!endpointsRunning)
+  //   return (
+  //     <Icon name="circle-notch" className="loading-icon-spin loading-icon" />
+  //   );
 
   return (
     <footer className="">
