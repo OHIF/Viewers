@@ -219,36 +219,47 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
 
     store: {
-      dicom: async dataset => {
+      dicom: async (dataset, uploadCallbacks = {}, abortSignal) => {
         const headers = userAuthenticationService.getAuthorizationHeader();
         if (headers) {
           wadoDicomWebClient.headers = headers;
         }
 
-        const meta = {
-          FileMetaInformationVersion:
-            dataset._meta.FileMetaInformationVersion.Value,
-          MediaStorageSOPClassUID: dataset.SOPClassUID,
-          MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-          TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
-          ImplementationClassUID,
-          ImplementationVersionName,
-        };
+        if (dataset instanceof ArrayBuffer) {
+          const options = {
+            datasets: [dataset],
+            uploadCallbacks,
+            abortSignal,
+          };
 
-        const denaturalized = denaturalizeDataset(meta);
-        const dicomDict = new DicomDict(denaturalized);
+          await wadoDicomWebClient.storeInstances(options);
+        } else {
+          const meta = {
+            FileMetaInformationVersion:
+              dataset._meta.FileMetaInformationVersion.Value,
+            MediaStorageSOPClassUID: dataset.SOPClassUID,
+            MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+            TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
+            ImplementationClassUID,
+            ImplementationVersionName,
+          };
 
-        dicomDict.dict = denaturalizeDataset(dataset);
+          const denaturalized = denaturalizeDataset(meta);
+          const dicomDict = new DicomDict(denaturalized);
 
-        const part10Buffer = dicomDict.write();
+          dicomDict.dict = denaturalizeDataset(dataset);
 
-        const options = {
-          datasets: [part10Buffer],
-        };
+          const part10Buffer = dicomDict.write();
 
-        await wadoDicomWebClient.storeInstances(options);
+          const options = {
+            datasets: [part10Buffer],
+          };
+
+          await wadoDicomWebClient.storeInstances(options);
+        }
       },
     },
+
     _retrieveSeriesMetadataSync: async (
       StudyInstanceUID,
       filters,

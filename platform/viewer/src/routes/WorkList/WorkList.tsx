@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys } from '@ohif/core';
+import { utils, hotkeys, MODULE_TYPES } from '@ohif/core';
 
 import {
   Icon,
@@ -29,6 +29,8 @@ import {
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
+import DicomUpload from '@components/DicomUpload/DicomUpload';
+import { extensionManager } from '../../App.tsx';
 
 const { sortBySeriesDate } = utils;
 
@@ -47,6 +49,7 @@ function WorkList({
   dataSource,
   hotkeysManager,
   dataPath,
+  onRefresh,
 }) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
@@ -429,6 +432,34 @@ function WorkList({
     });
   }
 
+  const handleUploadComplete = () => {
+    hide();
+    onRefresh();
+  };
+
+  const handleUploadStarted = () => {
+    show({
+      ...uploadProps,
+      closeButton: false,
+    });
+  };
+
+  const uploadProps = {
+    title: 'Upload files',
+    closeButton: true,
+    shouldCloseOnEsc: false,
+    shouldCloseOnOverlayClick: false,
+    content: DicomUpload.bind(null, {
+      dataSource,
+      onComplete: handleUploadComplete,
+      onStarted: handleUploadStarted,
+    }),
+  };
+
+  const handleShowUpload = () => {
+    show(uploadProps);
+  };
+
   return (
     <div className="bg-black h-screen flex flex-col ">
       <Header
@@ -445,6 +476,7 @@ function WorkList({
           onChange={setFilterValues}
           clearFilters={() => setFilterValues(defaultFilterValues)}
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
+          onUploadClick={handleShowUpload}
         />
         {hasStudies ? (
           <>

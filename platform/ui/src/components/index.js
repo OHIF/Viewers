@@ -69,6 +69,7 @@ import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import ViewportActionBar from './ViewportActionBar';
+import ProgressLoadingBar from './ProgressLoadingBar';
 
 export {
   AboutModal,
@@ -108,6 +109,7 @@ export {
   Modal,
   NavBar,
   Notification,
+  ProgressLoadingBar,
   Select,
   SegmentationTable,
   SegmentationGroupTable,
