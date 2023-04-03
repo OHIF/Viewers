@@ -23,7 +23,7 @@ const InputRange: React.FC<{
   inputClassName?: string;
   labelClassName?: string;
   labelVariant?: string;
-  showLabel: boolean;
+  showLabel?: boolean;
 }> = ({
   value,
   onChange,

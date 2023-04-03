@@ -2,9 +2,10 @@ import dcmjs from 'dcmjs';
 import moment from 'moment';
 import React, { useState, useMemo } from 'react';
 import { classes } from '@ohif/core';
+import { InputRange, Select, Typography } from '@ohif/ui';
+
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
-import { InputRange, Select, Typography } from '@ohif/ui';
 
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
@@ -54,6 +55,15 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     });
   }, [displaySets]);
 
+  let metadata;
+  if (isImageStack) {
+    metadata = activeDisplaySet.images[instanceNumber - 1];
+  } else {
+    metadata = activeDisplaySet.instance || activeDisplaySet;
+  }
+  const tags = getSortedTags(metadata);
+  const rows = getFormattedRowsFromTags(tags, metadata);
+
   return (
     <div className="dicom-tag-browser-content">
       <div className="flex flex-row items-center mb-2">
@@ -69,6 +79,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
       <div className="flex flex-row items-center mb-6">
         <div className="w-1/2 mr-8">
           <Select
+            id="display-set-selector"
             isClearable={false}
             onChange={onSelectChange}
             options={displaySetList}
@@ -93,25 +104,12 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
           </div>
         ) : null}
       </div>
-      <DicomTagTable
-        rows={getFormattedRowsFromTags(activeDisplaySet, instanceNumber)}
-      ></DicomTagTable>
+      <DicomTagTable rows={rows} />
     </div>
   );
 };
 
-function getFormattedRowsFromTags(displaySet, instanceNumber) {
-  const isImageStack = _isImageStack(displaySet);
-
-  let metadata;
-
-  if (isImageStack) {
-    metadata = displaySet.images[instanceNumber - 1];
-  } else {
-    metadata = displaySet;
-  }
-
-  const tags = getSortedTags(metadata);
+function getFormattedRowsFromTags(tags, metadata) {
   const rows = [];
 
   tags.forEach(tagInfo => {
@@ -126,7 +124,7 @@ function getFormattedRowsFromTags(displaySet, instanceNumber) {
       const { values } = tagInfo;
 
       values.forEach((item, index) => {
-        const formatedRowsFromTags = getFormattedRowsFromTags(item);
+        const formatedRowsFromTags = getFormattedRowsFromTags(item, metadata);
 
         rows.push([
           `${item[0].tagIndent}(FFFE,E000)`,
@@ -140,34 +138,21 @@ function getFormattedRowsFromTags(displaySet, instanceNumber) {
     } else {
       if (tagInfo.vr === 'xs') {
         try {
-          /*  const dataset = metadataProvider.getStudyDataset(
-              meta.StudyInstanceUID
-            );*/
-          //  console.log(dataset);
-          //  const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
-          // const originalTagInfo = dataset[tag];
-          //  tagInfo.vr = originalTagInfo.vr;
+          const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
+          const originalTagInfo = metadata[tag];
+          tagInfo.vr = originalTagInfo.vr;
         } catch (error) {
           console.error(
             `Failed to parse value representation for tag '${tagInfo.keyword}'`
           );
         }
       }
-      if (tagInfo.vr === 'PN') {
-        rows.push([
-          `${tagInfo.tagIndent}${tagInfo.tag}`,
-          tagInfo.vr,
-          tagInfo.keyword,
-          tagInfo.value,
-        ]);
-      } else {
-        rows.push([
-          `${tagInfo.tagIndent}${tagInfo.tag}`,
-          tagInfo.vr,
-          tagInfo.keyword,
-          tagInfo.value,
-        ]);
-      }
+      rows.push([
+        `${tagInfo.tagIndent}${tagInfo.tag}`,
+        tagInfo.vr,
+        tagInfo.keyword,
+        tagInfo.value,
+      ]);
     }
   });
 
