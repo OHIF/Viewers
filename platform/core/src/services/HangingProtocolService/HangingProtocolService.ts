@@ -687,6 +687,7 @@ export default class HangingProtocolService extends PubSubService {
         computed[key] = this.customAttributeRetrievalCallbacks[
           value.custom
         ].callback.call(computed, displaySets);
+        if (computed[key] === undefined) computed[key] = computed.defaultValue;
       }
     }
     return computed;

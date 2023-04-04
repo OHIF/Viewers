@@ -14,6 +14,7 @@ describe('Top level exports', () => {
       'sortStudySeries',
       'sortingCriteria',
       'splitComma',
+      'getSplitParam',
       'isLowPriorityModality',
       'writeScript',
       'debounce',
