@@ -21,7 +21,11 @@ import {
 } from '@cornerstonejs/tools';
 import isEqual from 'lodash.isequal';
 import { easeInOutBell } from '../../utils/transitions';
-import { Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
+import {
+  Segment,
+  Segmentation,
+  SegmentationConfig,
+} from './SegmentationServiceTypes';
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -751,27 +755,93 @@ class SegmentationService extends PubSubService {
     }
 
     const defaultScheme = this._getDefaultSegmentationScheme();
+    const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
 
-    const rtStructData = structureSet.ROIContours.map(
+    const segmentCenters = {};
+
+    function distance(a, b) {
+      return Math.sqrt(
+        Math.pow(a[0] - b[0], 2) +
+          Math.pow(a[1] - b[1], 2) +
+          Math.pow(a[2] - b[2], 2)
+      );
+    }
+
+    function computeCentroid(points) {
+      let centroid = [0, 0, 0];
+      points.forEach(([x, y, z]) => {
+        centroid = [centroid[0] + x, centroid[1] + y, centroid[2] + z];
+      });
+
+      return centroid.map(coord => coord / points.length).map(Math.round);
+    }
+
+    const allRTStructData = structureSet.ROIContours.map(
       ({ contourPoints, ROINumber, ROIName, colorArray }) => {
-        const data = contourPoints.map(({ points, ...rest }) => ({
-          ...rest,
-          points: points.map(({ x, y, z }) => [x, y, z]),
-        }));
+        const data = contourPoints.map(({ points, ...rest }) => {
+          const newPoints = points.map(({ x, y, z }) => {
+            return [x, y, z];
+          });
+
+          return {
+            ...rest,
+            points: newPoints,
+          };
+        });
+        const centroids = data.map(({ points }) => computeCentroid(points));
+
+        const clusters = [];
+        const distanceThreshold = 30;
+
+        centroids.forEach(centroid => {
+          let foundCluster = false;
+
+          for (const cluster of clusters) {
+            if (distance(cluster[0], centroid) <= distanceThreshold) {
+              cluster.push(centroid);
+              foundCluster = true;
+              break;
+            }
+          }
+
+          if (!foundCluster) {
+            clusters.push([centroid]);
+          }
+        });
+
+        const clusterCentroids = clusters.map(cluster =>
+          computeCentroid(cluster)
+        );
+
+        const largestClusterCenter = clusterCentroids.reduce((a, b) =>
+          a.length >= b.length ? a : b
+        );
+
+        const centroid = largestClusterCenter;
+
+        // Set segment center
+        segmentCenters[ROINumber] = {
+          center: { world: centroid },
+          modifiedTime: Date.now(),
+        };
+
+        const id = ROIName || ROINumber;
+        const segmentIndex = ROINumber;
 
         return {
           data,
-          id: ROIName || ROINumber,
+          id,
+          segmentIndex,
           color: colorArray,
+          geometryId: `${rtDisplaySetUID}:${id}:segmentIndex-${ROINumber}`,
         };
       }
     );
 
-    const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
+    // sort by segmentIndex
+    allRTStructData.sort((a, b) => a.segmentIndex - b.segmentIndex);
 
-    const geometryIds = rtStructData.map(
-      struct => `${rtDisplaySetUID}:${struct.id}`
-    );
+    const geometryIds = allRTStructData.map(({ geometryId }) => geometryId);
 
     const segmentation: Segmentation = {
       ...defaultScheme,
@@ -803,54 +873,44 @@ class SegmentationService extends PubSubService {
       );
     }
 
-    const initializeContour = async (
-      rtStructData,
-      geometryLoader,
-      geometryIds,
-      segmentation,
-      index
-    ) => {
+    let count = 0;
+    const initializeContour = async rtStructData => {
+      const { data, id, color, segmentIndex, geometryId } = rtStructData;
       const contourSet = await geometryLoader.createAndCacheGeometry(
-        geometryIds[index],
+        geometryId,
         {
           geometryData: {
-            data: rtStructData[index].data,
+            data,
+            id,
+            color,
             frameOfReferenceUID: structureSet.frameOfReferenceUID,
-            id: rtStructData[index].id,
-            color: rtStructData[index].color,
-            segmentIndex: index,
+            segmentIndex,
           },
           type: csEnums.GeometryType.CONTOUR,
         }
       );
 
-      segmentation.segments[index] = {
-        label: rtStructData[index].id,
-        segmentIndex: index,
+      segmentation.segments[segmentIndex] = {
+        label: id,
+        segmentIndex,
         color: contourSet.data.color,
         opacity: 255,
         isVisible: true,
         isLocked: false,
       };
 
-      // Todo: add cached Stats for the center of contour to enabled jumping to
-      // the center of the contour
       this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
-        segmentIndex: Number(index),
-        numSegments: geometryIds.length,
+        segmentIndex: count++,
+        // Note: this is not the geometryIds length since there might be
+        // some missing ROINumbers
+        numSegments: allRTStructData.length,
       });
     };
 
-    for (let i = 0; i < rtStructData.length; i++) {
+    for (let i = 0; i < allRTStructData.length; i++) {
       const promise = new Promise<void>((resolve, reject) => {
         setTimeout(() => {
-          initializeContour(
-            rtStructData,
-            geometryLoader,
-            geometryIds,
-            segmentation,
-            i
-          ).then(() => {
+          initializeContour(allRTStructData[i]).then(() => {
             resolve();
           });
         }, 0);
@@ -859,8 +919,16 @@ class SegmentationService extends PubSubService {
       await promise;
     }
 
-    segmentation.segmentCount = rtStructData.length;
+    segmentation.segmentCount = allRTStructData.length;
     rtDisplaySet.isLoaded = true;
+
+    segmentation.cachedStats = {
+      ...segmentation.cachedStats,
+      segmentCenter: {
+        ...segmentation.cachedStats.segmentCenter,
+        ...segmentCenters,
+      },
+    };
 
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
@@ -946,61 +1014,30 @@ class SegmentationService extends PubSubService {
       toolGroupId
     );
 
+    const { type } = segmentationRepresentation;
     const { segments } = segmentation;
 
-    const newSegmentSpecificConfig = {
-      [segmentIndex]: {
-        LABELMAP: {
-          fillAlpha: alpha,
-        },
-      },
-    };
-
-    if (hideOthers) {
-      for (let i = 0; i < segments.length; i++) {
-        if (i !== segmentIndex) {
-          newSegmentSpecificConfig[i] = {
-            LABELMAP: {
-              fillAlpha: 0,
-            },
-          };
-        }
-      }
-    }
-
-    const { fillAlpha } = this.getConfiguration(toolGroupId);
-
-    let count = 0;
-    const intervalTime = 16;
-    const numberOfFrames = Math.ceil(animationLength / intervalTime);
-
-    this.highlightIntervalId = setInterval(() => {
-      const x = (count * intervalTime) / animationLength;
-      cstSegmentation.config.setSegmentSpecificConfig(
+    if (type === LABELMAP) {
+      this._highlightLabelmap(
+        segmentIndex,
+        alpha,
+        hideOthers,
+        segments,
         toolGroupId,
-        segmentationRepresentation.segmentationRepresentationUID,
-        {
-          [segmentIndex]: {
-            LABELMAP: {
-              fillAlpha: easeInOutBell(x, fillAlpha),
-            },
-          },
-        }
+        animationLength,
+        segmentationRepresentation
       );
-
-      count++;
-
-      if (count === numberOfFrames) {
-        clearInterval(this.highlightIntervalId);
-        cstSegmentation.config.setSegmentSpecificConfig(
-          toolGroupId,
-          segmentationRepresentation.segmentationRepresentationUID,
-          {}
-        );
-
-        this.highlightIntervalId = null;
-      }
-    }, intervalTime);
+    } else if (type === CONTOUR) {
+      this._highlightContour(
+        segmentIndex,
+        1 - alpha,
+        hideOthers,
+        segments,
+        toolGroupId,
+        animationLength,
+        segmentationRepresentation
+      );
+    }
   }
 
   public createSegmentationForDisplaySet = async (
@@ -1224,6 +1261,126 @@ class SegmentationService extends PubSubService {
       });
     }
   };
+
+  private _highlightLabelmap(
+    segmentIndex: number,
+    alpha: number,
+    hideOthers: boolean,
+    segments: Segment[],
+    toolGroupId: string,
+    animationLength: number,
+    segmentationRepresentation: cstTypes.ToolGroupSpecificRepresentation
+  ) {
+    const newSegmentSpecificConfig = {
+      [segmentIndex]: {
+        LABELMAP: {
+          fillAlpha: alpha,
+        },
+      },
+    };
+
+    if (hideOthers) {
+      for (let i = 0; i < segments.length; i++) {
+        if (i !== segmentIndex) {
+          newSegmentSpecificConfig[i] = {
+            LABELMAP: {
+              fillAlpha: 0,
+            },
+          };
+        }
+      }
+    }
+
+    const { fillAlpha } = this.getConfiguration(toolGroupId);
+
+    let count = 0;
+    const intervalTime = 16;
+    const numberOfFrames = Math.ceil(animationLength / intervalTime);
+
+    this.highlightIntervalId = setInterval(() => {
+      const x = (count * intervalTime) / animationLength;
+      cstSegmentation.config.setSegmentSpecificConfig(
+        toolGroupId,
+        segmentationRepresentation.segmentationRepresentationUID,
+        {
+          [segmentIndex]: {
+            LABELMAP: {
+              fillAlpha: easeInOutBell(x, fillAlpha),
+            },
+          },
+        }
+      );
+
+      count++;
+
+      if (count === numberOfFrames) {
+        clearInterval(this.highlightIntervalId);
+        cstSegmentation.config.setSegmentSpecificConfig(
+          toolGroupId,
+          segmentationRepresentation.segmentationRepresentationUID,
+          {}
+        );
+
+        this.highlightIntervalId = null;
+      }
+    }, intervalTime);
+  }
+
+  private _highlightContour(
+    segmentIndex: number,
+    alpha: number,
+    hideOthers: boolean,
+    segments: Segment[],
+    toolGroupId: string,
+    animationLength: number,
+    segmentationRepresentation: cstTypes.ToolGroupSpecificRepresentation
+  ) {
+    function getFillAlpha(progress: number, fillAlpha: number): number {
+      if (progress < 0.25) {
+        return 0.1;
+      } else if (progress < 0.5) {
+        return fillAlpha;
+      } else if (progress < 0.75) {
+        return 0.1;
+      } else {
+        return fillAlpha;
+      }
+    }
+
+    const { fillAlpha } = this.getConfiguration(toolGroupId);
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const progress = (currentTime - startTime) / animationLength;
+
+      if (progress >= 1) {
+        // Animation is finished, clear interval
+        cstSegmentation.config.setSegmentSpecificConfig(
+          toolGroupId,
+          segmentationRepresentation.segmentationRepresentationUID,
+          {}
+        );
+        return;
+      }
+
+      const reversedProgress = getFillAlpha(progress, fillAlpha);
+      cstSegmentation.config.setSegmentSpecificConfig(
+        toolGroupId,
+        segmentationRepresentation.segmentationRepresentationUID,
+        {
+          [segmentIndex]: {
+            CONTOUR: {
+              fillAlpha: reversedProgress,
+            },
+          },
+        }
+      );
+
+      requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+  }
 
   public removeSegmentationRepresentationFromToolGroup(
     toolGroupId: string,
