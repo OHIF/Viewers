@@ -24,6 +24,13 @@ const getDynamicVolumeInfo = instances => {
     getDynamicVolumeInfo: csGetDynamicVolumeInfo,
   } = volumeLoaderUtility.exports;
 
+  if (!csGetDynamicVolumeInfo) {
+    console.warn(
+      'getDynamicVolumeInfo not found in cornerstone library! Running in dev mode'
+    );
+    return getDynamicVolumeInfoDevMode(instances);
+  }
+
   return csGetDynamicVolumeInfo(imageIds);
 };
 
