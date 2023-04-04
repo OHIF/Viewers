@@ -116,22 +116,37 @@ values.
 :::
 
 
-### SeriesInstanceUID and displaySet.SeriesInstanceUID
+### SeriesInstanceUID and initialSeriesInstanceUID
 
-Sometimes you need to only retrieve a specific series in a study, you can do that by
+Sometimes you need to only retrieve a specific series in a study, you can do
+that by providing series level QIDO query parameters in the URL such as
+SeriesInstanceUID or SeriesNumber.  This does NOT work with instance or study
+level parameters.  For example:
 
 ```js
-/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1&SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125095748.1
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1&SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4
 ```
 
-This will only open the viewer with one series (one displaySet).
+This will only open the viewer with one series (one displaySet) loaded, and no
+queries made for any other series.
 
-Alternatively, you can open the study on a specified series and/or sop instance
-using:
-`displaySet.SeriesInstanceUID` and/or `displaySet.SOPInstanceUID`
+Alternatively, sometimes you want to just open the study on a specified series
+and/or display a particular sop instance, which you can accomplish using:
+`initialSeriesInstanceUID` and/or `initialSOPInstanceUID`
 to select the series to open on, but allowing other
 series to be present in the study browser panel.  This is the same behaviour
-as in OHIF 2.0, albeit on different URL parameters.
+as in OHIF 2.0, albeit on different URL parameters.  For example:
+
+```js
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1&initialSeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4
+```
+
+Note that you can combine these, if you want to load a specific set of series
+plus show an initial one as the first one selected, for example:
+
+```js
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1&SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4&initialSopInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113546.1
+```
 
 ### hangingProtocolId
 

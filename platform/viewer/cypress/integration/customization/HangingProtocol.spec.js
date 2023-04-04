@@ -36,13 +36,13 @@ describe('OHIF HP', () => {
   it('Should navigate to display set specified', () => {
     cy.checkStudyRouteInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
-      '&displaySet.SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4&displaySet.SOPInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113558.2'
+      '&SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4&initialSopInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113546.1'
     );
-    cy.expectMinimumThumbnails(3);
+    cy.expectMinimumThumbnails(1);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
 
     // The specified series/sop UID's are index 101, so ensure that image is displayed
-    cy.get('@viewportInfoTopRight').should('contains.text', '101');
+    cy.get('@viewportInfoTopRight').should('contains.text', 'I:6');
   });
 });

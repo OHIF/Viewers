@@ -280,9 +280,9 @@ export default function ModeRoute({
         Array.from(query.keys()).reduce(
           (acc: Record<string, string>, val: string) => {
             const lowerVal = val.toLowerCase();
-            if (lowerVal !== 'studyInstanceuids') {
-              // Note the query to filter the series UIDs is filterSeriesInstanceUID
-              if (lowerVal === 'filterseriesinstanceuid') {
+            if (lowerVal !== 'studyinstanceuids') {
+              // Not sure why the case matters here - it doesn't in the URL
+              if (lowerVal === 'seriesinstanceuid') {
                 return {
                   ...acc,
                   seriesInstanceUID: query.get(val),

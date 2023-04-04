@@ -7,7 +7,7 @@ const defaultProtocol = {
   hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
-  modifiedDate: '2021-02-23T19:22:08.894Z',
+  modifiedDate: '2023-04-01',
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
@@ -33,8 +33,6 @@ const defaultProtocol = {
   },
   displaySetSelectors: {
     defaultDisplaySetId: {
-      // Unused currently
-      imageMatchingRules: [],
       // Matches displaysets, NOT series
       seriesMatchingRules: [
         // Try to match series with images by default, to prevent weird display
@@ -45,6 +43,8 @@ const defaultProtocol = {
             greaterThan: { value: 0 },
           },
         },
+        // This display set will select the specified items by preference
+        // It has no affect if nothing is specified in the URL.
         {
           attribute: 'isDisplaySetFromUrl',
           weight: 10,
@@ -72,11 +72,14 @@ const defaultProtocol = {
           viewportOptions: {
             viewportType: 'stack',
             toolGroupId: 'default',
+            // This will specify the initial image options index if it matches in the URL
+            // and will otherwise not specify anything.
             initialImageOptions: {
               type: 'custom',
               attribute: 'sopInstanceLocation',
             },
-            // Other options for initialImageOptions:
+            // Other options for initialImageOptions, which can be included in the default
+            // custom attribute, or can be provided directly.
             //   index: 180,
             //   preset: 'middle', // 'first', 'last', 'middle'
             // },

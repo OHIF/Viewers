@@ -22,8 +22,8 @@ import {
   retrieveStudyMetadata,
   deleteStudyMetadataPromise,
 } from './retrieveStudyMetadata.js';
-import StaticWadoClient from './utils/StaticWadoClient.js';
-import getDirectURL from '../utils/getDirectURL.js';
+import StaticWadoClient from './utils/StaticWadoClient';
+import getDirectURL from '../utils/getDirectURL';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
