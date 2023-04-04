@@ -677,7 +677,7 @@ export default class HangingProtocolService extends PubSubService {
     for (const key in computed) {
       const value = computed[key];
       if (!value) continue;
-      if (value.type === 'custom') {
+      if (value.custom) {
         if (!displaySets) {
           displaySets = this.displaySets.filter(
             displaySet =>
@@ -685,9 +685,8 @@ export default class HangingProtocolService extends PubSubService {
           );
         }
         computed[key] = this.customAttributeRetrievalCallbacks[
-          value.attribute
+          value.custom
         ].callback.call(computed, displaySets);
-        console.log('Assigned custom attribute', key, computed[key]);
       }
     }
     return computed;

@@ -34,6 +34,8 @@ describe('OHIF HP', () => {
   });
 
   it('Should navigate to display set specified', () => {
+    // This filters by series instance UID, meaning there will only be 1 thumbnail
+    // It applies the initial SOP instance, navigating to that image
     cy.checkStudyRouteInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
       '&SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4&initialSopInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113546.1'

@@ -305,8 +305,8 @@ specified in the URL:
 ```javascript
 viewportOptions: {
   initialImageOptions: {
-    // type: 'custom' is required to set a value
-    type: 'custom',
-    // The name of the attribute is sopInstanceLocation
-    attribute: 'sopInstanceLocation',
+    // custom attribute name is selected by 'custom'
+    custom: 'sopInstanceLocation',
+    // This is the value returned if the above doesn't return anything
+    defaultValue: { index: 5 },
 ```
