@@ -91,10 +91,12 @@ function OHIFCornerstoneSRViewport(props) {
         SeriesInstanceUIDs[0]
       );
       if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewport({
-          viewportIndex: activeViewportIndex,
-          displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-        });
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+          },
+        ]);
       }
     };
   }
