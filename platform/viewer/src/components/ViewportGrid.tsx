@@ -99,9 +99,10 @@ function ViewerViewportGrid(props) {
       return {
         displaySetInstanceUIDs: displaySetUIDsToHang,
         displaySetOptions: displaySetUIDsToHangOptions,
-        viewportOptions: {
-          ...viewportOptions,
-        },
+        viewportOptions: hangingProtocolService.getComputedOptions(
+          viewportOptions,
+          displaySetUIDsToHang
+        ),
       };
     };
 
