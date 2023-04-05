@@ -567,19 +567,21 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
           onEdit={onMeasurementItemEditHandler}
         />
       </div>
-      <ButtonGroup color="black" size="inherit">
-        {promptSave && (
-          <Button className="px-2 py-2 text-base" onClick={promptSave}>
-            {props.t('Save Measurements')}
-          </Button>
-        )}
-        {/* <Button
-          className="px-2 py-2 text-base"
-          onClick={onDeleteCurrentSRHandler}
-        >
-          {props.t('Reject latest report')}
-        </Button> */}
-      </ButtonGroup>
+      <div className="flex justify-center p-4">
+        <ButtonGroup color="black" size="inherit">
+          {promptSave && (
+            <Button className="px-2 py-2 text-base" onClick={promptSave}>
+              {props.t('Create Report')}
+            </Button>
+          )}
+          {/* <Button
+            className="px-2 py-2 text-base"
+            onClick={onDeleteCurrentSRHandler}
+          >
+            {props.t('Reject latest report')}
+          </Button> */}
+        </ButtonGroup>
+      </div>
     </>
   );
 }
