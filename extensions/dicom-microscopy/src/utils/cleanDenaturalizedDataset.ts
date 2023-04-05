@@ -39,6 +39,17 @@ export default function cleanDenaturalizedDataset(obj: any): any {
       } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
         if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
           obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
+
+          // prevent mixed-content blockage
+          if (
+            window.location.protocol === 'https:' &&
+            obj[key].BulkDataURI.startsWith('http:')
+          ) {
+            obj[key].BulkDataURI = obj[key].BulkDataURI.replace(
+              'http:',
+              'https:'
+            );
+          }
           delete obj[key].Value;
         } else if (vrNumerics.includes(obj[key].vr)) {
           obj[key].Value = obj[key].Value.map(v => +v);

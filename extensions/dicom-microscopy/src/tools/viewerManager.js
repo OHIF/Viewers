@@ -268,14 +268,14 @@ class ViewerManager extends Publisher {
           },
         },
       ],
-      // [
-      //   'dragZoom',
-      //   {
-      //     bindings: {
-      //       mouseButtons: ['right'],
-      //     },
-      //   },
-      // ],
+      [
+        'dragZoom',
+        {
+          bindings: {
+            mouseButtons: ['right'],
+          },
+        },
+      ],
       ['modify', {}],
     ];
     this.activateInteractions(defaultInteractions);
