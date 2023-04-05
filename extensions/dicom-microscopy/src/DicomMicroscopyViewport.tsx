@@ -174,7 +174,7 @@ class DicomMicroscopyViewport extends Component {
         client,
         metadata: volumeImages,
         retrieveRendered: false,
-        controls: ['overview'],
+        controls: ['overview', 'position'],
       };
 
       this.viewer = new microscopyViewer(options);
