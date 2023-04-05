@@ -1,9 +1,13 @@
+.DicomMicroscopyViewer .ol-overviewmap.ol-unselectable.ol-control {
+  position: absolute;
+  bottom: 0;
+}
 .DicomMicroscopyViewer .ol-overviewmap .ol-overviewmap-map {
   width: 300px !important;
   height: 200px !important;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 
-.DicomMicroscopyViewer .ol-tooltip { 
+.DicomMicroscopyViewer .ol-tooltip {
   font-size: 16px !important;
 }
