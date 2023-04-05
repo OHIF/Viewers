@@ -1,4 +1,5 @@
-import { PubSubService, Types as OhifTypes, ServicesManager } from '@ohif/core';
+import { PubSubService, ServicesManager } from '@ohif/core';
+import * as OhifTypes from '@ohif/core/types';
 import {
   RenderingEngine,
   StackViewport,
