@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   StudySummary,
@@ -11,6 +11,7 @@ import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import debounce from 'lodash.debounce';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -45,6 +46,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
+  const measurementsPanelRef = useRef(null);
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
@@ -125,6 +127,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       subscriptions.push(
         measurementService.subscribe(evt, () => {
           setMeasurementsUpdated(Date.now().toString());
+          if (evt === added) {
+            debounce(() => {
+              measurementsPanelRef.current.scrollTop =
+                measurementsPanelRef.current.scrollHeight;
+            }, 300)();
+          }
         }).unsubscribe
       );
     });
@@ -241,6 +249,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     <>
       <div
         className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        ref={measurementsPanelRef}
         data-cy={'trackedMeasurements-panel'}
       >
         {displayStudySummary.key && (
@@ -253,6 +262,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         <MeasurementTable
           title="Measurements"
           data={displayMeasurementsWithoutFindings}
+          servicesManager={servicesManager}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
@@ -260,6 +270,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
+            servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
           />
@@ -318,13 +329,40 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     );
   }
 
-  const { displayText } = measurement;
+  const {
+    displayText: baseDisplayText,
+    uid,
+    label: baseLabel,
+    type,
+    selected,
+    findingSites,
+    finding,
+  } = measurement;
+
+  const firstSite = findingSites?.[0];
+  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
+  let displayText = baseDisplayText || [];
+  if (findingSites) {
+    const siteText = [];
+    findingSites.forEach(site => {
+      if (site?.text !== label) siteText.push(site.text);
+    });
+    displayText = [...siteText, ...displayText];
+  }
+  if (finding && finding?.text !== label) {
+    displayText = [finding.text, ...displayText];
+  }
+
   return {
-    uid: measurement.uid,
-    label: measurement.label || '(empty)',
-    measurementType: measurement.type,
-    displayText: displayText || [],
-    isActive: measurement.selected,
+    uid,
+    label,
+    baseLabel,
+    measurementType: type,
+    displayText,
+    baseDisplayText,
+    isActive: selected,
+    finding,
+    findingSites,
   };
 }
 

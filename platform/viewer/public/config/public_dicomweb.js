@@ -6,6 +6,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   servers: {
     dicomWeb: [
       {

@@ -8,6 +8,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   dataSources: [
     {
       friendlyName: 'DCM4CHEE Server',
@@ -26,6 +27,20 @@ window.config = {
           auth: 'admin:admin',
         },
       },
+    },
+    {
+      friendlyName: 'dicom json',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
+      sourceName: 'dicomjson',
+      configuration: {
+        name: 'json',
+      },
+    },
+    {
+      friendlyName: 'dicom local',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
+      sourceName: 'dicomlocal',
+      configuration: {},
     },
   ],
   studyListFunctionsEnabled: true,

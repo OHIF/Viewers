@@ -2,7 +2,8 @@
 <!-- markdownlint-disable -->
 <div align="center">
   <h1>OHIF Medical Imaging Viewer</h1>
-  <p><strong>The OHIF Viewer</strong> is a zero-footprint medical image viewer provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>.</p>
+  <p><strong>The OHIF Viewer</strong> is a zero-footprint medical image viewer
+provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>.</p>
 </div>
 
 

@@ -235,6 +235,8 @@ function OHIFCornerstoneSEGViewport(props) {
       return;
     }
 
+    // This creates a custom tool group which has the lifetime of this view
+    // only, and does NOT interfere with currently displayed segmentations.
     toolGroup = createSEGToolGroupAndAddTools(
       toolGroupService,
       toolGroupId,
@@ -249,6 +251,7 @@ function OHIFCornerstoneSEGViewport(props) {
         toolGroupId
       );
 
+      // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
@@ -298,14 +301,12 @@ function OHIFCornerstoneSEGViewport(props) {
     StudyDate,
     SeriesDescription,
     SpacingBetweenSlices,
-    SeriesNumber,
   } = referencedDisplaySetRef.current.metadata;
 
   const onStatusClick = async () => {
     const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
       viewportIndex,
-      toolGroupId,
       servicesManager,
     });
 

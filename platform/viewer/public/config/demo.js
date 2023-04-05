@@ -5,6 +5,7 @@ window.config = {
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
   showWarningMessageForCrossOrigin: true,
+  strictZSpacingForVolumeViewport: true,
   showCPUFallbackMessage: true,
   servers: {
     dicomWeb: [

@@ -10,13 +10,12 @@ function promptHydrateSEG({
   servicesManager,
   segDisplaySet,
   viewportIndex,
-  toolGroupId = 'default',
 }) {
-  const { UIViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService } = servicesManager.services;
 
   return new Promise(async function(resolve, reject) {
     const promptResult = await _askHydrate(
-      UIViewportDialogService,
+      uiViewportDialogService,
       viewportIndex
     );
 
@@ -24,7 +23,6 @@ function promptHydrateSEG({
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
         viewportIndex,
-        toolGroupId,
         servicesManager,
       });
 
@@ -33,7 +31,7 @@ function promptHydrateSEG({
   });
 }
 
-function _askHydrate(UIViewportDialogService, viewportIndex) {
+function _askHydrate(uiViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
@@ -49,18 +47,18 @@ function _askHydrate(UIViewportDialogService, viewportIndex) {
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
+    uiViewportDialogService.show({
       viewportIndex,
       type: 'info',
       message,
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });

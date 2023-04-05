@@ -17,7 +17,7 @@ const ViewportOverlay = ({
   bottomLeft,
   color,
 }) => {
-  const overlay = 'absolute pointer-events-none';
+  const overlay = 'absolute pointer-events-none viewport-overlay';
   return (
     <div className={classnames(color ? color : 'text-primary-light')}>
       <div

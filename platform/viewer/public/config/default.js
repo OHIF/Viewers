@@ -15,10 +15,13 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
-    prefetch: 10,
+    // Prefetch number is dependent on the http protocol. For http 2 or
+    // above, the number of requests can be go a lot higher.
+    prefetch: 25,
   },
   // filterQueryParam: false,
   dataSources: [
@@ -32,10 +35,12 @@ window.config = {
         // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+
         // new server
         wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',

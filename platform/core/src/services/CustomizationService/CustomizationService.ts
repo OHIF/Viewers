@@ -63,7 +63,7 @@ export default class CustomizationService extends PubSubService {
 
   modeCustomizations: Record<string, Customization> = {};
   globalCustomizations: Record<string, Customization> = {};
-  configuration: UICustomizationConfiguration;
+  configuration: CustomizationConfiguration;
 
   constructor({ configuration, commandsManager }) {
     super(EVENTS);
@@ -97,36 +97,6 @@ export default class CustomizationService extends PubSubService {
     this.modeCustomizations = {};
   }
 
-  /**
-   *
-   * @param {*} interaction - can be undefined to run nothing
-   * @param {*} extraOptions to include in the commands run
-   */
-  recordInteraction(
-    interaction: Customization | void,
-    extraOptions?: Record<string, unknown>
-  ): void {
-    if (!interaction) return;
-    const commandsManager = this.commandsManager;
-    const { commands = [] } = interaction;
-
-    commands.forEach(({ commandName, commandOptions, context }) => {
-      if (commandName) {
-        commandsManager.runCommand(
-          commandName,
-          {
-            interaction,
-            ...commandOptions,
-            ...extraOptions,
-          },
-          context
-        );
-      } else {
-        console.warn('No command name supplied in', interaction);
-      }
-    });
-  }
-
   public getModeCustomizations(): Record<string, Customization> {
     return this.modeCustomizations;
   }
@@ -145,6 +115,23 @@ export default class CustomizationService extends PubSubService {
     });
   }
 
+  /** This is the preferred getter for all customizations,
+   * getting mode customizations first and otherwise global customizations.
+   *
+   * @param customizationId - the customization id to look for
+   * @param defaultValue - is the default value to return.  Note this value
+   * may have been extended with any customizationType extensions provided,
+   * so you cannot just use `|| defaultValue`
+   * @return A customization to use if one is found, or the default customization,
+   * both enhanced with any customizationType inheritance (see transform)
+   */
+  public getCustomization(
+    customizationId: string,
+    defaultValue?: Customization
+  ): Customization | void {
+    return this.getModeCustomization(customizationId, defaultValue);
+  }
+
   /** Mode customizations are changes to the behaviour of the extensions
    * when running in a given mode.  Reset clears mode customizations.
    * Note that global customizations over-ride mode customizations.
@@ -158,18 +145,42 @@ export default class CustomizationService extends PubSubService {
       this.globalCustomizations[customizationId] ??
       this.modeCustomizations[customizationId] ??
       defaultValue;
-    return this.applyType(customization);
+    return this.transform(customization);
   }
 
-  /** Applies any inheritance due to UI Type customization */
-  public applyType(customization: Customization): Customization {
+  public hasModeCustomization(customizationId: string) {
+    return (
+      this.globalCustomizations[customizationId] ||
+      this.modeCustomizations[customizationId]
+    );
+  }
+  /**
+   * get is an alias for getModeCustomization, as it is the generic getter
+   * which will return both mode and global customizations, and should be
+   * used generally.
+   * Note that the second parameter, defaultValue, will be expanded to include
+   * any customizationType values defined in it, so it is not the same as doing:
+   *   `customizationService.get('key') || defaultValue`
+   * unless the defaultValue does not contain any customizationType definitions.
+   */
+  public get = this.getModeCustomization;
+
+  /**
+   * Applies any inheritance due to UI Type customization.
+   * This will look for customizationType in the customization object
+   * and if that is found, will assign all iterable values from that
+   * type into the new type, allowing default behaviour to be configured.
+   */
+  public transform(customization: Customization): Customization {
     if (!customization) return customization;
     const { customizationType } = customization;
     if (!customizationType) return customization;
-    const parent = this.getModeCustomization(customizationType);
-    return parent
+    const parent = this.getCustomization(customizationType);
+    const result = parent
       ? Object.assign(Object.create(parent), customization)
       : customization;
+    // Execute an nested type information
+    return result.transform?.(this) || result;
   }
 
   public addModeCustomizations(modeCustomizations): void {
@@ -196,7 +207,7 @@ export default class CustomizationService extends PubSubService {
     id: string,
     defaultValue?: Customization
   ): Customization | void {
-    return this.applyType(this.globalCustomizations[id] ?? defaultValue);
+    return this.transform(this.globalCustomizations[id] ?? defaultValue);
   }
 
   setGlobalCustomization(id: string, value: Customization): void {
@@ -227,19 +238,16 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
-   * A single reference is either an an array, or a single customization value,
-   * whose id is the id in the object, or the parent id.
-   * This allows for general use to register customizationModule entries.
+   * A single reference is either an string to be loaded from a module,
+   * or a customization itself.
    */
-  addReference(
-    value?: Obj | Obj[] | string,
-    isGlobal = true,
-    id?: string
-  ): void {
+  addReference(value?: Obj | string, isGlobal = true, id?: string): void {
     if (!value) return;
     if (typeof value === 'string') {
       const extensionValue = this.findExtensionValue(value);
-      this.addReferences(extensionValue);
+      // The child of a reference is only a set of references when an array,
+      // so call the addReference direct.  It could be a secondary reference perhaps
+      this.addReference(extensionValue.value, isGlobal, extensionValue.name);
     } else if (Array.isArray(value)) {
       this.addReferences(value, isGlobal);
     } else {
@@ -251,10 +259,10 @@ export default class CustomizationService extends PubSubService {
     }
   }
 
-  /** References are:
-   * list of customizations, added in order
-   * object containing a customization id and value
-   * This format allows for the original whitelist format.
+  /**
+   * Customizations can be specified as an array of strings or customizations,
+   * or as an object whose key is the reference id, and the value is the string
+   * or customization.
    */
   addReferences(references?: Obj | Obj[], isGlobal = true): void {
     if (!references) return;

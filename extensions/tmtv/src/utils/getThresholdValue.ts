@@ -1,19 +1,7 @@
 import * as csTools from '@cornerstonejs/tools';
 
-function getThresholdValues(
-  annotationUIDs,
-  referencedVolume,
-  config
-): { lower: number; upper: number } {
-  if (config.strategy === 'range') {
-    return {
-      lower: Number(config.lower),
-      upper: Number(config.upper),
-    };
-  }
-
+function getRoiStats(referencedVolume, annotations) {
   // roiStats
-  const { weight } = config;
   const { imageData } = referencedVolume;
   const values = imageData
     .getPointData()
@@ -23,10 +11,6 @@ function getThresholdValues(
   // Todo: add support for other strategies
   const { fn, baseValue } = _getStrategyFn('max');
   let value = baseValue;
-
-  const annotations = annotationUIDs.map(annotationUID =>
-    csTools.annotation.state.getAnnotation(annotationUID)
-  );
 
   const boundsIJK = csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
     annotations,
@@ -43,10 +27,35 @@ function getThresholdValues(
       }
     }
   }
+  return value;
+}
+
+function getThresholdValues(
+  annotationUIDs,
+  referencedVolumes,
+  config
+): { ptLower: number; ptUpper: number; ctLower: number; ctUpper: number } {
+  if (config.strategy === 'range') {
+    return {
+      ptLower: Number(config.ptLower),
+      ptUpper: Number(config.ptUpper),
+      ctLower: Number(config.ctLower),
+      ctUpper: Number(config.ctUpper),
+    };
+  }
+
+  const { weight } = config;
+  const annotations = annotationUIDs.map(annotationUID =>
+    csTools.annotation.state.getAnnotation(annotationUID)
+  );
+
+  const ptValue = getRoiStats(referencedVolumes[0], annotations);
 
   return {
-    lower: weight * value,
-    upper: +Infinity,
+    ctLower: -Infinity,
+    ctUpper: +Infinity,
+    ptLower: weight * ptValue,
+    ptUpper: +Infinity,
   };
 }
 

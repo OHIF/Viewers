@@ -1,4 +1,7 @@
 window.config = {
+  // Activate the new HP mode....
+  isNewHP: true,
+
   routerBasename: '/',
   customizationService: [
     '@ohif/extension-default.customizationModule.datasources',
@@ -9,7 +12,7 @@ window.config = {
     },
   ],
   extensions: [],
-  modes: [],
+  modes: ['@ohif/mode-test'],
   showStudyList: true,
   maxNumberOfWebWorkers: 4,
   // below flag is for performance reasons, but it might not work for all servers
@@ -17,6 +20,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -40,16 +44,21 @@ window.config = {
       },
     },
     {
-      friendlyName: 'AWS S3 OHIF',
+      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'aws',
+      sourceName: 'ohif',
       configuration: {
         name: 'aws',
-        qidoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
-        wadoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
+        // old server
+        // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        // new server
+        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
-        supportsStow: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -60,15 +69,16 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
+      friendlyName: 'AWS S3 OHIF',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'shared',
+      sourceName: 'aws',
       configuration: {
-        name: 'shared',
-        qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        name: 'aws',
+        qidoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
+        wadoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
+        supportsStow: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -122,92 +132,7 @@ window.config = {
     console.warn('test, navigate to https://ohif.org/');
   },
   defaultDataSourceName: 'default',
-  hotkeys: [
-    {
-      commandName: 'incrementActiveViewport',
-      label: 'Next Viewport',
-      keys: ['right'],
-    },
-    {
-      commandName: 'decrementActiveViewport',
-      label: 'Previous Viewport',
-      keys: ['left'],
-    },
-    { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
-    { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
-    { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
-    {
-      commandName: 'flipViewportHorizontal',
-      label: 'Flip Horizontally',
-      keys: ['h'],
-    },
-    {
-      commandName: 'flipViewportVertical',
-      label: 'Flip Vertically',
-      keys: ['v'],
-    },
-    { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
-    { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
-    { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
-    { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
-    { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
-    { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
-    // {
-    //   commandName: 'previousViewportDisplaySet',
-    //   label: 'Previous Series',
-    //   keys: ['pagedown'],
-    // },
-    // {
-    //   commandName: 'nextViewportDisplaySet',
-    //   label: 'Next Series',
-    //   keys: ['pageup'],
-    // },
-    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
-    // ~ Window level presets
-    {
-      commandName: 'windowLevelPreset1',
-      label: 'W/L Preset 1',
-      keys: ['1'],
-    },
-    {
-      commandName: 'windowLevelPreset2',
-      label: 'W/L Preset 2',
-      keys: ['2'],
-    },
-    {
-      commandName: 'windowLevelPreset3',
-      label: 'W/L Preset 3',
-      keys: ['3'],
-    },
-    {
-      commandName: 'windowLevelPreset4',
-      label: 'W/L Preset 4',
-      keys: ['4'],
-    },
-    {
-      commandName: 'windowLevelPreset5',
-      label: 'W/L Preset 5',
-      keys: ['5'],
-    },
-    {
-      commandName: 'windowLevelPreset6',
-      label: 'W/L Preset 6',
-      keys: ['6'],
-    },
-    {
-      commandName: 'windowLevelPreset7',
-      label: 'W/L Preset 7',
-      keys: ['7'],
-    },
-    {
-      commandName: 'windowLevelPreset8',
-      label: 'W/L Preset 8',
-      keys: ['8'],
-    },
-    {
-      commandName: 'windowLevelPreset9',
-      label: 'W/L Preset 9',
-      keys: ['9'],
-    },
-  ],
+
+  // Only list the unique hotkeys
+  hotkeys: [],
 };

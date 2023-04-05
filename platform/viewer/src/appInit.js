@@ -8,6 +8,7 @@ import {
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
+  StateSyncService,
   DisplaySetService,
   ToolbarService,
   ViewportGridService,
@@ -16,6 +17,7 @@ import {
   UserAuthenticationService,
   errorHandler,
   CustomizationService,
+  PanelService,
   // utils,
 } from '@ohif/core';
 
@@ -58,6 +60,8 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     HangingProtocolService.REGISTRATION,
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
+    PanelService.REGISTRATION,
+    StateSyncService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

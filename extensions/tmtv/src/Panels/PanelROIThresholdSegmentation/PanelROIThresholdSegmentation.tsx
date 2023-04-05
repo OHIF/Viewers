@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationTable, Button, Icon } from '@ohif/ui';
-import classnames from 'classnames';
 
 import { useTranslation } from 'react-i18next';
 import segmentationEditHandler from './segmentationEditHandler';
@@ -10,14 +9,16 @@ import ROIThresholdConfiguration, {
   ROI_STAT,
 } from './ROIThresholdConfiguration';
 
-const LOWER_THRESHOLD_DEFAULT = 0;
-const UPPER_THRESHOLD_DEFAULT = 100;
+const LOWER_CT_THRESHOLD_DEFAULT = -1024;
+const UPPER_CT_THRESHOLD_DEFAULT = 1024;
+const LOWER_PT_THRESHOLD_DEFAULT = 2.5;
+const UPPER_PT_THRESHOLD_DEFAULT = 100;
 const WEIGHT_DEFAULT = 0.41; // a default weight for suv max often used in the literature
 const DEFAULT_STRATEGY = ROI_STAT;
 
 function reducer(state, action) {
   const { payload } = action;
-  const { strategy, lower, upper, weight } = payload;
+  const { strategy, ctLower, ctUpper, ptLower, ptUpper, weight } = payload;
 
   switch (action.type) {
     case 'setStrategy':
@@ -28,8 +29,10 @@ function reducer(state, action) {
     case 'setThreshold':
       return {
         ...state,
-        lower: lower ? lower : state.lower,
-        upper: upper ? upper : state.upper,
+        ctLower: ctLower ? ctLower : state.ctLower,
+        ctUpper: ctUpper ? ctUpper : state.ctUpper,
+        ptLower: ptLower ? ptLower : state.ptLower,
+        ptUpper: ptUpper ? ptUpper : state.ptUpper,
       };
     case 'setWeight':
       return {
@@ -57,8 +60,10 @@ export default function PanelRoiThresholdSegmentation({
 
   const [config, dispatch] = useReducer(reducer, {
     strategy: DEFAULT_STRATEGY,
-    lower: LOWER_THRESHOLD_DEFAULT,
-    upper: UPPER_THRESHOLD_DEFAULT,
+    ctLower: LOWER_CT_THRESHOLD_DEFAULT,
+    ctUpper: UPPER_CT_THRESHOLD_DEFAULT,
+    ptLower: LOWER_PT_THRESHOLD_DEFAULT,
+    ptUpper: UPPER_PT_THRESHOLD_DEFAULT,
     weight: WEIGHT_DEFAULT,
   });
 
@@ -171,91 +176,93 @@ export default function PanelRoiThresholdSegmentation({
   }, [segmentations, selectedSegmentationId]);
 
   return (
-    <div className="flex flex-col">
-      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-        <div className="flex mx-4 my-4 mb-4 space-x-4">
-          <Button
-            color="primary"
-            onClick={() => {
-              setLabelmapLoading(true);
-              setTimeout(() => {
-                runCommand('createNewLabelmapFromPT').then(segmentationId => {
-                  setLabelmapLoading(false);
-                  setSelectedSegmentationId(segmentationId);
+    <>
+      <div className="flex flex-col">
+        <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+          <div className="flex mx-4 my-4 mb-4 space-x-4">
+            <Button
+              color="primary"
+              onClick={() => {
+                setLabelmapLoading(true);
+                setTimeout(() => {
+                  runCommand('createNewLabelmapFromPT').then(segmentationId => {
+                    setLabelmapLoading(false);
+                    setSelectedSegmentationId(segmentationId);
+                  });
                 });
-              });
+              }}
+            >
+              {labelmapLoading ? 'loading ...' : 'New Label'}
+            </Button>
+            <Button color="primary" onClick={handleROIThresholding}>
+              Run
+            </Button>
+          </div>
+          <div
+            className="flex items-center justify-around h-8 mb-2 border-t outline-none cursor-pointer select-none bg-secondary-dark first:border-0 border-secondary-light"
+            onClick={() => {
+              setShowConfig(!showConfig);
             }}
           >
-            {labelmapLoading ? 'loading ...' : 'New Label'}
-          </Button>
-          <Button color="primary" onClick={handleROIThresholding}>
-            Run
-          </Button>
-        </div>
-        <div
-          className="flex items-center justify-around h-8 mb-2 border-t outline-none cursor-pointer select-none bg-secondary-dark first:border-0 border-secondary-light"
-          onClick={() => {
-            setShowConfig(!showConfig);
-          }}
-        >
-          <div className="px-4 text-base text-white">
-            {t('ROI Threshold Configuration')}
+            <div className="px-4 text-base text-white">
+              {t('ROI Threshold Configuration')}
+            </div>
           </div>
-        </div>
-        {showConfig && (
-          <ROIThresholdConfiguration
-            config={config}
-            dispatch={dispatch}
-            runCommand={runCommand}
-          />
-        )}
-        {/* show segmentation table */}
-        <div className="mt-4">
-          {segmentations?.length ? (
-            <SegmentationTable
-              title={t('Segmentations')}
-              segmentations={segmentations}
-              activeSegmentationId={selectedSegmentationId}
-              onClick={id => {
-                runCommand('setSegmentationActiveForToolGroups', {
-                  segmentationId: id,
-                });
-                setSelectedSegmentationId(id);
-              }}
-              onToggleVisibility={id => {
-                segmentationService.toggleSegmentationVisibility(id);
-              }}
-              onToggleVisibilityAll={ids => {
-                ids.map(id => {
-                  segmentationService.toggleSegmentationVisibility(id);
-                });
-              }}
-              onDelete={id => {
-                segmentationService.remove(id);
-              }}
-              onEdit={id => {
-                segmentationEditHandler({
-                  id,
-                  servicesManager,
-                });
-              }}
+          {showConfig && (
+            <ROIThresholdConfiguration
+              config={config}
+              dispatch={dispatch}
+              runCommand={runCommand}
             />
-          ) : null}
-        </div>
-        {tmtvValue !== null ? (
-          <div className="flex items-baseline justify-between px-2 py-1 mt-4 bg-secondary-dark">
-            <span className="text-base font-bold tracking-widest text-white uppercase">
-              {'TMTV:'}
-            </span>
-            <div className="text-white">{`${tmtvValue} mL`}</div>
+          )}
+          {/* show segmentation table */}
+          <div className="mt-4">
+            {segmentations?.length ? (
+              <SegmentationTable
+                title={t('Segmentations')}
+                segmentations={segmentations}
+                activeSegmentationId={selectedSegmentationId}
+                onClick={id => {
+                  runCommand('setSegmentationActiveForToolGroups', {
+                    segmentationId: id,
+                  });
+                  setSelectedSegmentationId(id);
+                }}
+                onToggleVisibility={id => {
+                  segmentationService.toggleSegmentationVisibility(id);
+                }}
+                onToggleVisibilityAll={ids => {
+                  ids.map(id => {
+                    segmentationService.toggleSegmentationVisibility(id);
+                  });
+                }}
+                onDelete={id => {
+                  segmentationService.remove(id);
+                }}
+                onEdit={id => {
+                  segmentationEditHandler({
+                    id,
+                    servicesManager,
+                  });
+                }}
+              />
+            ) : null}
           </div>
-        ) : null}
-        <ExportReports
-          segmentations={segmentations}
-          tmtvValue={tmtvValue}
-          config={config}
-          commandsManager={commandsManager}
-        />
+          {tmtvValue !== null ? (
+            <div className="flex items-baseline justify-between px-2 py-1 mt-4 bg-secondary-dark">
+              <span className="text-base font-bold tracking-widest text-white uppercase">
+                {'TMTV:'}
+              </span>
+              <div className="text-white">{`${tmtvValue} mL`}</div>
+            </div>
+          ) : null}
+          <ExportReports
+            segmentations={segmentations}
+            tmtvValue={tmtvValue}
+            config={config}
+            commandsManager={commandsManager}
+          />
+        </div>
       </div>
       <div
         className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mt-auto cursor-pointer mb-4"
@@ -271,11 +278,11 @@ export default function PanelRoiThresholdSegmentation({
           width="15px"
           height="15px"
           name={'info'}
-          className={'ml-4 mr-3 text-primary-active'}
+          className={'text-primary-active ml-4 mr-3'}
         />
         <span>{'User Guide'}</span>
       </div>
-    </div>
+    </>
   );
 }
 

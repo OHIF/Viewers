@@ -15,11 +15,11 @@ import { ServicesManager } from '@ohif/core';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
 import { setColormap } from './utils/colormap/transferFunctionHelpers';
-import toggleMPRHangingProtocol from './utils/mpr/toggleMPRHangingProtocol';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
+import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
-const commandsModule = ({ servicesManager }) => {
+function commandsModule({ servicesManager, commandsManager }) {
   const {
     viewportGridService,
     toolGroupService,
@@ -27,9 +27,13 @@ const commandsModule = ({ servicesManager }) => {
     toolbarService,
     uiDialogService,
     cornerstoneViewportService,
-    hangingProtocolService,
     uiNotificationService,
+    customizationService,
+    measurementService,
+    hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
+
+  const { measurementServiceSource } = this;
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
@@ -70,9 +74,165 @@ const commandsModule = ({ servicesManager }) => {
   }
 
   const actions = {
-    getActiveViewportEnabledElement: () => {
-      return _getActiveViewportEnabledElement();
+    /**
+     * Generates the selector props for the context menu, specific to
+     * the cornerstone viewport, and then runs the context menu.
+     */
+    showCornerstoneContextMenu: options => {
+      const element = _getActiveViewportEnabledElement()?.viewport?.element;
+
+      const optionsToUse = { ...options, element };
+      const { useSelectedAnnotation, nearbyToolData, event } = optionsToUse;
+
+      // This code is used to invoke the context menu via keyboard shortcuts
+      if (useSelectedAnnotation && !nearbyToolData) {
+        const firstAnnotationSelected = getFirstAnnotationSelected(element);
+        // filter by allowed selected tools from config property (if there is any)
+        const isToolAllowed =
+          !optionsToUse.allowedSelectedTools ||
+          optionsToUse.allowedSelectedTools.includes(
+            firstAnnotationSelected?.metadata?.toolName
+          );
+        if (isToolAllowed) {
+          optionsToUse.nearbyToolData = firstAnnotationSelected;
+        } else {
+          return;
+        }
+      }
+
+      optionsToUse.defaultPointsPosition = [];
+      // if (optionsToUse.nearbyToolData) {
+      //   optionsToUse.defaultPointsPosition = commandsManager.runCommand(
+      //     'getToolDataActiveCanvasPoints',
+      //     { toolData: optionsToUse.nearbyToolData }
+      //   );
+      // }
+
+      // TODO - make the selectorProps richer by including the study metadata and display set.
+      optionsToUse.selectorProps = {
+        toolName: optionsToUse.nearbyToolData?.metadata?.toolName,
+        value: optionsToUse.nearbyToolData,
+        uid: optionsToUse.nearbyToolData?.annotationUID,
+        nearbyToolData: optionsToUse.nearbyToolData,
+        event,
+        ...optionsToUse.selectorProps,
+      };
+
+      commandsManager.run(options, optionsToUse);
     },
+
+    getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
+      return (
+        nearbyToolData ??
+        cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
+      );
+    },
+
+    // Measurement tool commands:
+
+    /** Delete the given measurement */
+    deleteMeasurement: ({ uid }) => {
+      if (uid) {
+        measurementServiceSource.remove(uid);
+      }
+    },
+
+    /**
+     * Show the measurement labelling input dialog and update the label
+     * on the measurement with a response if not cancelled.
+     */
+    setMeasurementLabel: ({ uid }) => {
+      const measurement = measurementService.getMeasurement(uid);
+
+      callInputDialog(
+        uiDialogService,
+        measurement,
+        (label, actionId) => {
+          if (actionId === 'cancel') {
+            return;
+          }
+
+          const updatedMeasurement = Object.assign({}, measurement, {
+            label,
+          });
+
+          measurementService.update(
+            updatedMeasurement.uid,
+            updatedMeasurement,
+            true
+          );
+        },
+        false
+      );
+    },
+
+    /**
+     *
+     * @param props - containing the updates to apply
+     * @param props.measurementKey - chooses the measurement key to apply the
+     *        code to.  This will typically be finding or site to apply a
+     *        finind code or a findingSites code.
+     * @param props.code - A coding scheme value from DICOM, including:
+     *       * CodeValue - the language independent code, for example '1234'
+     *       * CodingSchemeDesignator - the issue of the code value
+     *       * CodeMeaning - the text value shown to the user
+     *       * ref - a string reference in the form `<designator>:<codeValue>`
+     *       * Other fields
+     *     Note it is a valid option to remove the finding or site values by
+     *     supplying null for the code.
+     * @param props.uid - the measurement UID to find it with
+     * @param props.label - the text value for the code.  Has NOTHING to do with
+     *        the measurement label, which can be set with textLabel
+     * @param props.textLabel is the measurement label to apply.  Set to null to
+     *            delete.
+     *
+     * If the measurementKey is `site`, then the code will also be added/replace
+     * the 0 element of findingSites.  This behaviour is expected to be enhanced
+     * in the future with ability to set other site information.
+     */
+    updateMeasurement: props => {
+      const { code, uid, textLabel, label } = props;
+      const measurement = measurementService.getMeasurement(uid);
+      const updatedMeasurement = {
+        ...measurement,
+      };
+      // Call it textLabel as the label value
+      // TODO - remove the label setting when direct rendering of findingSites is enabled
+      if (textLabel !== undefined) {
+        updatedMeasurement.label = textLabel;
+      }
+      if (code !== undefined) {
+        const measurementKey = code.type || 'finding';
+
+        if (code.ref && !code.CodeValue) {
+          const split = code.ref.indexOf(':');
+          code.CodeValue = code.ref.substring(split + 1);
+          code.CodeMeaning = code.text || label;
+          code.CodingSchemeDesignator = code.ref.substring(0, split);
+        }
+        updatedMeasurement[measurementKey] = code;
+        // TODO - remove this line once the measurements table customizations are in
+        if (measurementKey !== 'finding') {
+          if (updatedMeasurement.findingSites) {
+            updatedMeasurement.findingSites = updatedMeasurement.findingSites.filter(
+              it => it.type !== measurementKey
+            );
+            updatedMeasurement.findingSites.push(code);
+          } else {
+            updatedMeasurement.findingSites = [code];
+          }
+        }
+      }
+      measurementService.update(
+        updatedMeasurement.uid,
+        updatedMeasurement,
+        true
+      );
+    },
+
+    // Retrieve value commands
+    getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
+
     setViewportActive: ({ viewportId }) => {
       const viewportInfo = cornerstoneViewportService.getViewportInfo(
         viewportId
@@ -128,6 +288,14 @@ const commandsModule = ({ servicesManager }) => {
       });
       viewport.render();
     },
+
+    // Just call the toolbar service record interaction - allows
+    // executing a toolbar command as a full toolbar command with side affects
+    // coming from the ToolbarService itself.
+    toolbarServiceRecordInteraction: props => {
+      toolbarService.recordInteraction(props);
+    },
+
     setToolActive: ({ toolName, toolGroupId = null }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = _getToolGroup(null);
@@ -150,7 +318,7 @@ const commandsModule = ({ servicesManager }) => {
       };
 
       const toolGroup = _getToolGroup(toolGroupId);
-      const toolGroupViewportIds = toolGroup.getViewportIds();
+      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
 
       // if toolGroup has been destroyed, or its viewports have been removed
       if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
@@ -169,6 +337,17 @@ const commandsModule = ({ servicesManager }) => {
 
       if (!filteredViewports.length) {
         return;
+      }
+
+      if (!toolGroup.getToolInstance(toolName)) {
+        uiNotificationService.show({
+          title: `${toolName} tool`,
+          message: `The ${toolName} tool is not available in this viewport.`,
+          type: 'info',
+          duration: 3000,
+        });
+
+        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
       }
 
       const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
@@ -404,16 +583,6 @@ const commandsModule = ({ servicesManager }) => {
         (activeViewportIndex - 1 + viewports.length) % viewports.length;
       viewportGridService.setActiveViewportIndex(nextViewportIndex);
     },
-    setHangingProtocol: ({ protocolId }) => {
-      hangingProtocolService.setProtocol(protocolId);
-    },
-    toggleMPR: ({ toggledState }) => {
-      toggleMPRHangingProtocol({
-        toggledState,
-        servicesManager,
-        getToolGroup: _getToolGroup,
-      });
-    },
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
         getEnabledElement,
@@ -446,8 +615,50 @@ const commandsModule = ({ servicesManager }) => {
   };
 
   const definitions = {
+    // The command here is to show the viewer context menu, as being the
+    // context menu
+    showCornerstoneContextMenu: {
+      commandFn: actions.showCornerstoneContextMenu,
+      storeContexts: [],
+      options: {
+        menuCustomizationId: 'measurementsContextMenu',
+        commands: [
+          {
+            commandName: 'showContextMenu',
+          },
+        ],
+      },
+    },
+
+    getNearbyToolData: {
+      commandFn: actions.getNearbyToolData,
+      storeContexts: [],
+      options: {},
+    },
+
+    deleteMeasurement: {
+      commandFn: actions.deleteMeasurement,
+      storeContexts: [],
+      options: {},
+    },
+    setMeasurementLabel: {
+      commandFn: actions.setMeasurementLabel,
+      storeContexts: [],
+      options: {},
+    },
+    updateMeasurement: {
+      commandFn: actions.updateMeasurement,
+      storeContexts: [],
+      options: {},
+    },
+
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
+      storeContexts: [],
+      options: {},
+    },
+    toolbarServiceRecordInteraction: {
+      commandFn: actions.toolbarServiceRecordInteraction,
       storeContexts: [],
       options: {},
     },
@@ -554,16 +765,6 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    setHangingProtocol: {
-      commandFn: actions.setHangingProtocol,
-      storeContexts: [],
-      options: {},
-    },
-    toggleMPR: {
-      commandFn: actions.toggleMPR,
-      storeContexts: [],
-      options: {},
-    },
     toggleStackImageSync: {
       commandFn: actions.toggleStackImageSync,
       storeContexts: [],
@@ -581,6 +782,6 @@ const commandsModule = ({ servicesManager }) => {
     definitions,
     defaultContext: 'CORNERSTONE',
   };
-};
+}
 
 export default commandsModule;

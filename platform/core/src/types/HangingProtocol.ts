@@ -1,68 +1,112 @@
-type DisplaySetInfo = {
-  SeriesInstanceUID: string;
-  displaySetInstanceUID: string;
-  displaySetOptions: Record<string, unknown>;
+import { Command } from './Command';
+
+export type DisplaySetInfo = {
+  displaySetInstanceUID?: string;
+  displaySetOptions: DisplaySetOptions;
 };
 
-type ViewportMatchDetails = {
+export type ViewportMatchDetails = {
   viewportOptions: ViewportOptions;
   displaySetsInfo: DisplaySetInfo[];
 };
 
-type DisplaySetMatchDetails = {
-  SeriesInstanceUID: string;
-  StudyInstanceUID: string;
+export type DisplaySetMatchDetails = {
+  StudyInstanceUID?: string;
   displaySetInstanceUID: string;
   matchDetails?: any;
-  matchingScores?: any[];
+  matchingScores?: DisplaySetMatchDetails[];
   sortingInfo?: any;
 };
 
-
-type DisplaySetAndViewportOptions = {
+export type DisplaySetAndViewportOptions = {
   displaySetInstanceUIDs: string[];
   viewportOptions: ViewportOptions;
   displaySetOptions: DisplaySetOptions;
-}
+};
 
-type ViewportSpecificProtocolOptions = {
-  [viewportIndex: string]: DisplaySetAndViewportOptions
-}
+export type SetProtocolOptions = {
+  /** Used to provide a mapping of what keys are provided for which viewport.
+   * For example, a Chest XRay might use have the display set selector id of
+   * "ChestXRay", then the user might drag an alternate chest xray from the initially chosen one,
+   * and then navigate to another stage or protocol.  If that new stage/protocol
+   * uses the name "ChestXRay", then that selection will be used instead of
+   * matching the display set selectors.  That allows remembering the
+   * user selected views by name.
+   * Note the keys are not simple display set selector values, but are:
+   * `${activeStudyUID}:${displaySetSelectorId}:${matchingDisplaySetIndex || 0}`
+   * This is normally transparent to the user of this, but in order to specify
+   * specific instances, they can be added like that.
+   */
+  displaySetSelectorMap?: Record<string, string>;
 
-type GlobalProtocolOptions = DisplaySetAndViewportOptions
+  /** Used to define the display sets already in view, in order to allow
+   * filling empty viewports with other instances.
+   * Only used when the -1 value for matchedDisplaySetsIndex is provided.
+   * List of display set instance UID's already displayed.
+   */
+  inDisplay?: string[];
 
+  /** Select the given stage, either by ID or position.
+   * Don't forget that name is used as the ID if ID not provided.
+   */
+  stageId?: string;
+  stageIndex?: number;
 
-type SetProtocolOptions =
-  ViewportSpecificProtocolOptions | GlobalProtocolOptions;
+  /** Indicates to setup the protocol and fire the PROTOCOL_RESTORED event
+   * but don't fire the protocol changed event.  Used to restore the
+   * HP service to a previous state.
+   */
+  restoreProtocol?: boolean;
+};
 
-
-type HangingProtocolMatchDetails = {
+export type HangingProtocolMatchDetails = {
   displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
   viewportMatchDetails: Map<number, ViewportMatchDetails>;
-  hpAlreadyApplied: Map<number, boolean>;
 };
 
-type MatchingRule = {
-  id: string;
-  weight: number;
+export type ConstraintValue =
+  | string
+  | number
+  | boolean
+  | []
+  | {
+    value: string | number | boolean | [];
+  };
+
+export type Constraint = {
+  // This value exactly
+  equals?: ConstraintValue;
+  notEquals?: ConstraintValue;
+  // A caseless contains
+  containsI?: string;
+  contains?: ConstraintValue;
+  greaterThan?: ConstraintValue;
+};
+
+export type MatchingRule = {
+  // No real use for the id
+  id?: string;
+  // Defaults to 1
+  weight?: number;
   attribute: string;
-  constraint: Record<string, unknown>;
-  required: boolean;
+  constraint: Constraint;
+  // Not required by default
+  required?: boolean;
 };
 
-type ViewportLayoutOptions = {
+export type ViewportLayoutOptions = {
   x: number;
   y: number;
   width: number;
   height: number;
 };
 
-type ViewportStructure = {
+export type ViewportStructure = {
   layoutType: string;
   properties: {
     rows: number;
     columns: number;
-    layoutOptions: ViewportLayoutOptions[];
+    layoutOptions?: ViewportLayoutOptions[];
   };
 };
 
@@ -74,7 +118,8 @@ type ViewportStructure = {
  * The matches are done lazily, so if a stage doesn't need a given match,
  * it won't be selected.
  */
-type DisplaySetSelector = {
+export type DisplaySetSelector = {
+  id?: string;
   // The image matching rule (not currently implemented) selects which image to
   // display initially, only for stack views.
   imageMatchingRules?: MatchingRule[];
@@ -83,58 +128,137 @@ type DisplaySetSelector = {
   studyMatchingRules?: MatchingRule[];
 };
 
-type SyncGroup = {
+export type SyncGroup = {
   type: string;
   id: string;
-  source?: boolean
-  target?: boolean
-}
+  source?: boolean;
+  target?: boolean;
+};
 
-type initialImageOptions = {
+export type initialImageOptions = {
   index?: number;
-  preset? : string; // todo: type more
-}
+  preset?: string; // todo: type more
+};
 
-type ViewportOptions = {
-  toolGroupId: string;
-  viewportType: string;
+export type ViewportOptions = {
+  toolGroupId?: string;
+  viewportType?: string;
   id?: string;
   orientation?: string;
   viewportId?: string;
   initialImageOptions?: initialImageOptions;
   syncGroups?: SyncGroup[];
   customViewportProps?: Record<string, unknown>;
+  // Set to true to allow non-matching drag and drop or options provided
+  // from options.displaySetSelectorsMap
+  allowUnmatchedView?: boolean;
 };
 
-type DisplaySetOptions = {
+// The options here includes both the display set selector and matching index
+// as well as actual options to apply to the individual viewports.
+export type DisplaySetOptions = {
   // The id is used to choose which display set selector to apply here
   id: string;
-  // An offset to allow display secondary series, for example
-  // to display the second matching series (displaySetIndex==1)
-  // This cannot easily be done with the matching rules directly.
-  displaySetIndex?: number;
+  /** The offset to allow display secondary series, for example
+   * to display the second matching series, use `matchedDisplaySetsIndex==1` */
+  matchedDisplaySetsIndex?: number;
+
   // The options to apply to the display set.
   options?: Record<string, unknown>;
 };
 
-type Viewport = {
+export type Viewport = {
   viewportOptions: ViewportOptions;
   displaySets: DisplaySetOptions[];
 };
 
-type ProtocolStage = {
-  id: string;
+/**
+ * disabled stages are missing display sets required in order to view them.
+ * enabled stages have all the requiredDisplaySets and at least preferredViewports
+ * filled.
+ * passive stages have the requiredDisplaySets and at least requiredViewports filled.
+ */
+export type StageStatus = 'disabled' | 'enabled' | 'passive';
+
+/** Controls whether a stage is activated or not, at the given level, by
+ * controlling the status of the stage.
+ */
+export type StageActivation = {
+  // The minimum number of viewports to be NON-blank to activate this level of the stage
+  minViewportsMatched?: number;
+  // The required set of display set selectors to have at least 1 match to activate
+  displaySetSelectorsMatched?: string[];
+};
+
+/**
+ * Protocol stages are a set of different views which can be applied, for
+ * example, a 2x1 and a 1x1 view might be both applied (see default extension
+ * for this example).
+ */
+export type ProtocolStage = {
+  /** The id defaults to the name of the protocol if not otherwise specified */
+  id?: string;
+  /**
+   * The display name used for this stage when shown to the user.  This can
+   * differ from the id, for example, to use the same name for different
+   * stages, only one of which ends up being active.
+   */
   name: string;
+  /** Indicate if the stage can be applied or not */
+  status?: StageStatus;
+
   viewportStructure: ViewportStructure;
+  stageActivation?: {
+    // The enabled activation is provided for fully active stages,
+    // participating in automatic stage selection and navigation
+    enabled?: StageActivation;
+    // The passive activation is provided to allow stages to manually
+    // be activated, but not navigated to by default, or used on initial view
+    passive?: StageActivation;
+  };
+
+  /** A viewport definition used for to fill in manually selected viewports.
+   * This allows changing the layout definition for additional viewports without
+   * needing to define layouts for each of the 1x1, 2x2 etc modes.
+   */
+  defaultViewport?: Viewport;
+
   viewports: Viewport[];
+
+  // Unused.
   createdDate?: string;
 };
 
-type Protocol = {
+// Add notifications for various types of events.
+export type ProtocolNotifications = {
+  // This set of commands is executed after the protocol is exited and the new one applied
+  onProtocolExit?: Command[];
+
+  // This set of commands is executed after the protocol is entered and applied
+  onProtocolEnter?: Command[];
+
+  // This set of commands is executed before the layout change is started.
+  // If it returns false, the layout change will be aborted.
+  // The numRows and numCols is included in the command params, so it is possible
+  // to apply a specific hanging protocol
+  onLayoutChange?: Command[];
+};
+
+/**
+ * A protocol is the top level definition for a hanging protocol.
+ * It is a set of rules about when the protocol can be applied at all,
+ * as well as a set of stages that represent indivividual views.
+ * Additionally, the display set selectors are used to choose from the existing
+ * display sets.  The hanging protcol definition here does NOT allow
+ * redefining the display sets to use, but only selects the views to show.
+ */
+export type Protocol = {
   // Mandatory
   id: string;
-  // Selects which display sets are given a specific name.
+  /** Maps ids to display set selectors to choose display sets */
   displaySetSelectors: Record<string, DisplaySetSelector>;
+  /** A default viewport to use for any stage to select new viewport layouts. */
+  defaultViewport?: Viewport;
   stages: ProtocolStage[];
   // Optional
   locked?: boolean;
@@ -145,35 +269,34 @@ type Protocol = {
   availableTo?: Record<string, unknown>;
   editableBy?: Record<string, unknown>;
   toolGroupIds?: string[];
+  // A set of callbacks relevant to entering and exiting the protocol
+  callbacks?: ProtocolNotifications;
   imageLoadStrategy?: string; // Todo: this should be types specifically
   protocolMatchingRules?: MatchingRule[];
+  /* The number of priors required for this hanging protocol.
+   * -1 means that NO priors are referenced, and thus this HP matches
+   * only the active study, whereas 0 means that an unknown number of
+   * priors is matched.
+   */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
 };
 
-type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
+/** Used to dynamically generate protocols.
+ * Try to avoid this as it is difficult to provide active/disabled settings
+ * to the GUI when this is used, and it can be expensive to apply.
+ * Alternatives include using the custom attributes where possible.
+ */
+export type ProtocolGenerator = ({
+  servicesManager: any,
+  commandsManager: any,
+}) => {
   protocol: Protocol;
 };
 
-export type {
-  SetProtocolOptions,
-  ViewportOptions,
-  ViewportMatchDetails,
-  DisplaySetMatchDetails,
-  HangingProtocolMatchDetails,
-  Protocol,
-  ProtocolStage,
-  Viewport,
-  DisplaySetSelector,
-  ViewportStructure,
-  ViewportLayoutOptions,
-  DisplaySetOptions,
-  MatchingRule,
-  SyncGroup,
-  initialImageOptions,
-  DisplaySetInfo,
-  GlobalProtocolOptions,
-  ViewportSpecificProtocolOptions,
-  DisplaySetAndViewportOptions,
-  ProtocolGenerator,
+export type HPInfo = {
+  protocolId: string;
+  stageId: string;
+  stageIndex: number;
+  activeStudyUID: string;
 };

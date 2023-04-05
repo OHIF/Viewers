@@ -17,8 +17,21 @@ describe('OHIF Study Viewer Page', function() {
   });
 
   it('drags and drop a series thumbnail into viewport', function() {
-    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)') //element to be dragged
-      .drag('.cornerstone-canvas'); //dropzone element
+    // Can't use the native drag version as the element should be rerendered
+    // cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)') //element to be dragged
+    //   .drag('.cornerstone-canvas'); //dropzone element
+
+    const dataTransfer = new DataTransfer();
+
+    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)')
+      .first()
+      .trigger('mousedown', { which: 1, button: 0 })
+      .trigger('dragstart', { dataTransfer })
+      .trigger('drag', {});
+    cy.get('.cornerstone-canvas')
+      .trigger('mousemove', 'center')
+      .trigger('dragover', { dataTransfer, force: true })
+      .trigger('drop', { dataTransfer, force: true });
 
     //const expectedText =
     //  'Ser: 2Img: 1 1/13512 x 512Loc: -17.60 mm Thick: 3.00 mm';
@@ -38,6 +51,8 @@ describe('OHIF Study Viewer Page', function() {
   });
 
   it('performs double-click to load thumbnail in active viewport', () => {
+    // Have to finish rendering the image before this works
+    cy.wait(350);
     cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
 
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);

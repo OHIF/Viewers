@@ -14,8 +14,9 @@ describe('OHIF MPR', () => {
   });
 
   it('should go MPR for reconstructible displaySets and come back', () => {
-    cy.wait(1000);
+    cy.wait(250);
     cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.wait(250);
 
     cy.get('[data-cy="MPR"]').click();
 
@@ -27,9 +28,10 @@ describe('OHIF MPR', () => {
   });
 
   it('should render correctly the MPR', () => {
-    cy.wait(1000);
+    cy.wait(250);
 
     cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.wait(250);
     cy.get('[data-cy="MPR"]').click();
 
     cy.get('[data-cy="thumbnail-viewport-labels"]').should('have.length', 3);
@@ -93,7 +95,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should correctly render Crosshairs for MPR', () => {
-    cy.wait(1000);
+    cy.wait(250);
 
     cy.get('[data-cy="Crosshairs"]').click();
     cy.window()
@@ -110,7 +112,7 @@ describe('OHIF MPR', () => {
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
 
-    cy.wait(1000);
+    cy.wait(250);
 
     // check cornerstone to see if each has crosshairs
     // we can later do visual testing to match the images with a baseline

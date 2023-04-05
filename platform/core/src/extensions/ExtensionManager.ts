@@ -36,12 +36,21 @@ export interface ExtensionParams extends ExtensionConstructor {
  */
 export interface Extension {
   id: string;
-  preRegistration?: (p: ExtensionParams) => void;
+  preRegistration?: (p: ExtensionParams) => Promise<void> | void;
+  onModeExit?: () => void;
+  getHangingProtocolModule?: (p: ExtensionParams) => unknown;
+  getCommandsModule?: (p: ExtensionParams) => CommandsModule;
 }
 
 export type ExtensionRegister = {
   id: string;
   create: (p: ExtensionParams) => Extension;
+};
+
+export type CommandsModule = {
+  actions: Record<string, unknown>;
+  definitions: Record<string, unknown>;
+  defaultContext?: string;
 };
 
 export default class ExtensionManager {
@@ -274,9 +283,14 @@ export default class ExtensionManager {
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
             extensionModule.forEach(element => {
-              this.modulesMap[
-                `${extensionId}.${moduleType}.${element.name}`
-              ] = element;
+              if (!element.name) {
+                throw new Error(
+                  `Extension ID ${extensionId} module ${moduleType} element has no name`
+                );
+              }
+              const id = `${extensionId}.${moduleType}.${element.name}`;
+              element.id = id;
+              this.modulesMap[id] = element;
             });
             break;
           default:
@@ -331,7 +345,7 @@ export default class ExtensionManager {
     }
 
     try {
-      const extensionModule = getModuleFn({
+      const extensionModule = extension[getModuleFnName]({
         appConfig: this._appConfig,
         commandsManager: this._commandsManager,
         servicesManager: this._servicesManager,
@@ -348,6 +362,7 @@ export default class ExtensionManager {
 
       return extensionModule;
     } catch (ex) {
+      console.log(ex);
       throw new Error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
@@ -356,10 +371,10 @@ export default class ExtensionManager {
 
   _initHangingProtocolsModule = (extensionModule, extensionId) => {
     const { hangingProtocolService } = this._servicesManager.services;
-    extensionModule.forEach(({ id, protocol }) => {
+    extensionModule.forEach(({ name, protocol }) => {
       if (protocol) {
         // Only auto-register if protocol specified, otherwise let mode register
-        hangingProtocolService.addProtocol(id, protocol);
+        hangingProtocolService.addProtocol(name, protocol);
       }
     });
   };

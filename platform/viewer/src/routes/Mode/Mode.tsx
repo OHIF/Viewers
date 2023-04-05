@@ -8,6 +8,7 @@ import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery, useSearchParams } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
+import getStudies from './studiesList';
 
 /**
  * Initialize the route.
@@ -64,21 +65,9 @@ function defaultRouteInit(
       return;
     }
 
-    const studyMap = {};
+    // Gets the studies list to use
+    const studies = getStudies(studyInstanceUIDs, displaySets);
 
-    // Prior studies don't quite work properly yet, but the studies list
-    // is at least being generated and passed in.
-    const studies = displaySets.reduce((prev, curr) => {
-      const { StudyInstanceUID } = curr;
-      if (!studyMap[StudyInstanceUID]) {
-        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
-        studyMap[StudyInstanceUID] = study;
-        prev.push(study);
-      }
-      return prev;
-    }, []);
-
-    // The assumption is that the display set at position 0 is the first
     // study being displayed, and is thus the "active" study.
     const activeStudy = studies[0];
 
@@ -125,7 +114,15 @@ export default function ModeRoute({
     hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
 
-  const { extensions, sopClassHandlers, hotkeys, hangingProtocol } = mode;
+  const {
+    extensions,
+    sopClassHandlers,
+    hotkeys: hotkeyObj,
+    hangingProtocol,
+  } = mode;
+  // Preserve the old array interface for hotkeys
+  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
+  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions-v2';
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;
@@ -133,10 +130,8 @@ export default function ModeRoute({
 
   extensionManager.setActiveDataSource(dataSourceName);
 
-  const dataSources = extensionManager.getActiveDataSource();
+  const dataSource = extensionManager.getActiveDataSource()[0];
 
-  // Only handling one instance of the datasource type (E.g. one DICOMWeb server)
-  const dataSource = dataSources[0];
   // Only handling one route per mode for now
   const route = mode.routes[0];
 
@@ -217,14 +212,12 @@ export default function ModeRoute({
 
     hotkeysManager.setDefaultHotKeys(hotkeys);
 
-    const userPreferredHotkeys = JSON.parse(
-      localStorage.getItem('hotkey-definitions')
-    );
+    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
 
     if (userPreferredHotkeys?.length) {
-      hotkeysManager.setHotkeys(userPreferredHotkeys);
+      hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
     } else {
-      hotkeysManager.setHotkeys(hotkeys);
+      hotkeysManager.setHotkeys(hotkeys, hotkeyName);
     }
 
     return () => {
