@@ -30,6 +30,7 @@ export default function getAuthorizationHeader({ requestOptions } = {}, user) {
   else if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
   }
-
+  const gcpJwtToken = localStorage.getItem('gcp-jwt-token');
+  headers.Authorization = `Bearer ${gcpJwtToken}`;
   return headers;
 }
