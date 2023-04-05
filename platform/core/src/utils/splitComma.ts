@@ -21,11 +21,11 @@ const getSplitParam = (
   lowerCaseKey: string,
   params = new URLSearchParams(window.location.search)
 ): string[] => {
-  return splitComma(
-    [...params]
-      .find(([key, value]) => key.toLowerCase() === lowerCaseKey && value)
-      ?.slice?.(1)
+  const sourceKey = [...params.keys()].find(
+    it => it.toLowerCase() === lowerCaseKey
   );
+  if (!sourceKey) return;
+  return splitComma(params.getAll(sourceKey));
 };
 
 export { splitComma, getSplitParam };
