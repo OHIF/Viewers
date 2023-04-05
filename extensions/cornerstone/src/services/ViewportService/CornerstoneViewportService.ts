@@ -1,4 +1,4 @@
-import { PubSubService } from '@ohif/core';
+import { PubSubService, Types as OhifTypes, ServicesManager } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
@@ -43,6 +43,16 @@ const EVENTS = {
  */
 class CornerstoneViewportService extends PubSubService
   implements IViewportService {
+  static REGISTRATION = {
+    name: 'cornerstoneViewportService',
+    altName: 'CornerstoneViewportService',
+    create: ({
+      servicesManager,
+    }: OhifTypes.Extensions.ExtensionParams): CornerstoneViewportService => {
+      return new CornerstoneViewportService(servicesManager);
+    },
+  };
+
   renderingEngine: Types.IRenderingEngine | null;
   viewportsInfo: Map<number, ViewportInfo> = new Map();
   viewportsById: Map<string, ViewportInfo> = new Map();
@@ -55,7 +65,7 @@ class CornerstoneViewportService extends PubSubService
   resizeRefreshMode: 'debounce';
   servicesManager = null;
 
-  constructor(servicesManager) {
+  constructor(servicesManager: ServicesManager) {
     super(EVENTS);
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;
@@ -71,7 +81,7 @@ class CornerstoneViewportService extends PubSubService
     viewportIndex: number,
     viewportOptions: PublicViewportOptions,
     elementRef: HTMLDivElement
-  ) {
+  ): void {
     // Use the provided viewportId
     // Not providing a viewportId is frowned upon because it does weird things
     // on moving them around, but it does mostly work.
@@ -855,14 +865,4 @@ class CornerstoneViewportService extends PubSubService
   }
 }
 
-export default function CornerstoneViewportServiceRegistration(serviceManager) {
-  return {
-    name: 'cornerstoneViewportService',
-    altName: 'CornerstoneViewportService',
-    create: ({ configuration = {} }) => {
-      return new CornerstoneViewportService(serviceManager);
-    },
-  };
-}
-
-export { CornerstoneViewportService, CornerstoneViewportServiceRegistration };
+export default CornerstoneViewportService;

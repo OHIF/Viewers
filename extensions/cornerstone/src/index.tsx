@@ -7,7 +7,7 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import { Types } from '@ohif/core';
+import { ServicesManager, Types } from '@ohif/core';
 
 import init from './init';
 import getCommandsModule from './commandsModule';
@@ -72,18 +72,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     props: Types.Extensions.ExtensionParams
   ): Promise<void> {
     const { servicesManager } = props;
-    // Todo: we should be consistent with how services get registered. Use REGISTRATION static method for all
-    servicesManager.registerService(
-      CornerstoneViewportService(servicesManager)
-    );
-    servicesManager.registerService(
-      ToolGroupService.REGISTRATION(servicesManager)
-    );
-    servicesManager.registerService(SyncGroupService(servicesManager));
-    servicesManager.registerService(SegmentationService(servicesManager));
-    servicesManager.registerService(
-      CornerstoneCacheService.REGISTRATION(servicesManager)
-    );
+    servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
+    servicesManager.registerService(ToolGroupService.REGISTRATION);
+    servicesManager.registerService(SyncGroupService.REGISTRATION);
+    servicesManager.registerService(SegmentationService.REGISTRATION);
+    servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
 
     return init.call(this, props);
   },
