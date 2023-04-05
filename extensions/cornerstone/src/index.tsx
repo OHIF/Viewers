@@ -16,10 +16,11 @@ import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
 import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
+import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
+import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset } from './state';
-import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
 import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
@@ -138,5 +139,5 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export type { PublicViewportOptions };
-export { measurementMappingUtils };
+export { measurementMappingUtils, CornerstoneExtensionTypes };
 export default cornerstoneExtension;

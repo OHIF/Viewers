@@ -30,17 +30,6 @@ const extension = {
    */
   id,
 
-  /**
-   * Perform any pre-registration tasks here. This is called before the extension
-   * is registered. Usually we run tasks such as: configuring the libraries
-   * (e.g. cornerstone, cornerstoneTools, ...) or registering any services that
-   * this extension is providing.
-   */
-  preRegistration: ({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-  }) => {},
  /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
