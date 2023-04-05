@@ -7,8 +7,8 @@ import { Types } from '@ohif/core';
  */
 const hpMN: Types.HangingProtocol.Protocol = {
   hasUpdatedPriorsInformation: false,
-  id: '@ohif/mn',
-  description: 'Has various hanging protocol layouts for use in testing',
+  id: '@ohif/mnGrid',
+  description: 'Has various hanging protocol grid layouts',
   name: '2x2',
   protocolMatchingRules: [
     {
@@ -16,7 +16,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
       weight: 25,
       attribute: 'numberOfDisplaySetsWithImages',
       constraint: {
-        greaterThan: 1,
+        greaterThan: 0,
       },
     },
   ],
@@ -28,6 +28,15 @@ const hpMN: Types.HangingProtocol.Protocol = {
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
+          },
+        },
+        // This display set will select the specified items by preference
+        // It has no affect if nothing is specified in the URL.
+        {
+          attribute: 'isDisplaySetFromUrl',
+          weight: 10,
+          constraint: {
+            equals: true,
           },
         },
       ],
@@ -140,7 +149,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
-              reuseId: '0-0',
             },
           ],
         },
@@ -151,9 +159,8 @@ const hpMN: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
+              id: 'defaultDisplaySetId',
               matchedDisplaySetsIndex: 1,
-              id: 'defaultDisplaySetId',
-              reuseId: '1-0',
             },
           ],
         },
@@ -164,9 +171,8 @@ const hpMN: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              matchedDisplaySetsIndex: 2,
               id: 'defaultDisplaySetId',
-              reuseId: '0-1',
+              matchedDisplaySetsIndex: 2,
             },
           ],
         },

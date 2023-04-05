@@ -1,4 +1,4 @@
-import hpMN from './hpMN';
+import hpMNGrid from './hpMNGrid';
 
 const defaultProtocol = {
   id: 'default',
@@ -105,8 +105,8 @@ function getHangingProtocolModule() {
     },
     // Create a MxN hanging protocol available by default
     {
-      name: hpMN.id,
-      protocol: hpMN,
+      name: hpMNGrid.id,
+      protocol: hpMNGrid,
     },
   ];
 }

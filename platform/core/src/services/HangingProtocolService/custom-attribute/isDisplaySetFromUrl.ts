@@ -1,4 +1,4 @@
-import { getSplitParam } from '../../utils';
+import { getSplitParam } from '../../../utils';
 
 /** Indicates if the given display set is the one specified in the
  * displaySet parameter in the URL
