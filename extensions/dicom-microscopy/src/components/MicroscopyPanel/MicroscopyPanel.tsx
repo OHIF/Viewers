@@ -553,6 +553,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     };
   });
 
+  const disabled = data.length === 0;
+
   return (
     <>
       <div
@@ -570,7 +572,14 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       <div className="flex justify-center p-4">
         <ButtonGroup color="black" size="inherit">
           {promptSave && (
-            <Button className="px-2 py-2 text-base" onClick={promptSave}>
+            <Button
+              className="px-2 py-2 text-base"
+              size="initial"
+              variant={disabled ? 'disabled' : 'outlined'}
+              color="black"
+              border="primaryActive"
+              onClick={promptSave}
+            >
               {props.t('Create Report')}
             </Button>
           )}
