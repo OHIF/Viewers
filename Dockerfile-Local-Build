@@ -1,6 +1,7 @@
 
 # Use Nginx Alpine image
 FROM nginx:stable-alpine
+ENV APP_GCP_URL=''
 
 # Update packages
 RUN apk -U upgrade
