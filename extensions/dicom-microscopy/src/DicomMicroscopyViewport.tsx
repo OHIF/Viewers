@@ -46,7 +46,46 @@ class DicomMicroscopyViewport extends Component {
     // other props from wrapping component
     servicesManager: PropTypes.object,
     extensionManager: PropTypes.object,
+    commandsManager: PropTypes.object,
   };
+
+  /**
+   * Get the nearest ROI from the mouse click point
+   *
+   * @param event
+   * @param autoselect
+   * @returns
+   */
+  getNearbyROI(event: Event, autoselect = true) {
+    const _drawingSource = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'drawingSource'
+    );
+    const _pyramid = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'pyramid'
+    );
+    const _map = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'map'
+    );
+    const _affine = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'affine'
+    );
+    const feature = this.viewer[_drawingSource].getClosestFeatureToCoordinate(
+      this.viewer[_map].getEventCoordinate(event)
+    );
+
+    if (feature) {
+      const roiAnnotation = this.viewer._getROIFromFeature(
+        feature,
+        this.viewer[_pyramid].metadata,
+        this.viewer[_affine]
+      );
+      if (roiAnnotation && autoselect) {
+        microscopyManager.selectAnnotation(roiAnnotation);
+      }
+      return roiAnnotation;
+    }
+    return null;
+  }
 
   // install the microscopy renderer into the web page.
   // you should only do this once.
@@ -164,6 +203,25 @@ class DicomMicroscopyViewport extends Component {
         StudyInstanceUID,
         SeriesInstanceUID
       );
+
+      this.managedViewer.addContextMenuCallback((event: Event) => {
+        const roiAnnotationNearBy = this.getNearbyROI(event);
+
+        // TODO: refactor this after Bill's changes on ContextMenu feature get merged
+        this.props.commandsManager.runCommand(
+          'showViewerContextMenu',
+          {
+            menuName: 'microscopyContextMenu',
+            event,
+            container,
+            viewer: this.viewer,
+            managedViewer: this.managedViewer,
+            viewportIndex: this.props.viewportIndex,
+            roiAnnotationNearBy,
+          },
+          'MICROSCOPY'
+        );
+      });
     };
 
     console.debug('Loading viewer metadata', displaySet);

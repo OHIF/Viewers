@@ -40,6 +40,20 @@ class ViewerManager extends Publisher {
     this.onRoiRemoved = this.roiRemovedHandler.bind(this);
     this.contextMenuCallback = () => {};
 
+    // init symbols
+    this._drawingSource = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'drawingSource'
+    );
+    this._pyramid = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'pyramid'
+    );
+    this._map = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'map'
+    );
+    this._affine = Object.getOwnPropertySymbols(this.viewer).find(
+      p => p.description == 'affine'
+    );
+
     this.registerEvents();
     this.activateDefaultInteractions();
   }
@@ -369,7 +383,7 @@ class ViewerManager extends Publisher {
   }
 
   _jumpToPoint(coord) {
-    const pyramid = this.viewer.imageMetadata;
+    const pyramid = this.viewer[this._pyramid].metadata;
 
     const mappedCoord = coordinateFormatScoord3d2Geometry(coord, pyramid);
     const view = this._getMapView();
@@ -378,7 +392,7 @@ class ViewerManager extends Publisher {
   }
 
   _jumpToPolyline(coord) {
-    const pyramid = this.viewer.imageMetadata;
+    const pyramid = this.viewer[this._pyramid].metadata;
 
     const mappedCoord = coordinateFormatScoord3d2Geometry(coord, pyramid);
     const view = this._getMapView();
@@ -394,7 +408,7 @@ class ViewerManager extends Publisher {
   }
 
   _jumpToPolygonOrEllipse(coordinates) {
-    const pyramid = this.viewer.imageMetadata;
+    const pyramid = this.viewer[this._pyramid].metadata;
 
     let minX = Infinity;
     let maxX = -Infinity;

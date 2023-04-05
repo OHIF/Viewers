@@ -35,7 +35,7 @@ export default {
    * {name, component} object. Example of a viewport module is the CornerstoneViewport
    * that is provided by the Cornerstone extension in OHIF.
    */
-  getViewportModule({ servicesManager, extensionManager }) {
+  getViewportModule({ servicesManager, extensionManager, commandsManager }) {
     /**
      *
      * @param props {*}
@@ -57,6 +57,7 @@ export default {
         <MicroscopyViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           activeViewportIndex={activeViewportIndex}
           setViewportActive={(viewportIndex: number) => {
             viewportGridService.setActiveViewportIndex(viewportIndex);
