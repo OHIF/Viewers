@@ -7,12 +7,12 @@ const RESPONSE = {
 };
 
 function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
 
   return new Promise(async function(resolve, reject) {
     let promptResult = await _askTrackMeasurements(
-      UIViewportDialogService,
+      uiViewportDialogService,
       viewportIndex
     );
 
@@ -25,7 +25,7 @@ function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
+function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
     const message = 'Track measurements for this series?';
     const actions = [
@@ -49,11 +49,11 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
+    uiViewportDialogService.show({
       viewportIndex,
       id: 'measurement-tracking-prompt-begin-tracking',
       type: 'info',
@@ -61,7 +61,7 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });

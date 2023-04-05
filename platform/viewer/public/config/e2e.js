@@ -8,6 +8,7 @@ window.config = {
   maxNumberOfWebWorkers: 3,
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
+  strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   dataSources: [
     {

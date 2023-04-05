@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "cornerstone-math": "0.1.9",
-    "cornerstone-wado-image-loader": "^4.2.1",
+    "cornerstone-wado-image-loader": "^4.13.0",
     "dicom-parser": "^1.8.9",
     "@ohif/ui": "^2.0.0"
   },

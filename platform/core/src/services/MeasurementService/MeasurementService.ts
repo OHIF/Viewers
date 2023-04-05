@@ -459,7 +459,12 @@ class MeasurementService extends PubSubService {
       log.warn(`Measurement ID not found. Generating UID: ${internalUID}`);
     }
 
+    const annotationData = data.annotation.data;
+
     const newMeasurement = {
+      finding: annotationData.finding,
+      findingSites: annotationData.findingSites,
+      site: annotationData.findingSites?.[0],
       ...measurement,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       uid: internalUID,
@@ -472,7 +477,7 @@ class MeasurementService extends PubSubService {
         measurement: newMeasurement,
       });
     } else {
-      log.info(`Measurement added.`, newMeasurement);
+      log.info('Measurement added', newMeasurement);
       this.measurements[internalUID] = newMeasurement;
       this._broadcastEvent(this.EVENTS.RAW_MEASUREMENT_ADDED, {
         source,
@@ -519,9 +524,14 @@ class MeasurementService extends PubSubService {
     let measurement = {};
     try {
       const sourceMappings = this.mappings[source.uid];
-      const { toMeasurementSchema } = sourceMappings.find(
+      const sourceMapping = sourceMappings.find(
         mapping => mapping.annotationType === annotationType
       );
+      if (!sourceMapping) {
+        console.log('No source mapping', source);
+        return;
+      }
+      const { toMeasurementSchema } = sourceMapping;
 
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
@@ -548,26 +558,27 @@ class MeasurementService extends PubSubService {
       );
     }
 
+    const oldMeasurement = this.measurements[internalUID];
+
     const newMeasurement = {
+      ...oldMeasurement,
       ...measurement,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       uid: internalUID,
     };
 
-    if (this.measurements[internalUID]) {
+    if (oldMeasurement) {
       // TODO: Ultimately, each annotation should have a selected flag right from the soure.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
-      newMeasurement.selected = this.measurements[internalUID].selected;
       this.measurements[internalUID] = newMeasurement;
       if (isUpdate) {
-        this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
           measurement: newMeasurement,
           notYetUpdatedAtSource: false,
         });
       } else {
         log.info('Measurement added.', newMeasurement);
-        this.measurements[internalUID] = newMeasurement;
         this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
           source,
           measurement: newMeasurement,

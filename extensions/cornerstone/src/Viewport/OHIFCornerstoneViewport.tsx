@@ -128,6 +128,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     cornerstoneViewportService,
     cornerstoneCacheService,
     viewportGridService,
+    stateSyncService,
   } = servicesManager.services;
 
   const cineHandler = () => {
@@ -211,6 +212,33 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
   }, [elementRef]);
 
+  const storePresentation = () => {
+    const currentPresentation = cornerstoneViewportService.getPresentation(
+      viewportIndex
+    );
+    if (!currentPresentation || !currentPresentation.presentationIds) return;
+    const {
+      lutPresentationStore,
+      positionPresentationStore,
+    } = stateSyncService.getState();
+    const { presentationIds } = currentPresentation;
+    const { lutPresentationId, positionPresentationId } = presentationIds || {};
+    const storeState = {};
+    if (lutPresentationId) {
+      storeState.lutPresentationStore = {
+        ...lutPresentationStore,
+        [lutPresentationId]: currentPresentation,
+      };
+    }
+    if (positionPresentationId) {
+      storeState.positionPresentationStore = {
+        ...positionPresentationStore,
+        [positionPresentationId]: currentPresentation,
+      };
+    }
+    stateSyncService.store(storeState);
+  };
+
   const cleanUpServices = useCallback(() => {
     const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
@@ -288,6 +316,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
+      storePresentation();
+
       cleanUpServices();
 
       cornerstoneViewportService.disableElement(viewportIndex);
@@ -360,11 +390,26 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIndex
       );
 
+      storePresentation();
+
+      const {
+        lutPresentationStore,
+        positionPresentationStore,
+      } = stateSyncService.getState();
+      const { presentationIds } = viewportOptions;
+      const presentations = {
+        positionPresentation:
+          positionPresentationStore[presentationIds?.positionPresentationId],
+        lutPresentation:
+          lutPresentationStore[presentationIds?.lutPresentationId],
+      };
+
       cornerstoneViewportService.setViewportData(
         viewportIndex,
         viewportData,
         viewportOptions,
-        displaySetOptions
+        displaySetOptions,
+        presentations
       );
     };
 

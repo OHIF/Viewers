@@ -5,7 +5,12 @@ import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 import Compose from './routes/Mode/Compose';
-
+import {
+  ServicesManager,
+  ExtensionManager,
+  CommandsManager,
+  HotkeysManager,
+} from '@ohif/core';
 import {
   DialogProvider,
   Modal,
@@ -24,7 +29,10 @@ import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 
-let commandsManager, extensionManager, servicesManager, hotkeysManager;
+let commandsManager: CommandsManager,
+  extensionManager: ExtensionManager,
+  servicesManager: ServicesManager,
+  hotkeysManager: HotkeysManager;
 
 function App({ config, defaultExtensions, defaultModes }) {
   const [init, setInit] = useState(null);
@@ -59,12 +67,12 @@ function App({ config, defaultExtensions, defaultModes }) {
   } = appConfigState;
 
   const {
-    UIDialogService,
+    uiDialogService,
     uiModalService,
-    UINotificationService,
-    UIViewportDialogService,
-    ViewportGridService,
-    CineService,
+    uiNotificationService,
+    uiViewportDialogService,
+    viewportGridService,
+    cineService,
     userAuthenticationService,
     customizationService,
   } = servicesManager.services;
@@ -74,11 +82,11 @@ function App({ config, defaultExtensions, defaultModes }) {
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapper],
-    [ViewportGridProvider, { service: ViewportGridService }],
-    [ViewportDialogProvider, { service: UIViewportDialogService }],
-    [CineProvider, { service: CineService }],
-    [SnackbarProvider, { service: UINotificationService }],
-    [DialogProvider, { service: UIDialogService }],
+    [ViewportGridProvider, { service: viewportGridService }],
+    [ViewportDialogProvider, { service: uiViewportDialogService }],
+    [CineProvider, { service: cineService }],
+    [SnackbarProvider, { service: uiNotificationService }],
+    [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
   ];
   const CombinedProviders = ({ children }) =>

@@ -1,22 +1,22 @@
 import cloneDeep from 'lodash.clonedeep';
 
-import { pubSubServiceInterface } from '@ohif/core';
 import {
-  utilities as cstUtils,
-  segmentation as cstSegmentation,
-  CONSTANTS as cstConstants,
-  Enums as csToolsEnums,
-  Types as cstTypes,
-} from '@cornerstonejs/tools';
-import {
-  eventTarget,
   cache,
+  eventTarget,
+  getEnabledElementByIds,
+  metaData,
+  Types,
   utilities as csUtils,
   volumeLoader,
-  Types,
-  metaData,
-  getEnabledElementByIds,
 } from '@cornerstonejs/core';
+import {
+  CONSTANTS as cstConstants,
+  Enums as csToolsEnums,
+  segmentation as cstSegmentation,
+  Types as cstTypes,
+  utilities as cstUtils,
+} from '@cornerstonejs/tools';
+import { pubSubServiceInterface } from '@ohif/core';
 import isEqual from 'lodash.isequal';
 import { easeInOutBell } from '../../utils/transitions';
 import {
@@ -202,7 +202,7 @@ class SegmentationService {
       this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
     }
 
-    // Todo: this includes nonhydrated segmentations which might not be
+    // Todo: this includes non-hydrated segmentations which might not be
     // persisted in the store
     this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
       segmentation,
@@ -1591,12 +1591,19 @@ class SegmentationService {
 
     segmentInfo.isVisible = isVisible;
 
-    cstSegmentation.config.visibility.setVisibilityForSegmentIndex(
+    cstSegmentation.config.visibility.setSegmentVisibility(
       toolGroupId,
       segmentationRepresentationUID,
       segmentIndex,
       isVisible
     );
+
+    // make sure to update the isVisible flag on the segmentation
+    // if a segment becomes invisible then the segmentation should be invisible
+    // in the status as well, and show correct icon
+    segmentation.isVisible = segmentation.segments
+      .filter(Boolean)
+      .every(segment => segment.isVisible);
 
     if (suppressEvents === false) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
@@ -1917,28 +1924,27 @@ class SegmentationService {
         representation => representation.segmentationId === segmentationId
       );
 
-      const visibility = cstSegmentation.config.visibility.getSegmentationVisibility(
-        toolGroupId,
-        representation.segmentationRepresentationUID
-      );
+      const { segmentsHidden } = representation;
+
+      const currentVisibility = segmentsHidden.size === 0 ? true : false;
+      const newVisibility = !currentVisibility;
 
       cstSegmentation.config.visibility.setSegmentationVisibility(
         toolGroupId,
         representation.segmentationRepresentationUID,
-        !visibility
+        newVisibility
       );
 
-      // set all segments to visible as well
-      const segments = this.getSegmentation(segmentationId).segments;
-      Object.keys(segments).forEach(segmentIndex => {
-        if (segmentIndex !== '0') {
-          this._setSegmentVisibility(
-            segmentationId,
-            Number(segmentIndex),
-            !visibility,
-            toolGroupId
-          );
-        }
+      // update segments visibility
+      const { segmentation } = this._getSegmentationInfo(
+        segmentationId,
+        toolGroupId
+      );
+
+      const segments = segmentation.segments.filter(Boolean);
+
+      segments.forEach(segment => {
+        segment.isVisible = newVisibility;
       });
     });
   };

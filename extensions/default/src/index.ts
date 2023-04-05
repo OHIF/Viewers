@@ -1,32 +1,34 @@
+import { Types } from '@ohif/core';
+
 import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
 import getPanelModule from './getPanelModule';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getToolbarModule from './getToolbarModule';
-import commandsModule from './commandsModule';
+import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByStudyInstanceUID from './Panels/getStudiesForPatientByStudyInstanceUID';
 import getCustomizationModule from './getCustomizationModule';
 import { id } from './id.js';
-import init from './init';
+import preRegistration from './init';
+import {
+  ContextMenuController,
+  CustomizeableContextMenuTypes,
+} from './CustomizeableContextMenu';
 
-const defaultExtension = {
+const defaultExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
   id,
-  preRegistration: ({ servicesManager, configuration = {} }) => {
-    init({ servicesManager, configuration });
-  },
+  preRegistration,
   getDataSourcesModule,
   getLayoutTemplateModule,
   getPanelModule,
   getHangingProtocolModule,
   getSopClassHandlerModule,
   getToolbarModule,
-  getCommandsModule({ servicesManager, commandsManager }) {
-    return commandsModule({ servicesManager, commandsManager });
-  },
+  getCommandsModule,
   getUtilityModule({ servicesManager }) {
     return [
       {
@@ -42,3 +44,5 @@ const defaultExtension = {
 };
 
 export default defaultExtension;
+
+export { ContextMenuController, CustomizeableContextMenuTypes };

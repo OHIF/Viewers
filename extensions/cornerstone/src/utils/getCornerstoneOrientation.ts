@@ -1,5 +1,4 @@
 import { Enums } from '@cornerstonejs/core';
-import { log } from '@ohif/core';
 
 const AXIAL = 'axial';
 const SAGITTAL = 'sagittal';

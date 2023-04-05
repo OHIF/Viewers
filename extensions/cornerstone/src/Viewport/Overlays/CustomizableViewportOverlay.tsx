@@ -117,8 +117,11 @@ function CustomizableViewportOverlay({
   viewportIndex,
   servicesManager,
 }) {
-  const { toolbarService, cornerstoneViewportService, customizationService } =
-    servicesManager.services;
+  const {
+    toolbarService,
+    cornerstoneViewportService,
+    customizationService,
+  } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -202,10 +205,9 @@ function CustomizableViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport =
-          cornerstoneViewportService.getCornerstoneViewportByIndex(
-            viewportIndex
-          );
+        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+          viewportIndex
+        );
 
         if (!viewport) {
           return;
@@ -283,7 +285,7 @@ function CustomizableViewportOverlay({
       } else if (item.customizationType === 'ohif.overlayItem.instanceNumber') {
         return <InstanceNumberOverlayItem {...overlayItemProps} />;
       } else {
-        const renderItem = customizationService.applyType(item);
+        const renderItem = customizationService.transform(item);
 
         if (typeof renderItem.content === 'function') {
           return renderItem.content(overlayItemProps);
@@ -450,8 +452,9 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport =
-    cornerstoneViewportService.getCornerstoneViewportByIndex(viewportIndex);
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+    viewportIndex
+  );
 
   if (!cornerstoneViewport) {
     return;

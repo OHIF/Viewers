@@ -168,9 +168,11 @@ const SplitButton = ({
             : 'text-common-bright hover:bg-primary-dark hover:text-primary-light'
         )}
       >
-        <span className="mr-4">
-          <Icon name={icon} className="w-5 h-5" />
-        </span>
+        {icon && (
+          <span className="mr-4">
+            <Icon name={icon} className="w-5 h-5" />
+          </span>
+        )}
         <span className="mr-5">{t(label)}</span>
       </div>
     );
