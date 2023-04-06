@@ -365,8 +365,11 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID } =
-        measurement;
+      const {
+        referenceSeriesUID,
+        referenceStudyUID,
+        SOPInstanceUID,
+      } = measurement;
 
       const instance = DicomMetadataStore.getInstance(
         referenceStudyUID,
