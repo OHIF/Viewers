@@ -4,6 +4,7 @@ const DEFAULT_COLORMAP = '2hot';
 
 function getPTOptions({
   colormap,
+  voiInverted,
   opacityMapping,
   voiInverted,
 }: {
@@ -14,13 +15,6 @@ function getPTOptions({
   }[];
   voiInverted?: boolean;
 } = {}) {
-  const colormapData = colormap
-    ? {
-        name: colormap,
-        opacityMapping,
-      }
-    : undefined;
-
   return {
     colormap: colormapData,
     voi: {
