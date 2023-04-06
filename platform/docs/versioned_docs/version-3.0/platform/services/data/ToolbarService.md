@@ -210,6 +210,16 @@ to create `MeasurementTools` nested button
           toolName: 'EllipticalRoi',
         }
       },
+      // Circle tool
+      {
+        id: 'CircleROI',
+        icon: 'tool-circle',
+        label: 'Circle',
+        type: 'tool',
+        commandOptions: {
+          toolName: 'CircleROI',
+        }
+      },
     ],
   },
 }
