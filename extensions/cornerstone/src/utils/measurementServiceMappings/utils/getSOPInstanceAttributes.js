@@ -13,8 +13,8 @@ import * as cornerstone from '@cornerstonejs/core';
  */
 export default function getSOPInstanceAttributes(
   imageId,
-  cornerstoneViewportService,
-  viewportId
+  cornerstoneViewportService = undefined,
+  viewportId = undefined
 ) {
   if (imageId) {
     return _getUIDFromImageID(imageId);
