@@ -17,6 +17,7 @@ const DEFAULT_STATE = {
 };
 
 const DEFAULT_CINE = { isPlaying: false, frameRate: 24 };
+const nextUpdateSeq = 0;
 
 export const CineContext = createContext(DEFAULT_STATE);
 
@@ -25,7 +26,6 @@ export default function CineProvider({ children, service }) {
     switch (action.type) {
       case 'SET_CINE': {
         const { id, frameRate, isPlaying = undefined } = action.payload;
-        console.warn(`>>>>> SET_CINE :: ${id} :: ${frameRate} :: ${isPlaying}`);
         const cines = state.cines;
         const syncedCineIds = service
           .getSyncedViewports(id)
@@ -55,7 +55,6 @@ export default function CineProvider({ children, service }) {
         return { ...state, cines: { ...cines } };
       }
       case 'SET_IS_CINE_ENABLED': {
-        console.warn(`>>>>> SET_IS_CINE_ENABLED :: ${action.payload}`);
         return { ...state, ...{ isCineEnabled: action.payload } };
       }
       default:

@@ -26,6 +26,26 @@ function _getState() {
 }
 
 function _setCine({ id, frameRate, isPlaying }) {
+  // const { cines } = _getState();
+  // const {
+  //   _setCine: setCine,
+  //   _getSyncedViewports: getSyncedViewports,
+  // } = serviceImplementation;
+  // const cine = cines[id];
+  // const updateViewports = getSyncedViewports(id).filter(({ viewportIndex }) => {
+  //   const curCine = cines[viewportIndex] ?? {};
+  //   return (
+  //     curCine.frameRate !== (frameRate ?? cine.frameRate) ||
+  //     curCine.isPlaying !== isPlaying
+  //   );
+  // });
+  //
+  // updateViewports.forEach(({ viewportIndex }) => {
+  //   setCine({ id: viewportIndex, frameRate, isPlaying });
+  // });
+  //
+  // return setCine({ id, frameRate, isPlaying });
+
   return serviceImplementation._setCine({ id, frameRate, isPlaying });
 }
 

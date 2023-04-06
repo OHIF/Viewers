@@ -126,7 +126,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = props;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
-  const [{ isCineEnabled, cines }, cineService] = useCine();
+  const [cineState, cineService] = useCine();
+  const { isCineEnabled, cines } = cineState;
   const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
   const elementRef = useRef();
@@ -153,9 +154,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const cine = cines[viewportIndex];
     const isPlaying = cine.isPlaying || false;
     const frameRate = cine.frameRate || 24;
-    console.warn(
-      `>>>>> OHIFCornerstoneViewport :: cineHandler :: ${isPlaying} :: ${frameRate} fps`
-    );
 
     const validFrameRate = Math.max(frameRate, 1);
 
@@ -196,6 +194,35 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
     };
   }, [cines, viewportIndex, cineService, enabledVPElement, cineHandler]);
+
+  useEffect(() => {
+    if (!cines || !cines[viewportIndex]) {
+      return;
+    }
+
+    const syncedCine = getSyncedCineState(
+      servicesManager,
+      cines,
+      viewportIndex
+    );
+
+    if (!syncedCine) {
+      return;
+    }
+
+    const cine = cines[viewportIndex];
+    const update =
+      cine.frameRate !== syncedCine.frameRate ||
+      cine.isPlaying !== syncedCine.isPlaying;
+
+    if (update) {
+      cineService.setCine({
+        id: viewportIndex,
+        frameRate: syncedCine.frameRate,
+        isPlaying: syncedCine.isPlaying,
+      });
+    }
+  }, [cineState, cines, cineService, servicesManager, viewportIndex]);
 
   const cine = cines[viewportIndex];
   const isPlaying = cine?.isPlaying ?? false;
