@@ -1,6 +1,7 @@
 import { id } from './id';
 import getPanelModule from './getPanelModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
+import { cache } from '@cornerstonejs/core';
 
 /**
  * You can remove any of the following modules if you don't need them.
@@ -22,7 +23,10 @@ export default {
     servicesManager,
     commandsManager,
     configuration = {},
-  }) => {},
+  }) => {
+    // TODO: look for the right fix
+    cache.setMaxCacheSize(5 * 1024 * 1024 * 1024);
+  },
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,

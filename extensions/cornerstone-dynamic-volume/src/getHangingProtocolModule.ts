@@ -1,5 +1,133 @@
-function volumeDisplaySetMatcher() {
+const DEFAULT_PT_OPTIONS = {
+  colormap: 'hsv',
+  voi: {
+    windowWidth: 5,
+    windowCenter: 2.5,
+  },
+  // voiInverted: true,
+};
 
+
+function getPTViewports() {
+  return [
+    {
+      viewportOptions: {
+        viewportId: 'ptAxial',
+        viewportType: 'volume',
+        orientation: 'axial',
+        // background: [1, 1, 1],
+        toolGroupId: 'default',
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+      },
+      displaySets: [
+        {
+          id: 'ptDisplaySet',
+          options: { ...DEFAULT_PT_OPTIONS },
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'ptSagittal',
+        viewportType: 'volume',
+        orientation: 'sagittal',
+        toolGroupId: 'default',
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+      },
+      displaySets: [
+        {
+          id: 'ptDisplaySet',
+          options: { ...DEFAULT_PT_OPTIONS },
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'ptCoronal',
+        viewportType: 'volume',
+        orientation: 'coronal',
+        toolGroupId: 'default',
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+      },
+      displaySets: [
+        {
+          id: 'ptDisplaySet',
+          options: { ...DEFAULT_PT_OPTIONS },
+        },
+      ],
+    }
+  ]
+}
+
+function getFusionViewports() {
+  return [
+    {
+      viewportOptions: {
+        viewportId: 'fusionAxial',
+        viewportType: 'volume',
+        orientation: 'axial',
+        toolGroupId: 'default',
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+        {
+          options: { ...DEFAULT_PT_OPTIONS },
+          id: 'ptDisplaySet',
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'fusionSagittal',
+        viewportType: 'volume',
+        orientation: 'sagittal',
+        toolGroupId: 'default',
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+        {
+          options: { ...DEFAULT_PT_OPTIONS },
+          id: 'ptDisplaySet',
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'fusionCoronal',
+        viewportType: 'volume',
+        orientation: 'coronal',
+        toolGroupId: 'default',
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+        {
+          options: { ...DEFAULT_PT_OPTIONS },
+          id: 'ptDisplaySet',
+        },
+      ],
+    },
+  ];
 }
 
 const defaultProtocol = {
@@ -56,38 +184,82 @@ const defaultProtocol = {
       // Can be used to select matching studies
       // studyMatchingRules: [],
     },
-    ctDisplaySetId: {
+    ctDisplaySet: {
       // Unused currently
       imageMatchingRules: [],
       // Matches displaysets, NOT series
       seriesMatchingRules: [
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+
         // Try to match series with images by default, to prevent weird display
         // on SEG/SR containing studies
         {
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
-          },
-        },
-
-        {
-          attribute: 'Modality',
-          constraint: {
-            format: {
-              pattern: '^CT$',
-              flags: 'i'
-            },
           },
         },
       ],
       // Can be used to select matching studies
       // studyMatchingRules: [],
     },
-    ptDisplaySetId: {
+    ptDisplaySet: {
       // Unused currently
       imageMatchingRules: [],
       // Matches displaysets, NOT series
       seriesMatchingRules: [
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: 'PT',
+          },
+          required: true,
+        },
+        {
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: 'Corrected',
+          },
+        },
+        {
+          weight: 2,
+          attribute: 'SeriesDescription',
+          constraint: {
+            doesNotContain: {
+              value: 'Uncorrected',
+            },
+          },
+        },
+
+        // Should we check if CorrectedImage contains ATTN?
+        // (0028,0051) (CorrectedImage): NORM\DTIM\ATTN\SCAT\RADL\DECY
+
         // Try to match series with images by default, to prevent weird display
         // on SEG/SR containing studies
         {
@@ -96,28 +268,6 @@ const defaultProtocol = {
             greaterThan: { value: 0 },
           },
         },
-
-        {
-          attribute: 'Modality',
-          constraint: {
-            format: {
-              pattern: '^PT$',
-              flags: 'i'
-            },
-          },
-        },
-
-        // 0028,0051 (CorrectedImage): NORM\DTIM\ATTN\SCAT\RADL\DECY
-        // {
-        //   attribute: 'Modality',
-        //   // weight: 10
-        //   constraint: {
-        //     format: {
-        //       pattern: '^PT$',
-        //       flags: 'i'
-        //     },
-        //   },
-        // },
       ],
       // Can be used to select matching studies
       // studyMatchingRules: [],
@@ -134,51 +284,7 @@ const defaultProtocol = {
         },
       },
       viewports: [
-        {
-          viewportOptions: {
-            viewportType: 'volume',
-            orientation: 'axial',
-            toolGroupId: 'default',
-            initialImageOptions: {
-              preset: 'middle', // 'first', 'last', 'middle'
-            },
-          },
-          displaySets: [
-            {
-              id: 'ptDisplaySetId',
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            viewportType: 'volume',
-            orientation: 'coronal',
-            toolGroupId: 'default',
-            initialImageOptions: {
-              preset: 'middle', // 'first', 'last', 'middle'
-            },
-          },
-          displaySets: [
-            {
-              id: 'ptDisplaySetId',
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            viewportType: 'volume',
-            orientation: 'sagittal',
-            toolGroupId: 'default',
-            initialImageOptions: {
-              preset: 'middle', // 'first', 'last', 'middle'
-            },
-          },
-          displaySets: [
-            {
-              id: 'ptDisplaySetId',
-            },
-          ],
-        },
+        ...getPTViewports(),
       ],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
@@ -193,96 +299,8 @@ const defaultProtocol = {
     //     },
     //   },
     //   viewports: [
-    //     {
-    //       viewportOptions: {
-    //         viewportType: 'volume',
-    //         orientation: 'axial',
-    //         toolGroupId: 'default',
-    //         initialImageOptions: {
-    //           preset: 'middle', // 'first', 'last', 'middle'
-    //         },
-    //       },
-    //       displaySets: [
-    //         {
-    //           id: 'ctDisplaySetId',
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       viewportOptions: {
-    //         viewportType: 'volume',
-    //         orientation: 'coronal',
-    //         toolGroupId: 'default',
-    //         initialImageOptions: {
-    //           preset: 'middle', // 'first', 'last', 'middle'
-    //         },
-    //       },
-    //       displaySets: [
-    //         {
-    //           id: 'ctDisplaySetId',
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       viewportOptions: {
-    //         viewportType: 'volume',
-    //         orientation: 'sagittal',
-    //         toolGroupId: 'default',
-    //         initialImageOptions: {
-    //           preset: 'middle', // 'first', 'last', 'middle'
-    //         },
-    //       },
-    //       displaySets: [
-    //         {
-    //           id: 'ctDisplaySetId',
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       viewportOptions: {
-    //         viewportType: 'volume',
-    //         orientation: 'axial',
-    //         toolGroupId: 'default',
-    //         initialImageOptions: {
-    //           preset: 'middle', // 'first', 'last', 'middle'
-    //         },
-    //       },
-    //       displaySets: [
-    //         {
-    //           id: 'ptDisplaySetId',
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       viewportOptions: {
-    //         viewportType: 'volume',
-    //         orientation: 'coronal',
-    //         toolGroupId: 'default',
-    //         initialImageOptions: {
-    //           preset: 'middle', // 'first', 'last', 'middle'
-    //         },
-    //       },
-    //       displaySets: [
-    //         {
-    //           id: 'ptDisplaySetId',
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       viewportOptions: {
-    //         viewportType: 'volume',
-    //         orientation: 'sagittal',
-    //         toolGroupId: 'default',
-    //         initialImageOptions: {
-    //           preset: 'middle', // 'first', 'last', 'middle'
-    //         },
-    //       },
-    //       displaySets: [
-    //         {
-    //           id: 'ptDisplaySetId',
-    //         },
-    //       ],
-    //     },
+    //     ...getFusionViewports(),
+    //     ...getPTViewports(),
     //   ],
     //   createdDate: '2023-01-01T00:00:00.000Z',
     // },
@@ -292,11 +310,13 @@ const defaultProtocol = {
     //   viewportStructure: {
     //     layoutType: 'grid',
     //     properties: {
-    //       rows: 2,
+    //       rows: 1,
     //       columns: 3,
     //     },
     //   },
-    //   viewports: [],
+    //   viewports: [
+    //     ...getFusionViewports(),
+    //   ],
     //   createdDate: '2023-01-01T00:00:00.000Z',
     // },
 
@@ -305,24 +325,28 @@ const defaultProtocol = {
     //   viewportStructure: {
     //     layoutType: 'grid',
     //     properties: {
-    //       rows: 2,
+    //       rows: 1,
     //       columns: 3,
     //     },
     //   },
-    //   viewports: [],
+    //   viewports: [
+    //     ...getFusionViewports(),
+    //   ],
     //   createdDate: '2023-01-01T00:00:00.000Z',
     // },
 
     // {
-    //   name: 'Kinetic Analysis',
+    //   name: 'Kinect Analysis',
     //   viewportStructure: {
     //     layoutType: 'grid',
     //     properties: {
-    //       rows: 2,
+    //       rows: 1,
     //       columns: 3,
     //     },
     //   },
-    //   viewports: [],
+    //   viewports: [
+    //     ...getPTViewports()
+    //   ],
     //   createdDate: '2023-01-01T00:00:00.000Z',
     // },
   ],
