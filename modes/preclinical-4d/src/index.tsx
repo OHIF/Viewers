@@ -114,7 +114,7 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: 'whatisthis',
+        path: 'preclinical-4d',
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,

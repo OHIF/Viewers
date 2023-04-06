@@ -22,6 +22,7 @@ import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CornerstoneServices from '../types/CornerstoneServices';
+import getSyncedCineState from '../utils/cine/getSyncedCineState';
 
 const STACK = 'stack';
 
@@ -114,10 +115,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = props;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
-  const [{ isCineEnabled, cines }, cineService] = useCine();
+  const [cineState, cineService] = useCine();
+  const { isCineEnabled, cines } = cineState;
   const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
-
   const elementRef = useRef();
 
   const {
@@ -132,7 +133,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
 
-  const cineHandler = () => {
+  const cineHandler = useCallback(() => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
       return;
     }
@@ -140,9 +141,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const cine = cines[viewportIndex];
     const isPlaying = cine.isPlaying || false;
     const frameRate = cine.frameRate || 24;
-    console.warn(
-      `>>>>> OHIFCornerstoneViewport :: cineHandler :: ${isPlaying} :: ${frameRate} fps`
-    );
 
     const validFrameRate = Math.max(frameRate, 1);
 
@@ -153,7 +151,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     } else {
       cineService.stopClip(enabledVPElement);
     }
-  };
+  }, [cines, viewportIndex, cineService, enabledVPElement]);
 
   useEffect(() => {
     eventTarget.addEventListener(
@@ -184,8 +182,38 @@ const OHIFCornerstoneViewport = React.memo(props => {
     };
   }, [cines, viewportIndex, cineService, enabledVPElement, cineHandler]);
 
+  useEffect(() => {
+    if (!cines || !cines[viewportIndex]) {
+      return;
+    }
+
+    const syncedCine = getSyncedCineState(
+      servicesManager,
+      cines,
+      viewportIndex
+    );
+
+    if (!syncedCine) {
+      return;
+    }
+
+    const cine = cines[viewportIndex];
+    const update =
+      cine.frameRate !== syncedCine.frameRate ||
+      cine.isPlaying !== syncedCine.isPlaying;
+
+    if (update) {
+      cineService.setCine({
+        id: viewportIndex,
+        frameRate: syncedCine.frameRate,
+        isPlaying: syncedCine.isPlaying,
+      });
+    }
+  }, [cineState, cines, cineService, servicesManager, viewportIndex]);
+
   const cine = cines[viewportIndex];
-  const isPlaying = (cine && cine.isPlaying) || false;
+  const isPlaying = cine?.isPlaying ?? false;
+  const frameRate = cine?.frameRate ?? 24;
 
   const handleCineClose = () => {
     toolbarService.recordInteraction({
@@ -486,6 +514,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         <CinePlayer
           className="absolute left-1/2 -translate-x-1/2 bottom-3"
           isPlaying={isPlaying}
+          frameRate={frameRate}
           onClose={handleCineClose}
           onPlayPauseChange={isPlaying =>
             cineService.setCine({

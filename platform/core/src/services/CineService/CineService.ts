@@ -1,5 +1,5 @@
 const name = 'CineService';
-
+// let _servicesManager;
 const publicAPI = {
   name,
   getState: _getState,
@@ -16,6 +16,7 @@ const serviceImplementation = {
   _playClip: () => console.warn('playClip() NOT IMPLEMENTED'),
   _stopClip: () => console.warn('stopClip() NOT IMPLEMENTED'),
   _setIsCineEnabled: () => console.warn('setIsCineEnabled() NOT IMPLEMENTED'),
+  // _getSyncedViewports: () => console.warn('getSyncedViewports() NOT IMPLEMENTED'),
 };
 
 function _getState() {
@@ -23,6 +24,26 @@ function _getState() {
 }
 
 function _setCine({ id, frameRate, isPlaying }) {
+  // const { cines } = _getState();
+  // const {
+  //   _setCine: setCine,
+  //   _getSyncedViewports: getSyncedViewports,
+  // } = serviceImplementation;
+  // const cine = cines[id];
+  // const updateViewports = getSyncedViewports(id).filter(({ viewportIndex }) => {
+  //   const curCine = cines[viewportIndex] ?? {};
+  //   return (
+  //     curCine.frameRate !== (frameRate ?? cine.frameRate) ||
+  //     curCine.isPlaying !== isPlaying
+  //   );
+  // });
+  //
+  // updateViewports.forEach(({ viewportIndex }) => {
+  //   setCine({ id: viewportIndex, frameRate, isPlaying });
+  // });
+  //
+  // return setCine({ id, frameRate, isPlaying });
+
   return serviceImplementation._setCine({ id, frameRate, isPlaying });
 }
 
@@ -39,15 +60,21 @@ function _stopClip(element) {
 }
 
 function setServiceImplementation({
+  // getSyncedViewports: getSyncedViewportsImplementation,
   getState: getStateImplementation,
   setCine: setCineImplementation,
   setIsCineEnabled: setIsCineEnabledImplementation,
   playClip: playClipImplementation,
   stopClip: stopClipImplementation,
 }) {
+  // if (getSyncedViewportsImplementation) {
+  //   serviceImplementation._getSyncedViewports = getSyncedViewportsImplementation;
+  // }
+
   if (getStateImplementation) {
     serviceImplementation._getState = getStateImplementation;
   }
+
   if (setCineImplementation) {
     serviceImplementation._setCine = setCineImplementation;
   }
@@ -69,6 +96,7 @@ const CineService = {
     altName: name,
     name: 'cineService',
     create: ({ configuration = {} }) => {
+      // _servicesManager = servicesManager;
       return publicAPI;
     },
   },

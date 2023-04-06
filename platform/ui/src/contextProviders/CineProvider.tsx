@@ -17,6 +17,7 @@ const DEFAULT_STATE = {
 };
 
 const DEFAULT_CINE = { isPlaying: false, frameRate: 24 };
+let nextUpdateSeq = 0;
 
 export const CineContext = createContext(DEFAULT_STATE);
 
@@ -25,18 +26,17 @@ export default function CineProvider({ children, service }) {
     switch (action.type) {
       case 'SET_CINE': {
         const { id, frameRate, isPlaying = undefined } = action.payload;
-        console.warn(`>>>>> SET_CINE :: ${id} :: ${frameRate} :: ${isPlaying}`);
         const cines = state.cines;
 
         if (!cines[id]) cines[id] = { id, ...DEFAULT_CINE };
         cines[id].frameRate = frameRate || cines[id].frameRate;
         cines[id].isPlaying =
           isPlaying !== undefined ? isPlaying : cines[id].isPlaying;
+        cines[id].updateSeq = nextUpdateSeq++;
 
         return { ...state, ...{ cines } };
       }
       case 'SET_IS_CINE_ENABLED': {
-        console.warn(`>>>>> SET_IS_CINE_ENABLED :: ${action.payload}`);
         return { ...state, ...{ isCineEnabled: action.payload } };
       }
       default:
