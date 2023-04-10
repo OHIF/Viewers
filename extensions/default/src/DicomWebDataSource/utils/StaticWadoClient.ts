@@ -9,18 +9,19 @@ import { api } from 'dicomweb-client';
  */
 export default class StaticWadoClient extends api.DICOMwebClient {
   static studyFilterKeys = {
-    StudyInstanceUID: '0020000D',
-    PatientName: '00100010',
+    studyinstanceuid: '0020000D',
+    patientname: '00100010',
     '00100020': 'mrn',
-    StudyDescription: '00081030',
-    StudyDate: '00080020',
-    ModalitiesInStudy: '00080061',
-    AccessionNumber: '00080050',
+    studydescription: '00081030',
+    studydate: '00080020',
+    modalitiesinstudy: '00080061',
+    accessionnumber: '00080050',
   };
 
   static seriesFilterKeys = {
-    SeriesInstanceUID: '0020000E',
-    SeriesNumber: '00200011',
+    seriesinstanceuid: '0020000E',
+    seriesnumber: '00200011',
+    modality: '00080060',
   };
 
   constructor(qidoConfig) {
@@ -37,15 +38,18 @@ export default class StaticWadoClient extends api.DICOMwebClient {
   async searchForStudies(options) {
     if (!this.staticWado) return super.searchForStudies(options);
 
-    let searchResult = await super.searchForStudies(options);
+    const searchResult = await super.searchForStudies(options);
     const { queryParams } = options;
+
     if (!queryParams) return searchResult;
+
+    const lowerParams = this.toLowerParams(queryParams);
     const filtered = searchResult.filter(study => {
       for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
         if (
           !this.filterItem(
             key,
-            queryParams,
+            lowerParams,
             study,
             StaticWadoClient.studyFilterKeys
           )
@@ -61,16 +65,18 @@ export default class StaticWadoClient extends api.DICOMwebClient {
   async searchForSeries(options) {
     if (!this.staticWado) return super.searchForSeries(options);
 
-    let searchResult = await super.searchForSeries(options);
+    const searchResult = await super.searchForSeries(options);
     const { queryParams } = options;
     if (!queryParams) return searchResult;
-    const filtered = searchResult.filter(study => {
+    const lowerParams = this.toLowerParams(queryParams);
+
+    const filtered = searchResult.filter(series => {
       for (const key of Object.keys(StaticWadoClient.seriesFilterKeys)) {
         if (
           !this.filterItem(
             key,
-            queryParams,
-            study,
+            lowerParams,
+            series,
             StaticWadoClient.seriesFilterKeys
           )
         ) {
@@ -136,13 +142,13 @@ export default class StaticWadoClient extends api.DICOMwebClient {
   /**
    * Filters the return list by the query parameters.
    *
-   * @param {*} key
-   * @param {*} queryParams
+   * @param anyCaseKey - a possible search key
+   * @param queryParams -
    * @param {*} study
    * @param {*} sourceFilterMap
    * @returns
    */
-  filterItem(key, queryParams, study, sourceFilterMap) {
+  filterItem(key: string, queryParams, study, sourceFilterMap) {
     const altKey = sourceFilterMap[key] || key;
     if (!queryParams) return true;
     const testValue = queryParams[key] || queryParams[altKey];
@@ -153,6 +159,15 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       return this.compareDateRange(testValue, valueElem.Value[0]);
     }
     const value = valueElem.Value;
-    return this.compareValues(testValue, value) && true;
+    return this.compareValues(testValue, value);
+  }
+
+  /** Converts the query parameters to lower case query parameters */
+  toLowerParams(queryParams: Record<string, unknown>): Record<string, unknown> {
+    const lowerParams = {};
+    Object.entries(queryParams).forEach(([key, value]) => {
+      lowerParams[key.toLowerCase()] = value;
+    });
+    return lowerParams;
   }
 }
