@@ -619,7 +619,7 @@ class MeasurementService extends PubSubService {
 
   clearMeasurements() {
     // Make a copy of the measurements
-    const measurements = { ...this.measurements };
+    const measurements = [...this.measurements.values()];
     this.measurements.clear();
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
