@@ -67,7 +67,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      console.warn('>>>>> onModeExit');
+      console.log('>>>>> onModeExit');
 
       const {
         toolGroupService,

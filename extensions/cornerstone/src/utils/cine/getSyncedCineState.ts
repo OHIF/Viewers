@@ -21,7 +21,7 @@ function getSyncedCineState(
     ({ viewportIndex }) => viewportIndex === srcViewportIndex
   );
 
-  if (srcViewportState.viewportOptions.viewportType !== 'volume') {
+  if (srcViewportState?.viewportOptions?.viewportType !== 'volume') {
     return;
   }
 
