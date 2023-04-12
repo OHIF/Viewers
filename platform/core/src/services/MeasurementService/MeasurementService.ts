@@ -643,7 +643,10 @@ class MeasurementService extends PubSubService {
     this.clearMeasurements();
   }
 
-  jumpToMeasurement(viewportIndex, measurementUID) {
+  public jumpToMeasurement(
+    viewportIndex: number,
+    measurementUID: string
+  ): void {
     const measurement = this.measurements[measurementUID];
 
     if (!measurement) {
