@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import ThumbnailType from './ThumbnailType';
-import { PresentationIds } from '../contextProviders/getPresentationIds';
 
 // A few miscellaneous types declared inline here.
 
@@ -18,4 +17,4 @@ const StringNumber = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
  */
 const StringArray = PropTypes.oneOfType([PropTypes.string, PropTypes.array]);
 
-export { StringNumber, StringArray, ThumbnailType, PresentationIds };
+export { StringNumber, StringArray, ThumbnailType };

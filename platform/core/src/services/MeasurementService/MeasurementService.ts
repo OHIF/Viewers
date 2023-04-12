@@ -83,6 +83,20 @@ const VALUE_TYPES = {
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
+// Contains priority levels for the jump to image.  This allows firing the
+// jump to image several times with increasing priority to apply the change
+// to different sets of viewports until some viewport handles it.
+const JUMP_TO_MEASUREMENT = {
+  // The grid layout should be updated to include this
+  GRID_PRIORITY: 2,
+
+  // Any viewport able to handle this should do so
+  ANY_VIEWPORT_PRIORITY: 1,
+
+  // Only the selected viewport should handle the jump
+  SELECTED_VIEWPORT_PRIORITY: 0,
+};
+
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -104,15 +118,16 @@ class MeasurementService extends PubSubService {
     },
   };
 
+  public static readonly EVENTS = EVENTS;
   public static VALUE_TYPES = VALUE_TYPES;
   public readonly VALUE_TYPES = VALUE_TYPES;
+  public static readonly JUMP_TO_MEASUREMENT = JUMP_TO_MEASUREMENT;
 
   constructor() {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
     this.measurements = {};
-    this._jumpToMeasurementCache = {};
   }
 
   /**
@@ -572,7 +587,7 @@ class MeasurementService extends PubSubService {
       // For now, it is just added in OHIF here and in setMeasurementSelected.
       this.measurements[internalUID] = newMeasurement;
       if (isUpdate) {
-       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+        this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
           measurement: newMeasurement,
           notYetUpdatedAtSource: false,
@@ -616,7 +631,6 @@ class MeasurementService extends PubSubService {
     // Make a copy of the measurements
     const measurements = { ...this.measurements };
     this.measurements = {};
-    this._jumpToMeasurementCache = {};
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
@@ -636,20 +650,23 @@ class MeasurementService extends PubSubService {
       log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
-    this._addJumpToMeasurement(viewportIndex, measurementUID);
-
-    this._broadcastEvent(this.EVENTS.JUMP_TO_MEASUREMENT, {
+    const consumableEvent = this.createConsumableEvent({
       viewportIndex,
       measurement,
     });
-  }
 
-  getJumpToMeasurement(viewportIndex) {
-    return this._jumpToMeasurementCache[viewportIndex];
-  }
-
-  removeJumpToMeasurement(viewportIndex) {
-    delete this._jumpToMeasurementCache[viewportIndex];
+    // This is done repeatedly to allow for
+    for (
+      let priority = 0;
+      priority <= JUMP_TO_MEASUREMENT.GRID_PRIORITY;
+      priority++
+    ) {
+      consumableEvent.priority = priority;
+      this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT, consumableEvent);
+      if (consumableEvent.isConsumed) {
+        return;
+      }
+    }
   }
 
   _getSourceUID(name, version) {
@@ -662,10 +679,6 @@ class MeasurementService extends PubSubService {
     });
 
     return sourceUID;
-  }
-
-  _addJumpToMeasurement(viewportIndex, measurementUID) {
-    this._jumpToMeasurementCache[viewportIndex] = measurementUID;
   }
 
   _getMappingByMeasurementSource(measurement, annotationType) {

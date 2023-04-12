@@ -1,4 +1,4 @@
-import { ServicesManager, utils } from '@ohif/core';
+import { ServicesManager, utils, Types } from '@ohif/core';
 
 import {
   ContextMenuController,

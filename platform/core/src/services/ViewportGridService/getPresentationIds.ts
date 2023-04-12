@@ -88,11 +88,8 @@ export type PresentationIds = {
  */
 const getPresentationIds = (viewport, viewports): PresentationIds => {
   if (!viewport) return;
-  const {
-    viewportOptions,
-    displaySetInstanceUIDs,
-    displaySetOptions,
-  } = viewport;
+  const { viewportOptions, displaySetInstanceUIDs, displaySetOptions } =
+    viewport;
   if (!viewportOptions || !displaySetInstanceUIDs?.length) {
     return;
   }
@@ -118,3 +115,4 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
 };
 
 export default getPresentationIds;
+export { getPresentationIds };
