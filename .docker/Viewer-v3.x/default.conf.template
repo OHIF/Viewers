@@ -1,5 +1,5 @@
 server {
-  listen ${PORT};
+  listen 80;
   location / {
     rewrite ^/viewer(/.*)$ $1 break;
     root   /usr/share/nginx/html;
