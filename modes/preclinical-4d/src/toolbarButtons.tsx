@@ -306,7 +306,7 @@ function _createCrosshairsToolButton() {
           commandName: 'setToolActive',
           commandOptions: {
             toolName: 'Crosshairs',
-            toolGroupId: 'mpr',
+            toolGroupId: 'dynamic4D-default',
           },
           context: 'CORNERSTONE',
         },
@@ -606,7 +606,7 @@ const toolbarButtons = [
   _createPanToolButton(),
   _createCaptureToolButton(),
   // _createLayoutToolbarButton(),
-  _createMprToolButton(),
+  // _createMprToolButton(),
   _createCrosshairsToolButton(),
   {
     id: 'MoreTools',

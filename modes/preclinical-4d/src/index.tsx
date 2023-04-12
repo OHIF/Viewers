@@ -34,8 +34,6 @@ function modeFactory({ modeConfiguration }) {
     routeName: 'dynamic-volume',
     displayName: '4D Volume',
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      console.warn('>>>>> onModeEnter');
-
       const {
         measurementService,
         toolbarService,
@@ -52,7 +50,7 @@ function modeFactory({ modeConfiguration }) {
       ({ unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
-          console.warn('>>>>> onViewportAdded');
+          console.log('>>>>> onViewportAdded');
         }
       ));
 
@@ -65,13 +63,13 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'Capture',
         // 'Layout',
-        'MPR',
+        // 'MPR',
         'Crosshairs',
         'MoreTools',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      console.warn('>>>>> onModeExit');
+      console.log('>>>>> onModeExit');
 
       const {
         toolGroupService,
@@ -135,7 +133,7 @@ function modeFactory({ modeConfiguration }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: ['default'],
+    hangingProtocol: ['default4D'],
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must

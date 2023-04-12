@@ -1,14 +1,27 @@
-const DEFAULT_PT_OPTIONS = {
-  colormap: 'hsv',
-  voi: {
-    windowWidth: 5,
-    windowCenter: 2.5,
-  },
-  // voiInverted: true,
-};
+const DEFAULT_COLORMAP = 'Black-Body Radiation'; // jet, rainbow_2, 2hot, Black-Body Radiation
+
+function getPTOptions({
+  colormap,
+  voiInverted
+}: {
+  colormap?: string;
+  voiInverted?: boolean;
+} = { }
+) {
+  return {
+    colormap,
+    voi: {
+      windowWidth: 5,
+      windowCenter: 2.5,
+    },
+    voiInverted,
+  }
+}
 
 
 function getPTViewports() {
+  const ptOptionsParams = { colormap: DEFAULT_COLORMAP };
+
   return [
     {
       viewportOptions: {
@@ -16,15 +29,29 @@ function getPTViewports() {
         viewportType: 'volume',
         orientation: 'axial',
         // background: [1, 1, 1],
-        toolGroupId: 'default',
+        toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'axialSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptWLSync',
+            source: true,
+            target: true,
+          },
+        ],
       },
       displaySets: [
         {
           id: 'ptDisplaySet',
-          options: { ...DEFAULT_PT_OPTIONS },
+          options: { ...getPTOptions(ptOptionsParams) },
         },
       ],
     },
@@ -33,15 +60,29 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'default',
+        toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'sagittalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptWLSync',
+            source: true,
+            target: true,
+          },
+        ],
       },
       displaySets: [
         {
           id: 'ptDisplaySet',
-          options: { ...DEFAULT_PT_OPTIONS },
+          options: { ...getPTOptions(ptOptionsParams) },
         },
       ],
     },
@@ -50,15 +91,29 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'default',
+        toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'coronalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptWLSync',
+            source: true,
+            target: true,
+          },
+        ],
       },
       displaySets: [
         {
           id: 'ptDisplaySet',
-          options: { ...DEFAULT_PT_OPTIONS },
+          options: { ...getPTOptions(ptOptionsParams) },
         },
       ],
     }
@@ -66,23 +121,45 @@ function getPTViewports() {
 }
 
 function getFusionViewports() {
+  const ptOptionsParams = { colormap: DEFAULT_COLORMAP };
+
   return [
     {
       viewportOptions: {
         viewportId: 'fusionAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'default',
+        toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'axialSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptWLSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptFusionWLSync',
+            source: true,
+            target: false,
+          },
+        ],
       },
       displaySets: [
         {
           id: 'ctDisplaySet',
         },
         {
-          options: { ...DEFAULT_PT_OPTIONS },
+          options: { ...getPTOptions(ptOptionsParams) },
           id: 'ptDisplaySet',
         },
       ],
@@ -92,17 +169,37 @@ function getFusionViewports() {
         viewportId: 'fusionSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'default',
+        toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'sagittalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptWLSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptFusionWLSync',
+            source: true,
+            target: false,
+          },
+        ],
       },
       displaySets: [
         {
           id: 'ctDisplaySet',
         },
         {
-          options: { ...DEFAULT_PT_OPTIONS },
+          options: { ...getPTOptions(ptOptionsParams) },
           id: 'ptDisplaySet',
         },
       ],
@@ -112,17 +209,37 @@ function getFusionViewports() {
         viewportId: 'fusionCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'default',
+        toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'coronalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptWLSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ptFusionWLSync',
+            source: true,
+            target: false,
+          },
+        ],
       },
       displaySets: [
         {
           id: 'ctDisplaySet',
         },
         {
-          options: { ...DEFAULT_PT_OPTIONS },
+          options: { ...getPTOptions(ptOptionsParams) },
           id: 'ptDisplaySet',
         },
       ],
@@ -131,7 +248,7 @@ function getFusionViewports() {
 }
 
 const defaultProtocol = {
-  id: 'default',
+  id: 'default4D',
   locked: true,
   // Don't store this hanging protocol as it applies to the currently active
   // display set by default
@@ -142,8 +259,16 @@ const defaultProtocol = {
   modifiedDate: '2023-01-01T00:00:00.000Z',
   availableTo: {},
   editableBy: {},
-  protocolMatchingRules: [],
-  toolGroupIds: ['default'],
+  imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  protocolMatchingRules: [
+    {
+      attribute: 'ModalitiesInStudy',
+      constraint: {
+        contains: ['CT', 'PT'],
+      },
+    },
+  ],
+  toolGroupIds: ['dynamic4D-default'],
   // -1 would be used to indicate active only, whereas other values are
   // the number of required priors referenced - so 0 means active with
   // 0 or more priors.
@@ -153,7 +278,7 @@ const defaultProtocol = {
   defaultViewport: {
     viewportOptions: {
       viewportType: 'volume',
-      toolGroupId: 'default',
+      toolGroupId: 'dynamic4D-default',
       allowUnmatchedView: true,
       initialImageOptions: {
         preset: 'middle', // 'first', 'last', 'middle'
@@ -207,15 +332,6 @@ const defaultProtocol = {
           },
           required: true,
         },
-
-        // Try to match series with images by default, to prevent weird display
-        // on SEG/SR containing studies
-        {
-          attribute: 'numImageFrames',
-          constraint: {
-            greaterThan: { value: 0 },
-          },
-        },
       ],
       // Can be used to select matching studies
       // studyMatchingRules: [],
@@ -259,15 +375,6 @@ const defaultProtocol = {
 
         // Should we check if CorrectedImage contains ATTN?
         // (0028,0051) (CorrectedImage): NORM\DTIM\ATTN\SCAT\RADL\DECY
-
-        // Try to match series with images by default, to prevent weird display
-        // on SEG/SR containing studies
-        {
-          attribute: 'numImageFrames',
-          constraint: {
-            greaterThan: { value: 0 },
-          },
-        },
       ],
       // Can be used to select matching studies
       // studyMatchingRules: [],
@@ -289,66 +396,66 @@ const defaultProtocol = {
       createdDate: '2023-01-01T00:00:00.000Z',
     },
 
-    // {
-    //   name: 'Registration',
-    //   viewportStructure: {
-    //     layoutType: 'grid',
-    //     properties: {
-    //       rows: 2,
-    //       columns: 3,
-    //     },
-    //   },
-    //   viewports: [
-    //     ...getFusionViewports(),
-    //     ...getPTViewports(),
-    //   ],
-    //   createdDate: '2023-01-01T00:00:00.000Z',
-    // },
+    {
+      name: 'Registration',
+      viewportStructure: {
+        layoutType: 'grid',
+        properties: {
+          rows: 2,
+          columns: 3,
+        },
+      },
+      viewports: [
+        ...getFusionViewports(),
+        ...getPTViewports(),
+      ],
+      createdDate: '2023-01-01T00:00:00.000Z',
+    },
 
-    // {
-    //   name: 'Review',
-    //   viewportStructure: {
-    //     layoutType: 'grid',
-    //     properties: {
-    //       rows: 1,
-    //       columns: 3,
-    //     },
-    //   },
-    //   viewports: [
-    //     ...getFusionViewports(),
-    //   ],
-    //   createdDate: '2023-01-01T00:00:00.000Z',
-    // },
+    {
+      name: 'Review',
+      viewportStructure: {
+        layoutType: 'grid',
+        properties: {
+          rows: 1,
+          columns: 3,
+        },
+      },
+      viewports: [
+        ...getFusionViewports(),
+      ],
+      createdDate: '2023-01-01T00:00:00.000Z',
+    },
 
-    // {
-    //   name: 'ROI Quantification',
-    //   viewportStructure: {
-    //     layoutType: 'grid',
-    //     properties: {
-    //       rows: 1,
-    //       columns: 3,
-    //     },
-    //   },
-    //   viewports: [
-    //     ...getFusionViewports(),
-    //   ],
-    //   createdDate: '2023-01-01T00:00:00.000Z',
-    // },
+    {
+      name: 'ROI Quantification',
+      viewportStructure: {
+        layoutType: 'grid',
+        properties: {
+          rows: 1,
+          columns: 3,
+        },
+      },
+      viewports: [
+        ...getFusionViewports(),
+      ],
+      createdDate: '2023-01-01T00:00:00.000Z',
+    },
 
-    // {
-    //   name: 'Kinect Analysis',
-    //   viewportStructure: {
-    //     layoutType: 'grid',
-    //     properties: {
-    //       rows: 1,
-    //       columns: 3,
-    //     },
-    //   },
-    //   viewports: [
-    //     ...getPTViewports()
-    //   ],
-    //   createdDate: '2023-01-01T00:00:00.000Z',
-    // },
+    {
+      name: 'Kinect Analysis',
+      viewportStructure: {
+        layoutType: 'grid',
+        properties: {
+          rows: 1,
+          columns: 3,
+        },
+      },
+      viewports: [
+        ...getPTViewports()
+      ],
+      createdDate: '2023-01-01T00:00:00.000Z',
+    },
   ],
 };
 

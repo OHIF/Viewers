@@ -213,7 +213,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     },
   };
 
-  toolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools(
+    'dynamic4D-default',
+    tools,
+    toolsConfig
+  );
 }
 // function initVolume3DToolGroup(extensionManager, toolGroupService) {
 //   const utilityModule = extensionManager.getModuleEntry(
