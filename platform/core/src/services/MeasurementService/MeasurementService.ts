@@ -123,11 +123,12 @@ class MeasurementService extends PubSubService {
   public readonly VALUE_TYPES = VALUE_TYPES;
   public static readonly JUMP_TO_MEASUREMENT = JUMP_TO_MEASUREMENT;
 
+  private measurements = new Map();
+
   constructor() {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
-    this.measurements = {};
   }
 
   /**
@@ -135,7 +136,7 @@ class MeasurementService extends PubSubService {
    * This method should be used to add custom tool schema to the measurement service.
    * @param {Array} schema schema for validation
    */
-  addMeasurementSchemaKeys(schema) {
+  public addMeasurementSchemaKeys(schema): void {
     if (!Array.isArray(schema)) {
       schema = [schema];
     }
@@ -175,11 +176,7 @@ class MeasurementService extends PubSubService {
    * @return {Measurement[]} Array of measurements
    */
   getMeasurements() {
-    const measurements = this._arrayOfObjects(this.measurements);
-    return (
-      measurements &&
-      measurements.map(m => this.measurements[Object.keys(m)[0]])
-    );
+    return [...this.measurements.values()];
   }
 
   /**
@@ -188,15 +185,8 @@ class MeasurementService extends PubSubService {
    * @param {string} uid measurement uid
    * @return {Measurement} Measurement instance
    */
-  getMeasurement(measurementUID) {
-    let measurement = null;
-    const measurements = this.measurements[measurementUID];
-
-    if (measurements && Object.keys(measurements).length > 0) {
-      measurement = this.measurements[measurementUID];
-    }
-
-    return measurement;
+  public getMeasurement(measurementUID: string) {
+    return this.measurements.get(measurementUID);
   }
 
   setMeasurementSelected(measurementUID, selected) {
@@ -388,8 +378,8 @@ class MeasurementService extends PubSubService {
     }
   }
 
-  update(measurementUID, measurement, notYetUpdatedAtSource = false) {
-    if (!this.measurements[measurementUID]) {
+  update(measurementUID: string, measurement, notYetUpdatedAtSource = false) {
+    if (!this.measurements.has(measurementUID)) {
       return;
     }
 
@@ -403,7 +393,7 @@ class MeasurementService extends PubSubService {
       updatedMeasurement
     );
 
-    this.measurements[measurementUID] = updatedMeasurement;
+    this.measurements.set(measurementUID, updatedMeasurement);
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
@@ -485,15 +475,15 @@ class MeasurementService extends PubSubService {
       uid: internalUID,
     };
 
-    if (this.measurements[internalUID]) {
-      this.measurements[internalUID] = newMeasurement;
+    if (this.measurements.get(internalUID)) {
+      this.measurements.set(internalUID, newMeasurement);
       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
         measurement: newMeasurement,
       });
     } else {
       log.info('Measurement added', newMeasurement);
-      this.measurements[internalUID] = newMeasurement;
+      this.measurements.set(internalUID, newMeasurement);
       this._broadcastEvent(this.EVENTS.RAW_MEASUREMENT_ADDED, {
         source,
         measurement: newMeasurement,
@@ -573,7 +563,7 @@ class MeasurementService extends PubSubService {
       );
     }
 
-    const oldMeasurement = this.measurements[internalUID];
+    const oldMeasurement = this.measurements.get(internalUID);
 
     const newMeasurement = {
       ...oldMeasurement,
@@ -585,7 +575,7 @@ class MeasurementService extends PubSubService {
     if (oldMeasurement) {
       // TODO: Ultimately, each annotation should have a selected flag right from the soure.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
-      this.measurements[internalUID] = newMeasurement;
+      this.measurements.set(internalUID, newMeasurement);
       if (isUpdate) {
         this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
@@ -601,7 +591,7 @@ class MeasurementService extends PubSubService {
       }
     } else {
       log.info('Measurement started.', newMeasurement);
-      this.measurements[internalUID] = newMeasurement;
+      this.measurements.set(internalUID, newMeasurement);
     }
 
     return newMeasurement.uid;
@@ -614,12 +604,12 @@ class MeasurementService extends PubSubService {
    * @param {MeasurementSource} source The measurement source instance
    */
   remove(measurementUID, source, eventDetails) {
-    if (!measurementUID || !this.measurements[measurementUID]) {
+    if (!measurementUID || !this.measurements.has(measurementUID)) {
       log.warn(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
 
-    delete this.measurements[measurementUID];
+    this.measurements.delete(measurementUID);
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
@@ -630,7 +620,7 @@ class MeasurementService extends PubSubService {
   clearMeasurements() {
     // Make a copy of the measurements
     const measurements = { ...this.measurements };
-    this.measurements = {};
+    this.measurements.clear();
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
@@ -647,7 +637,7 @@ class MeasurementService extends PubSubService {
     viewportIndex: number,
     measurementUID: string
   ): void {
-    const measurement = this.measurements[measurementUID];
+    const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
       log.warn(`No measurement uid, or unable to find by uid.`);

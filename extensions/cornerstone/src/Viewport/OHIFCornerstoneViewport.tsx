@@ -403,7 +403,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
         lutPresentation:
           lutPresentationStore[presentationIds?.lutPresentationId],
       };
+      let measurement;
       if (cacheJumpToMeasurement?.viewportIndex === viewportIndex) {
+        measurement = cacheJumpToMeasurement.measurement;
         // Delete the position presentation so that viewport navigates direct
         presentations.positionPresentation = null;
         cacheJumpToMeasurement = null;
@@ -416,6 +418,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
         displaySetOptions,
         presentations
       );
+
+      if (measurement) {
+        cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
+      }
     };
 
     loadViewportData();

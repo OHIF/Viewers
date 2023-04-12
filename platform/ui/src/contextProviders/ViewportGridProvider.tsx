@@ -130,7 +130,6 @@ export function ViewportGridProvider({ children, service }) {
        */
       case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
         const { payload } = action;
-        console.log('Start of set display sets for viewports', payload);
         const viewports = state.viewports.slice();
 
         // Have the initial id set contain all viewports not updated here
