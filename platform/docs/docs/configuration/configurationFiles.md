@@ -116,7 +116,26 @@ Here are a list of some options available:
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
 - `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
+- `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience. This feature related to PR [OHIF#2925](https://github.com/OHIF/Viewers/pull/2925).<br/>
+Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
+  - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
+  - Regex helps to avoid easy exploit. Dafault is `/.*/`. Setup your own regex to choose a specific source of configuration only.
+  - User must set `cross-origin:same-origin` to avoid potential harder exploit.
 
+  - Example config:
+    ```js
+    dangerouslyUseDynamicConfig: {
+      enabled: false,
+      regex: /.*/
+    }
+    ```
+
+  > Example 1, to allow numbers and letters in an absolute or sub-path only.<br/>
+`regex: /(0-9A-Za-z.]+)(\/[0-9A-Za-z.]+)*/`<br/>
+Example 2, to restricts to either hosptial.com or othersite.com.<br/>
+`regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/` <br/>
+Example usage:<br/>
+`http://localhost:3000/?configUrl=http://localhost:3000/config/example.json`<br/>
 
 
 
