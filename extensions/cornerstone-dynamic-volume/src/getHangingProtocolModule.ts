@@ -1,4 +1,4 @@
-const DEFAULT_COLORMAP = 'Black-Body Radiation'; // jet, rainbow_2, 2hot, Black-Body Radiation
+const DEFAULT_COLORMAP = 'hsv'; // hsv, jet, rainbow_2, 2hot, Black-Body Radiation
 
 function getPTOptions({
   colormap,
@@ -60,6 +60,7 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
+        // background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
@@ -91,6 +92,7 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
+        // background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
@@ -470,7 +472,7 @@ const defaultProtocol = {
 function getHangingProtocolModule() {
   return [
     {
-      id: defaultProtocol.id,
+      name: defaultProtocol.id,
       protocol: defaultProtocol,
     },
   ];
