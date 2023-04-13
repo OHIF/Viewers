@@ -34,13 +34,16 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 
-export const getExistingSegmentations = async userEmail => {
+export const getExistingSegmentations = async (series_uid, userEmail) => {
   try {
-    const response = await fetch(`${radcadapi}/segmentations/${userEmail}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch(
+      `${radcadapi}/segmentations?series=${series_uid}&email=${userEmail}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
     const data = await response.json();
     return data;
   } catch (error) {
@@ -58,7 +61,7 @@ export const startNnunetProcess = async (
   try {
     UIDialogService.dismiss({ id: 'ForceRerun' });
 
-    const url = radcadapi + '/nnunet/start';
+    const url = radcadapi + '/nnunet_lung';
     const body = JSON.stringify({
       studyInstanceUID: studyInstanceUID,
       seriesInstanceUID: seriesInstanceUID,
@@ -82,7 +85,9 @@ export const startNnunetProcess = async (
 // checkJobStatus function
 export const checkJobStatus = async userEmail => {
   try {
-    const url = radcadapi + `/nnunet/job-status?user_email=${userEmail}`;
+    const url =
+      radcadapi +
+      `/nnunet/job-status?user_email=${userEmail}&job_type=NNUNET_LUNG`;
     const response = await fetch(url, {
       method: 'GET',
     });
@@ -202,84 +207,26 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
   }, 16000);
 
   useEffect(async () => {
-    const checkEndpointsInterval = setInterval(async () => {
-      const endpointStatus = await fetch(radcadapi + '/endpoint-status').then(
-        response => response.json()
-      );
+    const series_uid = JSON.parse(localStorage.getItem('series_uid') || '');
 
-      if (
-        endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
-        endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] ===
-          'RUNNING' &&
-        endpointStatus['cbir-encoder'] === 'PENGING'
-      ) {
-        setLoading(false);
-        clearInterval(checkEndpointsInterval);
-
-        const segmentationsList = await getExistingSegmentations(
-          user.profile.email
-        );
-        if (isEmpty(segmentationsList)) {
-          await startNnunetProcess(
-            studyInstanceUIDs[0],
-            JSON.parse(localStorage.getItem('series_uid')),
-            user
-          );
-          setProcessStarted(true);
-        } else {
-          showLoadSegmentationDialog(
-            segmentationsList.includes('nnunet')
-              ? 'Nnunet segmentations exist, do you re-run nnunet segmentation?'
-              : 'Non-nnunet segmentations exist, do you run nnunet segmentation?'
-          );
-        }
-      } else {
-        UINotificationService.show({
-          title: 'Endpoint API is still warming',
-          type: 'info',
-          autoClose: true,
-        });
-      }
-    }, 16000);
-
-    const endpointStatus = await fetch(radcadapi + '/endpoint-status').then(
-      response => response.json()
+    const segmentationsList = await getExistingSegmentations(
+      series_uid,
+      user.profile.email
     );
-
-    if (
-      endpointStatus['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
-      endpointStatus['nnUNet-4D-Brain-lite-3modality-endpoint'] === 'RUNNING' &&
-      endpointStatus['cbir-encoder'] === 'RUNNING'
-    ) {
-      setLoading(false);
-      clearInterval(checkEndpointsInterval);
-
-      const segmentationsList = await getExistingSegmentations(
-        user.profile.email
+    if (isEmpty(segmentationsList)) {
+      await startNnunetProcess(
+        studyInstanceUIDs[0],
+        JSON.parse(localStorage.getItem('series_uid')),
+        user
       );
-      if (isEmpty(segmentationsList)) {
-        await startNnunetProcess(
-          studyInstanceUIDs[0],
-          JSON.parse(localStorage.getItem('series_uid')),
-          user
-        );
-        setProcessStarted(true);
-      } else {
-        showLoadSegmentationDialog(
-          segmentationsList.includes('nnunet')
-            ? 'Nnunet segmentations exist, do you re-run nnunet segmentation?'
-            : 'Non-nnunet segmentations exist, do you run nnunet segmentation?'
-        );
-      }
+      setProcessStarted(true);
     } else {
-      UINotificationService.show({
-        title: 'Endpoint API is still warming',
-        type: 'error',
-        autoClose: true,
-      });
+      showLoadSegmentationDialog(
+        segmentationsList.includes('nnunet')
+          ? 'Nnunet segmentations exist, do you re-run nnunet segmentation?'
+          : 'Non-nnunet segmentations exist, do you run nnunet segmentation?'
+      );
     }
-
-    return () => clearInterval(checkEndpointsInterval);
   }, []);
 
   const loadingIcon = (

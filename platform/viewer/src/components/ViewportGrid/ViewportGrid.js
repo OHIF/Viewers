@@ -320,8 +320,8 @@ const ViewportGrid = function(props) {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
       if (
-        location.pathname.includes('/edit') &&
-        fetchedSegmentations === 'idle'
+        location.pathname.includes('/edit') ||
+        (location.pathname.includes('/selectmask') && fetchedSegmentations === 'idle')
       ) {
         // CALLED ATER 2 SECONDS
         setTimeout(() => {
@@ -829,7 +829,7 @@ const ViewportGrid = function(props) {
   };
 
   const onImportButtonClick = async () => {
-    if (location.pathname.includes('/edit')) {
+    if (location.pathname.includes('/edit') || location.pathname.includes('/selectmask')) {
       let isSegmentsLoadedSuccessfullyll = JSON.parse(
         localStorage.getItem('fetchsegments') || 0
       );
