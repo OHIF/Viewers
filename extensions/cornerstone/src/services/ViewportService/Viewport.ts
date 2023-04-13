@@ -232,9 +232,7 @@ class ViewportInfo {
   }
 
   public getSyncGroups(): SyncGroup[] {
-    if (!this.viewportOptions.syncGroups) {
-      this.viewportOptions.syncGroups = [];
-    }
+    this.viewportOptions.syncGroups ||= [];
     return this.viewportOptions.syncGroups;
   }
 
