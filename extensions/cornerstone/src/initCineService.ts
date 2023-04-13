@@ -1,55 +1,59 @@
 import { cache } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
-// function _getSyncedViewports(servicesManager, srcViewportIndex) {
-//   const syncedViewports = [];
+function _getSyncedViewports(servicesManager, srcViewportIndex) {
+  const syncedViewports = [];
 
-//   const {
-//     viewportGridService,
-//     cornerstoneViewportService,
-//   } = servicesManager.services;
+  const {
+    viewportGridService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
 
-//   const { viewports: viewportsStates } = viewportGridService.getState();
-//   const srcViewportState = viewportsStates.find(
-//     ({ viewportIndex }) => viewportIndex === srcViewportIndex
-//   );
+  const { viewports: viewportsStates } = viewportGridService.getState();
+  const srcViewportState = viewportsStates.find(
+    ({ viewportIndex }) => viewportIndex === srcViewportIndex
+  );
 
-//   if (srcViewportState.viewportOptions.viewportType !== 'volume') {
-//     return syncedViewports;
-//   }
+  if (srcViewportState?.viewportOptions?.viewportType !== 'volume') {
+    return syncedViewports;
+  }
 
-//   const srcViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-//     srcViewportIndex
-//   );
-//   const { uid: srcVolumeId } = srcViewport.getDefaultActor();
-//   const srcVolume = cache.getVolume(srcVolumeId);
+  const srcViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+    srcViewportIndex
+  );
 
-//   if (!srcVolume.isDynamicVolume()) {
-//     return syncedViewports;
-//   }
+  const defaultActor = srcViewport.getDefaultActor();
 
-//   viewportsStates.forEach(({ viewportIndex }) => {
-//     const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-//       srcViewportIndex
-//     );
+  if (!defaultActor) {
+    return syncedViewports;
+  }
 
-//     if (
-//       viewportIndex !== srcViewportIndex &&
-//       viewport.hasVolumeId(srcVolumeId)
-//     ) {
-//       syncedViewports.push({ viewportIndex });
-//     }
-//   });
+  const { uid: srcVolumeId } = defaultActor;
+  const srcVolume = cache.getVolume(srcVolumeId);
 
-//   return syncedViewports;
-// }
+  if (!srcVolume?.isDynamicVolume()) {
+    return syncedViewports;
+  }
+
+  viewportsStates.forEach(({ viewportIndex }) => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+      viewportIndex
+    );
+
+    if (viewport.hasVolumeId(srcVolumeId)) {
+      syncedViewports.push({ viewportIndex });
+    }
+  });
+
+  return syncedViewports;
+}
 
 function initCineService(servicesManager) {
   const { cineService } = servicesManager.services;
 
-  // const getSyncedViewports = viewportIndex => {
-  //   return _getSyncedViewports(servicesManager, viewportIndex);
-  // };
+  const getSyncedViewports = viewportIndex => {
+    return _getSyncedViewports(servicesManager, viewportIndex);
+  };
 
   const playClip = (element, playClipOptions) => {
     return utilities.cine.playClip(element, playClipOptions);
@@ -60,7 +64,7 @@ function initCineService(servicesManager) {
   };
 
   cineService.setServiceImplementation({
-    // getSyncedViewports,
+    getSyncedViewports,
     playClip,
     stopClip,
   });
