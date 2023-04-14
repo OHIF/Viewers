@@ -2,7 +2,9 @@ import { cache } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
 function _getVolumesFromViewport(viewport) {
-  return viewport.getActors().map(actor => cache.getVolume(actor.uid));
+  return viewport
+    ? viewport.getActors().map(actor => cache.getVolume(actor.uid))
+    : [];
 }
 
 function _getVolumeFromViewport(viewport) {
@@ -38,7 +40,7 @@ function _getSyncedViewports(servicesManager, srcViewportIndex) {
     srcViewportIndex
   );
 
-  const srcVolume = _getVolumeFromViewport(srcViewport);
+  const srcVolume = srcViewport ? _getVolumeFromViewport(srcViewport) : null;
 
   if (!srcVolume?.isDynamicVolume()) {
     return [];

@@ -13,7 +13,7 @@ function DynamicDataPanel({
       className="flex flex-col flex-auto text-white"
       data-cy={'dynamic-volume-panel'}
     >
-      <WorkflowPanel></WorkflowPanel>
+      <WorkflowPanel commandsManager={commandsManager} />
       <ToolsPanel></ToolsPanel>
       <WindowLevelPanel></WindowLevelPanel>
     </div>

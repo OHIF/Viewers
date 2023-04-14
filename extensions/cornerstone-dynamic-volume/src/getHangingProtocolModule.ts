@@ -387,6 +387,7 @@ const defaultProtocol = {
   },
   stages: [
     {
+      id: 'dataPreparation',
       name: 'Data Preparation',
       viewportStructure: {
         layoutType: 'grid',
@@ -402,6 +403,7 @@ const defaultProtocol = {
     },
 
     {
+      id: 'registration',
       name: 'Registration',
       viewportStructure: {
         layoutType: 'grid',
@@ -418,6 +420,7 @@ const defaultProtocol = {
     },
 
     {
+      id: 'review',
       name: 'Review',
       viewportStructure: {
         layoutType: 'grid',
@@ -433,6 +436,7 @@ const defaultProtocol = {
     },
 
     {
+      id: 'roiQuantification',
       name: 'ROI Quantification',
       viewportStructure: {
         layoutType: 'grid',
@@ -448,6 +452,7 @@ const defaultProtocol = {
     },
 
     {
+      id: 'kinectAnalysis',
       name: 'Kinect Analysis',
       viewportStructure: {
         layoutType: 'grid',
