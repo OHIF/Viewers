@@ -1,9 +1,25 @@
 import { cache } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
-function _getSyncedViewports(servicesManager, srcViewportIndex) {
-  const syncedViewports = [];
+function _getVolumesFromViewport(viewport) {
+  return viewport.getActors().map(actor => cache.getVolume(actor.uid));
+}
 
+function _getVolumeFromViewport(viewport) {
+  const volumes = _getVolumesFromViewport(viewport);
+  const dynamicVolume = volumes.find(volume => volume.isDynamicVolume());
+
+  return dynamicVolume ?? volumes[0];
+}
+
+/**
+ * Return all viewports that needs to be synchronized with the source
+ * viewport passed as parameter when cine is updated.
+ * @param servicesManager ServiceManager
+ * @param srcViewportIndex Source viewport index
+ * @returns array with viewport information.
+ */
+function _getSyncedViewports(servicesManager, srcViewportIndex) {
   const {
     viewportGridService,
     cornerstoneViewportService,
@@ -15,37 +31,32 @@ function _getSyncedViewports(servicesManager, srcViewportIndex) {
   );
 
   if (srcViewportState?.viewportOptions?.viewportType !== 'volume') {
-    return syncedViewports;
+    return [];
   }
 
   const srcViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
     srcViewportIndex
   );
 
-  const defaultActor = srcViewport.getDefaultActor();
-
-  if (!defaultActor) {
-    return syncedViewports;
-  }
-
-  const { uid: srcVolumeId } = defaultActor;
-  const srcVolume = cache.getVolume(srcVolumeId);
+  const srcVolume = _getVolumeFromViewport(srcViewport);
 
   if (!srcVolume?.isDynamicVolume()) {
-    return syncedViewports;
+    return [];
   }
 
-  viewportsStates.forEach(({ viewportIndex }) => {
-    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-      viewportIndex
-    );
+  const { volumeId: srcVolumeId } = srcVolume;
 
-    if (viewport.hasVolumeId(srcVolumeId)) {
-      syncedViewports.push({ viewportIndex });
-    }
-  });
+  return viewportsStates
+    .filter(({ viewportIndex }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+        viewportIndex
+      );
 
-  return syncedViewports;
+      return (
+        viewportIndex !== srcViewportIndex && viewport?.hasVolumeId(srcVolumeId)
+      );
+    })
+    .map(({ viewportIndex }) => ({ viewportIndex }));
 }
 
 function initCineService(servicesManager) {

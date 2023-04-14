@@ -20,7 +20,10 @@ function getPTOptions({
 
 
 function getPTViewports() {
-  const ptOptionsParams = { colormap: DEFAULT_COLORMAP };
+const ptOptionsParams = {
+  /* colormap: DEFAULT_COLORMAP, */
+  voiInverted: true,
+};
 
   return [
     {
@@ -28,7 +31,7 @@ function getPTViewports() {
         viewportId: 'ptAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        // background: [1, 1, 1],
+        background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
@@ -60,7 +63,7 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        // background: [1, 1, 1],
+        background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
@@ -92,7 +95,7 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        // background: [1, 1, 1],
+        background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'

@@ -26,16 +26,16 @@ export default function CineProvider({ children, service }) {
       case 'SET_CINE': {
         const { id, frameRate, isPlaying = undefined } = action.payload;
         const cines = state.cines;
-        const cineIdsToUpdate = service
+        const syncedCineIds = service
           .getSyncedViewports(id)
-          .filter(({ viewportIndex }) => {
-            const curCine = cines[viewportIndex] ?? {};
-            return (
-              curCine.frameRate !== (frameRate ?? curCine.frameRate) ||
-              curCine.isPlaying !== (isPlaying ?? curCine.isPlaying)
-            );
-          })
           .map(({ viewportIndex }) => viewportIndex);
+        const cineIdsToUpdate = [id, ...syncedCineIds].filter(curId => {
+          const curCine = cines[curId] ?? {};
+          return (
+            curCine.frameRate !== (frameRate ?? curCine.frameRate) ||
+            curCine.isPlaying !== (isPlaying ?? curCine.isPlaying)
+          );
+        });
 
         cineIdsToUpdate.forEach(currId => {
           let cine = cines[currId];
