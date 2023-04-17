@@ -1,11 +1,27 @@
 window.config = {
   routerBasename: '/',
   enableGoogleCloudAdapter: false,
-  healthcareApiEndpoint: 'https://healthcare.googleapis.com/v1',
-  servers: {
-    // This is an array, but we'll only use the first entry for now
-    dicomWeb: [
-      {
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
+  // This is an array, but we'll only use the first entry for now
+  oidc: [
+  ],
+  // whiteLabelling: {},
+  extensions: [],
+  modes: [],
+  showStudyList: true,
+  // filterQueryParam: false,
+  dataSources: [
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'GCP',
         wadoUriRoot:
           'https://healthcare.googleapis.com/v1/projects/nih-nci-ccr-mib-air-dev-2a0b/locations/us/datasets/mib-air-dicom-dataset-dev/dicomStores/mib-air-dicom-datastore-dev/dicomWeb',
         qidoRoot:
@@ -15,9 +31,25 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: false,
       },
-    ],
-  },
-  // This is an array, but we'll only use the first entry for now
-  studyListFunctionsEnabled: true,
+    },
+    {
+      friendlyName: 'dicom json',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
+      sourceName: 'dicomjson',
+      configuration: {
+        name: 'json',
+      },
+    },
+    {
+      friendlyName: 'dicom local',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
+      sourceName: 'dicomlocal',
+      configuration: {},
+    },
+  ],
+  defaultDataSourceName: 'dicomweb',
 };
