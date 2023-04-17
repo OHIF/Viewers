@@ -43,6 +43,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.CalibrationLine },
     ],
     // enabled
+    enabled: [{ toolName: toolNames.ImageOverlayViewer }],
     // disabled
     disabled: [{ toolName: toolNames.ReferenceLines }],
   };
