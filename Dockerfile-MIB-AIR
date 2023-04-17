@@ -66,6 +66,8 @@ FROM nginxinc/nginx-unprivileged:1.23.1-alpine as final
 ENV PORT=80
 ENV APP_GCP_URL=''
 RUN rm /etc/nginx/conf.d/default.conf
+RUN chmod -R 777 /usr/share/nginx/html/
+RUN chmod -R 777 /usr/src
 COPY .docker/Viewer-v3.x /etc/nginx/conf.d
 COPY .docker/Viewer-v3.x /usr/src
 COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
