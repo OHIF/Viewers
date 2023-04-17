@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { Button, Input, Dropdown, IconButton, Icon } from '@ohif/ui';
+import { Button, Input, Select } from '@ohif/ui';
 // import { useViewportSettings } from '@ohif/ui';
 // import { useViewer } from '@ohif/ui';
 // import cornerstone from 'cornerstone-core';
@@ -21,10 +21,21 @@ import {
   Types as cstTypes,
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
+
 const DEFAULT_MEATADATA = {
   TimeFrames: null,
   Operation: 'SUM',
 };
+
+const SUM = 'SUM';
+const AVG = 'AVERAGE';
+const SUB = 'SUBTRACT';
+
+const operations = [
+  { value: SUM, label: 'SUM', placeHolder: 'SUM' },
+  { value: AVG, label: 'AVERAGE', placeHolder: 'AVERAGE' },
+  { value: SUB, label: 'SUBTRACT', placeHolder: 'SUBTRACT' },
+];
 
 export default function PanelGenerateImage({
   servicesManager,
@@ -59,18 +70,16 @@ export default function PanelGenerateImage({
   const { activeViewportIndex, viewports } = viewportGridService.getState();
   const displaySetInstanceUID = viewports[0].displaySetInstanceUIDs[0];
   const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader id which defines which volume loader to use
+  const computedVolumeId = `cornerstoneStreamingImageVolume:MY_COMPUTED_VOLUME`;
 
   //TODO: get referenceVolumeId from viewport
   const dynamicVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`;
   //TODO: get the referencedVolume using cache.getVolume(referencedVolumeId)
   const dynamicVolume = cache.getVolume(dynamicVolumeId);
-  // console.warn(dynamicVolume);
-
-  // const onGenerateImage = dynamicVolumeId => {
-  //   console.log(dynamicVolumeId);
-  //   console.log('onGenerateImage was run');
-  //   return;
-  // };
+  const computedVolumeInit = createComputedVolume(
+    dynamicVolumeId,
+    computedVolumeId
+  );
 
   function onGenerateImage() {
     // console.log(dynamicVolumeId);
@@ -79,13 +88,20 @@ export default function PanelGenerateImage({
     for (let i = 0; i < timeFramesArray.length; i++) {
       timeFramesArray[i] = ~~timeFramesArray[i];
     }
-    console.log(timeFramesArray);
-    console.log(dynamicVolume);
-    // const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
-    //   dynamicVolume,
-    //   metadata.Operation,
-    //   timeFramesArray
-    // );
+    const computedVolume = cache.getVolume(computedVolumeId);
+
+    const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
+      dynamicVolume,
+      metadata.Operation,
+      timeFramesArray
+    );
+
+    const scalarData = computedVolume.getScalarData();
+    for (let i = 0; i < dataInTime.length; i++) {
+      scalarData[i] = dataInTime[i];
+    }
+
+    console.log(computedVolume.getScalarData());
   }
 
   //TODO: uncomment this section that checks for referencedVolume
@@ -124,63 +140,53 @@ export default function PanelGenerateImage({
   // }
 
   return (
-    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-      {
-        <div className="flex flex-col">
-          <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
-            <Input
-              label={t('Time Frames')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.TimeFrames || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  TimeFrames: e.target.value,
-                });
-              }}
-            />
-            <Dropdown
-              id="operation-dropdown"
-              showDropdownIcon={false}
-              list={[
-                {
-                  title: 'SUM',
-                  onClick: () => {
-                    // onSegmentationEdit(id);
-                  },
-                },
-                {
-                  title: 'AVERAGE',
-                  onClick: () => {
-                    // onSegmentationDelete(id);
-                  },
-                },
-                {
-                  title: 'SUBTRACT',
-                  onClick: () => {
-                    // onSegmentationDelete(id);
-                  },
-                },
-              ]}
-            >
-              {/* <IconButton
-                id={''}
-                variant="text"
-                color="inherit"
-                size="initial"
-                className="text-primary-active"
-              >
-                <Icon name="panel-group-more" />
-              </IconButton> */}
-            </Dropdown>
-            <Button color="primary" onClick={onGenerateImage}>
-              Generate Image
-            </Button>
-          </div>
-        </div>
-      }
+    <div className="flex flex-col">
+      <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
+        <Input
+          label={t('Time Frames')}
+          labelClassName="text-white mb-2"
+          className="mt-1"
+          value={metadata.TimeFrames || ''}
+          onChange={e => {
+            handleMetadataChange({
+              TimeFrames: e.target.value,
+            });
+          }}
+        />
+        <Select
+          label={t('Strategy')}
+          closeMenuOnSelect={true}
+          className="mr-2 bg-black border-primary-main text-white "
+          options={operations}
+          placeholder={
+            operations.find(option => option.value === metadata.Operation)
+              .placeHolder
+          }
+          value={metadata.Operation}
+          onChange={({ value }) => {
+            handleMetadataChange({
+              Operation: value,
+            });
+          }}
+        />
+        <Button color="primary" onClick={onGenerateImage}>
+          Generate Image
+        </Button>
+      </div>
     </div>
   );
+}
+
+async function createComputedVolume(dynamicVolumeId, computedVolumeId) {
+  if (!cache.getVolume(computedVolumeId)) {
+    const computedVolume = await volumeLoader.createAndCacheDerivedVolume(
+      dynamicVolumeId,
+      {
+        volumeId: computedVolumeId,
+      }
+    );
+    return computedVolume;
+  }
 }
 
 PanelGenerateImage.propTypes = {
