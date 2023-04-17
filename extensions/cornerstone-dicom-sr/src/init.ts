@@ -6,6 +6,7 @@ import {
   BidirectionalTool,
   CobbAngleTool,
   EllipticalROITool,
+  CircleROITool,
   LengthTool,
   PlanarFreehandROITool,
 } from '@cornerstonejs/tools';
@@ -24,6 +25,7 @@ export default function init({
   addToolInstance(toolNames.SRLength, LengthTool, {});
   addToolInstance(toolNames.SRBidirectional, BidirectionalTool);
   addToolInstance(toolNames.SREllipticalROI, EllipticalROITool);
+  addToolInstance(toolNames.SRCircleROI, CircleROITool);
   addToolInstance(toolNames.SRArrowAnnotate, ArrowAnnotateTool);
   addToolInstance(toolNames.SRAngle, AngleTool);
   // TODO - fix the SR display of Cobb Angle, as it joins the two lines
@@ -40,6 +42,7 @@ export default function init({
     SRLength: dashedLine,
     SRBidirectional: dashedLine,
     SREllipticalROI: dashedLine,
+    SRCircleROI: dashedLine,
     SRArrowAnnotate: dashedLine,
     SRCobbAngle: dashedLine,
     SRAngle: dashedLine,

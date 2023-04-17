@@ -24,6 +24,7 @@ const initMeasurementService = (
     Length,
     Bidirectional,
     EllipticalROI,
+    CircleROI,
     ArrowAnnotate,
     Angle,
     CobbAngle,
@@ -76,6 +77,14 @@ const initMeasurementService = (
     EllipticalROI.matchingCriteria,
     EllipticalROI.toAnnotation,
     EllipticalROI.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'CircleROI',
+    CircleROI.matchingCriteria,
+    CircleROI.toAnnotation,
+    CircleROI.toMeasurement
   );
 
   measurementService.addMapping(

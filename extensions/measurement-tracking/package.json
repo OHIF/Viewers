@@ -35,7 +35,7 @@
     "@cornerstonejs/core": "^0.40.0",
     "@cornerstonejs/tools": "^0.60.1",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
-    "dcmjs": "^0.29.4",
+    "dcmjs": "^0.29.5",
     "lodash.debounce": "^4.17.21",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",

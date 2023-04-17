@@ -173,6 +173,20 @@ const toolbarButtons = [
           ],
           'Ellipse Tool'
         ),
+        _createToolButton(
+          'CircleROI',
+          'tool-circle',
+          'Circle',
+          [
+            ..._createCommands('setToolActive', 'CircleROI', [
+              toolGroupIds.CT,
+              toolGroupIds.PT,
+              toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
+            ]),
+          ],
+          'Circle Tool'
+        ),
       ],
     },
   },
@@ -299,8 +313,7 @@ const toolbarButtons = [
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text:
-              'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },
