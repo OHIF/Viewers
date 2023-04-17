@@ -21,6 +21,15 @@ class ImageOverlayViewerTool extends BaseTool {
     if (!imageId) return;
 
     const targetId = this.getTargetId(viewport);
+    if (!this._cachedStats[targetId])
+      this._cachedStats[targetId] = {
+        showOverlays: true,
+        overlays: [],
+      };
+    const cachedStat = this._cachedStats[targetId];
+
+    // if the overlay is turned off
+    if (!cachedStat.showOverlays) return false;
 
     let overlays;
     ({ overlays } = metaData.get('overlayPlaneModule', imageId));
@@ -31,11 +40,8 @@ class ImageOverlayViewerTool extends BaseTool {
 
     overlays.forEach(async (overlay, idx) => {
       try {
-        let newlyLoaded = false;
-        if (!this._cachedStats[targetId]) this._cachedStats[targetId] = [];
-
-        if (!this._cachedStats[targetId][idx]) {
-          // load data
+        if (!cachedStat.overlays[idx]) {
+          // first time load? let's load data
           if (overlay.pixelData) {
             let pixelData = null;
             if (overlay.pixelData.Value) {
@@ -45,28 +51,21 @@ class ImageOverlayViewerTool extends BaseTool {
             }
 
             if (pixelData) {
-              this._cachedStats[targetId][idx] = {
+              cachedStat.overlays[idx] = {
                 ...overlay,
-                pixelDataRaw: new Uint8ClampedArray(pixelData),
+                pixelDataRaw: pixelData, // this will be an ArrayBuffer object
                 _id: guid(),
               };
-              newlyLoaded = true;
             }
           }
         }
 
-        if (this._cachedStats[targetId][idx]) {
-          const rendered = this._renderOverlay(
+        if (cachedStat.overlays[idx]) {
+          this._renderOverlay(
             enabledElement,
             svgDrawingHelper,
-            this._cachedStats[targetId][idx]
+            cachedStat.overlays[idx]
           );
-          if (newlyLoaded && rendered) {
-            // todo: refresh
-            setTimeout(() => {
-              viewport.render();
-            }, 0);
-          }
         }
       } catch (e) {
         console.error('Failed to render overlay', e);
@@ -81,6 +80,7 @@ class ImageOverlayViewerTool extends BaseTool {
       // TODO: check against the configured color as well
       // create pixel data from bit array of overlay data
       const { pixelDataRaw, rows: height, columns: width } = overlayData;
+      const pixelDataView = new DataView(pixelDataRaw);
       const totalBits = width * height;
       // TODO: have this color from configuration or user settings
       const color = {
@@ -98,12 +98,20 @@ class ImageOverlayViewerTool extends BaseTool {
       ctx.globalCompositeOperation = 'copy';
       const imageData = ctx.getImageData(0, 0, width, height);
       const data = imageData.data;
-      for (let i = 0; i < totalBits; i++) {
-        if (pixelDataRaw[Math.floor(i / 8)] & (1 << i % 8)) {
+      for (let i = 0, bitIdx = 0, byteIdx = 0; i < totalBits; i++) {
+        if (pixelDataView.getUint8(Math.floor(byteIdx)) & (1 << bitIdx)) {
           data[i * 4] = color.r;
           data[i * 4 + 1] = color.g;
           data[i * 4 + 2] = color.b;
           data[i * 4 + 3] = color.a;
+        }
+
+        // next bit, byte
+        if (bitIdx >= 7) {
+          bitIdx = 0;
+          byteIdx++;
+        } else {
+          bitIdx++;
         }
       }
       ctx.putImageData(imageData, 0, 0);
@@ -141,11 +149,11 @@ class ImageOverlayViewerTool extends BaseTool {
 
     const attributes = {
       'data-id': svgNodeHash,
-      href: overlayData.dataUrl,
       width: overlayBottomRightOnCanvas[0] - overlayTopLeftOnCanvas[0],
       height: overlayBottomRightOnCanvas[1] - overlayTopLeftOnCanvas[1],
       x: overlayTopLeftOnCanvas[0],
       y: overlayTopLeftOnCanvas[1],
+      href: overlayData.dataUrl,
     };
 
     if (
@@ -154,7 +162,7 @@ class ImageOverlayViewerTool extends BaseTool {
       isNaN(attributes.width) ||
       isNaN(attributes.height)
     ) {
-      console.error(
+      console.warn(
         'Invalid rendering attribute for image overlay',
         attributes['data-id']
       );
@@ -199,7 +207,7 @@ class ImageOverlayViewerTool extends BaseTool {
   }
 }
 
-function _setAttributesIfNecessary(attributes, svgNode) {
+function _setAttributesIfNecessary(attributes, svgNode: SVGElement) {
   Object.keys(attributes).forEach(key => {
     const currentValue = svgNode.getAttribute(key);
     const newValue = attributes[key];
@@ -211,7 +219,7 @@ function _setAttributesIfNecessary(attributes, svgNode) {
   });
 }
 
-function _setNewAttributesIfValid(attributes, svgNode) {
+function _setNewAttributesIfValid(attributes, svgNode: SVGElement) {
   Object.keys(attributes).forEach(key => {
     const newValue = attributes[key];
     if (newValue !== undefined && newValue !== '') {
