@@ -100,6 +100,7 @@ class CornerstoneCacheService {
 
     if (volume) {
       cs3DCache.removeVolumeLoadObject(volumeId);
+      this.volumeImageIds.delete(volumeId);
     }
 
     const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>

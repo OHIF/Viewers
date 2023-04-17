@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
-
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, ServicesManager } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery, useSearchParams } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
+
+const { getSplitParam } = utils;
 
 /**
  * Initialize the route.
@@ -279,15 +280,18 @@ export default function ModeRoute({
       const filters =
         Array.from(query.keys()).reduce(
           (acc: Record<string, string>, val: string) => {
-            if (val !== 'StudyInstanceUIDs') {
-              if (['seriesInstanceUID', 'SeriesInstanceUID'].includes(val)) {
+            const lowerVal = val.toLowerCase();
+            if (lowerVal !== 'studyinstanceuids') {
+              // Not sure why the case matters here - it doesn't in the URL
+              if (lowerVal === 'seriesinstanceuid') {
+                const seriesUIDs = getSplitParam(lowerVal, query);
                 return {
                   ...acc,
-                  seriesInstanceUID: query.get(val),
+                  seriesInstanceUID: seriesUIDs,
                 };
               }
 
-              return { ...acc, [val]: query.get(val) };
+              return { ...acc, [val]: getSplitParam(lowerVal, query) };
             }
           },
           {}
