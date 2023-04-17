@@ -622,13 +622,13 @@ function commandsModule({ servicesManager, commandsManager }) {
     toggleImageOverlay: ({ toggledState }) => {
       toggledState = !toggledState; // revert the state because unlike other toggle tools, this starts as enabled
 
-      const { activeViewportIndex } = ViewportGridService.getState();
-      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+      const { activeViewportIndex } = viewportGridService.getState();
+      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
         activeViewportIndex
       );
 
       const viewportId = viewportInfo.getViewportId();
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       toolGroup.setToolConfiguration(ImageOverlayViewerTool.toolName, {
         showOverlays: toggledState,
