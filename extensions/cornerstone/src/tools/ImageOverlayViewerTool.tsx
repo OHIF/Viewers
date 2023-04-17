@@ -15,6 +15,9 @@ interface CachedStat {
 /**
  * Image Overlay Viewer tool is not a traditional tool that requires user interactin.
  * But it is used to display Pixel Overlays. And it will provide toggling capability.
+ *
+ * The documentation for Overlay Plane Module of DICOM can be found in [C.9.2 of
+ * Part-3 of DICOM standard](https://dicom.nema.org/medical/dicom/2018b/output/chtml/part03/sect_C.9.2.html)
  */
 class ImageOverlayViewerTool extends BaseTool {
   static toolName = 'ImageOverlayViewer';
@@ -106,8 +109,9 @@ class ImageOverlayViewerTool extends BaseTool {
       !overlayData.color ||
       this.configuration.fillColor != overlayData.color
     ) {
-      // create pixel data from bit array of overlay data
-
+      // pixelData of overlayPlane module is an array of bits corresponding
+      // to each of the underlying pixels of the image.
+      // let's create pixel data from bit array of overlay data
       const { pixelDataRaw, rows: height, columns: width } = overlayData;
       const pixelDataView = new DataView(pixelDataRaw);
       const totalBits = width * height;
@@ -122,7 +126,7 @@ class ImageOverlayViewerTool extends BaseTool {
       const imageData = ctx.getImageData(0, 0, width, height);
       const data = imageData.data;
       for (let i = 0, bitIdx = 0, byteIdx = 0; i < totalBits; i++) {
-        if (pixelDataView.getUint8(Math.floor(byteIdx)) & (1 << bitIdx)) {
+        if (pixelDataView.getUint8(byteIdx) & (1 << bitIdx)) {
           data[i * 4] = color[0];
           data[i * 4 + 1] = color[1];
           data[i * 4 + 2] = color[2];
@@ -139,19 +143,19 @@ class ImageOverlayViewerTool extends BaseTool {
       }
       ctx.putImageData(imageData, 0, 0);
 
+      // this also works as a flag and identifier of cached pixelated overlay image.
       overlayData.color = color;
       overlayData.dataUrl = canvas.toDataURL();
     }
 
-    // get original image's size
     const { viewport } = enabledElement;
     const imageId = this._getReferencedImageId(viewport);
     if (!imageId) return;
 
+    // Decide the rendering position of the overlay image on the current canvas
     const { _id, columns: width, rows: height, x, y } = overlayData;
-
     const overlayTopLeftWorldPos = utilities.imageToWorldCoords(imageId, [
-      x - 1,
+      x - 1, // Remind that top-left corner's (x, y) is be (1, 1)
       y - 1,
     ]);
     const overlayTopLeftOnCanvas = viewport.worldToCanvas(
@@ -165,7 +169,7 @@ class ImageOverlayViewerTool extends BaseTool {
       overlayBottomRightWorldPos
     );
 
-    // add image to the svg layer
+    // add image to the annotations svg layer
     const svgns = 'http://www.w3.org/2000/svg';
     const svgNodeHash = `image-overlay-${_id}`;
     const existingImageElement = svgDrawingHelper.getSvgNode(svgNodeHash);
