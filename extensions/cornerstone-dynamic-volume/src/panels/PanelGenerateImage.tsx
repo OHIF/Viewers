@@ -82,7 +82,6 @@ export default function PanelGenerateImage({
   );
 
   function onGenerateImage() {
-    // console.log(dynamicVolumeId);
     console.log('onGenerateImage was run');
     const timeFramesArray = metadata.TimeFrames.split(',');
     for (let i = 0; i < timeFramesArray.length; i++) {
@@ -102,6 +101,17 @@ export default function PanelGenerateImage({
     }
 
     console.log(computedVolume.getScalarData());
+    renderGeneratedImage();
+  }
+
+  function renderGeneratedImage() {
+    console.log(viewports);
+    console.log('renderGenerateImage was run');
+    // const test = cornerstoneViewportService;
+    const viewport1 = cornerstoneViewportService.getCornerstoneViewportByIndex(
+      0
+    );
+    cornerstoneViewportService.set;
   }
 
   //TODO: uncomment this section that checks for referencedVolume
@@ -138,6 +148,9 @@ export default function PanelGenerateImage({
   //   // Do something with the generated image
   //   console.log(image);
   // }
+  if (!metadata.TimeFrames) {
+    console.log(dynamicVolume);
+  }
 
   return (
     <div className="flex flex-col">
