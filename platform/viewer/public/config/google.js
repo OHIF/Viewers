@@ -7,9 +7,6 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
-  // This is an array, but we'll only use the first entry for now
-  oidc: [
-  ],
   // whiteLabelling: {},
   extensions: [],
   modes: [],
