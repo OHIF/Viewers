@@ -3,6 +3,15 @@ import { utilities } from '@cornerstonejs/core';
 import { BaseTool } from '@cornerstonejs/tools';
 import { guid } from '@ohif/core/src/utils';
 
+interface CachedStat {
+  color: number[];
+  overlays: (unknown & {
+    _id: string;
+    pixelDataRaw: ArrayBuffer;
+    type: 'G' | 'R';
+  })[];
+}
+
 /**
  * Image Overlay Viewer tool is not a traditional tool that requires user interactin.
  * But it is used to display Pixel Overlays. And it will provide toggling capability.
@@ -11,9 +20,34 @@ class ImageOverlayViewerTool extends BaseTool {
   static toolName = 'ImageOverlayViewer';
 
   _renderingViewport: any;
-  _cachedStats = [];
+  _cachedStats: { [key: string]: CachedStat } = {};
+
+  constructor(
+    toolProps = {},
+    defaultToolProps = {
+      supportedInteractionTypes: [],
+      configuration: {
+        showOverlays: true,
+        fillColor: [255, 127, 127, 255],
+      },
+    }
+  ) {
+    super(toolProps, defaultToolProps);
+  }
+
+  private _getCachedStat(targetId: string, createIfMissing = true): CachedStat {
+    if (!this._cachedStats[targetId] && createIfMissing)
+      this._cachedStats[targetId] = {
+        color: [127, 127, 127, 255], // color (r,g,b,a), default color: gray
+        overlays: [],
+      };
+    return this._cachedStats[targetId];
+  }
 
   renderAnnotation = (enabledElement, svgDrawingHelper) => {
+    // overlays are toggled off by configuration
+    if (!this.configuration.showOverlays) return false;
+
     const { viewport } = enabledElement;
     this._renderingViewport = viewport;
 
@@ -21,15 +55,7 @@ class ImageOverlayViewerTool extends BaseTool {
     if (!imageId) return;
 
     const targetId = this.getTargetId(viewport);
-    if (!this._cachedStats[targetId])
-      this._cachedStats[targetId] = {
-        showOverlays: true,
-        overlays: [],
-      };
-    const cachedStat = this._cachedStats[targetId];
-
-    // if the overlay is turned off
-    if (!cachedStat.showOverlays) return false;
+    const cachedStat = this._getCachedStat(targetId);
 
     let overlays;
     ({ overlays } = metaData.get('overlayPlaneModule', imageId));
@@ -75,20 +101,17 @@ class ImageOverlayViewerTool extends BaseTool {
     return true;
   };
 
-  _renderOverlay(enabledElement, svgDrawingHelper, overlayData) {
-    if (!overlayData.color) {
-      // TODO: check against the configured color as well
+  private _renderOverlay(enabledElement, svgDrawingHelper, overlayData) {
+    if (
+      !overlayData.color ||
+      this.configuration.fillColor != overlayData.color
+    ) {
       // create pixel data from bit array of overlay data
+
       const { pixelDataRaw, rows: height, columns: width } = overlayData;
       const pixelDataView = new DataView(pixelDataRaw);
       const totalBits = width * height;
-      // TODO: have this color from configuration or user settings
-      const color = {
-        r: 127,
-        g: 127,
-        b: 127,
-        a: 255,
-      };
+      const color = this.configuration.fillColor;
 
       const canvas = document.createElement('canvas');
       canvas.width = width;
@@ -100,10 +123,10 @@ class ImageOverlayViewerTool extends BaseTool {
       const data = imageData.data;
       for (let i = 0, bitIdx = 0, byteIdx = 0; i < totalBits; i++) {
         if (pixelDataView.getUint8(Math.floor(byteIdx)) & (1 << bitIdx)) {
-          data[i * 4] = color.r;
-          data[i * 4 + 1] = color.g;
-          data[i * 4 + 2] = color.b;
-          data[i * 4 + 3] = color.a;
+          data[i * 4] = color[0];
+          data[i * 4 + 1] = color[1];
+          data[i * 4 + 2] = color[2];
+          data[i * 4 + 3] = color[3];
         }
 
         // next bit, byte
@@ -192,7 +215,7 @@ class ImageOverlayViewerTool extends BaseTool {
    * @param viewport
    * @returns
    */
-  _getReferencedImageId(
+  private _getReferencedImageId(
     viewport: Types.IStackViewport | Types.IVolumeViewport
   ): string {
     const targetId = this.getTargetId(viewport);

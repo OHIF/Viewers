@@ -18,6 +18,7 @@ import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
+import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 function commandsModule({ servicesManager, commandsManager }) {
   const {
@@ -612,6 +613,27 @@ function commandsModule({ servicesManager, commandsManager }) {
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
+
+    /**
+     * Toggle Image Overlays
+     *
+     * @param param0
+     */
+    toggleImageOverlay: ({ toggledState }) => {
+      toggledState = !toggledState; // revert the state because unlike other toggle tools, this starts as enabled
+
+      const { activeViewportIndex } = ViewportGridService.getState();
+      const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+        activeViewportIndex
+      );
+
+      const viewportId = viewportInfo.getViewportId();
+      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+
+      toolGroup.setToolConfiguration(ImageOverlayViewerTool.toolName, {
+        showOverlays: toggledState,
+      });
+    },
   };
 
   const definitions = {
@@ -772,6 +794,11 @@ function commandsModule({ servicesManager, commandsManager }) {
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+      storeContexts: [],
+      options: {},
+    },
+    toggleImageOverlay: {
+      commandFn: actions.toggleImageOverlay,
       storeContexts: [],
       options: {},
     },

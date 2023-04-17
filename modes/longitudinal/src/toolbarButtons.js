@@ -440,6 +440,14 @@ const toolbarButtons = [
             },
           ]
         ),
+        // TODO: we need a new icon for image overlay toggler button
+        _createToggleButton('ImageOverlay', 'link', 'Image Overlay', [
+          {
+            commandName: 'toggleImageOverlay',
+            commandOptions: {},
+            context: 'CORNERSTONE',
+          },
+        ]),
         _createToolButton(
           'StackScroll',
           'tool-stack-scroll',
