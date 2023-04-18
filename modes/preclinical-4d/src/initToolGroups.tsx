@@ -1,15 +1,10 @@
-function initDefaultToolGroup(
-  extensionManager,
-  toolGroupService,
-  commandsManager,
-  toolGroupId
-) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.tools'
-  );
+const toolGroupIds = {
+  default: 'dynamic4D-default',
+  PT: 'dynamic4D-pt',
+  Fusion: 'dynamic4D-fusion',
+};
 
-  const { toolNames, Enums } = utilityModule.exports;
-
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const tools = {
     active: [
       {
@@ -31,162 +26,16 @@ function initDefaultToolGroup(
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
-      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.CalibrationLine },
     ],
-    // enabled
-    // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
-  };
-
-  const toolsConfig = {
-    [toolNames.ArrowAnnotate]: {
-      getTextCallback: (callback, eventDetails) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          eventDetails,
-        }),
-
-      changeTextCallback: (data, eventDetails, callback) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          data,
-          eventDetails,
-        }),
-    },
-  };
-
-  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
-}
-
-function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
-  const SRUtilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
-  );
-
-  const CS3DUtilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.tools'
-  );
-
-  const { toolNames: SRToolNames } = SRUtilityModule.exports;
-  const { toolNames, Enums } = CS3DUtilityModule.exports;
-  const tools = {
-    active: [
-      {
-        toolName: toolNames.WindowLevel,
-        bindings: [
-          {
-            mouseButton: Enums.MouseBindings.Primary,
-          },
-        ],
-      },
-      {
-        toolName: toolNames.Pan,
-        bindings: [
-          {
-            mouseButton: Enums.MouseBindings.Auxiliary,
-          },
-        ],
-      },
-      {
-        toolName: toolNames.Zoom,
-        bindings: [
-          {
-            mouseButton: Enums.MouseBindings.Secondary,
-          },
-        ],
-      },
-      {
-        toolName: toolNames.StackScrollMouseWheel,
-        bindings: [],
-      },
-    ],
-    passive: [
-      { toolName: SRToolNames.SRLength },
-      { toolName: SRToolNames.SRArrowAnnotate },
-      { toolName: SRToolNames.SRBidirectional },
-      { toolName: SRToolNames.SREllipticalROI },
-    ],
-    enabled: [
-      // {
-      //   toolName: SRToolNames.DICOMSRDisplay,
-      //   bindings: [],
-      // },
-    ],
-    // disabled
-  };
-
-  const toolsConfig = {
-    [toolNames.ArrowAnnotate]: {
-      getTextCallback: (callback, eventDetails) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          eventDetails,
-        }),
-
-      changeTextCallback: (data, eventDetails, callback) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          data,
-          eventDetails,
-        }),
-    },
-  };
-
-  const toolGroupId = 'SRToolGroup';
-  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
-}
-
-function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.tools'
-  );
-
-  const { toolNames, Enums } = utilityModule.exports;
-
-  const tools = {
-    active: [
-      {
-        toolName: toolNames.WindowLevel,
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-      },
-      {
-        toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
-      },
-      {
-        toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
-      },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
-    ],
-    passive: [
-      { toolName: toolNames.Length },
-      { toolName: toolNames.ArrowAnnotate },
-      { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.DragProbe },
-      { toolName: toolNames.EllipticalROI },
-      { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
-      { toolName: toolNames.Angle },
-      { toolName: toolNames.CobbAngle },
-      { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.SegmentationDisplay },
-    ],
-    disabled: [
-      { toolName: toolNames.Crosshairs },
-      { toolName: toolNames.ReferenceLines },
-    ],
-
-    // enabled
-    // disabled
+    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    disabled: [{ toolName: toolNames.Crosshairs }],
   };
 
   const toolsConfig = {
@@ -198,11 +47,12 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
     },
     [toolNames.ArrowAnnotate]: {
-      getTextCallback: (callback, eventDetails) =>
+      getTextCallback: (callback, eventDetails) => {
         commandsManager.runCommand('arrowTextCallback', {
           callback,
           eventDetails,
-        }),
+        });
+      },
 
       changeTextCallback: (data, eventDetails, callback) =>
         commandsManager.runCommand('arrowTextCallback', {
@@ -214,40 +64,40 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   };
 
   toolGroupService.createToolGroupAndAddTools(
-    'dynamic4D-default',
+    toolGroupIds.PT,
+    {
+      active: tools.active,
+      passive: [
+        ...tools.passive,
+        { toolName: 'RectangleROIStartEndThreshold' },
+      ],
+      enabled: tools.enabled,
+      disabled: tools.disabled,
+    },
+    toolsConfig
+  );
+
+  toolGroupService.createToolGroupAndAddTools(
+    toolGroupIds.Fusion,
+    tools,
+    toolsConfig
+  );
+
+  toolGroupService.createToolGroupAndAddTools(
+    toolGroupIds.default,
     tools,
     toolsConfig
   );
 }
-// function initVolume3DToolGroup(extensionManager, toolGroupService) {
-//   const utilityModule = extensionManager.getModuleEntry(
-//     '@ohif/extension-cornerstone.utilityModule.tools'
-//   );
 
-//   const { toolNames, Enums } = utilityModule.exports;
-
-//   const tools = {
-//     active: [
-//       {
-//         toolName: toolNames.TrackballRotateTool,
-//         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-//       },
-//     ],
-//   };
-
-//   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
-// }
-
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(
-    extensionManager,
-    toolGroupService,
-    commandsManager,
-    'default'
-  );
-  initSRToolGroup(extensionManager, toolGroupService, commandsManager);
-  initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
-  // initVolume3DToolGroup(extensionManager, toolGroupService);
+function initToolGroups({
+  toolNames,
+  Enums,
+  toolGroupService,
+  commandsManager,
+}) {
+  debugger;
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 }
 
-export default initToolGroups;
+export { initToolGroups as default, toolGroupIds };

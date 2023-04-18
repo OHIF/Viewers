@@ -61,7 +61,7 @@ function WorkflowPanel({ commandsManager }) {
 
   return (
     <div data-cy={'workflow-panel'} style={styles.panel}>
-      <div style={styles.title}>Workflow Panel</div>
+      <div style={styles.title}>Workflow</div>
       <div style={styles.container}>
         { stages }
       </div>

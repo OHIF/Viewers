@@ -134,7 +134,7 @@ function getFusionViewports() {
         viewportId: 'fusionAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-default',
+        toolGroupId: 'dynamic4D-fusion',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -174,7 +174,7 @@ function getFusionViewports() {
         viewportId: 'fusionSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-default',
+        toolGroupId: 'dynamic4D-fusion',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -214,7 +214,7 @@ function getFusionViewports() {
         viewportId: 'fusionCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-default',
+        toolGroupId: 'dynamic4D-fusion',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },

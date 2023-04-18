@@ -1,11 +1,8 @@
-// TODO: torn, can either bake this here; or have to create a whole new button type
-// Only ways that you can pass in a custom React component for render :l
-import {
-  // ExpandableToolbarButton,
-  // ListMenu,
-  WindowLevelMenuItem,
-} from '@ohif/ui';
+import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults } from '@ohif/core';
+import { toolGroupIds } from './initToolGroups';
+
+setTimeout(() => console.log('>>>>> toolGroupIds :: ', toolGroupIds), 3000);
 
 const { windowLevelPresets } = defaults;
 /**
@@ -41,16 +38,24 @@ function _createLengthToolButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'Length',
+          toolGroupId: 'dynamic4D-default',
         },
         context: 'CORNERSTONE',
       },
       {
         commandName: 'setToolActive',
         commandOptions: {
-          toolName: 'SRLength',
-          toolGroupId: 'SRToolGroup',
+          toolName: 'Length',
+          toolGroupId: 'dynamic4D-pt',
         },
-        // we can use the setToolActive command for this from Cornerstone commandsModule
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'Length',
+          toolGroupId: 'dynamic4D-fusion',
+        },
         context: 'CORNERSTONE',
       },
     ],
@@ -68,14 +73,23 @@ function _createBidirectionalToolButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'Bidirectional',
+          toolGroupId: 'dynamic4D-default',
         },
         context: 'CORNERSTONE',
       },
       {
         commandName: 'setToolActive',
         commandOptions: {
-          toolName: 'SRBidirectional',
-          toolGroupId: 'SRToolGroup',
+          toolName: 'Bidirectional',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'Bidirectional',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -94,14 +108,23 @@ function _createArrowAnnotateToolButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'ArrowAnnotate',
+          toolGroupId: 'dynamic4D-default',
         },
         context: 'CORNERSTONE',
       },
       {
         commandName: 'setToolActive',
         commandOptions: {
-          toolName: 'SRArrowAnnotate',
-          toolGroupId: 'SRToolGroup',
+          toolName: 'ArrowAnnotate',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'ArrowAnnotate',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -120,14 +143,23 @@ function _createEllipticalROIToolButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'EllipticalROI',
+          toolGroupId: 'dynamic4D-default',
         },
         context: 'CORNERSTONE',
       },
       {
         commandName: 'setToolActive',
         commandOptions: {
-          toolName: 'SREllipticalROI',
-          toolGroupId: 'SRToolGroup',
+          toolName: 'EllipticalROI',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'EllipticalROI',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -149,6 +181,23 @@ function _createZoomToolButton() {
           commandName: 'setToolActive',
           commandOptions: {
             toolName: 'Zoom',
+            toolGroupId: 'dynamic4D-default',
+          },
+          context: 'CORNERSTONE',
+        },
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Zoom',
+            toolGroupId: 'dynamic4D-pt',
+          },
+          context: 'CORNERSTONE',
+        },
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Zoom',
+            toolGroupId: 'dynamic4D-fusion',
           },
           context: 'CORNERSTONE',
         },
@@ -174,6 +223,23 @@ function _createWwwcPreset(preset, title, subtitle) {
         commandName: 'setWindowLevel',
         commandOptions: {
           ...windowLevelPresets[preset],
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setWindowLevel',
+        commandOptions: {
+          ...windowLevelPresets[preset],
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setWindowLevel',
+        commandOptions: {
+          ...windowLevelPresets[preset],
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -196,6 +262,23 @@ function _createWindowLevelToolButton() {
             commandName: 'setToolActive',
             commandOptions: {
               toolName: 'WindowLevel',
+              toolGroupId: 'dynamic4D-default',
+            },
+            context: 'CORNERSTONE',
+          },
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'WindowLevel',
+              toolGroupId: 'dynamic4D-pt',
+            },
+            context: 'CORNERSTONE',
+          },
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'WindowLevel',
+              toolGroupId: 'dynamic4D-fusion',
             },
             context: 'CORNERSTONE',
           },
@@ -234,6 +317,23 @@ function _createPanToolButton() {
           commandName: 'setToolActive',
           commandOptions: {
             toolName: 'Pan',
+            toolGroupId: 'dynamic4D-default',
+          },
+          context: 'CORNERSTONE',
+        },
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Pan',
+            toolGroupId: 'dynamic4D-pt',
+          },
+          context: 'CORNERSTONE',
+        },
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Pan',
+            toolGroupId: 'dynamic4D-fusion',
           },
           context: 'CORNERSTONE',
         },
@@ -307,6 +407,22 @@ function _createCrosshairsToolButton() {
           commandOptions: {
             toolName: 'Crosshairs',
             toolGroupId: 'dynamic4D-default',
+          },
+          context: 'CORNERSTONE',
+        },
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Crosshairs',
+            toolGroupId: 'dynamic4D-pt',
+          },
+          context: 'CORNERSTONE',
+        },
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Crosshairs',
+            toolGroupId: 'dynamic4D-fusion',
           },
           context: 'CORNERSTONE',
         },
@@ -398,6 +514,23 @@ function _createStackScrollToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'StackScroll',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'StackScroll',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'StackScroll',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -432,6 +565,23 @@ function _createProbeToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'DragProbe',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'DragProbe',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'DragProbe',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -465,6 +615,23 @@ function _createAngleToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'Angle',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'Angle',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'Angle',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -483,6 +650,23 @@ function _createCobbAngleToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'CobbAngle',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'CobbAngle',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'CobbAngle',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -501,6 +685,23 @@ function _createPlanarFreehandROIToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'PlanarFreehandROI',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'PlanarFreehandROI',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'PlanarFreehandROI',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -519,6 +720,23 @@ function _createMagnifyToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'Magnify',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'Magnify',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'Magnify',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -537,6 +755,23 @@ function _createRectangleToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'RectangleROI',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'RectangleROI',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'RectangleROI',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },
@@ -555,6 +790,23 @@ function _createCalibrationLineToolbarButton() {
         commandName: 'setToolActive',
         commandOptions: {
           toolName: 'CalibrationLine',
+          toolGroupId: 'dynamic4D-default',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'CalibrationLine',
+          toolGroupId: 'dynamic4D-pt',
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolName: 'CalibrationLine',
+          toolGroupId: 'dynamic4D-fusion',
         },
         context: 'CORNERSTONE',
       },

@@ -41,9 +41,14 @@ function modeFactory({ modeConfiguration }) {
         panelService,
       } = servicesManager.services;
 
-      measurementService.clearMeasurements();
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone.utilityModule.tools'
+      );
 
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      const { toolNames, Enums } = utilityModule.exports;
+
+      measurementService.clearMeasurements();
+      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
 
       let unsubscribe;
 
