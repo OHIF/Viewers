@@ -23,11 +23,11 @@ const findReferencedInstances = (
   displaySet
 ) => {
   const instances = [];
-  const instanceByUrl = {};
+  const instanceById = {};
   for (const measurement of displaySet.measurements) {
     const { imageId } = measurement;
     if (!imageId) continue;
-    if (instanceByUrl[imageId]) continue;
+    if (instanceById[imageId]) continue;
 
     const instance = findInstance(measurement, displaySetService);
     if (!instance) {
@@ -35,7 +35,7 @@ const findReferencedInstances = (
       continue;
     }
 
-    instanceByUrl[imageId] = instance;
+    instanceById[imageId] = instance;
     instances.push(instance);
   }
   return instances;
@@ -52,7 +52,7 @@ const findReferencedInstances = (
 const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
   const instances = findReferencedInstances(displaySetService, displaySet);
   // This will be a  member function of the created image set
-  const updateInstances = function () {
+  const updateInstances = function() {
     this.images.splice(
       0,
       this.images.length,
