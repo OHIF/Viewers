@@ -63,7 +63,7 @@
     "@types/react": "^17.0.38",
     "classnames": "^2.3.2",
     "config-point": "^0.4.8",
-    "core-js": "^3.16.1",
+    "core-js": "^3.2.1",
     "cornerstone-math": "^0.1.9",
     "cornerstone-wado-image-loader": "^4.13.0",
     "dcmjs": "^0.29.5",

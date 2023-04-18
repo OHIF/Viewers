@@ -10,6 +10,7 @@ import {
   utilities as csUtils,
   CONSTANTS,
 } from '@cornerstonejs/core';
+import { MeasurementService } from '@ohif/core';
 import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
 import {
   IStackViewport,
