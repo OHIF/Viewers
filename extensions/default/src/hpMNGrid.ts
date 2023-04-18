@@ -2,7 +2,8 @@ import { Types } from '@ohif/core';
 
 /**
  * This hanging protocol can be activated on the primary mode by directly
- * referencing it in a URL or by directly including it within a mode.
+ * referencing it in a URL or by directly including it within a mode, e.g.:
+ * `&hangingProtocolId=@ohif/mnGrid` added to the viewer URL
  * It is not included in the viewer mode by default.
  */
 const hpMN: Types.HangingProtocol.Protocol = {
