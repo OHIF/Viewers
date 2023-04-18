@@ -6,6 +6,7 @@ import getCommandsModule from './getCommandsModule';
 import { useViewportGrid } from '@ohif/ui';
 import getDicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler';
 import getDicomMicroscopySRSopClassHandler from './DicomMicroscopySRSopClassHandler';
+import MicroscopyService from './services/MicroscopyService';
 
 const Component = React.lazy(() => {
   return import('./DicomMicroscopyViewport');
@@ -28,6 +29,17 @@ export default {
    * You ID can be anything you want, but it should be unique.
    */
   id,
+
+  async preRegistration({
+    servicesManager,
+    commandsManager,
+    configuration = {},
+    appConfig,
+  }) {
+    servicesManager.registerService(
+      MicroscopyService.REGISTRATION(servicesManager)
+    );
+  },
 
   /**
    * ViewportModule should provide a list of viewports that will be available in OHIF

@@ -1,5 +1,6 @@
-import Publisher from './Publisher';
 import areaOfPolygon from './areaOfPolygon';
+
+import { PubSubService } from '@ohif/core';
 
 const EVENTS = {
   LABEL_UPDATED: 'labelUpdated',
@@ -11,7 +12,7 @@ const EVENTS = {
 /**
  * Represents a single annotation for the Microscopy Viewer
  */
-class RoiAnnotation extends Publisher {
+class RoiAnnotation extends PubSubService {
   constructor(
     roiGraphic,
     studyInstanceUID,
@@ -19,7 +20,7 @@ class RoiAnnotation extends Publisher {
     label = '',
     viewState = null
   ) {
-    super();
+    super(EVENTS);
     this.uid = roiGraphic.uid;
     this.roiGraphic = roiGraphic;
     this.studyInstanceUID = studyInstanceUID;
@@ -113,8 +114,8 @@ class RoiAnnotation extends Publisher {
 
       case 'POLYLINE':
         let len = 0;
-        for (let i=1; i<coordinates.length; i++) {
-          const p1 = coordinates[i-1];
+        for (let i = 1; i < coordinates.length; i++) {
+          const p1 = coordinates[i - 1];
           const p2 = coordinates[i];
 
           let xLen = p2[0] - p1[0];
@@ -148,7 +149,7 @@ class RoiAnnotation extends Publisher {
    * @param {String} label New label for the annotation
    */
   setLabel(label, finding) {
-    this.label = label || finding && finding.CodeMeaning;
+    this.label = label || (finding && finding.CodeMeaning);
     this.finding = finding || {
       CodingSchemeDesignator: '@ohif/extension-dicom-microscopy',
       CodeValue: label,

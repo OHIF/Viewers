@@ -48,7 +48,7 @@ function _getDisplaySetsFromSeries(
     throw new Error('No instances were provided');
   }
 
-  const { displaySetService } = servicesManager.services;
+  const { displaySetService, microscopyService } = servicesManager.services;
 
   const instance = instances[0];
 
@@ -99,11 +99,13 @@ function _getDisplaySetsFromSeries(
   };
 
   displaySet.load = function(referencedDisplaySet) {
-    return loadSR(displaySet, referencedDisplaySet).catch(error => {
-      displaySet.isLoaded = false;
-      displaySet.loadError = true;
-      throw new Error(error);
-    });
+    return loadSR(microscopyService, displaySet, referencedDisplaySet).catch(
+      error => {
+        displaySet.isLoaded = false;
+        displaySet.loadError = true;
+        throw new Error(error);
+      }
+    );
   };
 
   displaySet.getSourceDisplaySet = function() {

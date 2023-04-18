@@ -1,6 +1,7 @@
-import Publisher from '../utils/Publisher';
 import coordinateFormatScoord3d2Geometry from '../utils/coordinateFormatScoord3d2Geometry';
 import styles from '../utils/styles';
+
+import { PubSubService } from '@ohif/core';
 
 // Events from the third-party viewer
 const ApiEvents = {
@@ -20,7 +21,7 @@ const EVENTS = {
  * ViewerManager encapsulates the complexity of the third-party viewer and
  * expose only the features/behaviors that are relevant to the application
  */
-class ViewerManager extends Publisher {
+class ViewerManager extends PubSubService {
   constructor(
     viewer,
     viewportIndex,
@@ -28,7 +29,7 @@ class ViewerManager extends Publisher {
     studyInstanceUID,
     seriesInstanceUID
   ) {
-    super();
+    super(EVENTS);
     this.viewer = viewer;
     this.viewportIndex = viewportIndex;
     this.container = container;
@@ -41,18 +42,11 @@ class ViewerManager extends Publisher {
     this.contextMenuCallback = () => {};
 
     // init symbols
-    this._drawingSource = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'drawingSource'
-    );
-    this._pyramid = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'pyramid'
-    );
-    this._map = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'map'
-    );
-    this._affine = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'affine'
-    );
+    const symbols = Object.getOwnPropertySymbols(this.viewer);
+    this._drawingSource = symbols.find(p => p.description === 'drawingSource');
+    this._pyramid = symbols.find(p => p.description === 'pyramid');
+    this._map = symbols.find(p => p.description === 'map');
+    this._affine = symbols.find(p => p.description === 'affine');
 
     this.registerEvents();
     this.activateDefaultInteractions();

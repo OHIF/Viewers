@@ -3,18 +3,19 @@ import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
-import microscopyManager from './tools/microscopyManager';
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
 import dcmjs from 'dcmjs';
 import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
+import MicroscopyService from './services/MicroscopyService';
 
 class DicomMicroscopyViewport extends Component {
   state = {
     error: null as any,
   };
 
+  microscopyService: MicroscopyService;
   viewer: any = null; // dicom-microscopy-viewer instance
   managedViewer: any = null; // managed wrapper of microscopy-dicom extension
 
@@ -25,6 +26,8 @@ class DicomMicroscopyViewport extends Component {
   constructor(props: any) {
     super(props);
 
+    const { microscopyService } = this.props.servicesManager.services;
+    this.microscopyService = microscopyService;
     this.debouncedResize = debounce(() => {
       if (this.viewer) this.viewer.resize();
     }, 100);
@@ -57,34 +60,29 @@ class DicomMicroscopyViewport extends Component {
    * @returns
    */
   getNearbyROI(event: Event, autoselect = true) {
-    const _drawingSource = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'drawingSource'
-    );
-    const _pyramid = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'pyramid'
-    );
-    const _map = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'map'
-    );
-    const _affine = Object.getOwnPropertySymbols(this.viewer).find(
-      p => p.description == 'affine'
-    );
+    const symbols = Object.getOwnPropertySymbols(this.viewer);
+    const _drawingSource = symbols.find(p => p.description === 'drawingSource');
+    const _pyramid = symbols.find(p => p.description === 'pyramid');
+    const _map = symbols.find(p => p.description === 'map');
+    const _affine = symbols.find(p => p.description === 'affine');
+
     const feature = this.viewer[_drawingSource].getClosestFeatureToCoordinate(
       this.viewer[_map].getEventCoordinate(event)
     );
 
-    if (feature) {
-      const roiAnnotation = this.viewer._getROIFromFeature(
-        feature,
-        this.viewer[_pyramid].metadata,
-        this.viewer[_affine]
-      );
-      if (roiAnnotation && autoselect) {
-        microscopyManager.selectAnnotation(roiAnnotation);
-      }
-      return roiAnnotation;
+    if (!feature) {
+      return null;
     }
-    return null;
+
+    const roiAnnotation = this.viewer._getROIFromFeature(
+      feature,
+      this.viewer[_pyramid].metadata,
+      this.viewer[_affine]
+    );
+    if (roiAnnotation && autoselect) {
+      this.microscopyService.selectAnnotation(roiAnnotation);
+    }
+    return roiAnnotation;
   }
 
   // install the microscopy renderer into the web page.
@@ -199,7 +197,7 @@ class DicomMicroscopyViewport extends Component {
 
       const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
 
-      this.managedViewer = microscopyManager.addViewer(
+      this.managedViewer = this.microscopyService.addViewer(
         this.viewer,
         this.props.viewportIndex,
         container,
@@ -249,7 +247,7 @@ class DicomMicroscopyViewport extends Component {
       const { displaySets } = this.props;
       const displaySet = displaySets[0];
 
-      microscopyManager.clearAnnotations();
+      this.microscopyService.clearAnnotations();
 
       // loading SR
       if (displaySet.Modality === 'SR') {
@@ -260,7 +258,7 @@ class DicomMicroscopyViewport extends Component {
   }
 
   componentWillUnmount() {
-    microscopyManager.removeViewer(this.viewer);
+    this.microscopyService.removeViewer(this.viewer);
   }
 
   setViewportActiveHandler = () => {

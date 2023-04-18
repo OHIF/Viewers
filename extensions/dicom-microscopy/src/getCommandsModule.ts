@@ -1,4 +1,3 @@
-import microscopyManager from './tools/microscopyManager';
 import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
 import styles from './utils/styles';
 import callInputDialog from './utils/callInputDialog';
@@ -14,24 +13,21 @@ export default function getCommandsModule({
 }) {
   const {
     viewportGridService,
-    toolbarService,
     uiDialogService,
-    cornerstoneViewportService,
-    customizationService,
-    measurementService,
+    microscopyService,
   } = servicesManager.services;
 
   const actions = {
     // Measurement tool commands:
     deleteMeasurement: ({ uid }) => {
       if (uid) {
-        const roiAnnotation = microscopyManager.getAnnotation(uid);
-        if (roiAnnotation) microscopyManager.removeAnnotation(roiAnnotation);
+        const roiAnnotation = microscopyService.getAnnotation(uid);
+        if (roiAnnotation) microscopyService.removeAnnotation(roiAnnotation);
       }
     },
 
     setLabel: ({ uid }) => {
-      const roiAnnotation = microscopyManager.getAnnotation(uid);
+      const roiAnnotation = microscopyService.getAnnotation(uid);
 
       callInputDialog({
         uiDialogService,
@@ -41,7 +37,7 @@ export default function getCommandsModule({
           switch (action) {
             case 'save': {
               roiAnnotation.setLabel(value);
-              microscopyManager.triggerRelabel(roiAnnotation);
+              microscopyService.triggerRelabel(roiAnnotation);
             }
           }
         },
@@ -74,9 +70,9 @@ export default function getCommandsModule({
           delete options.vertexEnabled;
         }
 
-        microscopyManager.activateInteractions([['draw', options]]);
+        microscopyService.activateInteractions([['draw', options]]);
       } else if (toolName == 'dragPan') {
-        microscopyManager.activateInteractions([['dragPan']]);
+        microscopyService.activateInteractions([['dragPan']]);
       }
     },
 
@@ -112,10 +108,10 @@ export default function getCommandsModule({
 
       // overview
       const { activeViewportIndex, viewports } = viewportGridService.getState();
-      microscopyManager.toggleOverviewMap(activeViewportIndex);
+      microscopyService.toggleOverviewMap(activeViewportIndex);
     },
     toggleAnnotations: () => {
-      microscopyManager.toggleROIsVisibility();
+      microscopyService.toggleROIsVisibility();
     },
   };
 

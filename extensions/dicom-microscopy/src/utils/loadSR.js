@@ -1,6 +1,5 @@
 import dcmjs from 'dcmjs';
 
-import microscopyManager from '../tools/microscopyManager';
 import DCM_CODE_VALUES from './dcmCodeValues';
 import toArray from './toArray';
 
@@ -9,19 +8,15 @@ const MeasurementReport =
 
 // Define as async so that it returns a promise, expected by the ViewportGrid
 export default async function loadSR(
+  microscopyService,
   microscopySRDisplaySet,
   referencedDisplaySet
 ) {
-  console.debug(
-    'Microscopy - loadSR',
-    microscopySRDisplaySet.StudyInstanceUID,
-    microscopySRDisplaySet.SeriesInstanceUID
-  );
   const naturalizedDataset = microscopySRDisplaySet.metadata;
 
   const { StudyInstanceUID, FrameOfReferenceUID } = referencedDisplaySet;
 
-  const managedViewers = microscopyManager.getManagedViewersForStudy(
+  const managedViewers = microscopyService.getManagedViewersForStudy(
     StudyInstanceUID
   );
 

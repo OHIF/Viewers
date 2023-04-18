@@ -9,7 +9,7 @@ import {
 import { MeasurementTable, Icon, ButtonGroup, Button } from '@ohif/ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import DEVICE_OBSERVER_UID from '../../utils/DEVICE_OBSERVER_UID';
-import { EVENTS as MicroscopyEvents } from '../../tools/microscopyManager';
+import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
 import styles from '../../utils/styles';
 import callInputDialog from '../../utils/callInputDialog';
@@ -67,7 +67,6 @@ interface IMicroscopyPanelProps extends WithTranslation {
   activeViewportIndex: PropTypes.number;
 
   //
-  microscopyManager: PropTypes.object;
   onSaveComplete?: PropTypes.func; // callback when successfully saved annotations
   onRejectComplete?: PropTypes.func; // callback when rejected annotations
 
@@ -84,7 +83,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
  * @returns
  */
 function MicroscopyPanel(props: IMicroscopyPanelProps) {
-  const microscopyManager: any = props.microscopyManager;
+  const { microscopyService } = props.servicesManager.services;
 
   const [studyInstanceUID, setStudyInstanceUID] = useState(
     null as string | null
@@ -109,22 +108,26 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
   useEffect(() => {
     const onAnnotationUpdated = () => {
-      const roiAnnotations = microscopyManager.getAnnotationsForStudy(
+      const roiAnnotations = microscopyService.getAnnotationsForStudy(
         studyInstanceUID
       );
       setRoiAnnotations(roiAnnotations);
     };
 
     const onAnnotationSelected = () => {
-      const selectedAnnotation = microscopyManager.getSelectedAnnotation();
+      const selectedAnnotation = microscopyService.getSelectedAnnotation();
       setSelectedAnnotation(selectedAnnotation);
     };
 
-    microscopyManager.subscribe(
+    const {
+      unsubscribe: unsubscribeAnnotationUpdated,
+    } = microscopyService.subscribe(
       MicroscopyEvents.ANNOTATION_UPDATED,
       onAnnotationUpdated
     );
-    microscopyManager.subscribe(
+    const {
+      unsubscribe: unsubscribeAnnotationSelected,
+    } = microscopyService.subscribe(
       MicroscopyEvents.ANNOTATION_SELECTED,
       onAnnotationSelected
     );
@@ -133,14 +136,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
     // on unload unsubscribe from events
     return () => {
-      microscopyManager.unsubscribe(
-        MicroscopyEvents.ANNOTATION_UPDATED,
-        onAnnotationUpdated
-      );
-      microscopyManager.unsubscribe(
-        MicroscopyEvents.ANNOTATION_SELECTED,
-        onAnnotationSelected
-      );
+      unsubscribeAnnotationUpdated();
+      unsubscribeAnnotationSelected();
     };
   }, [studyInstanceUID]);
 
@@ -151,7 +148,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * @returns
    */
   const promptSave = () => {
-    const annotations = microscopyManager.getAnnotationsForStudy(
+    const annotations = microscopyService.getAnnotationsForStudy(
       studyInstanceUID
     );
 
@@ -194,7 +191,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     const dataSource = extensionManager.getActiveDataSource()[0];
     const { onSaveComplete } = props;
     const imagingMeasurements = [];
-    const annotations = microscopyManager.getAnnotationsForStudy(
+    const annotations = microscopyService.getAnnotationsForStudy(
       studyInstanceUID
     );
 
@@ -495,9 +492,9 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * @param param0
    */
   const onMeasurementItemClickHandler = ({ uid }: { uid: string }) => {
-    const roiAnnotation = microscopyManager.getAnnotation(uid);
-    microscopyManager.selectAnnotation(roiAnnotation);
-    microscopyManager.focusAnnotation(roiAnnotation, props.activeViewportIndex);
+    const roiAnnotation = microscopyService.getAnnotation(uid);
+    microscopyService.selectAnnotation(roiAnnotation);
+    microscopyService.focusAnnotation(roiAnnotation, props.activeViewportIndex);
   };
 
   /**
@@ -514,7 +511,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     props.commandsManager.runCommand('setLabel', { uid }, 'MICROSCOPY');
   };
 
-  // Convert ROI annotations managed by microscopyManager into our
+  // Convert ROI annotations managed by microscopyService into our
   // own format for display
   const data = roiAnnotations.map((roiAnnotation, index) => {
     const label = roiAnnotation.getDetailedLabel();

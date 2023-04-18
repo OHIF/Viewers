@@ -1,10 +1,9 @@
-import Publisher from '../utils/Publisher';
-import ViewerManager, { EVENTS as ViewerEvents } from './viewerManager';
+import ViewerManager, { EVENTS as ViewerEvents } from '../tools/viewerManager';
 import RoiAnnotation, {
   EVENTS as AnnotationEvents,
 } from '../utils/RoiAnnotation';
 import styles from '../utils/styles';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, PubSubService } from '@ohif/core';
 
 const EVENTS = {
   ANNOTATION_UPDATED: 'annotationUpdated',
@@ -14,20 +13,33 @@ const EVENTS = {
 };
 
 /**
- * MicroscopyManager is responsible to manage multiple third-party API's
+ * MicroscopyService is responsible to manage multiple third-party API's
  * microscopy viewers expose methods to manage the interaction with these
  * viewers and handle their ROI graphics to create, remove and modify the
  * ROI annotations relevant to the application
  */
-class MicroscopyManager extends Publisher {
+export default class MicroscopyService extends PubSubService {
+  public static REGISTRATION = serviceManager => {
+    return {
+      name: 'microscopyService',
+      altName: 'MicroscopyService',
+      create: ({ configuration = {} }) => {
+        return new MicroscopyService(serviceManager);
+      },
+    };
+  };
+
+  serviceManager: any;
+
   managedViewers = new Set();
   roiUids = new Set();
   annotations = {};
   selectedAnnotation = null;
   pendingFocus = false;
 
-  constructor() {
-    super();
+  constructor(serviceManager) {
+    super(EVENTS);
+    this.serviceManager = serviceManager;
     this._onRoiAdded = this._onRoiAdded.bind(this);
     this._onRoiModified = this._onRoiModified.bind(this);
     this._onRoiRemoved = this._onRoiRemoved.bind(this);
@@ -150,10 +162,10 @@ class MicroscopyManager extends Publisher {
    * @param {ViewerManager} managedViewer The viewer being added
    */
   _addManagedViewerSubscriptions(managedViewer) {
-    managedViewer.subscribe(ViewerEvents.ADDED, this._onRoiAdded);
-    managedViewer.subscribe(ViewerEvents.MODIFIED, this._onRoiModified);
-    managedViewer.subscribe(ViewerEvents.REMOVED, this._onRoiRemoved);
-    managedViewer.subscribe(ViewerEvents.UPDATED, this._onRoiUpdated);
+    managedViewer._roiAddedSubscription = managedViewer.subscribe(ViewerEvents.ADDED, this._onRoiAdded);
+    managedViewer._roiModifiedSubscription = managedViewer.subscribe(ViewerEvents.MODIFIED, this._onRoiModified);
+    managedViewer._roiRemovedSubscription = managedViewer.subscribe(ViewerEvents.REMOVED, this._onRoiRemoved);
+    managedViewer._roiUpdatedSubscription = managedViewer.subscribe(ViewerEvents.UPDATED, this._onRoiUpdated);
   }
 
   /**
@@ -162,10 +174,15 @@ class MicroscopyManager extends Publisher {
    * @param {ViewerManager} managedViewer The viewer being removed
    */
   _removeManagedViewerSubscriptions(managedViewer) {
-    managedViewer.unsubscribe(ViewerEvents.ADDED, this._onRoiAdded);
-    managedViewer.unsubscribe(ViewerEvents.MODIFIED, this._onRoiModified);
-    managedViewer.unsubscribe(ViewerEvents.REMOVED, this._onRoiRemoved);
-    managedViewer.unsubscribe(ViewerEvents.UPDATED, this._onRoiUpdated);
+    managedViewer._roiAddedSubscription && managedViewer._roiAddedSubscription.unsubscribe();
+    managedViewer._roiModifiedSubscription && managedViewer._roiModifiedSubscription.unsubscribe();
+    managedViewer._roiRemovedSubscription && managedViewer._roiRemovedSubscription.unsubscribe();
+    managedViewer._roiUpdatedSubscription && managedViewer._roiUpdatedSubscription.unsubscribe();
+
+    managedViewer._roiAddedSubscription = null;
+    managedViewer._roiModifiedSubscription = null;
+    managedViewer._roiRemovedSubscription = null;
+    managedViewer._roiUpdatedSubscription = null;
   }
 
   /**
@@ -325,11 +342,7 @@ class MicroscopyManager extends Publisher {
    * Toggle ROIs visibility
    */
   toggleROIsVisibility() {
-    if (!this.isROIsVisible) {
-      this.showROIs();
-    } else {
-      this.hideROIs();
-    }
+    this.isROIsVisible ? this.hideROIs() : this.showROIs;
     this.isROIsVisible = !this.isROIsVisible;
   }
 
@@ -587,5 +600,3 @@ class MicroscopyManager extends Publisher {
 }
 
 export { EVENTS };
-
-export default new MicroscopyManager();
