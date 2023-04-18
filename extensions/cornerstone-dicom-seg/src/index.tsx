@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Types } from '@ohif/core';
 
-import getSopClassHandlerModule, { segProtocol } from './getSopClassHandlerModule';
+import getSopClassHandlerModule, { protocols } from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import getHangingProtocolModule from './getHangingProtocolModule';
 
@@ -87,4 +87,6 @@ const extension = {
 
 export default extension;
 
-export { segProtocol };
+// Export the protocols separately to allow for extending it at compile time
+// in other modules
+export { protocols };

@@ -1,12 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import OHIF, {
-  utils,
-  ServicesManager,
-  ExtensionManager,
-  classes,
-} from '@ohif/core';
+import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import {
@@ -441,6 +436,10 @@ async function _getViewportReferencedDisplaySetData(
   displaySetService
 ) {
   if (!displaySet.keyImageDisplaySet) {
+    // Create a new display set, and preserve a reference to it here,
+    // so that it can be re-displayed and shown inside the SR viewport.
+    // This is only for ease of redisplay - the display set is stored in the
+    // usual manner in the display set service.
     displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(
       displaySetService,
       displaySet

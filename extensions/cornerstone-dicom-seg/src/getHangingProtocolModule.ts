@@ -75,4 +75,9 @@ function getHangingProtocolModule() {
 }
 
 export default getHangingProtocolModule;
-export { segProtocol };
+
+const protocols = {
+  [segProtocol.id]: segProtocol,
+};
+
+export { protocols };
