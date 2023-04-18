@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
-import { MODULE_TYPES } from '@ohif/core';
+import { DicomMetadataStore, MODULE_TYPES } from '@ohif/core';
 
 import Dropzone from 'react-dropzone';
 import filesToStudies from './filesToStudies';
@@ -62,10 +62,30 @@ function Local() {
 
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
-    // Todo: navigate to work list and let user select a mode
+
     const query = new URLSearchParams();
-    studies.forEach(id => query.append('StudyInstanceUIDs', id));
-    navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
+
+    const smStudies = studies.filter(id => {
+      const study = DicomMetadataStore.getStudy(id);
+      return (
+        study.series.findIndex(
+          s => s.Modality === 'SM' || s.instances[0].Modality === 'SM'
+        ) >= 0
+      );
+    });
+
+    if (smStudies.length > 0) {
+      smStudies.forEach(id => query.append('StudyInstanceUIDs', id));
+
+      navigate(
+        `/microscopy/dicomlocal?${decodeURIComponent(query.toString())}`
+      );
+    } else {
+      // Todo: navigate to work list and let user select a mode
+      studies.forEach(id => query.append('StudyInstanceUIDs', id));
+
+      navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
+    }
   };
 
   // Set body style

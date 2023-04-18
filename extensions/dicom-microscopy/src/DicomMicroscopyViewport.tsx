@@ -99,7 +99,10 @@ class DicomMicroscopyViewport extends Component {
       );
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
-      const client = getDicomWebClient();
+      const client = getDicomWebClient({
+        extensionManager: this.props.extensionManager,
+        servicesManager: this.props.servicesManager,
+      });
 
       // Parse, format, and filter metadata
       const volumeImages: any[] = [];
