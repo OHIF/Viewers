@@ -633,6 +633,26 @@ class MeasurementService extends PubSubService {
     this.clearMeasurements();
   }
 
+  /**
+   * This method calls the subscriptions for JUMP_TO_MEASUREMENT, with an
+   * increasing priority starting at 0.
+   *
+   * The priority increase is done to allow different viewports to handle
+   * the jump in different ways, so that the preferred viewport gets to handle
+   * the display first, then other viewports already showing the display set
+   * secondly, and finally the viewport grid service if no viewports can display
+   * the image.
+   *
+   * When a viewport decides to handle the jump to measurement, it should call
+   * the consume function on the event.  This will NOT prevent other viewports
+   * from receiving the event, but they can check that isConsumed attribute to
+   * see if someone has handled the event.
+   *
+   * This prevents requiring that different types of viewports and the viewport
+   * grid service know about each other's details, and allows both of them
+   * to be isolated from each other.
+   */
+
   public jumpToMeasurement(
     viewportIndex: number,
     measurementUID: string
@@ -648,7 +668,7 @@ class MeasurementService extends PubSubService {
       measurement,
     });
 
-    // This is done repeatedly to allow for
+    // See method description for details
     for (
       let priority = 0;
       priority <= JUMP_TO_MEASUREMENT.GRID_PRIORITY;

@@ -535,15 +535,14 @@ function _subscribeToJumpToMeasurementEvents(
         isConsumed,
         priority,
       } = props;
-      if (!measurement) return;
-      if (isConsumed) {
-        return;
-      }
+      if (!measurement || isConsumed) return;
       if (
         priority ===
           MeasurementService.JUMP_TO_MEASUREMENT.SELECTED_VIEWPORT_PRIORITY &&
         jumpIndex !== viewportIndex
       ) {
+        // If the prioriy is the selected viewport priority, and this
+        // isn't the selected viewport, then skip handling it right now.
         return;
       }
 
