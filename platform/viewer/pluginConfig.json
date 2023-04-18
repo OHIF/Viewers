@@ -1,48 +1,55 @@
 {
   "extensions": [
     {
+      "packageName": "@ohif/extension-default"
+    },
+    {
       "packageName": "@ohif/extension-cornerstone",
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-measurement-tracking",
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-sr",
-      "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/extension-default",
-      "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/extension-dicom-pdf",
-      "version": "3.0.1"
-    },
-    {
-      "packageName": "@ohif/extension-dicom-video",
-      "version": "3.0.1"
-    },
-    {
-      "packageName": "@ohif/extension-tmtv",
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-seg",
-      "version": "3.0.0"
+      "default": false
+    },
+    {
+      "packageName": "@ohif/extension-dicom-pdf",
+      "default": false
+    },
+    {
+      "packageName": "@ohif/extension-dicom-video",
+      "default": false
+    },
+    {
+      "packageName": "@ohif/extension-tmtv",
+      "default": false
+    },
+    {
+      "packageName": "@ohif/extension-test",
+      "default": false
     }
   ],
   "modes": [
     {
-      "packageName": "@ohif/mode-longitudinal",
-      "version": "3.0.0"
+      "packageName": "@ohif/mode-longitudinal"
     },
     {
-      "packageName": "@ohif/mode-tmtv",
-      "version": "3.0.0"
+      "packageName": "@ohif/mode-tmtv"
+    },
+    {
+      "packageName": "@ohif/mode-basic-dev-mode",
+      "default": false
+    },
+    {
+      "packageName": "@ohif/mode-test",
+      "default": false
     }
-  ],
-  "modesFactory": [],
-  "umd": []
+  ]
 }

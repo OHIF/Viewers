@@ -21,6 +21,8 @@ import {
   // utils,
 } from '@ohif/core';
 
+import loadModules from './pluginImports';
+
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
@@ -74,8 +76,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
+  const loadedExtensions = await loadModules([
+    ...defaultExtensions,
+    ...appConfig.extensions,
+  ]);
   await extensionManager.registerExtensions(
-    [...defaultExtensions, ...appConfig.extensions],
+    loadedExtensions,
     appConfig.dataSources
   );
 
@@ -87,24 +93,39 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     throw new Error('No modes are defined! Check your app-config.js');
   }
 
-  for (let i = 0; i < defaultModes.length; i++) {
-    const { modeFactory, id } = defaultModes[i];
+  const loadedModes = await loadModules([
+    ...(appConfig.modes || []),
+    ...defaultModes,
+  ]);
 
-    // If the appConfig contains configuration for this mode, use it.
-    const modeConfig =
-      appConfig.modeConfig && appConfig.modeConfig[i]
-        ? appConfig.modeConfig[id]
-        : {};
+  // This is a terrible setup here - todo, change this to use an alternate
+  // name so as to not confuse the issue
+  appConfig.modes = [];
+  // This is a preferred name
+  appConfig.loadedModes = [];
+  const modesById = new Set();
+  for (let i = 0; i < loadedModes.length; i++) {
+    let mode = loadedModes[i];
+    if (!mode) continue;
+    const { id } = mode;
 
-    const mode = modeFactory(modeConfig);
+    if (mode.modeFactory) {
+      // If the appConfig contains configuration for this mode, use it.
+      const modeConfig =
+        appConfig.modeConfig && appConfig.modeConfig[i]
+          ? appConfig.modeConfig[id]
+          : {};
 
+      mode = mode.modeFactory(modeConfig);
+    }
+
+    if (modesById.has(id)) continue;
+    // Prevent duplication
+    modesById.add(id);
+    if (!mode || typeof mode !== 'object') continue;
     appConfig.modes.push(mode);
+    appConfig.loadedModes.push(mode);
   }
-
-  // remove modes that are not objects, or have no id
-  appConfig.modes = appConfig.modes.filter(
-    mode => typeof mode === 'object' && mode.id
-  );
 
   return {
     appConfig,

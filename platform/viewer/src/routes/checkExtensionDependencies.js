@@ -1,7 +1,18 @@
-export default function checkExtensionDependencies(mode, extensionManager) {
+import { ExtensionManager } from '@ohif/core';
+
+import loadModules from '../pluginImports';
+
+export default async function checkExtensionDependencies(
+  mode,
+  extensionManager: ExtensionManager
+) {
   const extensionDependencies = mode.extensions;
 
   const dependencyString = `Unmet extension dependency in mode: ${mode.id}`;
+
+  // Load missing extensions
+  const extensions = await loadModules(extensionDependencies);
+  extensionManager.registerExtensions(extensions);
 
   Object.keys(extensionDependencies).forEach(extensionId => {
     const extensionInstalled = extensionManager.registeredExtensionIds.includes(
