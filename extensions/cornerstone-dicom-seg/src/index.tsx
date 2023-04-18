@@ -5,6 +5,7 @@ import { Types } from '@ohif/core';
 
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
+import getHangingProtocolModule from './getHangingProtocolModule';
 
 const Component = React.lazy(() => {
   return import(
@@ -79,6 +80,8 @@ const extension = {
    * Examples include the default sop class handler provided by the default extension
    */
   getSopClassHandlerModule,
+
+  getHangingProtocolModule,
 };
 
 export default extension;

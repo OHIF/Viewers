@@ -357,7 +357,7 @@ const toolbarButtons = [
             {
               commandName: 'setHangingProtocol',
               commandOptions: {
-                protocolId: '@ohif/hp-extension.mn',
+                protocolId: '@ohif/mnGrid',
                 stageId: '2x2',
               },
               context: 'DEFAULT',
@@ -372,7 +372,7 @@ const toolbarButtons = [
             {
               commandName: 'setHangingProtocol',
               commandOptions: {
-                protocolId: '@ohif/hp-extension.mn',
+                protocolId: '@ohif/mnGrid',
                 stageId: '3x1',
               },
               context: 'DEFAULT',
@@ -387,7 +387,7 @@ const toolbarButtons = [
             {
               commandName: 'setHangingProtocol',
               commandOptions: {
-                protocolId: '@ohif/hp-extension.mn',
+                protocolId: '@ohif/mnGrid',
                 stageId: '2x1',
               },
               context: 'DEFAULT',
@@ -402,7 +402,7 @@ const toolbarButtons = [
             {
               commandName: 'setHangingProtocol',
               commandOptions: {
-                protocolId: '@ohif/hp-extension.mn',
+                protocolId: '@ohif/mnGrid',
                 stageId: '1x1',
               },
               context: 'DEFAULT',
