@@ -155,11 +155,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
-    // enable experimental features, like webAssembly
-    // experiments: {
-    //   asyncWebAssembly: true,
-    //   syncWebAssembly: true,
-    // },
   };
 
   if (isProdBuild) {
