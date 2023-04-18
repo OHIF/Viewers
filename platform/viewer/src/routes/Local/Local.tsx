@@ -60,32 +60,39 @@ function Local() {
   const firstLocalDataSource = localDataSources[0];
   const dataSource = firstLocalDataSource.createDataSource({});
 
+  const microscopyExtensionLoaded = extensionManager.registeredExtensionIds.includes(
+    '@ohif/extension-dicom-microscopy'
+  );
+
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
 
     const query = new URLSearchParams();
 
-    const smStudies = studies.filter(id => {
-      const study = DicomMetadataStore.getStudy(id);
-      return (
-        study.series.findIndex(
-          s => s.Modality === 'SM' || s.instances[0].Modality === 'SM'
-        ) >= 0
-      );
-    });
+    if (microscopyExtensionLoaded) {
+      const smStudies = studies.filter(id => {
+        const study = DicomMetadataStore.getStudy(id);
+        return (
+          study.series.findIndex(
+            s => s.Modality === 'SM' || s.instances[0].Modality === 'SM'
+          ) >= 0
+        );
+      });
 
-    if (smStudies.length > 0) {
-      smStudies.forEach(id => query.append('StudyInstanceUIDs', id));
+      if (smStudies.length > 0) {
+        smStudies.forEach(id => query.append('StudyInstanceUIDs', id));
 
-      navigate(
-        `/microscopy/dicomlocal?${decodeURIComponent(query.toString())}`
-      );
-    } else {
-      // Todo: navigate to work list and let user select a mode
-      studies.forEach(id => query.append('StudyInstanceUIDs', id));
-
-      navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
+        navigate(
+          `/microscopy/dicomlocal?${decodeURIComponent(query.toString())}`
+        );
+        return;
+      }
     }
+
+    // Todo: navigate to work list and let user select a mode
+    studies.forEach(id => query.append('StudyInstanceUIDs', id));
+
+    navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
   };
 
   // Set body style
