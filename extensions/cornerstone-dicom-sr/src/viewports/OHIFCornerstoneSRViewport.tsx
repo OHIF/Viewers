@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
+import { CornerstoneServices } from '@ohif/extension-cornerstone/types';
+
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import {
@@ -37,7 +39,7 @@ function OHIFCornerstoneSRViewport(props) {
     displaySetService,
     cornerstoneViewportService,
     measurementService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -91,10 +93,12 @@ function OHIFCornerstoneSRViewport(props) {
         SeriesInstanceUIDs[0]
       );
       if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewport({
-          viewportIndex: activeViewportIndex,
-          displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-        });
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+          },
+        ]);
       }
     };
   }
@@ -422,6 +426,7 @@ OHIFCornerstoneSRViewport.propTypes = {
   children: PropTypes.node,
   customProps: PropTypes.object,
   viewportOptions: PropTypes.object,
+  viewportLabel: PropTypes.string,
   servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
