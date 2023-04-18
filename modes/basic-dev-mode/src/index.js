@@ -47,8 +47,8 @@ const extensionDependencies = {
 function modeFactory({ modeConfiguration }) {
   return {
     id,
-    routeName: 'viewer',
-    displayName: 'Basic Viewer CS3D',
+    routeName: 'dev',
+    displayName: 'Basic Dev Viewer',
     /**
      * Lifecycle hooks
      */
@@ -135,8 +135,11 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const { toolGroupService, measurementService, toolbarService } =
-        servicesManager.services;
+      const {
+        toolGroupService,
+        measurementService,
+        toolbarService,
+      } = servicesManager.services;
 
       toolGroupService.destroy();
     },
@@ -183,7 +186,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocol: [ohif.hangingProtocol],
+    hangingProtocol: 'default',
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       ohif.sopClassHandler,
