@@ -31,7 +31,7 @@ const isDisplaySetFromUrl = (displaySet): boolean => {
  * Returns undefined to fallback to the defaultValue
  */
 function sopInstanceLocation(displaySets) {
-  const displaySet = displaySets[0];
+  const displaySet = displaySets?.[0];
   if (!displaySet) return;
   const initialSOPInstanceUID = getSplitParam('initialsopinstanceuid');
   if (!initialSOPInstanceUID) return;
