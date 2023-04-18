@@ -98,10 +98,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     ...defaultModes,
   ]);
 
-  // This is a terrible setup here - todo, change this to use an alternate
-  // name so as to not confuse the issue
-  appConfig.modes = [];
-  // This is a preferred name
+  // This is the name for the loaded istance object
   appConfig.loadedModes = [];
   const modesById = new Set();
   for (let i = 0; i < loadedModes.length; i++) {
@@ -123,9 +120,11 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     // Prevent duplication
     modesById.add(id);
     if (!mode || typeof mode !== 'object') continue;
-    appConfig.modes.push(mode);
     appConfig.loadedModes.push(mode);
   }
+  // Hack alert - don't touch the original modes definition,
+  // but there are still dependencies on having the appConfig modes defined
+  appConfig.modes = appConfig.loadedModes;
 
   return {
     appConfig,
