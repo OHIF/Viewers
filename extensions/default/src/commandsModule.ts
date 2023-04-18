@@ -171,7 +171,7 @@ const commandsModule = ({
       reset = false,
     }: HangingProtocolParams): boolean => {
       try {
-        // Stores in the state the reuseID to displaySetUID mapping
+        // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
         const state = viewportGridService.getState();

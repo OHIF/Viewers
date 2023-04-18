@@ -1,4 +1,4 @@
-import { getSplitParam } from '../../utils';
+import { getSplitParam } from '../../../utils';
 
 /** Indicates if the given display set is the one specified in the
  * displaySet parameter in the URL
@@ -31,7 +31,7 @@ const isDisplaySetFromUrl = (displaySet): boolean => {
  * Returns undefined to fallback to the defaultValue
  */
 function sopInstanceLocation(displaySets) {
-  const displaySet = displaySets[0];
+  const displaySet = displaySets?.[0];
   if (!displaySet) return;
   const initialSOPInstanceUID = getSplitParam('initialsopinstanceuid');
   if (!initialSOPInstanceUID) return;

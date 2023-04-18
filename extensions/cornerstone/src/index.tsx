@@ -7,8 +7,7 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import { ServicesManager } from '@ohif/core';
-import { Types } from '@ohif/core';
+import { ServicesManager, Types } from '@ohif/core';
 
 import init from './init';
 import getCommandsModule from './commandsModule';
@@ -17,10 +16,11 @@ import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
 import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
+import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
+import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset } from './state';
-import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
 import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
@@ -73,18 +73,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     props: Types.Extensions.ExtensionParams
   ): Promise<void> {
     const { servicesManager } = props;
-    // Todo: we should be consistent with how services get registered. Use REGISTRATION static method for all
-    servicesManager.registerService(
-      CornerstoneViewportService(servicesManager)
-    );
-    servicesManager.registerService(
-      ToolGroupService.REGISTRATION(servicesManager)
-    );
-    servicesManager.registerService(SyncGroupService(servicesManager));
-    servicesManager.registerService(SegmentationService(servicesManager));
-    servicesManager.registerService(
-      CornerstoneCacheService.REGISTRATION(servicesManager)
-    );
+    servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
+    servicesManager.registerService(ToolGroupService.REGISTRATION);
+    servicesManager.registerService(SyncGroupService.REGISTRATION);
+    servicesManager.registerService(SegmentationService.REGISTRATION);
+    servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
 
     return init.call(this, props);
   },
@@ -146,5 +139,5 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export type { PublicViewportOptions };
-export { measurementMappingUtils };
+export { measurementMappingUtils, CornerstoneExtensionTypes };
 export default cornerstoneExtension;

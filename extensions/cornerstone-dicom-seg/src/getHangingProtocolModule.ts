@@ -6,7 +6,7 @@ const segProtocol: Types.HangingProtocol.Protocol = {
   // display set by default
   // cacheId: null,
   hasUpdatedPriorsInformation: false,
-  name: 'Segmentation Load',
+  name: 'Segmentations',
   // Just apply this one when specifically listed
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
@@ -43,7 +43,7 @@ const segProtocol: Types.HangingProtocol.Protocol = {
   },
   stages: [
     {
-      name: 'Segmentat',
+      name: 'Segmentations',
       viewportStructure: {
         layoutType: 'grid',
         properties: {
@@ -75,9 +75,4 @@ function getHangingProtocolModule() {
 }
 
 export default getHangingProtocolModule;
-
-const protocols = {
-  [segProtocol.id]: segProtocol,
-};
-
-export { protocols };
+export { segProtocol };
