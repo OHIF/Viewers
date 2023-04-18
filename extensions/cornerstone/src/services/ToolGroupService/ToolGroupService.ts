@@ -1,6 +1,6 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
 
-import { pubSubServiceInterface } from '@ohif/core';
+import { Types as OhifTypes, pubSubServiceInterface } from '@ohif/core';
 
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone::toolgroupservice:viewportadded',
@@ -20,14 +20,14 @@ type Tools = {
 };
 
 export default class ToolGroupService {
-  public static REGISTRATION = serviceManager => {
-    return {
-      name: 'toolGroupService',
-      altName: 'ToolGroupService',
-      create: ({ configuration = {} }) => {
-        return new ToolGroupService(serviceManager);
-      },
-    };
+  public static REGISTRATION = {
+    name: 'toolGroupService',
+    altName: 'ToolGroupService',
+    create: ({
+      servicesManager,
+    }: OhifTypes.Extensions.ExtensionParams): ToolGroupService => {
+      return new ToolGroupService(servicesManager);
+    },
   };
 
   serviceManager: any;

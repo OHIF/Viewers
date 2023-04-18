@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep';
 
+import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
 import {
   cache,
   eventTarget,
@@ -16,7 +17,6 @@ import {
   Types as cstTypes,
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
-import { pubSubServiceInterface } from '@ohif/core';
 import isEqual from 'lodash.isequal';
 import { easeInOutBell } from '../../utils/transitions';
 import {
@@ -47,19 +47,26 @@ const EVENTS = {
 
 const VALUE_TYPES = {};
 
-class SegmentationService {
-  listeners = {};
+class SegmentationService extends PubSubService {
+  static REGISTRATION = {
+    name: 'segmentationService',
+    altName: 'SegmentationService',
+    create: ({
+      servicesManager,
+    }: OhifTypes.Extensions.ExtensionParams): SegmentationService => {
+      return new SegmentationService({ servicesManager });
+    },
+  };
+
   segmentations: Record<string, Segmentation>;
-  servicesManager = null;
+  readonly servicesManager: ServicesManager;
   highlightIntervalId = null;
-  _broadcastEvent: (eventName: string, callbackProps: any) => void;
   readonly EVENTS = EVENTS;
 
   constructor({ servicesManager }) {
+    super(EVENTS);
     this.segmentations = {};
-    this.listeners = {};
 
-    Object.assign(this, pubSubServiceInterface);
     this.servicesManager = servicesManager;
 
     this._initSegmentationService();
