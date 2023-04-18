@@ -64,12 +64,17 @@ function Local() {
     '@ohif/extension-dicom-microscopy'
   );
 
+  let modePath = 'viewer';
+
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
 
     const query = new URLSearchParams();
 
     if (microscopyExtensionLoaded) {
+      // TODO: for microscopy, we are forcing microscopy mode, which is not ideal.
+      //     we should make the local drag and drop navigate to the worklist and
+      //     there user can select microscopy mode
       const smStudies = studies.filter(id => {
         const study = DicomMetadataStore.getStudy(id);
         return (
@@ -82,17 +87,14 @@ function Local() {
       if (smStudies.length > 0) {
         smStudies.forEach(id => query.append('StudyInstanceUIDs', id));
 
-        navigate(
-          `/microscopy/dicomlocal?${decodeURIComponent(query.toString())}`
-        );
-        return;
+        modePath = 'microscopy';
       }
     }
 
     // Todo: navigate to work list and let user select a mode
     studies.forEach(id => query.append('StudyInstanceUIDs', id));
 
-    navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
+    navigate(`/${modePath}/dicomlocal?${decodeURIComponent(query.toString())}`);
   };
 
   // Set body style
