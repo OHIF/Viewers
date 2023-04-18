@@ -2,8 +2,6 @@ import { InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 
-const displaySetCache = new Map();
-
 export type DisplaySet = {
   displaySetInstanceUID: string;
   instances: InstanceMetadata[];
@@ -11,6 +9,8 @@ export type DisplaySet = {
   SeriesInstanceUID?: string;
   numImages?: number;
 };
+
+const displaySetCache = new Map<string, DisplaySet>();
 
 /**
  * Filters the instances set by instances not in
@@ -48,7 +48,7 @@ export default class DisplaySetService extends PubSubService {
 
   public activeDisplaySets = [];
 
-  protected activeDisplaySetsMap = new Map();
+  protected activeDisplaySetsMap = new Map<string, DisplaySet>();
 
   // Record if the active display sets changed - used to group change events so
   // that fewer events need to be fired when creating multiple display sets
@@ -122,25 +122,25 @@ export default class DisplaySetService extends PubSubService {
     );
   };
 
-  getDisplaySetForSOPInstanceUID(
-    SOPInstanceUID,
-    SeriesInstanceUID,
-    frameNumber
-  ) {
-    const displaySets = SeriesInstanceUID
-      ? this.getDisplaySetsForSeries(SeriesInstanceUID)
+  public getDisplaySetForSOPInstanceUID(
+    sopInstanceUID: string,
+    seriesInstanceUID: string,
+    frameNumber?: number
+  ): DisplaySet {
+    const displaySets = seriesInstanceUID
+      ? this.getDisplaySetsForSeries(seriesInstanceUID)
       : [...this.getDisplaySetCache().values()];
 
     const displaySet = displaySets.find(ds => {
       return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+        ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID)
       );
     });
 
     return displaySet;
   }
 
-  setDisplaySetMetadataInvalidated(displaySetInstanceUID) {
+  public setDisplaySetMetadataInvalidated(displaySetInstanceUID: string): void {
     const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
 
     if (!displaySet) {
@@ -246,7 +246,7 @@ export default class DisplaySetService extends PubSubService {
    * the mode specific onModeExit is called before this method and should
    * store the active display sets and the cached data.
    */
-  onModeExit() {
+  public onModeExit(): void {
     this.getDisplaySetCache().clear();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
@@ -354,10 +354,10 @@ export default class DisplaySetService extends PubSubService {
    * Iterates over displaysets and invokes comparator for each element.
    * It returns a list of items that has being succeed by comparator method.
    *
-   * @param {function} comparator method to be used on the validation
+   * @param comparator - method to be used on the validation
    * @returns list of displaysets
    */
-  getDisplaySetsBy(comparator) {
+  public getDisplaySetsBy(comparator: (DisplaySet) => boolean): DisplaySet[] {
     const result = [];
 
     if (typeof comparator !== 'function') {
