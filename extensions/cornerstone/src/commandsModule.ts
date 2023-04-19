@@ -630,9 +630,9 @@ function commandsModule({ servicesManager, commandsManager }) {
       const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-      toolGroup.setToolConfiguration(ImageOverlayViewerTool.toolName, {
-        showOverlays: toggledState,
-      });
+      toggledState
+        ? toolGroup.setToolEnabled(ImageOverlayViewerTool.toolName)
+        : toolGroup.setToolDisabled(ImageOverlayViewerTool.toolName);
     },
   };
 

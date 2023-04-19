@@ -4,15 +4,15 @@ import { BaseTool } from '@cornerstonejs/tools';
 import { guid } from '@ohif/core/src/utils';
 
 interface CachedStat {
-  color: number[];
-  overlays: (unknown & {
+  color: number[]; // [r, g, b, a]
+  overlays: {
     // ...overlayPlaneModule
     _id: string;
     pixelDataRaw: ArrayBuffer;
-    type: 'G' | 'R';
-    color?: number[]; // Rendered color
+    type: 'G' | 'R'; // G for Graphics, R for ROI
+    color?: number[]; // Rendered color [r, g, b, a]
     dataUrl?: string; // Rendered image in Data URL expression
-  })[];
+  }[];
 }
 
 /**
@@ -21,10 +21,14 @@ interface CachedStat {
  *
  * The documentation for Overlay Plane Module of DICOM can be found in [C.9.2 of
  * Part-3 of DICOM standard](https://dicom.nema.org/medical/dicom/2018b/output/chtml/part03/sect_C.9.2.html)
+ *
+ * Image Overlay rendered by this tool can be toggled on and off using
+ * toolGroup.setToolEnabled() and toolGroup.setToolDisabled()
  */
 class ImageOverlayViewerTool extends BaseTool {
   static toolName = 'ImageOverlayViewer';
 
+  _mode = 'Disabled';
   _renderingViewport: any;
   _cachedStats: { [key: string]: CachedStat } = {};
 
@@ -33,13 +37,20 @@ class ImageOverlayViewerTool extends BaseTool {
     defaultToolProps = {
       supportedInteractionTypes: [],
       configuration: {
-        showOverlays: true,
         fillColor: [255, 127, 127, 255],
       },
     }
   ) {
     super(toolProps, defaultToolProps);
   }
+
+  onSetToolEnabled = (): void => {
+    this._mode = 'Enabled';
+  };
+
+  onSetToolDisabled = (): void => {
+    this._mode = 'Disabled';
+  };
 
   private _getCachedStat(targetId: string, createIfMissing = true): CachedStat {
     if (!this._cachedStats[targetId] && createIfMissing) {
@@ -53,7 +64,7 @@ class ImageOverlayViewerTool extends BaseTool {
 
   renderAnnotation = (enabledElement, svgDrawingHelper) => {
     // overlays are toggled off by configuration
-    if (!this.configuration.showOverlays) return false;
+    if (this._mode !== 'Enabled') return false;
 
     const { viewport } = enabledElement;
     this._renderingViewport = viewport;
@@ -70,7 +81,7 @@ class ImageOverlayViewerTool extends BaseTool {
     // get graphics overlay
     // https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.9.2.html#table_C.9-2
     overlays
-      .filter(overlay => overlay.type === 'G' && overlay.pixelData)
+      .filter(overlay => overlay.pixelData)
       .forEach(async (overlay, idx) => {
         try {
           if (!cachedStat.overlays[idx]) {
