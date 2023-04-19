@@ -127,6 +127,21 @@ function commandsModule({ servicesManager, commandsManager }) {
         cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
       );
     },
+    getNearbyAnnotation({ element, canvasCoordinates }) {
+      const nearbyToolData = actions.getNearbyToolData({
+        nearbyToolData: null,
+        element,
+        canvasCoordinates,
+      });
+
+      const isAnnotation = toolName =>
+        toolName !== 'Crosshairs' && toolName !== 'ReferenceLines';
+
+      return nearbyToolData?.metadata?.toolName &&
+        isAnnotation(nearbyToolData.metadata.toolName)
+        ? nearbyToolData
+        : null;
+    },
 
     // Measurement tool commands:
 
@@ -632,6 +647,11 @@ function commandsModule({ servicesManager, commandsManager }) {
 
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
+      storeContexts: [],
+      options: {},
+    },
+    getNearbyAnnotation: {
+      commandFn: actions.getNearbyAnnotation,
       storeContexts: [],
       options: {},
     },
