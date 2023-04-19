@@ -1,17 +1,18 @@
 import { Types } from '@ohif/core';
 
 const mpr: Types.HangingProtocol.Protocol = {
+  id: 'mpr',
+  name: 'Multi-Planar Reconstruction',
   locked: true,
   hasUpdatedPriorsInformation: false,
-  name: 'mpr',
-  createdDate: '2021-02-23T19:22:08.894Z',
-  modifiedDate: '2023-02-17',
+  createdDate: '2021-02-23',
+  modifiedDate: '2023-04-03',
   availableTo: {},
   editableBy: {},
   // Unknown number of priors referenced - so just match any study
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
-  // imageLoadStrategy: 'nth',
+  imageLoadStrategy: 'nth',
   callbacks: {
     // Switches out of MPR mode when the layout change button is used
     onLayoutChange: [
@@ -170,7 +171,7 @@ const mprAnd3DVolumeViewport = {
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
-  imageLoadStrategy: 'interleaveTopToBottom',
+  imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
     mprDisplaySet: {
       seriesMatchingRules: [
@@ -180,6 +181,15 @@ const mprAnd3DVolumeViewport = {
           constraint: {
             equals: {
               value: true,
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
             },
           },
           required: true,
@@ -294,11 +304,11 @@ const mprAnd3DVolumeViewport = {
 function getHangingProtocolModule() {
   return [
     {
-      id: 'mpr',
+      name: mpr.id,
       protocol: mpr,
     },
     {
-      id: mprAnd3DVolumeViewport.id,
+      name: mprAnd3DVolumeViewport.id,
       protocol: mprAnd3DVolumeViewport,
     },
   ];

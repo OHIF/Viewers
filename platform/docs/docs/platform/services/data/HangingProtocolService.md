@@ -218,7 +218,8 @@ the display set is the same as the other viewports, but the
 from the display set selector which isn't already filling a view.
 
 ## Custom Attribute
-In some situations, you might want to match based on a custom attribute and not the DICOM tags. For instance,
+In some situations, you might want to match based on a custom
+attribute and not the DICOM tags. For instance,
 if you have assigned a `timepointId` to each study, and you want to match based on it.
 Good news is that, in `OHIF-v3` you can define you custom attribute and use it for matching.
 
@@ -293,4 +294,19 @@ function modeFactory() {
     /** ... **/
   };
 }
+```
+
+### Custom Attributes for Viewport Options
+
+The custom attributes can also be used for viewport options.  This example,
+from the default hanging protocol navigates the image to the image
+specified in the URL:
+
+```javascript
+viewportOptions: {
+  initialImageOptions: {
+    // custom attribute name is selected by 'custom'
+    custom: 'sopInstanceLocation',
+    // This is the value returned if the above doesn't return anything
+    defaultValue: { index: 5 },
 ```

@@ -206,40 +206,40 @@ describe('ExtensionManager.ts', () => {
       const extension = {
         id: 'hello-world',
         getViewportModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getSopClassHandlerModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getPanelModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getToolbarModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getCommandsModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getLayoutTemplateModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getDataSourcesModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getHangingProtocolModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getContextModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getUtilityModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getCustomizationModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getStateSyncModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
       };
 

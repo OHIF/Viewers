@@ -24,6 +24,7 @@ const initMeasurementService = (
     Length,
     Bidirectional,
     EllipticalROI,
+    CircleROI,
     ArrowAnnotate,
     Angle,
     CobbAngle,
@@ -50,6 +51,20 @@ const initMeasurementService = (
 
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
+    'Crosshairs',
+    Length.matchingCriteria,
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    },
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    }
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
     'Bidirectional',
     Bidirectional.matchingCriteria,
     Bidirectional.toAnnotation,
@@ -62,6 +77,14 @@ const initMeasurementService = (
     EllipticalROI.matchingCriteria,
     EllipticalROI.toAnnotation,
     EllipticalROI.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'CircleROI',
+    CircleROI.matchingCriteria,
+    CircleROI.toAnnotation,
+    CircleROI.toMeasurement
   );
 
   measurementService.addMapping(
