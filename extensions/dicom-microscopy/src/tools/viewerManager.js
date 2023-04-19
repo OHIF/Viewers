@@ -64,14 +64,16 @@ class ViewerManager extends PubSubService {
   }
 
   /**
-   * Overrides the publish method and always send the ROI graphic object and
-   * this managed viewer instance
+   * This is to overrides the _broadcastEvent method of PubSubService and always
+   * send the ROI graphic object and this managed viewer instance.
+   * Due to the way that PubSubService is written, the same name override of the
+   * function doesn't work.
    *
    * @param {String} key key Subscription key
    * @param {Object} roiGraphic ROI graphic object created by the third-party API
    */
   publish(key, roiGraphic) {
-    super.publish(key, {
+    this._broadcastEvent(key, {
       roiGraphic,
       managedViewer: this,
     });
@@ -184,7 +186,7 @@ class ViewerManager extends PubSubService {
     }
     this.runSilently(() => this.viewer.addROI(roiGraphic, styles.default));
 
-    super.publish(EVENTS.ADDED, {
+    this._broadcastEvent(EVENTS.ADDED, {
       roiGraphic,
       managedViewer: this,
       label,
@@ -247,9 +249,10 @@ class ViewerManager extends PubSubService {
       'contextmenu',
       event => {
         event.preventDefault();
-        if (typeof this.contextMenuCallback === 'function') {
-          this.contextMenuCallback(event);
-        }
+        // comment out when context menu for microscopy is enabled
+        // if (typeof this.contextMenuCallback === 'function') {
+        //   this.contextMenuCallback(event);
+        // }
       },
       false
     );

@@ -57,7 +57,7 @@ class RoiAnnotation extends PubSubService {
    * When called will trigger the REMOVED event
    */
   destroy() {
-    this.publish(EVENTS.REMOVED, this);
+    this._broadcastEvent(EVENTS.REMOVED, this);
   }
 
   /**
@@ -69,7 +69,7 @@ class RoiAnnotation extends PubSubService {
   setRoiGraphic(roiGraphic) {
     this.roiGraphic = roiGraphic;
     this.setMeasurements();
-    this.publish(EVENTS.GRAPHIC_UPDATED, this);
+    this._broadcastEvent(EVENTS.GRAPHIC_UPDATED, this);
   }
 
   /**
@@ -140,7 +140,7 @@ class RoiAnnotation extends PubSubService {
    */
   setViewState(viewState) {
     this.viewState = viewState;
-    this.publish(EVENTS.VIEW_UPDATED, this);
+    this._broadcastEvent(EVENTS.VIEW_UPDATED, this);
   }
 
   /**
@@ -155,7 +155,7 @@ class RoiAnnotation extends PubSubService {
       CodeValue: label,
       CodeMeaning: label,
     };
-    this.publish(EVENTS.LABEL_UPDATED, this);
+    this._broadcastEvent(EVENTS.LABEL_UPDATED, this);
   }
 
   /**

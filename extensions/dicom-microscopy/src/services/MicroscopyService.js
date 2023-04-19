@@ -97,7 +97,7 @@ export default class MicroscopyService extends PubSubService {
     this.annotations[roiGraphic.uid] = roiAnnotation;
 
     roiAnnotation.subscribe(AnnotationEvents.LABEL_UPDATED, () => {
-      this.publish(EVENTS.ANNOTATION_UPDATED, roiAnnotation);
+      this._broadcastEvent(EVENTS.ANNOTATION_UPDATED, roiAnnotation);
     });
 
     if (label !== undefined) {
@@ -153,7 +153,7 @@ export default class MicroscopyService extends PubSubService {
   _onRoiUpdated(data) {
     const { roiGraphic, managedViewer } = data;
     this.synchronizeViewers(managedViewer);
-    this.publish(EVENTS.ANNOTATION_UPDATED, this.getAnnotation(roiGraphic.uid));
+    this._broadcastEvent(EVENTS.ANNOTATION_UPDATED, this.getAnnotation(roiGraphic.uid));
   }
 
   /**
@@ -439,7 +439,7 @@ export default class MicroscopyService extends PubSubService {
     if (this.selectedAnnotation) this.clearSelection();
 
     this.selectedAnnotation = roiAnnotation;
-    this.publish(EVENTS.ANNOTATION_SELECTED, roiAnnotation);
+    this._broadcastEvent(EVENTS.ANNOTATION_SELECTED, roiAnnotation);
     this.setROIStyle(roiAnnotation.uid, styles.active);
   }
 
@@ -564,7 +564,7 @@ export default class MicroscopyService extends PubSubService {
         );
     }
 
-    this.publish(EVENTS.RELABEL, {
+    this._broadcastEvent(EVENTS.RELABEL, {
       roiAnnotation,
       deleteCallback: () => this.removeAnnotation(roiAnnotation),
       successCallback: onRelabel,
@@ -579,7 +579,7 @@ export default class MicroscopyService extends PubSubService {
    * @param {RoiAnnotation} roiAnnotation The instance to be deleted
    */
   triggerDelete(roiAnnotation) {
-    this.publish(EVENTS.DELETE, roiAnnotation);
+    this._broadcastEvent(EVENTS.DELETE, roiAnnotation);
   }
 
   /**

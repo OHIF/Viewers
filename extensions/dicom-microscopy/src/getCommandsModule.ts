@@ -61,6 +61,9 @@ export default function getCommandsModule({
           geometryType: toolName,
           vertexEnabled: true,
           styleOptions: styles.default,
+          bindings: {
+            mouseButtons: ['left'],
+          },
         } as any;
         if ('line' === toolName) {
           options.minPoints = 2;
@@ -72,7 +75,16 @@ export default function getCommandsModule({
 
         microscopyService.activateInteractions([['draw', options]]);
       } else if (toolName == 'dragPan') {
-        microscopyService.activateInteractions([['dragPan']]);
+        microscopyService.activateInteractions([
+          [
+            'dragPan',
+            {
+              bindings: {
+                mouseButtons: ['left', 'middle'],
+              },
+            },
+          ],
+        ]);
       }
     },
 

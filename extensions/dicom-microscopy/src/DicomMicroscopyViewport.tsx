@@ -206,22 +206,8 @@ class DicomMicroscopyViewport extends Component {
       );
 
       this.managedViewer.addContextMenuCallback((event: Event) => {
-        const roiAnnotationNearBy = this.getNearbyROI(event);
-
         // TODO: refactor this after Bill's changes on ContextMenu feature get merged
-        this.props.commandsManager.runCommand(
-          'showViewerContextMenu',
-          {
-            menuName: 'microscopyContextMenu',
-            event,
-            container,
-            viewer: this.viewer,
-            managedViewer: this.managedViewer,
-            viewportIndex: this.props.viewportIndex,
-            roiAnnotationNearBy,
-          },
-          'MICROSCOPY'
-        );
+        // const roiAnnotationNearBy = this.getNearbyROI(event);
       });
     };
 
