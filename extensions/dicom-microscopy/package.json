@@ -2,7 +2,7 @@
   "name": "@ohif/extension-dicom-microscopy",
   "version": "3.0.0",
   "description": "OHIF extension for DICOM microscopy",
-  "author": "Bill Wallace, md-prog, Radical Imaging",
+  "author": "Bill Wallace, md-prog",
   "license": "MIT",
   "main": "dist/umd/@ohif/extension-dicom-microscopy/index.umd.js",
   "files": [

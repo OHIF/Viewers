@@ -2,7 +2,7 @@
   "name": "@ohif/mode-microscopy",
   "version": "3.0.0",
   "description": "OHIF mode for DICOM microscopy",
-  "author": "Bill Wallace, md-prog, Radical Imaging",
+  "author": "Bill Wallace, md-prog",
   "license": "MIT",
   "main": "dist/umd/@ohif/mode-microscopy/index.umd.js",
   "files": [
