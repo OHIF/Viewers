@@ -45,6 +45,22 @@ export default function getCommandsModule({
     },
 
     setToolActive: ({ toolName, toolGroupId = 'MICROSCOPY' }) => {
+      const dragPanOnMiddle = [
+        'dragPan',
+        {
+          bindings: {
+            mouseButtons: ['middle'],
+          },
+        },
+      ];
+      const dragZoomOnRight = [
+        'dragZoom',
+        {
+          bindings: {
+            mouseButtons: ['right'],
+          },
+        },
+      ];
       if (
         [
           'line',
@@ -73,7 +89,11 @@ export default function getCommandsModule({
           delete options.vertexEnabled;
         }
 
-        microscopyService.activateInteractions([['draw', options]]);
+        microscopyService.activateInteractions([
+          ['draw', options],
+          dragPanOnMiddle,
+          dragZoomOnRight,
+        ]);
       } else if (toolName == 'dragPan') {
         microscopyService.activateInteractions([
           [
@@ -84,6 +104,20 @@ export default function getCommandsModule({
               },
             },
           ],
+          dragZoomOnRight,
+        ]);
+      } else {
+        microscopyService.activateInteractions([
+          [
+            toolName,
+            {
+              bindings: {
+                mouseButtons: ['left'],
+              },
+            },
+          ],
+          dragPanOnMiddle,
+          dragZoomOnRight,
         ]);
       }
     },

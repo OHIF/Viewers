@@ -44,6 +44,7 @@ export default class MicroscopyService extends PubSubService {
     this._onRoiModified = this._onRoiModified.bind(this);
     this._onRoiRemoved = this._onRoiRemoved.bind(this);
     this._onRoiUpdated = this._onRoiUpdated.bind(this);
+    this._onRoiSelected = this._onRoiSelected.bind(this);
     this.isROIsVisible = true;
   }
 
@@ -157,6 +158,24 @@ export default class MicroscopyService extends PubSubService {
   }
 
   /**
+   * Observes when an ROI is selected.
+   * Also publishes an ANNOTATION_SELECTED event to notify the subscribers.
+   *
+   * @param {Object} data The published data
+   * @param {Object} data.roiGraphic The added ROI graphic object
+   * @param {ViewerManager} data.managedViewer The origin viewer for the event
+   */
+  _onRoiSelected(data) {
+    const { roiGraphic } = data;
+    const selectedAnnotation = this.getAnnotation(roiGraphic.uid);
+    if (selectedAnnotation && selectedAnnotation !== this.getSelectedAnnotation()) {
+      if (this.selectedAnnotation) this.clearSelection();
+      this.selectedAnnotation = selectedAnnotation;
+      this._broadcastEvent(EVENTS.ANNOTATION_SELECTED, selectedAnnotation);
+    }
+  }
+
+  /**
    * Creates the subscriptions for the managed viewer being added
    *
    * @param {ViewerManager} managedViewer The viewer being added
@@ -166,6 +185,7 @@ export default class MicroscopyService extends PubSubService {
     managedViewer._roiModifiedSubscription = managedViewer.subscribe(ViewerEvents.MODIFIED, this._onRoiModified);
     managedViewer._roiRemovedSubscription = managedViewer.subscribe(ViewerEvents.REMOVED, this._onRoiRemoved);
     managedViewer._roiUpdatedSubscription = managedViewer.subscribe(ViewerEvents.UPDATED, this._onRoiUpdated);
+    managedViewer._roiSelectedSubscription = managedViewer.subscribe(ViewerEvents.UPDATED, this._onRoiSelected);
   }
 
   /**
@@ -178,11 +198,13 @@ export default class MicroscopyService extends PubSubService {
     managedViewer._roiModifiedSubscription && managedViewer._roiModifiedSubscription.unsubscribe();
     managedViewer._roiRemovedSubscription && managedViewer._roiRemovedSubscription.unsubscribe();
     managedViewer._roiUpdatedSubscription && managedViewer._roiUpdatedSubscription.unsubscribe();
+    managedViewer._roiSelectedSubscription && managedViewer._roiSelectedSubscription.unsubscribe();
 
     managedViewer._roiAddedSubscription = null;
     managedViewer._roiModifiedSubscription = null;
     managedViewer._roiRemovedSubscription = null;
     managedViewer._roiUpdatedSubscription = null;
+    managedViewer._roiSelectedSubscription = null;
   }
 
   /**

@@ -5,9 +5,32 @@ import { PubSubService } from '@ohif/core';
 
 // Events from the third-party viewer
 const ApiEvents = {
+  /** Triggered when a ROI was added. */
   ROI_ADDED: 'dicommicroscopyviewer_roi_added',
+  /** Triggered when a ROI was modified. */
   ROI_MODIFIED: 'dicommicroscopyviewer_roi_modified',
+  /** Triggered when a ROI was removed. */
   ROI_REMOVED: 'dicommicroscopyviewer_roi_removed',
+  /** Triggered when a ROI was drawn. */
+  ROI_DRAWN: `dicommicroscopyviewer_roi_drawn`,
+  /** Triggered when a ROI was selected. */
+  ROI_SELECTED: `dicommicroscopyviewer_roi_selected`,
+  /** Triggered when a viewport move has started. */
+  MOVE_STARTED: `dicommicroscopyviewer_move_started`,
+  /** Triggered when a viewport move has ended. */
+  MOVE_ENDED: `dicommicroscopyviewer_move_ended`,
+  /** Triggered when a loading of data has started. */
+  LOADING_STARTED: `dicommicroscopyviewer_loading_started`,
+  /** Triggered when a loading of data has ended. */
+  LOADING_ENDED: `dicommicroscopyviewer_loading_ended`,
+  /** Triggered when an error occurs during loading of data. */
+  LOADING_ERROR: `dicommicroscopyviewer_loading_error`,
+  /* Triggered when the loading of an image tile has started. */
+  FRAME_LOADING_STARTED: `dicommicroscopyviewer_frame_loading_started`,
+  /* Triggered when the loading of an image tile has ended. */
+  FRAME_LOADING_ENDED: `dicommicroscopyviewer_frame_loading_ended`,
+  /* Triggered when the error occurs during loading of an image tile. */
+  FRAME_LOADING_ERROR: `dicommicroscopyviewer_frame_loading_ended`,
 };
 
 const EVENTS = {
@@ -15,6 +38,7 @@ const EVENTS = {
   MODIFIED: 'modified',
   REMOVED: 'removed',
   UPDATED: 'updated',
+  SELECTED: 'selected',
 };
 
 /**
@@ -39,6 +63,7 @@ class ViewerManager extends PubSubService {
     this.onRoiAdded = this.roiAddedHandler.bind(this);
     this.onRoiModified = this.roiModifiedHandler.bind(this);
     this.onRoiRemoved = this.roiRemovedHandler.bind(this);
+    this.onRoiSelected = this.roiSelectedHandler.bind(this);
     this.contextMenuCallback = () => {};
 
     // init symbols
@@ -86,6 +111,7 @@ class ViewerManager extends PubSubService {
     this.container.addEventListener(ApiEvents.ROI_ADDED, this.onRoiAdded);
     this.container.addEventListener(ApiEvents.ROI_MODIFIED, this.onRoiModified);
     this.container.addEventListener(ApiEvents.ROI_REMOVED, this.onRoiRemoved);
+    this.container.addEventListener(ApiEvents.ROI_SELECTED, this.onRoiSelected);
   }
 
   /**
@@ -100,6 +126,10 @@ class ViewerManager extends PubSubService {
     this.container.removeEventListener(
       ApiEvents.ROI_REMOVED,
       this.onRoiRemoved
+    );
+    this.container.removeEventListener(
+      ApiEvents.ROI_SELECTED,
+      this.onRoiSelected
     );
   }
 
@@ -134,6 +164,16 @@ class ViewerManager extends PubSubService {
     const roiGraphic = event.detail.payload;
     this.publish(EVENTS.REMOVED, roiGraphic);
     this.publish(EVENTS.UPDATED, roiGraphic);
+  }
+
+  /**
+   * Handles the ROI_SELECTED event triggered by the third-party API
+   *
+   * @param {Event} event Event triggered by the third-party API
+   */
+  roiSelectedHandler(event) {
+    const roiGraphic = event.detail.payload;
+    this.publish(EVENTS.SELECTED, roiGraphic);
   }
 
   /**
@@ -303,6 +343,8 @@ class ViewerManager extends PubSubService {
         activate
           ? 'activateDragZoomInteraction'
           : 'deactivateDragZoomInteraction',
+      select: activate =>
+        activate ? 'activateSelectInteraction' : 'deactivateSelectInteraction',
     };
 
     const availableInteractionsName = Object.keys(interactionsMap);

@@ -54,6 +54,7 @@ function modeFactory() {
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
+        'select',
         'dragPan',
       ]);
     },

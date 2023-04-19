@@ -21,7 +21,6 @@ const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
 
-
 const toolbarButtons = [
   // Measurement
   {
@@ -158,6 +157,25 @@ const toolbarButtons = [
           ],
           'Freehand Line Tool'
         ),
+      ],
+    },
+  },
+  // Select...
+  {
+    id: 'select',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-probe',
+      label: 'Select',
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'select',
+          },
+          context: 'MICROSCOPY',
+        },
       ],
     },
   },
