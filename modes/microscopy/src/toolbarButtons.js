@@ -160,25 +160,6 @@ const toolbarButtons = [
       ],
     },
   },
-  // Select...
-  {
-    id: 'select',
-    type: 'ohif.radioGroup',
-    props: {
-      type: 'tool',
-      icon: 'tool-probe',
-      label: 'Select',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'select',
-          },
-          context: 'MICROSCOPY',
-        },
-      ],
-    },
-  },
   // Pan...
   {
     id: 'dragPan',
