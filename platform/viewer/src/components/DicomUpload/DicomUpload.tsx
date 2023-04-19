@@ -6,7 +6,7 @@ import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
 import { Button } from '@ohif/ui';
 
-export type DicomUploadProps = {
+type DicomUploadProps = {
   dataSource;
   onComplete: () => void;
   onStarted: () => void;

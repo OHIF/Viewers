@@ -432,18 +432,6 @@ function WorkList({
     });
   }
 
-  const handleUploadComplete = () => {
-    hide();
-    onRefresh();
-  };
-
-  const handleUploadStarted = () => {
-    show({
-      ...uploadProps,
-      closeButton: false,
-    });
-  };
-
   const uploadProps = {
     title: 'Upload files',
     closeButton: true,
@@ -451,13 +439,18 @@ function WorkList({
     shouldCloseOnOverlayClick: false,
     content: DicomUpload.bind(null, {
       dataSource,
-      onComplete: handleUploadComplete,
-      onStarted: handleUploadStarted,
+      onComplete: () => {
+        hide();
+        onRefresh();
+      },
+      onStarted: () => {
+        show({
+          ...uploadProps,
+          // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
+          closeButton: false,
+        });
+      },
     }),
-  };
-
-  const handleShowUpload = () => {
-    show(uploadProps);
   };
 
   return (
@@ -476,7 +469,7 @@ function WorkList({
           onChange={setFilterValues}
           clearFilters={() => setFilterValues(defaultFilterValues)}
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
-          onUploadClick={handleShowUpload}
+          onUploadClick={() => show(uploadProps)}
         />
         {hasStudies ? (
           <>

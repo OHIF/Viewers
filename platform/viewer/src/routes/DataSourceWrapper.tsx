@@ -126,6 +126,7 @@ function DataSourceWrapper(props) {
       dataTotal={data.total}
       dataSource={dataSource}
       isLoadingData={isLoading}
+      // To refresh the data, simply reset it to DEFAULT_DATA which invalidates it and triggers a new query to fetch the data.
       onRefresh={() => setData(DEFAULT_DATA)}
     />
   );

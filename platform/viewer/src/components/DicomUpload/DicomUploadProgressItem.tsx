@@ -7,7 +7,7 @@ import DicomFileUploader, {
 } from '../../utils/DicomFileUploader';
 import { Icon } from '@ohif/ui';
 
-export type DicomUploadProgressItemProps = {
+type DicomUploadProgressItemProps = {
   dicomFileUploader: DicomFileUploader;
 };
 

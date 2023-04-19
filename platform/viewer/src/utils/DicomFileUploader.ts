@@ -29,6 +29,7 @@ export default class DicomFileUploader extends PubSubService {
   private _abortController = new AbortController();
   private _status: UploadStatus = UploadStatus.NotStarted;
   private _percentComplete = 0;
+  private _request = new XMLHttpRequest();
 
   constructor(file, dataSource) {
     super(EVENTS);
@@ -68,48 +69,54 @@ export default class DicomFileUploader extends PubSubService {
     }
 
     this._loadPromise = new Promise<void>((resolve, reject) => {
+      // The upload listeners: fire progress events and/or settle the promise.
+      const uploadCallbacks = {
+        progress: evt => {
+          if (!evt.lengthComputable) {
+            // Progress computation is not possible.
+            return;
+          }
+
+          this._status = UploadStatus.InProgress;
+
+          this._percentComplete = Math.round((100 * evt.loaded) / evt.total);
+          this._broadcastEvent(EVENTS.PROGRESS, {
+            fileId: this._fileId,
+            percentComplete: this._percentComplete,
+          });
+        },
+        timeout: () => {
+          this._reject(reject, new Error('The request timed out.'));
+        },
+        abort: () => {
+          this._reject(reject, new Error('The request was aborted.'));
+        },
+        error: () => {
+          this._reject(reject, new Error('The request failed.'));
+        },
+      };
+
       // First try to load the file.
       cornerstoneWADOImageLoader.wadouri
         .loadFileRequest(this._fileId)
         .then(dicomFile => {
+          if (this._abortController.signal.aborted) {
+            this._reject(reject, new Error('The request was aborted.'));
+            return;
+          }
+
           if (!this._checkDicomFile(dicomFile)) {
             // The file is not DICOM
             this._reject(reject, new Error('Not a valid DICOM file.'));
             return;
           }
 
-          // The upload listeners: fire progress events and/or settle the promise.
-          const uploadCallbacks = {
-            progress: evt => {
-              if (!evt.lengthComputable) {
-                // Progress computation is not possible.
-                return;
-              }
-
-              this._status = UploadStatus.InProgress;
-
-              this._percentComplete = Math.round(
-                (100 * evt.loaded) / evt.total
-              );
-              this._broadcastEvent(EVENTS.PROGRESS, {
-                fileId: this._fileId,
-                percentComplete: this._percentComplete,
-              });
-            },
-            timeout: () => {
-              this._reject(reject, new Error('The request timed out.'));
-            },
-            abort: () => {
-              this._reject(reject, new Error('The request was aborted.'));
-            },
-            error: () => {
-              this._reject(reject, new Error('The request failed.'));
-            },
-          };
+          const request = new XMLHttpRequest();
+          this._addRequestCallbacks(request, uploadCallbacks);
 
           // Do the actual upload by supplying the DICOM file and upload callbacks/listeners.
           return this._dataSource.store
-            .dicom(dicomFile, uploadCallbacks, this._abortController.signal)
+            .dicom(dicomFile, request)
             .then(() => {
               this._status = UploadStatus.Success;
               resolve();
@@ -129,6 +136,26 @@ export default class DicomFileUploader extends PubSubService {
   private _reject(reject: (reason?: any) => void, reason: any) {
     this._status = UploadStatus.Failed;
     reject(reason);
+  }
+
+  private _addRequestCallbacks(request: XMLHttpRequest, uploadCallbacks) {
+    const abortCallback = () => request.abort();
+    this._abortController.signal.addEventListener('abort', abortCallback);
+
+    for (const [eventName, callback] of Object.entries(uploadCallbacks)) {
+      request.upload.addEventListener(eventName, callback);
+    }
+
+    const cleanUpCallback = () => {
+      this._abortController.signal.removeEventListener('abort', abortCallback);
+
+      for (const [eventName, callback] of Object.entries(uploadCallbacks)) {
+        request.upload.removeEventListener(eventName, callback);
+      }
+
+      request.removeEventListener('loadend', cleanUpCallback);
+    };
+    request.addEventListener('loadend', cleanUpCallback);
   }
 
   private _checkDicomFile(arrayBuffer: ArrayBuffer) {

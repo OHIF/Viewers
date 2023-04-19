@@ -219,7 +219,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
 
     store: {
-      dicom: async (dataset, uploadCallbacks = {}, abortSignal) => {
+      dicom: async (dataset, request) => {
         const headers = userAuthenticationService.getAuthorizationHeader();
         if (headers) {
           wadoDicomWebClient.headers = headers;
@@ -228,8 +228,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
-            uploadCallbacks,
-            abortSignal,
+            request,
           };
 
           await wadoDicomWebClient.storeInstances(options);
@@ -253,6 +252,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
           const options = {
             datasets: [part10Buffer],
+            request,
           };
 
           await wadoDicomWebClient.storeInstances(options);

@@ -1,19 +1,28 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ReactElement } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  ReactElement,
+} from 'react';
 import PropTypes from 'prop-types';
 import { Button, Icon, ProgressLoadingBar } from '@ohif/ui';
 import DicomFileUploader, {
   EVENTS,
   UploadStatus,
+  DicomFileUploaderProgressEvent,
 } from '../../utils/DicomFileUploader';
-import { DicomFileUploaderProgressEvent } from '../../utils/DicomFileUploader';
 import DicomUploadProgressItem from './DicomUploadProgressItem';
 import classNames from 'classnames';
 
-export type DicomUploadProgressProps = {
+type DicomUploadProgressProps = {
   dicomFileUploaderArr: DicomFileUploader[];
   onComplete: () => void;
 };
+
+const ONE_SECOND = 1000;
+const ONE_MINUTE = ONE_SECOND * 60;
+const ONE_HOUR = ONE_MINUTE * 60;
 
 // The base/initial interval time length used to calculate the
 // rate of the upload and in turn estimate the
@@ -83,7 +92,6 @@ function DicomUploadProgress({
       uploadRateRef.current =
         uploadSizeFromStartOfInterval / timeSinceStartOfInterval;
 
-      console.info(uploadRateRef.current);
       // Reset the interval starting values.
       intervalStartUploadSize = currentUploadSizeRef.current;
       intervalStartTime = now;
@@ -107,25 +115,6 @@ function DicomUploadProgress({
       clearTimeout(timeoutId);
     };
   }, []);
-
-  const getFormattedTimeRemaining = (): string => {
-    if (timeRemaining == null) {
-      return '';
-    } else if (timeRemaining < 60000) {
-      const secondsRemaining = Math.ceil(timeRemaining / 1000);
-      return `${secondsRemaining} ${
-        secondsRemaining === 1 ? 'second' : 'seconds'
-      }`;
-    } else if (timeRemaining < 3600000) {
-      const minutesRemaining = Math.ceil(timeRemaining / 60000);
-      return `${minutesRemaining} ${
-        minutesRemaining === 1 ? 'minute' : 'minutes'
-      }`;
-    } else {
-      const hoursRemaining = Math.ceil(timeRemaining / 3600000);
-      return `${hoursRemaining} ${hoursRemaining === 1 ? 'hour' : 'hours'}`;
-    }
-  };
 
   /**
    * The effect for: updating the overall percentage complete; setting the
@@ -155,6 +144,10 @@ function DicomUploadProgress({
             currentFileUploadSize
         );
 
+        setPercentComplete(
+          (currentUploadSizeRef.current / totalUploadSize) * 100
+        );
+
         if (uploadRateRef.current !== 0) {
           const uploadSizeRemaining =
             totalUploadSize - currentUploadSizeRef.current;
@@ -166,41 +159,43 @@ function DicomUploadProgress({
           if (currentTimeRemaining === null) {
             currentTimeRemaining = timeRemaining;
             setTimeRemaining(currentTimeRemaining);
-          } else {
-            // Do not show an increase in the time remaining by two seconds or minutes
-            // so as to prevent jumping the time remaining up and down constantly
-            // due to rounding, inaccuracies in the estimate and slight variations
-            // in upload rates over time.
-            if (timeRemaining < 60000) {
-              const currentSecondsRemaining = Math.ceil(
-                currentTimeRemaining / 1000
-              );
-              const secondsRemaining = Math.ceil(timeRemaining / 1000);
-              const delta = secondsRemaining - currentSecondsRemaining;
-              if (delta < 0 || delta > 2) {
-                currentTimeRemaining = timeRemaining;
-                setTimeRemaining(currentTimeRemaining);
-              }
-            } else if (timeRemaining < 3600000) {
-              const currentMinutesRemaining = Math.ceil(
-                currentTimeRemaining / 60000
-              );
-              const minutesRemaining = Math.ceil(timeRemaining / 60000);
-              const delta = minutesRemaining - currentMinutesRemaining;
-              if (delta < 0 || delta > 2) {
-                currentTimeRemaining = timeRemaining;
-                setTimeRemaining(currentTimeRemaining);
-              }
-            } else {
+            return;
+          }
+
+          // Do not show an increase in the time remaining by two seconds or minutes
+          // so as to prevent jumping the time remaining up and down constantly
+          // due to rounding, inaccuracies in the estimate and slight variations
+          // in upload rates over time.
+          if (timeRemaining < ONE_MINUTE) {
+            const currentSecondsRemaining = Math.ceil(
+              currentTimeRemaining / ONE_SECOND
+            );
+            const secondsRemaining = Math.ceil(timeRemaining / ONE_SECOND);
+            const delta = secondsRemaining - currentSecondsRemaining;
+            if (delta < 0 || delta > 2) {
               currentTimeRemaining = timeRemaining;
               setTimeRemaining(currentTimeRemaining);
             }
+            return;
           }
-        }
 
-        setPercentComplete(
-          (currentUploadSizeRef.current / totalUploadSize) * 100
-        );
+          if (timeRemaining < ONE_HOUR) {
+            const currentMinutesRemaining = Math.ceil(
+              currentTimeRemaining / ONE_MINUTE
+            );
+            const minutesRemaining = Math.ceil(timeRemaining / ONE_MINUTE);
+            const delta = minutesRemaining - currentMinutesRemaining;
+            if (delta < 0 || delta > 2) {
+              currentTimeRemaining = timeRemaining;
+              setTimeRemaining(currentTimeRemaining);
+            }
+            return;
+          }
+
+          // Hours remaining...
+          currentTimeRemaining = timeRemaining;
+          setTimeRemaining(currentTimeRemaining);
+        }
       };
 
       const progressCallback = (
@@ -230,7 +225,7 @@ function DicomUploadProgress({
     };
   }, []);
 
-  const cancelAllUploads = async () => {
+  const cancelAllUploads = useCallback(async () => {
     for (const dicomFileUploader of dicomFileUploaderArr) {
       // Important: we need a non-blocking way to cancel every upload,
       // otherwise the UI will freeze and the user will not be able
@@ -244,24 +239,61 @@ function DicomUploadProgress({
 
       await promise;
     }
-  };
+  }, []);
 
-  const getPercentCompleteRounded = () =>
-    Math.min(100, Math.round(percentComplete));
+  const getFormattedTimeRemaining = useCallback((): string => {
+    if (timeRemaining == null) {
+      return '';
+    }
+
+    if (timeRemaining < ONE_MINUTE) {
+      const secondsRemaining = Math.ceil(timeRemaining / ONE_SECOND);
+      return `${secondsRemaining} ${
+        secondsRemaining === 1 ? 'second' : 'seconds'
+      }`;
+    }
+
+    if (timeRemaining < ONE_HOUR) {
+      const minutesRemaining = Math.ceil(timeRemaining / ONE_MINUTE);
+      return `${minutesRemaining} ${
+        minutesRemaining === 1 ? 'minute' : 'minutes'
+      }`;
+    }
+
+    const hoursRemaining = Math.ceil(timeRemaining / ONE_HOUR);
+    return `${hoursRemaining} ${hoursRemaining === 1 ? 'hour' : 'hours'}`;
+  }, [timeRemaining]);
+
+  const getPercentCompleteRounded = useCallback(
+    () => Math.min(100, Math.round(percentComplete)),
+    [percentComplete]
+  );
 
   /**
    * Determines if the progress bar should show the infinite animation or not.
    * Show the infinite animation for progress less than 1% AND if less than
    * one pixel of the progress bar would be displayed.
    */
-  const showInfiniteProgressBar = (): boolean => {
+  const showInfiniteProgressBar = useCallback((): boolean => {
     return (
       getPercentCompleteRounded() < 1 &&
       (progressBarContainerRef?.current?.offsetWidth ?? 0) *
         (percentComplete / 100) <
         1
     );
-  };
+  }, [getPercentCompleteRounded, percentComplete]);
+
+  /**
+   * Gets the css style for the 'n of m' (files completed) text. The only css attribute
+   * of the style is width such that the 'n of m' is always a fixed width and thus
+   * as each file completes uploading the text on screen does not constantly shift
+   * left and right.
+   */
+  const getNofMFilesStyle = useCallback(() => {
+    const numDigits = 2 * dicomFileUploaderArr.length.toString().length;
+    const numChars = numDigits + 4; // the number of digits + 2 spaces and 2 characters for 'of'
+    return { width: `${numChars}ch` };
+  }, []);
 
   const getNumCompletedAndTimeRemainingComponent = (): ReactElement => {
     return (
@@ -359,18 +391,6 @@ function DicomUploadProgress({
         </div>
       </div>
     );
-  };
-
-  /**
-   * Gets the css style for the 'n of m' (files completed) text. The only css attribute
-   * of the style is width such that the 'n of m' is always a fixed width and thus
-   * as each file completes uploading the text on screen does not constantly shift
-   * left and right.
-   */
-  const getNofMFilesStyle = () => {
-    const numDigits = 2 * dicomFileUploaderArr.length.toString().length;
-    const numChars = numDigits + 4; // the number of digits + 2 spaces and 2 characters for 'of'
-    return { width: `${numChars}ch` };
   };
 
   return (
