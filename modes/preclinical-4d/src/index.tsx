@@ -65,12 +65,10 @@ function modeFactory({ modeConfiguration }) {
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
-        'Pan',
-        'Capture',
-        // 'Layout',
-        // 'MPR',
         'Crosshairs',
-        'MoreTools',
+        'Pan',
+        'RectangleROIStartEndThreshold',
+        'fusionPTColormap',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
@@ -90,7 +88,6 @@ function modeFactory({ modeConfiguration }) {
       cornerstoneViewportService.destroy();
     },
     get validationTags() {
-      debugger;
       return {
         study: [],
         series: [],

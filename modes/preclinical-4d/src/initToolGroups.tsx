@@ -96,7 +96,6 @@ function initToolGroups({
   toolGroupService,
   commandsManager,
 }) {
-  debugger;
   _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 }
 
