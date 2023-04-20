@@ -442,20 +442,23 @@ function _createCrosshairsToolButton() {
 //   );
 // }
 
-// function _createCineToolbarButton() {
-//   return _createToggleButton(
-//     'cine',
-//     'tool-cine',
-//     'Cine',
-//     [
-//       {
-//         commandName: 'toggleCine',
-//         context: 'CORNERSTONE',
-//       },
-//     ],
-//     'Cine'
-//   );
-// }
+function _createCineToolbarButton() {
+  return {
+    id: 'Cine',
+    type: 'ohif.toggle',
+    props: {
+      type: 'toggle',
+      icon: 'tool-cine',
+      label: 'Cine',
+      commands: [
+        {
+          commandName: 'toggleCine',
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  };
+}
 
 // function _createAngleToolbarButton() {
 //   return _createToolButton(
@@ -561,6 +564,8 @@ const toolbarButtons = [
   _createPanToolButton(),
   _createRectangleROIThreshold(),
   _createFusionPTColormap(),
+  _createCineToolbarButton(),
+
   // _createCaptureToolButton(),
   // _createLayoutToolbarButton(),
   // _createMprToolButton(),

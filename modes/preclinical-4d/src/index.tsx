@@ -69,6 +69,7 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'RectangleROIStartEndThreshold',
         'fusionPTColormap',
+        'Cine',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
