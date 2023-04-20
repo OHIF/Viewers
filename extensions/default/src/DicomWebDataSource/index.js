@@ -61,6 +61,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     singlepart,
   } = dicomWebConfig;
 
+  const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
+
   const qidoConfig = {
     url: qidoRoot,
     staticWado,
@@ -481,6 +483,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         config: dicomWebConfig,
       });
       return imageIds;
+    },
+    getConfig() {
+      return dicomWebConfigCopy;
     },
   };
 

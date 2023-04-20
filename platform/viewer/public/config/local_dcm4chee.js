@@ -30,6 +30,7 @@ window.config = {
         requestOptions: {
           auth: 'admin:admin',
         },
+        dicomUploadEnabled: true,
       },
     },
     {
