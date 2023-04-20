@@ -3,6 +3,10 @@ window.config = {
   // whiteLabelling: {},
   extensions: [],
   modes: [],
+  customizationService: {
+    dicomUploadComponent:
+      '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+  },
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
   showLoadingIndicator: true,

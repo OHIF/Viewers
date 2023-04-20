@@ -27,6 +27,7 @@ import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import { PublicViewportOptions } from './services/ViewportService/Viewport';
+import getCustomizationModule from './getCustomizationModule';
 
 const Component = React.lazy(() => {
   return import(
@@ -142,6 +143,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       },
     ];
   },
+  getCustomizationModule,
 };
 
 export type { PublicViewportOptions };

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys, MODULE_TYPES } from '@ohif/core';
+import { utils, hotkeys, MODULE_TYPES, ServicesManager } from '@ohif/core';
 
 import {
   Icon,
@@ -50,6 +50,7 @@ function WorkList({
   hotkeysManager,
   dataPath,
   onRefresh,
+  servicesManager,
 }) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
@@ -432,12 +433,16 @@ function WorkList({
     });
   }
 
+  const { customizationService } = servicesManager.services;
+  const { component: dicomUploadComponent } = customizationService.get(
+    'dicomUploadComponent'
+  );
   const uploadProps = {
     title: 'Upload files',
     closeButton: true,
     shouldCloseOnEsc: false,
     shouldCloseOnOverlayClick: false,
-    content: DicomUpload.bind(null, {
+    content: dicomUploadComponent.bind(null, {
       dataSource,
       onComplete: () => {
         hide();
@@ -505,6 +510,7 @@ WorkList.propTypes = {
     query: PropTypes.object.isRequired,
   }).isRequired,
   isLoadingData: PropTypes.bool.isRequired,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 const defaultFilterValues = {
