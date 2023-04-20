@@ -28,6 +28,7 @@ import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
+import initDoubleClick from './initDoubleClick';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -45,6 +46,14 @@ export default async function init({
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+  cornerstone.setConfiguration({
+    ...cornerstone.getConfiguration(),
+    rendering: {
+      ...cornerstone.getConfiguration().rendering,
+      strictZSpacingForVolumeViewport:
+        appConfig.strictZSpacingForVolumeViewport,
+    },
+  });
 
   // For debugging large datasets
   const MAX_CACHE_SIZE_1GB = 1073741824;
@@ -104,6 +113,12 @@ export default async function init({
   // Stores a map from `positionPresentationId` to a Presentation object so that
   // an OHIFCornerstoneViewport can be redisplayed with the same position
   stateSyncService.register('positionPresentationStore', {
+    clearOnModeExit: true,
+  });
+
+  // Stores the entire ViewportGridService getState when toggling to one up
+  // (e.g. via a double click) so that it can be restored when toggling back.
+  stateSyncService.register('toggleOneUpViewportGridStore', {
     clearOnModeExit: true,
   });
 
@@ -175,9 +190,26 @@ export default async function init({
           viewportId
         );
 
+        const ohifViewport = cornerstoneViewportService.getViewportInfo(
+          viewportId
+        );
+
+        const {
+          lutPresentationStore,
+          positionPresentationStore,
+        } = stateSyncService.getState();
+        const { presentationIds } = ohifViewport.getViewportOptions();
+        const presentations = {
+          positionPresentation:
+            positionPresentationStore[presentationIds?.positionPresentationId],
+          lutPresentation:
+            lutPresentationStore[presentationIds?.lutPresentationId],
+        };
+
         cornerstoneViewportService.setVolumesForViewport(
           viewport,
-          volumeInputArray
+          volumeInputArray,
+          presentations
         );
       }
     }
@@ -185,6 +217,11 @@ export default async function init({
 
   initContextMenu({
     cornerstoneViewportService,
+    customizationService,
+    commandsManager,
+  });
+
+  initDoubleClick({
     customizationService,
     commandsManager,
   });

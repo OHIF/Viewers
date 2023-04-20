@@ -412,6 +412,34 @@ class MetadataProvider {
     return metadata;
   }
 
+  /**
+   * Retrieves the frameNumber information, depending on the url style
+   * wadors /frames/1
+   * wadouri &frame=1
+   * @param {*} imageId
+   * @returns
+   */
+  getFrameInformationFromURL(imageId) {
+    function getInformationFromURL(informationString, separator) {
+      let result = '';
+      const splittedStr = imageId.split(informationString)[1];
+      if (splittedStr.includes(separator)) {
+        result = splittedStr.split(separator)[0];
+      } else {
+        result = splittedStr;
+      }
+      return result;
+    }
+
+    if (imageId.includes('/frames')) {
+      return getInformationFromURL('/frames', '/');
+    }
+    if (imageId.includes('&frame=')) {
+      return getInformationFromURL('&frame=', '&');
+    }
+    return;
+  }
+
   getUIDsFromImageID(imageId) {
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
@@ -445,7 +473,7 @@ class MetadataProvider {
     // check if the imageId starts with http:// or https:// using regex
     // Todo: handle non http imageIds
     let imageURI;
-    const urlRegex = /^(http|https):\/\//;
+    const urlRegex = /^(http|https|dicomfile):\/\//;
     if (urlRegex.test(imageId)) {
       imageURI = imageId;
     } else {
@@ -453,7 +481,7 @@ class MetadataProvider {
     }
 
     const uids = this.imageURIToUIDs.get(imageURI);
-    const frameNumber = imageId.split(/\/frames\//)[1];
+    let frameNumber = this.getFrameInformationFromURL(imageId) || '1';
 
     if (uids && frameNumber !== undefined) {
       return { ...uids, frameNumber };

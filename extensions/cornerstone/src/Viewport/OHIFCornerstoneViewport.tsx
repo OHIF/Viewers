@@ -10,21 +10,18 @@ import {
   utilities as csUtils,
   CONSTANTS,
 } from '@cornerstonejs/core';
-import { Services } from '@ohif/core';
+import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import {
+  IStackViewport,
+  IVolumeViewport,
+} from '@cornerstonejs/core/dist/esm/types';
 
 import { setEnabledElement } from '../state';
 
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
-import {
-  IStackViewport,
-  IVolumeViewport,
-} from '@cornerstonejs/core/dist/esm/types';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
-
-import { CornerstoneViewportService } from '../services/ViewportService/CornerstoneViewportService';
-import Presentation from '../types/Presentation';
+import CornerstoneServices from '../types/CornerstoneServices';
 
 const STACK = 'stack';
 
@@ -133,7 +130,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     cornerstoneCacheService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   const cineHandler = () => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
@@ -394,8 +391,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIndex
       );
 
-      storePresentation();
-
+      // The presentation state will have been stored previously by closing
+      // a viewport.  Otherwise, this viewport will be unchanged and the
+      // presentation information will be directly carried over.
       const {
         lutPresentationStore,
         positionPresentationStore,
@@ -407,7 +405,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
         lutPresentation:
           lutPresentationStore[presentationIds?.lutPresentationId],
       };
-      console.log('Using presentations', presentations);
 
       cornerstoneViewportService.setViewportData(
         viewportIndex,

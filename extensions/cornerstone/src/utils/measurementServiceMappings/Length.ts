@@ -1,6 +1,6 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import { displaySetService, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 
 const Length = {
   toAnnotation: measurement => {},
@@ -32,15 +32,12 @@ const Length = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
-      referencedImageId,
-      cornerstoneViewportService,
-      viewportId
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
+      getSOPInstanceAttributes(
+        referencedImageId,
+        cornerstoneViewportService,
+        viewportId
+      );
 
     let displaySet;
 
@@ -104,11 +101,8 @@ function getMappedAnnotations(annotation, displaySetService) {
       );
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber,
-    } = getSOPInstanceAttributes(referencedImageId);
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+      getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -179,12 +173,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const {
-    length,
-    SeriesNumber,
-    SOPInstanceUID,
-    frameNumber,
-  } = mappedAnnotations[0];
+  const { length, SeriesNumber, SOPInstanceUID, frameNumber } =
+    mappedAnnotations[0];
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID

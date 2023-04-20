@@ -1,6 +1,7 @@
 import { eventTarget, EVENTS } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
 import { setEnabledElement } from './state';
+import { findNearbyToolData } from './utils/findNearbyToolData';
 
 const cs3DToolsEvents = Enums.Events;
 
@@ -47,28 +48,6 @@ function initContextMenu({
   customizationService,
   commandsManager,
 }): void {
-  /**
-   * Finds tool nearby event position triggered.
-   *
-   * @param {Object} commandsManager mannager of commands
-   * @param {Object} event that has being triggered
-   * @returns cs toolData or undefined if not found.
-   */
-  const findNearbyToolData = evt => {
-    if (!evt?.detail) {
-      return;
-    }
-    const { element, currentPoints } = evt.detail;
-    return commandsManager.runCommand(
-      'getNearbyToolData',
-      {
-        element,
-        canvasCoordinates: currentPoints?.canvas,
-      },
-      'CORNERSTONE'
-    );
-  };
-
   /*
    * Run the commands associated with the given button press,
    * defaults on button1 and button2
@@ -80,7 +59,7 @@ function initContextMenu({
     const toRun = customizations[name];
     console.log('initContextMenu::cornerstoneViewportHandleEvent', name, toRun);
     const options = {
-      nearbyToolData: findNearbyToolData(evt),
+      nearbyToolData: findNearbyToolData(commandsManager, evt),
       event: evt,
     };
     commandsManager.run(toRun, options);
