@@ -300,9 +300,9 @@ function ViewerViewportGrid(props) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
-      const viewportId = paneMetadata.viewportId || `viewport-${i}`;
-      if (!paneMetadata.viewportId) {
-        paneMetadata.viewportId = viewportId;
+      const gridId = paneMetadata.gridId || `viewport-${i}`;
+      if (!paneMetadata.gridId) {
+        paneMetadata.gridId = gridId;
       }
       const {
         displaySetInstanceUIDs,
@@ -353,7 +353,7 @@ function ViewerViewportGrid(props) {
 
       viewportPanes[i] = (
         <ViewportPane
-          key={viewportId}
+          key={gridId}
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
           onInteraction={onInteractionHandler}
