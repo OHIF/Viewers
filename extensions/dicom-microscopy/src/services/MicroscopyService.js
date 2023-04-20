@@ -8,6 +8,7 @@ import { DicomMetadataStore, PubSubService } from '@ohif/core';
 const EVENTS = {
   ANNOTATION_UPDATED: 'annotationUpdated',
   ANNOTATION_SELECTED: 'annotationSelected',
+  ANNOTATION_REMOVED: 'annotationRemoved',
   RELABEL: 'relabel',
   DELETE: 'delete',
 };
@@ -140,6 +141,7 @@ export default class MicroscopyService extends PubSubService {
     this.roiUids.delete(roiGraphic.uid);
     this.annotations[roiGraphic.uid].destroy();
     delete this.annotations[roiGraphic.uid];
+    this._broadcastEvent(EVENTS.ANNOTATION_REMOVED, roiGraphic);
   }
 
   /**
@@ -498,6 +500,14 @@ export default class MicroscopyService extends PubSubService {
     managedViewers.forEach(managedViewer =>
       managedViewer.removeRoiGraphic(uid)
     );
+
+    if (this.annotations[uid]) {
+      this.roiUids.delete(uid);
+      this.annotations[uid].destroy();
+      delete this.annotations[uid];
+
+      this.publish(EVENTS.ANNOTATION_REMOVED, roiAnnotation);
+    }
   }
 
   /**

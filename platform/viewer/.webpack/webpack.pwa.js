@@ -111,6 +111,9 @@ module.exports = (env, argv) => {
             from:
               '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
             to: DIST_DIR,
+            globOptions: {
+              ignore: ['*.js.map'],
+            },
           },
         ],
       }),

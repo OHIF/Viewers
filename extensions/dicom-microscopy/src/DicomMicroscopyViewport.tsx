@@ -87,7 +87,7 @@ class DicomMicroscopyViewport extends Component {
 
   // install the microscopy renderer into the web page.
   // you should only do this once.
-  installOpenLayersRenderer(container, displaySet) {
+  async installOpenLayersRenderer(container, displaySet) {
     const loadViewer = async metadata => {
       const {
         viewer: DicomMicroscopyViewer,
@@ -211,8 +211,20 @@ class DicomMicroscopyViewport extends Component {
       });
     };
 
-    console.debug('Loading viewer metadata', displaySet);
-    loadViewer(displaySet.others);
+    this.microscopyService.clearAnnotations();
+
+    let smDisplaySet = displaySet;
+    if (displaySet.Modality === 'SR') {
+      // for SR displaySet, let's load the actual image displaySet
+      smDisplaySet = displaySet.getSourceDisplaySet();
+    }
+    console.log('Loading viewer metadata', smDisplaySet);
+
+    await loadViewer(smDisplaySet.others);
+
+    if (displaySet.Modality === 'SR') {
+      displaySet.load(smDisplaySet);
+    }
   }
 
   componentDidMount() {

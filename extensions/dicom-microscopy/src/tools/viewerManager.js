@@ -220,10 +220,12 @@ class ViewerManager extends PubSubService {
    * @param {String} label The label of the annotation.
    */
   addRoiGraphicWithLabel(roiGraphic, label) {
-    if (label) {
-      if (!roiGraphic.properties) roiGraphic.properties = {};
-      roiGraphic.properties.label = label;
-    }
+    // NOTE: Dicom Microscopy Viewer will override styles for "Text" evalutations
+    // to hide all other geometries, we are not going to use its label.
+    // if (label) {
+    //   if (!roiGraphic.properties) roiGraphic.properties = {};
+    //   roiGraphic.properties.label = label;
+    // }
     this.runSilently(() => this.viewer.addROI(roiGraphic, styles.default));
 
     this._broadcastEvent(EVENTS.ADDED, {

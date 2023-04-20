@@ -119,6 +119,10 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       setSelectedAnnotation(selectedAnnotation);
     };
 
+    const onAnnotationRemoved = () => {
+      onAnnotationUpdated();
+    };
+
     const {
       unsubscribe: unsubscribeAnnotationUpdated,
     } = microscopyService.subscribe(
@@ -131,6 +135,12 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       MicroscopyEvents.ANNOTATION_SELECTED,
       onAnnotationSelected
     );
+    const {
+      unsubscribe: unsubscribeAnnotationRemoved,
+    } = microscopyService.subscribe(
+      MicroscopyEvents.ANNOTATION_REMOVED,
+      onAnnotationRemoved
+    );
     onAnnotationUpdated();
     onAnnotationSelected();
 
@@ -138,6 +148,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     return () => {
       unsubscribeAnnotationUpdated();
       unsubscribeAnnotationSelected();
+      unsubscribeAnnotationRemoved();
     };
   }, [studyInstanceUID]);
 
@@ -337,7 +348,6 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         });
       });
 
-      debugger;
       const identifier = `ROI #${i + 1}`;
       const group = new dcmjs.sr.templates.PlanarROIMeasurementsAndQualitativeEvaluations(
         {

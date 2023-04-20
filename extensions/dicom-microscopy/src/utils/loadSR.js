@@ -34,7 +34,19 @@ export default async function loadSR(
   const managedViewer = managedViewers[0];
 
   for (let i = 0; i < rois.length; i++) {
-    managedViewer.addRoiGraphicWithLabel(rois[i], labels[i]);
+    // NOTE: When saving Microscopy SR, we are attaching identifier property
+    // to each ROI, and when read for display, it is coming in as "TEXT"
+    // evaluation.
+    // As the Dicom Microscopy Viewer will override styles for "Text" evalutations
+    // to hide all other geometries, we are going to manually remove that
+    // evaluation item.
+    const roi = rois[i];
+    const roiSymbols = Object.getOwnPropertySymbols(roi);
+    const _properties = roiSymbols.find(s => s.description === 'properties');
+    const properties = roi[_properties];
+    properties['evaluations'] = [];
+
+    managedViewer.addRoiGraphicWithLabel(roi, labels[i]);
   }
 }
 

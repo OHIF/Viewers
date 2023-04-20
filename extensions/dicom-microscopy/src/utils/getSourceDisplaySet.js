@@ -25,13 +25,13 @@ export default function getSourceDisplaySet(
         ))
   );
 
-  if (!referencedDisplaySet && otherDisplaySets.length == 1) {
+  if (!referencedDisplaySet && otherDisplaySets.length >= 1) {
     console.warn(
       'No display set with FrameOfReferenceUID',
       ReferencedFrameOfReferenceUID,
       'single series, assuming data error, defaulting to only series.'
     );
-    return otherDisplaySets[0];
+    return otherDisplaySets.find(displaySet => displaySet.Modality === 'SM');
   }
 
   return referencedDisplaySet;
