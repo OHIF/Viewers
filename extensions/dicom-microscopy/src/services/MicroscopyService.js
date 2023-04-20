@@ -506,7 +506,7 @@ export default class MicroscopyService extends PubSubService {
       this.annotations[uid].destroy();
       delete this.annotations[uid];
 
-      this.publish(EVENTS.ANNOTATION_REMOVED, roiAnnotation);
+      this._broadcastEvent(EVENTS.ANNOTATION_REMOVED, roiAnnotation);
     }
   }
 
