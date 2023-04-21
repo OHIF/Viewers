@@ -757,25 +757,6 @@ class SegmentationService extends PubSubService {
     const defaultScheme = this._getDefaultSegmentationScheme();
     const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
 
-    const segmentCenters = {};
-
-    function distance(a, b) {
-      return Math.sqrt(
-        Math.pow(a[0] - b[0], 2) +
-          Math.pow(a[1] - b[1], 2) +
-          Math.pow(a[2] - b[2], 2)
-      );
-    }
-
-    function computeCentroid(points) {
-      let centroid = [0, 0, 0];
-      points.forEach(([x, y, z]) => {
-        centroid = [centroid[0] + x, centroid[1] + y, centroid[2] + z];
-      });
-
-      return centroid.map(coord => coord / points.length).map(Math.round);
-    }
-
     const allRTStructData = structureSet.ROIContours.map(
       ({ contourPoints, ROINumber, ROIName, colorArray }) => {
         const data = contourPoints.map(({ points, ...rest }) => {
@@ -788,52 +769,14 @@ class SegmentationService extends PubSubService {
             points: newPoints,
           };
         });
-        const centroids = data.map(({ points }) => computeCentroid(points));
-
-        const clusters = [];
-        const distanceThreshold = 30;
-
-        centroids.forEach(centroid => {
-          let foundCluster = false;
-
-          for (const cluster of clusters) {
-            if (distance(cluster[0], centroid) <= distanceThreshold) {
-              cluster.push(centroid);
-              foundCluster = true;
-              break;
-            }
-          }
-
-          if (!foundCluster) {
-            clusters.push([centroid]);
-          }
-        });
-
-        const clusterCentroids = clusters.map(cluster =>
-          computeCentroid(cluster)
-        );
-
-        const largestClusterCenter = clusterCentroids.reduce((a, b) =>
-          a.length >= b.length ? a : b
-        );
-
-        const centroid = largestClusterCenter;
-
-        // Set segment center
-        segmentCenters[ROINumber] = {
-          center: { world: centroid },
-          modifiedTime: Date.now(),
-        };
-
-        const id = ROIName || ROINumber;
-        const segmentIndex = ROINumber;
 
         return {
           data,
-          id,
-          segmentIndex,
+          id: ROIName || ROINumber,
+          segmentIndex: ROINumber,
           color: colorArray,
-          geometryId: `${rtDisplaySetUID}:${id}:segmentIndex-${ROINumber}`,
+          geometryId: `${rtDisplaySetUID}:${ROIName ||
+            ROINumber}:segmentIndex-${ROINumber}`,
         };
       }
     );
@@ -867,33 +810,38 @@ class SegmentationService extends PubSubService {
       );
     }
 
-    if (!structureSet.ROIContours || !structureSet.ROIContours.length) {
+    if (!structureSet.ROIContours?.length) {
       throw new Error(
-        'The structureSet does not contain any ROIContours, please make sure that the structureSet is loaded first.'
+        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
       );
     }
-
     let count = 0;
+    const segmentsCachedStats = {};
     const initializeContour = async rtStructData => {
       const { data, id, color, segmentIndex, geometryId } = rtStructData;
-      const contourSet = await geometryLoader.createAndCacheGeometry(
-        geometryId,
-        {
-          geometryData: {
-            data,
-            id,
-            color,
-            frameOfReferenceUID: structureSet.frameOfReferenceUID,
-            segmentIndex,
-          },
-          type: csEnums.GeometryType.CONTOUR,
-        }
-      );
+      const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
+        geometryData: {
+          data,
+          id,
+          color,
+          frameOfReferenceUID: structureSet.frameOfReferenceUID,
+          segmentIndex,
+        },
+        type: csEnums.GeometryType.CONTOUR,
+      });
+
+      const contourSet = geometry.data;
+      const centroid = contourSet.getCentroid();
+
+      segmentsCachedStats[segmentIndex] = {
+        center: { world: centroid },
+        modifiedTime: Date.now(),
+      };
 
       segmentation.segments[segmentIndex] = {
         label: id,
         segmentIndex,
-        color: contourSet.data.color,
+        color,
         opacity: 255,
         isVisible: true,
         isLocked: false,
@@ -926,7 +874,7 @@ class SegmentationService extends PubSubService {
       ...segmentation.cachedStats,
       segmentCenter: {
         ...segmentation.cachedStats.segmentCenter,
-        ...segmentCenters,
+        ...segmentsCachedStats,
       },
     };
 
@@ -1017,27 +965,22 @@ class SegmentationService extends PubSubService {
     const { type } = segmentationRepresentation;
     const { segments } = segmentation;
 
-    if (type === LABELMAP) {
-      this._highlightLabelmap(
-        segmentIndex,
-        alpha,
-        hideOthers,
-        segments,
-        toolGroupId,
-        animationLength,
-        segmentationRepresentation
-      );
-    } else if (type === CONTOUR) {
-      this._highlightContour(
-        segmentIndex,
-        1 - alpha,
-        hideOthers,
-        segments,
-        toolGroupId,
-        animationLength,
-        segmentationRepresentation
-      );
-    }
+    const highlightFn =
+      type === LABELMAP
+        ? this._highlightLabelmap.bind(this)
+        : this._highlightContour.bind(this);
+
+    const adjustedAlpha = type === LABELMAP ? alpha : 1 - alpha;
+
+    highlightFn(
+      segmentIndex,
+      adjustedAlpha,
+      hideOthers,
+      segments,
+      toolGroupId,
+      animationLength,
+      segmentationRepresentation
+    );
   }
 
   public createSegmentationForDisplaySet = async (
@@ -1335,24 +1278,10 @@ class SegmentationService extends PubSubService {
     animationLength: number,
     segmentationRepresentation: cstTypes.ToolGroupSpecificRepresentation
   ) {
-    function getFillAlpha(progress: number, fillAlpha: number): number {
-      if (progress < 0.25) {
-        return 0.1;
-      } else if (progress < 0.5) {
-        return fillAlpha;
-      } else if (progress < 0.75) {
-        return 0.1;
-      } else {
-        return fillAlpha;
-      }
-    }
-
-    const { fillAlpha } = this.getConfiguration(toolGroupId);
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
       const progress = (currentTime - startTime) / animationLength;
-
       if (progress >= 1) {
         // Animation is finished, clear interval
         cstSegmentation.config.setSegmentSpecificConfig(
@@ -1363,7 +1292,8 @@ class SegmentationService extends PubSubService {
         return;
       }
 
-      const reversedProgress = getFillAlpha(progress, fillAlpha);
+      const reversedProgress = reverseEaseInOutBell(progress, 0.1);
+      console.debug('fillAlpha', reversedProgress);
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
         segmentationRepresentation.segmentationRepresentationUID,
