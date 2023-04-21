@@ -3,7 +3,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils } from '@ohif/core';
 import {
-  LoadingIndicatorProgress, Notification, useViewportDialog, useViewportGrid, ViewportActionBar
+  LoadingIndicatorTotalPercent,
+  Notification,
+  useViewportDialog,
+  useViewportGrid,
+  ViewportActionBar,
 } from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
@@ -58,7 +62,7 @@ function OHIFCornerstoneSEGViewport(props) {
   const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
   const [element, setElement] = useState(null);
   const [processingProgress, setProcessingProgress] = useState({
-    segmentIndex: 1,
+    percentComplete: null,
     totalSegments: null,
   });
 
@@ -191,9 +195,9 @@ function OHIFCornerstoneSEGViewport(props) {
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
-      ({ segmentIndex, numSegments }) => {
+      ({ percentComplete, numSegments }) => {
         setProcessingProgress({
-          segmentIndex,
+          percentComplete,
           totalSegments: numSegments,
         });
       }
@@ -351,27 +355,11 @@ function OHIFCornerstoneSEGViewport(props) {
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {segIsLoading && (
-          <LoadingIndicatorProgress
+          <LoadingIndicatorTotalPercent
             className="w-full h-full"
-            progress={
-              processingProgress.totalSegments !== null
-                ? ((processingProgress.segmentIndex + 1) /
-                    processingProgress.totalSegments) *
-                  100
-                : null
-            }
-            textBlock={
-              !processingProgress.totalSegments ? (
-                <span className="text-white text-sm">Loading SEG ...</span>
-              ) : (
-                <span className="text-white text-sm flex items-baseline space-x-2">
-                  <div>Loading Segment</div>
-                  <div className="w-3">{`${processingProgress.segmentIndex}`}</div>
-                  <div>/</div>
-                  <div>{`${processingProgress.totalSegments}`}</div>
-                </span>
-              )
-            }
+            totalNumbers={processingProgress.totalSegments}
+            percentComplete={processingProgress.percentComplete}
+            loadingText="Loading SEG..."
           />
         )}
         {getCornerstoneViewport()}

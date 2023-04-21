@@ -568,7 +568,7 @@ class CornerstoneViewportService extends PubSubService
     presentations
   ) {
     const {
-      DisplaySetService,
+      displaySetService,
       toolGroupService,
     } = this.servicesManager.services;
 
@@ -578,24 +578,13 @@ class CornerstoneViewportService extends PubSubService
     // load any secondary displaySets
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
 
-    const segDisplaySet = displaySetInstanceUIDs
-      .map(DisplaySetService.getDisplaySetByUID)
-      .find(displaySet => displaySet && displaySet.Modality === 'SEG');
+    // can be SEG or RTSTRUCT for now
+    const overlayDisplaySet = displaySetInstanceUIDs
+      .map(displaySetService.getDisplaySetByUID)
+      .find(displaySet => displaySet?.isOverlayDisplaySet);
 
-    const rtssDisplaySet = displaySetInstanceUIDs
-      .map(DisplaySetService.getDisplaySetByUID)
-      .find(displaySet => displaySet && displaySet.Modality === 'RTSTRUCT');
-
-    if (segDisplaySet) {
-      this._addSegmentationRepresentationForSEGDisplaySet(
-        segDisplaySet,
-        viewport
-      );
-    } else if (rtssDisplaySet) {
-      this._addSegmentationRepresentationForRTDisplaySet(
-        rtssDisplaySet,
-        viewport
-      );
+    if (overlayDisplaySet) {
+      this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport);
     } else {
       // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
       // and we can look into hydrated segmentations to check if any of them are
@@ -686,8 +675,8 @@ class CornerstoneViewportService extends PubSubService
     }
   }
 
-  private _addSegmentationRepresentationForSEGDisplaySet(
-    segDisplaySet: any,
+  private addOverlayRepresentationForDisplaySet(
+    displaySet: any,
     viewport: any
   ) {
     const {
@@ -695,36 +684,21 @@ class CornerstoneViewportService extends PubSubService
       toolGroupService,
     } = this.servicesManager.services;
 
-    const { referencedVolumeId } = segDisplaySet;
-    const referencedVolume = cache.getVolume(referencedVolumeId);
-    const segmentationId = segDisplaySet.displaySetInstanceUID;
+    const { referencedVolumeId } = displaySet;
+    const segmentationId = displaySet.displaySetInstanceUID;
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
 
-    if (referencedVolume) {
-      segmentationService.addSegmentationRepresentationToToolGroup(
-        toolGroup.id,
-        segmentationId
-      );
-    }
-  }
-  private _addSegmentationRepresentationForRTDisplaySet(
-    rtDisplaySet: any,
-    viewport: any
-  ) {
-    const {
-      segmentationService,
-      toolGroupService,
-    } = this.servicesManager.services;
+    const representationType =
+      referencedVolumeId && cache.getVolume(referencedVolumeId) !== undefined
+        ? csToolsEnums.SegmentationRepresentations.Labelmap
+        : csToolsEnums.SegmentationRepresentations.Contour;
 
-    const segmentationId = rtDisplaySet.displaySetInstanceUID;
-
-    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     segmentationService.addSegmentationRepresentationToToolGroup(
       toolGroup.id,
       segmentationId,
-      false, // hydrate
-      csToolsEnums.SegmentationRepresentations.Contour
+      false,
+      representationType
     );
   }
 

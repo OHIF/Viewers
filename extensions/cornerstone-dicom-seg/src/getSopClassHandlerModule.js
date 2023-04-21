@@ -56,6 +56,7 @@ function _getDisplaySetsFromSeries(
     wadoRoot,
     wadoUriRoot,
     wadoUri,
+    isOverlayDisplaySet: true,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -133,11 +134,8 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
     }
 
     const suppressEvents = true;
-    segmentationService.createSegmentationForSEGDisplaySet(
-      segDisplaySet,
-      null,
-      suppressEvents
-    )
+    segmentationService
+      .createSegmentationForSEGDisplaySet(segDisplaySet, null, suppressEvents)
       .then(() => {
         segDisplaySet.loading = false;
         resolve();

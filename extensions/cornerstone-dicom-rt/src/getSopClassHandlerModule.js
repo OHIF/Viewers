@@ -52,6 +52,7 @@ function _getDisplaySetsFromSeries(
     wadoRoot,
     wadoUriRoot,
     wadoUri,
+    isOverlayDisplaySet: true,
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
