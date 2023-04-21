@@ -11,6 +11,8 @@ import findViewportsByPosition, {
 } from './findViewportsByPosition';
 
 import { ContextMenuProps } from './CustomizeableContextMenu/types';
+import { NavigateHistory } from './types/commandModuleTypes';
+import { history } from '@ohif/ui';
 
 const { subscribeToNextViewportGridChange } = utils;
 
@@ -480,6 +482,13 @@ const commandsModule = ({
       }
     },
 
+    /**
+     * Exposes the browser history navigation used by OHIF.
+     */
+    navigateHistory(historyArgs: NavigateHistory) {
+      history.navigate(historyArgs.to, historyArgs.options);
+    },
+
     openDICOMTagViewer() {
       const { activeViewportIndex, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports[activeViewportIndex];
@@ -537,6 +546,11 @@ const commandsModule = ({
     },
     toggleHangingProtocol: {
       commandFn: actions.toggleHangingProtocol,
+      storeContexts: [],
+      options: {},
+    },
+    navigateHistory: {
+      commandFn: actions.navigateHistory,
       storeContexts: [],
       options: {},
     },

@@ -112,3 +112,4 @@ export { getIcon, ICONS, addIcon } from './components/Icon/getIcon';
 export { BackgroundColor } from './pages/Colors/BackgroundColor';
 export { ModalComponent } from './contextProviders/ModalComponent';
 export { Types };
+export { history } from './utils/history';
