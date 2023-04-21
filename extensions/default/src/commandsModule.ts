@@ -341,12 +341,6 @@ const commandsModule = ({
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
-        console.log(
-          'setViewportGridLayout running',
-          onLayoutChange,
-          numRows,
-          numCols
-        );
         // Don't apply the layout if the run command returns false
         return;
       }
@@ -421,7 +415,15 @@ const commandsModule = ({
           );
 
           return viewport
-            ? { viewportOptions, displaySetOptions, ...viewport }
+            ? {
+                displaySetOptions,
+                ...viewport,
+                viewportOptions: {
+                  ...viewportOptions,
+                  ...viewport.viewportOptions,
+                  viewportId: null,
+                },
+              }
             : toggleOneUpViewportGridStore.viewports[viewportIndex];
         };
 

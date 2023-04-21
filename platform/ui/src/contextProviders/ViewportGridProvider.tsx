@@ -229,7 +229,7 @@ export function ViewportGridProvider({ children, service }) {
             if (!viewport) continue;
             viewport.positionId = positionId;
             viewport.viewportOptions.viewportId ||= positionId;
-            // Should not need to set it twices...
+            // Should not need to set it twice...
             viewport.viewportId = viewport.viewportOptions.viewportId;
 
             // Create a new viewport object as it is getting updated here
