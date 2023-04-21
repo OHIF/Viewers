@@ -9,7 +9,9 @@ import * as HangingProtocol from '../../types/HangingProtocol';
 import {
   isDisplaySetFromUrl,
   sopInstanceLocation,
-} from './isDisplaySetFromUrl';
+} from './custom-attribute/isDisplaySetFromUrl';
+import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
+import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
@@ -92,6 +94,16 @@ export default class HangingProtocolService extends PubSubService {
     sopInstanceLocation: {
       name: 'Gets the position of the specified sop instance',
       callback: sopInstanceLocation,
+    },
+    seriesDescriptions: {
+      name: 'seriesDescriptions',
+      description: 'List of Series Descriptions',
+      callback: seriesDescriptionsFromDisplaySets,
+    },
+    numberOfDisplaySetsWithImages: {
+      name: 'numberOfDisplaySetsWithImages',
+      desription: 'Number of displays sets with images',
+      numberOfDisplaySetsWithImages,
     },
   };
   listeners = {};
@@ -1297,7 +1309,11 @@ export default class HangingProtocolService extends PubSubService {
       const studyMatchDetails = this.protocolEngine.findMatch(
         study,
         studyMatchingRules,
-        { studies: this.studies, displaySets: studyDisplaySets }
+          {
+            studies: this.studies,
+            displaySets: studyDisplaySets,
+            displaySetMatchDetails: this.displaySetMatchDetails,
+          }
       );
 
       // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
@@ -1321,7 +1337,12 @@ export default class HangingProtocolService extends PubSubService {
           displaySet,
           seriesMatchingRules,
           // Todo: why we have images here since the matching type does not have it
-          { studies: this.studies, instance: displaySet.images?.[0] }
+            {
+              studies: this.studies,
+              instance: displaySet.images?.[0],
+              displaySetMatchDetails: this.displaySetMatchDetails,
+              displaySets: studyDisplaySets,
+            }
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed

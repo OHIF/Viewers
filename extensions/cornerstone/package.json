@@ -7,6 +7,11 @@
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.tsx",
+  "types": "src/types/index.ts",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./types": "./src/types/index.ts"
+  },
   "engines": {
     "node": ">=10",
     "npm": ">=6",
@@ -30,7 +35,7 @@
     "@ohif/core": "^3.0.0",
     "@ohif/ui": "^2.0.0",
     "cornerstone-wado-image-loader": "^4.13.0",
-    "dcmjs": "^0.29.4",
+    "dcmjs": "^0.29.5",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
     "prop-types": "^15.6.2",
