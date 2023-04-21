@@ -62,6 +62,9 @@ export default function PanelSegmentation({
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
         const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
+        setInitialSegmentationConfigurations(
+          segmentationService.getConfiguration()
+        );
       });
       subscriptions.push(unsubscribe);
     });

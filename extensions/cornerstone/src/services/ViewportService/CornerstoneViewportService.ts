@@ -720,13 +720,6 @@ class CornerstoneViewportService extends PubSubService
     const segmentationId = rtDisplaySet.displaySetInstanceUID;
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
-    console.debug(
-      'adding contour representation for toolGroup',
-      toolGroup.id,
-      'and segmentation',
-      segmentationId,
-      ''
-    );
     segmentationService.addSegmentationRepresentationToToolGroup(
       toolGroup.id,
       segmentationId,

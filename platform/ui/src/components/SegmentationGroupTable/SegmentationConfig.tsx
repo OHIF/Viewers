@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Icon, InputRange, CheckBox, InputNumber } from '../';
 import classNames from 'classnames';
-import { reducer } from './segmentationConfigReducer';
 
 const ActiveSegmentationConfig = ({
   config,
-  dispatch,
   setRenderOutline,
   setOutlineOpacityActive,
   setOutlineWidthActive,
@@ -31,32 +29,14 @@ const ActiveSegmentationConfig = ({
           checked={config.renderOutline}
           labelClassName="text-[12px] pl-1 pt-1"
           className="mb-[9px]"
-          onChange={value => {
-            dispatch({
-              type: 'RENDER_OUTLINE',
-              payload: {
-                value,
-              },
-            });
-
-            setRenderOutline(value);
-          }}
+          onChange={setRenderOutline}
         />
         <CheckBox
           label="Fill"
           checked={config.renderFill}
           labelClassName="text-[12px] pl-1 pt-1"
           className="mb-[9px]"
-          onChange={value => {
-            dispatch({
-              type: 'RENDER_FILL',
-              payload: {
-                value,
-              },
-            });
-
-            setRenderFill(value);
-          }}
+          onChange={setRenderFill}
         />
       </div>
 
@@ -72,13 +52,6 @@ const ActiveSegmentationConfig = ({
           }
           onChange={value => {
             setUseOutlineOpacityPercentage(false);
-            dispatch({
-              type: 'SET_OUTLINE_OPACITY',
-              payload: {
-                value: value,
-              },
-            });
-
             setOutlineOpacityActive(value);
           }}
           step={1}
@@ -95,13 +68,6 @@ const ActiveSegmentationConfig = ({
           }
           onChange={value => {
             setUseFillAlphaPercentage(false);
-            dispatch({
-              type: 'SET_FILL_ALPHA',
-              payload: {
-                value,
-              },
-            });
-
             setFillAlpha(value);
           }}
           step={1}
@@ -116,16 +82,7 @@ const ActiveSegmentationConfig = ({
         <div className="text-[#b3b3b3] text-[10px] mb-[12px]">Size</div>
         <InputNumber
           value={config.outlineWidthActive}
-          onChange={value => {
-            dispatch({
-              type: 'SET_OUTLINE_WIDTH',
-              payload: {
-                value,
-              },
-            });
-
-            setOutlineWidthActive(value);
-          }}
+          onChange={setOutlineWidthActive}
           className="-mt-1"
         />
       </div>
@@ -135,7 +92,6 @@ const ActiveSegmentationConfig = ({
 
 const InactiveSegmentationConfig = ({
   config,
-  dispatch,
   setRenderInactiveSegmentations,
   setFillAlphaInactive,
   usePercentage,
@@ -152,16 +108,7 @@ const InactiveSegmentationConfig = ({
         checked={config.renderInactiveSegmentations}
         labelClassName="text-[12px] pt-1"
         className="mb-[9px]"
-        onChange={value => {
-          dispatch({
-            type: 'RENDER_INACTIVE_SEGMENTATIONS',
-            payload: {
-              value,
-            },
-          });
-
-          setRenderInactiveSegmentations(value);
-        }}
+        onChange={setRenderInactiveSegmentations}
       />
 
       <div className="flex pl-4 items-center space-x-2">
@@ -176,13 +123,6 @@ const InactiveSegmentationConfig = ({
           }
           onChange={value => {
             setUseFillInactivePercentage(false);
-            dispatch({
-              type: 'SET_FILL_ALPHA_INACTIVE',
-              payload: {
-                value: value,
-              },
-            });
-
             setFillAlphaInactive(value);
           }}
           step={1}
@@ -206,11 +146,7 @@ const SegmentationConfig = ({
   setRenderInactiveSegmentations,
   setRenderOutline,
 }) => {
-  const [config, dispatch] = React.useReducer(
-    reducer,
-    segmentationConfig.initialConfig
-  );
-
+  const { initialConfig, usePercentage } = segmentationConfig;
   const [isMinimized, setIsMinimized] = useState(true);
   return (
     <div className="bg-primary-dark">
@@ -238,14 +174,13 @@ const SegmentationConfig = ({
       {!isMinimized && (
         <div>
           <ActiveSegmentationConfig
-            config={config}
-            dispatch={dispatch}
+            config={initialConfig}
             setFillAlpha={setFillAlpha}
             setOutlineWidthActive={setOutlineWidthActive}
             setOutlineOpacityActive={setOutlineOpacityActive}
             setRenderFill={setRenderFill}
             setRenderOutline={setRenderOutline}
-            usePercentage={segmentationConfig.usePercentage}
+            usePercentage={usePercentage}
           />
           {/* A small line  */}
           <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
@@ -259,11 +194,10 @@ const SegmentationConfig = ({
             </span>
           </div>
           <InactiveSegmentationConfig
-            config={config}
-            dispatch={dispatch}
+            config={initialConfig}
             setRenderInactiveSegmentations={setRenderInactiveSegmentations}
             setFillAlphaInactive={setFillAlphaInactive}
-            usePercentage={segmentationConfig.usePercentage}
+            usePercentage={usePercentage}
           />
         </div>
       )}

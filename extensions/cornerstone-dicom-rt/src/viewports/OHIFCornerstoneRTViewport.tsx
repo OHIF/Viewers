@@ -306,7 +306,7 @@ function OHIFCornerstoneRTViewport(props) {
     SeriesNumber,
   } = referencedDisplaySetRef.current.metadata;
 
-  const onPillClick = () => {
+  const onStatusClick = () => {
     promptHydrateRT({
       servicesManager,
       viewportIndex,
@@ -329,7 +329,7 @@ function OHIFCornerstoneRTViewport(props) {
         getStatusComponent={() => {
           return _getStatusComponent({
             isHydrated,
-            onPillClick,
+            onStatusClick,
           });
         }}
         studyData={{
