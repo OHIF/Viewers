@@ -77,6 +77,9 @@ function addInstances(
 ) {
   this.instances.push(...instances);
   utils.sortStudyInstances(this.instances);
+  // The last instance is the newest one, so is the one most interesting.
+  // Eventually, the SR viewer should have the ability to choose which SR
+  // gets loaded, and to navigate among them.
   this.instance = this.instances[this.instances.length - 1];
   this.isLoaded = false;
   if (this.keyImageDisplaySet) {
@@ -108,6 +111,9 @@ function _getDisplaySetsFromSeries(
   }
 
   utils.sortStudyInstances(instances);
+  // The last instance is the newest one, so is the one most interesting.
+  // Eventually, the SR viewer should have the ability to choose which SR
+  // gets loaded, and to navigate among them.
   const instance = instances[instances.length - 1];
 
   const {
@@ -125,7 +131,7 @@ function _getDisplaySetsFromSeries(
   if (
     !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-    CodeNameCodeSequenceValues.ImagingMeasurementReport
+      CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     console.log(
       'Only support Imaging Measurement Report SRs (TID1500) for this renderer.'
@@ -361,7 +367,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     trackingUniqueIdentifier => {
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
+          trackingUniqueIdentifier
         ];
 
       const measurement = _processMeasurement(mergedContentSequence);
@@ -401,7 +407,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
 
     if (
       mergedContentSequencesByTrackingUniqueIdentifiers[
-      trackingUniqueIdentifier
+        trackingUniqueIdentifier
       ] === undefined
     ) {
       // Add the full ContentSequence
@@ -516,9 +522,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   const findingSites = mergedContentSequence.filter(
     item =>
       item.ConceptNameCodeSequence.CodingSchemeDesignator ===
-      CodingSchemeDesignators.SRT &&
+        CodingSchemeDesignators.SRT &&
       item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.FindingSite
+        CodeNameCodeSequenceValues.FindingSite
   );
 
   const measurement = {
@@ -535,7 +541,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       finding.ConceptCodeSequence.CodingSchemeDesignator
     ) &&
     finding.ConceptCodeSequence.CodeValue ===
-    CodeNameCodeSequenceValues.CornerstoneFreeText
+      CodeNameCodeSequenceValues.CornerstoneFreeText
   ) {
     measurement.labels.push({
       label: CORNERSTONE_FREETEXT_CODE_VALUE,
@@ -551,7 +557,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
           FindingSite.ConceptCodeSequence.CodingSchemeDesignator
         ) &&
         FindingSite.ConceptCodeSequence.CodeValue ===
-        CodeNameCodeSequenceValues.CornerstoneFreeText
+          CodeNameCodeSequenceValues.CornerstoneFreeText
     );
 
     if (cornerstoneFreeTextFindingSite) {
