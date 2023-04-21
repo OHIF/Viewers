@@ -1,20 +1,16 @@
 import cloneDeep from 'lodash.clonedeep';
-import isEqual from 'lodash.isequal';
 
 import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
 import {
   cache,
+  Enums as csEnums,
+  geometryLoader,
+  Types as csTypes,
   eventTarget,
   getEnabledElementByIds,
   metaData,
-  Types,
   utilities as csUtils,
   volumeLoader,
-  Types as csTypes,
-  metaData,
-  getEnabledElementByIds,
-  geometryLoader,
-  Enums as csEnums,
 } from '@cornerstonejs/core';
 import {
   CONSTANTS as cstConstants,
