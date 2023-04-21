@@ -4,6 +4,7 @@ import callInputDialog from '../utils/callInputDialog';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
 
 const { calibrateImageSpacing } = utilities;
+
 /**
  * Calibration Line tool works almost the same as the
  */
