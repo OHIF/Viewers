@@ -5,7 +5,6 @@ import {
   cache,
   Enums as csEnums,
   geometryLoader,
-  Types as csTypes,
   eventTarget,
   getEnabledElementByIds,
   metaData,
@@ -20,8 +19,7 @@ import {
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
 import isEqual from 'lodash.isequal';
-import { easeInOutBell } from '../../utils/transitions';
-import { pubSubServiceInterface, Types as ohifTypes } from '@ohif/core';
+import { Types as ohifTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import {
   Segment,
