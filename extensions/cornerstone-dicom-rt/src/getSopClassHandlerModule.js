@@ -56,17 +56,16 @@ function _getDisplaySetsFromSeries(
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
-  if (!instance.ReferencedSeriesSequence) {
-    const ReferencedFrameOfReferenceSequence =
-      instance.ReferencedFrameOfReferenceSequence;
-
-    if (ReferencedFrameOfReferenceSequence) {
-      instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
-        ReferencedFrameOfReferenceSequence
-      );
-      referencedSeriesSequence = instance.ReferencedSeriesSequence;
-    }
+  if (
+    instance.ReferencedFrameOfReferenceSequence &&
+    !instance.ReferencedSeriesSequence
+  ) {
+    instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
+      instance.ReferencedFrameOfReferenceSequence
+    );
+    referencedSeriesSequence = instance.ReferencedSeriesSequence;
   }
+
   if (!referencedSeriesSequence) {
     throw new Error('ReferencedSeriesSequence is missing for the RTSTRUCT');
   }
@@ -212,19 +211,17 @@ function _segmentationExistsInCache(rtDisplaySet, SegmentationService) {
 }
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
-  const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
-  };
-
   return [
     {
       name: 'dicom-rt',
       sopClassUids,
-      getDisplaySetsFromSeries,
+      getDisplaySetsFromSeries: instances => {
+        return _getDisplaySetsFromSeries(
+          instances,
+          servicesManager,
+          extensionManager
+        );
+      },
     },
   ];
 }
