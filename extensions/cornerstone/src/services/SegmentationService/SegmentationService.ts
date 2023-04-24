@@ -2136,7 +2136,7 @@ class SegmentationService extends PubSubService {
     // cleanup the segmentation state too
     segmentationState.removeSegmentation(segmentationId);
 
-    if (removeFromCache) {
+    if (removeFromCache && cache.getImageLoadObject(segmentationId)) {
       cache.removeVolumeLoadObject(segmentationId);
     }
   }

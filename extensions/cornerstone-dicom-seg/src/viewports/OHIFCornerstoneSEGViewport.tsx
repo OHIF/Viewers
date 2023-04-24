@@ -134,6 +134,8 @@ function OHIFCornerstoneSEGViewport(props) {
 
       let newSelectedSegmentIndex = selectedSegment + direction;
 
+      // Segment 0 is always background
+
       if (newSelectedSegmentIndex > numberOfSegments - 1) {
         newSelectedSegmentIndex = 1;
       } else if (newSelectedSegmentIndex === 0) {

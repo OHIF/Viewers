@@ -1,7 +1,6 @@
 async function _hydrateRTDisplaySet({
   rtDisplaySet,
   viewportIndex,
-  toolGroupId,
   servicesManager,
 }) {
   const {

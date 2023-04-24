@@ -13,6 +13,7 @@ import _hydrateRTdisplaySet from '../utils/_hydrateRT';
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
 import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
+import _hydrateRTDisplaySet from '../utils/_hydrateRT';
 
 const { formatDate } = utils;
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
@@ -132,6 +133,7 @@ function OHIFCornerstoneRTViewport(props) {
 
       let newSelectedSegmentIndex = selectedSegment + direction;
 
+      // Segment 0 is always background
       if (newSelectedSegmentIndex >= numberOfSegments - 1) {
         newSelectedSegmentIndex = 1;
       } else if (newSelectedSegmentIndex === 0) {
@@ -304,16 +306,14 @@ function OHIFCornerstoneRTViewport(props) {
     SeriesNumber,
   } = referencedDisplaySetRef.current.metadata;
 
-  const onStatusClick = () => {
-    promptHydrateRT({
-      servicesManager,
-      viewportIndex,
+  const onStatusClick = async () => {
+    const isHydrated = await _hydrateRTDisplaySet({
       rtDisplaySet,
-    }).then(isHydrated => {
-      if (isHydrated) {
-        setIsHydrated(true);
-      }
+      viewportIndex,
+      servicesManager,
     });
+
+    setIsHydrated(isHydrated);
   };
 
   return (
