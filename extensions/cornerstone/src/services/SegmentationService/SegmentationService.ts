@@ -700,6 +700,8 @@ class SegmentationService extends PubSubService {
       });
     };
 
+    const promiseArray = [];
+
     for (const segmentIndex in segments) {
       const segmentInfo = segments[segmentIndex];
 
@@ -713,8 +715,10 @@ class SegmentationService extends PubSubService {
         }, 0);
       });
 
-      await promise;
+      promiseArray.push(promise);
     }
+
+    await Promise.all(promiseArray);
 
     segmentation.segmentCount = Object.keys(segments).length;
     segmentation.segments = [null]; // segment 0

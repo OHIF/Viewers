@@ -132,7 +132,7 @@ function OHIFCornerstoneRTViewport(props) {
 
       let newSelectedSegmentIndex = selectedSegment + direction;
 
-      if (newSelectedSegmentIndex > numberOfSegments - 1) {
+      if (newSelectedSegmentIndex >= numberOfSegments - 1) {
         newSelectedSegmentIndex = 1;
       } else if (newSelectedSegmentIndex === 0) {
         newSelectedSegmentIndex = numberOfSegments - 1;
