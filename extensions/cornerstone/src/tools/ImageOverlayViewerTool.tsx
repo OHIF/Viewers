@@ -27,10 +27,10 @@ const isSameColor = (color1: number[], color2: number[]) => {
   return (
     color1 &&
     color2 &&
-    color1[0] == color2[0] &&
-    color1[1] == color2[1] &&
-    color1[2] == color2[2] &&
-    color1[3] == color2[3]
+    color1[0] === color2[0] &&
+    color1[1] === color2[1] &&
+    color1[2] === color2[2] &&
+    color1[3] === color2[3]
   );
 };
 
