@@ -8,12 +8,121 @@ interface CachedStat {
   overlays: {
     // ...overlayPlaneModule
     _id: string;
-    pixelDataRaw: ArrayBuffer;
     type: 'G' | 'R'; // G for Graphics, R for ROI
     color?: number[]; // Rendered color [r, g, b, a]
     dataUrl?: string; // Rendered image in Data URL expression
   }[];
 }
+
+const cachedStats: { [key: string]: CachedStat } = {};
+
+const isSameColor = (color1: number[], color2: number[]) => {
+  return (
+    color1 &&
+    color2 &&
+    color1[0] == color2[0] &&
+    color1[1] == color2[1] &&
+    color1[2] == color2[2] &&
+    color1[3] == color2[3]
+  );
+};
+
+/**
+ * pixelData of overlayPlane module is an array of bits corresponding
+ * to each of the underlying pixels of the image.
+ * Let's create pixel data from bit array of overlay data
+ *
+ * @param pixelDataRaw
+ * @param color
+ * @returns
+ */
+const renderOverlayToDataUrl = ({ width, height }, color, pixelDataRaw) => {
+  const pixelDataView = new DataView(pixelDataRaw);
+  const totalBits = width * height;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, width, height); // make it transparent
+  ctx.globalCompositeOperation = 'copy';
+
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  for (let i = 0, bitIdx = 0, byteIdx = 0; i < totalBits; i++) {
+    if (pixelDataView.getUint8(byteIdx) & (1 << bitIdx)) {
+      data[i * 4] = color[0];
+      data[i * 4 + 1] = color[1];
+      data[i * 4 + 2] = color[2];
+      data[i * 4 + 3] = color[3];
+    }
+
+    // next bit, byte
+    if (bitIdx >= 7) {
+      bitIdx = 0;
+      byteIdx++;
+    } else {
+      bitIdx++;
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+
+  return canvas.toDataURL();
+};
+
+/**
+ *
+ * @param imageId
+ * @param overlayMetadata
+ * @param color {number[]} - color (r,g,b,a), default color: gray
+ * @returns
+ */
+const getCachedStat = async (
+  imageId: string,
+  overlayMetadata: any[],
+  color: number[] = [127, 127, 127, 255]
+): Promise<CachedStat> => {
+  if (
+    !cachedStats[imageId] ||
+    !isSameColor(cachedStats[imageId].color, color)
+  ) {
+    const overlays = await Promise.all(
+      overlayMetadata
+        .filter(overlay => overlay.pixelData)
+        .map(async (overlay, idx) => {
+          let pixelData = null;
+          if (overlay.pixelData.Value) {
+            pixelData = overlay.pixelData.Value;
+          } else if (overlay.pixelData.retrieveBulkData) {
+            pixelData = await overlay.pixelData.retrieveBulkData();
+          }
+
+          if (!pixelData) return;
+
+          const dataUrl = renderOverlayToDataUrl(
+            { width: overlay.columns, height: overlay.rows },
+            color,
+            pixelData
+          );
+
+          return {
+            ...overlay,
+            _id: guid(),
+            dataUrl, // this will be a data url expression of the rendered image
+            color,
+          };
+        })
+    );
+
+    cachedStats[imageId] = {
+      color: color,
+      overlays: overlays.filter(overlay => overlay),
+    };
+  }
+
+  return cachedStats[imageId];
+};
 
 /**
  * Image Overlay Viewer tool is not a traditional tool that requires user interactin.
@@ -30,7 +139,6 @@ class ImageOverlayViewerTool extends BaseTool {
 
   _mode = 'Disabled';
   _renderingViewport: any;
-  _cachedStats: { [key: string]: CachedStat } = {};
 
   constructor(
     toolProps = {},
@@ -52,16 +160,6 @@ class ImageOverlayViewerTool extends BaseTool {
     this._mode = 'Disabled';
   };
 
-  private _getCachedStat(targetId: string, createIfMissing = true): CachedStat {
-    if (!this._cachedStats[targetId] && createIfMissing) {
-      this._cachedStats[targetId] = {
-        color: [127, 127, 127, 255], // color (r,g,b,a), default color: gray
-        overlays: [],
-      };
-    }
-    return this._cachedStats[targetId];
-  }
-
   renderAnnotation = (enabledElement, svgDrawingHelper) => {
     // overlays are toggled off by configuration
     if (this._mode !== 'Enabled') return false;
@@ -72,94 +170,20 @@ class ImageOverlayViewerTool extends BaseTool {
     const imageId = this._getReferencedImageId(viewport);
     if (!imageId) return;
 
-    const targetId = this.getTargetId(viewport);
-    const cachedStat = this._getCachedStat(targetId);
-
     const { overlays } = metaData.get('overlayPlaneModule', imageId);
     // no overlays
     if (!overlays || overlays.length <= 0) return;
-    // get graphics overlay
-    // https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.9.2.html#table_C.9-2
-    overlays
-      .filter(overlay => overlay.pixelData)
-      .forEach(async (overlay, idx) => {
-        try {
-          if (!cachedStat.overlays[idx]) {
-            // first time load? let's load data
-            let pixelData = null;
-            if (overlay.pixelData.Value) {
-              pixelData = overlay.pixelData.Value;
-            } else if (overlay.pixelData.retrieveBulkData) {
-              pixelData = await overlay.pixelData.retrieveBulkData();
-            }
 
-            if (pixelData) {
-              cachedStat.overlays[idx] = {
-                ...overlay,
-                pixelDataRaw: pixelData, // this will be an ArrayBuffer object
-                _id: guid(),
-              };
-            }
-          }
-
-          if (cachedStat.overlays[idx]) {
-            this._renderOverlay(
-              enabledElement,
-              svgDrawingHelper,
-              cachedStat.overlays[idx]
-            );
-          }
-        } catch (e) {
-          console.error('Failed to render overlay', e);
-        }
-      });
+    getCachedStat(imageId, overlays, this.configuration.fillColor).then(
+      cachedStat => {
+        cachedStat.overlays.forEach(overlay => {
+          this._renderOverlay(enabledElement, svgDrawingHelper, overlay);
+        });
+      }
+    );
 
     return true;
   };
-
-  /**
-   * pixelData of overlayPlane module is an array of bits corresponding
-   * to each of the underlying pixels of the image.
-   * Let's create pixel data from bit array of overlay data
-   *
-   * @param overlayData
-   * @param color
-   * @returns
-   */
-  private _renderOverlayToDataUrl({ width, height }, color, pixelDataRaw) {
-    const pixelDataView = new DataView(pixelDataRaw);
-    const totalBits = width * height;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, width, height); // make it transparent
-    ctx.globalCompositeOperation = 'copy';
-
-    const imageData = ctx.getImageData(0, 0, width, height);
-    const data = imageData.data;
-    for (let i = 0, bitIdx = 0, byteIdx = 0; i < totalBits; i++) {
-      if (pixelDataView.getUint8(byteIdx) & (1 << bitIdx)) {
-        data[i * 4] = color[0];
-        data[i * 4 + 1] = color[1];
-        data[i * 4 + 2] = color[2];
-        data[i * 4 + 3] = color[3];
-      }
-
-      // next bit, byte
-      if (bitIdx >= 7) {
-        bitIdx = 0;
-        byteIdx++;
-      } else {
-        bitIdx++;
-      }
-    }
-    ctx.putImageData(imageData, 0, 0);
-
-    return canvas.toDataURL();
-  }
 
   /**
    * Render to DOM
@@ -170,21 +194,6 @@ class ImageOverlayViewerTool extends BaseTool {
    * @returns
    */
   private _renderOverlay(enabledElement, svgDrawingHelper, overlayData) {
-    if (
-      !overlayData.color ||
-      this.configuration.fillColor[0] !== overlayData.color[0] ||
-      this.configuration.fillColor[1] !== overlayData.color[1] ||
-      this.configuration.fillColor[2] !== overlayData.color[2] ||
-      this.configuration.fillColor[3] !== overlayData.color[3]
-    ) {
-      overlayData.color = this.configuration.fillColor; // this also works as a flag and identifier of cached pixelated overlay image.
-      overlayData.dataUrl = this._renderOverlayToDataUrl(
-        { width: overlayData.columns, height: overlayData.rows },
-        this.configuration.fillColor,
-        overlayData.pixelDataRaw
-      );
-    }
-
     const { viewport } = enabledElement;
     const imageId = this._getReferencedImageId(viewport);
     if (!imageId) return;
