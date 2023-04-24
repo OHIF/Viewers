@@ -9,17 +9,7 @@ const ActiveSegmentationConfig = ({
   setOutlineWidthActive,
   setRenderFill,
   setFillAlpha,
-  usePercentage,
 }) => {
-  const [
-    useOutlineOpacityPercentage,
-    setUseOutlineOpacityPercentage,
-  ] = useState(usePercentage);
-
-  const [useFillAlphaPercentage, setUseFillAlphaPercentage] = useState(
-    usePercentage
-  );
-
   return (
     <div className="flex justify-between text-[12px] pt-[13px] px-2">
       <div className="flex flex-col items-start">
@@ -44,16 +34,9 @@ const ActiveSegmentationConfig = ({
         <div className="text-[#b3b3b3] text-[10px] mb-[12px]">Opacity</div>
         <InputRange
           minValue={0}
-          maxValue={usePercentage ? 100 : 1}
-          value={
-            useOutlineOpacityPercentage
-              ? config.outlineOpacity * 100
-              : config.outlineOpacity
-          }
-          onChange={value => {
-            setUseOutlineOpacityPercentage(false);
-            setOutlineOpacityActive(value);
-          }}
+          maxValue={100}
+          value={config.outlineOpacity * 100}
+          onChange={setOutlineOpacityActive}
           step={1}
           containerClassName="mt-[4px] mb-[9px]"
           inputClassName="w-[64px]"
@@ -62,14 +45,9 @@ const ActiveSegmentationConfig = ({
         />
         <InputRange
           minValue={0}
-          maxValue={usePercentage ? 100 : 1}
-          value={
-            useFillAlphaPercentage ? config.fillAlpha * 100 : config.fillAlpha
-          }
-          onChange={value => {
-            setUseFillAlphaPercentage(false);
-            setFillAlpha(value);
-          }}
+          maxValue={100}
+          value={config.fillAlpha * 100}
+          onChange={setFillAlpha}
           step={1}
           containerClassName="mt-[4px] mb-[9px]"
           inputClassName="w-[64px]"
@@ -94,13 +72,7 @@ const InactiveSegmentationConfig = ({
   config,
   setRenderInactiveSegmentations,
   setFillAlphaInactive,
-  usePercentage,
 }) => {
-  const [
-    useFillAlphaInactivePercentage,
-    setUseFillInactivePercentage,
-  ] = useState(usePercentage);
-
   return (
     <div className="px-2">
       <CheckBox
@@ -115,16 +87,9 @@ const InactiveSegmentationConfig = ({
         <span className="text-[10px] text-[#b3b3b3]">Opacity</span>
         <InputRange
           minValue={0}
-          maxValue={usePercentage ? 100 : 1}
-          value={
-            useFillAlphaInactivePercentage
-              ? config.fillAlphaInactive * 100
-              : config.fillAlphaInactive
-          }
-          onChange={value => {
-            setUseFillInactivePercentage(false);
-            setFillAlphaInactive(value);
-          }}
+          maxValue={100}
+          value={config.fillAlphaInactive * 100}
+          onChange={setFillAlphaInactive}
           step={1}
           containerClassName="mt-[4px]"
           inputClassName="w-[64px]"
@@ -146,7 +111,7 @@ const SegmentationConfig = ({
   setRenderInactiveSegmentations,
   setRenderOutline,
 }) => {
-  const { initialConfig, usePercentage } = segmentationConfig;
+  const { initialConfig } = segmentationConfig;
   const [isMinimized, setIsMinimized] = useState(true);
   return (
     <div className="bg-primary-dark">
@@ -180,7 +145,6 @@ const SegmentationConfig = ({
             setOutlineOpacityActive={setOutlineOpacityActive}
             setRenderFill={setRenderFill}
             setRenderOutline={setRenderOutline}
-            usePercentage={usePercentage}
           />
           {/* A small line  */}
           <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
@@ -197,7 +161,6 @@ const SegmentationConfig = ({
             config={initialConfig}
             setRenderInactiveSegmentations={setRenderInactiveSegmentations}
             setFillAlphaInactive={setFillAlphaInactive}
-            usePercentage={usePercentage}
           />
         </div>
       )}

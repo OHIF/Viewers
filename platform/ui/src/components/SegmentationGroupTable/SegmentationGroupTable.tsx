@@ -129,7 +129,6 @@ SegmentationGroupTable.defaultProps = {
       renderInactiveSegmentations: true,
       renderOutline: true,
     },
-    usePercentage: true,
   },
   setFillAlpha: () => {},
   setFillAlphaInactive: () => {},
