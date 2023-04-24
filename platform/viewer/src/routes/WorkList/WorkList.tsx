@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys, MODULE_TYPES, ServicesManager } from '@ohif/core';
+import { utils, hotkeys, ServicesManager } from '@ohif/core';
 
 import {
   Icon,
@@ -29,8 +29,6 @@ import {
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import DicomUpload from '@components/DicomUpload/DicomUpload';
-import { extensionManager } from '../../App.tsx';
 
 const { sortBySeriesDate } = utils;
 
