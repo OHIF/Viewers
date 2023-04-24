@@ -688,14 +688,11 @@ class SegmentationService extends PubSubService {
         },
       };
 
-      const numInitialized = Object.keys(
-        segmentation.cachedStats.segmentCenter
-      );
+      const numInitialized = Object.keys(segmentation.cachedStats.segmentCenter)
+        .length;
 
       // Calculate percentage completed
-      const percentComplete = Math.round(
-        (numInitialized.length / numSegments) * 100
-      );
+      const percentComplete = Math.round((numInitialized / numSegments) * 100);
 
       this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
         percentComplete,

@@ -7,6 +7,7 @@ interface Props {
   totalNumbers: number | null;
   percentComplete: number | null;
   loadingText?: string;
+  targetText?: string;
 }
 
 /**
@@ -18,12 +19,13 @@ function LoadingIndicatorTotalPercent({
   totalNumbers,
   percentComplete,
   loadingText = 'Loading...',
+  targetText = 'segments',
 }: Props): JSX.Element {
   percentComplete = percentComplete !== null ? percentComplete : null;
 
   const progress = percentComplete !== null ? percentComplete : null;
   const totalNumbersText = totalNumbers !== null ? `${totalNumbers}` : '';
-  const numSegmentLoadedText =
+  const numTargetsLoadedText =
     percentComplete !== null
       ? Math.floor((percentComplete * totalNumbers) / 100)
       : '';
@@ -33,10 +35,10 @@ function LoadingIndicatorTotalPercent({
   ) : (
     <div className="text-white text-sm flex items-baseline space-x-1">
       <div>Loaded</div>
-      <div>{numSegmentLoadedText}</div>
-      <div>of total</div>
+      <div>{numTargetsLoadedText}</div>
+      <div>of</div>
       <div>{totalNumbersText}</div>
-      <div>Segments</div>
+      <div>{targetText}</div>
     </div>
   );
 

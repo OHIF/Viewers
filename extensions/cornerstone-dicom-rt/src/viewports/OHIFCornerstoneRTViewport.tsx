@@ -29,10 +29,11 @@ function OHIFCornerstoneRTViewport(props) {
   } = props;
 
   const {
-    DisplaySetService,
-    ToolGroupService,
+    displaySetService,
+    toolGroupService,
     segmentationService,
-    UINotificationService,
+    uiNotificationService,
+    customizationService,
   } = servicesManager.services;
 
   const toolGroupId = `${RT_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
@@ -175,7 +176,7 @@ function OHIFCornerstoneRTViewport(props) {
         }
 
         if (evt.overlappingSegments) {
-          UINotificationService.show({
+          uiNotificationService.show({
             title: 'Overlapping Segments',
             message:
               'Overlapping segments detected which is not currently supported',
@@ -210,8 +211,8 @@ function OHIFCornerstoneRTViewport(props) {
    Cleanup the SEG viewport when the viewport is destroyed
    */
   useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
         if (
@@ -231,16 +232,16 @@ function OHIFCornerstoneRTViewport(props) {
   }, []);
 
   useEffect(() => {
-    let toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+    let toolGroup = toolGroupService.getToolGroup(toolGroupId);
 
     if (toolGroup) {
       return;
     }
 
     toolGroup = createRTToolGroupAndAddTools(
-      ToolGroupService,
-      toolGroupId,
-      extensionManager
+      toolGroupService,
+      customizationService,
+      toolGroupId
     );
 
     setToolGroupCreated(true);
@@ -251,7 +252,7 @@ function OHIFCornerstoneRTViewport(props) {
         toolGroupId
       );
 
-      ToolGroupService.destroyToolGroup(toolGroupId);
+      toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
 

@@ -94,8 +94,8 @@ function _getDisplaySetsFromSeries(
     return referencedDisplaySet;
   };
 
-  displaySet.load = async ({ headers }) =>
-    await _load(displaySet, servicesManager, extensionManager, headers);
+  displaySet.load = ({ headers }) =>
+    _load(displaySet, servicesManager, extensionManager, headers);
 
   return [displaySet];
 }
@@ -155,51 +155,36 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
 ) {
   const ReferencedSeriesSequence = [];
 
-  _getSequenceAsArray(ReferencedFrameOfReferenceSequence).forEach(
-    referencedFrameOfReference => {
-      const { RTReferencedStudySequence } = referencedFrameOfReference;
+  ReferencedFrameOfReferenceSequence.forEach(referencedFrameOfReference => {
+    const { RTReferencedStudySequence } = referencedFrameOfReference;
 
-      _getSequenceAsArray(RTReferencedStudySequence).forEach(
-        rtReferencedStudy => {
-          const { RTReferencedSeriesSequence } = rtReferencedStudy;
+    RTReferencedStudySequence.forEach(rtReferencedStudy => {
+      const { RTReferencedSeriesSequence } = rtReferencedStudy;
 
-          _getSequenceAsArray(RTReferencedSeriesSequence).forEach(
-            rtReferencedSeries => {
-              const ReferencedInstanceSequence = [];
-              const {
-                ContourImageSequence,
-                SeriesInstanceUID,
-              } = rtReferencedSeries;
+      RTReferencedSeriesSequence.forEach(rtReferencedSeries => {
+        const ReferencedInstanceSequence = [];
+        const { ContourImageSequence, SeriesInstanceUID } = rtReferencedSeries;
 
-              _getSequenceAsArray(ContourImageSequence).forEach(
-                contourImage => {
-                  ReferencedInstanceSequence.push({
-                    ReferencedSOPInstanceUID:
-                      contourImage.ReferencedSOPInstanceUID,
-                    ReferencedSOPClassUID: contourImage.ReferencedSOPClassUID,
-                  });
-                }
-              );
+        ContourImageSequence.forEach(contourImage => {
+          ReferencedInstanceSequence.push({
+            ReferencedSOPInstanceUID: contourImage.ReferencedSOPInstanceUID,
+            ReferencedSOPClassUID: contourImage.ReferencedSOPClassUID,
+          });
+        });
 
-              const referencedSeries = {
-                SeriesInstanceUID,
-                ReferencedInstanceSequence,
-              };
+        const referencedSeries = {
+          SeriesInstanceUID,
+          ReferencedInstanceSequence,
+        };
 
-              ReferencedSeriesSequence.push(referencedSeries);
-            }
-          );
-        }
-      );
-    }
-  );
+        ReferencedSeriesSequence.push(referencedSeries);
+      });
+    });
+  });
 
   return ReferencedSeriesSequence;
 }
 
-function _getSequenceAsArray(sequence) {
-  return Array.isArray(sequence) ? sequence : [sequence];
-}
 function _segmentationExistsInCache(rtDisplaySet, SegmentationService) {
   // Todo: fix this
   return false;

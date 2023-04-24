@@ -31,13 +31,17 @@ const extension = {
    */
   id,
 
- /**
+  /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({ servicesManager, commandsManager, extensionManager }): Types.Panel[] => {
+  getPanelModule: ({
+    servicesManager,
+    commandsManager,
+    extensionManager,
+  }): Types.Panel[] => {
     const wrappedPanelSegmentation = () => {
       return (
         <PanelSegmentation
@@ -80,7 +84,6 @@ const extension = {
    * Examples include the default sop class handler provided by the default extension
    */
   getSopClassHandlerModule,
-
   getHangingProtocolModule,
 };
 

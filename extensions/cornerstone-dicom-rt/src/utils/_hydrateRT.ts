@@ -51,12 +51,10 @@ async function _hydrateRTDisplaySet({
     );
 
     if (shouldDisplaySeg) {
-      viewportGridService.setDisplaySetsForViewport({
+      updatedViewports.push({
         viewportIndex: index,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
-          viewportType: 'volume',
-          toolGroupId,
           initialImageOptions: {
             preset: 'middle',
           },
@@ -65,6 +63,8 @@ async function _hydrateRTDisplaySet({
     }
   });
 
+  // Do the entire update at once
+  viewportGridService.setDisplaySetsForViewports(updatedViewports);
   return true;
 }
 

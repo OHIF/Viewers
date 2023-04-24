@@ -35,6 +35,7 @@ function OHIFCornerstoneSEGViewport(props) {
     toolGroupService,
     segmentationService,
     uiNotificationService,
+    customizationService,
   } = servicesManager.services;
 
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
@@ -243,8 +244,8 @@ function OHIFCornerstoneSEGViewport(props) {
     // only, and does NOT interfere with currently displayed segmentations.
     toolGroup = createSEGToolGroupAndAddTools(
       toolGroupService,
-      toolGroupId,
-      extensionManager
+      customizationService,
+      toolGroupId
     );
 
     setToolGroupCreated(true);
