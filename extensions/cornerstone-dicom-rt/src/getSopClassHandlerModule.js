@@ -102,9 +102,11 @@ function _getDisplaySetsFromSeries(
 
 function _load(rtDisplaySet, servicesManager, extensionManager, headers) {
   const { SOPInstanceUID } = rtDisplaySet;
+  const { segmentationService } = servicesManager.services;
   if (
     (rtDisplaySet.loading || rtDisplaySet.isLoaded) &&
-    loadPromises[SOPInstanceUID]
+    loadPromises[SOPInstanceUID] &&
+    _segmentationExistsInCache(rtDisplaySet, segmentationService)
   ) {
     return loadPromises[SOPInstanceUID];
   }
@@ -114,12 +116,6 @@ function _load(rtDisplaySet, servicesManager, extensionManager, headers) {
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
-    const { SegmentationService } = servicesManager.services;
-
-    if (_segmentationExistsInCache(rtDisplaySet, SegmentationService)) {
-      return;
-    }
-
     if (!rtDisplaySet.structureSet) {
       const structureSet = await loadRTStruct(
         extensionManager,
@@ -132,11 +128,8 @@ function _load(rtDisplaySet, servicesManager, extensionManager, headers) {
     }
 
     const suppressEvents = true;
-    SegmentationService.createSegmentationForRTDisplaySet(
-      rtDisplaySet,
-      null,
-      suppressEvents
-    )
+    segmentationService
+      .createSegmentationForRTDisplaySet(rtDisplaySet, null, suppressEvents)
       .then(() => {
         rtDisplaySet.loading = false;
         resolve();
@@ -185,12 +178,12 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   return ReferencedSeriesSequence;
 }
 
-function _segmentationExistsInCache(rtDisplaySet, SegmentationService) {
+function _segmentationExistsInCache(rtDisplaySet, segmentationService) {
   // Todo: fix this
   return false;
   // This should be abstracted with the CornerstoneCacheService
   const rtContourId = rtDisplaySet.displaySetInstanceUID;
-  const contour = SegmentationService.getContour(rtContourId);
+  const contour = segmentationService.getContour(rtContourId);
 
   return contour !== undefined;
 }

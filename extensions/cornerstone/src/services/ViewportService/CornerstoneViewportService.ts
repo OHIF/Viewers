@@ -439,6 +439,11 @@ class CornerstoneViewportService extends PubSubService
       const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(
         viewport
       );
+
+      if (!imageSliceData) {
+        return;
+      }
+
       numberOfSlices = imageSliceData.length;
     } else {
       return;

@@ -102,9 +102,12 @@ function _getDisplaySetsFromSeries(
 
 function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   const { SOPInstanceUID } = segDisplaySet;
+  const { segmentationService } = servicesManager.services;
+
   if (
     (segDisplaySet.loading || segDisplaySet.isLoaded) &&
-    loadPromises[SOPInstanceUID]
+    loadPromises[SOPInstanceUID] &&
+    _segmentationExists(segDisplaySet, segmentationService)
   ) {
     return loadPromises[SOPInstanceUID];
   }
@@ -114,12 +117,6 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
-    const { segmentationService } = servicesManager.services;
-
-    if (_segmentationExistsInCache(segDisplaySet, segmentationService)) {
-      return;
-    }
-
     if (
       !segDisplaySet.segments ||
       Object.keys(segDisplaySet.segments).length === 0
@@ -173,12 +170,11 @@ async function _loadSegments(extensionManager, segDisplaySet, headers) {
   return segments;
 }
 
-function _segmentationExistsInCache(segDisplaySet, segmentationService) {
+function _segmentationExists(segDisplaySet, segmentationService) {
   // This should be abstracted with the CornerstoneCacheService
-  const labelmapVolumeId = segDisplaySet.displaySetInstanceUID;
-  const segVolume = segmentationService.getLabelmapVolume(labelmapVolumeId);
-
-  return segVolume !== undefined;
+  return segmentationService.getSegmentation(
+    segDisplaySet.displaySetInstanceUID
+  );
 }
 
 function _getPixelData(dataset, segments) {

@@ -58,6 +58,8 @@ const SEGMENT_CONSTANT = {
   isLocked: false,
 };
 
+const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
+
 class SegmentationService extends PubSubService {
   static REGISTRATION = {
     name: 'segmentationService',
@@ -543,7 +545,7 @@ class SegmentationService extends PubSubService {
       representationData: {
         [LABELMAP]: {
           volumeId: segmentationId,
-          referencedVolumeId: segDisplaySet.referencedVolumeURI,
+          referencedVolumeId: segDisplaySet.referencedVolumeId,
         },
       },
     };
@@ -997,8 +999,7 @@ class SegmentationService extends PubSubService {
     // Todo: we currently only support labelmap for segmentation for a displaySet
     const representationType = LABELMAP;
 
-    const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
-    const volumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`; // VolumeId with loader id + volume id
+    const volumeId = this._getVolumeIdForDisplaySet(displaySetInstanceUID);
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
@@ -1025,7 +1026,7 @@ class SegmentationService extends PubSubService {
       representationData: {
         LABELMAP: {
           volumeId: segmentationId,
-          referencedVolumeId: volumeId.split(':')[0], // Todo: this is so ugly
+          referencedVolumeId: volumeId, // Todo: this is so ugly
         },
       },
     };
@@ -1699,6 +1700,13 @@ class SegmentationService extends PubSubService {
     }
   }
 
+  private _getVolumeIdForDisplaySet(displaySet) {
+    const volumeLoaderSchema =
+      displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
+
+    return `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
+  }
+
   private _setSegmentColor = (
     segmentationId: string,
     segmentIndex: number,
@@ -2136,7 +2144,7 @@ class SegmentationService extends PubSubService {
     // cleanup the segmentation state too
     segmentationState.removeSegmentation(segmentationId);
 
-    if (removeFromCache && cache.getImageLoadObject(segmentationId)) {
+    if (removeFromCache && cache.getVolumeLoadObject(segmentationId)) {
       cache.removeVolumeLoadObject(segmentationId);
     }
   }

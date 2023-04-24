@@ -629,20 +629,16 @@ function _jumpToMeasurement(
     } else {
       // for volume viewport we can't rely on the imageIdIndex since it can be
       // a reconstructed view that doesn't match the original slice numbers etc.
-      const { viewPlaneNormal } = measurement.metadata;
+      const { viewPlaneNormal: measurementViewPlane } = measurement.metadata;
       imageIdIndex = referencedDisplaySet.images.findIndex(
         i => i.SOPInstanceUID === SOPInstanceUID
       );
 
-      const { orientation } = viewportInfo.getViewportOptions();
+      const { viewPlaneNormal: viewportViewPlane } = viewport.getCamera();
 
       if (
-        orientation &&
-        viewPlaneNormal &&
-        !csUtils.isEqual(
-          CONSTANTS.MPR_CAMERA_VALUES[orientation]?.viewPlaneNormal,
-          viewPlaneNormal
-        )
+        measurementViewPlane &&
+        !csUtils.isEqual(measurementViewPlane, viewportViewPlane)
       ) {
         viewportCameraDirectionMatch = false;
       }
