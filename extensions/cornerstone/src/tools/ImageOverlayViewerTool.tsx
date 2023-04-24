@@ -16,6 +16,13 @@ interface CachedStat {
 
 const cachedStats: { [key: string]: CachedStat } = {};
 
+/**
+ * compare two RGBA expression of colors.
+ *
+ * @param color1
+ * @param color2
+ * @returns
+ */
 const isSameColor = (color1: number[], color2: number[]) => {
   return (
     color1 &&
