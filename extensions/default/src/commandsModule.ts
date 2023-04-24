@@ -12,7 +12,7 @@ import findViewportsByPosition, {
 
 import { ContextMenuProps } from './CustomizeableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
-import { history } from '@ohif/ui';
+import { history } from '@ohif/viewer';
 
 const { subscribeToNextViewportGridChange } = utils;
 
@@ -483,7 +483,22 @@ const commandsModule = ({
     },
 
     /**
-     * Exposes the browser history navigation used by OHIF.
+     * Exposes the browser history navigation used by OHIF. This command can be used to either replace or
+     * push a new entry into the browser history. For example, the following will replace the current
+     * browser history entry with the specified relative URL which changes the study displayed to the
+     * study with study instance UID 1.2.3. Note that as a result of using `options.replace = true`, the
+     * page prior to invoking this command cannot be returned to via the browser back button.
+     *
+     * navigateHistory({
+     *   to: 'viewer?StudyInstanceUIDs=1.2.3',
+     *   options: { replace: true },
+     * });
+     *
+     * @param historyArgs - arguments for the history function;
+     *                      the `to` property is the URL;
+     *                      the `options.replace` is a boolean indicating if the current browser history entry
+     *                      should be replaced or a new entry pushed onto the history (stack); the default value
+     *                      for `replace` is false
      */
     navigateHistory(historyArgs: NavigateHistory) {
       history.navigate(historyArgs.to, historyArgs.options);
