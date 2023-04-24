@@ -67,6 +67,7 @@
     "cornerstone-math": "^0.1.9",
     "cornerstone-wado-image-loader": "^4.13.0",
     "dcmjs": "^0.29.5",
+    "express": "^4.18.2",
     "detect-gpu": "^4.0.16",
     "dicom-parser": "^1.8.9",
     "dotenv-webpack": "^1.7.0",
