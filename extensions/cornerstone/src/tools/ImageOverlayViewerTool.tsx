@@ -241,10 +241,6 @@ class ImageOverlayViewerTool extends BaseTool {
       );
       return false;
     }
-    console.log(
-      'rendering overlay image with attributes',
-      attributes['data-id']
-    );
 
     if (existingImageElement) {
       _setAttributesIfNecessary(attributes, existingImageElement);
