@@ -69,6 +69,11 @@ export default function PanelGenerateImage({
   // Establish a reference to the viewer API context
   const { activeViewportIndex, viewports } = viewportGridService.getState();
   const displaySetInstanceUID = viewports[0].displaySetInstanceUIDs[0];
+
+  // Get toolGroupIds for setting PT color map
+  const toolGroupIds = toolGroupService.getToolGroupIds();
+  console.log(toolGroupIds);
+
   const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader id which defines which volume loader to use
   const computedVolumeId = `cornerstoneStreamingImageVolume:MY_COMPUTED_VOLUME`;
 
@@ -80,6 +85,7 @@ export default function PanelGenerateImage({
     dynamicVolumeId,
     computedVolumeId
   );
+  console.log(dynamicVolumeId);
 
   function onGenerateImage() {
     console.log('onGenerateImage was run');
@@ -88,6 +94,7 @@ export default function PanelGenerateImage({
       timeFramesArray[i] = ~~timeFramesArray[i];
     }
     const computedVolume = cache.getVolume(computedVolumeId);
+    console.log(metadata.Operation);
 
     const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
       dynamicVolume,
@@ -99,19 +106,30 @@ export default function PanelGenerateImage({
     for (let i = 0; i < dataInTime.length; i++) {
       scalarData[i] = dataInTime[i];
     }
-
-    console.log(computedVolume.getScalarData());
-    renderGeneratedImage();
+    // renderGeneratedImage(dynamicVolumeId);
   }
 
-  function renderGeneratedImage() {
-    console.log(viewports);
+  function renderGeneratedImage(volumeIdToUse) {
+    // console.log(viewports);
     console.log('renderGenerateImage was run');
+    console.log(volumeIdToUse);
     // const test = cornerstoneViewportService;
-    const viewport1 = cornerstoneViewportService.getCornerstoneViewportByIndex(
-      0
-    );
-    cornerstoneViewportService.set;
+    // const viewport1 = cornerstoneViewportService.getCornerstoneViewportByIndex(
+    //   0
+    // );
+    // cornerstoneViewportService.set;
+    commandsManager.runCommand('setVolumeToViewport', {
+      volumeId: volumeIdToUse,
+    });
+  }
+
+  function returnTo4D() {
+    console.log(dynamicVolumeId);
+    renderGeneratedImage(dynamicVolumeId);
+  }
+
+  function callRender() {
+    renderGeneratedImage(computedVolumeId);
   }
 
   //TODO: uncomment this section that checks for referencedVolume
@@ -185,6 +203,12 @@ export default function PanelGenerateImage({
         <Button color="primary" onClick={onGenerateImage}>
           Generate Image
         </Button>
+        <Button color="primary" onClick={callRender}>
+          Render Generated Image
+        </Button>
+        <Button color="primary" onClick={returnTo4D}>
+          Return To 4D
+        </Button>
       </div>
     </div>
   );
@@ -201,6 +225,10 @@ async function createComputedVolume(dynamicVolumeId, computedVolumeId) {
     return computedVolume;
   }
 }
+
+async function getDynamicVolumeFromCache(dynamicVolumeId) {}
+
+async function getTimeFrames(dynamicVolumeId) {}
 
 PanelGenerateImage.propTypes = {
   servicesManager: PropTypes.shape({

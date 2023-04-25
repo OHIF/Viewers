@@ -18,6 +18,7 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
+import { split } from 'lodash';
 
 function commandsModule({
   servicesManager,
@@ -564,6 +565,9 @@ function commandsModule({
         viewportIndex
       );
 
+      console.log(viewport);
+      debugger;
+
       const actorEntries = viewport.getActors();
 
       const actorEntry = actorEntries.find(actorEntry => {
@@ -617,6 +621,43 @@ function commandsModule({
         true // overwrite
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
+    },
+    setVolumeToViewport: ({ volumeId }) => {
+      console.log('setVolumeToViewport has run');
+      const colormap = 'gray';
+
+      const displayUID = volumeId.split(':')[1];
+      // Get all viewports and their corresponding indexs
+      const { viewports } = viewportGridService.getState();
+      const viewportIndex = Object.keys(viewports);
+
+      // For each viewport index, get the cornerstone viewport and set the
+      // computed volume
+      viewportIndex.forEach(viewportNum => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(
+          viewports[viewportNum].viewportId
+        );
+
+        console.log(viewport.getActors());
+
+        viewport.setVolumes([
+          {
+            volumeId,
+          },
+        ]);
+        const viewportInfo = cornerstoneViewportService.getViewportInfo(
+          viewports[viewportNum].viewportId
+        );
+
+        const viewportInd = viewportInfo.getViewportIndex();
+        console.log(viewportInd);
+
+        commandsManager.runCommand('setViewportColormap', {
+          viewportIndex: viewportInd,
+          displaySetInstanceUID: displayUID,
+          colormap,
+        });
+      });
     },
   };
 
@@ -741,6 +782,11 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+    },
+    setVolumeToViewport: {
+      commandFn: actions.setVolumeToViewport,
+      storeContexts: [],
+      options: {},
     },
   };
 
