@@ -122,9 +122,9 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       symlinks: true,
       fallback: { fs: false, path: false, zlib: false },
     },
-    experiments: {
-      asyncWebAssembly: true,
-    },
+    // experiments: {
+    //   asyncWebAssembly: true,
+    // },
     plugins: [
       new webpack.DefinePlugin({
         /* Application */
