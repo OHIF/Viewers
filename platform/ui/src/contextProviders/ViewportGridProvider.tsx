@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import isEqual from 'lodash.isequal';
 import viewportLabels from '../utils/viewportLabels';
 import getPresentationIds from './getPresentationIds';
+import uniqueViewportIds from './uniqueViewportIds';
 
 const DEFAULT_STATE = {
   activeViewportIndex: 0,
@@ -145,7 +146,7 @@ export function ViewportGridProvider({ children, service }) {
           gridIdSet.add(viewport.gridId);
         });
 
-        for (const updatedViewport of payload) {
+        const replaceViewports = payload.map(updatedViewport => {
           // Use the newly provide viewportOptions and display set options
           // when provided, and otherwise fall back to the previous ones.
           // That allows for easy updates of just the display set.
@@ -166,25 +167,30 @@ export function ViewportGridProvider({ children, service }) {
             }
           }
 
-          let newViewport = {
+          const newViewport = {
             ...previousViewport,
             displaySetInstanceUIDs,
             viewportOptions,
             displaySetOptions,
             viewportLabel: viewportLabels[viewportIndex],
+            viewportIndex,
           };
-          newViewport.viewportOptions.viewportId ||= newViewport.viewportId || `viewport-${viewportIndex}`;
-          newViewport.viewportId = newViewport.viewportOptions.viewportId;
-          viewportOptions.presentationIds = getPresentationIds(
-            newViewport,
-            viewports
+          return reuseGridId(gridIdSet, newViewport, state.viewports);
+        });
+
+        uniqueViewportIds(replaceViewports, state.viewports);
+        replaceViewports.forEach(viewport => {
+          viewport.viewportOptions.presentationIds = getPresentationIds(
+            viewport,
+            state.viewports
           );
-
-          newViewport = reuseGridId(gridIdSet, newViewport, state.viewports);
-          newViewport.viewportIndex = previousViewport.viewportIndex;
-
-          viewports[viewportIndex] = newViewport;
-        }
+          console.log(
+            'Replacing viewport',
+            viewport,
+            viewports[viewport.viewportIndex]
+          );
+          viewports[viewport.viewportIndex] = viewport;
+        });
 
         return { ...state, viewports };
       }
@@ -228,9 +234,6 @@ export function ViewportGridProvider({ children, service }) {
             const viewport = findOrCreateViewport(pos, positionId, options);
             if (!viewport) continue;
             viewport.positionId = positionId;
-            viewport.viewportOptions.viewportId ||= positionId;
-            // Should not need to set it twice...
-            viewport.viewportId = viewport.viewportOptions.viewportId;
 
             // Create a new viewport object as it is getting updated here
             // and it is part of the read only state
@@ -266,19 +269,14 @@ export function ViewportGridProvider({ children, service }) {
             viewports[viewportIndex],
             state.viewports
           );
-          if (!viewport.viewportOptions.presentationIds) {
-            viewport.viewportOptions.presentationIds = getPresentationIds(
-              viewport,
-              viewports
-            );
-          }
-          viewport.viewportOptions.viewportId ||= `viewport-${viewportIndex}`;
-          // Ugly having this in two places
-          viewport.viewportId = viewport.viewportOptions.viewportId;
-          viewport.viewportIndex = viewportIndex;
+          viewport.viewportOptions.presentationIds = getPresentationIds(
+            viewport,
+            viewports
+          );
           viewport.viewportLabel = viewportLabels[viewportIndex];
           viewports[viewportIndex] = viewport;
         }
+        uniqueViewportIds(viewports);
 
         const ret = {
           ...state,
