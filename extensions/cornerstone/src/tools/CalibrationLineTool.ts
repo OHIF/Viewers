@@ -1,12 +1,16 @@
 import { metaData } from '@cornerstonejs/core';
 import { LengthTool, utilities } from '@cornerstonejs/tools';
+import { classes } from '@ohif/core';
+
 import callInputDialog from '../utils/callInputDialog';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
 
 const { calibrateImageSpacing } = utilities;
+const metadataProvider = classes.MetadataProvider;
 
 /**
- * Calibration Line tool works almost the same as the
+ * Calibration Line tool works almost the same as the Line tool, but used for
+ * image length calibration.
  */
 class CalibrationLineTool extends LengthTool {
   static toolName = 'CalibrationLine';
@@ -81,20 +85,48 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
   const currentColumnPixelSpacing =
     calibratedPixelSpacing?.[1] || imagePlaneModule?.columnPixelSpacing || 1;
 
+  /**
+   * calibration action handler
+   *
+   **/
   const adjustCalibration = newLength => {
     const spacingScale = newLength / length;
     const rowSpacing = spacingScale * currentRowPixelSpacing;
     const colSpacing = spacingScale * currentColumnPixelSpacing;
 
+    const renderingEngine = viewport.getRenderingEngine();
+
     // trigger resize of the viewport to adjust the world/pixel mapping
-    calibrateImageSpacing(
-      imageId,
-      viewport.getRenderingEngine(),
-      rowSpacing,
-      colSpacing
-    );
+    calibrateImageSpacing(imageId, renderingEngine, rowSpacing, colSpacing);
+
+    // NOTE: in the StackViewport, if the row and colum pixel spacing from
+    // 'calibratedPixelSpacing' and the 'imagePlaneModule' metadata are different,
+    // it triggers the "IMAGE_SPACING_CALIBRATED" event, which applies calibration
+    // multiple times to the annotations.
+    // So, let's override imagePlaneModule.
+    // This override should happen in the next event cycle, as the rendering is
+    // going on after above function call.
+    setTimeout(() => {
+      metadataProvider.addCustomMetadata(imageId, 'imagePlaneModule', {
+        ...imagePlaneModule,
+        // backup original rowPixelSpacing and columnPixelSpacing
+        origRowPixelSpacing:
+          imagePlaneModule.origRowPixelSpacing ||
+          imagePlaneModule.rowPixelSpacing ||
+          1,
+        origColumnPixelSpacing:
+          imagePlaneModule.origColumnPixelSpacing ||
+          imagePlaneModule.columnPixelSpacing ||
+          1,
+        // override rowPixelSpacing and columPixelSpacing
+        rowPixelSpacing: rowSpacing,
+        columnPixelSpacing: colSpacing,
+      });
+    }, 0);
   };
 
+  // Display calibration dialog, which requires the user to enter the actual
+  // physical length of the drawn calibration line.
   return new Promise((resolve, reject) => {
     if (!uiDialogService) {
       reject('UIDialogService is not initiated');
