@@ -1451,6 +1451,14 @@
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
+"@cornerstonejs/core@^0.43.0":
+  version "0.43.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.43.0.tgz#10b0c71d5878ba9c218b58f971c14fc066c73cd2"
+  integrity sha512-p6j3wPRK/xC7Sn/tXe/6knzMgZ+awPHgPAnul1Vku+61B+LdtquWBLcaYDRp3v3IzlyfgG8ds/l48wCQ/Q3rEg==
+  dependencies:
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
 "@cornerstonejs/streaming-image-volume-loader@^0.16.2":
   version "0.16.2"
   resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.16.2.tgz#7ac513a21d4d8045047a7aa2fb57b5a85682c036"
@@ -1459,12 +1467,12 @@
     "@cornerstonejs/core" "^0.41.0"
     cornerstone-wado-image-loader "^4.10.2"
 
-"@cornerstonejs/tools@^0.61.0":
-  version "0.61.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.61.0.tgz#e3d15dfb66276a19f8c663d3cb3f872fd9e55d20"
-  integrity sha512-RS0gCH/hzwz3hAO02NuUzabIqAe73zFuvNh54oylG3uD6g348P+nTkdzCbcO3ShJ71KrOx5euEbvVbWbHPUkaw==
+"@cornerstonejs/tools@^0.63.2":
+  version "0.63.2"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.63.2.tgz#a41c0d0ac248cdea81c6310d528dd7ac3e40bffc"
+  integrity sha512-4z8YEcRdhbCXMBC1hdtcfqsEefKfhx1pudbI4v1ogTMZI/fnJfbxNuGh8SHUZNcB3OOclAC/Sl6trgYWie0vdg==
   dependencies:
-    "@cornerstonejs/core" "^0.41.0"
+    "@cornerstonejs/core" "^0.43.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 

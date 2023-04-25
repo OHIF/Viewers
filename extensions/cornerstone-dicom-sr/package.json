@@ -47,6 +47,6 @@
     "classnames": "^2.3.2",
     "@cornerstonejs/adapters": "^0.6.0",
     "@cornerstonejs/core": "^0.41.0",
-    "@cornerstonejs/tools": "^0.61.0"
+    "@cornerstonejs/tools": "^0.63.2"
   }
 }

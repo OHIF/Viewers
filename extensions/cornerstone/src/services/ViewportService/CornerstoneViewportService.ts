@@ -444,7 +444,7 @@ class CornerstoneViewportService extends PubSubService
         return;
       }
 
-      numberOfSlices = imageSliceData.length;
+      ({ numberOfSlices } = imageSliceData);
     } else {
       return;
     }
