@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
+import { CornerstoneServices } from '@ohif/extension-cornerstone/types';
+
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import {
@@ -13,6 +15,7 @@ import {
   ViewportActionBar,
 } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
+import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const { formatDate } = utils;
 
@@ -37,7 +40,7 @@ function OHIFCornerstoneSRViewport(props) {
     displaySetService,
     cornerstoneViewportService,
     measurementService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -57,7 +60,6 @@ function OHIFCornerstoneSRViewport(props) {
     referencedDisplaySetMetadata,
     setReferencedDisplaySetMetadata,
   ] = useState(null);
-  const [isHydrated, setIsHydrated] = useState(srDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportIndex } = viewportGrid;
 
@@ -87,14 +89,16 @@ function OHIFCornerstoneSRViewport(props) {
         { servicesManager, extensionManager },
         displaySetInstanceUID
       );
-      const displaySets = displaySetService.getDisplaySetsForSeries(
-        SeriesInstanceUIDs[0]
-      );
+      const displaySets = srDisplaySet.keyImageDisplaySet
+        ? [srDisplaySet.keyImageDisplaySet]
+        : displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
       if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewport({
-          viewportIndex: activeViewportIndex,
-          displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-        });
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+          },
+        ]);
       }
     };
   }
@@ -289,8 +293,6 @@ function OHIFCornerstoneSRViewport(props) {
     if (!srDisplaySet.isLoaded) {
       srDisplaySet.load();
     }
-    setIsHydrated(srDisplaySet.isHydrated);
-
     const numMeasurements = srDisplaySet.measurements.length;
     setMeasurementCount(numMeasurements);
   }, [srDisplaySet]);
@@ -378,6 +380,7 @@ function OHIFCornerstoneSRViewport(props) {
           label: viewportLabel,
           useAltStyling: true,
           studyDate: formatDate(StudyDate),
+          currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription || '',
           patientInformation: {
             patientName: PatientName
@@ -420,8 +423,10 @@ OHIFCornerstoneSRViewport.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
+  viewportLabel: PropTypes.string,
   customProps: PropTypes.object,
   viewportOptions: PropTypes.object,
+  viewportLabel: PropTypes.string,
   servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
@@ -435,14 +440,18 @@ async function _getViewportReferencedDisplaySetData(
   measurementSelected,
   displaySetService
 ) {
-  const { measurements } = displaySet;
-  const measurement = measurements[measurementSelected];
+  if (!displaySet.keyImageDisplaySet) {
+    // Create a new display set, and preserve a reference to it here,
+    // so that it can be re-displayed and shown inside the SR viewport.
+    // This is only for ease of redisplay - the display set is stored in the
+    // usual manner in the display set service.
+    displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(
+      displaySetService,
+      displaySet
+    );
+  }
 
-  const { displaySetInstanceUID } = measurement;
-
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
+  const referencedDisplaySet = displaySet.keyImageDisplaySet;
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {

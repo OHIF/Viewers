@@ -10,17 +10,18 @@ import {
   utilities as csUtils,
   CONSTANTS,
 } from '@cornerstonejs/core';
+import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import {
+  IStackViewport,
+  IVolumeViewport,
+} from '@cornerstonejs/core/dist/esm/types';
 
 import { setEnabledElement } from '../state';
 
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
-import {
-  IStackViewport,
-  IVolumeViewport,
-} from '@cornerstonejs/core/dist/esm/types';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import CornerstoneServices from '../types/CornerstoneServices';
 
 const STACK = 'stack';
 
@@ -129,7 +130,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     cornerstoneCacheService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   const cineHandler = () => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
@@ -549,6 +550,7 @@ function _checkForCachedJumpToMeasurementEvents(
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
+  if (!displaysUIDs?.length) return;
 
   const measurementIdToJumpTo = measurementService.getJumpToMeasurement(
     viewportIndex
@@ -560,7 +562,7 @@ function _checkForCachedJumpToMeasurementEvents(
       measurementIdToJumpTo
     );
 
-    if (displaysUIDs.includes(measurement.displaySetInstanceUID)) {
+    if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
       _jumpToMeasurement(
         measurement,
         elementRef,

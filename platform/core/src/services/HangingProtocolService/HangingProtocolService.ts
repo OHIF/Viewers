@@ -9,7 +9,9 @@ import * as HangingProtocol from '../../types/HangingProtocol';
 import {
   isDisplaySetFromUrl,
   sopInstanceLocation,
-} from './isDisplaySetFromUrl';
+} from './custom-attribute/isDisplaySetFromUrl';
+import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
+import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
@@ -92,6 +94,16 @@ export default class HangingProtocolService extends PubSubService {
     sopInstanceLocation: {
       name: 'Gets the position of the specified sop instance',
       callback: sopInstanceLocation,
+    },
+    seriesDescriptions: {
+      name: 'seriesDescriptions',
+      description: 'List of Series Descriptions',
+      callback: seriesDescriptionsFromDisplaySets,
+    },
+    numberOfDisplaySetsWithImages: {
+      name: 'numberOfDisplaySetsWithImages',
+      desription: 'Number of displays sets with images',
+      numberOfDisplaySetsWithImages,
     },
   };
   listeners = {};
