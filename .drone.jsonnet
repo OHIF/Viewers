@@ -49,8 +49,8 @@ local deployV3 = pipelineCommon {
         },
       },
       commands: [
-        'apt-get update',
-        'apt-get install jq',
+        'apt-get -y update',
+        'apt-get -y install jq',
         'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif-modules',
         'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-pacs',
         'yarn',
@@ -86,8 +86,8 @@ local deployProduction = pipelineCommon {
         },
       },
       commands: [
-        'apt-get update',
-        'apt-get install jq',
+        'apt-get -y update',
+        'apt-get-y install jq',
         'cd platform/viewer',
         'yarn',
         'rm dist -r',
