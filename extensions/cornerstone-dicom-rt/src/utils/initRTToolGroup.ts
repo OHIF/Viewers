@@ -1,4 +1,4 @@
-function createSEGToolGroupAndAddTools(
+function createRTToolGroupAndAddTools(
   ToolGroupService,
   customizationService,
   toolGroupId
@@ -9,4 +9,4 @@ function createSEGToolGroupAndAddTools(
   return ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
 }
 
-export default createSEGToolGroupAndAddTools;
+export default createRTToolGroupAndAddTools;

@@ -25,8 +25,8 @@ There are seven events that get publish in `MeasurementService`:
 | SEGMENTATION_ADDED | Fires when a new segmentation is added to OHIF |
 | SEGMENTATION_REMOVED   | Fires when a segmentation is removed from OHIF                 |
 | SEGMENTATION_CONFIGURATION_CHANGED  | Fires when a segmentation configuration is changed                |
-| SEGMENT_PIXEL_DATA_CREATED   | Fires when a segment group adds its pixel data to the volume    |
-| SEGMENTATION_PIXEL_DATA_CREATED   | Fires when the full segmentation volume is filled with its segments   |
+| SEGMENT_LOADING_COMPLETE   | Fires when a segment group adds its pixel data to the volume    |
+| SEGMENTATION_LOADING_COMPLETE   | Fires when the full segmentation volume is filled with its segments   |
 
 
 ## API

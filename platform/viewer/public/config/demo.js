@@ -18,6 +18,7 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
+        useBulkDataURI: false,
       },
     ],
   },

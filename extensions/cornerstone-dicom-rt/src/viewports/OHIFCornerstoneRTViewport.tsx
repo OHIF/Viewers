@@ -1,23 +1,24 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 import {
-  LoadingIndicatorTotalPercent,
   Notification,
-  useViewportDialog,
-  useViewportGrid,
   ViewportActionBar,
+  useViewportGrid,
+  useViewportDialog,
+  LoadingIndicatorTotalPercent,
 } from '@ohif/ui';
-import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
-import promptHydrateSEG from '../utils/promptHydrateSEG';
-import hydrateSEGDisplaySet from '../utils/_hydrateSEG';
+
+import _hydrateRTdisplaySet from '../utils/_hydrateRT';
+import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
+import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
+import _hydrateRTDisplaySet from '../utils/_hydrateRT';
 
 const { formatDate } = utils;
-const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
+const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
-function OHIFCornerstoneSEGViewport(props) {
+function OHIFCornerstoneRTViewport(props) {
   const {
     children,
     displaySets,
@@ -28,8 +29,6 @@ function OHIFCornerstoneSEGViewport(props) {
     extensionManager,
   } = props;
 
-  const { t } = useTranslation('SEGViewport');
-
   const {
     displaySetService,
     toolGroupService,
@@ -38,14 +37,14 @@ function OHIFCornerstoneSEGViewport(props) {
     customizationService,
   } = servicesManager.services;
 
-  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
+  const toolGroupId = `${RT_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
 
-  // SEG viewport will always have a single display set
+  // RT viewport will always have a single display set
   if (displaySets.length > 1) {
-    throw new Error('SEG viewport should only have a single display set');
+    throw new Error('RT viewport should only have a single display set');
   }
 
-  const segDisplaySet = displaySets[0];
+  const rtDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
@@ -54,13 +53,13 @@ function OHIFCornerstoneSEGViewport(props) {
   const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(1);
 
-  // Hydration means that the SEG is opened and segments are loaded into the
-  // segmentation panel, and SEG is also rendered on any viewport that is in the
-  // same frameOfReferenceUID as the referencedSeriesUID of the SEG. However,
-  // loading basically means SEG loading over network and bit unpacking of the
-  // SEG data.
-  const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
-  const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
+  // Hydration means that the RT is opened and segments are loaded into the
+  // segmentation panel, and RT is also rendered on any viewport that is in the
+  // same frameOfReferenceUID as the referencedSeriesUID of the RT. However,
+  // loading basically means RT loading over network and bit unpacking of the
+  // RT data.
+  const [isHydrated, setIsHydrated] = useState(rtDisplaySet.isHydrated);
+  const [rtIsLoading, setRtIsLoading] = useState(!rtDisplaySet.isLoaded);
   const [element, setElement] = useState(null);
   const [processingProgress, setProcessingProgress] = useState({
     percentComplete: null,
@@ -72,7 +71,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
   const { viewports, activeViewportIndex } = viewportGrid;
 
-  const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
+  const referencedDisplaySet = rtDisplaySet.getReferenceDisplaySet();
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
     referencedDisplaySet
   );
@@ -108,7 +107,7 @@ function OHIFCornerstoneSEGViewport(props) {
     return (
       <Component
         {...props}
-        displaySets={[referencedDisplaySet, segDisplaySet]}
+        displaySets={[referencedDisplaySet, rtDisplaySet]}
         viewportOptions={{
           viewportType: 'volume',
           toolGroupId: toolGroupId,
@@ -120,12 +119,12 @@ function OHIFCornerstoneSEGViewport(props) {
         // initialImageIndex={initialImageIndex}
       ></Component>
     );
-  }, [viewportIndex, segDisplaySet, toolGroupId]);
+  }, [viewportIndex, rtDisplaySet, toolGroupId]);
 
   const onSegmentChange = useCallback(
     direction => {
       direction = direction === 'left' ? -1 : 1;
-      const segmentationId = segDisplaySet.displaySetInstanceUID;
+      const segmentationId = rtDisplaySet.displaySetInstanceUID;
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
       const { segments } = segmentation;
@@ -135,8 +134,7 @@ function OHIFCornerstoneSEGViewport(props) {
       let newSelectedSegmentIndex = selectedSegment + direction;
 
       // Segment 0 is always background
-
-      if (newSelectedSegmentIndex > numberOfSegments - 1) {
+      if (newSelectedSegmentIndex >= numberOfSegments - 1) {
         newSelectedSegmentIndex = 1;
       } else if (newSelectedSegmentIndex === 0) {
         newSelectedSegmentIndex = numberOfSegments - 1;
@@ -153,30 +151,30 @@ function OHIFCornerstoneSEGViewport(props) {
   );
 
   useEffect(() => {
-    if (segIsLoading) {
+    if (rtIsLoading) {
       return;
     }
 
-    promptHydrateSEG({
+    promptHydrateRT({
       servicesManager,
       viewportIndex,
-      segDisplaySet,
+      rtDisplaySet,
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
+  }, [servicesManager, viewportIndex, rtDisplaySet, rtIsLoading]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
         if (
-          evt.segDisplaySet.displaySetInstanceUID ===
-          segDisplaySet.displaySetInstanceUID
+          evt.rtDisplaySet.displaySetInstanceUID ===
+          rtDisplaySet.displaySetInstanceUID
         ) {
-          setSegIsLoading(false);
+          setRtIsLoading(false);
         }
 
         if (evt.overlappingSegments) {
@@ -193,7 +191,7 @@ function OHIFCornerstoneSEGViewport(props) {
     return () => {
       unsubscribe();
     };
-  }, [segDisplaySet]);
+  }, [rtDisplaySet]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
@@ -209,7 +207,7 @@ function OHIFCornerstoneSEGViewport(props) {
     return () => {
       unsubscribe();
     };
-  }, [segDisplaySet]);
+  }, [rtDisplaySet]);
 
   /**
    Cleanup the SEG viewport when the viewport is destroyed
@@ -242,9 +240,7 @@ function OHIFCornerstoneSEGViewport(props) {
       return;
     }
 
-    // This creates a custom tool group which has the lifetime of this view
-    // only, and does NOT interfere with currently displayed segmentations.
-    toolGroup = createSEGToolGroupAndAddTools(
+    toolGroup = createRTToolGroupAndAddTools(
       toolGroupService,
       customizationService,
       toolGroupId
@@ -258,13 +254,12 @@ function OHIFCornerstoneSEGViewport(props) {
         toolGroupId
       );
 
-      // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
 
   useEffect(() => {
-    setIsHydrated(segDisplaySet.isHydrated);
+    setIsHydrated(rtDisplaySet.isHydrated);
 
     return () => {
       // remove the segmentation representations if seg displayset changed
@@ -273,7 +268,7 @@ function OHIFCornerstoneSEGViewport(props) {
       );
       referencedDisplaySetRef.current = null;
     };
-  }, [segDisplaySet]);
+  }, [rtDisplaySet]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -308,11 +303,12 @@ function OHIFCornerstoneSEGViewport(props) {
     StudyDate,
     SeriesDescription,
     SpacingBetweenSlices,
+    SeriesNumber,
   } = referencedDisplaySetRef.current.metadata;
 
   const onStatusClick = async () => {
-    const isHydrated = await hydrateSEGDisplaySet({
-      segDisplaySet,
+    const isHydrated = await _hydrateRTDisplaySet({
+      rtDisplaySet,
       viewportIndex,
       servicesManager,
     });
@@ -338,7 +334,8 @@ function OHIFCornerstoneSEGViewport(props) {
           label: viewportLabel,
           useAltStyling: true,
           studyDate: formatDate(StudyDate),
-          seriesDescription: `SEG Viewport ${SeriesDescription}`,
+          currentSeries: SeriesNumber,
+          seriesDescription: `RT Viewport ${SeriesDescription}`,
           patientInformation: {
             patientName: PatientName
               ? OHIF.utils.formatPN(PatientName.Alphabetic)
@@ -357,12 +354,12 @@ function OHIFCornerstoneSEGViewport(props) {
       />
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
-        {segIsLoading && (
+        {rtIsLoading && (
           <LoadingIndicatorTotalPercent
             className="w-full h-full"
             totalNumbers={processingProgress.totalSegments}
             percentComplete={processingProgress.percentComplete}
-            loadingText="Loading SEG..."
+            loadingText="Loading RTSTRUCT..."
           />
         )}
         {getCornerstoneViewport()}
@@ -384,7 +381,7 @@ function OHIFCornerstoneSEGViewport(props) {
   );
 }
 
-OHIFCornerstoneSEGViewport.propTypes = {
+OHIFCornerstoneRTViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
   viewportIndex: PropTypes.number.isRequired,
   dataSource: PropTypes.object,
@@ -392,7 +389,7 @@ OHIFCornerstoneSEGViewport.propTypes = {
   customProps: PropTypes.object,
 };
 
-OHIFCornerstoneSEGViewport.defaultProps = {
+OHIFCornerstoneRTViewport.defaultProps = {
   customProps: {},
 };
 
@@ -415,4 +412,4 @@ function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   return referencedDisplaySetMetadata;
 }
 
-export default OHIFCornerstoneSEGViewport;
+export default OHIFCornerstoneRTViewport;

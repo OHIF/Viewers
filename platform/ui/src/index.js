@@ -65,6 +65,7 @@ export {
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
+  LoadingIndicatorTotalPercent,
   MeasurementTable,
   Modal,
   NavBar,

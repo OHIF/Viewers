@@ -1,21 +1,15 @@
 import { id } from './id';
 import React from 'react';
-
 import { Types } from '@ohif/core';
-
-import getSopClassHandlerModule, {
-  protocols,
-} from './getSopClassHandlerModule';
-import PanelSegmentation from './panels/PanelSegmentation';
-import getHangingProtocolModule from './getHangingProtocolModule';
+import getSopClassHandlerModule from './getSopClassHandlerModule';
 
 const Component = React.lazy(() => {
   return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport'
+    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport'
   );
 });
 
-const OHIFCornerstoneSEGViewport = props => {
+const OHIFCornerstoneRTViewport = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <Component {...props} />
@@ -26,7 +20,7 @@ const OHIFCornerstoneSEGViewport = props => {
 /**
  * You can remove any of the following modules if you don't need them.
  */
-const extension = {
+const extension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    * You ID can be anything you want, but it should be unique.
@@ -39,36 +33,13 @@ const extension = {
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({
+  getViewportModule({
     servicesManager,
-    commandsManager,
     extensionManager,
-  }): Types.Panel[] => {
-    const wrappedPanelSegmentation = () => {
+  }: Types.Extensions.ExtensionParams) {
+    const ExtendedOHIFCornerstoneRTViewport = props => {
       return (
-        <PanelSegmentation
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-        />
-      );
-    };
-
-    return [
-      {
-        name: 'panelSegmentation',
-        iconName: 'tab-segmentation',
-        iconLabel: 'Segmentation',
-        label: 'Segmentation',
-        component: wrappedPanelSegmentation,
-      },
-    ];
-  },
-
-  getViewportModule({ servicesManager, extensionManager }) {
-    const ExtendedOHIFCornerstoneSEGViewport = props => {
-      return (
-        <OHIFCornerstoneSEGViewport
+        <OHIFCornerstoneRTViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           {...props}
@@ -76,9 +47,7 @@ const extension = {
       );
     };
 
-    return [
-      { name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport },
-    ];
+    return [{ name: 'dicom-rt', component: ExtendedOHIFCornerstoneRTViewport }];
   },
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be
@@ -87,11 +56,6 @@ const extension = {
    * Examples include the default sop class handler provided by the default extension
    */
   getSopClassHandlerModule,
-  getHangingProtocolModule,
 };
 
 export default extension;
-
-// Export the protocols separately to allow for extending it at compile time
-// in other modules
-export { protocols };

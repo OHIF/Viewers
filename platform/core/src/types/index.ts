@@ -12,6 +12,7 @@ export * from './Command';
 export * from './StudyMetadata';
 export * from './PanelModule';
 export * from './IPubSub';
+export * from './Color';
 
 /**
  * Export the types used within the various services and managers, but
