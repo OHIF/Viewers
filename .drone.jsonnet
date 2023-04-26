@@ -48,10 +48,10 @@ local deployV3 = pipelineCommon {
       name: 'clone',
       image: 'alpine/git',
       commands: [
-        'git clone -b feat/nl-v3-stable --single-branch https://github.com/new-lantern/nl-ohif',
+        'git clone -b feat/nl-v3-stable --single-branch https://github.com/new-lantern/nl-ohif.git',
         'cd nl-ohif',
-        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-pacs',
-        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif-modules',
+        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-pacs.git',
+        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif-modules.git',
       ],
     },
     jsStepCommon {
