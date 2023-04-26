@@ -53,7 +53,7 @@ local deployV3 = pipelineCommon {
       },
       commands: [
         'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif',
-        'cd nl-ohif'
+        'cd nl-ohif',
         'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif-modules',
         'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-pacs',
         'apt-get -y update',
