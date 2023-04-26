@@ -9632,10 +9632,10 @@ dicom-parser@^1.8.9:
   resolved "https://registry.npmjs.org/dicom-parser/-/dicom-parser-1.8.20.tgz#e5ef817d80d2fbc093ffd8c2a73a1cb5b47f50bd"
   integrity sha512-R8NXEcaqXu7Qe5exY662aXiJCbiE6fEF8+QpSkVcXTTecFzfIaW8KJ2tSwYvt0UMHP0AUBW13VxQSXfKv/0FUA==
 
-dicomweb-client@^0.8.4:
-  version "0.8.4"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.8.4.tgz#3da814cedb9415facb50bc5f43af8d961a991c74"
-  integrity sha512-/6oY3/Fg9JyAlbTWuJOYbVqici3+nlZt43+Z/Y47RNiqLc028JcxNlY28u4VQqksxfB59f1hhNbsqsHyDT4vhw==
+dicomweb-client@^0.10.2:
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.10.2.tgz#9c2e466264a5d3b56c18edaafd360e89912cac13"
+  integrity sha512-sGjq3TxM7jgbe7cBpqddT1VlfOlwXmE7Q12qCSGDOkEL7fgn+Ak/5oW/LiRP2FzmfYzcbpO32r+hC8i4ITXQLw==
 
 didyoumean@^1.2.2:
   version "1.2.2"
