@@ -30,6 +30,7 @@
     "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
+    "build:lantern": "lerna run build:lantern --stream",
     "dev": "lerna run dev:viewer --stream",
     "dev:lantern": "lerna run dev:lantern --stream",
     "dev:project": ".scripts/dev.sh",
