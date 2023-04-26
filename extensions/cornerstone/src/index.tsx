@@ -93,7 +93,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       return (
         <OHIFCornerstoneViewport
           {...props}
-          ToolbarService={toolbarService}
+          toolbarService={toolbarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />

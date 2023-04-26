@@ -59,7 +59,9 @@ describe('OHIF Measurement Panel', function() {
     cy.get('@viewportInfoTopRight').should('contains.text', '(14/');
 
     // Click on first measurement item
-    cy.get('[data-cy="measurement-item"]').click();
+    cy.get('[data-cy="measurement-item"]')
+      .eq(0)
+      .click();
 
     cy.get('@viewportInfoTopRight').should('contains.text', '(1/');
     cy.get('@viewportInfoTopRight').should('not.contains.text', '(14/');
