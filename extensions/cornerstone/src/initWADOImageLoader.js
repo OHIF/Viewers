@@ -18,6 +18,9 @@ function initWebWorkers(appConfig) {
       appConfig.maxNumberOfWebWorkers
     ),
     startWebWorkersOnDemand: true,
+    webWorkerTaskPaths: [
+      'https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js',
+    ],
     taskConfiguration: {
       decodeTask: {
         initializeCodecsOnStartup: false,
