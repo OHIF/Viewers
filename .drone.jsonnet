@@ -44,6 +44,16 @@ local deployV3 = pipelineCommon {
     disable: true,
   },
   steps: [
+    {
+      name: 'clone',
+      image: 'alpine/git',
+      commands: [
+        'git clone -b feat/nl-v3-stable --single-branch https://github.com/new-lantern/nl-ohif',
+        'cd nl-ohif',
+        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-pacs',
+        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif-modules',
+      ],
+    },
     jsStepCommon {
       name: 'deploy-v3',
       environment: {
@@ -52,10 +62,6 @@ local deployV3 = pipelineCommon {
         },
       },
       commands: [
-        'git clone -b feat/nl-v3-stable --single-branch https://github.com/new-lantern/nl-ohif',
-        'cd nl-ohif',
-        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-pacs',
-        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif-modules',
         'apt-get -y update',
         'apt-get -y install jq',
         'yarn',
