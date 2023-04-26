@@ -636,9 +636,13 @@ function _jumpToMeasurement(
 
       const { viewPlaneNormal: viewportViewPlane } = viewport.getCamera();
 
+      // should compare abs for both planes since the direction can be flipped
       if (
         measurementViewPlane &&
-        !csUtils.isEqual(measurementViewPlane, viewportViewPlane)
+        !csUtils.isEqual(
+          measurementViewPlane.map(Math.abs),
+          viewportViewPlane.map(Math.abs)
+        )
       ) {
         viewportCameraDirectionMatch = false;
       }

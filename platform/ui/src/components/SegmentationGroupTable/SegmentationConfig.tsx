@@ -61,6 +61,8 @@ const ActiveSegmentationConfig = ({
         <InputNumber
           value={config.outlineWidthActive}
           onChange={setOutlineWidthActive}
+          minValue={0}
+          maxValue={10}
           className="-mt-1"
         />
       </div>
