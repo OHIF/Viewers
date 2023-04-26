@@ -40,6 +40,9 @@ local deployV3 = pipelineCommon {
       'push',
     ],
   },
+  clone: {
+    disable: true,
+  },
   steps: [
     jsStepCommon {
       name: 'deploy-v3',
@@ -49,10 +52,12 @@ local deployV3 = pipelineCommon {
         },
       },
       commands: [
-        'apt-get -y update',
-        'apt-get -y install jq',
+        'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif',
+        'cd nl-ohif'
         'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-ohif-modules',
         'git clone -b v3-stable --single-branch https://github.com/new-lantern/nl-pacs',
+        'apt-get -y update',
+        'apt-get -y install jq',
         'yarn',
         'cd nl-ohif-modules/viewer',
         'yarn prepare',
