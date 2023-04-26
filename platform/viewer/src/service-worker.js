@@ -1,6 +1,6 @@
 // https://developers.google.com/web/tools/workbox/guides/troubleshoot-and-debug
 importScripts(
-  'https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-sw.js'
+  'https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js'
 );
 
 // Install newest
