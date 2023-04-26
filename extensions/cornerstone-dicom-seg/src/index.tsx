@@ -3,7 +3,9 @@ import React from 'react';
 
 import { Types } from '@ohif/core';
 
-import getSopClassHandlerModule from './getSopClassHandlerModule';
+import getSopClassHandlerModule, {
+  protocols,
+} from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import getHangingProtocolModule from './getHangingProtocolModule';
 
@@ -62,6 +64,7 @@ const extension = {
       },
     ];
   },
+
   getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {
       return (
@@ -88,3 +91,7 @@ const extension = {
 };
 
 export default extension;
+
+// Export the protocols separately to allow for extending it at compile time
+// in other modules
+export { protocols };

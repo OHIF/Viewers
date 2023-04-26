@@ -49,7 +49,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/adapters": "^0.6.0",
-    "@cornerstonejs/core": "^0.41.0",
+    "@cornerstonejs/core": "^0.42.2",
     "@cornerstonejs/streaming-image-volume-loader": "^0.16.2",
     "@cornerstonejs/tools": "^0.63.2",
     "@kitware/vtk.js": "26.5.6",

@@ -53,6 +53,7 @@ function _getDisplaySetsFromSeries(
     segments: {},
     sopClassUids,
     instance,
+    instances: [instance],
     wadoRoot,
     wadoUriRoot,
     wadoUri,
