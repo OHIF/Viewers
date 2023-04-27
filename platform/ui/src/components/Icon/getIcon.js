@@ -97,7 +97,6 @@ import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
 import toolCalibration from './../../assets/icons/tool-calibration.svg';
-import toolCircle from './../../assets/icons/tool-circle.svg';
 import toolFreehand from './../../assets/icons/tool-freehand.svg';
 import toolFreehandPolygon from './../../assets/icons/tool-freehand-polygon.svg';
 import toolPolygon from './../../assets/icons/tool-polygon.svg';
