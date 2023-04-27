@@ -122,13 +122,6 @@ export default function getCommandsModule({
       }
     },
 
-    rotateViewport: ({ rotation }) => {},
-    flipViewportHorizontal: () => {},
-    flipViewportVertical: () => {},
-    invertViewport: ({ element }) => {},
-    resetViewport: () => {},
-    scaleViewport: ({ direction }) => {},
-    scroll: ({ direction }) => {},
     incrementActiveViewport: () => {
       const { activeViewportIndex, viewports } = viewportGridService.getState();
       const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
@@ -177,16 +170,6 @@ export default function getCommandsModule({
       storeContexts: [] as any[],
       options: {},
     },
-    rotateViewportCW: {
-      commandFn: actions.rotateViewport,
-      storeContexts: [] as any[],
-      options: { rotation: 90 },
-    },
-    rotateViewportCCW: {
-      commandFn: actions.rotateViewport,
-      storeContexts: [] as any[],
-      options: { rotation: -90 },
-    },
     incrementActiveViewport: {
       commandFn: actions.incrementActiveViewport,
       storeContexts: [] as any[],
@@ -194,36 +177,6 @@ export default function getCommandsModule({
     decrementActiveViewport: {
       commandFn: actions.decrementActiveViewport,
       storeContexts: [] as any[],
-    },
-    flipViewportHorizontal: {
-      commandFn: actions.flipViewportHorizontal,
-      storeContexts: [] as any[],
-      options: {},
-    },
-    flipViewportVertical: {
-      commandFn: actions.flipViewportVertical,
-      storeContexts: [] as any[],
-      options: {},
-    },
-    resetViewport: {
-      commandFn: actions.resetViewport,
-      storeContexts: [] as any[],
-      options: {},
-    },
-    scaleUpViewport: {
-      commandFn: actions.scaleViewport,
-      storeContexts: [] as any[],
-      options: { direction: 1 },
-    },
-    scaleDownViewport: {
-      commandFn: actions.scaleViewport,
-      storeContexts: [] as any[],
-      options: { direction: -1 },
-    },
-    fitViewportToWindow: {
-      commandFn: actions.scaleViewport,
-      storeContexts: [] as any[],
-      options: { direction: 0 },
     },
     toggleOverlays: {
       commandFn: actions.toggleOverlays,
