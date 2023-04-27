@@ -1420,8 +1420,17 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.43.1.tgz#b51e3310156136e4407d56b1be9fc981022ae4dd"
   integrity sha512-TT2EZHWFblkwYnMqiUWYCwtwzWEseXy819YnquWU8OzzsF14k/2JAQPvw8FB0ephv/LoVyXZPC/zARA6U30weg==
   dependencies:
-    detect-gpu "^4.0.45"
-    lodash.clonedeep "4.5.0"
+    "@babel/eslint-parser" "^7.19.1"
+    "@cornerstonejs/codec-charls" "^1.2.3"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
+    "@cornerstonejs/codec-openjpeg" "^1.2.2"
+    "@cornerstonejs/codec-openjph" "^2.4.2"
+    "@cornerstonejs/core" "^0.44.0"
+    coverage-istanbul-loader "^3.0.5"
+    date-format "^4.0.14"
+    dicom-parser "^1.8.9"
+    pako "^2.0.4"
+    uuid "^9.0.0"
 
 "@cornerstonejs/streaming-image-volume-loader@^0.16.2":
   version "0.16.10"
@@ -1431,12 +1440,12 @@
     "@cornerstonejs/core" "^0.43.0"
     cornerstone-wado-image-loader "^4.10.2"
 
-"@cornerstonejs/tools@^0.63.2":
-  version "0.63.3"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.63.3.tgz#a66df8e8a3dc0c1bd5224d85db5d2231ab946f12"
-  integrity sha512-cgs/6OYcp3p+RSEOb77gR61eziTfb6Y0uK/GrdpgEet3InhFohJCst1TI8rbrHJd4wUX2VDzXHIm5gf6TlwRsA==
+"@cornerstonejs/tools@^0.65.0":
+  version "0.65.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.65.0.tgz#419800eed71d5c16809b393d5327dfb96b074a32"
+  integrity sha512-OemuMWJkRx7rvfkhI0QxXC1+3DjREuI1y74vNsyLHk9tOjX6ozbURMAGwoHrUu/Bz+8Xb/n8d6IfAF1CtjaqbA==
   dependencies:
-    "@cornerstonejs/core" "^0.43.1"
+    "@cornerstonejs/core" "^0.44.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -20540,6 +20549,7 @@ table@^6.0.9:
 
 tailwindcss@3.2.4:
   version "3.2.4"
+  resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.2.4.tgz#afe3477e7a19f3ceafb48e4b083e292ce0dc0250"
   resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.2.4.tgz#afe3477e7a19f3ceafb48e4b083e292ce0dc0250"
   integrity sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==
   dependencies:

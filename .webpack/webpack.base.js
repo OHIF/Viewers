@@ -103,8 +103,8 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
         '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
-        'cornerstone-wado-image-loader':
-          'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js',
+        '@cornerstonejs/dicom-image-loader':
+          '@cornerstonejs/dicom-image-loader/dist/dynamic-import/cornerstoneDICOMImageLoader.min.js',
       },
       // Which directories to search when resolving modules
       modules: [
