@@ -295,8 +295,8 @@ function DicomUploadProgress({
   const getNofMFilesStyle = useCallback(() => {
     // the number of digits accounts for the digits being on each side of the ' of '
     const numDigits = 2 * dicomFileUploaderArr.length.toString().length;
-    // the number of digits + 2 spaces and 2 characters for ' of ' minus 1 because ' of ' is not very wide
-    const numChars = numDigits + 3;
+    // the number of digits + 2 spaces and 2 characters for ' of '
+    const numChars = numDigits + 4;
     return { width: `${numChars}ch` };
   }, []);
 
@@ -309,7 +309,7 @@ function DicomUploadProgress({
               dicomFileUploaderArr.length
             } ${
               dicomFileUploaderArr.length > 1 ? 'files' : 'file'
-            } completed`}</span>
+            } completed.`}</span>
             <Button
               variant="contained"
               color="primary"
@@ -393,7 +393,7 @@ function DicomUploadProgress({
                   }
                 ></ProgressLoadingBar>
               </div>
-              <div className="ml-5 flex items-center gap-6">
+              <div className="w-24 flex items-center">
                 <div className="w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>

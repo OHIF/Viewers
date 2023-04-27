@@ -63,7 +63,7 @@ function DicomUploadProgressItem({
     <div className="flex w-full p-2.5 text-lg min-h-14 items-center border-b border-secondary-light overflow-hidden">
       <div className="flex flex-col gap-1 self-top w-0 grow shrink">
         <div className="flex gap-4">
-          <div className="flex w-6 justify-center items-center">
+          <div className="flex w-6 justify-center items-center shrink-0">
             {getStatusIcon()}
           </div>
           <div className="text-ellipsis whitespace-nowrap overflow-hidden">
@@ -72,20 +72,22 @@ function DicomUploadProgressItem({
         </div>
         {failedReason && <div className="pl-10">{failedReason}</div>}
       </div>
-      {!isComplete() && (
-        <div className="ml-auto flex gap-6 grow shrink w-1 justify-end items-center">
-          {dicomFileUploader.getStatus() === UploadStatus.InProgress && (
-            <div className="w-10 text-right">{percentComplete}%</div>
-          )}
-          <div className="flex cursor-pointer">
-            <Icon
-              className="w-6 h-6 self-center text-primary-active"
-              name="close"
-              onClick={cancelUpload}
-            />
-          </div>
-        </div>
-      )}
+      <div className="w-24 flex items-center">
+        {!isComplete() && (
+          <>
+            {dicomFileUploader.getStatus() === UploadStatus.InProgress && (
+              <div className="w-10 text-right">{percentComplete}%</div>
+            )}
+            <div className="flex cursor-pointer ml-auto">
+              <Icon
+                className="w-6 h-6 self-center text-primary-active"
+                name="close"
+                onClick={cancelUpload}
+              />
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -87,7 +87,7 @@ function DicomUpload({
   };
 
   return (
-    <div className="h-[calc(100vh-300px)] min-h-[250px] flex flex-col bg-black">
+    <div className="h-[calc(100vh-300px)] min-h-[250px] flex flex-col bg-black select-none">
       {dicomFileUploaderArr.length ? (
         <DicomUploadProgress
           dicomFileUploaderArr={Array.from(dicomFileUploaderArr)}
