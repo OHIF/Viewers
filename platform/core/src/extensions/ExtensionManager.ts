@@ -37,9 +37,13 @@ export interface ExtensionParams extends ExtensionConstructor {
 export interface Extension {
   id: string;
   preRegistration?: (p: ExtensionParams) => Promise<void> | void;
-  onModeExit?: () => void;
   getHangingProtocolModule?: (p: ExtensionParams) => unknown;
   getCommandsModule?: (p: ExtensionParams) => CommandsModule;
+  getViewportModule?: (p: ExtensionParams) => unknown;
+  getUtilityModule?: (p: ExtensionParams) => unknown;
+  getCustomizationModule?: (p: ExtensionParams) => unknown;
+  onModeEnter?: () => void;
+  onModeExit?: () => void;
 }
 
 export type ExtensionRegister = {

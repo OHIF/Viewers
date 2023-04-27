@@ -124,7 +124,7 @@ module.exports = (env, argv) => {
         patterns: [
           {
             from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
+              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
             to: DIST_DIR,
           },
         ],

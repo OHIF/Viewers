@@ -68,6 +68,7 @@ import InputRange from './InputRange';
 import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
+import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
 
@@ -105,6 +106,7 @@ export {
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
+  LoadingIndicatorTotalPercent,
   MeasurementTable,
   Modal,
   NavBar,

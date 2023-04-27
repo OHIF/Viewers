@@ -19,37 +19,60 @@ const sizesClasses = {
 const InputNumber: React.FC<{
   value: number;
   onChange: (value) => void;
+  minValue?: number;
+  maxValue?: number;
   step: number;
   size?: string;
   className?: string;
-}> = ({ value, onChange, step = 1, className, size = 'sm' }) => {
+}> = ({
+  value,
+  onChange,
+  step = 1,
+  className,
+  size = 'sm',
+  minValue = 0,
+  maxValue = 100,
+}) => {
   const [numberValue, setNumberValue] = useState(value);
+
+  const handleMinMax = useCallback(
+    (value: number) => {
+      if (value > maxValue) {
+        return maxValue;
+      } else if (value < minValue) {
+        return minValue;
+      } else {
+        return value;
+      }
+    },
+    [maxValue, minValue]
+  );
 
   const handleChange = useCallback(
     e => {
-      const numberValue = e.target.value;
+      const numberValue = handleMinMax(Number(e.target.value));
       setNumberValue(numberValue);
       onChange(numberValue);
     },
-    [onChange, setNumberValue]
+    [onChange, setNumberValue, handleMinMax]
   );
 
   const handleIncrement = useCallback(
     e => {
-      const newNum = Number(numberValue) + step;
+      const newNum = handleMinMax(Number(numberValue) + step);
       setNumberValue(newNum);
       onChange(newNum);
     },
-    [onChange, setNumberValue, step, numberValue]
+    [onChange, setNumberValue, step, numberValue, handleMinMax]
   );
 
   const handleDecrement = useCallback(
     e => {
-      const newNum = Number(numberValue) - step;
+      const newNum = handleMinMax(Number(numberValue) - step);
       setNumberValue(newNum);
       onChange(newNum);
     },
-    [onChange, setNumberValue, step, numberValue]
+    [onChange, setNumberValue, step, numberValue, handleMinMax]
   );
 
   return (

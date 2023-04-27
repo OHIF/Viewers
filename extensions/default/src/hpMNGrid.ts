@@ -1,24 +1,23 @@
 import { Types } from '@ohif/core';
 
 /**
- * This hanging protocol has multiple stages, which are enabled when
- * there are enough display sets with images to fill the stage, and
- * are passive when there is at least one display set.
- * Enabled display sets are navigated to by default, while passive ones
- * are navigated to manually using the ctrl+end keyboard shortcut.
+ * This hanging protocol can be activated on the primary mode by directly
+ * referencing it in a URL or by directly including it within a mode, e.g.:
+ * `&hangingProtocolId=@ohif/mnGrid` added to the viewer URL
+ * It is not included in the viewer mode by default.
  */
 const hpMN: Types.HangingProtocol.Protocol = {
   hasUpdatedPriorsInformation: false,
-  id: '@ohif/hp-extension.mn',
-  description: 'Has various hanging protocol layouts for use in testing',
+  id: '@ohif/mnGrid',
+  description: 'Has various hanging protocol grid layouts',
   name: '2x2',
   protocolMatchingRules: [
     {
       id: 'OneOrMoreSeries',
-      weight: 1,
+      weight: 25,
       attribute: 'numberOfDisplaySetsWithImages',
       constraint: {
-        greaterThan: 1,
+        greaterThan: 0,
       },
     },
   ],
@@ -30,6 +29,15 @@ const hpMN: Types.HangingProtocol.Protocol = {
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
+          },
+        },
+        // This display set will select the specified items by preference
+        // It has no affect if nothing is specified in the URL.
+        {
+          attribute: 'isDisplaySetFromUrl',
+          weight: 10,
+          constraint: {
+            equals: true,
           },
         },
       ],
@@ -142,7 +150,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
-              reuseId: '0-0',
             },
           ],
         },
@@ -153,9 +160,8 @@ const hpMN: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
+              id: 'defaultDisplaySetId',
               matchedDisplaySetsIndex: 1,
-              id: 'defaultDisplaySetId',
-              reuseId: '1-0',
             },
           ],
         },
@@ -166,9 +172,8 @@ const hpMN: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              matchedDisplaySetsIndex: 2,
               id: 'defaultDisplaySetId',
-              reuseId: '0-1',
+              matchedDisplaySetsIndex: 2,
             },
           ],
         },
