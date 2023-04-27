@@ -1,17 +1,35 @@
-const path = require('path');
+import path from 'path';
+import remarkGfm from 'remark-gfm';
+import type { StorybookConfig } from '@storybook/react-webpack5';
 
-module.exports = {
+const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(mdx)'],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/addon-google-analytics',
+    // Other addons go here
+    {
+      name: '@storybook/addon-docs',
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
+    },
   ],
-  core: {
-    builder: 'webpack5',
+  core: { builder: '@storybook/builder-webpack5' },
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {},
+  },
+  docs: {
+    autodocs: true, // see below for alternatives
+    defaultName: 'Docs', // set to change the name of generated docs entries
   },
   staticDirs: ['../static'],
-  webpackFinal: async (config, { configType }) => {
+  webpackFinal: async (config: any, { configType }) => {
     // `configType` has a value of 'DEVELOPMENT' or 'PRODUCTION'
     // You can change the configuration based on that.
     // 'PRODUCTION' is used when building the static version of storybook.
@@ -73,3 +91,5 @@ module.exports = {
     return config;
   },
 };
+
+export default config;

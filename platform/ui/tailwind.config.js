@@ -24,9 +24,6 @@ module.exports = {
       initial: 'initial',
       inherit: 'inherit',
 
-      indigo: {
-        dark: '#0b1a42',
-      },
       aqua: {
         pale: '#7bb2ce',
       },
@@ -155,6 +152,7 @@ module.exports = {
         700: '#4c51bf',
         800: '#434190',
         900: '#3c366b',
+        dark: '#0b1a42',
       },
       purple: {
         100: '#faf5ff',
