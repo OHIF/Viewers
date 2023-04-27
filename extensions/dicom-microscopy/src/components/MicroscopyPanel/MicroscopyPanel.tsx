@@ -381,7 +381,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       </div>
       <div className="flex justify-center p-4">
         <ButtonGroup color="black" size="inherit">
-          {promptSave && (
+          {/* Let's hide the save button for now, as export SR for SM is a proof of concept */}
+          {/*{promptSave && (
             <Button
               className="px-2 py-2 text-base"
               size="initial"
@@ -392,7 +393,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
             >
               {props.t('Create Report')}
             </Button>
-          )}
+          )} */}
           {/* <Button
             className="px-2 py-2 text-base"
             onClick={onDeleteCurrentSRHandler}
