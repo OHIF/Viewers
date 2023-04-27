@@ -22,8 +22,8 @@ import {
   retrieveStudyMetadata,
   deleteStudyMetadataPromise,
 } from './retrieveStudyMetadata.js';
-import StaticWadoClient from './utils/StaticWadoClient.js';
-import getDirectURL from '../utils/getDirectURL.js';
+import StaticWadoClient from './utils/StaticWadoClient';
+import getDirectURL from '../utils/getDirectURL';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -90,7 +90,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
+      const queryStudyInstanceUIDs = utils.splitComma(
+        query.getAll('StudyInstanceUIDs')
+      );
 
       const StudyInstanceUIDs =
         (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||

@@ -9,6 +9,7 @@ import {
   LengthTool,
   RectangleROITool,
   EllipticalROITool,
+  CircleROITool,
   BidirectionalTool,
   ArrowAnnotateTool,
   DragProbeTool,
@@ -41,6 +42,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(LengthTool);
   addTool(RectangleROITool);
   addTool(EllipticalROITool);
+  addTool(CircleROITool);
   addTool(BidirectionalTool);
   addTool(ArrowAnnotateTool);
   addTool(DragProbeTool);
@@ -83,6 +85,7 @@ const toolNames = {
   Probe: ProbeTool.toolName,
   RectangleROI: RectangleROITool.toolName,
   EllipticalROI: EllipticalROITool.toolName,
+  CircleROI: CircleROITool.toolName,
   Bidirectional: BidirectionalTool.toolName,
   Angle: AngleTool.toolName,
   CobbAngle: CobbAngleTool.toolName,

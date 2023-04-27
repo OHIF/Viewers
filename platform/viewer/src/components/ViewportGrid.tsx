@@ -99,9 +99,10 @@ function ViewerViewportGrid(props) {
       return {
         displaySetInstanceUIDs: displaySetUIDsToHang,
         displaySetOptions: displaySetUIDsToHangOptions,
-        viewportOptions: {
-          ...viewportOptions,
-        },
+        viewportOptions: hangingProtocolService.getComputedOptions(
+          viewportOptions,
+          displaySetUIDsToHang
+        ),
       };
     };
 
@@ -199,11 +200,12 @@ function ViewerViewportGrid(props) {
         }
 
         updatedViewports.forEach(vp => {
+          vp.viewportOptions ||= {};
           const { orientation, viewportType } = vp.viewportOptions;
           let initialImageOptions;
 
           // For initial imageIndex to hang be careful for the volume viewport
-          if (viewportType === 'stack') {
+          if (viewportType === 'stack' || !viewportType) {
             initialImageOptions = {
               index: imageIndex,
             };
@@ -226,7 +228,7 @@ function ViewerViewportGrid(props) {
             }
           }
 
-          vp.viewportOptions['initialImageOptions'] = initialImageOptions;
+          vp.viewportOptions.initialImageOptions = initialImageOptions;
         });
 
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
