@@ -100,12 +100,6 @@ module.exports = (env, argv) => {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
-          // Copy CSWIL build files
-          // {
-          //   from:
-          //     '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-          //   to: DIST_DIR,
-          // },
           // Copy Dicom Microscopy Viewer build files
           {
             from:
@@ -114,6 +108,12 @@ module.exports = (env, argv) => {
             globOptions: {
               ignore: ['*.js.map'],
             },
+          },
+          // Copy dicom-image-loader build files
+          {
+            from:
+              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
           },
         ],
       }),
@@ -133,15 +133,6 @@ module.exports = (env, argv) => {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
-      }),
-      new CopyWebpackPlugin({
-        patterns: [
-          {
-            from:
-              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
-        ],
       }),
     ],
     // https://webpack.js.org/configuration/dev-server/
