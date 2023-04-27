@@ -1,4 +1,4 @@
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 
 import { PubSubService } from '@ohif/core';
 
@@ -46,7 +46,7 @@ export default class DicomFileUploader extends PubSubService {
   constructor(file, dataSource) {
     super(EVENTS);
     this._file = file;
-    this._fileId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+    this._fileId = dicomImageLoader.wadouri.fileManager.add(file);
     this._dataSource = dataSource;
   }
 
@@ -118,7 +118,7 @@ export default class DicomFileUploader extends PubSubService {
       };
 
       // First try to load the file.
-      cornerstoneWADOImageLoader.wadouri
+      dicomImageLoader.wadouri
         .loadFileRequest(this._fileId)
         .then(dicomFile => {
           if (this._abortController.signal.aborted) {
