@@ -19,6 +19,19 @@ export enum UploadStatus {
   InProgress,
   Success,
   Failed,
+  Cancelled,
+}
+
+type CancelOrFailed = UploadStatus.Cancelled | UploadStatus.Failed;
+
+export class UploadRejection {
+  message: string;
+  status: CancelOrFailed;
+
+  constructor(status: CancelOrFailed, message: string) {
+    this.message = message;
+    this.status = status;
+  }
 }
 
 export default class DicomFileUploader extends PubSubService {
@@ -29,7 +42,6 @@ export default class DicomFileUploader extends PubSubService {
   private _abortController = new AbortController();
   private _status: UploadStatus = UploadStatus.NotStarted;
   private _percentComplete = 0;
-  private _request = new XMLHttpRequest();
 
   constructor(file, dataSource) {
     super(EVENTS);
@@ -86,13 +98,22 @@ export default class DicomFileUploader extends PubSubService {
           });
         },
         timeout: () => {
-          this._reject(reject, new Error('The request timed out.'));
+          this._reject(
+            reject,
+            new UploadRejection(UploadStatus.Failed, 'The request timed out.')
+          );
         },
         abort: () => {
-          this._reject(reject, new Error('The request was aborted.'));
+          this._reject(
+            reject,
+            new UploadRejection(UploadStatus.Cancelled, 'Cancelled')
+          );
         },
         error: () => {
-          this._reject(reject, new Error('The request failed.'));
+          this._reject(
+            reject,
+            new UploadRejection(UploadStatus.Failed, 'The request failed.')
+          );
         },
       };
 
@@ -101,13 +122,22 @@ export default class DicomFileUploader extends PubSubService {
         .loadFileRequest(this._fileId)
         .then(dicomFile => {
           if (this._abortController.signal.aborted) {
-            this._reject(reject, new Error('The request was aborted.'));
+            this._reject(
+              reject,
+              new UploadRejection(UploadStatus.Cancelled, 'Cancelled')
+            );
             return;
           }
 
           if (!this._checkDicomFile(dicomFile)) {
             // The file is not DICOM
-            this._reject(reject, new Error('Not a valid DICOM file.'));
+            this._reject(
+              reject,
+              new UploadRejection(
+                UploadStatus.Failed,
+                'Not a valid DICOM file.'
+              )
+            );
             return;
           }
 
@@ -134,8 +164,16 @@ export default class DicomFileUploader extends PubSubService {
   }
 
   private _reject(reject: (reason?: any) => void, reason: any) {
-    this._status = UploadStatus.Failed;
-    reject(reason);
+    if (reason instanceof UploadRejection) {
+      this._status = reason.status;
+      reject(reason);
+    }
+
+    if (reason.message) {
+      reject(new UploadRejection(UploadStatus.Failed, reason.message));
+    }
+
+    reject(new UploadRejection(UploadStatus.Failed, reason));
   }
 
   private _addRequestCallbacks(request: XMLHttpRequest, uploadCallbacks) {

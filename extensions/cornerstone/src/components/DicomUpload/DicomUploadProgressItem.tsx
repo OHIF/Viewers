@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import DicomFileUploader, {
   DicomFileUploaderProgressEvent,
   EVENTS,
+  UploadRejection,
   UploadStatus,
 } from '../../utils/DicomFileUploader';
 import { Icon } from '@ohif/ui';
@@ -21,6 +22,7 @@ function DicomUploadProgressItem({
 
   const isComplete = () =>
     dicomFileUploader.getStatus() === UploadStatus.Failed ||
+    dicomFileUploader.getStatus() === UploadStatus.Cancelled ||
     dicomFileUploader.getStatus() === UploadStatus.Success;
 
   useEffect(() => {
@@ -31,8 +33,8 @@ function DicomUploadProgressItem({
       }
     );
 
-    dicomFileUploader.load().catch(reason => {
-      setFailedReason(reason?.toString() ?? '');
+    dicomFileUploader.load().catch((reason: UploadRejection) => {
+      setFailedReason(reason.message ?? '');
     });
 
     return () => progressSubscription.unsubscribe();

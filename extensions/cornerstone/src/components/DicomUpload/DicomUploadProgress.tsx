@@ -11,6 +11,7 @@ import DicomFileUploader, {
   EVENTS,
   UploadStatus,
   DicomFileUploaderProgressEvent,
+  UploadRejection,
 } from '../../utils/DicomFileUploader';
 import DicomUploadProgressItem from './DicomUploadProgressItem';
 import classNames from 'classnames';
@@ -62,7 +63,7 @@ function DicomUploadProgress({
 
   const [numFilesCompleted, setNumFilesCompleted] = useState(0);
 
-  const [failureOccurred, setFailureOccurred] = useState(false);
+  const [numFails, setNumFails] = useState(0);
 
   const [showFailedOnly, setShowFailedOnly] = useState(false);
 
@@ -208,8 +209,10 @@ function DicomUploadProgress({
       // uploads completed.
       fileUploader
         .load()
-        .catch(() => {
-          setFailureOccurred(true);
+        .catch((rejection: UploadRejection) => {
+          if (rejection.status === UploadStatus.Failed) {
+            setNumFails(numFails => numFails + 1);
+          }
         })
         .finally(() => {
           // If any error occurred, the percent complete progress stops firing
@@ -290,8 +293,10 @@ function DicomUploadProgress({
    * left and right.
    */
   const getNofMFilesStyle = useCallback(() => {
+    // the number of digits accounts for the digits being on each side of the ' of '
     const numDigits = 2 * dicomFileUploaderArr.length.toString().length;
-    const numChars = numDigits + 4; // the number of digits + 2 spaces and 2 characters for 'of'
+    // the number of digits + 2 spaces and 2 characters for ' of ' minus 1 because ' of ' is not very wide
+    const numChars = numDigits + 3;
     return { width: `${numChars}ch` };
   }, []);
 
@@ -300,9 +305,11 @@ function DicomUploadProgress({
       <div className="text-lg px-1 pb-4 h-14 flex bg-primary-dark items-center">
         {numFilesCompleted === dicomFileUploaderArr.length ? (
           <>
-            <span
-              className={NO_WRAP_ELLIPSIS_CLASS_NAMES}
-            >{`Upload of ${dicomFileUploaderArr.length} files complete`}</span>
+            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${
+              dicomFileUploaderArr.length
+            } ${
+              dicomFileUploaderArr.length > 1 ? 'files' : 'file'
+            } completed`}</span>
             <Button
               variant="contained"
               color="primary"
@@ -347,7 +354,7 @@ function DicomUploadProgress({
   const getShowFailedOnlyIconComponent = (): ReactElement => {
     return (
       <div className="ml-auto flex justify-center w-6">
-        {failureOccurred && (
+        {numFails > 0 && (
           <div
             onClick={() =>
               setShowFailedOnly(currentShowFailedOnly => !currentShowFailedOnly)
@@ -367,7 +374,11 @@ function DicomUploadProgress({
           {numFilesCompleted === dicomFileUploaderArr.length ? (
             <>
               <div className="text-xl text-primary-light">
-                {failureOccurred ? 'Completed with error(s)!' : 'Completed!'}
+                {numFails > 0
+                  ? `Completed with ${numFails} ${
+                      numFails > 1 ? 'errors' : 'error'
+                    }!`
+                  : 'Completed!'}
               </div>
               {getShowFailedOnlyIconComponent()}
             </>
