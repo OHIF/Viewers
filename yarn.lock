@@ -1415,10 +1415,18 @@
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/core@^0.43.0", "@cornerstonejs/core@^0.43.1":
-  version "0.43.1"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.43.1.tgz#b51e3310156136e4407d56b1be9fc981022ae4dd"
-  integrity sha512-TT2EZHWFblkwYnMqiUWYCwtwzWEseXy819YnquWU8OzzsF14k/2JAQPvw8FB0ephv/LoVyXZPC/zARA6U30weg==
+"@cornerstonejs/core@^0.44.0":
+  version "0.44.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.44.0.tgz#f1a9af5407b25510e91e3e17b55dd9f3c61c557b"
+  integrity sha512-EZURQAuILsmiUdp5nusUpL6pJjteVgY7DqrqkFSqeeSlDjt2j+0h+kFvvbpRAhjyWz/1OjK9vtvbRFCpwhnzJw==
+  dependencies:
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/dicom-image-loader@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.4.0.tgz#c7f5c5659a10a6f4f5e96367ab6d27784daeb424"
+  integrity sha512-ORnF/4qAbTninkesz7ADQu832PW+/xcbUhxSPU1ZPukjr9cglynsDzKjsEYJlY10+rWzbIQ+JEgefrXZgVoT1g==
   dependencies:
     "@babel/eslint-parser" "^7.19.1"
     "@cornerstonejs/codec-charls" "^1.2.3"
@@ -1432,12 +1440,12 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.16.2":
-  version "0.16.10"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.16.10.tgz#ec398b7f3c2585a39083bbaec1dd3b9e8ff196d3"
-  integrity sha512-CTaoqqh4jH0cHvZ9AcUlDgRZed1BYLfbVHPGf4yFNu2NISGztAQaKMloUuNv/alS7MGsU14P2Bu6bRPVxusmEA==
+"@cornerstonejs/streaming-image-volume-loader@^0.18.0":
+  version "0.18.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.18.0.tgz#69ed58328428710ea0a500d42fdaad4f4f867eed"
+  integrity sha512-mQpX8ajlKpVsmLx1GpBqoi6/M2VolG/b+Vh/W5pduRUGekewz3p2oAwIrwiRj6R/O7XhLiNTtcae7sT1+7xqpQ==
   dependencies:
-    "@cornerstonejs/core" "^0.43.0"
+    "@cornerstonejs/core" "^0.44.0"
     cornerstone-wado-image-loader "^4.10.2"
 
 "@cornerstonejs/tools@^0.65.0":
@@ -8034,7 +8042,7 @@ cornerstone-math@^0.1.9:
   resolved "https://registry.npmjs.org/cornerstone-math/-/cornerstone-math-0.1.10.tgz#a3f99db64d73c5adee61ae0d570128eca1682d07"
   integrity sha512-23XSAyP7t70ANvhFyqwvva+zFd1bQ2d5GL7tg9qKE932WmImjA2Y9tiy5n0iTtnf51W/78Png8Lia2o4dCdJaQ==
 
-cornerstone-wado-image-loader@^4.10.2, cornerstone-wado-image-loader@^4.13.0:
+cornerstone-wado-image-loader@^4.10.2:
   version "4.13.1"
   resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.13.1.tgz#99b90e15834b6e1b5f84f0495270400b18b07e8e"
   integrity sha512-IKAeI2JLG2HFBFF+ANHYyHxOJmjbys+wfX15flC0bz3D9AhDU1HX34qJMRh+HMMZ/Jcqjc4EJJq1ttR0OwMdig==
@@ -20549,7 +20557,6 @@ table@^6.0.9:
 
 tailwindcss@3.2.4:
   version "3.2.4"
-  resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.2.4.tgz#afe3477e7a19f3ceafb48e4b083e292ce0dc0250"
   resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.2.4.tgz#afe3477e7a19f3ceafb48e4b083e292ce0dc0250"
   integrity sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==
   dependencies:
