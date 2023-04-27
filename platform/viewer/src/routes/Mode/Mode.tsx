@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation } from 'react-router';
+import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
@@ -8,6 +8,7 @@ import { useQuery, useSearchParams } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
+import { history } from '../../utils/history';
 
 const { getSplitParam } = utils;
 
@@ -104,6 +105,9 @@ export default function ModeRoute({
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
   const isMounted = useRef(false);
+
+  // Expose the react router dom navigation.
+  history.navigate = useNavigate();
 
   if (location !== locationRef.current) {
     layoutTemplateData.current = null;
