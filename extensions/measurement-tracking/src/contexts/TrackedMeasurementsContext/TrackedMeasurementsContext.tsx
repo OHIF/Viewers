@@ -149,6 +149,10 @@ function TrackedMeasurementsContextProvider(
         activeViewport.displaySetInstanceUIDs[0]
       );
 
+      if (!displaySet) {
+        return;
+      }
+
       // If this is an SR produced by our SR SOPClassHandler,
       // and it hasn't been loaded yet, do that now so we
       // can check if it can be rehydrated or not.

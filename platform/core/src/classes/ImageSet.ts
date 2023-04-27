@@ -1,7 +1,16 @@
 import guid from '../utils/guid.js';
 import { Vector3 } from 'cornerstone-math';
 
-const OBJECT = 'object';
+type Attributes = Record<string, unknown>;
+type Image = {
+  StudyInstanceUID?: string;
+  getData(): {
+    metadata: {
+      ImagePositionPatient: number[];
+      ImageOrientationPatient: number[];
+    };
+  };
+};
 
 /**
  * This class defines an ImageSet object which will be used across the viewer. This object represents
@@ -10,8 +19,14 @@ const OBJECT = 'object';
  * indiscriminately, but this should be changed).
  */
 class ImageSet {
-  constructor(images) {
-    if (Array.isArray(images) !== true) {
+  images: Image[];
+  uid: string;
+  instances: Image[];
+  instance?: Image;
+  StudyInstanceUID?: string;
+
+  constructor(images: Image[]) {
+    if (!Array.isArray(images)) {
       throw new Error('ImageSet expects an array of images');
     }
 
@@ -36,41 +51,39 @@ class ImageSet {
     this.StudyInstanceUID = this.instance?.StudyInstanceUID;
   }
 
-  getUID() {
+  load: () => Promise<void>;
+
+  getUID(): string {
     return this.uid;
   }
 
-  setAttribute(attribute, value) {
+  setAttribute(attribute: string, value: unknown): void {
     this[attribute] = value;
   }
 
-  getAttribute(attribute) {
+  getAttribute(attribute: string): unknown {
     return this[attribute];
   }
 
-  setAttributes(attributes) {
-    if (typeof attributes === OBJECT && attributes !== null) {
-      const imageSet = this,
-        hasOwn = Object.prototype.hasOwnProperty;
-      for (let attribute in attributes) {
-        if (hasOwn.call(attributes, attribute)) {
-          imageSet[attribute] = attributes[attribute];
-        }
+  setAttributes(attributes: Attributes): void {
+    if (typeof attributes === 'object' && attributes !== null) {
+      for (const [attribute, value] of Object.entries(attributes)) {
+        this[attribute] = value;
       }
     }
   }
 
-  getNumImages = () => this.images.length;
+  getNumImages = (): number => this.images.length;
 
-  getImage(index) {
+  getImage(index: number): Image {
     return this.images[index];
   }
 
-  sortBy(sortingCallback) {
+  sortBy(sortingCallback: (a: Image, b: Image) => number): Image[] {
     return this.images.sort(sortingCallback);
   }
 
-  sortByImagePositionPatient() {
+  sortByImagePositionPatient(): void {
     const images = this.images;
     const referenceImagePositionPatient = _getImagePositionPatient(images[0]);
 
@@ -94,7 +107,7 @@ class ImageSet {
       )
     );
 
-    const distanceImagePairs = images.map(function(image) {
+    const distanceImagePairs = images.map(function(image: Image) {
       const ippVec = new Vector3(..._getImagePositionPatient(image));
       const positionVector = refIppVec.clone().sub(ippVec);
       const distance = positionVector.dot(scanAxisNormal);

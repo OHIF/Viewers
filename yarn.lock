@@ -1308,7 +1308,7 @@
     core-js-pure "^3.25.1"
     regenerator-runtime "^0.13.11"
 
-"@babel/runtime@7.17.9", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.6", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.6", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.7", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@7.17.9", "@babel/runtime@7.7.6", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.6", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.6", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.7", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
   version "7.20.13"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.20.13.tgz#7055ab8a7cff2b8f6058bf6ae45ff84ad2aded4b"
   integrity sha512-gt3PKXs0DBoL9xCvOIIZ2NEqAGZqHjAnmVbfQtB620V0uReIQutpel14KcneZuer7UioY8ALKZ7iocavvzTNFA==
@@ -1443,28 +1443,53 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.40.0":
-  version "0.40.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.40.0.tgz#5b6409277362b26c6ddb55b54025ecf26b304f84"
-  integrity sha512-tjUGFyXuRNRSybpKpd/mP4tKMshc48n/TIt9x5mXU+zqywBPGmojkXOj/v+pG02XopKLg5XPSI4LPysZNVscsg==
+"@cornerstonejs/core@^0.42.2":
+  version "0.42.3"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.42.3.tgz#c88d509f9f884942b1498e9c3dc1a4144e6c8854"
+  integrity sha512-WhNMnc8fqq0K//BWczPgaC05zM73+4r7MXC7tKLUj75+54JPouy7NQshOxP/p23nBOYcdpm1FEkTKTw61qbDVw==
   dependencies:
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.16.0":
-  version "0.16.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.16.0.tgz#513f868c285963fd2f2dbf54ed7840a2dc05e33a"
-  integrity sha512-+bbQ6/FN7ryCDdsuyheIPeRa5MO8mTDUDZusNIU97Q8fdmw1hB+eiy9fNThdGfCENd/GPANNsXe6K5olUX7QhQ==
+"@cornerstonejs/core@^0.44.0":
+  version "0.44.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.44.0.tgz#f1a9af5407b25510e91e3e17b55dd9f3c61c557b"
+  integrity sha512-EZURQAuILsmiUdp5nusUpL6pJjteVgY7DqrqkFSqeeSlDjt2j+0h+kFvvbpRAhjyWz/1OjK9vtvbRFCpwhnzJw==
   dependencies:
-    "@cornerstonejs/core" "^0.40.0"
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/dicom-image-loader@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.4.0.tgz#c7f5c5659a10a6f4f5e96367ab6d27784daeb424"
+  integrity sha512-ORnF/4qAbTninkesz7ADQu832PW+/xcbUhxSPU1ZPukjr9cglynsDzKjsEYJlY10+rWzbIQ+JEgefrXZgVoT1g==
+  dependencies:
+    "@babel/eslint-parser" "^7.19.1"
+    "@cornerstonejs/codec-charls" "^1.2.3"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
+    "@cornerstonejs/codec-openjpeg" "^1.2.2"
+    "@cornerstonejs/codec-openjph" "^2.4.2"
+    "@cornerstonejs/core" "^0.44.0"
+    coverage-istanbul-loader "^3.0.5"
+    date-format "^4.0.14"
+    dicom-parser "^1.8.9"
+    pako "^2.0.4"
+    uuid "^9.0.0"
+
+"@cornerstonejs/streaming-image-volume-loader@^0.18.0":
+  version "0.18.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.18.0.tgz#69ed58328428710ea0a500d42fdaad4f4f867eed"
+  integrity sha512-mQpX8ajlKpVsmLx1GpBqoi6/M2VolG/b+Vh/W5pduRUGekewz3p2oAwIrwiRj6R/O7XhLiNTtcae7sT1+7xqpQ==
+  dependencies:
+    "@cornerstonejs/core" "^0.44.0"
     cornerstone-wado-image-loader "^4.10.2"
 
-"@cornerstonejs/tools@^0.60.1":
-  version "0.60.1"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.60.1.tgz#88cf32fe79c7fb714a99c1a63c25822233a4d231"
-  integrity sha512-0GsxN8INh8/1/uKH4pU1ZT8XLNn4Xi2GJug9CQBT6plfnppru//+P+xl+LEQbYVpsydD1iYoWzLe8ykPuIeQCA==
+"@cornerstonejs/tools@^0.65.0":
+  version "0.65.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.65.0.tgz#419800eed71d5c16809b393d5327dfb96b074a32"
+  integrity sha512-OemuMWJkRx7rvfkhI0QxXC1+3DjREuI1y74vNsyLHk9tOjX6ozbURMAGwoHrUu/Bz+8Xb/n8d6IfAF1CtjaqbA==
   dependencies:
-    "@cornerstonejs/core" "^0.40.0"
+    "@cornerstonejs/core" "^0.44.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -6438,6 +6463,11 @@ array-union@^2.1.0:
   resolved "https://registry.npmjs.org/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
   integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
+array-union@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/array-union/-/array-union-3.0.1.tgz#da52630d327f8b88cfbfb57728e2af5cd9b6b975"
+  integrity sha512-1OvF9IbWwaeiM9VhzYXVQacMibxpXOMYVNIvMtKRyX9SImBXpKcFr8XvFDeEslCyuH/t6KRt7HEO94AlP8Iatw==
+
 array-uniq@^1.0.1:
   version "1.0.3"
   resolved "https://registry.npmjs.org/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
@@ -8450,6 +8480,18 @@ copy-text-to-clipboard@^3.0.1:
   resolved "https://registry.npmjs.org/copy-text-to-clipboard/-/copy-text-to-clipboard-3.0.1.tgz#8cbf8f90e0a47f12e4a24743736265d157bce69c"
   integrity sha512-rvVsHrpFcL4F2P8ihsoLdFHmd404+CMg71S756oRSeQgqk51U3kicGdnvfkrxva0xXH92SjGS62B0XIJsbh+9Q==
 
+copy-webpack-plugin@^10.2.0:
+  version "10.2.4"
+  resolved "https://registry.npmjs.org/copy-webpack-plugin/-/copy-webpack-plugin-10.2.4.tgz#6c854be3fdaae22025da34b9112ccf81c63308fe"
+  integrity sha512-xFVltahqlsRcyyJqQbDY6EYTtyQZF9rf+JPjwHObLdPFMEISqkFkr7mFoVOC6BfYS/dNThyoQKvziugm+OnwBg==
+  dependencies:
+    fast-glob "^3.2.7"
+    glob-parent "^6.0.1"
+    globby "^12.0.2"
+    normalize-path "^3.0.0"
+    schema-utils "^4.0.0"
+    serialize-javascript "^6.0.0"
+
 copy-webpack-plugin@^11.0.0:
   version "11.0.0"
   resolved "https://registry.npmjs.org/copy-webpack-plugin/-/copy-webpack-plugin-11.0.0.tgz#96d4dbdb5f73d02dd72d0528d1958721ab72e04a"
@@ -8515,22 +8557,6 @@ cornerstone-wado-image-loader@^4.10.2:
   version "4.10.2"
   resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.10.2.tgz#139956654324fd2b01fe5b4900d0f4ed8c52633d"
   integrity sha512-qj9dThELqYCm3jAZfg9qnUl8d76gngOl55kYJabY5lh/dFeVIxno/hYxy3ydE7RtG2c/TUGXb+EMUl0CJSqKBQ==
-  dependencies:
-    "@babel/eslint-parser" "^7.19.1"
-    "@cornerstonejs/codec-charls" "^1.2.3"
-    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
-    "@cornerstonejs/codec-openjpeg" "^1.2.2"
-    "@cornerstonejs/codec-openjph" "^2.4.2"
-    coverage-istanbul-loader "^3.0.5"
-    date-format "^4.0.14"
-    dicom-parser "^1.8.9"
-    pako "^2.0.4"
-    uuid "^9.0.0"
-
-cornerstone-wado-image-loader@^4.13.0:
-  version "4.13.0"
-  resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.13.0.tgz#277173973b1d5ec90a2d10557df1f667065953da"
-  integrity sha512-pv3Ic1wDXUopa3DuSJ/IVmnrdUzEsva8ARB5w/I2JPnH3GaO80yZB6TtCqP8BUf3bl33O15k7EsGSICd2KoeCw==
   dependencies:
     "@babel/eslint-parser" "^7.19.1"
     "@cornerstonejs/codec-charls" "^1.2.3"
@@ -11988,6 +12014,18 @@ globby@^11.0.1, globby@^11.0.2, globby@^11.0.3, globby@^11.0.4, globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
+globby@^12.0.2:
+  version "12.2.0"
+  resolved "https://registry.npmjs.org/globby/-/globby-12.2.0.tgz#2ab8046b4fba4ff6eede835b29f678f90e3d3c22"
+  integrity sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA==
+  dependencies:
+    array-union "^3.0.1"
+    dir-glob "^3.0.1"
+    fast-glob "^3.2.7"
+    ignore "^5.1.9"
+    merge2 "^1.4.1"
+    slash "^4.0.0"
+
 globby@^13.1.1:
   version "13.1.3"
   resolved "https://registry.npmjs.org/globby/-/globby-13.1.3.tgz#f62baf5720bcb2c1330c8d4ef222ee12318563ff"
@@ -12720,7 +12758,7 @@ ignore@^4.0.3, ignore@^4.0.6:
   resolved "https://registry.npmjs.org/ignore/-/ignore-4.0.6.tgz#750e3db5862087b4737ebac8207ffd1ef27b25fc"
   integrity sha512-cyFDKrqc/YdcWFniJhzI42+AzS+gNwmUzOSFcRCQYwySuBBBy/KjuxWLZ/FHEH6Moq1NizMOBWyTcv8O4OZIMg==
 
-ignore@^5.0.0, ignore@^5.1.1, ignore@^5.1.8, ignore@^5.2.0:
+ignore@^5.0.0, ignore@^5.1.1, ignore@^5.1.8, ignore@^5.1.9, ignore@^5.2.0:
   version "5.2.4"
   resolved "https://registry.npmjs.org/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"
   integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==
@@ -17882,27 +17920,9 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.26, postcss@^7.0.2
     picocolors "^0.2.1"
     source-map "^0.6.1"
 
-postcss@^8.2.15, postcss@^8.3.11, postcss@^8.3.5:
-  version "8.4.14"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.14.tgz#ee9274d5622b4858c1007a74d76e42e56fd21caf"
-  integrity sha512-E398TUmfAYFPBSdzgeieK2Y1+1cpdxJx8yXbK/m57nRhKSmk1GB2tO4lbLBtlkfPQTDKfe4Xqv1ASWPpayPEig==
-  dependencies:
-    nanoid "^3.3.4"
-    picocolors "^1.0.0"
-    source-map-js "^1.0.2"
-
-postcss@^8.4.14:
-  version "8.4.16"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.16.tgz#33a1d675fac39941f5f445db0de4db2b6e01d43c"
-  integrity sha512-ipHE1XBvKzm5xI7hiHCZJCSugxvsdq2mPnsq5+UF+VHCjiBvtDrlxJfMBToWaP9D5XlgNmcFGqoHmUn0EYEaRQ==
-  dependencies:
-    nanoid "^3.3.4"
-    picocolors "^1.0.0"
-    source-map-js "^1.0.2"
-
-postcss@^8.4.17, postcss@^8.4.18, postcss@^8.4.19:
+postcss@^8.2.15, postcss@^8.3.11, postcss@^8.3.5, postcss@^8.4.14, postcss@^8.4.17, postcss@^8.4.18, postcss@^8.4.19:
   version "8.4.21"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.21.tgz#c639b719a57efc3187b13a1d765675485f4134f4"
+  resolved "https://registry.npmjs.org/postcss/-/postcss-8.4.21.tgz#c639b719a57efc3187b13a1d765675485f4134f4"
   integrity sha512-tP7u/Sn/dVxK2NnruI4H9BG+x+Wxz6oeZ1cJ8P6G/PZY0IKk4k/63TDsQf2kQq3+qoJeLm2kIBUNlZe3zgb4Zg==
   dependencies:
     nanoid "^3.3.4"
@@ -21011,7 +21031,7 @@ table@^6.0.9:
 
 tailwindcss@3.2.4:
   version "3.2.4"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.2.4.tgz#afe3477e7a19f3ceafb48e4b083e292ce0dc0250"
+  resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.2.4.tgz#afe3477e7a19f3ceafb48e4b083e292ce0dc0250"
   integrity sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==
   dependencies:
     arg "^5.0.2"

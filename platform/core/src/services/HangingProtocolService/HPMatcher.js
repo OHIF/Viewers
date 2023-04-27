@@ -32,7 +32,7 @@ const match = (
   // Allow for matching against current or prior specifically
   const prior = options?.studies?.[1];
   const current = options?.studies?.[0];
-  const instance = (metadataInstance.images || metadataInstance.others)?.[0];
+  const instance = metadataInstance.instances?.[0];
   const fromSrc = {
     prior,
     current,

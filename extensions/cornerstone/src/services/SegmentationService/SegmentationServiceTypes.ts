@@ -29,6 +29,8 @@ type Segmentation = {
   colorLUTIndex: number;
   // if segmentation contains any data (often calculated from labelmap)
   cachedStats: Record<string, any>;
+  // displaySetInstanceUID
+  displaySetInstanceUID: string;
   // displayText is the text that is displayed on the segmentation panel (often derived from the data)
   displayText?: string[];
   // the id of the segmentation
@@ -45,44 +47,22 @@ type Segmentation = {
   segments: Array<Segment>;
   // the set of segments that are locked
   segmentsLocked: Array<number>;
-  // the segmentation representation type
-  type: csToolsEnums.SegmentationRepresentations;
-  // if labelmap, the id of the volume that the labelmap is associated with
-  volumeId?: string;
   // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport
   // but hydrated SEG -> segmentation that is persisted in the store)
   hydrated: boolean;
-};
-
-// Schema to generate a segmentation
-type SegmentationSchema = {
-  // active segment index for the segmentation
-  activeSegmentIndex: number;
-  // statistics that are derived from the segmentation
-  cachedStats: Record<string, any>;
-  // the displayText for the segmentation in the panels
-  displayText?: string[];
-  // segmentation id
-  id: string;
-  // displaySetInstanceUID
-  displaySetInstanceUID: string;
-  // segmentation label
-  label: string;
-  // segment indices that are locked for the segmentation
-  segmentsLocked: Array<number>;
   // the type of the segmentation (e.g., Labelmap etc.)
   type: csToolsEnums.SegmentationRepresentations;
-  // the volume id of the volume that the labelmap is associated with, this only exists for the labelmap representation
-  volumeId: string;
-  // the referenced volumeURI for the segmentation
-  referencedVolumeURI: string;
-  // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport
-  // but hydrated SEG -> segmentation that is persisted in the store)
-  hydrated: boolean;
-  // the number of segments in the segmentation
-  segmentCount: number;
-  // the array of segments with their details
-  segments: Array<Segment>;
+  // the segmentation representation data
+  representationData: SegmentationRepresentationData;
 };
 
-export { SegmentationConfig, Segment, Segmentation, SegmentationSchema };
+type LabelmapSegmentationData = {
+  volumeId: string;
+  referencedVolumeId?: string;
+};
+
+type SegmentationRepresentationData = {
+  LABELMAP?: LabelmapSegmentationData;
+};
+
+export { SegmentationConfig, Segment, Segmentation };

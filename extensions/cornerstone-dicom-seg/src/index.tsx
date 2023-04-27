@@ -3,7 +3,9 @@ import React from 'react';
 
 import { Types } from '@ohif/core';
 
-import getSopClassHandlerModule from './getSopClassHandlerModule';
+import getSopClassHandlerModule, {
+  protocols,
+} from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import getHangingProtocolModule from './getHangingProtocolModule';
 
@@ -31,13 +33,17 @@ const extension = {
    */
   id,
 
- /**
+  /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({ servicesManager, commandsManager, extensionManager }): Types.Panel[] => {
+  getPanelModule: ({
+    servicesManager,
+    commandsManager,
+    extensionManager,
+  }): Types.Panel[] => {
     const wrappedPanelSegmentation = () => {
       return (
         <PanelSegmentation
@@ -58,6 +64,7 @@ const extension = {
       },
     ];
   },
+
   getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {
       return (
@@ -80,8 +87,11 @@ const extension = {
    * Examples include the default sop class handler provided by the default extension
    */
   getSopClassHandlerModule,
-
   getHangingProtocolModule,
 };
 
 export default extension;
+
+// Export the protocols separately to allow for extending it at compile time
+// in other modules
+export { protocols };

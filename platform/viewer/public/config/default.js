@@ -50,6 +50,7 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
+        useBulkDataURI: false,
       },
     },
     {
