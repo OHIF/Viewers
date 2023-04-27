@@ -134,7 +134,7 @@ module.exports = (env, argv) => {
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
       }),
-      new CopyPlugin({
+      new CopyWebpackPlugin({
         patterns: [
           {
             from:
