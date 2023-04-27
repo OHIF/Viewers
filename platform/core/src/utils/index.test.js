@@ -13,6 +13,8 @@ describe('Top level exports', () => {
       'sortStudyInstances',
       'sortStudySeries',
       'sortingCriteria',
+      'splitComma',
+      'getSplitParam',
       'isLowPriorityModality',
       'writeScript',
       'debounce',
@@ -35,6 +37,7 @@ describe('Top level exports', () => {
       'resolveObjectPath',
       'hierarchicalListUtils',
       'progressTrackingUtils',
+      'subscribeToNextViewportGridChange',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

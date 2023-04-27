@@ -13,6 +13,7 @@ import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
+import chevronMenu from './../../assets/icons/chevron-menu.svg';
 import chevronNext from './../../assets/icons/chevron-next.svg';
 import chevronPrev from './../../assets/icons/chevron-prev.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
@@ -80,6 +81,7 @@ import toolWindow from './../../assets/icons/tool-window-level.svg';
 import toolAnnotate from './../../assets/icons/tool-annotate.svg';
 import toolBidirectional from './../../assets/icons/tool-bidirectional.svg';
 import toolElipse from './../../assets/icons/tool-elipse.svg';
+import toolCircle from './../../assets/icons/tool-circle.svg';
 import toolLength from './../../assets/icons/tool-length.svg';
 import toolStackScroll from './../../assets/icons/tool-stack-scroll.svg';
 import toolMagnify from './../../assets/icons/tool-magnify.svg';
@@ -134,6 +136,7 @@ const ICONS = {
   'circled-checkmark': circledCheckmark,
   'chevron-down': chevronDown,
   'chevron-left': chevronLeft,
+  'chevron-menu': chevronMenu,
   'chevron-next': chevronNext,
   'chevron-prev': chevronPrev,
   'chevron-right': chevronRight,
@@ -201,6 +204,7 @@ const ICONS = {
   'tool-annotate': toolAnnotate,
   'tool-bidirectional': toolBidirectional,
   'tool-elipse': toolElipse,
+  'tool-circle': toolCircle,
   'tool-length': toolLength,
   'tool-stack-scroll': toolStackScroll,
   'tool-magnify': toolMagnify,

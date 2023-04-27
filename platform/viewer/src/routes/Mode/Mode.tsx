@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation } from 'react-router';
-
+import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, ServicesManager } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery, useSearchParams } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
+import { history } from '../../utils/history';
+
+const { getSplitParam } = utils;
 
 /**
  * Initialize the route.
@@ -104,6 +106,9 @@ export default function ModeRoute({
   const locationRef = useRef(null);
   const isMounted = useRef(false);
 
+  // Expose the react router dom navigation.
+  history.navigate = useNavigate();
+
   if (location !== locationRef.current) {
     layoutTemplateData.current = null;
     locationRef.current = location;
@@ -114,7 +119,15 @@ export default function ModeRoute({
     hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
 
-  const { extensions, sopClassHandlers, hotkeys, hangingProtocol } = mode;
+  const {
+    extensions,
+    sopClassHandlers,
+    hotkeys: hotkeyObj,
+    hangingProtocol,
+  } = mode;
+  // Preserve the old array interface for hotkeys
+  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
+  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions-v2';
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;
@@ -204,14 +217,12 @@ export default function ModeRoute({
 
     hotkeysManager.setDefaultHotKeys(hotkeys);
 
-    const userPreferredHotkeys = JSON.parse(
-      localStorage.getItem('hotkey-definitions')
-    );
+    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
 
     if (userPreferredHotkeys?.length) {
-      hotkeysManager.setHotkeys(userPreferredHotkeys);
+      hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
     } else {
-      hotkeysManager.setHotkeys(hotkeys);
+      hotkeysManager.setHotkeys(hotkeys, hotkeyName);
     }
 
     return () => {
@@ -273,15 +284,18 @@ export default function ModeRoute({
       const filters =
         Array.from(query.keys()).reduce(
           (acc: Record<string, string>, val: string) => {
-            if (val !== 'StudyInstanceUIDs') {
-              if (['seriesInstanceUID', 'SeriesInstanceUID'].includes(val)) {
+            const lowerVal = val.toLowerCase();
+            if (lowerVal !== 'studyinstanceuids') {
+              // Not sure why the case matters here - it doesn't in the URL
+              if (lowerVal === 'seriesinstanceuid') {
+                const seriesUIDs = getSplitParam(lowerVal, query);
                 return {
                   ...acc,
-                  seriesInstanceUID: query.get(val),
+                  seriesInstanceUID: seriesUIDs,
                 };
               }
 
-              return { ...acc, [val]: query.get(val) };
+              return { ...acc, [val]: getSplitParam(lowerVal, query) };
             }
           },
           {}

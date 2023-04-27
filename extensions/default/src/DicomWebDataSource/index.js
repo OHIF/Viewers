@@ -22,8 +22,8 @@ import {
   retrieveStudyMetadata,
   deleteStudyMetadataPromise,
 } from './retrieveStudyMetadata.js';
-import StaticWadoClient from './utils/StaticWadoClient.js';
-import getDirectURL from '../utils/getDirectURL.js';
+import StaticWadoClient from './utils/StaticWadoClient';
+import getDirectURL from '../utils/getDirectURL';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -90,7 +90,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
+      const queryStudyInstanceUIDs = utils.splitComma(
+        query.getAll('StudyInstanceUIDs')
+      );
 
       const StudyInstanceUIDs =
         (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||
@@ -104,7 +106,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
+        search: async function(origParams) {
           const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -129,7 +131,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
+        search: async function(studyInstanceUid) {
           const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
@@ -175,6 +177,17 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
        */
       directURL: params => {
         return getDirectURL(wadoRoot, params);
+      },
+      bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
+        const options = {
+          multipart: false,
+          BulkDataURI,
+          StudyInstanceUID,
+        };
+        return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+          const ret = (val && val[0]) || undefined;
+          return ret;
+        });
       },
       series: {
         metadata: async ({

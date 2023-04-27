@@ -134,6 +134,15 @@ module.exports = (env, argv) => {
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
       }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from:
+              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
+          },
+        ],
+      }),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {

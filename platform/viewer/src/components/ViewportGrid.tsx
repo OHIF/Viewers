@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { ServicesManager } from '@ohif/core';
+import { ServicesManager, Types } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
@@ -21,15 +21,6 @@ const ORIENTATION_MAP = {
     viewPlaneNormal: [0, 1, 0],
     viewUp: [0, 0, 1],
   },
-};
-
-const createHpInfo = (protocol, stage, activeStudyUID) => {
-  return {
-    hangingProtocolId: protocol.id,
-    stageId: stage.stageId,
-    stageIdx: protocol.stages.findIndex(it => it === stage),
-    activeStudyUID,
-  };
 };
 
 const compareViewportOptions = (opts1, opts2) => {
@@ -62,7 +53,7 @@ function ViewerViewportGrid(props) {
 
    */
   const updateDisplaySetsFromProtocol = (
-    protocol,
+    protocol: Types.HangingProtocol.Protocol,
     stage,
     activeStudyUID,
     viewportMatchDetails
@@ -108,9 +99,10 @@ function ViewerViewportGrid(props) {
       return {
         displaySetInstanceUIDs: displaySetUIDsToHang,
         displaySetOptions: displaySetUIDsToHangOptions,
-        viewportOptions: {
-          ...viewportOptions,
-        },
+        viewportOptions: hangingProtocolService.getComputedOptions(
+          viewportOptions,
+          displaySetUIDsToHang
+        ),
       };
     };
 
@@ -119,7 +111,6 @@ function ViewerViewportGrid(props) {
       numCols,
       layoutType,
       layoutOptions,
-      hpInfo: createHpInfo(protocol, stage, activeStudyUID),
       findOrCreateViewport,
     });
   };
@@ -209,11 +200,12 @@ function ViewerViewportGrid(props) {
         }
 
         updatedViewports.forEach(vp => {
+          vp.viewportOptions ||= {};
           const { orientation, viewportType } = vp.viewportOptions;
           let initialImageOptions;
 
           // For initial imageIndex to hang be careful for the volume viewport
-          if (viewportType === 'stack') {
+          if (viewportType === 'stack' || !viewportType) {
             initialImageOptions = {
               index: imageIndex,
             };
@@ -236,7 +228,7 @@ function ViewerViewportGrid(props) {
             }
           }
 
-          vp.viewportOptions['initialImageOptions'] = initialImageOptions;
+          vp.viewportOptions.initialImageOptions = initialImageOptions;
         });
 
         viewportGridService.setDisplaySetsForViewports(updatedViewports);

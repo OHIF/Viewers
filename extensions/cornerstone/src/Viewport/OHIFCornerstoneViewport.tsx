@@ -10,21 +10,18 @@ import {
   utilities as csUtils,
   CONSTANTS,
 } from '@cornerstonejs/core';
-import { Services } from '@ohif/core';
+import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import {
+  IStackViewport,
+  IVolumeViewport,
+} from '@cornerstonejs/core/dist/esm/types';
 
 import { setEnabledElement } from '../state';
 
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
-import {
-  IStackViewport,
-  IVolumeViewport,
-} from '@cornerstonejs/core/dist/esm/types';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
-
-import { CornerstoneViewportService } from '../services/ViewportService/CornerstoneViewportService';
-import Presentation from '../types/Presentation';
+import CornerstoneServices from '../types/CornerstoneServices';
 
 const STACK = 'stack';
 
@@ -133,7 +130,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     cornerstoneCacheService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   const cineHandler = () => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
@@ -220,15 +217,27 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const currentPresentation = cornerstoneViewportService.getPresentation(
       viewportIndex
     );
-    const { presentationSync } = stateSyncService.getState();
-    if (currentPresentation) {
-      stateSyncService.store({
-        presentationSync: {
-          ...presentationSync,
-          [currentPresentation.id]: currentPresentation,
-        },
-      });
+    if (!currentPresentation || !currentPresentation.presentationIds) return;
+    const {
+      lutPresentationStore,
+      positionPresentationStore,
+    } = stateSyncService.getState();
+    const { presentationIds } = currentPresentation;
+    const { lutPresentationId, positionPresentationId } = presentationIds || {};
+    const storeState = {};
+    if (lutPresentationId) {
+      storeState.lutPresentationStore = {
+        ...lutPresentationStore,
+        [lutPresentationId]: currentPresentation,
+      };
     }
+    if (positionPresentationId) {
+      storeState.positionPresentationStore = {
+        ...positionPresentationStore,
+        [positionPresentationId]: currentPresentation,
+      };
+    }
+    stateSyncService.store(storeState);
   };
 
   const cleanUpServices = useCallback(() => {
@@ -382,20 +391,27 @@ const OHIFCornerstoneViewport = React.memo(props => {
         initialImageIndex
       );
 
-      storePresentation();
-
-      const { presentationSync } = stateSyncService.getState();
-      const { presentationId } = viewportOptions;
-      const presentation = presentationId
-        ? (presentationSync[presentationId] as Presentation)
-        : null;
+      // The presentation state will have been stored previously by closing
+      // a viewport.  Otherwise, this viewport will be unchanged and the
+      // presentation information will be directly carried over.
+      const {
+        lutPresentationStore,
+        positionPresentationStore,
+      } = stateSyncService.getState();
+      const { presentationIds } = viewportOptions;
+      const presentations = {
+        positionPresentation:
+          positionPresentationStore[presentationIds?.positionPresentationId],
+        lutPresentation:
+          lutPresentationStore[presentationIds?.lutPresentationId],
+      };
 
       cornerstoneViewportService.setViewportData(
         viewportIndex,
         viewportData,
         viewportOptions,
         displaySetOptions,
-        presentation
+        presentations
       );
     };
 
@@ -534,6 +550,7 @@ function _checkForCachedJumpToMeasurementEvents(
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
+  if (!displaysUIDs?.length) return;
 
   const measurementIdToJumpTo = measurementService.getJumpToMeasurement(
     viewportIndex
@@ -545,7 +562,7 @@ function _checkForCachedJumpToMeasurementEvents(
       measurementIdToJumpTo
     );
 
-    if (displaysUIDs.includes(measurement.displaySetInstanceUID)) {
+    if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
       _jumpToMeasurement(
         measurement,
         elementRef,
@@ -613,19 +630,19 @@ function _jumpToMeasurement(
     } else {
       // for volume viewport we can't rely on the imageIdIndex since it can be
       // a reconstructed view that doesn't match the original slice numbers etc.
-      const { viewPlaneNormal } = measurement.metadata;
+      const { viewPlaneNormal: measurementViewPlane } = measurement.metadata;
       imageIdIndex = referencedDisplaySet.images.findIndex(
         i => i.SOPInstanceUID === SOPInstanceUID
       );
 
-      const { orientation } = viewportInfo.getViewportOptions();
+      const { viewPlaneNormal: viewportViewPlane } = viewport.getCamera();
 
+      // should compare abs for both planes since the direction can be flipped
       if (
-        orientation &&
-        viewPlaneNormal &&
+        measurementViewPlane &&
         !csUtils.isEqual(
-          CONSTANTS.MPR_CAMERA_VALUES[orientation]?.viewPlaneNormal,
-          viewPlaneNormal
+          measurementViewPlane.map(Math.abs),
+          viewportViewPlane.map(Math.abs)
         )
       ) {
         viewportCameraDirectionMatch = false;

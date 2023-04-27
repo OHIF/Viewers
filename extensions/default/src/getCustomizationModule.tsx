@@ -1,3 +1,4 @@
+import { CustomizationService } from '@ohif/core';
 import React from 'react';
 import DataSourceSelector from './Panels/DataSourceSelector';
 
@@ -82,7 +83,6 @@ export default function getCustomizationModule() {
          */
         {
           id: 'ohif.overlayItem',
-          uiType: 'uiType',
           content: function (props) {
             if (this.condition && !this.condition(props)) return null;
 
@@ -91,8 +91,8 @@ export default function getCustomizationModule() {
               instance && this.attribute
                 ? instance[this.attribute]
                 : this.contentF && typeof this.contentF === 'function'
-                ? this.contentF(props)
-                : null;
+                  ? this.contentF(props)
+                  : null;
             if (!value) return null;
 
             return (
@@ -107,6 +107,29 @@ export default function getCustomizationModule() {
                 <span className="font-light">{value}</span>
               </span>
             );
+          },
+        },
+
+        {
+          id: 'ohif.contextMenu',
+
+          /** Applies the customizationType to all the menu items.
+           * This function clones the object and child objects to prevent
+           * changes to the original customization object.
+           */
+          transform: function (customizationService: CustomizationService) {
+            // Don't modify the children, as those are copied by reference
+            const clonedObject = { ...this };
+            clonedObject.menus = this.menus.map(menu => ({ ...menu }));
+
+            for (const menu of clonedObject.menus) {
+              const { items: originalItems } = menu;
+              menu.items = [];
+              for (const item of originalItems) {
+                menu.items.push(customizationService.transform(item));
+              }
+            }
+            return clonedObject;
           },
         },
       ],

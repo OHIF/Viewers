@@ -36,7 +36,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
-      ? appConfigOrFunc({ servicesManager })
+      ? await appConfigOrFunc({ servicesManager })
       : appConfigOrFunc),
   };
 

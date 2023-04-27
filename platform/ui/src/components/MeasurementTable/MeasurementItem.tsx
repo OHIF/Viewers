@@ -11,6 +11,7 @@ const MeasurementItem = ({
   isActive,
   onClick,
   onEdit,
+  item,
 }) => {
   const [isHovering, setIsHovering] = useState(false);
 

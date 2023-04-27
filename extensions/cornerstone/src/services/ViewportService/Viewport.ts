@@ -1,13 +1,14 @@
 import { Types, Enums } from '@cornerstonejs/core';
+import { Types as UITypes } from '@ohif/ui';
+import {
+  StackViewportData,
+  VolumeViewportData,
+} from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import JumpPresets from '../../utils/JumpPresets';
 import { SyncGroup } from '../SyncGroupService/SyncGroupService';
-import {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../types/CornerstoneCacheService';
 
 export type InitialImageOptions = {
   index?: number;
@@ -15,12 +16,13 @@ export type InitialImageOptions = {
 };
 
 export type ViewportOptions = {
+  id?: string;
   viewportType: Enums.ViewportType;
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationId?: string;
-  orientation?: Types.Orientation;
+  presentationIds?: UITypes.PresentationIds;
+  orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
@@ -33,11 +35,12 @@ export type ViewportOptions = {
 };
 
 export type PublicViewportOptions = {
+  id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationId?: string;
+  presentationIds?: UITypes.PresentationIds;
   viewportId?: string;
-  orientation?: string;
+  orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
@@ -51,19 +54,26 @@ export type DisplaySetSelector = {
 };
 
 export type PublicDisplaySetOptions = {
+  /** The display set options can have an id in order to distinguish
+   * it from other similar items.
+   */
+  id?: string;
   voi?: VOI;
   voiInverted?: boolean;
   blendMode?: string;
   slabThickness?: number;
   colormap?: string;
+  presetName?: string;
 };
 
 export type DisplaySetOptions = {
+  id?: string;
   voi?: VOI;
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
   colormap?: string;
+  presetName?: string;
 };
 
 type VOI = {
@@ -76,7 +86,6 @@ export type DisplaySet = {
 };
 
 const STACK = 'stack';
-const VOLUME = 'volume';
 const DEFAULT_TOOLGROUP_ID = 'default';
 
 class ViewportInfo {
@@ -177,7 +186,7 @@ class ViewportInfo {
     let viewportType = viewportOptionsEntry.viewportType;
     const {
       toolGroupId = DEFAULT_TOOLGROUP_ID,
-      presentationId,
+      presentationIds,
     } = viewportOptionsEntry;
     let orientation;
 
@@ -190,10 +199,12 @@ class ViewportInfo {
     }
 
     // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
+    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    } else {
-      orientation = Enums.OrientationAxis.AXIAL;
+    }
+
+    if (!toolGroupId) {
+      toolGroupId = DEFAULT_TOOLGROUP_ID;
     }
 
     this.setViewportOptions({
@@ -202,7 +213,7 @@ class ViewportInfo {
       viewportType: viewportType as Enums.ViewportType,
       orientation,
       toolGroupId,
-      presentationId,
+      presentationIds,
     });
   }
 
@@ -221,7 +232,8 @@ class ViewportInfo {
   }
 
   public getSyncGroups(): SyncGroup[] {
-    return this.viewportOptions.syncGroups || [];
+    this.viewportOptions.syncGroups ||= [];
+    return this.viewportOptions.syncGroups;
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {
@@ -240,7 +252,7 @@ class ViewportInfo {
     return this.viewportOptions.background || [0, 0, 0];
   }
 
-  public getOrientation(): Types.Orientation {
+  public getOrientation(): Enums.OrientationAxis {
     return this.viewportOptions.orientation;
   }
 
@@ -274,6 +286,7 @@ class ViewportInfo {
         colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
+        presetName: option.presetName,
       });
     });
 

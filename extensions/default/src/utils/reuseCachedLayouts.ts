@@ -58,7 +58,7 @@ const reuseCachedLayout = (
       }
       if (displaySetOptions[i]?.id) {
         displaySetSelectorMap[
-          `${activeStudyUID}: ${displaySetOptions[i].id}: ${displaySetOptions[i]
+          `${activeStudyUID}:${displaySetOptions[i].id}:${displaySetOptions[i]
             .matchedDisplaySetsIndex || 0}`
         ] = displaySetUID;
       }

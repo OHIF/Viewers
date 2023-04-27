@@ -48,7 +48,6 @@ import ThumbnailNoImage from './ThumbnailNoImage';
 import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
 import ToolbarButton from './ToolbarButton';
-import ContextMenuMeasurements from './ContextMenuMeasurements';
 import ExpandableToolbarButton from './ExpandableToolbarButton';
 import ListMenu from './ListMenu';
 import Tooltip from './Tooltip';
@@ -69,6 +68,7 @@ import InputRange from './InputRange';
 import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
+import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 
 export {
@@ -105,6 +105,7 @@ export {
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
+  LoadingIndicatorTotalPercent,
   MeasurementTable,
   Modal,
   NavBar,
@@ -134,7 +135,6 @@ export {
   ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
-  ContextMenuMeasurements,
   Tooltip,
   TooltipClipboard,
   Typography,
