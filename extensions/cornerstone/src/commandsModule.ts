@@ -28,9 +28,7 @@ function commandsModule({ servicesManager, commandsManager }) {
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
-    customizationService,
     measurementService,
-    hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
 
   const { measurementServiceSource } = this;
@@ -134,8 +132,23 @@ function commandsModule({ servicesManager, commandsManager }) {
         canvasCoordinates,
       });
 
-      const isAnnotation = toolName =>
-        toolName !== 'Crosshairs' && toolName !== 'ReferenceLines';
+      const isAnnotation = toolName => {
+        const enabledElement = getEnabledElement(element);
+
+        if (!enabledElement) {
+          return;
+        }
+
+        const { renderingEngineId, viewportId } = enabledElement;
+        const toolGroup = ToolGroupManager.getToolGroupForViewport(
+          viewportId,
+          renderingEngineId
+        );
+
+        const toolInstance = toolGroup.getToolInstance(toolName);
+
+        return toolInstance?.constructor?.isAnnotation ?? true;
+      };
 
       return nearbyToolData?.metadata?.toolName &&
         isAnnotation(nearbyToolData.metadata.toolName)
