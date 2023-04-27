@@ -3,7 +3,7 @@
 // modules, so it's perfectly fine to serve this code to any browsers
 // (older browsers will just ignore it)
 //
-import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-window.prod.mjs';
+import { Workbox } from './workbox-window.prod.mjs';
 
 var supportsServiceWorker = 'serviceWorker' in navigator;
 var isNotLocalDevelopment =
