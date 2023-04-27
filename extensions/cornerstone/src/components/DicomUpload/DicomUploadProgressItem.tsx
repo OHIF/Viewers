@@ -54,6 +54,8 @@ function DicomUploadProgressItem({
         return <Icon name="icon-transferring"></Icon>;
       case UploadStatus.Failed:
         return <Icon name="icon-alert-small"></Icon>;
+      case UploadStatus.Cancelled:
+        return <Icon name="icon-alert-outline"></Icon>;
       default:
         return <></>;
     }

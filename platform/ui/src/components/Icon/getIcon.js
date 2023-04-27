@@ -50,6 +50,7 @@ import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
 import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
 import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
+import iconAlertOutline from './../../assets/icons/icons-alert-outline.svg';
 import iconAlertSmall from './../../assets/icons/icon-alert-small.svg';
 import iconClose from './../../assets/icons/icon-close.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
@@ -145,6 +146,7 @@ const ICONS = {
   'external-link': externalLink,
   'group-layers': groupLayers,
   info: info,
+  'icon-alert-outline': iconAlertOutline,
   'icon-alert-small': iconAlertSmall,
   'icon-close': iconClose,
   'icon-play': iconPlay,
