@@ -77,16 +77,15 @@ const InputNumber: React.FC<{
 
   return (
     <div
-      className={`flex items-center bg-black border-2 px-1 overflow-hidden justify-center border-secondary-light rounded-md ${
-        sizesClasses[size]
-      } ${className ? className : ''}`}
+      className={`flex items-center bg-black border-2 px-1 overflow-hidden justify-center border-secondary-light rounded-md ${sizesClasses[size]
+        } ${className ? className : ''}`}
     >
       <div className="flex">
         <input
           type="text"
           value={numberValue}
           onChange={handleChange}
-          className={`bg-black text-white text-[12px] w-full text-center`}
+          className={`bg-black text-white text-[12px] w-full text-center input-number`}
         />
 
         <div className="up-arrowsize flex flex-col items-center justify-around">
