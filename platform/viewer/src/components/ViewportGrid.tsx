@@ -299,11 +299,8 @@ function ViewerViewportGrid(props) {
     for (let i = 0; i < numViewportPanes; i++) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
-      const paneMetadata = viewports[i] || {};
-      const gridId = paneMetadata.gridId || `viewport-${i}`;
-      if (!paneMetadata.gridId) {
-        paneMetadata.gridId = gridId;
-      }
+      const paneMetadata = viewports[i] || { viewportId: `viewport-${i}` };
+      const gridId = paneMetadata.viewportId;
       const {
         displaySetInstanceUIDs,
         viewportOptions,

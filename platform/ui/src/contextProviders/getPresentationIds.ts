@@ -121,6 +121,13 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
 
   const lutPresentationId = lutPresentationArr.join(JOIN_STR);
   const positionPresentationId = positionPresentationArr.join(JOIN_STR);
+  console.log(
+    '* Presentation Ids',
+    viewport.viewportIndex,
+    viewport.viewportId,
+    lutPresentationId,
+    positionPresentationId
+  );
   return { lutPresentationId, positionPresentationId };
 };
 

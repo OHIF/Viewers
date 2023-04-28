@@ -53,69 +53,6 @@ const isReuseableViewport = (oldViewport, newViewport) => {
   );
 };
 
-// Holds a global viewport counter - used to assign new id's to viewports
-// Starts at a value above zero so that any of the old viewport id's are
-// immediately obvious and if we get any index generated viewports, they are
-// definitely distinct from these ones.
-let viewportCounter = 5000;
-
-/**
- * Find a gridId to re-use if possible, preserving the existing
- * viewport information, OR create a new one if the viewport given isn't
- * compatible with what was there before.
- *
- * @param gridIdSet
- * @param viewport
- * @param stateViewports
- * @returns
- */
-const reuseGridId = (gridIdSet: Set, viewport, stateViewports) => {
-  for (const oldViewport of stateViewports) {
-    const { gridId: oldId } = oldViewport;
-    if (!oldId) {
-      // This occurs on startup, so skip re-using it
-      continue;
-    }
-    if (gridIdSet.has(oldId)) {
-      // oldId is already used - we can't reuse it
-      continue;
-    }
-    if (isReuseableViewport(oldViewport, viewport)) {
-      gridIdSet.add(oldId);
-      // This means the old and the new viewport are compatible, and
-      // since we have gotten here, the viewport ID isn't used, so we
-      // are good to reuse it.
-      // This will remember the old viewport options, assuming they are unchanging.
-      return {
-        ...oldViewport,
-        ...viewport,
-        id: oldId,
-        gridId: oldId,
-        viewportOptions: {
-          // Update any viewport options from new
-          ...viewport.viewportOptions,
-          gridId: oldId,
-        },
-      };
-    }
-  }
-
-  // There wasn't an old id found to be reused, so create a new one
-  // Find a viewport instance number different from earlier viewports
-  const gridId = 'viewport-' + viewportCounter;
-  gridIdSet.add(gridId);
-  // Loop over viewport counters in case of a really long lived display
-  viewportCounter = (viewportCounter + 1) % 100000;
-  // viewportOptions is already a copy, so can just update direct
-  viewport.viewportOptions.gridId = gridId;
-
-  return {
-    ...viewport,
-    id: gridId,
-    gridId,
-  };
-};
-
 export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state, action) => {
     switch (action.type) {
@@ -132,19 +69,6 @@ export function ViewportGridProvider({ children, service }) {
       case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
         const { payload } = action;
         const viewports = state.viewports.slice();
-
-        // Have the initial id set contain all viewports not updated here
-        const gridIdSet = new Set();
-        viewports.forEach((viewport, index) => {
-          if (!viewport.gridId) return;
-          const isUpdated = payload.find(
-            newViewport => newViewport.viewportIndex === index
-          );
-          if (isUpdated) {
-            return;
-          }
-          gridIdSet.add(viewport.gridId);
-        });
 
         const replaceViewports = payload.map(updatedViewport => {
           // Use the newly provide viewportOptions and display set options
@@ -175,7 +99,7 @@ export function ViewportGridProvider({ children, service }) {
             viewportLabel: viewportLabels[viewportIndex],
             viewportIndex,
           };
-          return reuseGridId(gridIdSet, newViewport, state.viewports);
+          return newViewport;
         });
 
         uniqueViewportIds(replaceViewports, state.viewports);
@@ -258,17 +182,14 @@ export function ViewportGridProvider({ children, service }) {
 
         activeViewportIndexToSet = activeViewportIndexToSet ?? 0;
 
-        const gridIdSet = new Set();
         for (
           let viewportIndex = 0;
           viewportIndex < viewports.length;
           viewportIndex++
         ) {
-          const viewport = reuseGridId(
-            gridIdSet,
-            viewports[viewportIndex],
-            state.viewports
-          );
+          const viewport = {
+            ...viewports[viewportIndex],
+          };
           viewport.viewportOptions.presentationIds = getPresentationIds(
             viewport,
             viewports
