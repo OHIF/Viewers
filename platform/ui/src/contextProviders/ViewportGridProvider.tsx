@@ -79,6 +79,7 @@ export function ViewportGridProvider({ children, service }) {
           const viewportOptions = {
             ...(updatedViewport.viewportOptions ||
               previousViewport.viewportOptions),
+            presentationIds: {},
           };
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
@@ -153,6 +154,11 @@ export function ViewportGridProvider({ children, service }) {
             const viewport = findOrCreateViewport(pos, positionId, options);
             if (!viewport) continue;
             viewport.positionId = positionId;
+            delete viewport.viewportOptions.presentationIds;
+
+            // Assign an initial viewport id in a way that tends to be
+            // position invariant
+            viewport.viewportOptions.viewportId ||= `viewport-${positionId}`;
 
             // Create a new viewport object as it is getting updated here
             // and it is part of the read only state
@@ -184,6 +190,7 @@ export function ViewportGridProvider({ children, service }) {
         ) {
           const viewport = {
             ...viewports[viewportIndex],
+            viewportIndex,
           };
           viewport.viewportOptions.presentationIds = getPresentationIds(
             viewport,

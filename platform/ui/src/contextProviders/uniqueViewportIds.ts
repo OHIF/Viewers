@@ -9,6 +9,7 @@ const uniqueViewportIds = (viewportsToUpdate, existingViewports = []) => {
     const found = viewportsToUpdate.find(newViewport => newViewport.viewportIndex == viewportIndex);
     if (found) {
       // Re-use the viewportID if not provided
+      console.debug("Re-using viewport id", viewportIndex, viewportId);
       found.viewportOptions.viewportId ||= viewportId;
       return;
     }
@@ -30,6 +31,7 @@ const uniqueViewportIds = (viewportsToUpdate, existingViewports = []) => {
     viewport.viewportOptions.viewportId = viewportId;
     viewport.viewportId = viewport.id = viewportId;
     viewportIds.add(viewportId);
+    console.debug("Assigning viewportId", viewport.viewportIndex, viewportId);
   });
 }
 

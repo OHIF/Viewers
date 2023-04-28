@@ -175,19 +175,19 @@ class CornerstoneViewportService extends PubSubService
    * created for every new viewport, this will be called whenever the set of
    * viewports is changed, but NOT when the viewport position changes only.
    *
-   * @param viewportIndex
+   * @param viewportId
    */
-  public disableElement(viewportIndex: number): void {
-    const viewportInfo = this.viewportsInfo.get(viewportIndex);
+  public disableElement(viewportId: string): void {
+    const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
       return;
     }
 
-    const viewportId = viewportInfo.getViewportId();
+    const viewportIndex = viewportInfo.getViewportIndex();
 
     this.renderingEngine && this.renderingEngine.disableElement(viewportId);
 
-    this.viewportsInfo.get(viewportIndex).destroy();
+    viewportInfo.destroy();
     this.viewportsInfo.delete(viewportIndex);
     this.viewportsById.delete(viewportId);
   }
@@ -199,12 +199,14 @@ class CornerstoneViewportService extends PubSubService
     if (camera) viewport.setCamera(camera);
   }
 
-  public getPresentation(viewportIndex: number): Presentation {
-    const viewportInfo = this.viewportsInfo.get(viewportIndex);
+  public getPresentation(viewportId: string): Presentation {
+    const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) return;
     const { viewportType, presentationIds } = viewportInfo.getViewportOptions();
 
-    const csViewport = this.getCornerstoneViewportByIndex(viewportIndex);
+    const csViewport = this.getCornerstoneViewportByIndex(
+      viewportInfo.getViewportIndex()
+    );
     if (!csViewport) return;
 
     const properties = csViewport.getProperties();
@@ -224,6 +226,14 @@ class CornerstoneViewportService extends PubSubService
     };
   }
 
+  /** Moves a viewport to a new viewport index.  No-op if not moving. */
+  public moveViewport(viewportIndex: number, viewportId: string): void {
+    const viewportInfo = this.viewportsById.get(viewportId);
+    if (!viewportInfo) return;
+    this.viewportsInfo.set(viewportIndex, viewportInfo);
+    viewportInfo.viewportIndex = viewportIndex;
+  }
+
   /**
    * Uses the renderingEngine to enable the element for the given viewport index
    * and sets the displaySet data to the viewport
@@ -240,8 +250,7 @@ class CornerstoneViewportService extends PubSubService
     presentations?: Presentations
   ): void {
     const renderingEngine = this.getRenderingEngine();
-    const viewportId =
-      publicViewportOptions.viewportId || this.getViewportId(viewportIndex);
+    const { viewportId } = publicViewportOptions;
     if (!viewportId) {
       throw new Error('Must define viewportId externally');
     }
@@ -252,12 +261,7 @@ class CornerstoneViewportService extends PubSubService
       throw new Error('Viewport info not defined');
     }
 
-    // If the viewport has moved index, then record the new index
-    if (viewportInfo.viewportIndex !== viewportIndex) {
-      this.viewportsInfo.delete(viewportInfo.viewportIndex);
-      this.viewportsInfo.set(viewportIndex, viewportInfo);
-      viewportInfo.viewportIndex = viewportIndex;
-    }
+    this.moveViewport(viewportIndex, viewportId);
 
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
@@ -516,7 +520,7 @@ class CornerstoneViewportService extends PubSubService
       displaySetInstanceUIDs.push(displaySetInstanceUID);
 
       if (!volume) {
-        console.log('Volume display set not found');
+        console.warn('Volume display set not found');
         continue;
       }
 
@@ -715,6 +719,7 @@ class CornerstoneViewportService extends PubSubService
     keepCamera = false
   ) {
     const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
+    this.moveViewport(viewportIndex, viewportInfo?.viewportId);
 
     const viewportId = viewportInfo.getViewportId();
     const viewport = this.getCornerstoneViewport(viewportId);

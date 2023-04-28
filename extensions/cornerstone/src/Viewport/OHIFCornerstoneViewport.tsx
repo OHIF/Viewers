@@ -30,6 +30,10 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
+  if (prevProps.viewportIndex !== nextProps.viewportIndex) {
+    return false;
+  }
+
   if (prevProps.displaySets.length !== nextProps.displaySets.length) {
     return false;
   }
@@ -102,7 +106,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportIndex,
     displaySets,
     dataSource,
-    viewportOptions,
+    viewportOptions = {},
     displaySetOptions,
     servicesManager,
     onElementEnabled,
@@ -117,7 +121,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
+  const [displaySetUids, setDisplaySetUids] = useState(
+    displaySets.map(it => it.uid).join()
+  );
 
+  const { viewportId } = viewportOptions;
   const elementRef = useRef();
 
   const {
@@ -215,8 +223,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   const storePresentation = () => {
     const currentPresentation = cornerstoneViewportService.getPresentation(
-      viewportIndex
+      viewportId
     );
+    console.debug('storePresentation', viewportId, currentPresentation);
     if (!currentPresentation || !currentPresentation.presentationIds) return;
     const {
       lutPresentationStore,
@@ -241,6 +250,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
   };
 
   const cleanUpServices = useCallback(() => {
+    console.debug(
+      'Cleanup services',
+      viewportIndex,
+      viewportOptions.viewportId
+    );
     const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
@@ -303,6 +317,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   // disable the element upon unmounting
   useEffect(() => {
+    console.debug('Enabling', viewportIndex, viewportOptions?.viewportId);
     cornerstoneViewportService.enableViewport(
       viewportIndex,
       viewportOptions,
@@ -321,7 +336,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       cleanUpServices();
 
-      cornerstoneViewportService.disableElement(viewportIndex);
+      console.debug('** Disabling', viewportIndex, viewportOptions?.viewportId);
+      cornerstoneViewportService.disableElement(viewportOptions?.viewportId);
 
       if (onElementDisabled) {
         const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
@@ -347,6 +363,16 @@ const OHIFCornerstoneViewport = React.memo(props => {
   // Note: this approach does not actually end of sending network requests
   // and it uses the network cache
   useEffect(() => {
+    console.debug(
+      'viewportInfo changed effect',
+      viewportOptions?.viewportId,
+      viewportIndex
+    );
+    cornerstoneViewportService.moveViewport(
+      viewportIndex,
+      viewportOptions.viewportId
+    );
+
     const { unsubscribe } = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       async invalidatedDisplaySetInstanceUID => {
@@ -354,6 +380,12 @@ const OHIFCornerstoneViewport = React.memo(props => {
           viewportIndex
         );
 
+        console.debug(
+          'Invalidated',
+          viewportIndex,
+          viewportOptions.viewportId,
+          viewportInfo?.viewportId
+        );
         if (viewportInfo.hasDisplaySet(invalidatedDisplaySetInstanceUID)) {
           const viewportData = viewportInfo.getViewportData();
           const newViewportData = await cornerstoneCacheService.invalidateViewportData(
@@ -406,6 +438,14 @@ const OHIFCornerstoneViewport = React.memo(props => {
           lutPresentationStore[presentationIds?.lutPresentationId],
       };
 
+      console.debug(
+        'Setting viewportData',
+        viewportIndex,
+        viewportOptions.viewportId,
+        presentations,
+        presentationIds,
+        positionPresentationStore
+      );
       cornerstoneViewportService.setViewportData(
         viewportIndex,
         viewportData,
@@ -415,8 +455,24 @@ const OHIFCornerstoneViewport = React.memo(props => {
       );
     };
 
+    cornerstoneViewportService.moveViewport(
+      viewportIndex,
+      viewportOptions.viewportId
+    );
+    console.debug('loadViewportData', viewportIndex);
+    storePresentation();
     loadViewportData();
-  }, [viewportOptions, displaySets, dataSource]);
+  }, [displaySetUids, dataSource]);
+
+  useEffect(() => {
+    const newDisplaySetUids = displaySets.map(it => it.uid).join();
+    if (newDisplaySetUids !== displaySetUids) {
+      console.debug('*** Setting new display set uids', viewportIndex);
+      setDisplaySetUids(newDisplaySetUids);
+    } else {
+      console.debug('NOT setting display set uids', viewportIndex);
+    }
+  }, [displaySets]);
 
   /**
    * There are two scenarios for jump to click

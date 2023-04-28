@@ -74,7 +74,7 @@ const match = (
       errorMessages = ['Something went wrong during validation.', e];
     }
 
-    console.log(
+    console.debug(
       'Test',
       `${from}.${attribute}`,
       readValues[attribute],

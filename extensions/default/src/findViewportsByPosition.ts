@@ -25,10 +25,8 @@ export const findOrCreateViewport = (
   if (byPositionViewport) {
     return {
       ...byPositionViewport,
-      viewportId: null,
       viewportOptions: {
         ...byPositionViewport.viewportOptions,
-        viewportId: null,
       },
     };
   }
@@ -88,10 +86,6 @@ const findViewportsByPosition = (
         viewportOptions: { ...viewport.viewportOptions },
       };
       viewportsByPosition[viewport.positionId] = storedViewport;
-      // The cache doesn't store the viewport options - it is only useful
-      // for remembering the type of viewport and UIDs
-      delete storedViewport.viewportId;
-      delete storedViewport.viewportOptions.viewportId;
     }
   }
 

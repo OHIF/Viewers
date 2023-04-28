@@ -423,7 +423,6 @@ const commandsModule = ({
                 viewportOptions: {
                   ...viewportOptions,
                   ...viewport.viewportOptions,
-                  viewportId: null,
                 },
               }
             : toggleOneUpViewportGridStore.viewports[viewportIndex];
