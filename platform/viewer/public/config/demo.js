@@ -1,5 +1,6 @@
 window.config = {
   routerBasename: '/',
+  modes: [],
   extensions: [],
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
@@ -7,21 +8,24 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   strictZSpacingForVolumeViewport: true,
   showCPUFallbackMessage: true,
-  servers: {
-    dicomWeb: [
-      {
+  dataSources: [
+    {
+      friendlyName: 'DCM4CHEE Server',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
         useBulkDataURI: false,
       },
-    ],
-  },
+    },
+  ],
+  defaultDataSourceName: 'dicomweb',
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',

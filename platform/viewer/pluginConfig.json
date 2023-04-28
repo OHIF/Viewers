@@ -17,6 +17,10 @@
       "version": "3.0.0"
     },
     {
+      "packageName": "@ohif/extension-dicom-microscopy",
+      "version": "3.0.0"
+    },
+    {
       "packageName": "@ohif/extension-dicom-pdf",
       "version": "3.0.1"
     },
@@ -40,6 +44,10 @@
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/mode-microscopy",
       "version": "3.0.0"
     },
     {

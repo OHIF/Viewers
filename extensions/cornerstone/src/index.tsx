@@ -28,7 +28,7 @@ import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
-import { PublicViewportOptions } from './services/ViewportService/Viewport';
+import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 
 const Component = React.lazy(() => {
   return import(
