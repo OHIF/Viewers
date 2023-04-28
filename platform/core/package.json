@@ -32,7 +32,11 @@
   },
   "peerDependencies": {
     "cornerstone-math": "0.1.9",
-    "cornerstone-wado-image-loader": "^4.13.0",
+    "@cornerstonejs/dicom-image-loader": "^0.4.0",
+    "@cornerstonejs/codec-charls": "^1.2.3",
+    "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
+    "@cornerstonejs/codec-openjpeg": "^1.2.2",
+    "@cornerstonejs/codec-openjph": "^2.4.2",
     "dicom-parser": "^1.8.9",
     "@ohif/ui": "^2.0.0"
   },
