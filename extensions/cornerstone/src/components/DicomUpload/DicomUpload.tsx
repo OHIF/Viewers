@@ -2,9 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { ReactElement } from 'react';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
 import { Button } from '@ohif/ui';
+import './DicomUpload.css';
 
 type DicomUploadProps = {
   dataSource;
@@ -17,6 +19,7 @@ function DicomUpload({
   onComplete,
   onStarted,
 }: DicomUploadProps): ReactElement {
+  const baseClassNames = 'min-h-[520px] flex flex-col bg-black select-none';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
   const onDrop = useCallback(async acceptedFiles => {
@@ -37,7 +40,7 @@ function DicomUpload({
         {({ getRootProps }) => (
           <div
             {...getRootProps()}
-            className="m-10 border border-dashed border-aqua-pale rounded flex flex-col items-center justify-center h-full"
+            className="m-5 dicom-upload-drop-area-border-dash flex flex-col items-center justify-center h-full"
           >
             <div className="flex gap-3">
               <Dropzone onDrop={onDrop} noDrag>
@@ -76,7 +79,7 @@ function DicomUpload({
                 )}
               </Dropzone>
             </div>
-            <div className="pt-8">or drag images or folders here</div>
+            <div className="pt-5">or drag images or folders here</div>
             <div className="pt-3 text-aqua-pale text-lg">
               (DICOM files supported)
             </div>
@@ -87,16 +90,20 @@ function DicomUpload({
   };
 
   return (
-    <div className="h-[calc(100vh-300px)] min-h-[250px] flex flex-col bg-black select-none">
+    <>
       {dicomFileUploaderArr.length ? (
-        <DicomUploadProgress
-          dicomFileUploaderArr={Array.from(dicomFileUploaderArr)}
-          onComplete={onComplete}
-        />
+        <div className={classNames('h-[calc(100vh-300px)]', baseClassNames)}>
+          <DicomUploadProgress
+            dicomFileUploaderArr={Array.from(dicomFileUploaderArr)}
+            onComplete={onComplete}
+          />
+        </div>
       ) : (
-        getDropZoneComponent()
+        <div className={classNames('h-[520px]', baseClassNames)}>
+          {getDropZoneComponent()}
+        </div>
       )}
-    </div>
+    </>
   );
 }
 
