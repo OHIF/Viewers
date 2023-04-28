@@ -2,10 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 import {
-  Notification,
   ViewportActionBar,
   useViewportGrid,
-  useViewportDialog,
   LoadingIndicatorTotalPercent,
 } from '@ohif/ui';
 
@@ -47,7 +45,6 @@ function OHIFCornerstoneRTViewport(props) {
   const rtDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [viewportDialogState, viewportDialogApi] = useViewportDialog();
 
   // States
   const [isToolGroupCreated, setToolGroupCreated] = useState(false);
@@ -363,18 +360,6 @@ function OHIFCornerstoneRTViewport(props) {
           />
         )}
         {getCornerstoneViewport()}
-        <div className="absolute w-full">
-          {viewportDialogState.viewportIndex === viewportIndex && (
-            <Notification
-              id="viewport-notification"
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-            />
-          )}
-        </div>
         {childrenWithProps}
       </div>
     </>

@@ -401,17 +401,6 @@ function OHIFCornerstoneSRViewport(props) {
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {getCornerstoneViewport()}
-        <div className="absolute w-full">
-          {viewportDialogState.viewportIndex === viewportIndex && (
-            <Notification
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-            />
-          )}
-        </div>
         {childrenWithProps}
       </div>
     </>

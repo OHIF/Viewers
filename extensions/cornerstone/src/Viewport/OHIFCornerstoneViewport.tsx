@@ -8,9 +8,14 @@ import {
   getEnabledElement,
   StackViewport,
   utilities as csUtils,
-  CONSTANTS,
 } from '@cornerstonejs/core';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import {
+  CinePlayer,
+  useCine,
+  useViewportGrid,
+  Notification,
+  useViewportDialog,
+} from '@ohif/ui';
 import {
   IStackViewport,
   IVolumeViewport,
@@ -131,6 +136,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportGridService,
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
+
+  const [viewportDialogState] = useViewportDialog();
 
   const cineHandler = () => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
@@ -455,50 +462,64 @@ const OHIFCornerstoneViewport = React.memo(props => {
   }, [displaySets, elementRef, viewportIndex]);
 
   return (
-    <div className="viewport-wrapper">
-      <ReactResizeDetector
-        handleWidth
-        handleHeight
-        skipOnMount={true} // Todo: make these configurable
-        refreshMode={'debounce'}
-        refreshRate={200} // transition amount in side panel
-        onResize={onResize}
-        targetRef={elementRef.current}
-      />
-      <div
-        className="cornerstone-viewport-element"
-        style={{ height: '100%', width: '100%' }}
-        onContextMenu={e => e.preventDefault()}
-        onMouseDown={e => e.preventDefault()}
-        ref={elementRef}
-      ></div>
-      <CornerstoneOverlays
-        viewportIndex={viewportIndex}
-        toolbarService={toolbarService}
-        element={elementRef.current}
-        scrollbarHeight={scrollbarHeight}
-        servicesManager={servicesManager}
-      />
-      {isCineEnabled && (
-        <CinePlayer
-          className="absolute left-1/2 -translate-x-1/2 bottom-3"
-          isPlaying={isPlaying}
-          onClose={handleCineClose}
-          onPlayPauseChange={isPlaying =>
-            cineService.setCine({
-              id: activeViewportIndex,
-              isPlaying,
-            })
-          }
-          onFrameRateChange={frameRate =>
-            cineService.setCine({
-              id: activeViewportIndex,
-              frameRate,
-            })
-          }
+    <React.Fragment>
+      <div className="viewport-wrapper">
+        <ReactResizeDetector
+          handleWidth
+          handleHeight
+          skipOnMount={true} // Todo: make these configurable
+          refreshMode={'debounce'}
+          refreshRate={200} // transition amount in side panel
+          onResize={onResize}
+          targetRef={elementRef.current}
         />
-      )}
-    </div>
+        <div
+          className="cornerstone-viewport-element"
+          style={{ height: '100%', width: '100%' }}
+          onContextMenu={e => e.preventDefault()}
+          onMouseDown={e => e.preventDefault()}
+          ref={elementRef}
+        ></div>
+        <CornerstoneOverlays
+          viewportIndex={viewportIndex}
+          toolBarService={toolbarService}
+          element={elementRef.current}
+          scrollbarHeight={scrollbarHeight}
+          servicesManager={servicesManager}
+        />
+        {isCineEnabled && (
+          <CinePlayer
+            className="absolute left-1/2 -translate-x-1/2 bottom-3"
+            isPlaying={isPlaying}
+            onClose={handleCineClose}
+            onPlayPauseChange={isPlaying =>
+              cineService.setCine({
+                id: activeViewportIndex,
+                isPlaying,
+              })
+            }
+            onFrameRateChange={frameRate =>
+              cineService.setCine({
+                id: activeViewportIndex,
+                frameRate,
+              })
+            }
+          />
+        )}
+      </div>
+      <div className="absolute w-full">
+        {viewportDialogState.viewportIndex === viewportIndex && (
+          <Notification
+            id="viewport-notification"
+            message={viewportDialogState.message}
+            type={viewportDialogState.type}
+            actions={viewportDialogState.actions}
+            onSubmit={viewportDialogState.onSubmit}
+            onOutsideClick={viewportDialogState.onOutsideClick}
+          />
+        )}
+      </div>
+    </React.Fragment>
   );
 }, areEqual);
 
