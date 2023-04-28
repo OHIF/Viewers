@@ -108,11 +108,6 @@ export function ViewportGridProvider({ children, service }) {
             viewport,
             state.viewports
           );
-          console.log(
-            'Replacing viewport',
-            viewport,
-            viewports[viewport.viewportIndex]
-          );
           viewports[viewport.viewportIndex] = viewport;
         });
 
