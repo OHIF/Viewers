@@ -4,8 +4,6 @@ import { useTranslation } from 'react-i18next';
 import OHIF, { utils } from '@ohif/core';
 import {
   LoadingIndicatorTotalPercent,
-  Notification,
-  useViewportDialog,
   useViewportGrid,
   ViewportActionBar,
 } from '@ohif/ui';
@@ -48,7 +46,6 @@ function OHIFCornerstoneSEGViewport(props) {
   const segDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [viewportDialogState, viewportDialogApi] = useViewportDialog();
 
   // States
   const [isToolGroupCreated, setToolGroupCreated] = useState(false);

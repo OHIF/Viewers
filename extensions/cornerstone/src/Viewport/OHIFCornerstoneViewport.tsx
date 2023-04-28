@@ -8,9 +8,14 @@ import {
   getEnabledElement,
   StackViewport,
   utilities as csUtils,
-  CONSTANTS,
 } from '@cornerstonejs/core';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import {
+  CinePlayer,
+  useCine,
+  useViewportGrid,
+  Notification,
+  useViewportDialog,
+} from '@ohif/ui';
 import {
   IStackViewport,
   IVolumeViewport,
@@ -477,7 +482,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         ></div>
         <CornerstoneOverlays
           viewportIndex={viewportIndex}
-          toolBarService={toolBarService}
+          toolBarService={toolbarService}
           element={elementRef.current}
           scrollbarHeight={scrollbarHeight}
           servicesManager={servicesManager}
@@ -505,7 +510,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       <div className="absolute w-full">
         {viewportDialogState.viewportIndex === viewportIndex && (
           <Notification
-            id={viewportDialogState.id}
+            id="viewport-notification"
             message={viewportDialogState.message}
             type={viewportDialogState.type}
             actions={viewportDialogState.actions}
