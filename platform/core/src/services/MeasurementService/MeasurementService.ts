@@ -508,7 +508,6 @@ class MeasurementService extends PubSubService {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
-
     if (!annotationType) {
       throw new Error('No source annotationType provided.');
     }
@@ -572,7 +571,7 @@ class MeasurementService extends PubSubService {
       // For now, it is just added in OHIF here and in setMeasurementSelected.
       this.measurements[internalUID] = newMeasurement;
       if (isUpdate) {
-       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+        this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
           measurement: newMeasurement,
           notYetUpdatedAtSource: false,
