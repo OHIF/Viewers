@@ -239,8 +239,6 @@ function DicomUploadProgress({
           resolve();
         }, 0);
       });
-
-      await promise;
     }
   }, []);
 
