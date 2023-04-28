@@ -526,26 +526,20 @@ function _subscribeToJumpToMeasurementEvents(
     displaySet => displaySet.displaySetInstanceUID
   );
   const { unsubscribe } = measurementService.subscribe(
-    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
+    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
     props => {
       cacheJumpToMeasurement = props;
-      const {
-        viewportIndex: jumpIndex,
-        measurement,
-        isConsumed,
-        priority,
-      } = props;
+      const { viewportIndex: jumpIndex, measurement, isConsumed } = props;
       if (!measurement || isConsumed) return;
-      if (
-        priority ===
-          MeasurementService.JUMP_TO_MEASUREMENT.SELECTED_VIEWPORT_PRIORITY &&
-        jumpIndex !== viewportIndex
-      ) {
-        // If the prioriy is the selected viewport priority, and this
-        // isn't the selected viewport, then skip handling it right now.
-        return;
+      if (cacheJumpToMeasurement.cornerstoneViewport === undefined) {
+        // Decide on which viewport should handle this
+        cacheJumpToMeasurement.cornerstoneViewport =
+          cornerstoneViewportService.findMeasurementViewportIndex(
+            measurement,
+            jumpIndex
+          );
       }
-
+      if (cacheJumpToMeasurement.cornerstoneViewport !== viewportIndex) return;
       // Jump the the measurement if the viewport contains the displaySetUID (fusion)
       if (displaysUIDs.includes(measurement.displaySetInstanceUID)) {
         _jumpToMeasurement(
@@ -584,8 +578,7 @@ function _checkForCachedJumpToMeasurementEvents(
   );
 
   // Jump to measurement if the measurement exists
-  const { measurement, viewportIndex: jumpIndex } = cacheJumpToMeasurement;
-  if (viewportIndex !== jumpIndex) return;
+  const { measurement } = cacheJumpToMeasurement;
   if (measurement && elementRef) {
     if (displaysUIDs.includes(measurement.displaySetInstanceUID)) {
       _jumpToMeasurement(

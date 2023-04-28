@@ -264,7 +264,7 @@ class CornerstoneViewportService extends PubSubService
       publicViewportOptions,
       publicDisplaySetOptions,
       viewportInfo
-    );
+      );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -863,6 +863,25 @@ class CornerstoneViewportService extends PubSubService
     if (images && images.length) {
       return images[0].FrameOfReferenceUID;
     }
+  }
+
+  /**
+   *
+   * @param measurement
+   * @return the viewportIndex to display the given measurement or -1
+   */
+  public findMeasurementViewportIndex(measurement, jumpIndex: number): number {
+    const viewportId = this.getViewportId(jumpIndex);
+    const viewportInfo = this.getViewportInfo(viewportId);
+    const { displaySetInstanceUID } = measurement;
+    if (viewportInfo?.containsDisplaySet(displaySetInstanceUID))
+      return jumpIndex;
+
+    return (
+      [...this.viewportsInfo.values()].find(viewportInfo =>
+        viewportInfo.containsDisplaySet(displaySetInstanceUID)
+      )?.viewportIndex ?? -1
+    );
   }
 }
 

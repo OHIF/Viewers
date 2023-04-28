@@ -67,7 +67,10 @@ const EVENTS = {
   RAW_MEASUREMENT_ADDED: 'event::raw_measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
-  JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
+  // Give the viewport a chance to jump to the measurement
+  JUMP_TO_MEASUREMENT_VIEWPORT: 'event:jump_to_measurement_viewport',
+  // Give the layout a chance to jump to the measurement
+  JUMP_TO_MEASUREMENT_LAYOUT: 'event:jump_to_measurement_layout',
 };
 
 const VALUE_TYPES = {
@@ -81,20 +84,6 @@ const VALUE_TYPES = {
   CIRCLE: 'value_type::circle',
   ROI_THRESHOLD: 'value_type::roiThreshold',
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
-};
-
-// Contains priority levels for the jump to image.  This allows firing the
-// jump to image several times with increasing priority to apply the change
-// to different sets of viewports until some viewport handles it.
-const JUMP_TO_MEASUREMENT = {
-  // The grid layout should be updated to include this
-  GRID_PRIORITY: 2,
-
-  // Any viewport able to handle this should do so
-  ANY_VIEWPORT_PRIORITY: 1,
-
-  // Only the selected viewport should handle the jump
-  SELECTED_VIEWPORT_PRIORITY: 0,
 };
 
 /**
@@ -121,7 +110,6 @@ class MeasurementService extends PubSubService {
   public static readonly EVENTS = EVENTS;
   public static VALUE_TYPES = VALUE_TYPES;
   public readonly VALUE_TYPES = VALUE_TYPES;
-  public static readonly JUMP_TO_MEASUREMENT = JUMP_TO_MEASUREMENT;
 
   private measurements = new Map();
 
@@ -189,7 +177,10 @@ class MeasurementService extends PubSubService {
     return this.measurements.get(measurementUID);
   }
 
-  setMeasurementSelected(measurementUID, selected) {
+  public setMeasurementSelected(
+    measurementUID: string,
+    selected: boolean
+  ): void {
     const measurement = this.getMeasurement(measurementUID);
     if (!measurement) {
       return;
@@ -634,23 +625,19 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * This method calls the subscriptions for JUMP_TO_MEASUREMENT, with an
-   * increasing priority starting at 0.
+   * This method calls the subscriptions for JUMP_TO_MEASUREMENT_VIEWPORT
+   * and JUMP_TO_MEASUREMENT_LAYOUT.  There are two events which are
+   * fired because there are two different items which might want to handle
+   * the event.  First, there might already be a viewport which can handle
+   * the event.  If so, then the layout doesn't need to necessarily change.
+   * This is communicated by the isConsumed value on the event itself.
+   * Otherwise, the layout itself may need to be navigated to in order
+   * to provide a viewport which can show the given measurement.
    *
-   * The priority increase is done to allow different viewports to handle
-   * the jump in different ways, so that the preferred viewport gets to handle
-   * the display first, then other viewports already showing the display set
-   * secondly, and finally the viewport grid service if no viewports can display
-   * the image.
-   *
-   * When a viewport decides to handle the jump to measurement, it should call
-   * the consume function on the event.  This will NOT prevent other viewports
-   * from receiving the event, but they can check that isConsumed attribute to
-   * see if someone has handled the event.
-   *
-   * This prevents requiring that different types of viewports and the viewport
-   * grid service know about each other's details, and allows both of them
-   * to be isolated from each other.
+   * When a viewport decides to apply the event, it should call the consume()
+   * method on the event, so that other listeners know they do not need to
+   * navigate.  This does NOT affect whether the layout event is fired, and
+   * merely causes it to fire the event with the isConsumed set to true.
    */
 
   public jumpToMeasurement(
@@ -668,18 +655,8 @@ class MeasurementService extends PubSubService {
       measurement,
     });
 
-    // See method description for details
-    for (
-      let priority = 0;
-      priority <= JUMP_TO_MEASUREMENT.GRID_PRIORITY;
-      priority++
-    ) {
-      consumableEvent.priority = priority;
-      this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT, consumableEvent);
-      if (consumableEvent.isConsumed) {
-        return;
-      }
-    }
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
   }
 
   _getSourceUID(name, version) {

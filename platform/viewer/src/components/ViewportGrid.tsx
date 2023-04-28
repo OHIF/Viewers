@@ -153,11 +153,9 @@ function ViewerViewportGrid(props) {
 
   useEffect(() => {
     const { unsubscribe } = measurementService.subscribe(
-      MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
-      ({ viewportIndex, measurement, priority }) => {
-        if (priority !== MeasurementService.JUMP_TO_MEASUREMENT.GRID_PRIORITY) {
-          return;
-        }
+      MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
+      ({ viewportIndex, measurement, isConsumed }) => {
+        if (isConsumed) return;
         // This occurs when no viewport has elected to consume the event
         // so we need to change layouts into a layout which can consume
         // the event.
