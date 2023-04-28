@@ -163,14 +163,29 @@ export default class DicomFileUploader extends PubSubService {
     return this._loadPromise;
   }
 
+  private _isRejected(): boolean {
+    return (
+      this._status === UploadStatus.Failed ||
+      this._status === UploadStatus.Cancelled
+    );
+  }
+
   private _reject(reject: (reason?: any) => void, reason: any) {
+    if (this._isRejected()) {
+      return;
+    }
+
     if (reason instanceof UploadRejection) {
       this._status = reason.status;
       reject(reason);
+      return;
     }
+
+    this._status = UploadStatus.Failed;
 
     if (reason.message) {
       reject(new UploadRejection(UploadStatus.Failed, reason.message));
+      return;
     }
 
     reject(new UploadRejection(UploadStatus.Failed, reason));
