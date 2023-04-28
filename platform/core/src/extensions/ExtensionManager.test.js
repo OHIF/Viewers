@@ -1,10 +1,10 @@
-import ExtensionManager from './ExtensionManager.js';
-import MODULE_TYPES from './MODULE_TYPES.js';
+import ExtensionManager from './ExtensionManager';
+import MODULE_TYPES from './MODULE_TYPES';
 import log from './../log.js';
 
 jest.mock('./../log.js');
 
-describe('ExtensionManager.js', () => {
+describe('ExtensionManager.ts', () => {
   let extensionManager, commandsManager, servicesManager, appConfig;
 
   beforeEach(() => {
@@ -206,37 +206,40 @@ describe('ExtensionManager.js', () => {
       const extension = {
         id: 'hello-world',
         getViewportModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getSopClassHandlerModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getPanelModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getToolbarModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getCommandsModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getLayoutTemplateModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getDataSourcesModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getHangingProtocolModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getContextModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getUtilityModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
         },
         getCustomizationModule: () => {
-          return [{}];
+          return [{ name: 'test' }];
+        },
+        getStateSyncModule: () => {
+          return [{ name: 'test' }];
         },
       };
 
@@ -245,7 +248,7 @@ describe('ExtensionManager.js', () => {
       // Registers 1 module per module type
       Object.keys(extensionManager.modules).forEach(moduleType => {
         const modulesForType = extensionManager.modules[moduleType];
-
+        console.log('moduleType', moduleType);
         expect(modulesForType.length).toBe(1);
       });
     });

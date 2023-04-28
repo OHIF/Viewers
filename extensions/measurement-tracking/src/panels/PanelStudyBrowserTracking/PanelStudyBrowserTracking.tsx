@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { HangingProtocolService, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
@@ -23,11 +23,11 @@ function PanelStudyBrowserTracking({
   dataSource,
 }) {
   const {
-    MeasurementService,
-    DisplaySetService,
-    UIDialogService,
-    HangingProtocolService,
-    UINotificationService,
+    measurementService,
+    displaySetService,
+    uiDialogService,
+    hangingProtocolService,
+    uiNotificationService,
   } = servicesManager.services;
 
   // Normally you nest the components so the tree isn't so deep, and the data
@@ -55,13 +55,13 @@ function PanelStudyBrowserTracking({
     let updatedViewports = [];
     const viewportIndex = activeViewportIndex;
     try {
-      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportIndex,
         displaySetInstanceUID
       );
     } catch (error) {
       console.warn(error);
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message:
           'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
@@ -79,13 +79,13 @@ function PanelStudyBrowserTracking({
   const isSingleViewport = numCols === 1 && numRows === 1;
 
   useEffect(() => {
-    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
-    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
+    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
     const subscriptions = [];
 
     [added, addedRaw].forEach(evt => {
       subscriptions.push(
-        MeasurementService.subscribe(evt, ({ source, measurement }) => {
+        measurementService.subscribe(evt, ({ source, measurement }) => {
           const {
             referenceSeriesUID: SeriesInstanceUID,
             referenceStudyUID: StudyInstanceUID,
@@ -106,7 +106,7 @@ function PanelStudyBrowserTracking({
         unsub();
       });
     };
-  }, [MeasurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
+  }, [measurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
 
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
 
@@ -150,10 +150,10 @@ function PanelStudyBrowserTracking({
 
   // ~~ Initial Thumbnails
   useEffect(() => {
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         dSet.displaySetInstanceUID
       );
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -171,28 +171,28 @@ function PanelStudyBrowserTracking({
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [DisplaySetService, dataSource, getImageSrc]);
+  }, [displaySetService, dataSource, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
       thumbnailImageSrcMap,
       trackedSeries,
       viewports,
-      isSingleViewport,
+      viewportGridService,
       dataSource,
-      DisplaySetService,
-      UIDialogService,
-      UINotificationService
+      displaySetService,
+      uiDialogService,
+      uiNotificationService
     );
 
     setDisplaySets(mappedDisplaySets);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    DisplaySetService.activeDisplaySets,
+    displaySetService.activeDisplaySets,
     trackedSeries,
     thumbnailImageSrcMap,
     viewports,
@@ -202,15 +202,15 @@ function PanelStudyBrowserTracking({
   // ~~ subscriptions --> displaySets
   useEffect(() => {
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
-    const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+    const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
 
           const newImageSrcEntry = {};
-          const displaySet = DisplaySetService.getDisplaySetByUID(
+          const displaySet = displaySetService.getDisplaySetByUID(
             displaySetInstanceUID
           );
 
@@ -237,19 +237,19 @@ function PanelStudyBrowserTracking({
 
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
-    const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
           thumbnailImageSrcMap,
           trackedSeries,
           viewports,
-          isSingleViewport,
+          viewportGridService,
           dataSource,
-          DisplaySetService,
-          UIDialogService,
-          UINotificationService
+          displaySetService,
+          uiDialogService,
+          uiNotificationService
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -262,7 +262,7 @@ function PanelStudyBrowserTracking({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    DisplaySetService,
+    displaySetService,
     dataSource,
     getImageSrc,
     thumbnailImageSrcMap,
@@ -294,7 +294,7 @@ function PanelStudyBrowserTracking({
     if (!shouldCollapseStudy) {
       const madeInClient = true;
       requestDisplaySetCreationForStudy(
-        DisplaySetService,
+        displaySetService,
         StudyInstanceUID,
         madeInClient
       );
@@ -357,7 +357,7 @@ function PanelStudyBrowserTracking({
         setActiveTabName(clickedTabName);
       }}
       onClickUntrack={displaySetInstanceUID => {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
+        const displaySet = displaySetService.getDisplaySetByUID(
           displaySetInstanceUID
         );
         // TODO: shift this somewhere else where we're centralizing this logic?
@@ -412,29 +412,32 @@ function _mapDisplaySets(
   thumbnailImageSrcMap,
   trackedSeriesInstanceUIDs,
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
-  isSingleViewport,
+  viewportGridService,
   dataSource,
-  DisplaySetService,
-  UIDialogService,
-  UINotificationService
+  displaySetService,
+  uiDialogService,
+  uiNotificationService
 ) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets.forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     const componentType = _getComponentType(ds.Modality);
-    const viewportIdentificator = isSingleViewport
-      ? []
-      : viewports.reduce((acc, viewportData, index) => {
-          if (
-            viewportData?.displaySetInstanceUIDs?.includes(
-              ds.displaySetInstanceUID
-            )
-          ) {
-            acc.push(viewportData.viewportLabel);
-          }
-          return acc;
-        }, []);
+    const numPanes = viewportGridService.getNumViewportPanes();
+    const viewportIdentificator =
+      numPanes === 1
+        ? []
+        : viewports.reduce((acc, viewportData, index) => {
+            if (
+              index < numPanes &&
+              viewportData?.displaySetInstanceUIDs?.includes(
+                ds.displaySetInstanceUID
+              )
+            ) {
+              acc.push(viewportData.viewportLabel);
+            }
+            return acc;
+          }, []);
 
     const array =
       componentType === 'thumbnailTracked'
@@ -450,6 +453,7 @@ function _mapDisplaySets(
       modality: ds.Modality,
       seriesDate: formatDate(ds.SeriesDate),
       numInstances: ds.numImageFrames,
+      countIcon: ds.countIcon,
       StudyInstanceUID: ds.StudyInstanceUID,
       componentType,
       imageSrc,
@@ -466,7 +470,7 @@ function _mapDisplaySets(
       if (dataSource.reject && dataSource.reject.series) {
         thumbnailProps.canReject = true;
         thumbnailProps.onReject = () => {
-          UIDialogService.create({
+          uiDialogService.create({
             id: 'ds-reject-sr',
             centralize: true,
             isDraggable: false,
@@ -489,7 +493,7 @@ function _mapDisplaySets(
                   classes: ['reject-yes-button'],
                 },
               ],
-              onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
+              onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
               onShow: () => {
                 const yesButton = document.querySelector('.reject-yes-button');
 
@@ -503,16 +507,16 @@ function _mapDisplaySets(
                         ds.StudyInstanceUID,
                         ds.SeriesInstanceUID
                       );
-                      DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
+                      displaySetService.deleteDisplaySet(displaySetInstanceUID);
+                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                      uiNotificationService.show({
                         title: 'Delete Report',
                         message: 'Report deleted successfully',
                         type: 'success',
                       });
                     } catch (error) {
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
+                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                      uiNotificationService.show({
                         title: 'Delete Report',
                         message: 'Failed to delete report',
                         type: 'error',
@@ -520,7 +524,7 @@ function _mapDisplaySets(
                     }
                     break;
                   case 'cancel':
-                    UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                    uiDialogService.dismiss({ id: 'ds-reject-sr' });
                     break;
                 }
               },
@@ -541,6 +545,7 @@ function _mapDisplaySets(
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
+  'SM',
   'RTSTRUCT',
   'RTPLAN',
   'RTDOSE',

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 
-const { formatDate } = utils;
+const { sortStudyInstances, formatDate } = utils;
 
 /**
  *
@@ -17,9 +17,9 @@ function PanelStudyBrowser({
   dataSource,
 }) {
   const {
-    HangingProtocolService,
-    DisplaySetService,
-    UINotificationService,
+    hangingProtocolService,
+    displaySetService,
+    uiNotificationService,
   } = servicesManager.services;
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -42,16 +42,16 @@ function PanelStudyBrowser({
     let updatedViewports = [];
     const viewportIndex = activeViewportIndex;
     try {
-      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportIndex,
         displaySetInstanceUID
       );
     } catch (error) {
       console.warn(error);
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          'The selected display sets could not be added to the viewport.',
         type: 'info',
         duration: 3000,
       });
@@ -103,10 +103,10 @@ function PanelStudyBrowser({
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         dSet.displaySetInstanceUID
       );
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -134,11 +134,12 @@ function PanelStudyBrowser({
   // ~~ displaySets
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
       thumbnailImageSrcMap
     );
+    sortStudyInstances(mappedDisplaySets);
 
     setDisplaySets(mappedDisplaySets);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,13 +148,13 @@ function PanelStudyBrowser({
   // ~~ subscriptions --> displaySets
   useEffect(() => {
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
-    const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+    const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
         const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
-          const displaySet = DisplaySetService.getDisplaySetByUID(
+          const displaySet = displaySetService.getDisplaySetByUID(
             dSet.displaySetInstanceUID
           );
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -178,8 +179,8 @@ function PanelStudyBrowser({
 
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
-    const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
@@ -221,7 +222,7 @@ function PanelStudyBrowser({
     if (!shouldCollapseStudy) {
       const madeInClient = true;
       requestDisplaySetCreationForStudy(
-        DisplaySetService,
+        displaySetService,
         StudyInstanceUID,
         madeInClient
       );
@@ -300,7 +301,9 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
       seriesDate: ds.SeriesDate,
+      seriesTime: ds.SeriesTime,
       numInstances: ds.numImageFrames,
+      countIcon: ds.countIcon,
       StudyInstanceUID: ds.StudyInstanceUID,
       componentType,
       imageSrc,
@@ -318,6 +321,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
+  'SM',
   'RTSTRUCT',
   'RTPLAN',
   'RTDOSE',

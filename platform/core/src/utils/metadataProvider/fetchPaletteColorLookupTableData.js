@@ -12,16 +12,16 @@
  * Returns undefined if the palette data is absent.
  */
 export default function fetchPaletteColorLookupTableData(
-  item, tag, descriptorTag
+  item,
+  tag,
+  descriptorTag
 ) {
   const { PaletteColorLookupTableUID } = item;
   const paletteData = item[tag];
-  if (paletteData === undefined && PaletteColorLookupTableUID === undefined) return;
+  if (paletteData === undefined && PaletteColorLookupTableUID === undefined)
+    return;
   // performance optimization - read UID and cache by UID
-  return _getPaletteColor(
-    item[tag],
-    item[descriptorTag]
-  )
+  return _getPaletteColor(item[tag], item[descriptorTag]);
 }
 
 function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
@@ -36,13 +36,12 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
     if (bits === 16) {
       let j = 0;
       for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = arraybuffer[j++] + arraybuffer[j++] << 8;
+        lut[i] = (arraybuffer[j++] + arraybuffer[j++]) << 8;
       }
     } else {
       for (let i = 0; i < numLutEntries; i++) {
         lut[i] = byteArray[i];
       }
-
     }
     return lut;
   };
@@ -53,20 +52,33 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
 
   if (paletteColorLookupTableData.InlineBinary) {
     try {
-      const arraybuffer = Uint8Array.from(atob(paletteColorLookupTableData.InlineBinary), c =>
-        c.charCodeAt(0)
+      const arraybuffer = Uint8Array.from(
+        atob(paletteColorLookupTableData.InlineBinary),
+        c => c.charCodeAt(0)
       );
-      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(arraybuffer));
+      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(
+        arraybuffer
+      ));
     } catch (e) {
-      console.log("Couldn't decode", paletteColorLookupTableData.InlineBinary, e);
+      console.log(
+        "Couldn't decode",
+        paletteColorLookupTableData.InlineBinary,
+        e
+      );
       return undefined;
     }
   }
 
   if (paletteColorLookupTableData.retrieveBulkData) {
-    return paletteColorLookupTableData.retrieveBulkData().then(val =>
-      (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(val)));
+    return paletteColorLookupTableData
+      .retrieveBulkData()
+      .then(
+        val =>
+          (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(
+            val
+          ))
+      );
   }
 
-  throw new Error(`No data found for ${paletteColorLookupTableData} palette`)
+  console.error(`No data found for ${paletteColorLookupTableData} palette`);
 }

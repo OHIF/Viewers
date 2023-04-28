@@ -6,6 +6,9 @@ window.config = {
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
   showLoadingIndicator: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -22,6 +25,7 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
+        useBulkDataURI: false,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
       },

@@ -1,3 +1,4 @@
+import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 import { assign } from 'xstate';
 
 const RESPONSE = {
@@ -45,6 +46,7 @@ const machineConfiguration = {
           cond: 'hasNotIgnoredSRSeriesForHydration',
         },
         RESTORE_PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
+        HYDRATE_SR: 'hydrateStructuredReport',
       },
     },
     promptBeginTracking: {
@@ -225,6 +227,24 @@ const machineConfiguration = {
             target: 'idle',
             actions: ['ignoreHydrationForSRSeries'],
             cond: 'shouldIgnoreHydrationForSR',
+          },
+        ],
+        onError: {
+          target: 'idle',
+        },
+      },
+    },
+    hydrateStructuredReport: {
+      invoke: {
+        src: 'hydrateStructuredReport',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: [
+              'setTrackedStudyAndMultipleSeries',
+              'jumpToFirstMeasurementInActiveViewport',
+              'setIsDirtyToClean',
+            ],
           },
         ],
         onError: {

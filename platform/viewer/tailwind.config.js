@@ -46,6 +46,13 @@ module.exports = {
         active: '#348cfd',
       },
 
+      inputfield: {
+        main: '#3a3f99',
+        disabled: '#2b166b',
+        focus: '#5acce6',
+        placeholder: '#39383f'
+      },
+
       secondary: {
         light: '#3a3f99',
         main: '#2b166b',
@@ -63,11 +70,17 @@ module.exports = {
 
       customgreen: {
         100: '#05D97C',
+        200: '#0FD97C',
       },
 
       customblue: {
         100: '#c4fdff',
         200: '#38daff',
+        300: '#1D204D',
+      },
+
+      customgray: {
+        100: '#262943',
       },
 
       gray: {
@@ -238,6 +251,7 @@ module.exports = {
       auto: '1 1 auto',
       initial: '0 1 auto',
       none: 'none',
+      static: '0 0 auto',
     },
     flexGrow: {
       '0': '0',
@@ -302,15 +316,23 @@ module.exports = {
       ...theme('spacing'),
       full: '100%',
       screen: '100vh',
+      inherit: 'inherit',
     }),
-    inset: {
+    inset: theme => ({
+      ...theme('spacing'),
       '0': '0',
       auto: 'auto',
       full: '100%',
       viewport: '0.5rem',
       '1/2': '50%',
       'viewport-scrollbar': '1.3rem',
-    },
+    }),
+    minHeight: theme => ({
+      ...theme('spacing'),
+      '0': '0',
+      full: '100%',
+      screen: '100vh',
+    }),
     letterSpacing: {
       tighter: '-0.05em',
       tight: '-0.025em',
@@ -365,12 +387,6 @@ module.exports = {
       full: '100%',
       ...breakpoints(theme('screens')),
       ...theme('spacing'),
-    }),
-    minHeight: theme => ({
-      ...theme('spacing'),
-      '0': '0',
-      full: '100%',
-      screen: '100vh',
     }),
     minWidth: theme => ({
       ...theme('spacing'),

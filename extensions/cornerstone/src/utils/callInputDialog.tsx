@@ -9,44 +9,56 @@ import { Input, Dialog } from '@ohif/ui';
  * @param {*} event
  * @param {*} callback
  * @param {*} isArrowAnnotateInputDialog
+ * @param {*} dialogConfig
+ * @param {string?} dialogConfig.dialogTitle - title of the input dialog
+ * @param {string?} dialogConfig.inputLabel - show label above the input
  */
 function callInputDialog(
-  UIDialogService,
+  uiDialogService,
   data,
   callback,
-  isArrowAnnotateInputDialog = true
+  isArrowAnnotateInputDialog = true,
+  dialogConfig: any = {}
 ) {
-  const dialogId = 'enter-annotation';
+  const dialogId = 'dialog-enter-annotation';
   const label = data
     ? isArrowAnnotateInputDialog
       ? data.text
       : data.label
     : '';
+  const {
+    dialogTitle = 'Enter your annotation',
+    inputLabel = '',
+    validateFunc = value => true,
+  } = dialogConfig;
 
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save':
+        if (typeof validateFunc === 'function' && !validateFunc(value.label))
+          return;
+
         callback(value.label, action.id);
         break;
       case 'cancel':
         callback('', action.id);
         break;
     }
-    UIDialogService.dismiss({ id: dialogId });
+    uiDialogService.dismiss({ id: dialogId });
   };
 
-  if (UIDialogService) {
-    UIDialogService.create({
+  if (uiDialogService) {
+    uiDialogService.create({
       id: dialogId,
       centralize: true,
       isDraggable: false,
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: dialogTitle,
         value: { label },
         noCloseButton: true,
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
           { id: 'cancel', text: 'Cancel', type: 'primary' },
           { id: 'save', text: 'Save', type: 'secondary' },
@@ -59,7 +71,10 @@ function callInputDialog(
                 autoFocus
                 className="mt-2 bg-black border-primary-main"
                 type="text"
+                id="annotation"
                 containerClassName="mr-2"
+                label={inputLabel}
+                labelClassName="text-primary-light"
                 value={value.label}
                 onChange={event => {
                   event.persist();

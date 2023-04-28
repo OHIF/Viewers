@@ -30,7 +30,7 @@ function ViewportOrientationMarkers({
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
-  const { CornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
 
   useEffect(() => {
     const cameraModifiedListener = (
@@ -114,10 +114,14 @@ function ViewportOrientationMarkers({
       flipHorizontal
     );
 
-    const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+    const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
 
+    if (!ohifViewport) {
+      console.log('ViewportOrientationMarkers::No viewport');
+      return null;
+    }
     const backgroundColor = ohifViewport.getViewportOptions().background;
 
     // Todo: probably this can be done in a better way in which we identify bright

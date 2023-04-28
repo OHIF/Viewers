@@ -1,12 +1,9 @@
 describe('OHIF Cornerstone Toolbar', () => {
-  before(() => {
+  beforeEach(() => {
     cy.checkStudyRouteInViewer(
       '1.2.840.113619.2.5.1762583153.215519.978957063.78'
     );
     cy.expectMinimumThumbnails(3);
-  });
-
-  beforeEach(() => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
 
@@ -16,8 +13,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //const expectedText = 'Ser: 1';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
-
-    cy.resetViewport();
   });
 
   it('checks if all primary buttons are being displayed', () => {
@@ -84,15 +79,19 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .click({ force: true })
       .trigger('mousedown', 'center', { buttons: 1 })
       // Since we have scrollbar on the right side of the viewport, we need to
       // force the mousemove since it goes to another element
       .trigger('mousemove', 'right', { buttons: 1, force: true })
       .trigger('mouseup', { buttons: 1 });
 
-    const expectedText = 'W:1930L:479';
-    cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
+    // The exact text is slightly dependent on the viewport resolution, so leave a range
+    cy.get('@viewportInfoTopLeft').should($txt => {
+      const text = $txt.text();
+      expect(text)
+        .to.include('W:193')
+        .include('L:479');
+    });
   });
 
   it('checks if Pan tool will move the image inside the viewport', () => {

@@ -7,7 +7,7 @@
  * @property {boolean} [viewportIndex=false] Modal is dismissible via the esc key.
  */
 
-const name = 'UIViewportDialogService';
+const name = 'uiViewportDialogService';
 
 const publicAPI = {
   name,
@@ -75,8 +75,11 @@ function setServiceImplementation({
 }
 
 export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+  REGISTRATION: {
+    name,
+    altName: 'UIViewportDialogService',
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };

@@ -29,18 +29,100 @@ export default function isDisplaySetReconstructable(instances) {
     return { value: false };
   }
 
+  // Can't reconstruct if all instances don't have the ImagePositionPatient.
+  if (
+    !isMultiframe &&
+    !instances.every(instance => instance.ImagePositionPatient)
+  ) {
+    return { value: false };
+  }
+
   const sortedInstances = sortInstancesByPosition(instances);
 
-  if (isMultiframe) {
-    return processMultiframe(sortedInstances[0]);
-  } else {
-    return processSingleframe(sortedInstances);
-  }
+  return isMultiframe
+    ? processMultiframe(sortedInstances[0])
+    : processSingleframe(sortedInstances);
 }
 
-function processMultiframe(instance) {
-  //TODO: deal with multriframe checks! return false for now as can't reconstruct.
-  return { value: false };
+function hasPixelMeasurements(multiFrameInstance) {
+  const perFrameSequence =
+    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
+  const sharedSequence = multiFrameInstance.SharedFunctionalGroupsSequence;
+
+  return (
+    Boolean(perFrameSequence?.PixelMeasuresSequence) ||
+    Boolean(sharedSequence?.PixelMeasuresSequence) ||
+    Boolean(
+      multiFrameInstance.PixelSpacing &&
+        (multiFrameInstance.SliceThickness ||
+          multiFrameInstance.SpacingBetweenFrames)
+    )
+  );
+}
+
+function hasOrientation(multiFrameInstance) {
+  const sharedSequence = multiFrameInstance.SharedFunctionalGroupsSequence;
+  const perFrameSequence =
+    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
+
+  return (
+    Boolean(sharedSequence?.PlaneOrientationSequence) ||
+    Boolean(perFrameSequence?.PlaneOrientationSequence) ||
+    Boolean(
+      multiFrameInstance.ImageOrientationPatient ||
+        multiFrameInstance.DetectorInformationSequence?.[0]
+          ?.ImageOrientationPatient
+    )
+  );
+}
+
+function hasPosition(multiFrameInstance) {
+  const perFrameSequence =
+    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
+
+  return (
+    Boolean(perFrameSequence?.PlanePositionSequence) ||
+    Boolean(perFrameSequence?.CTPositionSequence) ||
+    Boolean(
+      multiFrameInstance.ImagePositionPatient ||
+        multiFrameInstance.DetectorInformationSequence?.[0]
+          ?.ImagePositionPatient
+    )
+  );
+}
+
+function isNMReconstructable(multiFrameInstance) {
+  const imageSubType = multiFrameInstance.ImageType?.[2];
+  return imageSubType === 'RECON TOMO' || imageSubType === 'RECON GATED TOMO';
+}
+
+function processMultiframe(multiFrameInstance) {
+  // If we don't have the PixelMeasuresSequence, then the pixel spacing and
+  // slice thickness isn't specified or is changing and we can't reconstruct
+  // the dataset.
+  if (!hasPixelMeasurements(multiFrameInstance)) {
+    return { value: false };
+  }
+
+  if (!hasOrientation(multiFrameInstance)) {
+    console.log('No image orientation information, not reconstructable');
+    return { value: false };
+  }
+
+  if (!hasPosition(multiFrameInstance)) {
+    console.log('No image position information, not reconstructable');
+    return { value: false };
+  }
+
+  if (
+    multiFrameInstance.Modality.includes('NM') &&
+    !isNMReconstructable(multiFrameInstance)
+  ) {
+    return { value: false };
+  }
+
+  // TODO - check spacing consistency
+  return { value: true };
 }
 
 function processSingleframe(instances) {

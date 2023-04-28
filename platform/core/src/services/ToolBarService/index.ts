@@ -1,8 +1,3 @@
-import ToolBarService from './ToolBarService';
+import ToolbarService from './ToolbarService';
 
-export default {
-  name: 'ToolBarService',
-  create: ({ configuration = {}, commandsManager }) => {
-    return new ToolBarService(commandsManager);
-  },
-};
+export default ToolbarService;

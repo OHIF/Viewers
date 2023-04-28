@@ -27,7 +27,7 @@ function createStudyMetadata(StudyInstanceUID) {
         const series = createSeriesMetadata([instance]);
         this.series.push(series);
         const { Modality } = series;
-        if (this.ModalitiesInStudy.indexof(Modality) === -1) {
+        if (this.ModalitiesInStudy.indexOf(Modality) === -1) {
           this.ModalitiesInStudy.push(Modality);
         }
       }
@@ -49,7 +49,15 @@ function createStudyMetadata(StudyInstanceUID) {
       );
 
       if (existingSeries) {
-        existingSeries.instances.push(...instances);
+        // Only add instances not already present, so generate a map
+        // of existing instances and filter the to add by things
+        // already present.
+        const sopMap = {};
+        existingSeries.instances.forEach(
+          it => (sopMap[it.SOPInstanceUID] = it)
+        );
+        const newInstances = instances.filter(it => !sopMap[it.SOPInstanceUID]);
+        existingSeries.instances.push(...newInstances);
       } else {
         const series = createSeriesMetadata(instances);
         this.series.push(series);

@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   orthanc:
-    image: jodogne/orthanc-plugins:1.5.6
+    image: jodogne/orthanc-plugins:1.11.0
     hostname: orthanc
     volumes:
       # Config
@@ -13,3 +13,11 @@ services:
       - '4242:4242' # DICOM
       - '8042:8042' # Web
     restart: unless-stopped
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - '80:80' #ngnix proxy
+    depends_on:
+      - orthanc

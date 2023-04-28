@@ -31,11 +31,12 @@
   },
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
-    "classnames": "^2.2.6",
-    "@cornerstonejs/core": "^0.21.5",
-    "@cornerstonejs/tools": "^0.29.8",
+    "classnames": "^2.3.2",
+    "@cornerstonejs/core": "^0.42.2",
+    "@cornerstonejs/tools": "^0.65.0",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
-    "dcmjs": "^0.28.3",
+    "dcmjs": "^0.29.5",
+    "lodash.debounce": "^4.17.21",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -44,7 +45,7 @@
     "@ohif/ui": "^2.0.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3",
+    "@babel/runtime": "^7.20.13",
     "@ohif/ui": "^2.0.0",
     "@xstate/react": "^0.8.1",
     "xstate": "^4.10.0"

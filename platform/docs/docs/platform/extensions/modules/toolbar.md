@@ -44,6 +44,11 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       defaultComponent: ToolbarLayoutSelector,
       clickHandler: (evt, clickedBtn, btnSectionName) => {},
     },
+    {
+      name: 'ohif.toggle',
+      defaultComponent: ToolbarButton,
+      clickHandler: () => {},
+    },
   ];
 }
 ```
@@ -129,8 +134,11 @@ There are three main types of toolbar buttons:
 You can use the `ohif.splitButton` type to build a button with extra tools in
 the dropdown.
 
-- First you need to give your `primary` tool definition to the split button
-- the `secondary` properties can be a simple arrow down (`chevron-down` icon)
+- First you need to give your `primary` tool definition to the split button. The primary
+tool can specify a `uiType` property which can be one of the button types returned by
+`getToolbarModule` that is a variation of `ToolbarButton`. If `uiType` is omitted then
+`ToolbarButton` is used by default.
+- The `secondary` properties can be a simple arrow down (`chevron-down` icon)
 - For adding the extra tools add them to the `items` list.
 
 You can see below how `longitudinal` mode is using the available toolbarModule

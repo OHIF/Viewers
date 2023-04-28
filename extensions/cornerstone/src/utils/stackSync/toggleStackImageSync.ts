@@ -12,10 +12,10 @@ export default function toggleStackImageSync({
   getEnabledElement,
 }) {
   const {
-    SyncGroupService,
-    ViewportGridService,
-    DisplaySetService,
-    CornerstoneViewportService,
+    syncGroupService,
+    viewportGridService,
+    displaySetService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   if (!toggledState) {
@@ -23,7 +23,7 @@ export default function toggleStackImageSync({
       const { viewports, synchronizerId } = syncGroupInfo;
 
       viewports.forEach(({ viewportId, renderingEngineId }) => {
-        SyncGroupService.removeViewportFromSyncGroup(
+        syncGroupService.removeViewportFromSyncGroup(
           viewportId,
           renderingEngineId,
           synchronizerId
@@ -37,7 +37,7 @@ export default function toggleStackImageSync({
   STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
   // create synchronization groups and add viewports
-  let { viewports } = ViewportGridService.getState();
+  let { viewports } = viewportGridService.getState();
 
   // filter empty viewports
   viewports = viewports.filter(
@@ -50,7 +50,7 @@ export default function toggleStackImageSync({
     const { displaySetInstanceUIDs } = viewport;
 
     for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 
@@ -70,7 +70,7 @@ export default function toggleStackImageSync({
       return acc;
     }
 
-    const { element } = CornerstoneViewportService.getViewportInfo(viewportId);
+    const { element } = cornerstoneViewportService.getViewportInfo(viewportId);
     const { viewport: csViewport, renderingEngineId } = getEnabledElement(
       element
     );
@@ -99,7 +99,7 @@ export default function toggleStackImageSync({
     calculateViewportRegistrations(viewports);
 
     viewports.forEach(({ viewportId, renderingEngineId }) => {
-      SyncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, {
+      syncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, {
         type: 'stackimage',
         id: synchronizerId,
         source: true,

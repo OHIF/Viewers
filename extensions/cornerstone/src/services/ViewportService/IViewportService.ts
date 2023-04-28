@@ -12,7 +12,7 @@ import {
  */
 export interface IViewportService {
   servicesManager: unknown;
-  HangingProtocolService: unknown;
+  hangingProtocolService: unknown;
   renderingEngine: unknown;
   viewportGridResizeObserver: unknown;
   viewportsInfo: unknown;

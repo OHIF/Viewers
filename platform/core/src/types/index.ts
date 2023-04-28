@@ -1,25 +1,21 @@
-import {
-  StudyMetadata,
-  SeriesMetadata,
-  InstanceMetadata,
-} from './StudyMetadata';
-
-import Consumer from './Consumer';
-import { ExtensionManager } from '../extensions';
-import { CustomizationService, PubSubService } from '../services';
+import * as Extensions from '../extensions/ExtensionManager';
 import * as HangingProtocol from './HangingProtocol';
-import Command from './Command';
+import Services from './Services';
+import Hotkey from '../classes/Hotkey';
+import { DisplaySet } from '../services/DisplaySetService/DisplaySetService';
 
 export * from '../services/CustomizationService/types';
+// Separate out some generic types
+export * from './AppConfig';
+export * from './Consumer';
+export * from './Command';
+export * from './StudyMetadata';
+export * from './PanelModule';
+export * from './IPubSub';
+export * from './Color';
 
-export type {
-  ExtensionManager,
-  HangingProtocol,
-  StudyMetadata,
-  SeriesMetadata,
-  InstanceMetadata,
-  Consumer,
-  PubSubService,
-  CustomizationService,
-  Command,
-};
+/**
+ * Export the types used within the various services and managers, but
+ * not the services/managers themselves, which are exported at the top level.
+ */
+export { Extensions, HangingProtocol, Services, Hotkey, DisplaySet };

@@ -33,7 +33,7 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askShouldAddMeasurements(UIViewportDialogService, viewportIndex) {
+function _askShouldAddMeasurements(uiViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
     const message =
       'Do you want to add this measurement to the existing report?';
@@ -51,18 +51,18 @@ function _askShouldAddMeasurements(UIViewportDialogService, viewportIndex) {
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
+    uiViewportDialogService.show({
       viewportIndex,
       type: 'info',
       message,
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });

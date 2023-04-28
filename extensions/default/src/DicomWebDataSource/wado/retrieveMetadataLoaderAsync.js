@@ -1,5 +1,8 @@
 import dcmjs from 'dcmjs';
-import { sortStudySeries, sortingCriteria } from '../utils/sortStudy';
+import {
+  sortStudySeries,
+  sortingCriteria,
+} from '@ohif/core/src/utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
 /**

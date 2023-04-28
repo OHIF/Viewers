@@ -1,19 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import OHIF, { utils } from '@ohif/core';
 import {
+  LoadingIndicatorTotalPercent,
   Notification,
-  ViewportActionBar,
-  useViewportGrid,
   useViewportDialog,
-  LoadingIndicatorProgress,
+  useViewportGrid,
+  ViewportActionBar,
 } from '@ohif/ui';
-
-import { useTranslation } from 'react-i18next';
-
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
-import _hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
+import hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
 
 const { formatDate } = utils;
@@ -33,10 +31,11 @@ function OHIFCornerstoneSEGViewport(props) {
   const { t } = useTranslation('SEGViewport');
 
   const {
-    DisplaySetService,
-    ToolGroupService,
-    SegmentationService,
-    UINotificationService,
+    displaySetService,
+    toolGroupService,
+    segmentationService,
+    uiNotificationService,
+    customizationService,
   } = servicesManager.services;
 
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
@@ -64,7 +63,7 @@ function OHIFCornerstoneSEGViewport(props) {
   const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
   const [element, setElement] = useState(null);
   const [processingProgress, setProcessingProgress] = useState({
-    segmentIndex: 1,
+    percentComplete: null,
     totalSegments: null,
   });
 
@@ -127,7 +126,7 @@ function OHIFCornerstoneSEGViewport(props) {
     direction => {
       direction = direction === 'left' ? -1 : 1;
       const segmentationId = segDisplaySet.displaySetInstanceUID;
-      const segmentation = SegmentationService.getSegmentation(segmentationId);
+      const segmentation = segmentationService.getSegmentation(segmentationId);
 
       const { segments } = segmentation;
 
@@ -135,13 +134,15 @@ function OHIFCornerstoneSEGViewport(props) {
 
       let newSelectedSegmentIndex = selectedSegment + direction;
 
+      // Segment 0 is always background
+
       if (newSelectedSegmentIndex > numberOfSegments - 1) {
         newSelectedSegmentIndex = 1;
       } else if (newSelectedSegmentIndex === 0) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      SegmentationService.jumpToSegmentCenter(
+      segmentationService.jumpToSegmentCenter(
         segmentationId,
         newSelectedSegmentIndex,
         toolGroupId
@@ -168,8 +169,8 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
         if (
           evt.segDisplaySet.displaySetInstanceUID ===
@@ -179,7 +180,7 @@ function OHIFCornerstoneSEGViewport(props) {
         }
 
         if (evt.overlappingSegments) {
-          UINotificationService.show({
+          uiNotificationService.show({
             title: 'Overlapping Segments',
             message:
               'Overlapping segments detected which is not currently supported',
@@ -195,11 +196,11 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [segDisplaySet]);
 
   useEffect(() => {
-    const { unsubscribe } = SegmentationService.subscribe(
-      SegmentationService.EVENTS.SEGMENT_PIXEL_DATA_CREATED,
-      ({ segmentIndex, numSegments }) => {
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
+      ({ percentComplete, numSegments }) => {
         setProcessingProgress({
-          segmentIndex,
+          percentComplete,
           totalSegments: numSegments,
         });
       }
@@ -214,8 +215,8 @@ function OHIFCornerstoneSEGViewport(props) {
    Cleanup the SEG viewport when the viewport is destroyed
    */
   useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
         if (
@@ -235,27 +236,30 @@ function OHIFCornerstoneSEGViewport(props) {
   }, []);
 
   useEffect(() => {
-    let toolGroup = ToolGroupService.getToolGroup(toolGroupId);
+    let toolGroup = toolGroupService.getToolGroup(toolGroupId);
 
     if (toolGroup) {
       return;
     }
 
+    // This creates a custom tool group which has the lifetime of this view
+    // only, and does NOT interfere with currently displayed segmentations.
     toolGroup = createSEGToolGroupAndAddTools(
-      ToolGroupService,
-      toolGroupId,
-      extensionManager
+      toolGroupService,
+      customizationService,
+      toolGroupId
     );
 
     setToolGroupCreated(true);
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+      segmentationService.removeSegmentationRepresentationFromToolGroup(
         toolGroupId
       );
 
-      ToolGroupService.destroyToolGroup(toolGroupId);
+      // Only destroy the viewport specific implementation
+      toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
 
@@ -264,7 +268,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      SegmentationService.removeSegmentationRepresentationFromToolGroup(
+      segmentationService.removeSegmentationRepresentationFromToolGroup(
         toolGroupId
       );
       referencedDisplaySetRef.current = null;
@@ -304,19 +308,16 @@ function OHIFCornerstoneSEGViewport(props) {
     StudyDate,
     SeriesDescription,
     SpacingBetweenSlices,
-    SeriesNumber,
   } = referencedDisplaySetRef.current.metadata;
 
-  const onPillClick = () => {
-    promptHydrateSEG({
-      servicesManager,
-      viewportIndex,
+  const onStatusClick = async () => {
+    const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
-    }).then(isHydrated => {
-      if (isHydrated) {
-        setIsHydrated(true);
-      }
+      viewportIndex,
+      servicesManager,
     });
+
+    setIsHydrated(isHydrated);
   };
 
   return (
@@ -330,14 +331,13 @@ function OHIFCornerstoneSEGViewport(props) {
         getStatusComponent={() => {
           return _getStatusComponent({
             isHydrated,
-            onPillClick,
+            onStatusClick,
           });
         }}
         studyData={{
           label: viewportLabel,
           useAltStyling: true,
           studyDate: formatDate(StudyDate),
-          currentSeries: SeriesNumber,
           seriesDescription: `SEG Viewport ${SeriesDescription}`,
           patientInformation: {
             patientName: PatientName
@@ -358,27 +358,11 @@ function OHIFCornerstoneSEGViewport(props) {
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {segIsLoading && (
-          <LoadingIndicatorProgress
+          <LoadingIndicatorTotalPercent
             className="w-full h-full"
-            progress={
-              processingProgress.totalSegments !== null
-                ? ((processingProgress.segmentIndex + 1) /
-                    processingProgress.totalSegments) *
-                  100
-                : null
-            }
-            textBlock={
-              !processingProgress.totalSegments ? (
-                <span className="text-white text-sm">Loading SEG ...</span>
-              ) : (
-                <span className="text-white text-sm flex items-baseline space-x-2">
-                  <div>Loading Segment</div>
-                  <div className="w-3">{`${processingProgress.segmentIndex}`}</div>
-                  <div>/</div>
-                  <div>{`${processingProgress.totalSegments}`}</div>
-                </span>
-              )
-            }
+            totalNumbers={processingProgress.totalSegments}
+            percentComplete={processingProgress.percentComplete}
+            loadingText="Loading SEG..."
           />
         )}
         {getCornerstoneViewport()}

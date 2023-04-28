@@ -36,12 +36,14 @@
     "@ohif/extension-default": "^3.0.0",
     "@ohif/extension-cornerstone": "^3.0.0",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
+    "@ohif/extension-cornerstone-dicom-seg": "^3.0.0",
+    "@ohif/extension-cornerstone-dicom-rt": "^3.0.0",
     "@ohif/extension-dicom-pdf": "^3.0.1",
     "@ohif/extension-dicom-video": "^3.0.1",
     "@ohif/extension-measurement-tracking": "^3.0.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.16.3"
+    "@babel/runtime": "^7.20.13"
   },
   "devDependencies": {
     "webpack": "^5.50.0",

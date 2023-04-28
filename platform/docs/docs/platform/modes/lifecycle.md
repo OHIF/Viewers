@@ -16,7 +16,11 @@ Currently, there are two hooks that are called for modes:
 
 This hook gets run after the defined route has been entered by the mode. This
 hook can be used to initialize the data, services and appearance of the viewer
-upon the first render.
+upon the first render, in any way that is custom to the mode.
+
+This is called after service `onModeEnter` calls so that the entry into a mode
+is done in a predefined/fixed state.  That allows any restoring of existing state
+to be performed.
 
 For instance, in `longitudinal` mode we are using this hook to initialize the
 `ToolBarService` and set the window level/width tool to be active and add
@@ -64,9 +68,13 @@ function modeFactory() {
 
 ## onModeExit
 
-This hook is called when the viewer navigate away from the route in the url.
-This is the place for cleaning up data, and services by unsubscribing to the
-events.
+This hook is called when the viewer navigates away from the route in the url.
+It is called BEFORE the service specific onModeExit calls are performed, and
+thus still has access to stateful data which can be cached or stored before
+the services clean themselves up.
+This is the place for cleaning up NON-service specific data, and services
+by unsubscribing to the events.  The cleanup of the service itself is intended
+to occur in the service `onModeEnter`.
 
 For instance, it can be used to reset the `ToolBarService` which reset the
 toggled buttons.

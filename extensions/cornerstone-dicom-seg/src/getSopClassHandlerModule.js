@@ -53,9 +53,11 @@ function _getDisplaySetsFromSeries(
     segments: {},
     sopClassUids,
     instance,
+    instances: [instance],
     wadoRoot,
     wadoUriRoot,
     wadoUri,
+    isOverlayDisplaySet: true,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -71,8 +73,8 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.getReferenceDisplaySet = () => {
-    const { DisplaySetService } = servicesManager.services;
-    const referencedDisplaySets = DisplaySetService.getDisplaySetsForSeries(
+    const { displaySetService } = servicesManager.services;
+    const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
       displaySet.referencedSeriesInstanceUID
     );
 
@@ -101,9 +103,12 @@ function _getDisplaySetsFromSeries(
 
 function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   const { SOPInstanceUID } = segDisplaySet;
+  const { segmentationService } = servicesManager.services;
+
   if (
     (segDisplaySet.loading || segDisplaySet.isLoaded) &&
-    loadPromises[SOPInstanceUID]
+    loadPromises[SOPInstanceUID] &&
+    _segmentationExists(segDisplaySet, segmentationService)
   ) {
     return loadPromises[SOPInstanceUID];
   }
@@ -113,12 +118,6 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
-    const { SegmentationService } = servicesManager.services;
-
-    if (_segmentationExistsInCache(segDisplaySet, SegmentationService)) {
-      return;
-    }
-
     if (
       !segDisplaySet.segments ||
       Object.keys(segDisplaySet.segments).length === 0
@@ -133,11 +132,8 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
     }
 
     const suppressEvents = true;
-    SegmentationService.createSegmentationForSEGDisplaySet(
-      segDisplaySet,
-      null,
-      suppressEvents
-    )
+    segmentationService
+      .createSegmentationForSEGDisplaySet(segDisplaySet, null, suppressEvents)
       .then(() => {
         segDisplaySet.loading = false;
         resolve();
@@ -175,12 +171,11 @@ async function _loadSegments(extensionManager, segDisplaySet, headers) {
   return segments;
 }
 
-function _segmentationExistsInCache(segDisplaySet, SegmentationService) {
+function _segmentationExists(segDisplaySet, segmentationService) {
   // This should be abstracted with the CornerstoneCacheService
-  const labelmapVolumeId = segDisplaySet.displaySetInstanceUID;
-  const segVolume = SegmentationService.getLabelmapVolume(labelmapVolumeId);
-
-  return segVolume !== undefined;
+  return segmentationService.getSegmentation(
+    segDisplaySet.displaySetInstanceUID
+  );
 }
 
 function _getPixelData(dataset, segments) {

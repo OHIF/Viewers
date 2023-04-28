@@ -30,12 +30,35 @@ const combineFrameInstance = (frame, instance) => {
       .map(it => it[0])
       .filter(it => it !== undefined && typeof it === 'object');
 
-    return Object.assign(
-      { frameNumber: frameNumber },
-      instance,
-      ...Object.values(shared),
-      ...Object.values(perFrame)
-    );
+    // this is to fix NM multiframe datasets with position and orientation
+    // information inside DetectorInformationSequence
+    if (
+      !instance.ImageOrientationPatient &&
+      instance.DetectorInformationSequence
+    ) {
+      instance.ImageOrientationPatient =
+        instance.DetectorInformationSequence[0].ImageOrientationPatient;
+    }
+    if (
+      !instance.ImagePositionPatient &&
+      instance.DetectorInformationSequence
+    ) {
+      instance.ImagePositionPatient =
+        instance.DetectorInformationSequence[0].ImagePositionPatient;
+    }
+
+    const newInstance = Object.assign(instance, { frameNumber: frameNumber });
+
+    // merge the shared first then the per frame to override
+    [...shared, ...perFrame].forEach(item => {
+      Object.entries(item).forEach(([key, value]) => {
+        newInstance[key] = value;
+      });
+    });
+
+    // Todo: we should cache this combined instance somewhere, maybe add it
+    // back to the dicomMetaStore so we don't have to do this again.
+    return newInstance;
   } else {
     return instance;
   }

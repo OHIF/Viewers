@@ -104,12 +104,12 @@ function LoginComponent(userManager) {
 function OpenIdConnectRoutes({
   oidc,
   routerBasename,
-  UserAuthenticationService,
+  userAuthenticationService,
 }) {
   const userManager = initUserManager(oidc, routerBasename);
 
   const getAuthorizationHeader = () => {
-    const user = UserAuthenticationService.getUser();
+    const user = userAuthenticationService.getUser();
 
     return {
       Authorization: `Bearer ${user.access_token}`,
@@ -145,9 +145,9 @@ function OpenIdConnectRoutes({
   }, []);
 
   useEffect(() => {
-    UserAuthenticationService.set({ enabled: true });
+    userAuthenticationService.set({ enabled: true });
 
-    UserAuthenticationService.setServiceImplementation({
+    userAuthenticationService.setServiceImplementation({
       getAuthorizationHeader,
       handleUnauthenticated,
     });
@@ -200,7 +200,7 @@ function OpenIdConnectRoutes({
                 sessionStorage.getItem('ohif-redirect-to')
               );
 
-              UserAuthenticationService.setUser(user);
+              userAuthenticationService.setUser(user);
 
               navigate({
                 pathname,

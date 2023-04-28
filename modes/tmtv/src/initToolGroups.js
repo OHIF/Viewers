@@ -7,7 +7,7 @@ export const toolGroupIds = {
   // MPR: 'mpr',
 };
 
-function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const tools = {
     active: [
       {
@@ -34,6 +34,7 @@ function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
+      { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
     ],
     enabled: [{ toolName: toolNames.SegmentationDisplay }],
@@ -65,12 +66,12 @@ function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
     },
   };
 
-  ToolGroupService.createToolGroupAndAddTools(
+  toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.CT,
     tools,
     toolsConfig
   );
-  ToolGroupService.createToolGroupAndAddTools(
+  toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.PT,
     {
       active: tools.active,
@@ -83,12 +84,12 @@ function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
     },
     toolsConfig
   );
-  ToolGroupService.createToolGroupAndAddTools(
+  toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.Fusion,
     tools,
     toolsConfig
   );
-  ToolGroupService.createToolGroupAndAddTools(
+  toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.default,
     tools,
     toolsConfig
@@ -116,14 +117,14 @@ function _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
     },
   };
 
-  ToolGroupService.createToolGroupAndAddTools(
+  toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.MIP,
     mipTools,
     mipToolsConfig
   );
 }
 
-function initMPRToolGroup(toolNames, Enums, ToolGroupService, commandsManager) {
+function initMPRToolGroup(toolNames, Enums, toolGroupService, commandsManager) {
   const tools = {
     active: [
       {
@@ -149,6 +150,7 @@ function initMPRToolGroup(toolNames, Enums, ToolGroupService, commandsManager) {
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
+      { toolName: toolNames.CobbAngle },
       { toolName: toolNames.SegmentationDisplay },
     ],
     disabled: [{ toolName: toolNames.Crosshairs }],
@@ -181,12 +183,12 @@ function initMPRToolGroup(toolNames, Enums, ToolGroupService, commandsManager) {
     },
   };
 
-  ToolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
 }
 
-function initToolGroups(toolNames, Enums, ToolGroupService, commandsManager) {
-  _initToolGroups(toolNames, Enums, ToolGroupService, commandsManager);
-  // initMPRToolGroup(toolNames, Enums, ToolGroupService, commandsManager);
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+  // initMPRToolGroup(toolNames, Enums, toolGroupService, commandsManager);
 }
 
 export default initToolGroups;

@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  LayoutSelector as OHIFLayoutSelector,
-  ToolbarButton,
-  useViewportGrid,
-} from '@ohif/ui';
+import { LayoutSelector as OHIFLayoutSelector, ToolbarButton } from '@ohif/ui';
 
-function LayoutSelector({ rows, columns, servicesManager }) {
+import { ServicesManager } from '@ohif/core';
+
+function LayoutSelector({
+  rows,
+  columns,
+  className,
+  servicesManager,
+  ...rest
+}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [disableSelector, setDisableSelector] = useState(false);
-  const [viewportGridState, viewportGridService] = useViewportGrid();
 
-  const { HangingProtocolService } = servicesManager.services;
+  const {
+    hangingProtocolService,
+    toolbarService,
+  } = (servicesManager as ServicesManager).services;
 
   const closeOnOutsideClick = () => {
     if (isOpen) {
@@ -20,23 +25,17 @@ function LayoutSelector({ rows, columns, servicesManager }) {
   };
 
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       evt => {
         const { protocol } = evt;
-
-        if (protocol.id === 'mpr') {
-          setDisableSelector(true);
-        } else {
-          setDisableSelector(false);
-        }
       }
     );
 
     return () => {
       unsubscribe();
     };
-  }, [HangingProtocolService]);
+  }, [hangingProtocolService]);
 
   useEffect(() => {
     window.addEventListener('click', closeOnOutsideClick);
@@ -45,15 +44,21 @@ function LayoutSelector({ rows, columns, servicesManager }) {
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    /* Reset to default layout when component unmounts */
-    return () => {
-      viewportGridService.setLayout({ numCols: 1, numRows: 1 });
-    };
-  }, []);
-
   const onInteractionHandler = () => setIsOpen(!isOpen);
   const DropdownContent = isOpen ? OHIFLayoutSelector : null;
+
+  const onSelectionHandler = props => {
+    toolbarService.recordInteraction({
+      interactionType: 'action',
+      commands: [
+        {
+          commandName: 'setViewportGridLayout',
+          commandOptions: { ...props },
+          context: 'DEFAULT',
+        },
+      ],
+    });
+  };
 
   return (
     <ToolbarButton
@@ -61,18 +66,18 @@ function LayoutSelector({ rows, columns, servicesManager }) {
       label="Grid Layout"
       icon="tool-layout"
       onInteraction={onInteractionHandler}
+      className={className}
+      rounded={rest.rounded}
       dropdownContent={
         DropdownContent !== null && (
           <DropdownContent
             rows={rows}
             columns={columns}
-            onSelection={({ numRows, numCols }) => {
-              viewportGridService.setLayout({ numRows, numCols });
-            }}
+            onSelection={onSelectionHandler}
           />
         )
       }
-      isActive={disableSelector ? false : isOpen}
+      isActive={isOpen}
       type="toggle"
     />
   );
@@ -82,6 +87,7 @@ LayoutSelector.propTypes = {
   rows: PropTypes.number,
   columns: PropTypes.number,
   onLayoutChange: PropTypes.func,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 LayoutSelector.defaultProps = {

@@ -1,10 +1,10 @@
 import { SOPClassHandlerId } from './id';
 
 export default function onModeEnter({ servicesManager }) {
-  const { DisplaySetService } = servicesManager.services;
-  const displaySetCache = DisplaySetService.getDisplaySetCache();
+  const { displaySetService } = servicesManager.services;
+  const displaySetCache = displaySetService.getDisplaySetCache();
 
-  const srDisplaySets = displaySetCache.filter(
+  const srDisplaySets = [...displaySetCache.values()].filter(
     ds => ds.SOPClassHandlerId === SOPClassHandlerId
   );
 

@@ -89,6 +89,20 @@ const bindings = [
   //   isEditable: true,
   // },
   {
+    commandName: 'nextStage',
+    context: 'DEFAULT',
+    label: 'Next Stage',
+    keys: ['.'],
+    isEditable: true,
+  },
+  {
+    commandName: 'previousStage',
+    context: 'DEFAULT',
+    label: 'Previous Stage',
+    keys: [','],
+    isEditable: true,
+  },
+  {
     commandName: 'nextImage',
     label: 'Next Image',
     keys: ['down'],

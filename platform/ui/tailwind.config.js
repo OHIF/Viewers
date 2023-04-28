@@ -24,9 +24,6 @@ module.exports = {
       initial: 'initial',
       inherit: 'inherit',
 
-      indigo: {
-        dark: '#0b1a42',
-      },
       aqua: {
         pale: '#7bb2ce',
       },
@@ -36,6 +33,13 @@ module.exports = {
         main: '#0944b3',
         dark: '#090c29',
         active: '#348cfd',
+      },
+
+      inputfield: {
+        main: '#3a3f99',
+        disabled: '#2b166b',
+        focus: '#5acce6',
+        placeholder: '#39383f'
       },
 
       secondary: {
@@ -55,11 +59,17 @@ module.exports = {
 
       customgreen: {
         100: '#05D97C',
+        200: '#0FD97C',
       },
 
       customblue: {
         100: '#c4fdff',
         200: '#38daff',
+        300: '#1D204D',
+      },
+
+      customgray: {
+        100: '#262943',
       },
 
       gray: {
@@ -149,6 +159,7 @@ module.exports = {
         700: '#4c51bf',
         800: '#434190',
         900: '#3c366b',
+        dark: '#0b1a42',
       },
       purple: {
         100: '#faf5ff',
@@ -230,6 +241,7 @@ module.exports = {
       auto: '1 1 auto',
       initial: '0 1 auto',
       none: 'none',
+      static: '0 0 auto',
     },
     flexGrow: {
       '0': '0',
@@ -256,14 +268,15 @@ module.exports = {
       full: '100%',
       screen: '100vh',
     }),
-    inset: {
+    inset: theme => ({
+      ...theme('spacing'),
       '0': '0',
       auto: 'auto',
       full: '100%',
       viewport: '0.5rem',
       '1/2': '50%',
       'viewport-scrollbar': '1.3rem',
-    },
+    }),
     letterSpacing: {
       tighter: '-0.05em',
       tight: '-0.025em',

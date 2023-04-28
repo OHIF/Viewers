@@ -1,31 +1,31 @@
-import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, ButtonGroup, Button, CinePlayer } from '../';
+import React, {
+  MouseEventHandler,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Icon } from '..';
+import { useResizeObserver } from '../../hooks';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import PatientInfo from '../PatientInfo';
-import { StringNumber } from '../../types';
+
+export type ViewportActionBarProps = {
+  studyData: any;
+  onArrowsClick: (arrow: string) => void;
+  onDoubleClick: MouseEventHandler;
+  getStatusComponent: () => ReactElement;
+};
 
 const ViewportActionBar = ({
   studyData,
-  showNavArrows,
-  showStatus,
-  showCine,
-  cineProps,
-  showPatientInfo: patientInfoVisibility,
   onArrowsClick,
   onDoubleClick,
   getStatusComponent,
-}) => {
-  const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
-
-  const {
-    label,
-    useAltStyling,
-    studyDate,
-    currentSeries,
-    seriesDescription,
-    patientInformation,
-  } = studyData;
+}: ViewportActionBarProps): JSX.Element => {
+  const { label, studyDate, seriesDescription, patientInformation } = studyData;
 
   const {
     patientName,
@@ -37,11 +37,43 @@ const ViewportActionBar = ({
     scanner,
   } = patientInformation;
 
+  // The minimum width that the viewport must be to show the next/prev arrows.
+  const arrowsPresentViewportMinWidth = 300;
+
+  // The space left between the study date and the patient info icon when the series description text is zero width.
+  // With a zero width series description what we have left is:
+  // - a separator (17px)
+  // - patient info icon left padding (4px)
+  // - series description right margin (4px)
+  const zeroWidthSeriesDescriptionSpace = 25;
+
+  const separatorClasses = 'border-l py-2 mx-2 border-secondary-light';
+  const textEllipsisClasses = 'overflow-hidden shrink text-ellipsis';
+  const arrowClasses =
+    'cursor-pointer shrink-0 mr-2 text-white hover:text-primary-light';
+
+  const componentRootElemRef = (elem: HTMLElement) => {
+    setComponentRootElem(elem);
+  };
+  const studyDateElemRef = useRef<HTMLElement>(null);
+  const seriesDescElemRef = useRef<HTMLElement>(null);
+  const showPatientInfoElemRef = useRef<HTMLElement>(null);
+
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
   const closePatientInfo = () => setShowPatientInfo(false);
-  const showPatientInfoRef = useRef(null);
+
+  const [showPatientInfo, setShowPatientInfo] = useState(false);
+  const [showSeriesDesc, setShowSeriesDesc] = useState(true);
+  const [showArrows, setShowArrows] = useState(true);
+  const [componentRootElem, setComponentRootElem] = useState(null);
+
+  const studyDateClasses = () =>
+    `text-white ${showSeriesDesc ? '' : `mr-1 ${textEllipsisClasses}`}`;
+
+  const patientInfoClasses = () => (showArrows ? '' : 'pl-1 ml-auto');
+
   const clickOutsideListener = useOnClickOutside(
-    showPatientInfoRef,
+    showPatientInfoElemRef,
     closePatientInfo
   );
 
@@ -55,79 +87,81 @@ const ViewportActionBar = ({
     return () => clickOutsideListener.remove();
   }, [clickOutsideListener, showPatientInfo]);
 
-  const borderColor = useAltStyling ? '#365A6A' : '#1D205A';
+  /**
+   * Handles what gets hidden and what gets shown during a resize of the viewport.
+   */
+  const resizeCallback = useCallback(() => {
+    if (!componentRootElem) {
+      return;
+    }
 
-  let backgroundColor = '#020424';
-  if (useAltStyling) {
-    backgroundColor = '#031923';
-  }
+    const componentRootElemBBox = componentRootElem.getBoundingClientRect();
+
+    // Show or hide the arrows based on the viewport/root element width.
+    if (componentRootElemBBox.width < arrowsPresentViewportMinWidth) {
+      setShowArrows(false);
+    } else {
+      setShowArrows(true);
+    }
+
+    const studyDateElemBBox = studyDateElemRef.current.getBoundingClientRect();
+    const showPatientInfoElemBBox = showPatientInfoElemRef.current.getBoundingClientRect();
+
+    if (
+      showPatientInfoElemBBox.left - studyDateElemBBox.right <=
+      zeroWidthSeriesDescriptionSpace
+    ) {
+      // The area to display the series description is zero, so don't show the series description element.
+      setShowSeriesDesc(false);
+    } else {
+      setShowSeriesDesc(true);
+    }
+  }, [componentRootElem]);
+
+  useResizeObserver(componentRootElem, resizeCallback);
 
   return (
     <div
-      className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
-      style={{
-        borderColor: borderColor,
-        backgroundColor: backgroundColor,
-      }}
+      ref={componentRootElemRef}
+      className="pointer-events-auto select-none text-base flex overflow-visible whitespace-nowrap h-8 items-center px-2 shrink-0"
       onDoubleClick={onDoubleClick}
-      onContextMenu={e => e.preventDefault()}
     >
-      <div className="flex flex-1 grow mt-2 min-w-48">
-        <div className="flex items-center">
-          <span className="mr-2 text-white text-large">{label}</span>
-          {showStatus && getStatusComponent()}
-        </div>
-        <div className="flex flex-col justify-start ml-4">
-          <div className="flex">
-            <span className="text-base text-white">{studyDate}</span>
-            <span className="pl-2 ml-2 text-base border-l border-primary-light text-primary-light">
-              S: {currentSeries}
-            </span>
-          </div>
-          <div className="flex">
-            {/* TODO:
-                This is tricky. Our "no-wrap" in truncate means this has a hard
-                length. The overflow forces ellipse. If we don't set max width
-                appropriately, this causes the ActionBar to overflow.
-                Can clean up by setting percentage widths + calc on parent
-                containers
-             */}
-            <p className="text-base truncate max-w-40 text-primary-light">
-              {seriesDescription}
-            </p>
-          </div>
-        </div>
-      </div>
-      {showNavArrows && !showCine && (
-        <div className="mt-2" style={{ pointerEvents: 'all' }}>
-          <ButtonGroup>
-            <Button
-              size="initial"
-              className="px-2 py-1 bg-black"
-              border="light"
-              onClick={() => onArrowsClick('left')}
-            >
-              <Icon name="chevron-left" className="w-4 text-white" />
-            </Button>
-            <Button
-              size="initial"
-              border="light"
-              className="px-2 py-1 bg-black"
-              onClick={() => onArrowsClick('right')}
-            >
-              <Icon name="chevron-right" className="w-4 text-white" />
-            </Button>
-          </ButtonGroup>
-        </div>
+      {getStatusComponent()}
+      {!!label?.length && (
+        <span className="ml-1 text-aqua-pale text-large">{label}</span>
       )}
-      {showCine && !showNavArrows && (
-        <div className="mt-2 mr-auto min-w-48 max-w-48">
-          <CinePlayer {...cineProps} />
-        </div>
+      <div className={separatorClasses}></div>
+      <span ref={studyDateElemRef} className={studyDateClasses()}>
+        {studyDate}
+      </span>
+      {showSeriesDesc && (
+        <>
+          <div className={separatorClasses}></div>
+          <span
+            ref={seriesDescElemRef}
+            className={`mr-1 text-aqua-pale ${textEllipsisClasses}`}
+          >
+            {seriesDescription}
+          </span>
+        </>
       )}
-      <div className="flex h-8 mt-2 ml-4 mr-2" onClick={onPatientInfoClick}>
+      {showArrows && (
+        <>
+          <Icon
+            className={`ml-auto ${arrowClasses}`}
+            name="chevron-prev"
+            onClick={() => onArrowsClick('left')}
+          />
+          <Icon
+            className={arrowClasses}
+            name="chevron-next"
+            onClick={() => onArrowsClick('right')}
+          />
+        </>
+      )}
+      <div className={patientInfoClasses()} onClick={onPatientInfoClick}>
         <PatientInfo
-          showPatientInfoRef={showPatientInfoRef}
+          showPatientInfoRef={showPatientInfoElemRef}
           isOpen={showPatientInfo}
           patientName={patientName}
           patientSex={patientSex}
@@ -144,17 +178,12 @@ const ViewportActionBar = ({
 
 ViewportActionBar.propTypes = {
   onArrowsClick: PropTypes.func.isRequired,
-  showNavArrows: PropTypes.bool,
-  showCine: PropTypes.bool,
-  cineProps: PropTypes.object,
-  showPatientInfo: PropTypes.bool,
   studyData: PropTypes.shape({
     //
     useAltStyling: PropTypes.bool,
     //
     label: PropTypes.string.isRequired,
     studyDate: PropTypes.string.isRequired,
-    currentSeries: StringNumber.isRequired,
     seriesDescription: PropTypes.string.isRequired,
     patientInformation: PropTypes.shape({
       patientName: PropTypes.string.isRequired,
@@ -167,14 +196,6 @@ ViewportActionBar.propTypes = {
     }),
   }).isRequired,
   getStatusComponent: PropTypes.func.isRequired,
-};
-
-ViewportActionBar.defaultProps = {
-  cineProps: {},
-  showCine: false,
-  showStatus: true,
-  showNavArrows: true,
-  showPatientInfo: false,
 };
 
 export default ViewportActionBar;

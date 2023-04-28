@@ -10,7 +10,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 // ~~ Directories
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -29,18 +28,18 @@ const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
-    res.setHeader('Content-Encoding', 'gzip')
+    res.setHeader('Content-Encoding', 'gzip');
   } else if (path.indexOf('.br') !== -1) {
-    res.setHeader('Content-Encoding', 'br')
+    res.setHeader('Content-Encoding', 'br');
   }
   if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
-  } else if (path.indexOf('/frames') !== -1) {
-    res.setHeader('Content-Type', 'multipart/related')
+  } else if (path.indexOf('frames') !== -1) {
+    res.setHeader('Content-Type', 'multipart/related');
   } else {
-    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('Content-Type', 'application/json');
   }
-}
+};
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
@@ -55,7 +54,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function (info) {
+      devtoolModuleFilenameTemplate: function(info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -101,6 +100,21 @@ module.exports = (env, argv) => {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
+          // Copy Dicom Microscopy Viewer build files
+          {
+            from:
+              '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+            to: DIST_DIR,
+            globOptions: {
+              ignore: ['*.js.map'],
+            },
+          },
+          // Copy dicom-image-loader build files
+          {
+            from:
+              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
+          },
         ],
       }),
       // Generate "index.html" w/ correct includes/imports
@@ -120,15 +134,6 @@ module.exports = (env, argv) => {
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
       }),
-      new CopyPlugin({
-        patterns: [
-          {
-            from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
-        ],
-      }),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
@@ -146,12 +151,12 @@ module.exports = (env, argv) => {
       proxy: {
         '/dicomweb': 'http://localhost:5000',
       },
-      'static': [
+      static: [
         {
           directory: '../../testdata',
           staticOptions: {
             extensions: ['gz', 'br'],
-            index: "index.json.gz",
+            index: ['index.json.gz', 'index.mht.gz'],
             redirect: true,
             setHeaders,
           },

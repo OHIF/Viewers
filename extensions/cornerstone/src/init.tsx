@@ -1,6 +1,5 @@
-import OHIF from '@ohif/core';
+import OHIF, { Types } from '@ohif/core';
 import React from 'react';
-import { ContextMenuMeasurements } from '@ohif/ui';
 
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
@@ -10,28 +9,23 @@ import {
   EVENTS,
   metaData,
   volumeLoader,
-  imageLoader,
   imageLoadPoolManager,
   Settings,
+  utilities as csUtilities,
 } from '@cornerstonejs/core';
 import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
-import {
-  cornerstoneStreamingImageVolumeLoader,
-  sharedArrayBufferImageLoader,
-} from '@cornerstonejs/streaming-image-volume-loader';
+import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
-import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
+import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
-
-const cs3DToolsEvents = Enums.Events;
-
-let CONTEXT_MENU_OPEN = false;
+import initContextMenu from './initContextMenu';
+import initDoubleClick from './initDoubleClick';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -44,11 +38,19 @@ export default async function init({
   commandsManager,
   configuration,
   appConfig,
-}) {
+}: Types.Extensions.ExtensionParams): Promise<void> {
   await cs3DInit();
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+  cornerstone.setConfiguration({
+    ...cornerstone.getConfiguration(),
+    rendering: {
+      ...cornerstone.getConfiguration().rendering,
+      strictZSpacingForVolumeViewport:
+        appConfig.strictZSpacingForVolumeViewport,
+    },
+  });
 
   // For debugging large datasets
   const MAX_CACHE_SIZE_1GB = 1073741824;
@@ -65,23 +67,57 @@ export default async function init({
   );
 
   const {
-    UserAuthenticationService,
-    MeasurementService,
-    DisplaySetService,
-    UIDialogService,
-    UIModalService,
-    CineService,
-    CornerstoneViewportService,
-    HangingProtocolService,
-    ToolGroupService,
-    ViewportGridService,
+    userAuthenticationService,
+    measurementService,
+    customizationService,
+    displaySetService,
+    uiDialogService,
+    uiModalService,
+    uiNotificationService,
+    cineService,
+    cornerstoneViewportService,
+    hangingProtocolService,
+    toolGroupService,
+    viewportGridService,
+    stateSyncService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
 
-  if (cornerstone.getShouldUseCPURendering()) {
-    _showCPURenderingModal(UIModalService, HangingProtocolService);
+  if (
+    appConfig.showWarningMessageForCrossOrigin &&
+    !window.crossOriginIsolated
+  ) {
+    uiNotificationService.show({
+      title: 'Cross Origin Isolation',
+      message:
+        'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
+      type: 'warning',
+    });
   }
+
+  if (
+    appConfig.showCPUFallbackMessage &&
+    cornerstone.getShouldUseCPURendering()
+  ) {
+    _showCPURenderingModal(uiModalService, hangingProtocolService);
+  }
+
+  // Stores a map from `lutPresentationId` to a Presentation object so that
+  // an OHIFCornerstoneViewport can be redisplayed with the same LUT
+  stateSyncService.register('lutPresentationStore', { clearOnModeExit: true });
+
+  // Stores a map from `positionPresentationId` to a Presentation object so that
+  // an OHIFCornerstoneViewport can be redisplayed with the same position
+  stateSyncService.register('positionPresentationStore', {
+    clearOnModeExit: true,
+  });
+
+  // Stores the entire ViewportGridService getState when toggling to one up
+  // (e.g. via a double click) so that it can be restored when toggling back.
+  stateSyncService.register('toggleOneUpViewportGridStore', {
+    clearOnModeExit: true,
+  });
 
   const labelmapRepresentation =
     cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
@@ -103,20 +139,22 @@ export default async function init({
     cornerstoneStreamingImageVolumeLoader
   );
 
-  HangingProtocolService.registerImageLoadStrategy(
+  hangingProtocolService.registerImageLoadStrategy(
     'interleaveCenter',
     interleaveCenterLoader
   );
-  HangingProtocolService.registerImageLoadStrategy(
+  hangingProtocolService.registerImageLoadStrategy(
     'interleaveTopToBottom',
     interleaveTopToBottom
   );
+  hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
-  imageLoader.registerImageLoader(
-    'streaming-wadors',
-    sharedArrayBufferImageLoader
-  );
-
+  // add metadata providers
+  metaData.addProvider(
+    csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
+      csUtilities.calibratedPixelSpacingMetadataProvider
+    )
+  ); // this provider is required for Calibration tool
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
   imageLoadPoolManager.maxNumRequests = {
@@ -125,159 +163,60 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(UserAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig);
 
   /* Measurement Service */
-  const measurementServiceSource = connectToolsToMeasurementService(
-    MeasurementService,
-    DisplaySetService,
-    CornerstoneViewportService
+  this.measurementServiceSource = connectToolsToMeasurementService(
+    servicesManager
   );
 
-  initCineService(CineService);
-
-  const _getDefaultPosition = event => ({
-    x: (event && event.currentPoints.client[0]) || 0,
-    y: (event && event.currentPoints.client[1]) || 0,
-  });
-
-  const onRightClick = event => {
-    if (!UIDialogService) {
-      console.warn('Unable to show dialog; no UI Dialog Service available.');
-      return;
-    }
-
-    const onGetMenuItems = defaultMenuItems => {
-      const { element, currentPoints } = event.detail;
-
-      const nearbyToolData = utilities.getAnnotationNearPoint(
-        element,
-        currentPoints.canvas
-      );
-
-      const menuItems = [];
-      if (nearbyToolData && nearbyToolData.metadata.toolName !== 'Crosshairs') {
-        defaultMenuItems.forEach(item => {
-          item.value = nearbyToolData;
-          item.element = element;
-          menuItems.push(item);
-        });
-      }
-
-      return menuItems;
-    };
-
-    CONTEXT_MENU_OPEN = true;
-
-    UIDialogService.dismiss({ id: 'context-menu' });
-    UIDialogService.create({
-      id: 'context-menu',
-      isDraggable: false,
-      preservePosition: false,
-      defaultPosition: _getDefaultPosition(event.detail),
-      content: ContextMenuMeasurements,
-      onClickOutside: () => {
-        UIDialogService.dismiss({ id: 'context-menu' });
-        CONTEXT_MENU_OPEN = false;
-      },
-      contentProps: {
-        onGetMenuItems,
-        eventData: event.detail,
-        onDelete: item => {
-          const { annotationUID } = item.value;
-
-          const uid = annotationUID;
-          // Sync'd w/ Measurement Service
-          if (uid) {
-            measurementServiceSource.remove(uid, {
-              element: item.element,
-            });
-          }
-          CONTEXT_MENU_OPEN = false;
-        },
-        onClose: () => {
-          CONTEXT_MENU_OPEN = false;
-          UIDialogService.dismiss({ id: 'context-menu' });
-        },
-        onSetLabel: item => {
-          const { annotationUID } = item.value;
-
-          const measurement = MeasurementService.getMeasurement(annotationUID);
-
-          callInputDialog(
-            UIDialogService,
-            measurement,
-            (label, actionId) => {
-              if (actionId === 'cancel') {
-                return;
-              }
-
-              const updatedMeasurement = Object.assign({}, measurement, {
-                label,
-              });
-
-              MeasurementService.update(
-                updatedMeasurement.uid,
-                updatedMeasurement,
-                true
-              );
-            },
-            false
-          );
-
-          CONTEXT_MENU_OPEN = false;
-        },
-      },
-    });
-  };
-
-  const resetContextMenu = () => {
-    if (!UIDialogService) {
-      console.warn('Unable to show dialog; no UI Dialog Service available.');
-      return;
-    }
-
-    CONTEXT_MENU_OPEN = false;
-
-    UIDialogService.dismiss({ id: 'context-menu' });
-  };
+  initCineService(cineService);
 
   // When a custom image load is performed, update the relevant viewports
-  HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
+  hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = CornerstoneViewportService.getCornerstoneViewport(
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(
           viewportId
         );
 
-        CornerstoneViewportService.setVolumesForViewport(
+        const ohifViewport = cornerstoneViewportService.getViewportInfo(
+          viewportId
+        );
+
+        const {
+          lutPresentationStore,
+          positionPresentationStore,
+        } = stateSyncService.getState();
+        const { presentationIds } = ohifViewport.getViewportOptions();
+        const presentations = {
+          positionPresentation:
+            positionPresentationStore[presentationIds?.positionPresentationId],
+          lutPresentation:
+            lutPresentationStore[presentationIds?.lutPresentationId],
+        };
+
+        cornerstoneViewportService.setVolumesForViewport(
           viewport,
-          volumeInputArray
+          volumeInputArray,
+          presentations
         );
       }
     }
   );
 
-  /*
-   * Because click gives us the native "mouse up", buttons will always be `0`
-   * Need to fallback to event.which;
-   *
-   */
-  const contextMenuHandleClick = evt => {
-    const mouseUpEvent = evt.detail.event;
-    const isRightClick = mouseUpEvent.which === 3;
+  initContextMenu({
+    cornerstoneViewportService,
+    customizationService,
+    commandsManager,
+  });
 
-    const clickMethodHandler = isRightClick ? onRightClick : resetContextMenu;
-    clickMethodHandler(evt);
-  };
-
-  // const cancelContextMenuIfOpen = evt => {
-  //   if (CONTEXT_MENU_OPEN) {
-  //     resetContextMenu();
-  //   }
-  // };
+  initDoubleClick({
+    customizationService,
+    commandsManager,
+  });
 
   const newStackCallback = evt => {
     const { element } = evt.detail;
@@ -312,12 +251,6 @@ export default async function init({
 
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
-
-    element.addEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      contextMenuHandleClick
-    );
-
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     eventTarget.addEventListener(
@@ -328,11 +261,6 @@ export default async function init({
 
   function elementDisabledHandler(evt) {
     const { element } = evt.detail;
-
-    element.removeEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      contextMenuHandleClick
-    );
 
     element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
@@ -353,11 +281,11 @@ export default async function init({
     elementDisabledHandler.bind(null)
   );
 
-  ViewportGridService.subscribe(
-    ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
-    ({ viewportIndex }) => {
-      const viewportId = `viewport-${viewportIndex}`;
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
+  viewportGridService.subscribe(
+    viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
+    ({ viewportIndex, viewportId }) => {
+      viewportId = viewportId || `viewport-${viewportIndex}`;
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
         return;
@@ -400,10 +328,10 @@ function CPUModal() {
   );
 }
 
-function _showCPURenderingModal(UIModalService, HangingProtocolService) {
+function _showCPURenderingModal(uiModalService, hangingProtocolService) {
   const callback = progress => {
     if (progress === 100) {
-      UIModalService.show({
+      uiModalService.show({
         content: CPUModal,
         title: 'OHIF Fell Back to CPU Rendering',
       });
@@ -412,10 +340,10 @@ function _showCPURenderingModal(UIModalService, HangingProtocolService) {
     }
   };
 
-  const { unsubscribe } = HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
-    ({ progress }) => {
-      const done = callback(progress);
+  const { unsubscribe } = hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    () => {
+      const done = callback(100);
 
       if (done) {
         unsubscribe();

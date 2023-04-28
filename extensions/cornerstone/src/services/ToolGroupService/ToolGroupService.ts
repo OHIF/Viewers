@@ -1,6 +1,6 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
 
-import { pubSubServiceInterface } from '@ohif/core';
+import { Types as OhifTypes, pubSubServiceInterface } from '@ohif/core';
 
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone::toolgroupservice:viewportadded',
@@ -20,6 +20,16 @@ type Tools = {
 };
 
 export default class ToolGroupService {
+  public static REGISTRATION = {
+    name: 'toolGroupService',
+    altName: 'ToolGroupService',
+    create: ({
+      servicesManager,
+    }: OhifTypes.Extensions.ExtensionParams): ToolGroupService => {
+      return new ToolGroupService(servicesManager);
+    },
+  };
+
   serviceManager: any;
   private toolGroupIds: Set<string> = new Set();
   /**
@@ -29,8 +39,8 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(serviceManager) {
-    const { CornerstoneViewportService } = serviceManager.services;
-    this.CornerstoneViewportService = CornerstoneViewportService;
+    const { cornerstoneViewportService } = serviceManager.services;
+    this.cornerstoneViewportService = cornerstoneViewportService;
     this.listeners = {};
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
@@ -51,7 +61,7 @@ export default class ToolGroupService {
   }
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
-    const renderingEngine = this.CornerstoneViewportService.getRenderingEngine();
+    const renderingEngine = this.cornerstoneViewportService.getRenderingEngine();
     return ToolGroupManager.getToolGroupForViewport(
       viewportId,
       renderingEngine.id

@@ -1,4 +1,4 @@
-import HangingProtocolServiceClass from './HangingProtocolService';
+import HangingProtocolService from './HangingProtocolService';
 
 const testProtocol = {
   id: 'test',
@@ -79,6 +79,14 @@ const testProtocol = {
   numberOfPriorsReferenced: -1,
 };
 
+function testProtocolGenerator({ servicesManager }) {
+  servicesManager.services.TestService.toCall();
+
+  return {
+    protocol: testProtocol,
+  };
+}
+
 const studyMatch = {
   StudyInstanceUID: 'studyMatch',
   StudyDescription: 'A PETCT study type',
@@ -107,42 +115,83 @@ const displaySet3 = {
 
 const studyMatchDisplaySets = [displaySet3, displaySet2, displaySet1];
 
+function checkHpsBestMatch(hps) {
+  hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
+  const { viewportMatchDetails } = hps.getMatchDetails();
+  expect(viewportMatchDetails.size).toBe(1);
+  expect(viewportMatchDetails.get(0)).toMatchObject({
+    viewportOptions: {
+      viewportId: 'ctAXIAL',
+      viewportType: 'volume',
+      orientation: 'axial',
+      toolGroupId: 'ctToolGroup',
+    },
+    // Matches ds1 because it matches 2 rules, a required and an optional
+    // ds2 fails to match required and ds3 fails to match an optional.
+    displaySetsInfo: [
+      {
+        displaySetInstanceUID: 'displaySet1',
+        displaySetOptions: {
+          id: 'displaySetSelector',
+          options: {},
+      },
+      },
+    ],
+  });
+}
+
 describe('HangingProtocolService', () => {
+  const mockedFunction = jest.fn();
   const commandsManager = {};
-  const hps = new HangingProtocolServiceClass(commandsManager);
+  const servicesManager = {
+    services: {
+      TestService: {
+        toCall: mockedFunction,
+      },
+    },
+  };
+  const hangingProtocolService = new HangingProtocolService(
+    commandsManager,
+    servicesManager
+  );
   let initialScaling;
 
-  beforeAll(() => {
-    hps.addProtocol(testProtocol.id, testProtocol);
+  afterEach(() => {
+    mockedFunction.mockClear();
   });
 
-  it('has one protocol', () => {
-    expect(hps.getProtocols().length).toBe(1);
-  });
+  describe('with a static protocol', () => {
+    beforeAll(() => {
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocol);
+    });
 
-  describe('run', () => {
-    it('matches best image match', () => {
-      hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
-      const { hpAlreadyApplied, viewportMatchDetails } = hps.getMatchDetails();
-      expect(hpAlreadyApplied).toMatchObject(new Map([[0, false]]));
-      expect(viewportMatchDetails.size).toBe(1);
-      expect(viewportMatchDetails.get(0)).toMatchObject({
-        viewportOptions: {
-          viewportId: 'ctAXIAL',
-          viewportType: 'volume',
-          orientation: 'axial',
-          toolGroupId: 'ctToolGroup',
-        },
-        // Matches ds1 because it matches 2 rules, a required and an optional
-        // ds2 fails to match required and ds3 fails to match an optional.
-        displaySetsInfo: [
-          {
-            SeriesInstanceUID: 'ds1',
-            displaySetInstanceUID: 'displaySet1',
-            displaySetOptions: {},
-          },
-        ],
+    it('has one protocol', () => {
+      expect(hangingProtocolService.getProtocols().length).toBe(1);
+    });
+
+    describe('run', () => {
+      it('matches best image match', () => {
+        checkHpsBestMatch(hangingProtocolService);
       });
     });
   });
-});
+
+  describe('with protocol generator', () => {
+    beforeAll(() => {
+      hangingProtocolService.addProtocol(
+        testProtocol.id,
+        testProtocolGenerator
+      );
+    });
+
+    it('has one protocol', () => {
+      expect(hangingProtocolService.getProtocols().length).toBe(1);
+    });
+
+    describe('run', () => {
+      it('matches best image match', () => {
+        checkHpsBestMatch(hangingProtocolService);
+      });
+      });
+    });
+  });

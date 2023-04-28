@@ -1,6 +1,6 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
+  // whiteLabeling: {},
   extensions: [],
   modes: [],
   customizationService: {
@@ -8,14 +8,20 @@ window.config = {
     // helloPage: '@ohif/extension-default.customizationModule.helloPage',
   },
   showStudyList: true,
-  maxNumberOfWebWorkers: 4,
+  // some windows systems have issues with more than 3 web workers
+  maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
-    prefetch: 10,
+    // Prefetch number is dependent on the http protocol. For http 2 or
+    // above, the number of requests can be go a lot higher.
+    prefetch: 25,
   },
   // filterQueryParam: false,
   dataSources: [
@@ -29,10 +35,12 @@ window.config = {
         // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+
         // new server
         wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
@@ -42,6 +50,7 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
+        useBulkDataURI: false,
       },
     },
     {

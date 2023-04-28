@@ -16,6 +16,7 @@ function getPanelModule({
       <PanelMeasurementTable
         commandsManager={commandsManager}
         servicesManager={servicesManager}
+        extensionManager={extensionManager}
       />
     );
   };
