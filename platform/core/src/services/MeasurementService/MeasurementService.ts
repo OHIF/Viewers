@@ -504,7 +504,6 @@ class MeasurementService extends PubSubService {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
-
     if (!annotationType) {
       throw new Error('No source annotationType provided.');
     }

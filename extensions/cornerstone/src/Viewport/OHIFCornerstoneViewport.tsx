@@ -8,10 +8,15 @@ import {
   getEnabledElement,
   StackViewport,
   utilities as csUtils,
-  CONSTANTS,
 } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import {
+  CinePlayer,
+  useCine,
+  useViewportGrid,
+  Notification,
+  useViewportDialog,
+} from '@ohif/ui';
 import {
   IStackViewport,
   IVolumeViewport,
@@ -138,6 +143,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportGridService,
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
+
+  const [viewportDialogState] = useViewportDialog();
 
   const cineHandler = () => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
@@ -466,6 +473,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   }, [displaySets, elementRef, viewportIndex]);
 
   return (
+    <React.Fragment>
     <div className="viewport-wrapper">
       <ReactResizeDetector
         handleWidth
@@ -485,7 +493,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       ></div>
       <CornerstoneOverlays
         viewportIndex={viewportIndex}
-        toolbarService={toolbarService}
+          toolBarService={toolbarService}
         element={elementRef.current}
         scrollbarHeight={scrollbarHeight}
         servicesManager={servicesManager}
@@ -510,6 +518,19 @@ const OHIFCornerstoneViewport = React.memo(props => {
         />
       )}
     </div>
+      <div className="absolute w-full">
+        {viewportDialogState.viewportIndex === viewportIndex && (
+          <Notification
+            id="viewport-notification"
+            message={viewportDialogState.message}
+            type={viewportDialogState.type}
+            actions={viewportDialogState.actions}
+            onSubmit={viewportDialogState.onSubmit}
+            onOutsideClick={viewportDialogState.onOutsideClick}
+          />
+        )}
+      </div>
+    </React.Fragment>
   );
 }, areEqual);
 
@@ -576,11 +597,12 @@ function _checkForCachedJumpToMeasurementEvents(
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
+  if (!displaysUIDs?.length) return;
 
   // Jump to measurement if the measurement exists
   const { measurement } = cacheJumpToMeasurement;
   if (measurement && elementRef) {
-    if (displaysUIDs.includes(measurement.displaySetInstanceUID)) {
+    if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
       _jumpToMeasurement(
         measurement,
         elementRef,
@@ -648,19 +670,19 @@ function _jumpToMeasurement(
     } else {
       // for volume viewport we can't rely on the imageIdIndex since it can be
       // a reconstructed view that doesn't match the original slice numbers etc.
-      const { viewPlaneNormal } = measurement.metadata;
+      const { viewPlaneNormal: measurementViewPlane } = measurement.metadata;
       imageIdIndex = referencedDisplaySet.images.findIndex(
         i => i.SOPInstanceUID === SOPInstanceUID
       );
 
-      const { orientation } = viewportInfo.getViewportOptions();
+      const { viewPlaneNormal: viewportViewPlane } = viewport.getCamera();
 
+      // should compare abs for both planes since the direction can be flipped
       if (
-        orientation &&
-        viewPlaneNormal &&
+        measurementViewPlane &&
         !csUtils.isEqual(
-          CONSTANTS.MPR_CAMERA_VALUES[orientation]?.viewPlaneNormal,
-          viewPlaneNormal
+          measurementViewPlane.map(Math.abs),
+          viewportViewPlane.map(Math.abs)
         )
       ) {
         viewportCameraDirectionMatch = false;

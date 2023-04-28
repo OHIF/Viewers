@@ -18,6 +18,7 @@ import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
+import { CornerstoneServices } from './types';
 
 function commandsModule({
   servicesManager,
@@ -32,48 +33,13 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
   }
-
-  function _getToolGroup(toolGroupId) {
-    let toolGroupIdToUse = toolGroupId;
-
-    if (!toolGroupIdToUse) {
-      // Use the active viewport's tool group if no tool group id is provided
-      const enabledElement = _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
-        return;
-      }
-
-      const { renderingEngineId, viewportId } = enabledElement;
-      const toolGroup = ToolGroupManager.getToolGroupForViewport(
-        viewportId,
-        renderingEngineId
-      );
-
-      if (!toolGroup) {
-        console.warn(
-          'No tool group found for viewportId:',
-          viewportId,
-          'and renderingEngineId:',
-          renderingEngineId
-        );
-        return;
-      }
-
-      toolGroupIdToUse = toolGroup.id;
-    }
-
-    const toolGroup = toolGroupService.getToolGroup(toolGroupIdToUse);
-    return toolGroup;
-  }
-
   const actions = {
     /**
      * Generates the selector props for the context menu, specific to
@@ -127,6 +93,36 @@ function commandsModule({
         nearbyToolData ??
         cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
       );
+    },
+    getNearbyAnnotation({ element, canvasCoordinates }) {
+      const nearbyToolData = actions.getNearbyToolData({
+        nearbyToolData: null,
+        element,
+        canvasCoordinates,
+      });
+
+      const isAnnotation = toolName => {
+        const enabledElement = getEnabledElement(element);
+
+        if (!enabledElement) {
+          return;
+        }
+
+        const { renderingEngineId, viewportId } = enabledElement;
+        const toolGroup = ToolGroupManager.getToolGroupForViewport(
+          viewportId,
+          renderingEngineId
+        );
+
+        const toolInstance = toolGroup.getToolInstance(toolName);
+
+        return toolInstance?.constructor?.isAnnotation ?? true;
+      };
+
+      return nearbyToolData?.metadata?.toolName &&
+        isAnnotation(nearbyToolData.metadata.toolName)
+        ? nearbyToolData
+        : null;
     },
 
     // Measurement tool commands:
@@ -298,7 +294,7 @@ function commandsModule({
 
     setToolActive: ({ toolName, toolGroupId = null }) => {
       if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = _getToolGroup(null);
+        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 
         if (!activeViewportToolGroup._toolInstances.Crosshairs) {
           uiNotificationService.show({
@@ -317,7 +313,7 @@ function commandsModule({
         viewports: [],
       };
 
-      const toolGroup = _getToolGroup(toolGroupId);
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const toolGroupViewportIds = toolGroup?.getViewportIds?.();
 
       // if toolGroup has been destroyed, or its viewports have been removed
@@ -626,6 +622,11 @@ function commandsModule({
 
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
+    },
+    getNearbyAnnotation: {
+      commandFn: actions.getNearbyAnnotation,
+      storeContexts: [],
+      options: {},
     },
 
     deleteMeasurement: {

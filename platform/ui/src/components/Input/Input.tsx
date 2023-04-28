@@ -4,12 +4,17 @@ import Label from '../Label';
 import classnames from 'classnames';
 
 const baseInputClasses =
-  'shadow transition duration-300 appearance-none border border-primary-main hover:border-gray-500 focus:border-gray-500 focus:outline-none rounded w-full py-2 px-3 text-sm text-white leading-tight focus:outline-none';
+  'shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded w-full py-2 px-3 text-sm text-white placeholder-inputfield-placeholder leading-tight';
 
 const transparentClasses = {
   true: 'bg-transparent',
   false: 'bg-black',
 };
+
+const smallInputClasses = {
+  true: 'input-small',
+  false: ''
+}
 
 const Input = ({
   id,
@@ -18,6 +23,7 @@ const Input = ({
   labelClassName = '',
   className = '',
   transparent = false,
+  smallInput = false,
   type = 'text',
   value,
   onChange,
@@ -39,6 +45,7 @@ const Input = ({
           className,
           baseInputClasses,
           transparentClasses[transparent],
+          smallInputClasses[smallInput],
           { 'cursor-not-allowed': disabled }
         )}
         disabled={disabled}
@@ -63,6 +70,7 @@ Input.propTypes = {
   labelClassName: PropTypes.string,
   className: PropTypes.string,
   transparent: PropTypes.bool,
+  smallInput: PropTypes.bool,
   type: PropTypes.string,
   value: PropTypes.any,
   onChange: PropTypes.func,
