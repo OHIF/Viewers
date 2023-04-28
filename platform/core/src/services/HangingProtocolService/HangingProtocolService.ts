@@ -1303,15 +1303,13 @@ export default class HangingProtocolService extends PubSubService {
     this.studies.forEach(study => {
       // Skip non-active if active only
       if (matchActiveOnly && this.activeStudy !== study) return;
-      const studyDisplaySets = this.displaySets.filter(
-        it => it.StudyInstanceUID === study.StudyInstanceUID
-      );
+
       const studyMatchDetails = this.protocolEngine.findMatch(
         study,
         studyMatchingRules,
           {
             studies: this.studies,
-            displaySets: studyDisplaySets,
+            displaySets: this.displaySets,
             displaySetMatchDetails: this.displaySetMatchDetails,
           }
       );
@@ -1321,6 +1319,9 @@ export default class HangingProtocolService extends PubSubService {
         return;
       }
 
+      const studyDisplaySets = this.displaySets.filter(
+          it => it.StudyInstanceUID === study.StudyInstanceUID
+      );
       this.debug(
         'study',
         study.StudyInstanceUID,
