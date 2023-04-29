@@ -4,14 +4,13 @@
   --scrollbar-width: 20px;
   pointer-events: none;
   font-size: 15px;
-  color: #ccc;
   line-height: 18px;
 }
 .ViewportOrientationMarkers .orientation-marker {
   position: absolute;
 }
 .ViewportOrientationMarkers .top-mid {
-  top: 5px;
+  top: 0.6rem;
   left: 50%;
 }
 .ViewportOrientationMarkers .left-mid {
@@ -23,7 +22,7 @@
   left: calc(100% - var(--marker-width) - var(--scrollbar-width));
 }
 .ViewportOrientationMarkers .bottom-mid {
-  top: calc(100% - var(--marker-height) - 5px);
+  top: calc(100% - var(--marker-height) - 0.6rem);
   left: 47%;
 }
 .ViewportOrientationMarkers .right-mid .orientation-marker-value {

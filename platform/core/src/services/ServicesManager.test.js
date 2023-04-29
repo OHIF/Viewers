@@ -1,9 +1,9 @@
-import ServicesManager from './ServicesManager.js';
-import log from '../log.js';
+import ServicesManager from './ServicesManager';
+import log from '../log';
 
-jest.mock('./../log.js');
+jest.mock('./../log');
 
-describe('ServicesManager.js', () => {
+describe('ServicesManager', () => {
   let servicesManager, commandsManager;
 
   beforeEach(() => {

@@ -5,7 +5,12 @@ import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 import Compose from './routes/Mode/Compose';
-
+import {
+  ServicesManager,
+  ExtensionManager,
+  CommandsManager,
+  HotkeysManager,
+} from '@ohif/core';
 import {
   DialogProvider,
   Modal,
@@ -24,7 +29,10 @@ import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 
-let commandsManager, extensionManager, servicesManager, hotkeysManager;
+let commandsManager: CommandsManager,
+  extensionManager: ExtensionManager,
+  servicesManager: ServicesManager,
+  hotkeysManager: HotkeysManager;
 
 function App({ config, defaultExtensions, defaultModes }) {
   const [init, setInit] = useState(null);
@@ -50,7 +58,44 @@ function App({ config, defaultExtensions, defaultModes }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { routerBasename, modes, dataSources, oidc } = appConfigState;
+  const {
+    routerBasename,
+    modes,
+    dataSources,
+    oidc,
+    showStudyList,
+  } = appConfigState;
+
+  const {
+    uiDialogService,
+    uiModalService,
+    uiNotificationService,
+    uiViewportDialogService,
+    viewportGridService,
+    cineService,
+    userAuthenticationService,
+    customizationService,
+  } = servicesManager.services;
+
+  const providers = [
+    [AppConfigProvider, { value: appConfigState }],
+    [UserAuthenticationProvider, { service: userAuthenticationService }],
+    [I18nextProvider, { i18n }],
+    [ThemeWrapper],
+    [ViewportGridProvider, { service: viewportGridService }],
+    [ViewportDialogProvider, { service: uiViewportDialogService }],
+    [CineProvider, { service: cineService }],
+    [SnackbarProvider, { service: uiNotificationService }],
+    [DialogProvider, { service: uiDialogService }],
+    [ModalProvider, { service: uiModalService, modal: Modal }],
+  ];
+  const CombinedProviders = ({ children }) =>
+    Compose({ components: providers, children });
+
+  let authRoutes = null;
+
+  // Should there be a generic call to init on the extension manager?
+  customizationService.init(extensionManager);
 
   // Use config to create routes
   const appRoutes = createRoutes({
@@ -61,40 +106,15 @@ function App({ config, defaultExtensions, defaultModes }) {
     commandsManager,
     hotkeysManager,
     routerBasename,
+    showStudyList,
   });
-  const {
-    UIDialogService,
-    UIModalService,
-    UINotificationService,
-    UIViewportDialogService,
-    ViewportGridService,
-    CineService,
-    UserAuthenticationService,
-  } = servicesManager.services;
-
-  const providers = [
-    [AppConfigProvider, { value: appConfigState }],
-    [UserAuthenticationProvider, { service: UserAuthenticationService }],
-    [I18nextProvider, { i18n }],
-    [ThemeWrapper],
-    [ViewportGridProvider, { service: ViewportGridService }],
-    [ViewportDialogProvider, { service: UIViewportDialogService }],
-    [CineProvider, { service: CineService }],
-    [SnackbarProvider, { service: UINotificationService }],
-    [DialogProvider, { service: UIDialogService }],
-    [ModalProvider, { service: UIModalService, modal: Modal }],
-  ];
-  const CombinedProviders = ({ children }) =>
-    Compose({ components: providers, children });
-
-  let authRoutes = null;
 
   if (oidc) {
     authRoutes = (
       <OpenIdConnectRoutes
         oidc={oidc}
         routerBasename={routerBasename}
-        UserAuthenticationService={UserAuthenticationService}
+        userAuthenticationService={userAuthenticationService}
       />
     );
   }
@@ -115,9 +135,7 @@ App.propTypes = {
     PropTypes.shape({
       routerBasename: PropTypes.string.isRequired,
       oidc: PropTypes.array,
-      whiteLabeling: PropTypes.shape({
-        createLogoComponentFn: PropTypes.func,
-      }),
+      whiteLabeling: PropTypes.object,
       extensions: PropTypes.array,
     }),
   ]).isRequired,
@@ -139,6 +157,7 @@ App.defaultProps = {
     /**
      *
      */
+    showLoadingIndicator: true,
     showStudyList: true,
     oidc: [],
     extensions: [],

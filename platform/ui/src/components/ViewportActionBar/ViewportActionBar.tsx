@@ -1,51 +1,31 @@
-import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { Icon, ButtonGroup, Button, Tooltip, CinePlayer } from '../';
+import React, {
+  MouseEventHandler,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Icon } from '..';
+import { useResizeObserver } from '../../hooks';
 import useOnClickOutside from '../../utils/useOnClickOutside';
-import { useTranslation } from 'react-i18next';
-import { StringNumber } from '../../types';
+import PatientInfo from '../PatientInfo';
 
-const classes = {
-  infoHeader: 'text-base text-primary-light',
-  infoText: 'text-base text-white max-w-24 truncate',
-  firstRow: 'flex flex-col',
-  row: 'flex flex-col ml-4',
+export type ViewportActionBarProps = {
+  studyData: any;
+  onArrowsClick: (arrow: string) => void;
+  onDoubleClick: MouseEventHandler;
+  getStatusComponent: () => ReactElement;
 };
 
 const ViewportActionBar = ({
   studyData,
-  showNavArrows,
-  showStatus,
-  showCine,
-  cineProps,
-  showPatientInfo: patientInfoVisibility,
-  onSeriesChange,
+  onArrowsClick,
   onDoubleClick,
-  //
-  onPillClick,
-}) => {
-  const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
-
-  // TODO -> Remake this component with a bunch of generic slots that can be filled,
-  // Its not generic at all, isTracked etc shouldn't be parts of this component.
-  // It shouldn't care that a tracking mode or SR exists.
-  // Things like the right/left buttons should be made into smaller
-  // Components you can compose.
-  // OHIF-200 ticket.
-
-  const {
-    label,
-    isTracked,
-    isLocked,
-    isRehydratable,
-    useAltStyling,
-    modality,
-    studyDate,
-    currentSeries,
-    seriesDescription,
-    patientInformation,
-  } = studyData;
+  getStatusComponent,
+}: ViewportActionBarProps): JSX.Element => {
+  const { label, studyDate, seriesDescription, patientInformation } = studyData;
 
   const {
     patientName,
@@ -57,11 +37,43 @@ const ViewportActionBar = ({
     scanner,
   } = patientInformation;
 
+  // The minimum width that the viewport must be to show the next/prev arrows.
+  const arrowsPresentViewportMinWidth = 300;
+
+  // The space left between the study date and the patient info icon when the series description text is zero width.
+  // With a zero width series description what we have left is:
+  // - a separator (17px)
+  // - patient info icon left padding (4px)
+  // - series description right margin (4px)
+  const zeroWidthSeriesDescriptionSpace = 25;
+
+  const separatorClasses = 'border-l py-2 mx-2 border-secondary-light';
+  const textEllipsisClasses = 'overflow-hidden shrink text-ellipsis';
+  const arrowClasses =
+    'cursor-pointer shrink-0 mr-2 text-white hover:text-primary-light';
+
+  const componentRootElemRef = (elem: HTMLElement) => {
+    setComponentRootElem(elem);
+  };
+  const studyDateElemRef = useRef<HTMLElement>(null);
+  const seriesDescElemRef = useRef<HTMLElement>(null);
+  const showPatientInfoElemRef = useRef<HTMLElement>(null);
+
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
   const closePatientInfo = () => setShowPatientInfo(false);
-  const showPatientInfoRef = useRef(null);
+
+  const [showPatientInfo, setShowPatientInfo] = useState(false);
+  const [showSeriesDesc, setShowSeriesDesc] = useState(true);
+  const [showArrows, setShowArrows] = useState(true);
+  const [componentRootElem, setComponentRootElem] = useState(null);
+
+  const studyDateClasses = () =>
+    `text-white ${showSeriesDesc ? '' : `mr-1 ${textEllipsisClasses}`}`;
+
+  const patientInfoClasses = () => (showArrows ? '' : 'pl-1 ml-auto');
+
   const clickOutsideListener = useOnClickOutside(
-    showPatientInfoRef,
+    showPatientInfoElemRef,
     closePatientInfo
   );
 
@@ -75,242 +87,81 @@ const ViewportActionBar = ({
     return () => clickOutsideListener.remove();
   }, [clickOutsideListener, showPatientInfo]);
 
-  const renderIconStatus = () => {
-    if (modality === 'SR') {
-      // 1 - Incompatible
-      // 2 - Locked
-      // 3 - Rehydratable / Open
-      const state =
-        isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
-      let ToolTipMessage = null;
-      let StatusIcon = null;
-
-      switch (state) {
-        case 1:
-          StatusIcon = () => (
-            <div
-              className="flex items-center justify-center -mr-1 rounded-full"
-              style={{
-                width: '18px',
-                height: '18px',
-                backgroundColor: '#98e5c1',
-                border: 'solid 1.5px #000000',
-              }}
-            >
-              <Icon
-                name="exclamation"
-                style={{ color: '#000', width: '12px', height: '12px' }}
-              />
-            </div>
-          );
-
-          ToolTipMessage = () => (
-            <div>
-              This structured report is not compatible
-              <br />
-              with this application.
-            </div>
-          );
-          break;
-        case 2:
-          StatusIcon = () => (
-            <div
-              className="flex items-center justify-center -mr-1 bg-black rounded-full"
-              style={{
-                width: '18px',
-                height: '18px',
-              }}
-            >
-              <Icon
-                name="lock"
-                style={{ color: '#05D97C', width: '8px', height: '11px' }}
-              />
-            </div>
-          );
-
-          ToolTipMessage = () => (
-            <div>
-              This structured report is currently read-only
-              <br />
-              because you are tracking measurements in
-              <br />
-              another viewport.
-            </div>
-          );
-          break;
-        case 3:
-          StatusIcon = () => (
-            <div
-              className="flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200"
-              style={{
-                width: '18px',
-                height: '18px',
-                border: 'solid 1.5px #000000',
-              }}
-            >
-              <Icon
-                name="arrow-left"
-                style={{ color: '#000', width: '14px', height: '14px' }}
-              />
-            </div>
-          );
-
-          ToolTipMessage = () => <div>Click to restore measurements.</div>;
-      }
-
-      const StatusPill = () => (
-        <div
-          className={classnames(
-            'group relative flex items-center justify-center px-2 rounded-full cursor-default bg-customgreen-100',
-            {
-              'hover:bg-customblue-100': state === 3,
-              'cursor-pointer': state === 3,
-            }
-          )}
-          style={{
-            height: '24px',
-            width: '55px',
-          }}
-          onClick={() => {
-            if (state === 3) {
-              // TODO: Gatsby build failing due
-              //       to ESLint's "no-unused-expressions"
-              //onPillClick?.();
-              if (onPillClick) {
-                onPillClick();
-              }
-            }
-          }}
-        >
-          <span className="pr-1 text-lg font-bold leading-none text-black">
-            SR
-          </span>
-          <StatusIcon />
-        </div>
-      );
-
-      return (
-        <>
-          {ToolTipMessage && (
-            <Tooltip content={<ToolTipMessage />} position="bottom-left">
-              <StatusPill />
-            </Tooltip>
-          )}
-          {!ToolTipMessage && <StatusPill />}
-        </>
-      );
+  /**
+   * Handles what gets hidden and what gets shown during a resize of the viewport.
+   */
+  const resizeCallback = useCallback(() => {
+    if (!componentRootElem) {
+      return;
     }
 
-    const trackedIcon = isTracked ? 'tracked' : 'dotted-circle';
+    const componentRootElemBBox = componentRootElem.getBoundingClientRect();
 
-    return (
-      <div className="relative">
-        <Tooltip
-          position="bottom-left"
-          content={
-            <div className="flex py-2">
-              <div className="flex pt-1">
-                <Icon name="info-link" className="w-4 text-primary-main" />
-              </div>
-              <div className="flex ml-4">
-                <span className="text-base text-common-light">
-                  {isTracked ? (
-                    <>
-                      Series is
-                      <span className="font-bold text-white"> tracked</span> and
-                      can be viewed <br /> in the measurement panel
-                    </>
-                  ) : (
-                    <>
-                      Measurements for
-                      <span className="font-bold text-white"> untracked </span>
-                      series <br /> will not be shown in the <br /> measurements
-                      panel
-                    </>
-                  )}
-                </span>
-              </div>
-            </div>
-          }
-        >
-          <Icon name={trackedIcon} className="w-6 text-primary-light" />
-        </Tooltip>
-      </div>
-    );
-  };
+    // Show or hide the arrows based on the viewport/root element width.
+    if (componentRootElemBBox.width < arrowsPresentViewportMinWidth) {
+      setShowArrows(false);
+    } else {
+      setShowArrows(true);
+    }
 
-  const borderColor = useAltStyling ? '#365A6A' : '#1D205A';
+    const studyDateElemBBox = studyDateElemRef.current.getBoundingClientRect();
+    const showPatientInfoElemBBox = showPatientInfoElemRef.current.getBoundingClientRect();
 
-  let backgroundColor = '#020424';
-  if (useAltStyling || isTracked) {
-    backgroundColor = '#031923';
-  }
+    if (
+      showPatientInfoElemBBox.left - studyDateElemBBox.right <=
+      zeroWidthSeriesDescriptionSpace
+    ) {
+      // The area to display the series description is zero, so don't show the series description element.
+      setShowSeriesDesc(false);
+    } else {
+      setShowSeriesDesc(true);
+    }
+  }, [componentRootElem]);
+
+  useResizeObserver(componentRootElem, resizeCallback);
 
   return (
     <div
-      className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
-      style={{
-        borderColor: borderColor,
-        backgroundColor: backgroundColor,
-      }}
+      ref={componentRootElemRef}
+      className="pointer-events-auto select-none text-base flex overflow-visible whitespace-nowrap h-8 items-center px-2 shrink-0"
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-1 grow mt-2 min-w-48">
-        <div className="flex items-center">
-          <span className="mr-2 text-white text-large">{label}</span>
-          {showStatus && renderIconStatus()}
-        </div>
-        <div className="flex flex-col justify-start ml-4">
-          <div className="flex">
-            <span className="text-base text-white">{studyDate}</span>
-            <span className="pl-2 ml-2 text-base border-l border-primary-light text-primary-light">
-              S: {currentSeries}
-            </span>
-          </div>
-          <div className="flex">
-            {/* TODO:
-                This is tricky. Our "no-wrap" in truncate means this has a hard
-                length. The overflow forces ellipse. If we don't set max width
-                appropriately, this causes the ActionBar to overflow.
-                Can clean up by setting percentage widths + calc on parent
-                containers
-             */}
-            <p className="text-base truncate max-w-40 text-primary-light">
-              {seriesDescription}
-            </p>
-          </div>
-        </div>
-      </div>
-      {showNavArrows && !showCine && (
-        <div className="mt-2" style={{ pointerEvents: 'all' }}>
-          <ButtonGroup>
-            <Button
-              size="initial"
-              className="px-2 py-1 bg-black"
-              border="light"
-              onClick={() => onSeriesChange('left')}
-            >
-              <Icon name="chevron-left" className="w-4 text-white" />
-            </Button>
-            <Button
-              size="initial"
-              border="light"
-              className="px-2 py-1 bg-black"
-              onClick={() => onSeriesChange('right')}
-            >
-              <Icon name="chevron-right" className="w-4 text-white" />
-            </Button>
-          </ButtonGroup>
-        </div>
+      {getStatusComponent()}
+      {!!label?.length && (
+        <span className="ml-1 text-aqua-pale text-large">{label}</span>
       )}
-      {showCine && !showNavArrows && (
-        <div className="mt-2 mr-auto min-w-48 max-w-48">
-          <CinePlayer {...cineProps} />
-        </div>
+      <div className={separatorClasses}></div>
+      <span ref={studyDateElemRef} className={studyDateClasses()}>
+        {studyDate}
+      </span>
+      {showSeriesDesc && (
+        <>
+          <div className={separatorClasses}></div>
+          <span
+            ref={seriesDescElemRef}
+            className={`mr-1 text-aqua-pale ${textEllipsisClasses}`}
+          >
+            {seriesDescription}
+          </span>
+        </>
       )}
-      <div className="flex h-8 mt-2 ml-4 mr-2" onClick={onPatientInfoClick}>
+      {showArrows && (
+        <>
+          <Icon
+            className={`ml-auto ${arrowClasses}`}
+            name="chevron-prev"
+            onClick={() => onArrowsClick('left')}
+          />
+          <Icon
+            className={arrowClasses}
+            name="chevron-next"
+            onClick={() => onArrowsClick('right')}
+          />
+        </>
+      )}
+      <div className={patientInfoClasses()} onClick={onPatientInfoClick}>
         <PatientInfo
-          showPatientInfoRef={showPatientInfoRef}
+          showPatientInfoRef={showPatientInfoElemRef}
           isOpen={showPatientInfo}
           patientName={patientName}
           patientSex={patientSex}
@@ -326,22 +177,14 @@ const ViewportActionBar = ({
 };
 
 ViewportActionBar.propTypes = {
-  onSeriesChange: PropTypes.func.isRequired,
-  showNavArrows: PropTypes.bool,
-  showCine: PropTypes.bool,
-  cineProps: PropTypes.object,
-  showPatientInfo: PropTypes.bool,
+  onArrowsClick: PropTypes.func.isRequired,
   studyData: PropTypes.shape({
     //
     useAltStyling: PropTypes.bool,
     //
     label: PropTypes.string.isRequired,
-    isTracked: PropTypes.bool.isRequired,
-    isRehydratable: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
-    currentSeries: StringNumber.isRequired,
     seriesDescription: PropTypes.string.isRequired,
-    modality: PropTypes.string.isRequired,
     patientInformation: PropTypes.shape({
       patientName: PropTypes.string.isRequired,
       patientSex: PropTypes.string.isRequired,
@@ -352,137 +195,7 @@ ViewportActionBar.propTypes = {
       scanner: PropTypes.string.isRequired,
     }),
   }).isRequired,
+  getStatusComponent: PropTypes.func.isRequired,
 };
-
-ViewportActionBar.defaultProps = {
-  cineProps: {},
-  showCine: false,
-  showStatus: true,
-  showNavArrows: true,
-  showPatientInfo: false,
-};
-
-function PatientInfo({
-  patientName,
-  patientSex,
-  patientAge,
-  MRN,
-  thickness,
-  spacing,
-  scanner,
-  isOpen,
-  showPatientInfoRef,
-}) {
-  const { t } = useTranslation('PatientInfo');
-
-  while (patientAge.charAt(0) === '0') {
-    patientAge = patientAge.substr(1);
-  }
-
-  return (
-    <div ref={showPatientInfoRef}>
-      <Tooltip
-        isSticky
-        isDisabled={!isOpen}
-        position="bottom-right"
-        content={
-          isOpen && (
-            <div className="flex py-2">
-              <div className="flex pt-1">
-                <Icon name="info-link" className="w-4 text-primary-main" />
-              </div>
-              <div className="flex flex-col ml-2">
-                <span
-                  className="text-base font-bold text-white"
-                  title={patientName}
-                >
-                  {patientName}
-                </span>
-                <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
-                  <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Sex')}
-                    </span>
-                    <span
-                      className={classnames(classes.infoText)}
-                      title={patientSex}
-                    >
-                      {patientSex}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Age')}
-                    </span>
-                    <span
-                      className={classnames(classes.infoText)}
-                      title={patientAge}
-                    >
-                      {patientAge}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('MRN')}
-                    </span>
-                    <span className={classnames(classes.infoText)} title={MRN}>
-                      {MRN}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex">
-                  <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Thickness')}
-                    </span>
-                    <span
-                      className={classnames(classes.infoText)}
-                      title={thickness}
-                    >
-                      {thickness}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Spacing')}
-                    </span>
-                    <span
-                      className={classnames(classes.infoText)}
-                      title={spacing}
-                    >
-                      {spacing}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Scanner')}
-                    </span>
-                    <span
-                      className={classnames(classes.infoText)}
-                      title={scanner}
-                    >
-                      {scanner}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        }
-      >
-        <div className="relative flex justify-end cursor-pointer">
-          <div className="relative">
-            <Icon name="profile" className="w-5 text-white" />
-            <Icon
-              name="info-link"
-              className="absolute w-5 text-white bg-black"
-              style={{ right: -7, bottom: -10 }}
-            />
-          </div>
-        </div>
-      </Tooltip>
-    </div>
-  );
-}
 
 export default ViewportActionBar;

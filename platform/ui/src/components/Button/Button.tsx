@@ -44,7 +44,10 @@ const variants = {
       'text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
       'text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    translucent:
+      'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    white:
+      'text-black hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
     black:
       'text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
     primaryActive:
@@ -55,6 +58,8 @@ const variants = {
   contained: {
     default: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    primaryDark:
+      'text-primary-active hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
       'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     white: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
@@ -90,6 +95,7 @@ const defaultVariantBackGroundColor = {
   contained: {
     default: 'bg-primary-light',
     primary: 'bg-primary-main',
+    primaryDark: 'bg-primary-dark',
     secondary: 'bg-secondary-light',
     white: 'bg-white',
     black: 'bg-black',
@@ -224,20 +230,25 @@ Button.propTypes = {
   /** Button corner roundness  */
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained', 'disabled']),
+  /* color prop must have all the possible keys of variants defined above */
   color: PropTypes.oneOf([
     'default',
     'primary',
+    'primaryDark',
+    'primaryActive',
     'secondary',
     'white',
     'black',
     'inherit',
     'light',
+    'translucent',
   ]),
   border: PropTypes.oneOf([
     'none',
     'light',
     'default',
     'primary',
+    'primaryActive',
     'secondary',
     'white',
     'black',

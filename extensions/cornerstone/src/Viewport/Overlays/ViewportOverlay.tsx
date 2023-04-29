@@ -3,6 +3,7 @@ import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ViewportOverlay } from '@ohif/ui';
+import { ServicesManager } from '@ohif/core';
 
 const EPSILON = 1e-4;
 
@@ -14,8 +15,8 @@ function CornerstoneViewportOverlay({
   servicesManager,
 }) {
   const {
-    CornerstoneViewportService,
-    ToolBarService,
+    cornerstoneViewportService,
+    toolbarService,
   } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
@@ -25,7 +26,26 @@ function CornerstoneViewportOverlay({
    * Initial toolbar state
    */
   useEffect(() => {
-    setActiveTools(ToolBarService.getActiveTools());
+    setActiveTools(toolbarService.getActiveTools());
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const { unsubscribe } = toolbarService.subscribe(
+      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
+      () => {
+        if (!isMounted) {
+          return;
+        }
+
+        setActiveTools(toolbarService.getActiveTools());
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   /**
@@ -66,7 +86,7 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
           viewportIndex
         );
 
@@ -100,23 +120,6 @@ function CornerstoneViewportOverlay({
     };
   }, [viewportIndex, viewportData]);
 
-  /**
-   * Updating the active tools when the toolbar changes
-   */
-  // Todo: this should act on the toolGroups instead of the toolbar state
-  useEffect(() => {
-    const { unsubscribe } = ToolBarService.subscribe(
-      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => {
-        setActiveTools(ToolBarService.getActiveTools());
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [ToolBarService]);
-
   const getTopLeftContent = useCallback(() => {
     const { windowWidth, windowCenter } = voi;
 
@@ -126,7 +129,7 @@ function CornerstoneViewportOverlay({
       }
 
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">W:</span>
           <span className="ml-1 mr-2 font-light">{windowWidth.toFixed(0)}</span>
           <span className="mr-1">L:</span>
@@ -137,7 +140,7 @@ function CornerstoneViewportOverlay({
 
     if (activeTools.includes('Zoom')) {
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">Zoom:</span>
           <span className="font-light">{scale.toFixed(2)}x</span>
         </div>
@@ -166,12 +169,12 @@ function CornerstoneViewportOverlay({
         viewportData,
         imageIndex,
         viewportIndex,
-        CornerstoneViewportService
+        cornerstoneViewportService
       );
     }
 
     return (
-      <div className="flex flex-row">
+      <div className="flex flex-row text-base">
         <span className="mr-1">I:</span>
         <span className="font-light">
           {instanceNumber !== undefined
@@ -186,22 +189,33 @@ function CornerstoneViewportOverlay({
     return null;
   }
 
-  if (viewportData.imageIds.length === 0) {
-    throw new Error(
-      'ViewportOverlay: only viewports with imageIds is supported at this time'
-    );
+  const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
+    viewportIndex
+  );
+
+  if (!ohifViewport) {
+    return null;
   }
+
+  const backgroundColor = ohifViewport.getViewportOptions().background;
+
+  // Todo: probably this can be done in a better way in which we identify bright
+  // background
+  const isLight = backgroundColor
+    ? utilities.isEqual(backgroundColor, [1, 1, 1])
+    : false;
 
   return (
     <ViewportOverlay
       topLeft={getTopLeftContent()}
       topRight={getTopRightContent()}
+      color={isLight && 'text-[#0944B3]'}
     />
   );
 }
 
 function _getInstanceNumberFromStack(viewportData, imageIndex) {
-  const imageIds = viewportData.imageIds;
+  const imageIds = viewportData.data.imageIds;
   const imageId = imageIds[imageIndex];
 
   if (!imageId) {
@@ -227,7 +241,7 @@ function _getInstanceNumberFromVolume(
   viewportData,
   imageIndex,
   viewportIndex,
-  CornerstoneViewportService
+  cornerstoneViewportService
 ) {
   const volumes = viewportData.volumes;
 
@@ -239,7 +253,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
     viewportIndex
   );
 
@@ -274,6 +288,7 @@ CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
   viewportIndex: PropTypes.number,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 export default CornerstoneViewportOverlay;

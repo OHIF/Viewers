@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
-import { useDebounce, useQuery } from '@hooks';
-import { utils, hotkeys } from '@ohif/core';
+import { useDebounce, useSearchParams } from '@hooks';
+import { utils, hotkeys, ServicesManager } from '@ohif/core';
 
 import {
   Icon,
@@ -25,6 +25,7 @@ import {
   useModal,
   AboutModal,
   UserPreferences,
+  LoadingIndicatorProgress,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -45,6 +46,9 @@ function WorkList({
   isLoadingData,
   dataSource,
   hotkeysManager,
+  dataPath,
+  onRefresh,
+  servicesManager,
 }) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
@@ -52,10 +56,10 @@ function WorkList({
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
-  const query = useQuery();
+  const searchParams = useSearchParams();
   const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
-  const queryFilterValues = _getQueryFilterValues(query);
+  const queryFilterValues = _getQueryFilterValues(searchParams);
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
     ...queryFilterValues,
@@ -322,13 +326,13 @@ function WorkList({
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                return {
-                  description: s.description || '(empty)',
-                  seriesNumber: s.seriesNumber || '',
-                  modality: s.modality || '',
-                  instances: s.numSeriesInstances || '',
-                };
-              })
+                  return {
+                    description: s.description || '(empty)',
+                    seriesNumber: s.seriesNumber ?? '',
+                    modality: s.modality || '',
+                    instances: s.numSeriesInstances || '',
+                  };
+                })
               : []
           }
         >
@@ -345,16 +349,17 @@ function WorkList({
             return (
               <Link
                 key={i}
-                to={`${mode.routeName}?StudyInstanceUIDs=${studyInstanceUid}`}
-              // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+                to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
+                  ''}?StudyInstanceUIDs=${studyInstanceUid}`}
+                // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
                   variant={isValidMode ? 'contained' : 'disabled'}
                   disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                  className={classnames('font-bold', { 'ml-2': !isFirst })}
-                  onClick={() => { }}
+                  className={classnames('font-medium	', { 'ml-2': !isFirst })}
+                  onClick={() => {}}
                 >
                   {t(`Modes:${mode.displayName}`)}
                 </Button>
@@ -419,51 +424,82 @@ function WorkList({
       icon: 'power-off',
       title: t('Header:Logout'),
       onClick: () => {
-        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
-
-      }
+        navigate(
+          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
+        );
+      },
     });
   }
 
+  const { customizationService } = servicesManager.services;
+  const { component: dicomUploadComponent } =
+    customizationService.get('dicomUploadComponent') ?? {};
+  const uploadProps =
+    dicomUploadComponent && dataSource.getConfig().dicomUploadEnabled
+      ? {
+          title: 'Upload files',
+          closeButton: true,
+          shouldCloseOnEsc: false,
+          shouldCloseOnOverlayClick: false,
+          content: dicomUploadComponent.bind(null, {
+            dataSource,
+            onComplete: () => {
+              hide();
+              onRefresh();
+            },
+            onStarted: () => {
+              show({
+                ...uploadProps,
+                // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
+                closeButton: false,
+              });
+            },
+          }),
+        }
+      : undefined;
+
   return (
-    <div
-      className={classnames('bg-black h-full', {
-        'h-screen': !hasStudies,
-      })}
-    >
+    <div className="bg-black h-screen flex flex-col ">
       <Header
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <StudyListFilter
-        numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-        filtersMeta={filtersMeta}
-        filterValues={{ ...filterValues, ...defaultSortValues }}
-        onChange={setFilterValues}
-        clearFilters={() => setFilterValues(defaultFilterValues)}
-        isFiltering={isFiltering(filterValues, defaultFilterValues)}
-      />
-      {hasStudies ? (
-        <>
-          <StudyListTable
-            tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-            numOfStudies={numOfStudies}
-            filtersMeta={filtersMeta}
-          />
-          <StudyListPagination
-            onChangePage={onPageNumberChange}
-            onChangePerPage={onResultsPerPageChange}
-            currentPage={pageNumber}
-            perPage={resultsPerPage}
-          />
-        </>
-      ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies isLoading={isLoadingData} />
-        </div>
-      )}
+      <div className="overflow-y-auto ohif-scrollbar">
+        <StudyListFilter
+          numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
+          filtersMeta={filtersMeta}
+          filterValues={{ ...filterValues, ...defaultSortValues }}
+          onChange={setFilterValues}
+          clearFilters={() => setFilterValues(defaultFilterValues)}
+          isFiltering={isFiltering(filterValues, defaultFilterValues)}
+          onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+        />
+        {hasStudies ? (
+          <>
+            <StudyListTable
+              tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
+              numOfStudies={numOfStudies}
+              filtersMeta={filtersMeta}
+            />
+            <StudyListPagination
+              onChangePage={onPageNumberChange}
+              onChangePerPage={onResultsPerPageChange}
+              currentPage={pageNumber}
+              perPage={resultsPerPage}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center pt-48">
+            {appConfig.showLoadingIndicator && isLoadingData ? (
+              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+            ) : (
+              <EmptyStudies />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -472,8 +508,10 @@ WorkList.propTypes = {
   data: PropTypes.array.isRequired,
   dataSource: PropTypes.shape({
     query: PropTypes.object.isRequired,
+    getConfig: PropTypes.func,
   }).isRequired,
   isLoadingData: PropTypes.bool.isRequired,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 const defaultFilterValues = {
@@ -490,37 +528,37 @@ const defaultFilterValues = {
   sortDirection: 'none',
   pageNumber: 1,
   resultsPerPage: 25,
+  datasources: '',
 };
 
 function _tryParseInt(str, defaultValue) {
-  var retValue = defaultValue;
-  if (str !== null) {
-    if (str.length > 0) {
-      if (!isNaN(str)) {
-        retValue = parseInt(str);
-      }
+  let retValue = defaultValue;
+  if (str && str.length > 0) {
+    if (!isNaN(str)) {
+      retValue = parseInt(str);
     }
   }
   return retValue;
 }
 
-function _getQueryFilterValues(query) {
+function _getQueryFilterValues(params) {
   const queryFilterValues = {
-    patientName: query.get('patientName'),
-    mrn: query.get('mrn'),
+    patientName: params.get('patientname'),
+    mrn: params.get('mrn'),
     studyDate: {
-      startDate: query.get('startDate'),
-      endDate: query.get('endDate'),
+      startDate: params.get('startdate') || null,
+      endDate: params.get('enddate') || null,
     },
-    description: query.get('description'),
-    modalities: query.get('modalities')
-      ? query.get('modalities').split(',')
+    description: params.get('description'),
+    modalities: params.get('modalities')
+      ? params.get('modalities').split(',')
       : [],
-    accession: query.get('accession'),
-    sortBy: query.get('sortBy'),
-    sortDirection: query.get('sortDirection'),
-    pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
-    resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
+    accession: params.get('accession'),
+    sortBy: params.get('sortby'),
+    sortDirection: params.get('sortdirection'),
+    pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
+    resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
+    datasources: params.get('datasources'),
   };
 
   // Delete null/undefined keys

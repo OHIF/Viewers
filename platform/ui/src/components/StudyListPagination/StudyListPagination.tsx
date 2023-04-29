@@ -47,19 +47,19 @@ const StudyListPagination = ({
               onChange={onSelectedRange}
             />
             <Typography className="text-base opacity-60">
-              {t('Results per page')}
+              {t('ResultsPerPage')}
             </Typography>
           </div>
           <div className="">
             <div className="flex items-center">
               <Typography className="opacity-60 mr-4 text-base">
-                Page {currentPage}
+                {t('Page')} {currentPage}
               </Typography>
               <ButtonGroup>
                 <Button
                   size="initial"
                   className="px-4 py-2 text-base"
-                  color="white"
+                  color="translucent"
                   border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(1)}
@@ -69,22 +69,22 @@ const StudyListPagination = ({
                 <Button
                   size="initial"
                   className="py-2 px-2 text-base"
-                  color="white"
+                  color="translucent"
                   border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(currentPage - 1)}
                 >
-                  {t(`< Previous`)}
+                  {t('Previous')}
                 </Button>
                 <Button
                   size="initial"
                   className="py-2 px-4 text-base"
-                  color="white"
+                  color="translucent"
                   border="primary"
                   variant="outlined"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
-                  {t(`Next >`)}
+                  {t('Next')}
                 </Button>
               </ButtonGroup>
             </div>

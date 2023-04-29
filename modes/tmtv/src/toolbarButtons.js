@@ -105,6 +105,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            // toolGroupIds.MPR,
           ]),
         ],
         'Length'
@@ -125,6 +126,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Length Tool'
@@ -138,6 +140,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Bidirectional Tool'
@@ -151,6 +154,7 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Arrow Annotate'
@@ -164,9 +168,24 @@ const toolbarButtons = [
               toolGroupIds.CT,
               toolGroupIds.PT,
               toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
             ]),
           ],
           'Ellipse Tool'
+        ),
+        _createToolButton(
+          'CircleROI',
+          'tool-circle',
+          'Circle',
+          [
+            ..._createCommands('setToolActive', 'CircleROI', [
+              toolGroupIds.CT,
+              toolGroupIds.PT,
+              toolGroupIds.Fusion,
+              // toolGroupIds.MPR,
+            ]),
+          ],
+          'Circle Tool'
         ),
       ],
     },
@@ -184,7 +203,26 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
+      ],
+    },
+  },
+  {
+    id: 'MPR',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleHangingProtocol',
+          commandOptions: {
+            protocolId: 'mpr',
+          },
+          context: 'DEFAULT',
+        },
       ],
     },
   },
@@ -203,6 +241,7 @@ const toolbarButtons = [
             toolGroupIds.CT,
             toolGroupIds.PT,
             toolGroupIds.Fusion,
+            // toolGroupIds.MPR,
           ]),
         ],
         'Window Level'
@@ -228,14 +267,15 @@ const toolbarButtons = [
     id: 'Crosshairs',
     type: 'ohif.radioGroup',
     props: {
-      type: 'toggle',
+      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
       commands: [
-        ..._createCommands('toggleCrosshairs', 'Crosshairs', [
+        ..._createCommands('setToolActive', 'Crosshairs', [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
       ],
     },
@@ -253,6 +293,7 @@ const toolbarButtons = [
           toolGroupIds.CT,
           toolGroupIds.PT,
           toolGroupIds.Fusion,
+          // toolGroupIds.MPR,
         ]),
       ],
     },

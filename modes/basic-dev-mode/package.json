@@ -32,13 +32,12 @@
     "@ohif/core": "^3.0.0",
     "@ohif/extension-default": "^3.0.0",
     "@ohif/extension-cornerstone": "^3.0.0",
-    "@ohif/extension-cornerstone": "^3.0.0",
     "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
     "@ohif/extension-dicom-pdf": "^3.0.1",
     "@ohif/extension-dicom-video": "^3.0.1"
   },
   "dependencies": {
-    "@babel/runtime": "7.13.10"
+    "@babel/runtime": "^7.20.13"
   },
   "devDependencies": {
     "webpack": "^5.50.0",

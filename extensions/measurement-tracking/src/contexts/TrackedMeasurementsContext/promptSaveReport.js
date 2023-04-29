@@ -9,9 +9,9 @@ function promptSaveReport(
   evt
 ) {
   const {
-    UIDialogService,
-    MeasurementService,
-    DisplaySetService,
+    uiDialogService,
+    measurementService,
+    displaySetService,
   } = servicesManager.services;
   const viewportIndex =
     evt.viewportIndex === undefined
@@ -26,13 +26,13 @@ function promptSaveReport(
   let displaySetInstanceUIDs;
 
   return new Promise(async function(resolve, reject) {
-    // TODO: Fallback if (UIDialogService) {
-    const promptResult = await createReportDialogPrompt(UIDialogService);
+    // TODO: Fallback if (uiDialogService) {
+    const promptResult = await createReportDialogPrompt(uiDialogService);
 
     if (promptResult.action === RESPONSE.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
-      const measurements = MeasurementService.getMeasurements();
+      const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m =>
           trackedStudy === m.referenceStudyUID &&
@@ -45,7 +45,7 @@ function promptSaveReport(
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      const SeriesNumber = getNextSRSeriesNumber(DisplaySetService);
+      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
 
       displaySetInstanceUIDs = await createReportAsync(
         servicesManager,

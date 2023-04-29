@@ -1,0 +1,47 @@
+import InputNumber from '../InputNumber';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+
+export const argTypes = {
+  component: InputNumber,
+  title: 'Components/InputNumber',
+};
+
+<Meta title="Components/InputNumber" component={InputNumber} />
+
+export const InputNumberTemplate = args => (
+  <div className="w-16">
+    <InputNumber {...args} />
+  </div>
+)
+
+<Heading title="InputNumber" componentRelativePath="InputNumber/InputNumber.tsx" />
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+InputNumber is a component that allows you to use as a number value
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      step: 1,
+      value: 3,
+      size: 'sm',
+      onChange: () => console.log('input range change'),
+    }}
+  >
+    {InputNumberTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={InputNumber} />
+
+## Contribute
+
+<Footer componentRelativePath="InputNumber/__stories__/InputNumber.stories.mdx" />

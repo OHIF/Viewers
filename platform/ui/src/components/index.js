@@ -18,12 +18,15 @@ import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
 import LayoutSelector from './LayoutSelector';
+import LegacyCinePlayer from './LegacyCinePlayer';
+import LegacyViewportActionBar from './LegacyViewportActionBar';
 import MeasurementTable from './MeasurementTable';
 import Modal from './Modal';
 import NavBar from './NavBar';
 import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
+import SegmentationGroupTable from './SegmentationGroupTable';
 import SidePanel from './SidePanel';
 import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
@@ -45,14 +48,12 @@ import ThumbnailNoImage from './ThumbnailNoImage';
 import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
 import ToolbarButton from './ToolbarButton';
-import ContextMenuMeasurements from './ContextMenuMeasurements';
 import ExpandableToolbarButton from './ExpandableToolbarButton';
 import ListMenu from './ListMenu';
 import Tooltip from './Tooltip';
 import TooltipClipboard from './TooltipClipboard';
 import Typography from './Typography';
 import Viewport from './Viewport';
-import ViewportActionBar from './ViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
@@ -63,6 +64,13 @@ import HotkeyField from './HotkeyField';
 import Header from './Header';
 import ImageScrollbar from './ImageScrollbar';
 import ViewportOverlay from './ViewportOverlay';
+import InputRange from './InputRange';
+import InputNumber from './InputNumber';
+import CheckBox from './CheckBox';
+import LoadingIndicatorProgress from './LoadingIndicatorProgress';
+import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
+import ViewportActionBar from './ViewportActionBar';
+import ProgressLoadingBar from './ProgressLoadingBar';
 
 export {
   AboutModal,
@@ -72,8 +80,9 @@ export {
   HotkeysPreferences,
   Button,
   ButtonGroup,
-  ContextMenu,
+  CheckBox,
   CinePlayer,
+  ContextMenu,
   DateRange,
   Dialog,
   Dropdown,
@@ -86,18 +95,26 @@ export {
   Input,
   InputDateRange,
   InputGroup,
+  InputRange,
+  InputNumber,
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
   ImageScrollbar,
   Label,
   LayoutSelector,
+  LegacyCinePlayer,
+  LegacyViewportActionBar,
+  LoadingIndicatorProgress,
+  LoadingIndicatorTotalPercent,
   MeasurementTable,
   Modal,
   NavBar,
   Notification,
+  ProgressLoadingBar,
   Select,
   SegmentationTable,
+  SegmentationGroupTable,
   SidePanel,
   SplitButton,
   StudyBrowser,
@@ -120,7 +137,6 @@ export {
   ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
-  ContextMenuMeasurements,
   Tooltip,
   TooltipClipboard,
   Typography,

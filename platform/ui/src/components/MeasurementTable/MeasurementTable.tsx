@@ -1,11 +1,30 @@
 import React from 'react';
+import { ServicesManager } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
 
-const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
+const MeasurementTable = ({
+  data,
+  title,
+  onClick,
+  onEdit,
+  servicesManager,
+}) => {
+  servicesManager = servicesManager as ServicesManager;
+  const { customizationService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
+  const amount = data.length;
+
+  const itemCustomization = customizationService.getCustomization(
+    'MeasurementItem',
+    {
+      content: MeasurementItem,
+      contentProps: {},
+    }
+  );
+  const CustomMeasurementItem = itemCustomization.content;
 
   return (
     <div>
@@ -18,13 +37,14 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
       <div className="overflow-hidden ohif-scrollbar max-h-112">
         {data.length !== 0 &&
           data.map((measurementItem, index) => (
-            <MeasurementItem
+            <CustomMeasurementItem
               key={measurementItem.uid}
               uid={measurementItem.uid}
               index={index + 1}
               label={measurementItem.label}
               isActive={measurementItem.isActive}
               displayText={measurementItem.displayText}
+              item={measurementItem}
               onClick={onClick}
               onEdit={onEdit}
             />
@@ -45,7 +65,6 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
 };
 
 MeasurementTable.defaultProps = {
-  amount: null,
   data: [],
   onClick: () => {},
   onEdit: () => {},
@@ -53,7 +72,6 @@ MeasurementTable.defaultProps = {
 
 MeasurementTable.propTypes = {
   title: PropTypes.string.isRequired,
-  amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   data: PropTypes.arrayOf(
     PropTypes.shape({
       uid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

@@ -33,6 +33,7 @@ button is clicked by the user.
     presets.
   - `commandName`: if tool has a command attached to run
   - `commandOptions`: arguments for the command.
+  - `setActive`: Sets a given tool active (not as primary but as secondary)
 
 - `reset`: reset the state of the toolbarService, set the primary tool to be
   `Wwwc` and unsubscribe tools that have registered their functions.

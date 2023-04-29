@@ -6,6 +6,10 @@ window.config = {
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -14,17 +18,19 @@ window.config = {
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        stowUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/',
+        qidoUrlPrefix: 'dicomweb',
+        wadoUrlPrefix: 'dicomweb',
+        stowUrlPrefix: 'dicomweb',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: false,
-        supportsFuzzyMatching: true,
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
         supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video,pdf',
       },
     },
     {

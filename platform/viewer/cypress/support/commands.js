@@ -5,7 +5,6 @@ import {
   initCornerstoneToolsAliases,
   initCommonElementsAliases,
   initRouteAliases,
-  initVTKToolsAliases,
   initStudyListAliasesOnDesktop,
   initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
@@ -46,26 +45,38 @@ import {
 Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
   cy.get('#filter-patientNameOrId').type(PatientName);
-  cy.wait('@getStudies');
+  // cy.get('@getStudies').then(() => {
+  cy.wait(1000);
+
   cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
     .contains(PatientName)
     .first()
     .click({ force: true });
 });
 
-Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
-  cy.location('pathname').then($url => {
-    cy.log($url);
-    if ($url == 'blank' || !$url.includes(`/viewer/${StudyInstanceUID}`)) {
-      cy.openStudyInViewer(StudyInstanceUID);
-      cy.waitDicomImage();
-    }
-  });
-});
+Cypress.Commands.add(
+  'checkStudyRouteInViewer',
+  (StudyInstanceUID, otherParams = '') => {
+    cy.location('pathname').then($url => {
+      cy.log($url);
+      if (
+        $url == 'blank' ||
+        !$url.includes(`/basic-test/${StudyInstanceUID}${otherParams}`)
+      ) {
+        cy.openStudyInViewer(StudyInstanceUID, otherParams);
+        cy.waitDicomImage();
+        cy.wait(2000);
+      }
+    });
+  }
+);
 
-Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
-  cy.visit(`/viewer?StudyInstanceUIDs=${StudyInstanceUID}`);
-});
+Cypress.Commands.add(
+  'openStudyInViewer',
+  (StudyInstanceUID, otherParams = '') => {
+    cy.visit(`/basic-test?StudyInstanceUIDs=${StudyInstanceUID}${otherParams}`);
+  }
+);
 
 /**
  * Command to search for a Modality and open the study.
@@ -89,16 +100,20 @@ Cypress.Commands.add('openStudyModality', Modality => {
 /**
  * Command to wait and check if a new page was loaded
  *
- * @param {string} url - part of the expected url. Default value is /viewer
+ * @param {string} url - part of the expected url. Default value is /basic-test
  */
-Cypress.Commands.add('isPageLoaded', (url = '/viewer') => {
+Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
 });
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
   cy.visit('/');
-  cy.wait('@getStudies');
+
+  // For some reason cypress 12.x does not like to stub the network request
+  // so we just wait herer for 1 second
+  // cy.wait('@getStudies');
+  cy.wait(1000);
 });
 
 Cypress.Commands.add('waitStudyList', () => {
@@ -450,6 +465,29 @@ Cypress.Commands.add('openPreferences', () => {
   });
 });
 
+Cypress.Commands.add('scrollToIndex', index => {
+  // Workaround implemented based on Cypress issue:
+  // https://github.com/cypress-io/cypress/issues/1570#issuecomment-450966053
+  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+    window.HTMLInputElement.prototype,
+    'value'
+  ).set;
+
+  cy.get('input.imageSlider[type=range]').then($range => {
+    // get the DOM node
+    const range = $range[0];
+    // set the value manually
+    nativeInputValueSetter.call(range, index);
+    // now dispatch the event
+    range.dispatchEvent(
+      new Event('change', {
+        value: index,
+        bubbles: true,
+      })
+    );
+  });
+});
+
 Cypress.Commands.add('closePreferences', () => {
   cy.log('Close User Preferences Modal');
 
@@ -596,3 +634,14 @@ Cypress.Commands.add('setLanguage', (language, save = true) => {
       .click();
   });
 });
+
+// hide noisy logs
+// https://github.com/cypress-io/cypress/issues/7362
+// uncomment this if you really need the network logs
+const origLog = Cypress.log;
+Cypress.log = function(opts, ...other) {
+  if (opts.displayName === 'script' || opts.name === 'request') {
+    return;
+  }
+  return origLog(opts, ...other);
+};

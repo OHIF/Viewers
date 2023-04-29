@@ -19,29 +19,36 @@ function DataSourceWrapper(props) {
   const params = useParams();
   const location = useLocation();
 
-  // TODO: Fetch by type, name, etc?
-  const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
-  // TODO: Good usecase for flatmap?
-  const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
-    const mods = [];
-    curr.module.forEach(mod => {
-      if (mod.type === 'webApi') {
-        mods.push(mod);
-      }
-    });
-    return acc.concat(mods);
-  }, []);
+  // TODO - get the variable from the props all the time...
+  let dataSourceName = new URLSearchParams(location.search).get('datasources');
+  const dataPath = dataSourceName ? `/${dataSourceName}` : '';
 
-  // Grabbing first defined for now - should get active
-  // TODO: Why does this return an array?
-  const dataSource = webApiDataSources
-    .map(ds => extensionManager.getDataSources(ds.name)?.[0])
-    .find(it => it !== undefined);
-  if (!dataSource) {
-    throw new Error(
-      `No data source found for any of ${webApiDataSources.map(it => it.name)}`
-    );
+  if (!dataSourceName && window.config.defaultDataSourceName) {
+    dataSourceName = window.config.defaultDataSourceName;
+  } else if (!dataSourceName) {
+    // Gets the first defined datasource with the right name
+    // Mostly for historical reasons - new configs should use the defaultDataSourceName
+    const dataSourceModules =
+      extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
+    // TODO: Good usecase for flatmap?
+    const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
+      const mods = [];
+      curr.module.forEach(mod => {
+        if (mod.type === 'webApi') {
+          mods.push(mod);
+        }
+      });
+      return acc.concat(mods);
+    }, []);
+    dataSourceName = webApiDataSources
+      .map(ds => ds.name)
+      .find(it => extensionManager.getDataSources(it)?.[0] !== undefined);
   }
+  const dataSource = extensionManager.getDataSources(dataSourceName)?.[0];
+  if (!dataSource) {
+    throw new Error(`No data source found for ${dataSourceName}`);
+  }
+
   // Route props --> studies.mapParams
   // mapParams --> studies.search
   // studies.search --> studies.processResults
@@ -49,13 +56,14 @@ function DataSourceWrapper(props) {
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
   const STUDIES_LIMIT = 101;
-  const [data, setData] = useState({
+  const DEFAULT_DATA = {
     studies: [],
     total: 0,
     resultsPerPage: 25,
     pageNumber: 1,
     location: 'Not a valid location, causes first load to occur',
-  });
+  };
+  const [data, setData] = useState(DEFAULT_DATA);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -114,9 +122,12 @@ function DataSourceWrapper(props) {
     <LayoutTemplate
       {...rest}
       data={data.studies}
+      dataPath={dataPath}
       dataTotal={data.total}
       dataSource={dataSource}
       isLoadingData={isLoading}
+      // To refresh the data, simply reset it to DEFAULT_DATA which invalidates it and triggers a new query to fetch the data.
+      onRefresh={() => setData(DEFAULT_DATA)}
     />
   );
 }

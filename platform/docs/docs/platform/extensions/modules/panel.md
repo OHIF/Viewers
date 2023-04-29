@@ -25,6 +25,10 @@ optionally provide its own `context` value.
 The `getPanelModule` receives an object containing the `ExtensionManager`'s
 associated `ServicesManager` and `CommandsManager`.
 
+An extension can also trigger to activate/open a panel via the `PanelService` -
+either by explicitly calling `PanelService.activatePanel` or triggering panel
+activation when some other event fires.
+
 ```jsx
 import PanelMeasurementTable from './PanelMeasurementTable.js';
 
@@ -64,7 +68,15 @@ providing the component with its.
 
 New: You can easily add multiple panels to the left/right side of the viewer
 using the mode configuration. As seen below, the `leftPanels` and `rightPanels`
-accept an `Array` of the `IDs`.
+accept an `Array` of the `IDs`. The mode configuration also allows for either (or
+both) side panels to be closed by default. In the code below, the right panel
+is closed by default. The mode can optionally add event triggers to
+the `PanelService` that when fired will cause a side panel that was defaulted
+closed to open. In the code below, the right side panel, that contains the
+`trackedMeasurements` panel, is triggered to open when a measurement is added.
+Note that once a default closed side panel has been opened once,
+only a `PanelService.EVENTS.ACTIVATE_PANEL` event with `forceActive === true`
+will cause it open (again).
 
 ```js
 
@@ -79,6 +91,7 @@ const id = 'viewer'
 const version = '3.0.0
 
 function modeFactory({ modeConfiguration }) {
+  let _activatePanelTriggersSubscriptions = [];
   return {
     id,
     routes: [
@@ -94,12 +107,35 @@ function modeFactory({ modeConfiguration }) {
               rightPanels: [
                 '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
               ],
+              rightPanelDefaultClosed: true,
               viewports,
             },
           };
         },
       },
     ],
+    onModeEnter: ({ servicesManager }) => {
+      const {
+        measurementService,
+        panelService,
+      } = servicesManager.services;
+
+      _activatePanelTriggersSubscriptions = [
+        ...panelService.addActivatePanelTriggers('@ohif/extension-measurement-tracking.panelModule.trackedMeasurements', [
+          {
+            sourcePubSubService: measurementService,
+            sourceEvents: [
+              measurementService.EVENTS.MEASUREMENT_ADDED,
+              measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+            ],
+          },
+        ]),
+      ];
+    },
+    onModeExit: () => {
+      _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
+      _activatePanelTriggersSubscriptions = [];
+    },
     extensions: extensionDependencies
   };
 }

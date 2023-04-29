@@ -53,7 +53,7 @@ const sopClassDictionary = {
 const sopClassUids = [
   sopClassDictionary.CTImageStorage,
   sopClassDictionary.MRImageStorage,
-;
+];
 
 const makeDisplaySet = (instances) => {
   const instance = instances[0];

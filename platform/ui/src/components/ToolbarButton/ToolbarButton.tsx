@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import { IconButton, Icon, Tooltip } from '../';
 
 const ToolbarButton = ({
-  type,
+  type = 'tool',
   id,
   icon,
   label,
@@ -14,24 +14,36 @@ const ToolbarButton = ({
   dropdownContent,
   //
   isActive: _isActive,
+  className,
   bState = {},
+  ...rest
   //
 }) => {
   const { primaryToolId } = bState;
   const isActive = _isActive || (type === 'tool' && id === primaryToolId);
   const classes = {
-    type: {
-      primary: isActive
-        ? 'text-black'
-        : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
-      secondary: isActive
-        ? 'text-black'
-        : 'text-white hover:bg-secondary-dark hover:text-white focus:bg-secondary-dark focus:text-white',
-    },
+    tool: isActive
+      ? 'text-black'
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+    toggle: isActive
+      ? '!text-[#348CFD]'
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+    action: isActive
+      ? 'text-black'
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+  };
+
+  const bgClasses = {
+    toggle: isActive && 'bg-transparent',
   };
 
   const activeClass = isActive ? 'active' : '';
   const shouldShowDropdown = !!isActive && !!dropdownContent;
+  const iconEl = icon ? (
+    <Icon name={icon} />
+  ) : (
+    <div>{label || 'Missing icon and label'}</div>
+  );
 
   return (
     <div key={id}>
@@ -42,8 +54,9 @@ const ToolbarButton = ({
       >
         <IconButton
           variant={isActive ? 'contained' : 'text'}
+          bgColor={bgClasses[type]}
           size="toolbar"
-          className={classnames('mx-1', activeClass, classes.type[type])}
+          className={classnames(activeClass, classes[type], className)}
           onClick={() => {
             onInteraction({
               itemId: id,
@@ -54,8 +67,9 @@ const ToolbarButton = ({
           name={label}
           key={id}
           id={id}
+          {...rest}
         >
-          <Icon name={icon} />
+          {iconEl}
         </IconButton>
       </Tooltip>
     </div>

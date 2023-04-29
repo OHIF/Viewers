@@ -18,6 +18,7 @@ export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="MoreTools-split-button-secondary"]').as('moreBtnSecondary');
   cy.get('[data-cy="Layout"]').as('layoutBtn');
   cy.get('.cornerstone-viewport-element').as('viewport');
+  cy.get('[data-cy="MPR"]').as('mprBtn');
 }
 
 //Creating aliases for Common page elements
@@ -25,6 +26,11 @@ export function initCommonElementsAliases() {
   cy.get('[data-cy="trackedMeasurements-btn"]').as('measurementsBtn');
   cy.get('.cornerstone-viewport-element').as('viewport');
   cy.get('[data-cy="seriesList-btn"]').as('seriesBtn');
+  cy.get('[data-cy="side-panel-header-right"]').as('RightCollapseBtn');
+  cy.get('[data-cy="side-panel-header-left"]').as('LeftCollapseBtn');
+
+  // click on the measurements button
+  cy.get('[data-cy="trackedMeasurements-btn"]').click();
 
   // TODO: Panels are not in DOM when closed, move this somewhere else
   cy.get('[data-cy="trackedMeasurements-panel"]').as('measurementsPanel');
@@ -44,9 +50,16 @@ export function initCommonElementsAliases() {
 
 //Creating aliases for Routes
 export function initRouteAliases() {
-  cy.server();
-  cy.route('GET', '**/series**').as('getStudySeries');
-  cy.route('GET', '**/studies**').as('getStudies');
+  cy.intercept('GET', '**/series**', { statusCode: 200, body: [] }).as(
+    'getStudySeries'
+  );
+
+  // Todo: for some reason cypress does not redirect to the correct url
+  // so we intercept the request and redirect it to the correct url
+  cy.intercept('/studies?limit*', req => {
+    const url = req.url.replace(/\/studies\?/, '/studies/?limit');
+    req.url = url;
+  });
 }
 
 //Creating aliases for Study List page elements on Desktop experience

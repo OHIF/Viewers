@@ -1,3 +1,4 @@
+import { Types } from '@ohif/core';
 import {
   PanelMeasurementTableTracking,
   PanelStudyBrowserTracking,
@@ -11,7 +12,7 @@ function getPanelModule({
   commandsManager,
   extensionManager,
   servicesManager,
-}) {
+}): Types.Panel[] {
   return [
     {
       name: 'seriesList',
@@ -24,9 +25,10 @@ function getPanelModule({
         servicesManager,
       }),
     },
+
     {
       name: 'trackedMeasurements',
-      iconName: 'list-bullets',
+      iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurements',
       component: PanelMeasurementTableTracking.bind(null, {

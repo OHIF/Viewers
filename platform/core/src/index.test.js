@@ -24,21 +24,24 @@ describe('Top level exports', () => {
       'OHIF',
       //
       'CineService',
+      'CustomizationService',
+      'StateSyncService',
       'UIDialogService',
       'UIModalService',
       'UINotificationService',
       'UIViewportDialogService',
       'DisplaySetService',
       'MeasurementService',
-      'ToolBarService',
+      'ToolbarService',
       'Types',
       'ViewportGridService',
-      'SegmentationService',
       'HangingProtocolService',
       'UserAuthenticationService',
       'IWebApiDataSource',
       'DicomMetadataStore',
       'pubSubServiceInterface',
+      'PubSubService',
+      'PanelService',
     ].sort();
 
     const exports = Object.keys(OHIF).sort();

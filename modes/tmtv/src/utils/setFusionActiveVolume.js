@@ -3,8 +3,8 @@ import { toolGroupIds } from '../initToolGroups';
 export default function setFusionActiveVolume(
   matches,
   toolNames,
-  ToolGroupService,
-  DisplaySetService
+  toolGroupService,
+  displaySetService
 ) {
   const matchDetails = matches.get('ptDisplaySet');
 
@@ -14,7 +14,7 @@ export default function setFusionActiveVolume(
 
   const { SeriesInstanceUID } = matchDetails;
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+  const displaySets = displaySetService.getDisplaySetsForSeries(
     SeriesInstanceUID
   );
 
@@ -22,33 +22,36 @@ export default function setFusionActiveVolume(
     return;
   }
 
-  const wlToolConfig = ToolGroupService.getToolConfiguration(
+  const wlToolConfig = toolGroupService.getToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.WindowLevel
   );
 
-  const ellipticalToolConfig = ToolGroupService.getToolConfiguration(
+  const ellipticalToolConfig = toolGroupService.getToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.EllipticalROI
   );
 
+  // Todo: this should not take into account the loader id
+  const volumeId = `cornerstoneStreamingImageVolume:${displaySets[0].displaySetInstanceUID}`;
+
   const windowLevelConfig = {
     ...wlToolConfig,
-    volumeId: displaySets[0].displaySetInstanceUID,
+    volumeId,
   };
 
   const ellipticalROIConfig = {
     ...ellipticalToolConfig,
-    volumeId: displaySets[0].displaySetInstanceUID,
+    volumeId,
   };
 
-  ToolGroupService.setToolConfiguration(
+  toolGroupService.setToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.WindowLevel,
     windowLevelConfig
   );
 
-  ToolGroupService.setToolConfiguration(
+  toolGroupService.setToolConfiguration(
     toolGroupIds.Fusion,
     toolNames.EllipticalROI,
     ellipticalROIConfig

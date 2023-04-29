@@ -7,18 +7,28 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import init from './init.js';
-import commandsModule from './commandsModule';
+import { ServicesManager, Types } from '@ohif/core';
+
+import init from './init';
+import getCustomizationModule from './getCustomizationModule';
+import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
-import { toolNames } from './initCornerstoneTools';
-import { getEnabledElement } from './state';
+import SegmentationService from './services/SegmentationService';
+import CornerstoneCacheService from './services/CornerstoneCacheService';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
+import * as CornerstoneExtensionTypes from './types';
+
+import { toolNames } from './initCornerstoneTools';
+import { getEnabledElement, reset as enabledElementReset } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
 import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
+import * as csWADOImageLoader from './initWADOImageLoader.js';
+import { measurementMappingUtils } from './utils/measurementServiceMappings';
+import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 
 const Component = React.lazy(() => {
   return import(
@@ -37,52 +47,54 @@ const OHIFCornerstoneViewport = props => {
 /**
  *
  */
-const cornerstoneExtension = {
+const cornerstoneExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
   id,
 
-  onModeExit: () => {
+  onModeExit: (): void => {
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
     Object.values(cs3DEnums.RequestType).forEach(type => {
       imageLoadPoolManager.clearRequestStack(type);
       imageRetrievalPoolManager.clearRequestStack(type);
     });
+
+    csWADOImageLoader.destroy();
+    enabledElementReset();
   },
 
   /**
+   * Register the Cornerstone 3D services and set them up for use.
    *
-   *
-   * @param {object} [configuration={}]
-   * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
+   * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
-  async preRegistration({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-    appConfig,
-  }) {
-    servicesManager.registerService(
-      CornerstoneViewportService(servicesManager)
-    );
-    servicesManager.registerService(ToolGroupService(servicesManager));
-    servicesManager.registerService(SyncGroupService(servicesManager));
-    await init({ servicesManager, commandsManager, configuration, appConfig });
+  preRegistration: function (
+    props: Types.Extensions.ExtensionParams
+  ): Promise<void> {
+    const { servicesManager } = props;
+    servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
+    servicesManager.registerService(ToolGroupService.REGISTRATION);
+    servicesManager.registerService(SyncGroupService.REGISTRATION);
+    servicesManager.registerService(SegmentationService.REGISTRATION);
+    servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
+
+    return init.call(this, props);
   },
+
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
       // const onNewImageHandler = jumpData => {
       //   commandsManager.runCommand('jumpToImage', jumpData);
       // };
-      const { ToolBarService } = servicesManager.services;
+      const { toolbarService } = (servicesManager as ServicesManager).services;
 
       return (
         <OHIFCornerstoneViewport
           {...props}
-          ToolBarService={ToolBarService}
+          toolbarService={toolbarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />
@@ -96,13 +108,8 @@ const cornerstoneExtension = {
       },
     ];
   },
-  getCommandsModule({ servicesManager, commandsManager, extensionManager }) {
-    return commandsModule({
-      servicesManager,
-      commandsManager,
-      extensionManager,
-    });
-  },
+  getCommandsModule,
+  getCustomizationModule,
   getUtilityModule({ servicesManager }) {
     return [
       {
@@ -133,4 +140,6 @@ const cornerstoneExtension = {
   },
 };
 
+export type { PublicViewportOptions };
+export { measurementMappingUtils, CornerstoneExtensionTypes, toolNames };
 export default cornerstoneExtension;

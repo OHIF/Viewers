@@ -1,13 +1,21 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import OHIF, { utils } from '@ohif/core';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
+import { CornerstoneServices } from '@ohif/extension-cornerstone/types';
+
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
+
 import {
+  Icon,
   Notification,
-  ViewportActionBar,
-  useViewportGrid,
+  Tooltip,
   useViewportDialog,
+  useViewportGrid,
+  ViewportActionBar,
 } from '@ohif/ui';
+import hydrateStructuredReport from '../utils/hydrateStructuredReport';
+import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const { formatDate } = utils;
 
@@ -22,15 +30,17 @@ function OHIFCornerstoneSRViewport(props) {
     dataSource,
     displaySets,
     viewportIndex,
+    viewportOptions,
     viewportLabel,
     servicesManager,
     extensionManager,
   } = props;
 
   const {
-    DisplaySetService,
-    CornerstoneViewportService,
-  } = servicesManager.services;
+    displaySetService,
+    cornerstoneViewportService,
+    measurementService,
+  } = servicesManager.services as CornerstoneServices;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -50,7 +60,6 @@ function OHIFCornerstoneSRViewport(props) {
     referencedDisplaySetMetadata,
     setReferencedDisplaySetMetadata,
   ] = useState(null);
-  const [isHydrated, setIsHydrated] = useState(srDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportIndex } = viewportGrid;
 
@@ -62,18 +71,36 @@ function OHIFCornerstoneSRViewport(props) {
     MEASUREMENT_TRACKING_EXTENSION_ID
   );
 
-  // TODO: this is a hook that fails if we register/de-register
   if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
       '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
     );
 
-    const useTrackedMeasurements = () => useContext(contextModule.context);
-
-    [
-      trackedMeasurements,
-      sendTrackedMeasurementsEvent,
-    ] = useTrackedMeasurements();
+    const tracked = useContext(contextModule.context);
+    trackedMeasurements = tracked?.[0];
+    sendTrackedMeasurementsEvent = tracked?.[1];
+  }
+  if (!sendTrackedMeasurementsEvent) {
+    // if no panels from measurement-tracking extension is used, this code will run
+    trackedMeasurements = null;
+    sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
+      measurementService.clearMeasurements();
+      const { SeriesInstanceUIDs } = hydrateStructuredReport(
+        { servicesManager, extensionManager },
+        displaySetInstanceUID
+      );
+      const displaySets = srDisplaySet.keyImageDisplaySet
+        ? [srDisplaySet.keyImageDisplaySet]
+        : displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
+      if (displaySets.length) {
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+          },
+        ]);
+      }
+    };
   }
 
   /**
@@ -127,7 +154,7 @@ function OHIFCornerstoneSRViewport(props) {
       _getViewportReferencedDisplaySetData(
         srDisplaySet,
         newMeasurementSelected,
-        DisplaySetService
+        displaySetService
       ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
         setMeasurementSelected(newMeasurementSelected);
         setActiveImageDisplaySetData(referencedDisplaySet);
@@ -141,13 +168,13 @@ function OHIFCornerstoneSRViewport(props) {
 
           // it means that we have a new referenced display set, and the
           // imageIdIndex will handle it by updating the viewport, but if they
-          // are the same we just need to use MeasurementService to jump to the
+          // are the same we just need to use measurementService to jump to the
           // new measurement
-          const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+          const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
             viewportIndex
           );
 
-          const csViewport = CornerstoneViewportService.getCornerstoneViewport(
+          const csViewport = cornerstoneViewportService.getCornerstoneViewport(
             viewportInfo.getViewportId()
           );
 
@@ -193,6 +220,7 @@ function OHIFCornerstoneSRViewport(props) {
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
         viewportOptions={{
+          ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
         }}
         onElementEnabled={onElementEnabled}
@@ -234,8 +262,8 @@ function OHIFCornerstoneSRViewport(props) {
    Cleanup the SR viewport when the viewport is destroyed
    */
   useEffect(() => {
-    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
         if (
@@ -259,14 +287,12 @@ function OHIFCornerstoneSRViewport(props) {
    * isHydratable check, the outcome for the isHydrated state here is always FALSE
    * since we don't do the hydration here. Todo: can't we just set it as false? why
    * we are changing the state here? isHydrated is always false at this stage, and
-   * if it is hydrated we don't event use the SR viewport.
+   * if it is hydrated we don't even use the SR viewport.
    */
   useEffect(() => {
     if (!srDisplaySet.isLoaded) {
       srDisplaySet.load();
     }
-    setIsHydrated(srDisplaySet.isHydrated);
-
     const numMeasurements = srDisplaySet.measurements.length;
     setMeasurementCount(numMeasurements);
   }, [srDisplaySet]);
@@ -318,8 +344,6 @@ function OHIFCornerstoneSRViewport(props) {
     });
   }
 
-  const { Modality } = srDisplaySet;
-
   const {
     PatientID,
     PatientName,
@@ -341,24 +365,23 @@ function OHIFCornerstoneSRViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        onPillClick={() => {
-          sendTrackedMeasurementsEvent('RESTORE_PROMPT_HYDRATE_SR', {
-            displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
+        onArrowsClick={onMeasurementChange}
+        getStatusComponent={() =>
+          _getStatusComponent({
+            srDisplaySet,
             viewportIndex,
-          });
-        }}
-        onSeriesChange={onMeasurementChange}
+            isTracked: false,
+            isRehydratable: srDisplaySet.isRehydratable,
+            isLocked,
+            sendTrackedMeasurementsEvent,
+          })
+        }
         studyData={{
           label: viewportLabel,
           useAltStyling: true,
-          isTracked: false,
-          isLocked,
-          isRehydratable: srDisplaySet.isRehydratable,
-          isHydrated,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
-          seriesDescription: SeriesDescription,
-          modality: Modality,
+          seriesDescription: SeriesDescription || '',
           patientInformation: {
             patientName: PatientName
               ? OHIF.utils.formatPN(PatientName.Alphabetic)
@@ -378,17 +401,6 @@ function OHIFCornerstoneSRViewport(props) {
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {getCornerstoneViewport()}
-        <div className="absolute w-full">
-          {viewportDialogState.viewportIndex === viewportIndex && (
-            <Notification
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-            />
-          )}
-        </div>
         {childrenWithProps}
       </div>
     </>
@@ -400,7 +412,12 @@ OHIFCornerstoneSRViewport.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
+  viewportLabel: PropTypes.string,
   customProps: PropTypes.object,
+  viewportOptions: PropTypes.object,
+  viewportLabel: PropTypes.string,
+  servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
+  extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
 
 OHIFCornerstoneSRViewport.defaultProps = {
@@ -410,16 +427,20 @@ OHIFCornerstoneSRViewport.defaultProps = {
 async function _getViewportReferencedDisplaySetData(
   displaySet,
   measurementSelected,
-  DisplaySetService
+  displaySetService
 ) {
-  const { measurements } = displaySet;
-  const measurement = measurements[measurementSelected];
+  if (!displaySet.keyImageDisplaySet) {
+    // Create a new display set, and preserve a reference to it here,
+    // so that it can be re-displayed and shown inside the SR viewport.
+    // This is only for ease of redisplay - the display set is stored in the
+    // usual manner in the display set service.
+    displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(
+      displaySetService,
+      displaySet
+    );
+  }
 
-  const { displaySetInstanceUID } = measurement;
-
-  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
+  const referencedDisplaySet = displaySet.keyImageDisplaySet;
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
@@ -439,14 +460,92 @@ async function _getViewportReferencedDisplaySetData(
   return { referencedDisplaySetMetadata, referencedDisplaySet };
 }
 
-// function _onDoubleClick() {
-//   const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
-//     'manipulatorState'
-//   ).setters.cancelActiveManipulatorsForElement;
-//   const enabledElements = cornerstoneTools.store.state.enabledElements;
-//   enabledElements.forEach(element => {
-//     cancelActiveManipulatorsForElement(element);
-//   });
-// }
+function _getStatusComponent({
+  srDisplaySet,
+  viewportIndex,
+  isRehydratable,
+  isLocked,
+  sendTrackedMeasurementsEvent,
+}) {
+  const handleMouseUp = () => {
+    sendTrackedMeasurementsEvent('HYDRATE_SR', {
+      displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
+      viewportIndex,
+    });
+  };
+
+  const { t } = useTranslation('Common');
+  const loadStr = t('LOAD');
+
+  // 1 - Incompatible
+  // 2 - Locked
+  // 3 - Rehydratable / Open
+  const state =
+    isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
+  let ToolTipMessage = null;
+  let StatusIcon = null;
+
+  switch (state) {
+    case 1:
+      StatusIcon = () => <Icon name="status-alert" />;
+
+      ToolTipMessage = () => (
+        <div>
+          This structured report is not compatible
+          <br />
+          with this application.
+        </div>
+      );
+      break;
+    case 2:
+      StatusIcon = () => <Icon name="status-locked" />;
+
+      ToolTipMessage = () => (
+        <div>
+          This structured report is currently read-only
+          <br />
+          because you are tracking measurements in
+          <br />
+          another viewport.
+        </div>
+      );
+      break;
+    case 3:
+      StatusIcon = () => <Icon name="status-untracked" />;
+
+      ToolTipMessage = () => (
+        <div>{`Click ${loadStr} to restore measurements.`}</div>
+      );
+  }
+
+  const StatusArea = () => (
+    <div className="flex h-6 leading-6 cursor-default text-sm text-white">
+      <div className="min-w-[45px] flex items-center p-1 rounded-l-xl rounded-r bg-customgray-100">
+        <StatusIcon />
+        <span className="ml-1">SR</span>
+      </div>
+      {state === 3 && (
+        <div
+          className="ml-1 px-1.5 rounded cursor-pointer hover:text-black bg-primary-main hover:bg-primary-light"
+          // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
+          onMouseUp={handleMouseUp}
+        >
+          {loadStr}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      {ToolTipMessage && (
+        <Tooltip content={<ToolTipMessage />} position="bottom-left">
+          <StatusArea />
+        </Tooltip>
+      )}
+      {!ToolTipMessage && <StatusArea />}
+    </>
+  );
+}
 
 export default OHIFCornerstoneSRViewport;

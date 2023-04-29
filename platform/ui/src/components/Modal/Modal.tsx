@@ -18,6 +18,7 @@ const Modal = ({
   title,
   onClose,
   children,
+  shouldCloseOnOverlayClick,
 }) => {
   const { hide } = useModal();
 
@@ -32,6 +33,7 @@ const Modal = ({
           <Typography
             variant="h4"
             className="flex grow text-primary-light font-light"
+            data-cy="modal-header"
           >
             {title}
           </Typography>
@@ -55,6 +57,7 @@ const Modal = ({
       onRequestClose={handleClose}
       isOpen={isOpen}
       title={title}
+      shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       {renderHeader()}
       <section className="ohif-scrollbar modal-content overflow-y-auto px-4 py-6 rounded-bl rounded-br bg-primary-dark">
@@ -66,6 +69,7 @@ const Modal = ({
 
 Modal.defaultProps = {
   shouldCloseOnEsc: true,
+  shouldCloseOnOverlayClick: true,
 };
 
 Modal.propTypes = {
@@ -79,6 +83,7 @@ Modal.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
+  shouldCloseOnOverlayClick: PropTypes.bool,
 };
 
 export default Modal;

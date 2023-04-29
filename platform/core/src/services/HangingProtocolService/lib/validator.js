@@ -14,6 +14,41 @@ validate.validators.doesNotEqual = function(value, options, key) {
   }
 };
 
+// Ignore case contains.
+// options testValue MUST be in lower case already, otherwise it won't match
+validate.validators.containsI = function (value, options, key) {
+  const testValue = options?.value ?? options;
+  if (Array.isArray(value)) {
+    if (
+      value.some(
+        item => !validate.validators.containsI(item.toLowerCase(), options, key)
+      )
+    ) {
+      return undefined;
+    }
+    return `No item of ${value.join(',')} contains ${JSON.stringify(
+      testValue
+    )}`;
+  }
+  if (Array.isArray(testValue)) {
+    if (
+      testValue.some(
+        subTest => !validate.validators.containsI(value, subTest, key)
+      )
+    ) {
+      return;
+    }
+    return `${key} must contain at least one of ${testValue.join(',')}`;
+  }
+  if (
+    testValue &&
+    value.indexOf &&
+    value.toLowerCase().indexOf(testValue) === -1
+  ) {
+    return key + 'must contain any case of' + testValue;
+  }
+};
+
 validate.validators.contains = function(value, options, key) {
   const testValue = options?.value ?? options;
   if (Array.isArray(value)) {
@@ -57,19 +92,18 @@ validate.validators.endsWith = function(value, options, key) {
   }
 };
 
+const getTestValue = options => options?.value ?? options;
+
 validate.validators.greaterThan = function(value, options, key) {
-  const testValue = options?.value ?? options;
-  if (testValue !== undefined && value <= testValue) {
+  const testValue = getTestValue(options);
+  if (value === undefined || value === null || value <= testValue) {
     return key + 'with value ' + value + ' must be greater than ' + testValue;
   }
 };
 
 validate.validators.range = function(value, options, key) {
-  const testValue = options?.value ?? options;
-  if (
-    (testValue !== undefined && value < testValue[0]) ||
-    value > testValue[1]
-  ) {
+  const testValue = getTestValue(options);
+  if (value === undefined || value < testValue[0] || value > testValue[1]) {
     return (
       key +
       'with value ' +

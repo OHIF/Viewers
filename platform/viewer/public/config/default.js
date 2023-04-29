@@ -1,16 +1,27 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
+  // whiteLabeling: {},
   extensions: [],
   modes: [],
+  customizationService: {
+    // Shows a custom route -access via http://localhost:3000/custom
+    // helloPage: '@ohif/extension-default.customizationModule.helloPage',
+  },
   showStudyList: true,
+  // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
-    prefetch: 10,
+    // Prefetch number is dependent on the http protocol. For http 2 or
+    // above, the number of requests can be go a lot higher.
+    prefetch: 25,
   },
   // filterQueryParam: false,
   dataSources: [
@@ -20,17 +31,20 @@ window.config = {
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        wadoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        stowUrlPrefix: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net',
+        wadoUrlPrefix: 'dicomweb',
+        qidoUrlPrefix: 'dicomweb',
+        stowUrlPrefix: 'dicomweb',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
+        supportsFuzzyMatching: false,
         supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video,pdf',
+        useBulkDataURI: false,
       },
     },
     {

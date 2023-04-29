@@ -2,7 +2,6 @@ import ObjectPath from './objectPath';
 import absoluteUrl from './absoluteUrl';
 import guid from './guid';
 import sortBy from './sortBy.js';
-import sortBySeriesDate from './sortBySeriesDate.js';
 import writeScript from './writeScript.js';
 import b64toBlob from './b64toBlob.js';
 //import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
@@ -20,10 +19,21 @@ import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 import { isImage } from './isImage';
 import isDisplaySetReconstructable from './isDisplaySetReconstructable';
+import sortInstancesByPosition from './sortInstancesByPosition';
 import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
+import isEqualWithin from './isEqualWithin';
+import {
+  sortStudy,
+  sortStudySeries,
+  sortStudyInstances,
+  sortingCriteria,
+  seriesSortCriteria,
+} from './sortStudy';
+import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGridChange';
+import { splitComma, getSplitParam } from './splitComma';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -33,7 +43,12 @@ const utils = {
   ObjectPath,
   absoluteUrl,
   sortBy,
-  sortBySeriesDate,
+  sortBySeriesDate: sortStudySeries,
+  sortStudy,
+  sortStudySeries,
+  sortStudyInstances,
+  sortingCriteria,
+  seriesSortCriteria,
   writeScript,
   formatDate,
   formatPN,
@@ -46,6 +61,7 @@ const utils = {
   hotkeys,
   Queue,
   isDicomUid,
+  isEqualWithin,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
@@ -55,6 +71,9 @@ const utils = {
   debounce,
   roundNumber,
   downloadCSVReport,
+  subscribeToNextViewportGridChange,
+  splitComma,
+  getSplitParam,
 };
 
 export {
@@ -72,16 +91,20 @@ export {
   hotkeys,
   Queue,
   isDicomUid,
+  isEqualWithin,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
+  sortInstancesByPosition,
   imageIdToURI,
   debounce,
   roundNumber,
   downloadCSVReport,
+  splitComma,
+  getSplitParam,
 };
 
 export default utils;

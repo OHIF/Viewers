@@ -39,7 +39,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'eval-source-map',
+    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
     entry: {
       app: `${SRC_DIR}/index.js`,
     },
@@ -78,6 +78,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       },
     },
     module: {
+      noParse: [/(codec)/, /(dicomicc)/],
       rules: [
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
@@ -89,6 +90,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           },
         },
         cssToJavaScript,
+        {
+          test: /\.wasm/,
+          type: 'asset/resource',
+        },
       ], //.concat(vtkRules),
     },
     resolve: {
@@ -103,8 +108,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
         '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
-        'cornerstone-wado-image-loader':
-          'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js',
+        'dicom-microscopy-viewer':
+          'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
+        '@cornerstonejs/dicom-image-loader':
+          '@cornerstonejs/dicom-image-loader/dist/dynamic-import/cornerstoneDICOMImageLoader.min.js',
       },
       // Which directories to search when resolving modules
       modules: [

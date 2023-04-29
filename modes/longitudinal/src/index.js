@@ -5,11 +5,12 @@ import initToolGroups from './initToolGroups.js';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
+const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
 const tracked = {
@@ -37,17 +38,33 @@ const dicompdf = {
   viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
 };
 
+const dicomSeg = {
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+};
+
+const dicomRt = {
+  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
 };
 
 function modeFactory() {
+  let _activatePanelTriggersSubscriptions = [];
   return {
     // TODO: We're using this as a route segment
     // We should not be.
@@ -58,15 +75,23 @@ function modeFactory() {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        panelService,
+        segmentationService,
+      } = servicesManager.services;
+
+      measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, ToolGroupService, commandsManager);
+      initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       let unsubscribe;
 
       const activateTool = () => {
-        ToolBarService.recordInteraction({
+        toolbarService.recordInteraction({
           groupId: 'WindowLevel',
           itemId: 'WindowLevel',
           interactionType: 'tool',
@@ -88,36 +113,63 @@ function modeFactory() {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         activateTool
       ));
 
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
         'Pan',
         'Capture',
         'Layout',
-        // 'MPR',
+        'MPR',
+        'Crosshairs',
         'MoreTools',
       ]);
+
+      // // ActivatePanel event trigger for when a segmentation or measurement is added.
+      // // Do not force activation so as to respect the state the user may have left the UI in.
+      // _activatePanelTriggersSubscriptions = [
+      //   ...panelService.addActivatePanelTriggers(dicomSeg.panel, [
+      //     {
+      //       sourcePubSubService: segmentationService,
+      //       sourceEvents: [
+      //         segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
+      //       ],
+      //     },
+      //   ]),
+      //   ...panelService.addActivatePanelTriggers(tracked.measurements, [
+      //     {
+      //       sourcePubSubService: measurementService,
+      //       sourceEvents: [
+      //         measurementService.EVENTS.MEASUREMENT_ADDED,
+      //         measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+      //       ],
+      //     },
+      //   ]),
+      // ];
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
-        SyncGroupService,
-        MeasurementService,
-        ToolBarService,
+        toolGroupService,
+        syncGroupService,
+        toolbarService,
+        segmentationService,
+        cornerstoneViewportService,
       } = servicesManager.services;
 
-      ToolBarService.reset();
-      MeasurementService.clearMeasurements();
-      ToolGroupService.destroy();
-      SyncGroupService.destroy();
+      _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
+      _activatePanelTriggersSubscriptions = [];
+
+      toolGroupService.destroy();
+      syncGroupService.destroy();
+      segmentationService.destroy();
+      cornerstoneViewportService.destroy();
     },
     validationTags: {
       study: [],
@@ -143,8 +195,8 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              // TODO: Should be optional, or required to pass empty array for slots?
-              rightPanels: [tracked.measurements],
+              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanelDefaultClosed: true,
               viewports: [
                 {
                   namespace: tracked.viewport,
@@ -162,6 +214,14 @@ function modeFactory() {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],
                 },
+                {
+                  namespace: dicomSeg.viewport,
+                  displaySetsToDisplay: [dicomSeg.sopClassHandler],
+                },
+                {
+                  namespace: dicomRt.viewport,
+                  displaySetsToDisplay: [dicomRt.sopClassHandler],
+                },
               ],
             },
           };
@@ -177,9 +237,11 @@ function modeFactory() {
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
+      dicomSeg.sopClassHandler,
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
+      dicomRt.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };

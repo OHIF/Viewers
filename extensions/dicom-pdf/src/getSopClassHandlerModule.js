@@ -26,6 +26,7 @@ const _getDisplaySetsFromSeries = (
       SeriesDate,
       SeriesInstanceUID,
       StudyInstanceUID,
+      SOPClassUID,
     } = instance;
     const pdfUrl = dataSource.retrieve.directURL({
       instance,
@@ -45,10 +46,11 @@ const _getDisplaySetsFromSeries = (
       SeriesInstanceUID,
       StudyInstanceUID,
       SOPClassHandlerId,
+      SOPClassUID,
       referencedImages: null,
       measurements: null,
       pdfUrl,
-      others: [instance],
+      instances: [instance],
       thumbnailSrc: dataSource.retrieve.directURL({
         instance,
         defaultPath: '/thumbnail',

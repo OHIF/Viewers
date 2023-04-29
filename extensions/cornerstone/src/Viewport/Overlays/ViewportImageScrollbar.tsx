@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Enums, Types, utilities } from '@cornerstonejs/core';
 import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
+import { ServicesManger } from '@ohif/core';
 
 function CornerstoneImageScrollbar({
   viewportData,
@@ -13,24 +14,27 @@ function CornerstoneImageScrollbar({
   scrollbarHeight,
   servicesManager,
 }) {
-  const { CineService, CornerstoneViewportService } = servicesManager.services;
+  const {
+    cineService,
+    cornerstoneViewportService,
+  } = (servicesManager as ServicesManger).services;
 
   const onImageScrollbarChange = (imageIndex, viewportIndex) => {
-    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+    const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
 
     const viewportId = viewportInfo.getViewportId();
-    const viewport = CornerstoneViewportService.getCornerstoneViewport(
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(
       viewportId
     );
 
-    const { isCineEnabled } = CineService.getState();
+    const { isCineEnabled } = cineService.getState();
 
     if (isCineEnabled) {
       // on image scrollbar change, stop the CINE if it is playing
-      CineService.stopClip(element);
-      CineService.setCine({ id: viewportIndex, isPlaying: false });
+      cineService.stopClip(element);
+      cineService.setCine({ id: viewportIndex, isPlaying: false });
     }
 
     csToolsUtils.jumpToSlice(viewport.element, {
@@ -44,7 +48,7 @@ function CornerstoneImageScrollbar({
       return;
     }
 
-    const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
       viewportIndex
     );
 
@@ -57,7 +61,7 @@ function CornerstoneImageScrollbar({
 
       setImageSliceData({
         imageIndex: imageIndex,
-        numberOfSlices: viewportData.imageIds.length,
+        numberOfSlices: viewportData.data.imageIds.length,
       });
 
       return;
@@ -87,7 +91,7 @@ function CornerstoneImageScrollbar({
       // find the index of imageId in the imageIds
       setImageSliceData({
         imageIndex: newImageIdIndex,
-        numberOfSlices: viewportData.imageIds.length,
+        numberOfSlices: viewportData.data.imageIds.length,
       });
     };
 
@@ -144,6 +148,7 @@ CornerstoneImageScrollbar.propTypes = {
   scrollbarHeight: PropTypes.string,
   imageSliceData: PropTypes.object.isRequired,
   setImageSliceData: PropTypes.func.isRequired,
+  servicesManager: PropTypes.object.isRequired,
 };
 
 export default CornerstoneImageScrollbar;

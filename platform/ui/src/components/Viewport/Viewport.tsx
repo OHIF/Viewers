@@ -1,13 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ViewportActionBar, Notification } from '../';
+import { LegacyViewportActionBar, Notification } from '../';
 
-const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
+const Viewport = ({
+  viewportId,
+  viewportIndex,
+  onArrowsClick,
+  studyData,
+  children,
+}) => {
+  if (!viewportId) {
+    viewportId = `viewport-${viewportIndex}`;
+  }
   return (
     <div className="relative flex flex-col h-full">
       <div className="absolute top-0 left-0 w-full">
-        <ViewportActionBar
-          onSeriesChange={onSeriesChange}
+        <LegacyViewportActionBar
+          onArrowsClick={onArrowsClick}
           studyData={studyData}
         />
 
@@ -39,7 +48,7 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
       </div>
 
       {/* STUDY IMAGE */}
-      <div className="w-full h-full" id={`viewport-${viewportIndex}`}>
+      <div className="w-full h-full" id={viewportId}>
         {children}
       </div>
     </div>
@@ -48,7 +57,7 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
 
 Viewport.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
-  onSeriesChange: PropTypes.func.isRequired,
+  onArrowsClick: PropTypes.func.isRequired,
   studyData: PropTypes.shape({
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,

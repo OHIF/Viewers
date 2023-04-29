@@ -52,5 +52,4 @@ const utilityModule = extensionManager.getModuleEntry(
 );
 
 const { CornerstoneViewportService } = utilityModule.exports;
-const viewportId = CornerstoneViewportService.getViewportId(viewportIndex);
 ```

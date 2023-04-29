@@ -31,4 +31,8 @@ const getEnabledElement = viewportIndex => {
   return state.enabledElements[viewportIndex];
 };
 
-export { setEnabledElement, getEnabledElement };
+const reset = () => {
+  state.enabledElements = {};
+};
+
+export { setEnabledElement, getEnabledElement, reset };
