@@ -908,20 +908,29 @@ class CornerstoneViewportService extends PubSubService
   }
 
   /**
+   * Looks through the viewports to see if the specified measurement can be
+   * displayed in one of the viewports.
    *
    * @param measurement
-   * @return the viewportIndex to display the given measurement or -1
+   *          The measurement that is desired to view.
+   * @param activeViewportIndex - the index that was active at the time the jump
+   *          was initiated.
+   * @return the viewportIndex to display the given measurement
    */
-  public findMeasurementViewportIndex(measurement, jumpIndex: number): number {
-    const viewportId = this.getViewportId(jumpIndex);
-    const viewportInfo = this.getViewportInfo(viewportId);
-    const { displaySetInstanceUID } = measurement;
-    if (viewportInfo?.containsDisplaySet(displaySetInstanceUID))
-      return jumpIndex;
+  public findMeasurementViewportIndex(
+    measurement,
+    activeViewportIndex: number
+  ): number {
+    const viewportInfo = this.viewportsInfo.get(activeViewportIndex);
+    const { displaySetInstanceUID, metadata } = measurement;
+    const { referencedImageId } = metadata || {};
+    if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
+      return activeViewportIndex;
+    }
 
     return (
-      [...this.viewportsInfo.values()].find(viewportInfo =>
-        viewportInfo.containsDisplaySet(displaySetInstanceUID)
+      [...this.viewportsById.values()].find(viewportInfo =>
+        viewportInfo.contains(displaySetInstanceUID, referencedImageId)
       )?.viewportIndex ?? -1
     );
   }

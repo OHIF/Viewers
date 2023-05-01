@@ -3,10 +3,8 @@ import { DisplaySetService, classes } from '@ohif/core';
 const ImageSet = classes.ImageSet;
 
 const findInstance = (measurement, displaySetService: DisplaySetService) => {
-  const {
-    displaySetInstanceUID,
-    ReferencedSOPInstanceUID: sopUid,
-  } = measurement;
+  const { displaySetInstanceUID, ReferencedSOPInstanceUID: sopUid } =
+    measurement;
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
@@ -52,7 +50,7 @@ const findReferencedInstances = (
 const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
   const instances = findReferencedInstances(displaySetService, displaySet);
   // This will be a  member function of the created image set
-  const updateInstances = function() {
+  const updateInstances = function () {
     this.images.splice(
       0,
       this.images.length,
@@ -77,6 +75,8 @@ const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
     numImageFrames: instances.length,
     SOPClassHandlerId: `@ohif/extension-default.sopClassHandlerModule.stack`,
     isReconstructable: false,
+    // This object is made of multiple instances from other series
+    isCompositeStack: true,
     madeInClient: true,
     updateInstances,
   });

@@ -178,9 +178,8 @@ const commandsModule = ({
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const {
-          protocol: oldProtocol,
-        } = hangingProtocolService.getActiveProtocol();
+        const { protocol: oldProtocol } =
+          hangingProtocolService.getActiveProtocol();
         const stateSyncReduce = reuseCachedLayouts(
           state,
           hangingProtocolService,
@@ -200,8 +199,8 @@ const commandsModule = ({
           }
         } else if (stageIndex === undefined && stageId === undefined) {
           // Re-set the same stage as was previously used
-          const hangingId = `${activeStudyUID ||
-            hpInfo.activeStudyUID}:${protocolId}`;
+          const hangingId = `${activeStudyUID || hpInfo.activeStudyUID
+            }:${protocolId}`;
           stageIndex = hangingProtocolStageIndexMap[hangingId]?.stageIndex;
         }
 
@@ -244,6 +243,12 @@ const commandsModule = ({
           }
         }
         // Do this after successfully applying the update
+        // Note, don't store the active display set - it is only needed while
+        // changing display sets.  This causes jump to measurement to fail on
+        // multi-study display.
+        delete displaySetSelectorMap[
+          `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`
+        ];
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
         actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
@@ -280,9 +285,8 @@ const commandsModule = ({
         activeStudy,
       } = hangingProtocolService.getActiveProtocol();
       const { toggleHangingProtocol } = stateSyncService.getState();
-      const storedHanging = `${
-        activeStudy.StudyInstanceUID
-      }:${protocolId}:${stageIndex | 0}`;
+      const storedHanging = `${activeStudy.StudyInstanceUID}:${protocolId}:${stageIndex | 0
+        }`;
       if (
         protocol.id === protocolId &&
         (stageIndex === undefined || stageIndex === desiredStageIndex)
@@ -311,10 +315,8 @@ const commandsModule = ({
     },
 
     deltaStage: ({ direction }) => {
-      const {
-        protocolId,
-        stageIndex: oldStageIndex,
-      } = hangingProtocolService.getState();
+      const { protocolId, stageIndex: oldStageIndex } =
+        hangingProtocolService.getState();
       const { protocol } = hangingProtocolService.getActiveProtocol();
       for (
         let stageIndex = oldStageIndex + direction;
@@ -380,11 +382,8 @@ const commandsModule = ({
     toggleOneUp() {
       const viewportGridState = viewportGridService.getState();
       const { activeViewportIndex, viewports, layout } = viewportGridState;
-      const {
-        displaySetInstanceUIDs,
-        displaySetOptions,
-        viewportOptions,
-      } = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs, displaySetOptions, viewportOptions } =
+        viewports[activeViewportIndex];
 
       if (layout.numCols === 1 && layout.numRows === 1) {
         // The viewer is in one-up. Check if there is a state to restore/toggle back to.
