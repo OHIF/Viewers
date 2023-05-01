@@ -24,8 +24,6 @@ window.config = {
     prefetch: 25,
   },
   // filterQueryParam: false,
-  // enable imageLoaderAcceptHeader configuration to force a reconfiguration of WADOImageLoader to support preflight request
-  // imageLoaderAcceptHeader: 'multipart/related; type="application/octet-stream"',
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',

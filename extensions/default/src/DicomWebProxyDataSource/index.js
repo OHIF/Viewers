@@ -17,7 +17,7 @@ function createDicomWebProxyApi(
   let dicomWebDelegate = undefined;
 
   const implementation = {
-    initialize: async ({ params, query, url }) => {
+    initialize: async ({ params, query }) => {
       let studyInstanceUIDs = [];
 
       // there seem to be a couple of variations of the case for this parameter
@@ -27,7 +27,7 @@ function createDicomWebProxyApi(
         throw new Error(`No studyInstanceUids in request for '${name}'`);
       }
 
-      if (!url) url = query.get('url');
+      let url = query.get('url');
 
       if (!url) {
         throw new Error(`No url for '${name}'`);
