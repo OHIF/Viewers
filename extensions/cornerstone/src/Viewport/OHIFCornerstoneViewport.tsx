@@ -492,7 +492,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   useEffect(() => {
     const newDisplaySetUids = displaySets.map(it => it.uid).join();
     if (newDisplaySetUids !== displaySetUids) {
-      console.debug('*** Setting new display set uids', viewportIndex);
+      console.debug('Setting new display set uids', viewportIndex);
       setDisplaySetUids(newDisplaySetUids);
     } else {
       console.debug('NOT setting display set uids', viewportIndex);

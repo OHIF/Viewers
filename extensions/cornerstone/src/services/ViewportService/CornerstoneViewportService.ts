@@ -511,6 +511,7 @@ class CornerstoneViewportService extends PubSubService
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
     const { hangingProtocolService } = this.servicesManager.services;
 
+    let useCustomStrategy = true;
     const volumeToLoad = [];
     const displaySetInstanceUIDs = [];
 
@@ -525,10 +526,10 @@ class CornerstoneViewportService extends PubSubService
       }
 
       volumeToLoad.push(volume);
-
       const displaySetOptions = displaySetOptionsArray[index];
-      const { volumeId } = volume;
-
+      const { volumeId, loadStatus } = volume;
+      // It should only use the custom load strategy if nothing has started loading
+      useCustomStrategy &&= loadStatus.cachedFrames.length === 0;
       const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
 
       const callback = ({ volumeActor }) => {
@@ -548,7 +549,8 @@ class CornerstoneViewportService extends PubSubService
 
     if (
       hangingProtocolService.hasCustomImageLoadStrategy() &&
-      !hangingProtocolService.customImageLoadPerformed
+      !hangingProtocolService.customImageLoadPerformed &&
+      useCustomStrategy
     ) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
       return hangingProtocolService.runImageLoadStrategy({
@@ -582,7 +584,6 @@ class CornerstoneViewportService extends PubSubService
     } = this.servicesManager.services;
 
     await viewport.setVolumes(volumeInputArray);
-    this.setPresentations(viewport, presentations);
 
     // load any secondary displaySets
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
@@ -617,6 +618,7 @@ class CornerstoneViewportService extends PubSubService
         imageIndex,
       });
     }
+    this.setPresentations(viewport, presentations);
 
     viewport.render();
   }

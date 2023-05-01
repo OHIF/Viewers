@@ -53,8 +53,24 @@ const isReuseableViewport = (oldViewport, newViewport) => {
   );
 };
 
-export function ViewportGridProvider({ children, service }) {
-  const viewportGridReducer = (state, action) => {
+export type ViewportGridLayout = {
+  numRows: number;
+  numCols: number;
+  layoutType: string;
+};
+
+export type ViewportType = {
+  viewportId?: string;
+  [key: string]: unknown;
+}
+
+export type ViewportGridState = {
+  activeViewportIndex: number;
+  viewports: ViewportType[];
+  layout: ViewportGridLayout;
+}
+
+const viewportGridReducer = (state, action): ViewportGridState => {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_INDEX': {
         return { ...state, ...{ activeViewportIndex: action.payload } };
@@ -105,7 +121,7 @@ export function ViewportGridProvider({ children, service }) {
 
         uniqueViewportIds(replaceViewports, state.viewports);
         replaceViewports.forEach(viewport => {
-          viewport.viewportOptions.presentationIds = getPresentationIds(
+          viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
             viewport,
             state.viewports
           );
@@ -229,6 +245,8 @@ export function ViewportGridProvider({ children, service }) {
         return action.payload;
     }
   };
+
+export function ViewportGridProvider({ children, service }) {
 
   const [viewportGridState, dispatch] = useReducer(
     viewportGridReducer,
