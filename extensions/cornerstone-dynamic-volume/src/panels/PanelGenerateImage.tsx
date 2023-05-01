@@ -88,29 +88,39 @@ export default function PanelGenerateImage({
   //TODO: get referenceVolumeId from viewport
   const dynamicVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`;
   //TODO: get the referencedVolume using cache.getVolume(referencedVolumeId)
-  // const dynamicVolume = cache.getVolume(dynamicVolumeId);
-  let dynamicVolume;
-  // const computedVolumeInit = createComputedVolume(
-  //   dynamicVolumeId,
-  //   computedVolumeId
-  // );
+  const dynamicVolume = cache.getVolume(dynamicVolumeId);
+  console.log(dynamicVolume);
+  // let dynamicVolume;
+  const computedVolumeInit = createComputedVolume(
+    dynamicVolumeId,
+    computedVolumeId
+  );
   console.log(dynamicVolumeId);
 
-  // useEffect to wait for volume to load before getting options
   useEffect(() => {
-    console.log('useEffect has run');
-    if (!displaySetInstanceUID) return;
+    if (displaySetInstanceUID && dynamicVolumeId) {
+      const x = cache.getVolume(dynamicVolumeId);
+      console.log(`NEIL: `, x);
+    }
+  }, [displaySetInstanceUID, dynamicVolumeId]);
 
-    console.log('there is a dynamic volume Id');
-    console.warn(displaySetInstanceUID);
+  // useEffect to wait for volume to load before getting options
+  // useEffect(() => {
+  //   console.log('useEffect has run');
+  //   if (!displaySetInstanceUID) return;
 
-    dynamicVolume = cache.getVolume(dynamicVolumeId);
-    console.log(dynamicVolume);
-    if (!dynamicVolume) return;
-    // const timePoints = dynamicVolume.numTimePoints;
-    // console.log(`timepoints: ${timePoints}`);
-    console.log('There is a dynamic volume');
-  }, [dynamicVolumeId, dynamicVolume]);
+  //   console.log('there is a dynamic volume Id');
+  //   console.warn(displaySetInstanceUID);
+  //   getDynamicVolumeFromCache(dynamicVolumeId);
+  //   console.log(`TEST: ${dynamicVolumeId}`);
+
+  //   // dynamicVolume = cache.getVolume(dynamicVolumeId);
+  //   console.log(dynamicVolume);
+  //   if (!dynamicVolume) return;
+  //   // const timePoints = dynamicVolume.numTimePoints;
+  //   // console.log(`timepoints: ${timePoints}`);
+  //   console.log('There is a dynamic volume');
+  // }, [dynamicVolumeId, dynamicVolume, displaySetInstanceUID]);
 
   function onGenerateImage() {
     console.log('onGenerateImage was run');
@@ -157,6 +167,33 @@ export default function PanelGenerateImage({
     renderGeneratedImage(computedVolumeId);
   }
 
+  // const handleAsyncFunction = useCallback(async () => {
+  //   console.log(`NEIL: `, { displaySetInstanceUID });
+  //   if (!displaySetInstanceUID) return;
+  //   dynamicVolume = await cache.getVolume(dynamicVolumeId);
+  //   console.log(`NEIL: `, { dynamicVolume });
+  //   if (!dynamicVolume) return;
+  // }, [dynamicVolumeId, dynamicVolume, displaySetInstanceUID]);
+  // useEffect(() => {
+  //   if (displaySetInstanceUID) {
+  //     handleAsyncFunction();
+  //   }
+  // }, [displaySetInstanceUID]);
+
+  // const [hasVolume, setHasVolume] = useState(false);
+  // const [dynVolume, setDynVolume] = useState(undefined);
+
+  // const getDynamicVolumeFromCache = async dynamicVolumeId => {
+  //   console.log({ dynamicVolumeId });
+  //   const dynamicVolumeFromCache = await cache.getVolume(dynamicVolumeId);
+  //   setDynVolume(true);
+
+  //   return dynamicVolumeFromCache;
+  // };
+  // useEffect(() => {
+  //   console.log(dynVolume);
+  // }, [dynVolume]);
+
   //TODO: uncomment this section that checks for referencedVolume
   // if (!referencedVolume) {
   //   throw new Error(
@@ -190,7 +227,7 @@ export default function PanelGenerateImage({
 
   //   // Do something with the generated image
   //   console.log(image);
-  // }
+  // console.log(`TEST ${dynamicVolume}`);
   if (!metadata.TimeFrames) {
     // console.log(dynamicVolume);
   }
