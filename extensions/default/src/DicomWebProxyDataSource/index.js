@@ -27,7 +27,7 @@ function createDicomWebProxyApi(
         throw new Error(`No studyInstanceUids in request for '${name}'`);
       }
 
-      let url = query.get('url');
+      const url = query.get('url');
 
       if (!url) {
         throw new Error(`No url for '${name}'`);
