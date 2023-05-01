@@ -36,10 +36,13 @@ async function linkPackage(packageDir, options, addToConfig, keyword) {
   results = await execa(`yarn`, ['link']);
 
   // change directory to OHIF Platform root and execute yarn link
-  process.chdir(viewerDirectory);
+  process.chdir(`${viewerDirectory}/../..`);
 
   results = await execa(`yarn`, ['link', packageName]);
   console.log(results.stdout);
+
+  // change directory to viewer packages and add the config item
+  process.chdir(viewerDirectory);
   addToConfig(packageName, { version });
 }
 

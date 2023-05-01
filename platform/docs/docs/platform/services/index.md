@@ -61,6 +61,17 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
+                <a href="./data/SegmentationService">
+                    segmentationService (NEW)
+                </a>
+            </td>
+            <td>Segmentation Service</td>
+            <td>
+                segmentationService
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./data/HangingProtocolService">
                     HangingProtocolService (NEW)
                 </a>
@@ -83,7 +94,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./data/ToolbarService">
+                <a href="./data/ToolBarService">
                     ToolBarService (NEW)
                 </a>
             </td>
@@ -112,6 +123,17 @@ The following services is available in the `OHIF-v3`.
             <td>UI Service</td>
             <td>
                 cine
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="./ui/customization-service">
+                    CustomizationService
+                </a>
+            </td>
+            <td>UI Service</td>
+            <td>
+                customizationService (NEW)
             </td>
         </tr>
         <tr>

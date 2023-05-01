@@ -1,0 +1,141 @@
+import SegmentationGroupTable from '../SegmentationGroupTable';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: SegmentationGroupTable,
+  title: 'Components/SegmentationGroupTable',
+};
+
+<Meta
+  title="Components/SegmentationGroupTable"
+  component={SegmentationGroupTable}
+/>
+
+export const SegmentationGroupTableTemplate = args => (
+  <div className="w-64 h-96 bg-primary-dark">
+    <SegmentationGroupTable {...args} />
+  </div>
+);
+
+<Heading
+  title="SegmentationGroupTable"
+  componentRelativePath="SegmentationGroupTable/SegmentationGroupTable.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+SegmentationGroupTable is a component that renders the SegmentationGroupTables.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      activeSegmentationId: 'ed8d6f8d-4035-438d-9032-36d5912aaa3a',
+      showAddSegmentation: true,
+      isMinimized: {"4be5-b9b2-ed33-fa86970568e7": false},
+      showAddSegment: true,
+       segmentations: [
+  {
+    "id": "4be5-b9b2-ed33-fa86970568e7",
+    "volumeId": "a3b0f15f-4be5-b9b2-ed33-fa86970568e7",
+    "activeSegmentIndex": 1,
+    "cachedStats": {},
+    "label": "Segmentation",
+    "segmentsLocked": {},
+    "type": "LABELMAP",
+    "displayText": [],
+    "hydrated": true,
+    "segmentCount": 3,
+    "segments": [
+      null,
+      {
+        "label": "Segment 1",
+        "segmentIndex": 1,
+        "color": [
+          128,
+          174,
+          128
+        ],
+        "opacity": 255,
+        "isVisible": true,
+        "isLocked": false,
+      },
+      {
+        "label": "Segment 2",
+        "segmentIndex": 2,
+        "color": [
+          241,
+          214,
+          145
+        ],
+        "opacity": 255,
+        "isVisible": true,
+        "isLocked": false,
+      },
+      {
+        "label": "Segment 3",
+        "segmentIndex": 3,
+        "color": [
+          141,
+          114,
+          145
+        ],
+        "opacity": 255,
+        "isVisible": false,
+        "isLocked": false
+      }
+    ],
+    "isActive": false,
+    "colorLUTIndex": 1,
+    "isVisible": true
+  },
+  {
+    "id": "a3b0f15f-4be5-b9b2-ed33-fa86970568e7",
+    "volumeId": "a3b0f15f-4be5-b9b2-ed33-fa86970568e7",
+    "activeSegmentIndex": 1,
+    "cachedStats": {},
+    "label": "Segmentation2",
+    "segmentsLocked": {},
+    "type": "LABELMAP",
+    "displayText": [],
+    "hydrated": true,
+    "segmentCount": 2,
+    "segments": [
+      null,
+      {
+        "label": "Segment 1",
+        "segmentIndex": 1,
+        "color": [
+          228,
+          174,
+          128
+        ],
+        "opacity": 255,
+        "isVisible": true,
+        "isLocked": false,
+      },
+    ],
+    "isActive": true,
+    "colorLUTIndex": 1,
+    "isVisible": true
+  }
+]
+    }}
+  >
+    {SegmentationGroupTableTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={SegmentationGroupTable} />
+
+## Contribute
+
+<Footer componentRelativePath="SegmentationGroupTable/__stories__/SegmentationGroupTable.stories.mdx" />

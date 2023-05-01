@@ -12,7 +12,7 @@ export const argTypes = {
 
 export const InputTemplate = createComponentTemplate(Input);
 
-<Heading title="Input" componentRelativePath="Input/Input.jsx" />
+<Heading title="Input" componentRelativePath="Input/Input.tsx" />
 
 - [Overview](#overview)
 - [Props](#props)
@@ -47,6 +47,19 @@ Input is a component that renders the Inputs.
     name="Transparent"
     args={{
       transparent: true,
+    }}
+  >
+    {InputTemplate.bind({})}
+  </Story>
+</Canvas>
+
+### Small Input
+
+<Canvas>
+  <Story
+    name="Small"
+    args={{
+      smallInput: true,
     }}
   >
     {InputTemplate.bind({})}

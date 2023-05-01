@@ -4,6 +4,12 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
+  // below flag is for performance reasons, but it might not work for all servers
+  omitQuotationForMultipartRequest: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   dataSources: [
     {
@@ -23,6 +29,20 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: false,
       },
+    },
+    {
+      friendlyName: 'dicom json',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
+      sourceName: 'dicomjson',
+      configuration: {
+        name: 'json',
+      },
+    },
+    {
+      friendlyName: 'dicom local',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
+      sourceName: 'dicomlocal',
+      configuration: {},
     },
   ],
   defaultDataSourceName: 'dicomweb',

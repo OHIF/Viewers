@@ -10,7 +10,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 // ~~ Directories
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -25,20 +24,22 @@ const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
 const writePluginImportFile = require('./writePluginImportsFile.js');
 
-writePluginImportFile(SRC_DIR);
+const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
-    res.setHeader('Content-Encoding', 'gzip')
+    res.setHeader('Content-Encoding', 'gzip');
   } else if (path.indexOf('.br') !== -1) {
-    res.setHeader('Content-Encoding', 'br')
+    res.setHeader('Content-Encoding', 'br');
   }
   if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
+  } else if (path.indexOf('frames') !== -1) {
+    res.setHeader('Content-Type', 'multipart/related');
   } else {
-    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('Content-Type', 'application/json');
   }
-}
+};
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
@@ -53,7 +54,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function (info) {
+      devtoolModuleFilenameTemplate: function(info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -77,6 +78,7 @@ module.exports = (env, argv) => {
       // Copy "Public" Folder to Dist
       new CopyWebpackPlugin({
         patterns: [
+          ...copyPluginFromExtensions,
           {
             from: PUBLIC_DIR,
             to: DIST_DIR,
@@ -84,7 +86,7 @@ module.exports = (env, argv) => {
             globOptions: {
               // Ignore our HtmlWebpackPlugin template file
               // Ignore our configuration files
-              ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+              ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
           // Short term solution to make sure GCloud config is available in output
@@ -98,6 +100,21 @@ module.exports = (env, argv) => {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
+          // Copy Dicom Microscopy Viewer build files
+          {
+            from:
+              '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+            to: DIST_DIR,
+            globOptions: {
+              ignore: ['*.js.map'],
+            },
+          },
+          // Copy dicom-image-loader build files
+          {
+            from:
+              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
+          },
         ],
       }),
       // Generate "index.html" w/ correct includes/imports
@@ -108,22 +125,14 @@ module.exports = (env, argv) => {
           PUBLIC_URL: PUBLIC_URL,
         },
       }),
-      // No longer maintained; but good for generating icons + manifest
-      // new FaviconsWebpackPlugin( path.join(PUBLIC_DIR, 'assets', 'icons-512.png')),
+      // Generate a service worker for fast local loads
       new InjectManifest({
         swDest: 'sw.js',
         swSrc: path.join(SRC_DIR, 'service-worker.js'),
         // Increase the limit to 4mb:
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-      }),
-      new CopyPlugin({
-        patterns: [
-          {
-            from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
-        ],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // Need to exclude the theme as it is updated independently
+        exclude: [/theme/],
       }),
     ],
     // https://webpack.js.org/configuration/dev-server/
@@ -139,22 +148,15 @@ module.exports = (env, argv) => {
       client: {
         overlay: { errors: true, warnings: false },
       },
-      'static': [
-        {
-          directory: path.join(require('os').homedir(), 'dicomweb'),
-          staticOptions: {
-            extensions: ['gz', 'br'],
-            index: "index.json.gz",
-            redirect: true,
-            setHeaders,
-          },
-          publicPath: '/dicomweb',
-        },
+      proxy: {
+        '/dicomweb': 'http://localhost:5000',
+      },
+      static: [
         {
           directory: '../../testdata',
           staticOptions: {
             extensions: ['gz', 'br'],
-            index: "index.json.gz",
+            index: ['index.json.gz', 'index.mht.gz'],
             redirect: true,
             setHeaders,
           },

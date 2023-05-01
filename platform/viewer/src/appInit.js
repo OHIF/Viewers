@@ -8,13 +8,16 @@ import {
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
+  StateSyncService,
   DisplaySetService,
-  ToolBarService,
+  ToolbarService,
   ViewportGridService,
   HangingProtocolService,
   CineService,
   UserAuthenticationService,
   errorHandler,
+  CustomizationService,
+  PanelService,
   // utils,
 } from '@ohif/core';
 
@@ -22,26 +25,21 @@ import {
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
-function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
-  const appConfig = {
-    ...(typeof appConfigOrFunc === 'function'
-      ? appConfigOrFunc({ servicesManager })
-      : appConfigOrFunc),
-  };
-
+async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const commandsManagerConfig = {
     getAppState: () => {},
-    /** Used by commands to determine active context */
-    getActiveContexts: () => [
-      'VIEWER',
-      'DEFAULT',
-      'ACTIVE_VIEWPORT::CORNERSTONE',
-    ],
   };
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
   const servicesManager = new ServicesManager(commandsManager);
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
+
+  const appConfig = {
+    ...(typeof appConfigOrFunc === 'function'
+      ? await appConfigOrFunc({ servicesManager })
+      : appConfigOrFunc),
+  };
+
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
@@ -50,17 +48,20 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   });
 
   servicesManager.registerServices([
-    UINotificationService,
-    UIModalService,
-    UIDialogService,
-    UIViewportDialogService,
-    MeasurementService,
-    DisplaySetService,
-    ToolBarService,
-    ViewportGridService,
-    HangingProtocolService,
-    CineService,
-    UserAuthenticationService,
+    UINotificationService.REGISTRATION,
+    UIModalService.REGISTRATION,
+    UIDialogService.REGISTRATION,
+    UIViewportDialogService.REGISTRATION,
+    MeasurementService.REGISTRATION,
+    DisplaySetService.REGISTRATION,
+    [CustomizationService.REGISTRATION, appConfig.customizationService],
+    ToolbarService.REGISTRATION,
+    ViewportGridService.REGISTRATION,
+    HangingProtocolService.REGISTRATION,
+    CineService.REGISTRATION,
+    UserAuthenticationService.REGISTRATION,
+    PanelService.REGISTRATION,
+    StateSyncService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {
@@ -73,7 +74,7 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  extensionManager.registerExtensions(
+  await extensionManager.registerExtensions(
     [...defaultExtensions, ...appConfig.extensions],
     appConfig.dataSources
   );
@@ -99,6 +100,11 @@ function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
     appConfig.modes.push(mode);
   }
+
+  // remove modes that are not objects, or have no id
+  appConfig.modes = appConfig.modes.filter(
+    mode => typeof mode === 'object' && mode.id
+  );
 
   return {
     appConfig,

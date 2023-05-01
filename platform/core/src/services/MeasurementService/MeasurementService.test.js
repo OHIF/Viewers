@@ -1,7 +1,7 @@
-import MeasurementService from './MeasurementService.js';
+import MeasurementService from './MeasurementService';
 import log from '../../log';
 
-jest.mock('../../log.js', () => ({
+jest.mock('../../log', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
@@ -11,7 +11,7 @@ describe('MeasurementService.js', () => {
   let measurementService;
   let measurement;
   let source;
-  let definition;
+  let annotationType;
   let matchingCriteria;
   let toSourceSchema;
   let toMeasurement;
@@ -20,9 +20,9 @@ describe('MeasurementService.js', () => {
   beforeEach(() => {
     measurementService = new MeasurementService();
     source = measurementService.createSource('Test', '1');
-    definition = 'Length';
+    annotationType = 'Length';
     annotation = {
-      toolName: definition,
+      toolName: annotationType,
       measurementData: {},
     };
     measurement = {
@@ -47,7 +47,7 @@ describe('MeasurementService.js', () => {
       }
 
       return measurement;
-    }
+    };
     matchingCriteria = {
       valueType: measurementService.VALUE_TYPES.POLYLINE,
       points: 2,
@@ -63,13 +63,13 @@ describe('MeasurementService.js', () => {
 
     it('throws Error if no name provided', () => {
       expect(() => {
-        measurementService.createSource(null, '1')
+        measurementService.createSource(null, '1');
       }).toThrow(new Error('Source name not provided.'));
     });
 
     it('throws Error if no version provided', () => {
       expect(() => {
-        measurementService.createSource('Testing', null)
+        measurementService.createSource('Testing', null);
       }).toThrow(new Error('Source version not provided.'));
     });
   });
@@ -78,7 +78,7 @@ describe('MeasurementService.js', () => {
     it('adds new mapping', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
@@ -91,7 +91,7 @@ describe('MeasurementService.js', () => {
 
         measurementService.addMapping(
           invalidSource,
-          definition,
+          annotationType,
           matchingCriteria,
           toSourceSchema,
           toMeasurement
@@ -103,7 +103,7 @@ describe('MeasurementService.js', () => {
       expect(() => {
         measurementService.addMapping(
           source,
-          definition,
+          annotationType,
           null,
           toSourceSchema,
           toMeasurement
@@ -111,12 +111,11 @@ describe('MeasurementService.js', () => {
       }).toThrow(new Error('Matching criteria not provided.'));
     });
 
-
     it('throws Error if no source provided', () => {
       expect(() => {
         measurementService.addMapping(
           null /* source */,
-          definition,
+          annotationType,
           matchingCriteria,
           toSourceSchema,
           toMeasurement
@@ -124,23 +123,23 @@ describe('MeasurementService.js', () => {
       }).toThrow(new Error('Invalid source.'));
     });
 
-    it('logs warning and return early if no definition provided', () => {
+    it('logs warning and return early if no AnnotationType provided', () => {
       expect(() => {
         measurementService.addMapping(
           source,
-          null /* definition */,
+          null /* AnnotationType */,
           matchingCriteria,
           toSourceSchema,
           toMeasurement
         );
-      }).toThrow(new Error('Definition not provided.'));
+      }).toThrow(new Error('annotationType not provided.'));
     });
 
     it('throws Error if no measurement mapping function provided', () => {
       expect(() => {
         measurementService.addMapping(
           source,
-          definition,
+          annotationType,
           matchingCriteria,
           null /* toSourceSchema */,
           toMeasurement
@@ -152,7 +151,7 @@ describe('MeasurementService.js', () => {
       expect(() => {
         measurementService.addMapping(
           source,
-          definition,
+          annotationType,
           matchingCriteria,
           toSourceSchema,
           null /* toMeasurement */
@@ -165,27 +164,39 @@ describe('MeasurementService.js', () => {
     it('get annotation based on matched criteria', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.addOrUpdate(definition, annotation);
-      const mappedAnnotation = source.getAnnotation(definition, measurementId);
+      const measurementId = source.annotationToMeasurement(
+        annotationType,
+        annotation
+      );
+      const mappedAnnotation = source.getAnnotation(
+        annotationType,
+        measurementId
+      );
 
       expect(annotation).toBe(mappedAnnotation);
     });
 
-    it('get annotation based on source and definition', () => {
+    it('get annotation based on source and annotationType', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         {},
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.addOrUpdate(definition, annotation);
-      const mappedAnnotation = source.getAnnotation(definition, measurementId);
+      const measurementId = source.annotationToMeasurement(
+        annotationType,
+        annotation
+      );
+      const mappedAnnotation = source.getAnnotation(
+        annotationType,
+        measurementId
+      );
 
       expect(annotation).toBe(mappedAnnotation);
     });
@@ -201,14 +212,14 @@ describe('MeasurementService.js', () => {
 
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
       );
 
-      source.addOrUpdate(definition, measurement);
-      source.addOrUpdate(definition, anotherMeasurement);
+      source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, anotherMeasurement);
 
       const measurements = measurementService.getMeasurements();
 
@@ -220,34 +231,34 @@ describe('MeasurementService.js', () => {
     it('return measurement service measurement with given id', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
       );
 
-      const id = source.addOrUpdate(definition, measurement);
-      const returnedMeasurement = measurementService.getMeasurement(id);
+      const uid = source.annotationToMeasurement(annotationType, measurement);
+      const returnedMeasurement = measurementService.getMeasurement(uid);
 
       /* Clear dynamic data */
       delete returnedMeasurement.modifiedTimestamp;
 
-      expect({ id, ...measurement }).toEqual(returnedMeasurement);
+      expect({ uid, ...measurement }).toEqual(returnedMeasurement);
     });
   });
 
-  describe('addOrUpdate()', () => {
+  describe('annotationToMeasurement()', () => {
     it('adds new measurements', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
       );
 
-      source.addOrUpdate(definition, measurement);
-      source.addOrUpdate(definition, measurement);
+      source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, measurement);
 
       const measurements = measurementService.getMeasurements();
 
@@ -256,39 +267,39 @@ describe('MeasurementService.js', () => {
 
     it('fails to add new measurements when no mapping', () => {
       expect(() => {
-        source.addOrUpdate(definition, measurement);
-      }).toThrow()
+        source.annotationToMeasurement(annotationType, measurement);
+      }).toThrow();
     });
 
     it('fails to add new measurements when invalid mapping function', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         1 /* Invalid */
       );
 
       expect(() => {
-        source.addOrUpdate(definition, measurement);
-      }).toThrow()
+        source.annotationToMeasurement(annotationType, measurement);
+      }).toThrow();
     });
 
-    it('adds new measurement with custom id', () => {
-      const newMeasurement = { id: 1, ...measurement };
+    it('adds new measurement with custom uid', () => {
+      const newMeasurement = { uid: 1, ...measurement };
 
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
       );
 
       /* Add new measurement */
-      source.addOrUpdate(definition, newMeasurement);
+      source.annotationToMeasurement(annotationType, newMeasurement);
       const savedMeasurement = measurementService.getMeasurement(
-        newMeasurement.id
+        newMeasurement.uid
       );
 
       /* Clear dynamic data */
@@ -303,32 +314,32 @@ describe('MeasurementService.js', () => {
 
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
       );
 
       expect(() => {
-        source.addOrUpdate(definition, measurement);
-      }).toThrow()
+        source.annotationToMeasurement(annotationType, measurement);
+      }).toThrow();
     });
 
     it('updates existing measurement', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
       );
 
-      const id = source.addOrUpdate(definition, measurement);
+      const uid = source.annotationToMeasurement(annotationType, measurement);
 
       measurement.unit = 'HU';
 
-      source.addOrUpdate(definition, { id, ...measurement });
-      const updatedMeasurement = measurementService.getMeasurement(id);
+      source.annotationToMeasurement(annotationType, { uid, ...measurement });
+      const updatedMeasurement = measurementService.getMeasurement(uid);
 
       expect(updatedMeasurement.unit).toBe('HU');
     });
@@ -338,7 +349,7 @@ describe('MeasurementService.js', () => {
     it('subscribers receive broadcasted add event', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
@@ -353,8 +364,9 @@ describe('MeasurementService.js', () => {
         () => (addCallbackWasCalled = true)
       );
 
-      /* Add new measurement */
-      source.addOrUpdate(definition, measurement);
+      /* Add new measurement - two calls needed for the start and the other for the completed*/
+      const uid = source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, { uid, ...measurement });
 
       expect(addCallbackWasCalled).toBe(true);
     });
@@ -362,7 +374,7 @@ describe('MeasurementService.js', () => {
     it('subscribers receive broadcasted update event', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
@@ -378,10 +390,14 @@ describe('MeasurementService.js', () => {
       );
 
       /* Create measurement */
-      const id = source.addOrUpdate(definition, measurement);
+      const uid = source.annotationToMeasurement(annotationType, measurement);
 
       /* Update measurement */
-      source.addOrUpdate(definition, { id, ...measurement });
+      source.annotationToMeasurement(
+        annotationType,
+        { uid, ...measurement },
+        true
+      );
 
       expect(updateCallbackWasCalled).toBe(true);
     });
@@ -389,7 +405,7 @@ describe('MeasurementService.js', () => {
     it('unsubscribes a listener', () => {
       measurementService.addMapping(
         source,
-        definition,
+        annotationType,
         matchingCriteria,
         toSourceSchema,
         toMeasurement
@@ -407,8 +423,9 @@ describe('MeasurementService.js', () => {
       /* Unsubscribe */
       unsubscribe();
 
-      /* Create measurement */
-      source.addOrUpdate(definition, measurement);
+      /* Create measurement - two calls needed one to start and one to complete */
+      const uid = source.annotationToMeasurement(annotationType, measurement);
+      source.annotationToMeasurement(annotationType, { uid, ...measurement });
 
       expect(updateCallbackWasCalled).toBe(false);
     });

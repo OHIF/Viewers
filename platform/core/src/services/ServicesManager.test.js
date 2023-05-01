@@ -1,13 +1,18 @@
-import ServicesManager from './ServicesManager.js';
-import log from '../log.js';
+import ServicesManager from './ServicesManager';
+import log from '../log';
 
-jest.mock('./../log.js');
+jest.mock('./../log');
 
-describe('ServicesManager.js', () => {
-  let servicesManager;
+describe('ServicesManager', () => {
+  let servicesManager, commandsManager;
 
   beforeEach(() => {
-    servicesManager = new ServicesManager();
+    commandsManager = {
+      createContext: jest.fn(),
+      getContext: jest.fn(),
+      registerCommand: jest.fn(),
+    };
+    servicesManager = new ServicesManager(commandsManager);
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -90,9 +95,9 @@ describe('ServicesManager.js', () => {
 
       servicesManager.registerService(fakeService, configuration);
 
-      expect(fakeService.create.mock.calls[0][0]).toEqual({
-        configuration,
-      });
+      expect(fakeService.create.mock.calls[0][0].configuration.config).toBe(
+        configuration.config
+      );
     });
   });
 });

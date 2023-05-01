@@ -10,41 +10,7 @@ sidebar_label: DisplaySet Service
 
 > Based on the instanceMetadata's `SOPClassHandlerId`, the correct module from the registered extensions is found by `OHIF` and its `getDisplaySetsFromSeries` runs to create a DisplaySet for the Series.
 
-
-```js title="platform/core/src/services/DisplaySetService/DisplaySetService.js"
-init(extensionManager, SOPClassHandlerIds) {
-  this.extensionManager = extensionManager;
-  this.SOPClassHandlerIds = SOPClassHandlerIds;
-  this.activeDisplaySets = [];
-}
-```
-
-in `Mode.jsx`
-
-```js title="platform/viewer/src/routes/Mode/Mode.jsx"
-export default function ModeRoute(/** ... **/) {
-  /** ... **/
-  const { DisplaySetService } = servicesManager.services
-  const { sopClassHandlers } = mode
-  /** ... **/
-  useEffect(
-    () => {
-      /** ... **/
-
-      // Add SOPClassHandlers to a new SOPClassManager.
-      DisplaySetService.init(extensionManager, sopClassHandlers)
-
-      /** ... **/
-    }
-    /** ... **/
-  )
-  /** ... **/
-  return <> /** ... **/ </>
-}
-```
-
-
-
+DisplaySets are created synchronously when the instances metadata is retrieved and added to the [DicomMetaDataStore](../data//DicomMetadataStore.md).
 
 ## Events
 There are three events that get broadcasted in `DisplaySetService`:

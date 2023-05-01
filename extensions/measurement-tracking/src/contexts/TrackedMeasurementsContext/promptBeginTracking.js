@@ -6,13 +6,13 @@ const RESPONSE = {
   SET_STUDY_AND_SERIES: 3,
 };
 
-function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIViewportDialogService } = servicesManager.services;
+function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
+  const { uiViewportDialogService } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
 
   return new Promise(async function(resolve, reject) {
     let promptResult = await _askTrackMeasurements(
-      UIViewportDialogService,
+      uiViewportDialogService,
       viewportIndex
     );
 
@@ -25,7 +25,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
+function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
     const message = 'Track measurements for this series?';
     const actions = [
@@ -33,7 +33,7 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
         id: 'prompt-begin-tracking-cancel',
         type: 'cancel',
         text: 'No',
-        value: RESPONSE.CANCEL
+        value: RESPONSE.CANCEL,
       },
       {
         id: 'prompt-begin-tracking-no-do-not-ask-again',
@@ -49,11 +49,11 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
+    uiViewportDialogService.show({
       viewportIndex,
       id: 'measurement-tracking-prompt-begin-tracking',
       type: 'info',
@@ -61,11 +61,11 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });
   });
 }
 
-export default promptUser;
+export default promptBeginTracking;

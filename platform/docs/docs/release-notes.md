@@ -25,11 +25,12 @@ of our medical image web viewers from the start. The summary of changes includes
   - Our vision is that technical people focus of developing extensions which
     provides core functionalities, and experts to build modes by picking the
     appropriate functionalities from each extension.
+  - Migrated all the `cornerstone-core` and `cornerstone-tools` usage to the newly released `Cornerstone3D`.
 
 * UI has been completely redesigned with modularity and workflow modes in mind.
 * New UI components have been built with Tailwind CSS
 * Redux store has been removed from the viewer in favour of services backed by
-  React's Context API
+  React's Context **API**
 
 Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
 
@@ -87,6 +88,10 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
         <td align="center">✅</td>
         <td align="center"></td>
     </tr>
+     <tr>
+        <td align="left">DICOM PDF support</td>
+        <td align="center">✅</td>
+    </tr>
     <tr>
         <td align="left">DICOM Whole-slide imaging viewport</td>
         <td align="center">🔜</td>
@@ -98,18 +103,13 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
         <td align="center">Not Started</td>
     </tr>
     <tr>
-        <td align="left">DICOM PDF support</td>
-        <td align="center">🔜</td>
-        <td align="center">Not Started</td>
-    </tr>
-    <tr>
         <td align="left">Displaying non-renderable DICOM as HTML</td>
         <td align="center">🔜</td>
         <td align="center">Not Started</td>
     </tr>
     <tr>
         <td align="left">Segmentation support</td>
-        <td align="center">🔜</td>
+        <td align="center">✅</td>
         <td align="center">Not Started</td>
     </tr>
     <tr>
@@ -129,8 +129,8 @@ Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
     </tr>
     <tr>
         <td align="left">VTK Extension + MIP / MPR layout</td>
-        <td align="center">❌</td>
-        <td align="center">Other plans that involves amazing news soon!</td>
+        <td align="center">✅</td>
+        <td align="center">3D rendering and 3D annotation tools via Cornerstone3D</td>
     </tr>
     <tr>
         <td align="left">UMD Build (Embedded Viewer). </td>

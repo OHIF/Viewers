@@ -1,4 +1,4 @@
-import hydrateStructuredReport from './_hydrateStructuredReport.js';
+import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -10,14 +10,23 @@ const RESPONSE = {
   HYDRATE_REPORT: 5,
 };
 
-function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIViewportDialogService, DisplaySetService } = servicesManager.services;
+function promptHydrateStructuredReport(
+  { servicesManager, extensionManager },
+  ctx,
+  evt
+) {
+  const {
+    uiViewportDialogService,
+    displaySetService,
+  } = servicesManager.services;
   const { viewportIndex, displaySetInstanceUID } = evt;
-  const srDisplaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID)
+  const srDisplaySet = displaySetService.getDisplaySetByUID(
+    displaySetInstanceUID
+  );
 
   return new Promise(async function(resolve, reject) {
     const promptResult = await _askTrackMeasurements(
-      UIViewportDialogService,
+      uiViewportDialogService,
       viewportIndex
     );
 
@@ -46,7 +55,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
+function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
     const message =
       'Do you want to continue tracking measurements for this study?';
@@ -63,22 +72,22 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
+    uiViewportDialogService.show({
       viewportIndex,
       type: 'info',
       message,
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });
   });
 }
 
-export default promptUser;
+export default promptHydrateStructuredReport;

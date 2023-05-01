@@ -13,7 +13,7 @@ export const contextMenueTemplate = createComponentTemplate(ContextMenu);
 
 <Heading
   title="ContextMenu"
-  componentRelativePath="ContextMenu/ContextMenu.jsx"
+  componentRelativePath="ContextMenu/ContextMenu.tsx"
 />
 
 - [Overview](#overview)
@@ -34,7 +34,7 @@ on user right click.
         {
           label: 'Delete measurement',
           actionType: 'Delete',
-          action: (item) => {
+          action: item => {
             window.alert(`${item.label} clicked`);
           },
           value: {},
@@ -42,7 +42,7 @@ on user right click.
         {
           label: 'Add Label',
           actionType: 'setLabel',
-          action: (item) => {
+          action: item => {
             window.alert(`${item.label} clicked`);
           },
           value: {},

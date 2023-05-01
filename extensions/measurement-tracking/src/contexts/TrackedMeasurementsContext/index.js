@@ -2,4 +2,4 @@ export {
   TrackedMeasurementsContext,
   TrackedMeasurementsContextProvider,
   useTrackedMeasurements,
-} from './TrackedMeasurementsContext.jsx';
+} from './TrackedMeasurementsContext.tsx';

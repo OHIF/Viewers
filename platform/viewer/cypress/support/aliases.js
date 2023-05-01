@@ -2,31 +2,47 @@
 export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
   cy.get('[data-cy="Zoom"]').as('zoomBtn');
-  cy.get('[data-cy="Wwwc-split-button-primary"]').as('wwwcBtnPrimary');
-  cy.get('[data-cy="Wwwc-split-button-secondary"]').as('wwwcBtnSecondary');
+  cy.get('[data-cy="WindowLevel-split-button-primary"]').as('wwwcBtnPrimary');
+  cy.get('[data-cy="WindowLevel-split-button-secondary"]').as(
+    'wwwcBtnSecondary'
+  );
   cy.get('[data-cy="Pan"]').as('panBtn');
-  cy.get('[data-cy="MeasurementTools-split-button-primary"]').as('measurementToolsBtnPrimary');
-  cy.get('[data-cy="MeasurementTools-split-button-secondary"]').as('measurementToolsBtnSecondary');
-  cy.get('[data-cy="Angle"]').as('angleBtn');
+  cy.get('[data-cy="MeasurementTools-split-button-primary"]').as(
+    'measurementToolsBtnPrimary'
+  );
+  cy.get('[data-cy="MeasurementTools-split-button-secondary"]').as(
+    'measurementToolsBtnSecondary'
+  );
+  // cy.get('[data-cy="Angle"]').as('angleBtn');
   cy.get('[data-cy="MoreTools-split-button-primary"]').as('moreBtnPrimary');
   cy.get('[data-cy="MoreTools-split-button-secondary"]').as('moreBtnSecondary');
   cy.get('[data-cy="Layout"]').as('layoutBtn');
-  cy.get('.viewport-element').as('viewport');
+  cy.get('.cornerstone-viewport-element').as('viewport');
+  cy.get('[data-cy="MPR"]').as('mprBtn');
 }
 
 //Creating aliases for Common page elements
 export function initCommonElementsAliases() {
   cy.get('[data-cy="trackedMeasurements-btn"]').as('measurementsBtn');
-  cy.get('.viewport-element').as('viewport');
+  cy.get('.cornerstone-viewport-element').as('viewport');
   cy.get('[data-cy="seriesList-btn"]').as('seriesBtn');
+  cy.get('[data-cy="side-panel-header-right"]').as('RightCollapseBtn');
+  cy.get('[data-cy="side-panel-header-left"]').as('LeftCollapseBtn');
+
+  // click on the measurements button
+  cy.get('[data-cy="trackedMeasurements-btn"]').click();
 
   // TODO: Panels are not in DOM when closed, move this somewhere else
   cy.get('[data-cy="trackedMeasurements-panel"]').as('measurementsPanel');
   cy.get('[data-cy="studyBrowser-panel"]').as('seriesPanel');
   cy.get('[data-cy="viewport-overlay-top-right"]').as('viewportInfoTopRight');
   cy.get('[data-cy="viewport-overlay-top-left"]').as('viewportInfoTopLeft');
-  cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
-  cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
+  cy.get('[data-cy="viewport-overlay-bottom-right"]').as(
+    'viewportInfoBottomRight'
+  );
+  cy.get('[data-cy="viewport-overlay-bottom-left"]').as(
+    'viewportInfoBottomLeft'
+  );
 
   cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
   cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
@@ -34,9 +50,16 @@ export function initCommonElementsAliases() {
 
 //Creating aliases for Routes
 export function initRouteAliases() {
-  cy.server();
-  cy.route('GET', '**/series**').as('getStudySeries');
-  cy.route('GET', '**/studies**').as('getStudies');
+  cy.intercept('GET', '**/series**', { statusCode: 200, body: [] }).as(
+    'getStudySeries'
+  );
+
+  // Todo: for some reason cypress does not redirect to the correct url
+  // so we intercept the request and redirect it to the correct url
+  cy.intercept('/studies?limit*', req => {
+    const url = req.url.replace(/\/studies\?/, '/studies/?limit');
+    req.url = url;
+  });
 }
 
 //Creating aliases for Study List page elements on Desktop experience

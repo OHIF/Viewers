@@ -1,13 +1,17 @@
-import createReportAsync from './../../_shared/createReportAsync.js';
+import createReportAsync from './../../_shared/createReportAsync';
 import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
 import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
 
-function promptUser({ servicesManager, extensionManager }, ctx, evt) {
+function promptSaveReport(
+  { servicesManager, commandsManager, extensionManager },
+  ctx,
+  evt
+) {
   const {
-    UIDialogService,
-    MeasurementService,
-    DisplaySetService,
+    uiDialogService,
+    measurementService,
+    displaySetService,
   } = servicesManager.services;
   const viewportIndex =
     evt.viewportIndex === undefined
@@ -22,13 +26,13 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
   let displaySetInstanceUIDs;
 
   return new Promise(async function(resolve, reject) {
-    // TODO: Fallback if (UIDialogService) {
-    const promptResult = await createReportDialogPrompt(UIDialogService);
+    // TODO: Fallback if (uiDialogService) {
+    const promptResult = await createReportDialogPrompt(uiDialogService);
 
     if (promptResult.action === RESPONSE.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
-      const measurements = MeasurementService.getMeasurements();
+      const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m =>
           trackedStudy === m.referenceStudyUID &&
@@ -41,10 +45,11 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      const SeriesNumber = getNextSRSeriesNumber(DisplaySetService);
+      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
 
       displaySetInstanceUIDs = await createReportAsync(
         servicesManager,
+        commandsManager,
         dataSource,
         trackedMeasurements,
         {
@@ -67,4 +72,4 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-export default promptUser;
+export default promptSaveReport;

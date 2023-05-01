@@ -1,186 +1,112 @@
-const hangingProtocolName = 'petCT';
+import hpMNGrid from './hpMNGrid';
 
-const petCTProtocol = {
-  id: 'PET/CT',
+const defaultProtocol = {
+  id: 'default',
   locked: true,
+  // Don't store this hanging protocol as it applies to the currently active
+  // display set by default
+  // cacheId: null,
   hasUpdatedPriorsInformation: false,
-  name: 'PET/CT',
-  createdDate: '2021-02-23T18:32:42.849Z',
-  modifiedDate: '2021-02-23T18:32:42.849Z',
+  name: 'Default',
+  createdDate: '2021-02-23T19:22:08.894Z',
+  modifiedDate: '2023-04-01',
   availableTo: {},
   editableBy: {},
-  protocolMatchingRules: [
-    {
-      id: 'wauZK2QNEfDPwcAQo',
-      weight: 1,
-      attribute: 'StudyInstanceUID',
-      constraint: {
-        equals: {
-          value: '1.3.6.1.4.1.25403.345050719074.3824.20170125112931.11',
-        },
-      },
-      required: true,
+  protocolMatchingRules: [],
+  toolGroupIds: ['default'],
+  // -1 would be used to indicate active only, whereas other values are
+  // the number of required priors referenced - so 0 means active with
+  // 0 or more priors.
+  numberOfPriorsReferenced: 0,
+  // Default viewport is used to define the viewport when
+  // additional viewports are added using the layout tool
+  defaultViewport: {
+    viewportOptions: {
+      viewportType: 'stack',
+      toolGroupId: 'default',
+      allowUnmatchedView: true,
     },
-  ],
+    displaySets: [
+      {
+        id: 'defaultDisplaySetId',
+        matchedDisplaySetsIndex: -1,
+      },
+    ],
+  },
+  displaySetSelectors: {
+    defaultDisplaySetId: {
+      // Matches displaysets, NOT series
+      seriesMatchingRules: [
+        // Try to match series with images by default, to prevent weird display
+        // on SEG/SR containing studies
+        {
+          attribute: 'numImageFrames',
+          constraint: {
+            greaterThan: { value: 0 },
+          },
+        },
+        // This display set will select the specified items by preference
+        // It has no affect if nothing is specified in the URL.
+        {
+          attribute: 'isDisplaySetFromUrl',
+          weight: 10,
+          constraint: {
+            equals: true,
+          },
+        },
+      ],
+      // Can be used to select matching studies
+      // studyMatchingRules: [],
+    },
+  },
   stages: [
     {
-      id: 'hYbmMy3b7pz7GLiaT',
-      name: 'oneByTwo',
+      name: 'default',
       viewportStructure: {
-        type: 'grid',
+        layoutType: 'grid',
         properties: {
-          rows: 2,
-          columns: 2,
+          rows: 1,
+          columns: 1,
         },
       },
       viewports: [
         {
-          viewportSettings: [
-            {
-              options: {
-                voi: {
-                  windowWidth: 500,
-                  windowCenter: 500,
-                },
-              },
-              commandName: '',
-              // Type can be viewport or prop
-              // viewport:  It is most suited for settings that
-              // should be applied before the first render
-              // prop: It is the type of command that can be applied
-              // after the image render, such as tool activations.
-              type: 'viewport',
+          viewportOptions: {
+            viewportType: 'stack',
+            toolGroupId: 'default',
+            // This will specify the initial image options index if it matches in the URL
+            // and will otherwise not specify anything.
+            initialImageOptions: {
+              custom: 'sopInstanceLocation',
             },
-          ],
-          imageMatchingRules: [],
-          seriesMatchingRules: [
+            // Other options for initialImageOptions, which can be included in the default
+            // custom attribute, or can be provided directly.
+            //   index: 180,
+            //   preset: 'middle', // 'first', 'last', 'middle'
+            // },
+          },
+          displaySets: [
             {
-              id: 'vSjk7NCYjtdS3XZAw',
-              weight: 1,
-              attribute: 'SeriesNumber',
-              constraint: {
-                equals: {
-                  value: "4",
-                },
-              },
-              required: false,
+              id: 'defaultDisplaySetId',
             },
-          ],
-          studyMatchingRules: [],
-        },
-        {
-          viewportSettings: [
-            {
-              options: {
-                invert: true,
-              },
-              commandName: '',
-              type: 'viewport',
-            },
-          ],
-          imageMatchingRules: [
-
-          ],
-          seriesMatchingRules: [
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesNumber',
-              constraint: {
-                equals: {
-                  value: "1",
-                },
-              },
-              required: false,
-            },
-          ],
-          studyMatchingRules: [
-
-          ],
-        },
-        {
-          viewportSettings: [
-            {
-              options: {
-                invert: true,
-              },
-              commandName: '',
-              type: 'viewport',
-            },
-          ],
-          imageMatchingRules: [
-
-          ],
-          seriesMatchingRules: [
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesNumber',
-              constraint: {
-                equals: {
-                  value: "6",
-                },
-              },
-              required: false,
-            },
-          ],
-          studyMatchingRules: [
-
-          ],
-        },
-        {
-          viewportSettings: [
-            {
-              options: {
-                invert: true,
-              },
-              commandName: '',
-              type: 'viewport',
-            },
-          ],
-          imageMatchingRules: [
-
-          ],
-          seriesMatchingRules: [
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 1,
-              attribute: 'SeriesDescription',
-              constraint: {
-                contains: {
-                  value: "Corrected",
-                },
-              },
-              required: false,
-            },
-            {
-              id: 'GPEYqFLv2dwzCM322',
-              weight: 2,
-              attribute: 'SeriesDescription',
-              constraint: {
-                doesNotContain: {
-                  value: "Uncorrected",
-                },
-              },
-              required: false,
-            },
-          ],
-          studyMatchingRules: [
-
           ],
         },
       ],
       createdDate: '2021-02-23T18:32:42.850Z',
     },
   ],
-  numberOfPriorsReferenced: 0,
 };
 
 function getHangingProtocolModule() {
   return [
     {
-      name: hangingProtocolName,
-      protocols: [petCTProtocol],
+      name: defaultProtocol.id,
+      protocol: defaultProtocol,
+    },
+    // Create a MxN hanging protocol available by default
+    {
+      name: hpMNGrid.id,
+      protocol: hpMNGrid,
     },
   ];
 }

@@ -1,11 +1,11 @@
 module.exports = {
-  prefix: '',
-  important: false,
-  separator: ':',
-  purge: {
-    content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
-    safelist: [],
-  },
+  // Note: in Tailwind 3.0, JIT will purge unused styles by default
+  // but in development, it is often useful to disable this to see
+  // and try out all the styles that are available.
+  // ...(process.env.NODE_ENV === 'development' && {
+  //   safelist: [{ pattern: /.*/ }],
+  // }),
+  content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
   theme: {
     screens: {
       sm: '640px',
@@ -24,9 +24,6 @@ module.exports = {
       initial: 'initial',
       inherit: 'inherit',
 
-      indigo: {
-        dark: '#0b1a42',
-      },
       aqua: {
         pale: '#7bb2ce',
       },
@@ -36,6 +33,13 @@ module.exports = {
         main: '#0944b3',
         dark: '#090c29',
         active: '#348cfd',
+      },
+
+      inputfield: {
+        main: '#3a3f99',
+        disabled: '#2b166b',
+        focus: '#5acce6',
+        placeholder: '#39383f'
       },
 
       secondary: {
@@ -55,11 +59,17 @@ module.exports = {
 
       customgreen: {
         100: '#05D97C',
+        200: '#0FD97C',
       },
 
       customblue: {
         100: '#c4fdff',
         200: '#38daff',
+        300: '#1D204D',
+      },
+
+      customgray: {
+        100: '#262943',
       },
 
       gray: {
@@ -149,6 +159,7 @@ module.exports = {
         700: '#4c51bf',
         800: '#434190',
         900: '#3c366b',
+        dark: '#0b1a42',
       },
       purple: {
         100: '#faf5ff',
@@ -173,36 +184,6 @@ module.exports = {
         900: '#702459',
       },
     },
-    spacing: {
-      px: '1px',
-      '0': '0',
-      '1': '0.15rem',
-      '2': '0.5rem',
-      '3': '0.75rem',
-      '4': '1rem',
-      '5': '1.25rem',
-      '6': '1.5rem',
-      '8': '2rem',
-      '10': '2.5rem',
-      '12': '3rem',
-      '14': '3.5rem',
-      '16': '4rem',
-      '18': '4.5rem',
-      '20': '5rem',
-      '24': '6rem',
-      '32': '8rem',
-      '40': '10rem',
-      '48': '12rem',
-      '56': '14rem',
-      '64': '16rem',
-      '72': '18rem',
-      '80': '20rem',
-      '88': '22rem',
-      '96': '24rem',
-      '104': '26rem',
-      '112': '28rem',
-      '250px': '250px',
-    },
     backgroundColor: theme => theme('colors'),
     backgroundPosition: {
       bottom: 'bottom',
@@ -224,21 +205,6 @@ module.exports = {
       ...theme('colors'),
       DEFAULT: theme('colors.gray.300', 'currentColor'),
     }),
-    borderRadius: {
-      none: '0',
-      sm: '0.125rem',
-      DEFAULT: '0.25rem',
-      md: '0.375rem',
-      lg: '0.5rem',
-      full: '9999px',
-    },
-    borderWidth: {
-      DEFAULT: '1px',
-      '0': '0',
-      '2': '2px',
-      '4': '4px',
-      '8': '8px',
-    },
     boxShadow: {
       xs: '0 0 0 1px rgba(0, 0, 0, 0.05)',
       sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -275,6 +241,7 @@ module.exports = {
       auto: '1 1 auto',
       initial: '0 1 auto',
       none: 'none',
+      static: '0 0 auto',
     },
     flexGrow: {
       '0': '0',
@@ -284,50 +251,11 @@ module.exports = {
       '0': '0',
       DEFAULT: '1',
     },
-    fontFamily: {
-      sans: [
-        'Lato',
-        'system-ui',
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        '"Noto Sans"',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-        '"Noto Color Emoji"',
-      ],
-      serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
-      mono: [
-        'Menlo',
-        'Monaco',
-        'Consolas',
-        '"Liberation Mono"',
-        '"Courier New"',
-        'monospace',
-      ],
-    },
-    fontSize: {
-      xs: '0.65rem',
-      sm: '0.75rem',
-      base: '0.875rem',
-      lg: '1rem',
-      xl: '1.25rem',
-      '2xl': '1.5rem',
-      '3xl': '1.875rem',
-      '4xl': '2.25rem',
-      '5xl': '3rem',
-      '6xl': '4rem',
-    },
     fontWeight: {
       hairline: '100',
       thin: '200',
       light: '300',
-      normal: '400',
+      normal: '300',
       medium: '500',
       semibold: '600',
       bold: '700',
@@ -340,14 +268,15 @@ module.exports = {
       full: '100%',
       screen: '100vh',
     }),
-    inset: {
+    inset: theme => ({
+      ...theme('spacing'),
       '0': '0',
       auto: 'auto',
       full: '100%',
       viewport: '0.5rem',
       '1/2': '50%',
       'viewport-scrollbar': '1.3rem',
-    },
+    }),
     letterSpacing: {
       tighter: '-0.05em',
       tight: '-0.025em',

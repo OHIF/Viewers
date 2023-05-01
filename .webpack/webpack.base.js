@@ -12,6 +12,8 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 // ~~ PackageJSON
 const PACKAGE = require('../platform/viewer/package.json');
+// const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
+//   .rules;
 // ~~ RULES
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
@@ -37,7 +39,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'eval-source-map',
+    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
     entry: {
       app: `${SRC_DIR}/index.js`,
     },
@@ -66,11 +68,21 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       children: false,
       warnings: true,
     },
+    devServer: {
+      open: true,
+      port: 3000,
+      historyApiFallback: true,
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
+    },
     module: {
+      noParse: [/(codec)/, /(dicomicc)/],
       rules: [
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
-        loadShadersRule,
+        // loadShadersRule,
         {
           test: /\.m?js/,
           resolve: {
@@ -78,7 +90,11 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           },
         },
         cssToJavaScript,
-      ],
+        {
+          test: /\.wasm/,
+          type: 'asset/resource',
+        },
+      ], //.concat(vtkRules),
     },
     resolve: {
       mainFields: ['module', 'browser', 'main'],
@@ -92,8 +108,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
         '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
-        'cornerstone-wado-image-loader':
-          'cornerstone-wado-image-loader/dist/dynamic-import/cornerstoneWADOImageLoader.min.js',
+        'dicom-microscopy-viewer':
+          'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
+        '@cornerstonejs/dicom-image-loader':
+          '@cornerstonejs/dicom-image-loader/dist/dynamic-import/cornerstoneDICOMImageLoader.min.js',
       },
       // Which directories to search when resolving modules
       modules: [
@@ -106,7 +124,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
-      extensions: ['.js', '.jsx', '.json', '*'],
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
       fallback: { fs: false, path: false, zlib: false },

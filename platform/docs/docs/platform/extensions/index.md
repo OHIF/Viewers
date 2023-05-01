@@ -65,6 +65,7 @@ export default {
   getContextModule() { /* */ },
   getToolbarModule() { /* */ },
   getHangingProtocolModule() { /* */ },
+  getUtilityModule() { /* */ },
 }
 ```
 
@@ -86,7 +87,7 @@ the top level [`extensions/`][ext-source] directory.
         <tr>
             <td>
                 <a href="">
-                    Default
+                    default
                 </a>
             </td>
             <td>
@@ -97,18 +98,18 @@ the top level [`extensions/`][ext-source] directory.
         </tr>
         <tr>
             <td>
-                <a href="https://www.npmjs.com/package/@ohif/extension-cornerstone">
-                    Cornerstone
+                <a href="">
+                    cornerstone
                 </a>
             </td>
             <td>
-                Provides rendering functionalities for 2D images.
+                Provides 2d and 3d rendering functionalities
             </td>
-            <td>ViewportModule, CommandsModule</td>
+            <td>ViewportModule, CommandsModule, UtilityModule</td>
         </tr>
         <tr>
             <td>
-                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-pdf">DICOM PDF</a>
+                <a href="">dicom-pdf</a>
             </td>
             <td>
                 Renders PDFs for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-pdf/src/OHIFDicomPDFSopClassHandler.js#L4-L6">specific SopClassUID</a>.
@@ -117,7 +118,16 @@ the top level [`extensions/`][ext-source] directory.
         </tr>
         <tr>
             <td>
-                <a href="">DICOM SR</a>
+                <a href="">dicom-video</a>
+            </td>
+            <td>
+                Renders DICOM Video files.
+            </td>
+            <td>Viewport, SopClassHandler</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="">cornerstone-dicom-sr</a>
             </td>
             <td>
                 Maintained extensions for cornerstone and visualization of DICOM Structured Reports
@@ -126,7 +136,7 @@ the top level [`extensions/`][ext-source] directory.
         </tr>
         <tr>
             <td>
-                <a href="">Measurement tracking</a>
+                <a href="">measurement-tracking</a>
             </td>
             <td>
                 Tracking measurements in the measurement panel
@@ -196,8 +206,10 @@ used to initialize data.
 
 [`onModeExit`](./lifecycle#onModeExit): Similarly to onModeEnter, this hook is
 called when navigating away from a mode, or before a mode’s data or datasource
-is changed. This can be used to clean up data (e.g. remove annotations that do
-not need to be persisted)
+is changed. This can be used to cache data for re-use later, but since it
+isn't known which mode will be entered next, the state after exiting should be
+clean, that is, the same as the state on a clean start.  This is called BEFORE
+service clean up, and after mode specific onModeExit handling.
 
 ## Modules
 
@@ -289,6 +301,14 @@ differently.
         </a>
       </td>
       <td align="left">Adds hanging protocol rules</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/hpModule">
+          Utility
+        </a>
+      </td>
+      <td align="left">Expose utility functions to the outside of extensions</td>
     </tr>
   </tbody>
 </table>

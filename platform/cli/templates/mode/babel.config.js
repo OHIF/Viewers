@@ -10,6 +10,7 @@ module.exports = {
             modules: 'commonjs',
             debug: false,
           },
+          "@babel/preset-typescript",
         ],
         '@babel/preset-react',
       ],
@@ -25,6 +26,7 @@ module.exports = {
         // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         '@babel/preset-react',
+        "@babel/preset-typescript",
       ],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
     },
@@ -33,6 +35,7 @@ module.exports = {
         // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         '@babel/preset-react',
+        "@babel/preset-typescript",
       ],
       plugins: ['react-hot-loader/babel'],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],

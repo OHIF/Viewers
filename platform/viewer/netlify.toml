@@ -12,7 +12,6 @@
   base = ""
   build = "yarn run build:viewer:ci"
   publish = "dist"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF . ../ui/ ../core/ ../i18n/"
 
 
 # NODE_VERSION in root `.nvmrc` takes priority
@@ -20,8 +19,8 @@
 [build.environment]
   # If 'production', `yarn install` does not install devDependencies
   NODE_ENV = "development"
-  NODE_VERSION = "14.19.1"
-  YARN_VERSION = "1.22.0"
+  NODE_VERSION = "16.14.0"
+  YARN_VERSION = "1.22.5"
   RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
   NETLIFY_USE_YARN = "true"
