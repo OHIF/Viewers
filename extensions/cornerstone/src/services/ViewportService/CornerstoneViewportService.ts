@@ -268,7 +268,7 @@ class CornerstoneViewportService extends PubSubService
       publicViewportOptions,
       publicDisplaySetOptions,
       viewportInfo
-      );
+    );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -917,13 +917,13 @@ class CornerstoneViewportService extends PubSubService
    *          was initiated.
    * @return the viewportIndex to display the given measurement
    */
-  public findMeasurementViewportIndex(
-    measurement,
-    activeViewportIndex: number
+  public getViewportIndexToJump(
+    activeViewportIndex: number,
+    displaySetInstanceUID: string,
+    cameraProps: unknown
   ): number {
     const viewportInfo = this.viewportsInfo.get(activeViewportIndex);
-    const { displaySetInstanceUID, metadata } = measurement;
-    const { referencedImageId } = metadata || {};
+    const { referencedImageId } = cameraProps;
     if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
       return activeViewportIndex;
     }

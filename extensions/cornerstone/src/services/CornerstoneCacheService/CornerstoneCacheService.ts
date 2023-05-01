@@ -143,8 +143,11 @@ class CornerstoneCacheService {
       this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } =
-      displaySet;
+    const {
+      displaySetInstanceUID,
+      StudyInstanceUID,
+      isCompositeStack,
+    } = displaySet;
 
     const StackViewportData: StackViewportData = {
       viewportType,

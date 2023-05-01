@@ -211,10 +211,9 @@ function commandsModule({
         // TODO - remove this line once the measurements table customizations are in
         if (measurementKey !== 'finding') {
           if (updatedMeasurement.findingSites) {
-            updatedMeasurement.findingSites =
-              updatedMeasurement.findingSites.filter(
-                it => it.type !== measurementKey
-              );
+            updatedMeasurement.findingSites = updatedMeasurement.findingSites.filter(
+              it => it.type !== measurementKey
+            );
             updatedMeasurement.findingSites.push(code);
           } else {
             updatedMeasurement.findingSites = [code];
@@ -232,8 +231,9 @@ function commandsModule({
     getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
 
     setViewportActive: ({ viewportId }) => {
-      const viewportInfo =
-        cornerstoneViewportService.getViewportInfo(viewportId);
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(
+        viewportId
+      );
       if (!viewportInfo) {
         console.warn('No viewport found for viewportId:', viewportId);
         return;
@@ -260,8 +260,9 @@ function commandsModule({
       const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId =
-        toolGroupService.getToolGroupForViewport(viewportId);
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(
+        viewportId
+      );
 
       if (toolGroupId && toolGroupId !== viewportToolGroupId) {
         return;
@@ -511,8 +512,8 @@ function commandsModule({
       if (viewport instanceof StackViewport) {
         numberOfSlices = viewport.getImageIds().length;
       } else if (viewport instanceof VolumeViewport) {
-        numberOfSlices =
-          csUtils.getImageSliceDataForVolumeViewport(viewport).numberOfSlices;
+        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport)
+          .numberOfSlices;
       } else {
         throw new Error('Unsupported viewport type');
       }
@@ -527,7 +528,6 @@ function commandsModule({
       const options = { imageIndex: jumpIndex };
       cstUtils.jumpToSlice(viewport.element, options);
     },
-
     scroll: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
 
@@ -546,8 +546,9 @@ function commandsModule({
       colormap,
       immediate = false,
     }) => {
-      const viewport =
-        cornerstoneViewportService.getCornerstoneViewportByIndex(viewportIndex);
+      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+        viewportIndex
+      );
 
       const actorEntries = viewport.getActors();
 
@@ -583,8 +584,9 @@ function commandsModule({
     },
     toggleReferenceLines: ({ toggledState }) => {
       const { activeViewportIndex } = viewportGridService.getState();
-      const viewportInfo =
-        cornerstoneViewportService.getViewportInfoByIndex(activeViewportIndex);
+      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
+        activeViewportIndex
+      );
 
       const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);

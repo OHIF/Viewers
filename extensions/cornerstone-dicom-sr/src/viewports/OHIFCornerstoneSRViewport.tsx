@@ -2,18 +2,10 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
-import { CornerstoneServices } from '@ohif/extension-cornerstone/types';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import {
-  Icon,
-  Notification,
-  Tooltip,
-  useViewportDialog,
-  useViewportGrid,
-  ViewportActionBar,
-} from '@ohif/ui';
+import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
@@ -36,8 +28,11 @@ function OHIFCornerstoneSRViewport(props) {
     extensionManager,
   } = props;
 
-  const { displaySetService, cornerstoneViewportService, measurementService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    cornerstoneViewportService,
+    measurementService,
+  } = servicesManager.services;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -47,7 +42,6 @@ function OHIFCornerstoneSRViewport(props) {
   const srDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [viewportDialogState] = useViewportDialog();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
   const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(
@@ -64,10 +58,9 @@ function OHIFCornerstoneSRViewport(props) {
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
 
-  const hasMeasurementTrackingExtension =
-    extensionManager.registeredExtensionIds.includes(
-      MEASUREMENT_TRACKING_EXTENSION_ID
-    );
+  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
+    MEASUREMENT_TRACKING_EXTENSION_ID
+  );
 
   if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
@@ -93,8 +86,8 @@ function OHIFCornerstoneSRViewport(props) {
       if (displaySets.length) {
         viewportGridService.setDisplaySetsForViewports([
           {
-          viewportIndex: activeViewportIndex,
-          displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
           },
         ]);
       }
@@ -131,8 +124,11 @@ function OHIFCornerstoneSRViewport(props) {
 
   const updateViewport = useCallback(
     newMeasurementSelected => {
-      const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } =
-        srDisplaySet;
+      const {
+        StudyInstanceUID,
+        displaySetInstanceUID,
+        sopClassUids,
+      } = srDisplaySet;
 
       if (!StudyInstanceUID || !displaySetInstanceUID) {
         return;
@@ -165,8 +161,9 @@ function OHIFCornerstoneSRViewport(props) {
           // imageIdIndex will handle it by updating the viewport, but if they
           // are the same we just need to use measurementService to jump to the
           // new measurement
-          const viewportInfo =
-            cornerstoneViewportService.getViewportInfoByIndex(viewportIndex);
+          const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
+            viewportIndex
+          );
 
           const csViewport = cornerstoneViewportService.getCornerstoneViewport(
             viewportInfo.getViewportId()
@@ -287,7 +284,6 @@ function OHIFCornerstoneSRViewport(props) {
     if (!srDisplaySet.isLoaded) {
       srDisplaySet.load();
     }
-
     const numMeasurements = srDisplaySet.measurements.length;
     setMeasurementCount(numMeasurements);
   }, [srDisplaySet]);

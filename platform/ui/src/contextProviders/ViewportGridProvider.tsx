@@ -173,8 +173,10 @@ export function ViewportGridProvider({ children, service }) {
             displaySetOptions,
             viewportLabel: viewportLabels[viewportIndex],
           };
-          viewportOptions.presentationIds =
-            ViewportGridService.getPresentationIds(newViewport, viewports);
+          viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
+            newViewport,
+            viewports
+          );
 
           newViewport = reuseViewportId(
             viewportIdSet,
@@ -263,8 +265,10 @@ export function ViewportGridProvider({ children, service }) {
             state.viewports
           );
           if (!viewport.viewportOptions.presentationIds) {
-            viewport.viewportOptions.presentationIds =
-              ViewportGridService.getPresentationIds(viewport, viewports);
+            viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
+              viewport,
+              viewports
+            );
           }
           viewport.viewportIndex = viewportIndex;
           viewport.viewportLabel = viewportLabels[viewportIndex];
