@@ -1,11 +1,12 @@
 import { Types } from '@ohif/core';
 
 const mpr: Types.HangingProtocol.Protocol = {
+  id: 'mpr',
+  name: 'Multi-Planar Reconstruction',
   locked: true,
   hasUpdatedPriorsInformation: false,
-  name: 'mpr',
-  createdDate: '2021-02-23T19:22:08.894Z',
-  modifiedDate: '2023-02-17',
+  createdDate: '2021-02-23',
+  modifiedDate: '2023-04-03',
   availableTo: {},
   editableBy: {},
   // Unknown number of priors referenced - so just match any study
@@ -303,7 +304,7 @@ const mprAnd3DVolumeViewport = {
 function getHangingProtocolModule() {
   return [
     {
-      name: 'mpr',
+      name: mpr.id,
       protocol: mpr,
     },
     {

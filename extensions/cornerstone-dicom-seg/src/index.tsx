@@ -3,8 +3,11 @@ import React from 'react';
 
 import { Types } from '@ohif/core';
 
-import getSopClassHandlerModule from './getSopClassHandlerModule';
+import getSopClassHandlerModule, {
+  protocols,
+} from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
+import getHangingProtocolModule from './getHangingProtocolModule';
 
 const Component = React.lazy(() => {
   return import(
@@ -31,23 +34,16 @@ const extension = {
   id,
 
   /**
-   * Perform any pre-registration tasks here. This is called before the extension
-   * is registered. Usually we run tasks such as: configuring the libraries
-   * (e.g. cornerstone, cornerstoneTools, ...) or registering any services that
-   * this extension is providing.
-   */
-  preRegistration: ({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-  }) => {},
- /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({ servicesManager, commandsManager, extensionManager }): Types.Panel[] => {
+  getPanelModule: ({
+    servicesManager,
+    commandsManager,
+    extensionManager,
+  }): Types.Panel[] => {
     const wrappedPanelSegmentation = () => {
       return (
         <PanelSegmentation
@@ -68,6 +64,7 @@ const extension = {
       },
     ];
   },
+
   getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {
       return (
@@ -90,6 +87,11 @@ const extension = {
    * Examples include the default sop class handler provided by the default extension
    */
   getSopClassHandlerModule,
+  getHangingProtocolModule,
 };
 
 export default extension;
+
+// Export the protocols separately to allow for extending it at compile time
+// in other modules
+export { protocols };

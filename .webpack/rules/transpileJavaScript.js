@@ -25,7 +25,7 @@ function transpileJavaScript(mode) {
     // These are packages that are not transpiled to our lowest supported
     // JS version (currently ES5). Most of these leverage ES6+ features,
     // that we need to transpile to a different syntax.
-    exclude,
+    exclude: [/(codecs)/, /(dicomicc)/, exclude],
     loader: 'babel-loader',
     options: {
       // Find babel.config.js in monorepo root

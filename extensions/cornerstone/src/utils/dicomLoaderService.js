@@ -1,5 +1,5 @@
 import { imageLoader } from '@cornerstonejs/core';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import { api } from 'dicomweb-client';
 import { DICOMWeb, errorHandler } from '@ohif/core';
 
@@ -114,7 +114,7 @@ class DicomLoaderService {
     }
 
     if (!someInvalidStrings(imageId)) {
-      return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
+      return dicomImageLoader.wadouri.loadFileRequest(imageId);
     }
   }
 

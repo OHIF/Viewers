@@ -1,4 +1,4 @@
-import OHIF from '@ohif/core';
+import OHIF, { Types } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';

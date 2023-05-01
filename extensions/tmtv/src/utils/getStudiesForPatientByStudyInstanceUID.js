@@ -8,7 +8,7 @@ async function getStudiesForPatientByStudyInstanceUID(
   // TODO: The `DicomMetadataStore` should short-circuit both of these requests
   // Data _could_ be here from route query, or if using JSON data source
   // We could also force this to "await" these values being available in the DICOMStore?
-  // Kind of like promise fulfillment in cornerstone-wado-image-loader when there are multiple
+  // Kind of like promise fulfillment in @cornerstonejs/dicom-image-loader when there are multiple
   // outgoing requests for the same data
   const getStudyResult = await dataSource.query.studies.search({
     studyInstanceUid: StudyInstanceUID,

@@ -50,7 +50,7 @@ const _getDisplaySetsFromSeries = (
       referencedImages: null,
       measurements: null,
       pdfUrl,
-      others: [instance],
+      instances: [instance],
       thumbnailSrc: dataSource.retrieve.directURL({
         instance,
         defaultPath: '/thumbnail',
