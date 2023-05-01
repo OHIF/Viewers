@@ -47,6 +47,15 @@ function TrackedMeasurementsContextProvider(
 
       const uid = trackedMeasurements[0].uid;
 
+      console.log(
+        'jumping to measurement reset viewport',
+        viewportGrid.activeViewportIndex,
+        trackedMeasurements[0]
+      );
+      viewportGridService.setDisplaySetsForViewport({
+        viewportIndex: viewportGrid.activeViewportIndex,
+        displaySetInstanceUIDs: [trackedMeasurements[0].displaySetInstanceUID],
+      });
       measurementService.jumpToMeasurement(
         viewportGrid.activeViewportIndex,
         uid

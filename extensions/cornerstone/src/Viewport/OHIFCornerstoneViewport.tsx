@@ -9,6 +9,7 @@ import {
   StackViewport,
   utilities as csUtils,
 } from '@cornerstonejs/core';
+import { MeasurementService } from '@ohif/core';
 import {
   CinePlayer,
   useCine,
@@ -29,6 +30,12 @@ import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/
 import CornerstoneServices from '../types/CornerstoneServices';
 
 const STACK = 'stack';
+
+/**
+ * Caches the jump to measurement operation, so that if display set is shown,
+ * it can jump to the measurement.
+ */
+let cacheJumpToMeasurementEvent;
 
 function areEqual(prevProps, nextProps) {
   if (nextProps.needsRerendering) {
@@ -412,6 +419,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
         lutPresentation:
           lutPresentationStore[presentationIds?.lutPresentationId],
       };
+      let measurement;
+      if (cacheJumpToMeasurementEvent?.viewportIndex === viewportIndex) {
+        measurement = cacheJumpToMeasurementEvent.measurement;
+        // Delete the position presentation so that viewport navigates direct
+        presentations.positionPresentation = null;
+        cacheJumpToMeasurementEvent = null;
+      }
 
       cornerstoneViewportService.setViewportData(
         viewportIndex,
@@ -420,6 +434,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
         displaySetOptions,
         presentations
       );
+
+      if (measurement) {
+        cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
+      }
     };
 
     loadViewportData();
@@ -536,22 +554,30 @@ function _subscribeToJumpToMeasurementEvents(
     displaySet => displaySet.displaySetInstanceUID
   );
   const { unsubscribe } = measurementService.subscribe(
-    measurementService.EVENTS.JUMP_TO_MEASUREMENT,
-    ({ measurement }) => {
-      if (!measurement) return;
-
-      // Jump the the measurement if the viewport contains the displaySetUID (fusion)
-      if (displaysUIDs.includes(measurement.displaySetInstanceUID)) {
-        _jumpToMeasurement(
-          measurement,
-          elementRef,
-          viewportIndex,
-          measurementService,
-          displaySetService,
-          viewportGridService,
-          cornerstoneViewportService
+    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
+    props => {
+      cacheJumpToMeasurementEvent = props;
+      const { viewportIndex: jumpIndex, measurement, isConsumed } = props;
+      if (!measurement || isConsumed) return;
+      if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
+        // Decide on which viewport should handle this
+        cacheJumpToMeasurementEvent.cornerstoneViewport = cornerstoneViewportService.getViewportIndexToJump(
+          jumpIndex,
+          measurement.displaySetInstanceUID,
+          { referencedImageId: measurement.referencedImageId }
         );
       }
+      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportIndex)
+        return;
+      _jumpToMeasurement(
+        measurement,
+        elementRef,
+        viewportIndex,
+        measurementService,
+        displaySetService,
+        viewportGridService,
+        cornerstoneViewportService
+      );
     }
   );
 
@@ -568,21 +594,19 @@ function _checkForCachedJumpToMeasurementEvents(
   viewportGridService,
   cornerstoneViewportService
 ) {
+  if (!cacheJumpToMeasurementEvent) return;
+  if (cacheJumpToMeasurementEvent.isConsumed) {
+    cacheJumpToMeasurementEvent = null;
+    return;
+  }
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
   if (!displaysUIDs?.length) return;
 
-  const measurementIdToJumpTo = measurementService.getJumpToMeasurement(
-    viewportIndex
-  );
-
-  if (measurementIdToJumpTo && elementRef) {
-    // Jump to measurement if the measurement exists
-    const measurement = measurementService.getMeasurement(
-      measurementIdToJumpTo
-    );
-
+  // Jump to measurement if the measurement exists
+  const { measurement } = cacheJumpToMeasurementEvent;
+  if (measurement && elementRef) {
     if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
       _jumpToMeasurement(
         measurement,
@@ -611,6 +635,7 @@ function _jumpToMeasurement(
 
   if (!SOPInstanceUID) {
     console.warn('cannot jump in a non-acquisition plane measurements yet');
+    return;
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
@@ -623,15 +648,17 @@ function _jumpToMeasurement(
 
   viewportGridService.setActiveViewportIndex(viewportIndex);
 
-  const enableElement = getEnabledElement(targetElement);
+  const enabledElement = getEnabledElement(targetElement);
 
   const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
     viewportIndex
   );
 
-  if (enableElement) {
+  if (enabledElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
-    const viewport = enableElement.viewport as IStackViewport | IVolumeViewport;
+    const viewport = enabledElement.viewport as
+      | IStackViewport
+      | IVolumeViewport;
 
     let imageIdIndex = 0;
     let viewportCameraDirectionMatch = true;
@@ -680,7 +707,8 @@ function _jumpToMeasurement(
 
     cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
     // Jump to measurement consumed, remove.
-    measurementService.removeJumpToMeasurement(viewportIndex);
+    cacheJumpToMeasurementEvent?.consume?.();
+    cacheJumpToMeasurementEvent = null;
   }
 }
 

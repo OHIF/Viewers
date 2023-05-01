@@ -1,4 +1,4 @@
-import { ServicesManager, utils } from '@ohif/core';
+import { ServicesManager, utils, Types } from '@ohif/core';
 
 import {
   ContextMenuController,
@@ -244,6 +244,12 @@ const commandsModule = ({
           }
         }
         // Do this after successfully applying the update
+        // Note, don't store the active display set - it is only needed while
+        // changing display sets.  This causes jump to measurement to fail on
+        // multi-study display.
+        delete displaySetSelectorMap[
+          `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`
+        ];
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
         actions.toggleHpTools(hangingProtocolService.getActiveProtocol());

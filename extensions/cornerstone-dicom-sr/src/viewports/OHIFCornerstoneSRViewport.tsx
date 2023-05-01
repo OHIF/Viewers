@@ -2,18 +2,10 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
-import { CornerstoneServices } from '@ohif/extension-cornerstone/types';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import {
-  Icon,
-  Notification,
-  Tooltip,
-  useViewportDialog,
-  useViewportGrid,
-  ViewportActionBar,
-} from '@ohif/ui';
+import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
@@ -40,7 +32,7 @@ function OHIFCornerstoneSRViewport(props) {
     displaySetService,
     cornerstoneViewportService,
     measurementService,
-  } = servicesManager.services as CornerstoneServices;
+  } = servicesManager.services;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -50,7 +42,6 @@ function OHIFCornerstoneSRViewport(props) {
   const srDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
   const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(

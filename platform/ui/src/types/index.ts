@@ -18,4 +18,4 @@ const StringNumber = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
  */
 const StringArray = PropTypes.oneOfType([PropTypes.string, PropTypes.array]);
 
-export { StringNumber, StringArray, ThumbnailType, PresentationIds };
+export { StringNumber, StringArray, ThumbnailType };

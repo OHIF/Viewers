@@ -906,6 +906,34 @@ class CornerstoneViewportService extends PubSubService
       return images[0].FrameOfReferenceUID;
     }
   }
+
+  /**
+   * Looks through the viewports to see if the specified measurement can be
+   * displayed in one of the viewports.
+   *
+   * @param measurement
+   *          The measurement that is desired to view.
+   * @param activeViewportIndex - the index that was active at the time the jump
+   *          was initiated.
+   * @return the viewportIndex to display the given measurement
+   */
+  public getViewportIndexToJump(
+    activeViewportIndex: number,
+    displaySetInstanceUID: string,
+    cameraProps: unknown
+  ): number {
+    const viewportInfo = this.viewportsInfo.get(activeViewportIndex);
+    const { referencedImageId } = cameraProps;
+    if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
+      return activeViewportIndex;
+    }
+
+    return (
+      [...this.viewportsById.values()].find(viewportInfo =>
+        viewportInfo.contains(displaySetInstanceUID, referencedImageId)
+      )?.viewportIndex ?? -1
+    );
+  }
 }
 
 export default CornerstoneViewportService;
