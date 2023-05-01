@@ -37,6 +37,14 @@ const operations = [
   { value: SUB, label: 'SUBTRACT', placeHolder: 'SUBTRACT' },
 ];
 
+const timeFrameOptions = [
+  { value: '1', label: '1', placeHolder: '1' },
+  { value: '2', label: '2', placeHolder: '2' },
+  { value: '3', label: '3', placeHolder: '3' },
+  { value: '4', label: '4', placeHolder: '4' },
+  { value: '5', label: '5', placeHolder: '5' },
+];
+
 export default function PanelGenerateImage({
   servicesManager,
   commandsManager,
@@ -48,6 +56,7 @@ export default function PanelGenerateImage({
   } = servicesManager.services;
   const { t } = useTranslation('PanelGenerateImage');
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
+  const [options, setOptions] = useState([]);
 
   const handleMetadataChange = metadata => {
     setMetadata(prevState => {
@@ -72,7 +81,6 @@ export default function PanelGenerateImage({
 
   // Get toolGroupIds for setting PT color map
   const toolGroupIds = toolGroupService.getToolGroupIds();
-  console.log(toolGroupIds);
 
   const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader id which defines which volume loader to use
   const computedVolumeId = `cornerstoneStreamingImageVolume:MY_COMPUTED_VOLUME`;
@@ -80,12 +88,29 @@ export default function PanelGenerateImage({
   //TODO: get referenceVolumeId from viewport
   const dynamicVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`;
   //TODO: get the referencedVolume using cache.getVolume(referencedVolumeId)
-  const dynamicVolume = cache.getVolume(dynamicVolumeId);
-  const computedVolumeInit = createComputedVolume(
-    dynamicVolumeId,
-    computedVolumeId
-  );
+  // const dynamicVolume = cache.getVolume(dynamicVolumeId);
+  let dynamicVolume;
+  // const computedVolumeInit = createComputedVolume(
+  //   dynamicVolumeId,
+  //   computedVolumeId
+  // );
   console.log(dynamicVolumeId);
+
+  // useEffect to wait for volume to load before getting options
+  useEffect(() => {
+    console.log('useEffect has run');
+    if (!displaySetInstanceUID) return;
+
+    console.log('there is a dynamic volume Id');
+    console.warn(displaySetInstanceUID);
+
+    dynamicVolume = cache.getVolume(dynamicVolumeId);
+    console.log(dynamicVolume);
+    if (!dynamicVolume) return;
+    // const timePoints = dynamicVolume.numTimePoints;
+    // console.log(`timepoints: ${timePoints}`);
+    console.log('There is a dynamic volume');
+  }, [dynamicVolumeId, dynamicVolume]);
 
   function onGenerateImage() {
     console.log('onGenerateImage was run');
@@ -167,7 +192,7 @@ export default function PanelGenerateImage({
   //   console.log(image);
   // }
   if (!metadata.TimeFrames) {
-    console.log(dynamicVolume);
+    // console.log(dynamicVolume);
   }
 
   return (
@@ -209,6 +234,18 @@ export default function PanelGenerateImage({
         <Button color="primary" onClick={returnTo4D}>
           Return To 4D
         </Button>
+        <Select
+          label={t('TimeFrameOptions')}
+          closeMenuOnSelect={false}
+          className="mr-2 bg-black border-primary-main text-white "
+          options={timeFrameOptions}
+          placeholder={timeFrameOptions[0].placeHolder}
+          value={timeFrameOptions}
+          isMulti={true}
+          onChange={e => {
+            console.log('BEEP');
+          }}
+        />
       </div>
     </div>
   );
@@ -226,7 +263,10 @@ async function createComputedVolume(dynamicVolumeId, computedVolumeId) {
   }
 }
 
-async function getDynamicVolumeFromCache(dynamicVolumeId) {}
+async function getDynamicVolumeFromCache(dynamicVolumeId) {
+  const dynamicVolumeFromCache = await cache.getVolume(dynamicVolumeId);
+  return dynamicVolumeFromCache;
+}
 
 async function getTimeFrames(dynamicVolumeId) {}
 
