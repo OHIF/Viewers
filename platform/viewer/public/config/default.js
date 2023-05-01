@@ -54,6 +54,14 @@ window.config = {
       },
     },
     {
+      friendlyName: 'dicomweb delegating proxy',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
+      sourceName: 'dicomwebproxy',
+      configuration: {
+        name: 'dicomwebproxy',
+      },
+    },
+    {
       friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',

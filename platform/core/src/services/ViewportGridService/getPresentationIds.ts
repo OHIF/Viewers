@@ -132,3 +132,4 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
 };
 
 export default getPresentationIds;
+export { getPresentationIds };

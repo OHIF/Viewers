@@ -88,6 +88,20 @@ export type DisplaySet = {
 const STACK = 'stack';
 const DEFAULT_TOOLGROUP_ID = 'default';
 
+// Return true if the data contains the given display set UID OR the imageId
+// if it is a composite object.
+const dataContains = (
+  data,
+  displaySetUID: string,
+  imageId?: string
+): boolean => {
+  if (data.displaySetInstanceUID === displaySetUID) return true;
+  if (imageId && data.isCompositeStack && data.imageIds) {
+    return !!data.imageIds.find(dataId => dataId === imageId);
+  }
+  return false;
+};
+
 class ViewportInfo {
   private viewportId = '';
   private viewportIndex: number;
@@ -102,6 +116,21 @@ class ViewportInfo {
     this.viewportId = viewportId;
     this.setPublicViewportOptions({});
     this.setPublicDisplaySetOptions([{}]);
+  }
+
+  /**
+   * Return true if the viewport contains the given display set UID,
+   * OR if it is a composite stack and contains the given imageId
+   */
+  public contains(displaySetUID: string, imageId: string): boolean {
+    if (!this.viewportData?.data) return false;
+
+    if (this.viewportData.data.length) {
+      return !!this.viewportData.find(data =>
+        dataContains(data, displaySetUID, imageId)
+      );
+    }
+    return dataContains(this.viewportData.data, displaySetUID, imageId);
   }
 
   public destroy = (): void => {
