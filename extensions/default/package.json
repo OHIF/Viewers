@@ -33,7 +33,7 @@
     "@ohif/core": "^3.0.0",
     "@ohif/i18n": "^1.0.0",
     "dcmjs": "^0.29.5",
-    "dicomweb-client": "^0.8.4",
+    "dicomweb-client": "^0.10.2",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
