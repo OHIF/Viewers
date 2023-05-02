@@ -92,7 +92,7 @@ jobs:
       TZ: '/usr/share/zoneinfo/America/Los_Angeles'
     working_directory: ~/Viewers
     docker:
-      - image: circleci/python:3.7.0-stretch
+      - image: cimg/python:3.8
     resource_class: large
     steps:
       - checkout
@@ -132,7 +132,7 @@ jobs:
     environment:
       TZ: '/usr/share/zoneinfo/America/Los_Angeles'
     docker:
-      - image: circleci/python:3.7.0-stretch
+      - image: cimg/python:3.8
     working_directory: ~/Viewers
     steps:
       - restore_cache:
