@@ -27,7 +27,7 @@ function createStudyMetadata(StudyInstanceUID) {
         const series = createSeriesMetadata([instance]);
         this.series.push(series);
         const { Modality } = series;
-        if (this.ModalitiesInStudy.indexof(Modality) === -1) {
+        if (this.ModalitiesInStudy.indexOf(Modality) === -1) {
           this.ModalitiesInStudy.push(Modality);
         }
       }

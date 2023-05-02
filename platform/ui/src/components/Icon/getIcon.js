@@ -50,6 +50,8 @@ import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
 import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
 import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
+import iconAlertOutline from './../../assets/icons/icons-alert-outline.svg';
+import iconAlertSmall from './../../assets/icons/icon-alert-small.svg';
 import iconClose from './../../assets/icons/icon-close.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
 import iconNext from './../../assets/icons/icon-next.svg';
@@ -57,6 +59,9 @@ import iconPlay from './../../assets/icons/icon-play.svg';
 import iconPause from './../../assets/icons/icon-pause.svg';
 import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
 import iconPrev from './../../assets/icons/icon-prev.svg';
+import iconStatusAlert from './../../assets/icons/icon-status-alert.svg';
+import iconTransferring from './../../assets/icons/icon-transferring.svg';
+import iconUpload from './../../assets/icons/icon-upload.svg';
 import navigationPanelRightHide from './../../assets/icons/navigation-panel-right-hide.svg';
 import navigationPanelRightReveal from './../../assets/icons/navigation-panel-right-reveal.svg';
 import tabLinear from './../../assets/icons/tab-linear.svg';
@@ -97,6 +102,9 @@ import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
 import toolCalibration from './../../assets/icons/tool-calibration.svg';
+import toolFreehand from './../../assets/icons/tool-freehand.svg';
+import toolFreehandPolygon from './../../assets/icons/tool-freehand-polygon.svg';
+import toolPolygon from './../../assets/icons/tool-polygon.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 import panelGroupMore from './../../assets/icons/panel-group-more.svg';
 import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
@@ -141,9 +149,13 @@ const ICONS = {
   'external-link': externalLink,
   'group-layers': groupLayers,
   info: info,
+  'icon-alert-outline': iconAlertOutline,
+  'icon-alert-small': iconAlertSmall,
   'icon-close': iconClose,
   'icon-play': iconPlay,
   'icon-pause': iconPause,
+  'icon-status-alert': iconStatusAlert,
+  'icon-transferring': iconTransferring,
   'info-action': infoAction,
   'info-link': infoLink,
   'arrow-left': arrowLeft,
@@ -216,12 +228,18 @@ const ICONS = {
   'tool-fusion-color': toolFusionColor,
   'tool-create-threshold': toolCreateThreshold,
   'tool-calibration': toolCalibration,
+  'tool-point': toolCircle,
+  'tool-circle': toolCircle,
+  'tool-freehand-line': toolFreehand,
+  'tool-freehand-polygon': toolFreehandPolygon,
+  'tool-polygon': toolPolygon,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,
   'icon-next': iconNext,
   'icon-prev-inactive': iconPrevInactive,
   'icon-prev': iconPrev,
+  'icon-upload': iconUpload,
   'navigation-panel-right-hide': navigationPanelRightHide,
   'navigation-panel-right-reveal': navigationPanelRightReveal,
   'tab-linear': tabLinear,
