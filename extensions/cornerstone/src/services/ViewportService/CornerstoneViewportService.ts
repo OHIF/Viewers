@@ -1,3 +1,4 @@
+import ulog from 'ulog';
 import { PubSubService, ServicesManager } from '@ohif/core';
 import * as OhifTypes from '@ohif/core/types';
 import {
@@ -41,6 +42,8 @@ const EVENTS = {
   VIEWPORT_DATA_CHANGED:
     'event::cornerstoneViewportService:viewportDataChanged',
 };
+
+const log = ulog('services:cornerstone:CornerstoneViewportService');
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -183,12 +186,9 @@ class CornerstoneViewportService extends PubSubService
       return;
     }
 
-    const viewportIndex = viewportInfo.getViewportIndex();
-
     this.renderingEngine && this.renderingEngine.disableElement(viewportId);
 
     viewportInfo.destroy();
-    this.viewportsInfo.delete(viewportIndex);
     this.viewportsById.delete(viewportId);
   }
 
@@ -228,6 +228,8 @@ class CornerstoneViewportService extends PubSubService
 
   /** Moves a viewport to a new viewport index.  No-op if not moving. */
   public moveViewport(viewportIndex: number, viewportId: string): void {
+    if (viewportIndex === undefined) throw new Error('Undefined viewportIndex ' + viewportId);
+    log.debug("* moveViewport", viewportIndex, viewportId);
     const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) return;
     this.viewportsInfo.set(viewportIndex, viewportInfo);
@@ -330,6 +332,7 @@ class CornerstoneViewportService extends PubSubService
     return viewport;
   }
 
+
   public getCornerstoneViewportByIndex(
     viewportIndex: number
   ): Types.IStackViewport | Types.IVolumeViewport | null {
@@ -360,13 +363,7 @@ class CornerstoneViewportService extends PubSubService
   }
 
   public getViewportInfo(viewportId: string): ViewportInfo {
-    // @ts-ignore
-    for (const [index, viewport] of this.viewportsInfo.entries()) {
-      if (viewport.getViewportId() === viewportId) {
-        return viewport;
-      }
-    }
-    return null;
+    return this.viewportsById.get(viewportId);
   }
 
   _setStackViewport(
@@ -716,14 +713,11 @@ class CornerstoneViewportService extends PubSubService
   // Todo: keepCamera is an interim solution until we have a better solution for
   // keeping the camera position when the viewport data is changed
   public updateViewport(
-    viewportIndex: number,
+    viewportId: string,
     viewportData,
     keepCamera = false
   ) {
-    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
-    this.moveViewport(viewportIndex, viewportInfo?.viewportId);
-
-    const viewportId = viewportInfo.getViewportId();
+    const viewportInfo = this.getViewportInfo(viewportId);
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 

@@ -267,11 +267,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   };
 
   const cleanUpServices = useCallback(() => {
-    log.debug(
-      'Cleanup services',
-      viewportIndex,
-      viewportOptions.viewportId
-    );
+    log.debug('Cleanup services', viewportIndex, viewportOptions.viewportId);
     const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
       viewportIndex
     );
@@ -393,8 +389,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const { unsubscribe } = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       async invalidatedDisplaySetInstanceUID => {
-        const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-          viewportIndex
+        const viewportInfo = cornerstoneViewportService.getViewportInfo(
+          viewportId
         );
 
         log.debug(
@@ -414,7 +410,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
           const keepCamera = true;
           cornerstoneViewportService.updateViewport(
-            viewportIndex,
+            viewportId,
             newViewportData,
             keepCamera
           );
@@ -557,6 +553,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         ></div>
         <CornerstoneOverlays
           viewportIndex={viewportIndex}
+          viewportId={viewportId}
           toolBarService={toolbarService}
           element={elementRef.current}
           scrollbarHeight={scrollbarHeight}

@@ -102,7 +102,7 @@ const viewportGridReducer = (state, action): ViewportGridState => {
           if (!displaySetOptions.length) {
             // Copy all the display set options, assuming a full set of displa
             // set UID's is provided.
-            displaySetOptions.push(...previousViewport.displaySetOptions);
+            displaySetOptions.push(...(previousViewport.displaySetOptions || []));
             if (!displaySetOptions.length) {
               displaySetOptions.push({});
             }
@@ -170,6 +170,8 @@ const viewportGridReducer = (state, action): ViewportGridState => {
             const viewport = findOrCreateViewport(pos, positionId, options);
             if (!viewport) continue;
             viewport.positionId = positionId;
+            // If the copied viewport didn't have options, then this sets them
+            viewport.viewportOptions ||= {};
             delete viewport.viewportOptions.presentationIds;
 
             // Assign an initial viewport id in a way that tends to be

@@ -6,7 +6,13 @@ import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
 
 function CornerstoneOverlays(props) {
-  const { viewportIndex, element, scrollbarHeight, servicesManager } = props;
+  const {
+    viewportIndex,
+    element,
+    scrollbarHeight,
+    servicesManager,
+    viewportId,
+  } = props;
   const { cornerstoneViewportService } = servicesManager.services;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
@@ -18,6 +24,10 @@ function CornerstoneOverlays(props) {
     const { unsubscribe } = cornerstoneViewportService.subscribe(
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
       props => {
+        if (props.viewportId !== viewportId) {
+          return;
+        }
+
         if (props.viewportIndex !== viewportIndex) {
           return;
         }
@@ -29,15 +39,14 @@ function CornerstoneOverlays(props) {
     return () => {
       unsubscribe();
     };
-  }, [viewportIndex]);
+  }, [viewportIndex, viewportId]);
 
   if (!element) {
     return null;
   }
 
   if (viewportData) {
-    const viewportInfo =
-      cornerstoneViewportService.getViewportInfoByIndex(viewportIndex);
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
     if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
       return null;
@@ -48,6 +57,7 @@ function CornerstoneOverlays(props) {
     <div className="noselect">
       <ViewportImageScrollbar
         viewportIndex={viewportIndex}
+        viewportId={viewportId}
         viewportData={viewportData}
         element={element}
         imageSliceData={imageSliceData}
@@ -60,6 +70,7 @@ function CornerstoneOverlays(props) {
         imageSliceData={imageSliceData}
         viewportData={viewportData}
         viewportIndex={viewportIndex}
+        viewportId={viewportId}
         servicesManager={servicesManager}
         element={element}
       />
@@ -74,7 +85,7 @@ function CornerstoneOverlays(props) {
         element={element}
         viewportData={viewportData}
         servicesManager={servicesManager}
-        viewportIndex={viewportIndex}
+        viewportId={viewportId}
       />
     </div>
   );
