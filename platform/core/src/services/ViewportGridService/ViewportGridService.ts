@@ -6,6 +6,7 @@ class ViewportGridService extends PubSubService {
     ACTIVE_VIEWPORT_INDEX_CHANGED: 'event::activeviewportindexchanged',
     LAYOUT_CHANGED: 'event::layoutChanged',
     GRID_STATE_CHANGED: 'event::gridStateChanged',
+    GRID_CONTENTS_CHANGED: 'event::gridContentsChanged',
   };
 
   public static REGISTRATION = {
@@ -99,7 +100,7 @@ class ViewportGridService extends PubSubService {
         );
       }
     }
-    this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
+    this._broadcastEvent(ViewportGridService.EVENTS.GRID_CONTENTS_CHANGED, {
       state,
       viewports,
     });

@@ -1,4 +1,7 @@
+import ulog from 'ulog';
 import validate from './lib/validator';
+
+const log = ulog('service:hp:HPMatcher');
 
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
@@ -74,7 +77,7 @@ const match = (
       errorMessages = ['Something went wrong during validation.', e];
     }
 
-    console.debug(
+    log.debug(
       'Test',
       `${from}.${attribute}`,
       readValues[attribute],

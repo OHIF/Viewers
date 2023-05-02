@@ -8,6 +8,12 @@ sidebar_label: URL
 You can modify the URL at any state of the app to get the desired result. Here
 are different part of the APP that you can modify:
 
+## Log levels
+
+You can set various log levels by using the `log` parameter according to the
+`ulog` settings.  For example `log=debug` will show debug level logging.
+You can also enable a specific module, eg `debug=ui:*` would enable all UI
+logging at the debug level.
 
 ## WorkList
 

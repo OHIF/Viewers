@@ -18,6 +18,8 @@ There are seven events that get publish in `ViewportGridService `:
 | ACTIVE_VIEWPORT_INDEX_CHANGED | Fires the index of the active viewport is changed |
 | LAYOUT_CHANGED                | Fires the layout is changed                       |
 | GRID_STATE_CHANGED            | Fires when the entire grid state is changed       |
+| GRID_CONTENTS_CHANGED         | Fires when the the contents of one or more layouts changes without the layout otherwise changing. |
+
 ## Interface
 
 For a more detailed look on the options and return values each of these methods

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
+import ulog from 'ulog';
 import * as cs3DTools from '@cornerstonejs/tools';
 import {
   Enums,
@@ -28,6 +29,8 @@ import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CornerstoneServices from '../types/CornerstoneServices';
+
+const log = ulog('cornerstone:OHIFCornerstoneViewport');
 
 const STACK = 'stack';
 
@@ -239,7 +242,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     const currentPresentation = cornerstoneViewportService.getPresentation(
       viewportId
     );
-    console.debug('storePresentation', viewportId, currentPresentation);
+    log.debug('storePresentation', viewportId, currentPresentation);
     if (!currentPresentation || !currentPresentation.presentationIds) return;
     const {
       lutPresentationStore,
@@ -264,7 +267,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   };
 
   const cleanUpServices = useCallback(() => {
-    console.debug(
+    log.debug(
       'Cleanup services',
       viewportIndex,
       viewportOptions.viewportId
@@ -331,7 +334,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   // disable the element upon unmounting
   useEffect(() => {
-    console.debug('Enabling', viewportIndex, viewportOptions?.viewportId);
+    log.debug('Enabling', viewportIndex, viewportOptions?.viewportId);
     cornerstoneViewportService.enableViewport(
       viewportIndex,
       viewportOptions,
@@ -350,7 +353,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       cleanUpServices();
 
-      console.debug('** Disabling', viewportIndex, viewportOptions?.viewportId);
+      log.debug('** Disabling', viewportIndex, viewportOptions?.viewportId);
       cornerstoneViewportService.disableElement(viewportOptions?.viewportId);
 
       if (onElementDisabled) {
@@ -377,7 +380,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   // Note: this approach does not actually end of sending network requests
   // and it uses the network cache
   useEffect(() => {
-    console.debug(
+    log.debug(
       'viewportInfo changed effect',
       viewportOptions?.viewportId,
       viewportIndex
@@ -394,7 +397,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
           viewportIndex
         );
 
-        console.debug(
+        log.debug(
           'Invalidated',
           viewportIndex,
           viewportOptions.viewportId,
@@ -459,7 +462,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         cacheJumpToMeasurementEvent = null;
       }
 
-      console.debug(
+      log.debug(
         'Setting viewportData',
         viewportIndex,
         viewportOptions.viewportId,
@@ -480,22 +483,20 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
     };
 
-    cornerstoneViewportService.moveViewport(
-      viewportIndex,
-      viewportOptions.viewportId
-    );
-    console.debug('loadViewportData', viewportIndex);
-    storePresentation();
+    log.debug('loadViewportData', viewportIndex);
     loadViewportData();
-  }, [displaySetUids, dataSource]);
+  }, [viewportOptions, displaySetUids, dataSource]);
+
+  useEffect(() => {
+    log.debug('storePresentations on viewportOptions change');
+    storePresentation();
+  }, [viewportOptions]);
 
   useEffect(() => {
     const newDisplaySetUids = displaySets.map(it => it.uid).join();
     if (newDisplaySetUids !== displaySetUids) {
-      console.debug('Setting new display set uids', viewportIndex);
+      log.debug('Setting new display set uids', viewportIndex);
       setDisplaySetUids(newDisplaySetUids);
-    } else {
-      console.debug('NOT setting display set uids', viewportIndex);
     }
   }, [displaySets]);
 

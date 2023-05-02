@@ -21394,6 +21394,11 @@ uid-number@0.0.6:
   resolved "https://registry.npmjs.org/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
   integrity sha512-c461FXIljswCuscZn67xq9PpszkPT6RjheWFQTgCyabJrTUozElanb0YEqv2UGgk247YpcJkFBuSGNvBlpXM9w==
 
+ulog@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ulog/-/ulog-1.1.0.tgz#2b07708ceb0a27df35851105cc8399aa7c0edd75"
+  integrity sha512-oQDYGh4w/ykGSpffEuwkqFnL5BYJa5HeV5PhpkjuAFwJCyjp2KjT2YDcFa8y4ie8kejdXMwpFCSF6HNM5Kia4g==
+
 umask@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/umask/-/umask-1.1.0.tgz#f29cebf01df517912bb58ff9c4e50fde8e33320d"

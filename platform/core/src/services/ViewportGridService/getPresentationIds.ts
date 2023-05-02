@@ -1,3 +1,7 @@
+import ulog from 'ulog';
+
+const log = ulog('services:grid:getPresentationIds');
+
 const JOIN_STR = '&';
 
 // The default lut presentation id if none defined
@@ -121,8 +125,8 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
 
   const lutPresentationId = lutPresentationArr.join(JOIN_STR);
   const positionPresentationId = positionPresentationArr.join(JOIN_STR);
-  console.debug(
-    '* Presentation Ids',
+  log.debug(
+    'Presentation Ids',
     viewport.viewportIndex,
     viewport.viewportId,
     lutPresentationId,

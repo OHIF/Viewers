@@ -1,5 +1,8 @@
+import ulog from 'ulog';
 import { HPMatcher } from './HPMatcher.js';
 import { sortByScore } from './lib/sortByScore';
+
+const log = ulog('service:hp:ProtocolEngine');
 
 export default class ProtocolEngine {
   constructor(protocols, customAttributeRetrievalCallbacks) {
@@ -42,7 +45,7 @@ export default class ProtocolEngine {
     // Retrieve the highest scoring Protocol
     const bestMatch = this._getHighestScoringProtocol();
 
-    console.debug('ProtocolEngine::getBestProtocolMatch bestMatch', bestMatch);
+    log.debug('ProtocolEngine::getBestProtocolMatch bestMatch', bestMatch);
 
     return bestMatch;
   }
@@ -51,7 +54,7 @@ export default class ProtocolEngine {
    * Populates the MatchedProtocols Collection by running the matching procedure
    */
   updateProtocolMatches() {
-    console.debug('ProtocolEngine::updateProtocolMatches');
+    log.debug('ProtocolEngine::updateProtocolMatches');
 
     // Clear all data currently in matchedProtocols
     this._clearMatchedProtocols();
@@ -71,7 +74,7 @@ export default class ProtocolEngine {
 
       // If it is not already in the MatchedProtocols Collection, insert it with its score
       if (!this.matchedProtocols.has(protocol.id)) {
-        console.debug(
+        log.debug(
           'ProtocolEngine::updateProtocolMatches inserting protocol match',
           matchedDetail
         );
@@ -156,7 +159,7 @@ export default class ProtocolEngine {
     // Sort the matched list by score
     sortByScore(matched);
 
-    console.debug('ProtocolEngine::findMatchByStudy matched', matched);
+    log.debug('ProtocolEngine::findMatchByStudy matched', matched);
 
     return matched;
   }
