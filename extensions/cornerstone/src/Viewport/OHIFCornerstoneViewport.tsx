@@ -177,6 +177,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
   };
 
+  useEffect(() =>
+    cornerstoneViewportService.moveViewport(viewportIndex, viewportId)
+  );
+
   useEffect(() => {
     eventTarget.addEventListener(
       Enums.Events.STACK_VIEWPORT_NEW_STACK,
@@ -267,16 +271,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
   };
 
   const cleanUpServices = useCallback(() => {
-    log.debug('Cleanup services', viewportIndex, viewportOptions.viewportId);
-    const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-      viewportIndex
-    );
+    log.debug('** Cleanup services', viewportIndex, viewportOptions.viewportId);
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
     if (!viewportInfo) {
       return;
     }
 
-    const viewportId = viewportInfo.getViewportId();
     const renderingEngineId = viewportInfo.getRenderingEngineId();
     const syncGroups = viewportInfo.getSyncGroups();
 
@@ -287,7 +288,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       renderingEngineId,
       syncGroups
     );
-  }, [viewportIndex, viewportOptions.viewportId]);
+  }, [viewportIndex, viewportId]);
 
   const elementEnabledHandler = useCallback(
     evt => {
@@ -330,7 +331,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   // disable the element upon unmounting
   useEffect(() => {
-    log.debug('Enabling', viewportIndex, viewportOptions?.viewportId);
+    log.debug('** Enabling', viewportIndex, viewportOptions?.viewportId);
     cornerstoneViewportService.enableViewport(
       viewportIndex,
       viewportOptions,
@@ -380,10 +381,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
       'viewportInfo changed effect',
       viewportOptions?.viewportId,
       viewportIndex
-    );
-    cornerstoneViewportService.moveViewport(
-      viewportIndex,
-      viewportOptions.viewportId
     );
 
     const { unsubscribe } = displaySetService.subscribe(

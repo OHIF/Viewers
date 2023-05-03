@@ -38,6 +38,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-i18next": "^10.11.0",
+    "ulog": "^1.1.0",
     "webpack": "^5.50.0",
     "webpack-merge": "^5.7.3"
   },

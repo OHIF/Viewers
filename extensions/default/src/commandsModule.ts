@@ -1,3 +1,4 @@
+import ulog from 'ulog';
 import { ServicesManager, utils, Types } from '@ohif/core';
 
 import {
@@ -14,6 +15,8 @@ import { ContextMenuProps } from './CustomizeableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/viewer';
 
+const log = ulog('default:commandsModule');
+
 const { subscribeToNextViewportGridChange } = utils;
 
 export type HangingProtocolParams = {
@@ -22,6 +25,10 @@ export type HangingProtocolParams = {
   activeStudyUID?: string;
   stageId?: string;
 };
+
+// Gets the stored hanging ID given the bits that make it up.
+const getStoredHangingID = (studyInstanceUID, protocolId, stageIndex) =>
+  `${studyInstanceUID}:${protocolId}:${stageIndex ?? ''}`;
 
 /**
  * Determine if a command is a hanging protocol one.
@@ -216,11 +223,13 @@ const commandsModule = ({
           hangingProtocolService.setActiveStudyUID(activeStudyUID);
         }
 
-        const storedHanging = `${
-          hangingProtocolService.getState().activeStudyUID
-        }:${protocolId}:${useStageIdx || 0}`;
+        const storedHangingID = getStoredHangingID(
+          hangingProtocolService.getState().activeStudyUID,
+          protocolId,
+          useStageIdx || 0
+        );
 
-        const restoreProtocol = !reset && viewportGridStore[storedHanging];
+        const restoreProtocol = !reset && viewportGridStore[storedHangingID];
 
         if (
           protocolId === hpInfo.protocolId &&
@@ -240,7 +249,7 @@ const commandsModule = ({
             restoreProtocol,
           });
           if (restoreProtocol) {
-            viewportGridService.set(viewportGridStore[storedHanging]);
+            viewportGridService.set(viewportGridStore[storedHangingID]);
           }
         }
         // Do this after successfully applying the update
@@ -286,28 +295,34 @@ const commandsModule = ({
         activeStudy,
       } = hangingProtocolService.getActiveProtocol();
       const { toggleHangingProtocol } = stateSyncService.getState();
-      const storedHanging = `${
-        activeStudy.StudyInstanceUID
-      }:${protocolId}:${stageIndex | 0}`;
+      const storedHangingID = getStoredHangingID(
+        activeStudy.StudyInstanceUID,
+        protocolId,
+        stageIndex
+      );
       if (
         protocol.id === protocolId &&
         (stageIndex === undefined || stageIndex === desiredStageIndex)
       ) {
         // Toggling off - restore to previous state
-        const previousState = toggleHangingProtocol[storedHanging] || {
+        const previousState = toggleHangingProtocol[storedHangingID] || {
           protocolId: 'default',
         };
         return actions.setHangingProtocol(previousState);
       } else {
-        stateSyncService.store({
-          toggleHangingProtocol: {
-            ...toggleHangingProtocol,
-            [storedHanging]: {
-              protocolId: protocol.id,
-              stageIndex: desiredStageIndex,
+        if (toggleHangingProtocol[storedHangingID]?.protocolId !== protocolId) {
+          // Only store the old protocol if it is not the current one
+          log.debug('Storing toggled protocol', storedHangingID, protocolId);
+          stateSyncService.store({
+            toggleHangingProtocol: {
+              ...toggleHangingProtocol,
+              [storedHangingID]: {
+                protocolId: protocol.id,
+                stageIndex: desiredStageIndex,
+              },
             },
-          },
-        });
+          });
+        }
         return actions.setHangingProtocol({
           protocolId,
           stageIndex,

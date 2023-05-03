@@ -115,6 +115,7 @@ function CustomizableViewportOverlay({
   viewportData,
   imageSliceData,
   viewportIndex,
+  viewportId,
   servicesManager,
 }) {
   const {
@@ -205,8 +206,8 @@ function CustomizableViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-          viewportIndex
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(
+          viewportId
         );
 
         if (!viewport) {
@@ -263,6 +264,7 @@ function CustomizableViewportOverlay({
         viewportData,
         imageSliceData,
         viewportIndex,
+        viewportId,
         servicesManager,
         customization: item,
         formatters: {
