@@ -1,6 +1,5 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabelling: {},
   extensions: [],
   modes: [],
   customizationService: {

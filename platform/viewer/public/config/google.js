@@ -30,7 +30,6 @@ window.config = {
       revokeAccessTokenOnSignout: true,
     },
   ],
-  // whiteLabelling: {},
   extensions: [],
   modes: [],
   showStudyList: true,
