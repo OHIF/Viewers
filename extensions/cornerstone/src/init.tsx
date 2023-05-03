@@ -36,6 +36,7 @@ window.cornerstoneTools = cornerstoneTools;
 export default async function init({
   servicesManager,
   commandsManager,
+  extensionManager,
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
@@ -83,6 +84,8 @@ export default async function init({
   } = servicesManager.services;
 
   window.services = servicesManager.services;
+  window.extensionManager = extensionManager;
+  window.commandsManager = commandsManager;
 
   if (
     appConfig.showWarningMessageForCrossOrigin &&
