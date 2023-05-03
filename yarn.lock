@@ -21411,7 +21411,7 @@ uglify-js@^3.1.4:
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.17.4.tgz#61678cf5fa3f5b7eb789bb345df29afb8257c22c"
   integrity sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==
 
-ulog@^1.0.0:
+ulog@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ulog/-/ulog-1.1.0.tgz#2b07708ceb0a27df35851105cc8399aa7c0edd75"
   integrity sha512-oQDYGh4w/ykGSpffEuwkqFnL5BYJa5HeV5PhpkjuAFwJCyjp2KjT2YDcFa8y4ie8kejdXMwpFCSF6HNM5Kia4g==

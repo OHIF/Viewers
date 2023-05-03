@@ -46,7 +46,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-resize-detector": "^6.7.6",
-    "ulog": "^1.0.0"
+    "ulog": "^1.1.0"
   },
   "devDependencies": {
     "lodash": "^4.17.21"

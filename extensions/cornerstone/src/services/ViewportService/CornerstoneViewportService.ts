@@ -62,7 +62,6 @@ class CornerstoneViewportService extends PubSubService
   };
 
   renderingEngine: Types.IRenderingEngine | null;
-  viewportsInfo: Map<number, ViewportInfo> = new Map();
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
   viewportsDisplaySets: Map<string, string[]> = new Map();
@@ -105,22 +104,15 @@ class CornerstoneViewportService extends PubSubService
     }
 
     viewportInfo.setElement(elementRef);
-    this.viewportsInfo.set(viewportIndex, viewportInfo);
     this.viewportsById.set(viewportId, viewportInfo);
   }
 
   public getViewportIds(): string[] {
-    const viewportIds = [];
-
-    this.viewportsInfo.forEach(viewportInfo => {
-      viewportIds.push(viewportInfo.getViewportId());
-    });
-
-    return viewportIds;
+    return [...this.viewportsById.keys()];
   }
 
   public getViewportId(viewportIndex: number): string {
-    return this.viewportsInfo[viewportIndex]?.viewportId;
+    return this.getViewportInfoByIndex(viewportIndex)?.viewportId;
   }
 
   /**
@@ -204,9 +196,7 @@ class CornerstoneViewportService extends PubSubService
     if (!viewportInfo) return;
     const { viewportType, presentationIds } = viewportInfo.getViewportOptions();
 
-    const csViewport = this.getCornerstoneViewportByIndex(
-      viewportInfo.getViewportIndex()
-    );
+    const csViewport = this.getCornerstoneViewport(viewportId);
     if (!csViewport) return;
 
     const properties = csViewport.getProperties();
@@ -228,11 +218,12 @@ class CornerstoneViewportService extends PubSubService
 
   /** Moves a viewport to a new viewport index.  No-op if not moving. */
   public moveViewport(viewportIndex: number, viewportId: string): void {
-    if (viewportIndex === undefined) throw new Error('Undefined viewportIndex ' + viewportId);
-    log.debug("* moveViewport", viewportIndex, viewportId);
+    if (viewportIndex === undefined) {
+      throw new Error('Undefined viewportIndex ' + viewportId);
+    }
+    log.debug("moveViewport", viewportIndex, viewportId);
     const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) return;
-    this.viewportsInfo.set(viewportIndex, viewportInfo);
     viewportInfo.viewportIndex = viewportIndex;
   }
 
@@ -359,7 +350,7 @@ class CornerstoneViewportService extends PubSubService
    * @returns {number} - the viewportIndex
    */
   public getViewportInfoByIndex(viewportIndex: number): ViewportInfo {
-    return this.viewportsInfo.get(viewportIndex);
+    return [...this.viewportsById.values()].find(viewport => viewport.viewportIndex === viewportIndex);
   }
 
   public getViewportInfo(viewportId: string): ViewportInfo {
@@ -923,9 +914,9 @@ class CornerstoneViewportService extends PubSubService
     displaySetInstanceUID: string,
     cameraProps: unknown
   ): number {
-    const viewportInfo = this.viewportsInfo.get(activeViewportIndex);
+    const viewportInfo = this.getViewportInfoByIndex(activeViewportIndex);
     const { referencedImageId } = cameraProps;
-    if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
+    if (viewportInfo?.contains?.(displaySetInstanceUID, referencedImageId)) {
       return activeViewportIndex;
     }
 
