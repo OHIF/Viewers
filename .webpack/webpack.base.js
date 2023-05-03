@@ -77,6 +77,9 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
     },
+    cache: {
+      type: 'filesystem',
+    },
     module: {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [

@@ -32,6 +32,8 @@ function transpileJavaScript(mode) {
       // https://babeljs.io/docs/en/options#rootmode
       rootMode: 'upward',
       envName: mode,
+      cacheCompression: false,
+      cacheDirectory: true,
     },
   };
 }
