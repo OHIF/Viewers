@@ -21,10 +21,14 @@ const { getSplitParam } = utils;
  * @param props.filters filters from query params to read the data from
  * @returns array of subscriptions to cancel
  */
-function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource, filters },
-  hangingProtocolId
-) {
+function defaultRouteInit({
+  servicesManager,
+  studyInstanceUIDs,
+  dataSource,
+  filters,
+  hangingProtocolId,
+  hangingProtocolStageIndex,
+}) {
   const {
     displaySetService,
     hangingProtocolService,
@@ -35,7 +39,7 @@ function defaultRouteInit(
     unsubscribe: instanceAddedUnsubscribe,
   } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+    function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
       const seriesMetadata = DicomMetadataStore.getSeries(
         StudyInstanceUID,
         SeriesInstanceUID
@@ -77,7 +81,8 @@ function defaultRouteInit(
     // hanging protocol in the mode configuration
     hangingProtocolService.run(
       { studies, activeStudy, displaySets },
-      hangingProtocolId
+      hangingProtocolId,
+      { stageIndex: hangingProtocolStageIndex || 0 }
     );
   });
 
@@ -99,6 +104,9 @@ export default function ModeRoute({
   const searchParams = useSearchParams();
 
   const runTimeHangingProtocolId = searchParams.get('hangingprotocolid');
+  const runTimeHangingProtocolStageIndex = searchParams.get(
+    'hangingprotocolstageindex'
+  );
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
@@ -124,6 +132,7 @@ export default function ModeRoute({
     sopClassHandlers,
     hotkeys: hotkeyObj,
     hangingProtocol,
+    hangingProtocolStageIndex,
   } = mode;
   // Preserve the old array interface for hotkeys
   const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
@@ -258,6 +267,8 @@ export default function ModeRoute({
       ? runTimeHangingProtocolId
       : hangingProtocol;
 
+    const hangingProtocolStageIndexToUse =
+      runTimeHangingProtocolStageIndex || hangingProtocolStageIndex;
     // Sets the active hanging protocols - if hangingProtocol is undefined,
     // resets to default.  Done before the onModeEnter to allow the onModeEnter
     // to perform custom hanging protocol actions
@@ -302,28 +313,26 @@ export default function ModeRoute({
         ) ?? {};
 
       if (route.init) {
-        return await route.init(
-          {
-            servicesManager,
-            extensionManager,
-            hotkeysManager,
-            studyInstanceUIDs,
-            dataSource,
-            filters,
-          },
-          hangingProtocolIdToUse
-        );
-      }
-
-      return defaultRouteInit(
-        {
+        return await route.init({
           servicesManager,
+          extensionManager,
+          hotkeysManager,
           studyInstanceUIDs,
           dataSource,
           filters,
-        },
-        hangingProtocolIdToUse
-      );
+          hangingProtocol: hangingProtocolIdToUse,
+          hangingProtocolStageIndex: hangingProtocolStageIndexToUse,
+        });
+      }
+
+      return defaultRouteInit({
+        servicesManager,
+        studyInstanceUIDs,
+        dataSource,
+        filters,
+        hangingProtocol: hangingProtocolIdToUse,
+        hangingProtocolStageIndex: hangingProtocolStageIndexToUse,
+      });
     };
 
     let unsubscriptions;
@@ -377,7 +386,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-      // reducer={reducer}
+    // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>
