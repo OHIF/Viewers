@@ -119,6 +119,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     servicesManager,
     onElementEnabled,
     onElementDisabled,
+    onViewportDataLoad,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
@@ -433,7 +434,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
         viewportOptions,
         displaySetOptions,
         presentations
-      );
+      ).then((val) => {
+        if (onViewportDataLoad) {
+          onViewportDataLoad(val)
+        }
+      });;
 
       if (measurement) {
         cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
@@ -723,6 +728,7 @@ OHIFCornerstoneViewport.propTypes = {
   displaySetOptions: PropTypes.arrayOf(PropTypes.any),
   servicesManager: PropTypes.object.isRequired,
   onElementEnabled: PropTypes.func,
+  onViewportDataLoad: PropTypes.func,
   // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
   // of the imageData in the OHIFCornerstoneViewport. This prop is used
   // to set the initial state of the viewport's first image to render

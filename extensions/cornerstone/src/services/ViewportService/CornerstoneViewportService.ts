@@ -46,8 +46,10 @@ const EVENTS = {
  * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
  */
-class CornerstoneViewportService extends PubSubService
-  implements IViewportService {
+class CornerstoneViewportService
+  extends PubSubService
+  implements IViewportService
+{
   static REGISTRATION = {
     name: 'cornerstoneViewportService',
     altName: 'CornerstoneViewportService',
@@ -238,7 +240,7 @@ class CornerstoneViewportService extends PubSubService
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[],
     presentations?: Presentations
-  ): void {
+  ): Promise<void> {
     const renderingEngine = this.getRenderingEngine();
     const viewportId =
       publicViewportOptions.viewportId || this.getViewportId(viewportIndex);
@@ -261,14 +263,12 @@ class CornerstoneViewportService extends PubSubService
 
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
-    const {
-      viewportOptions,
-      displaySetOptions,
-    } = this._getViewportAndDisplaySetOptions(
-      publicViewportOptions,
-      publicDisplaySetOptions,
-      viewportInfo
-    );
+    const { viewportOptions, displaySetOptions } =
+      this._getViewportAndDisplaySetOptions(
+        publicViewportOptions,
+        publicDisplaySetOptions,
+        viewportInfo
+      );
 
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
@@ -296,7 +296,12 @@ class CornerstoneViewportService extends PubSubService
     renderingEngine.enableElement(viewportInput);
 
     const viewport = renderingEngine.getViewport(viewportId);
-    this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
+    const displaySetPromsie = this._setDisplaySets(
+      viewport,
+      viewportData,
+      viewportInfo,
+      presentations
+    );
 
     // The broadcast event here ensures that listeners have a valid, up to date
     // viewport to access.  Doing it too early can result in exceptions or
@@ -306,6 +311,8 @@ class CornerstoneViewportService extends PubSubService
       viewportIndex,
       viewportId,
     });
+
+    return displaySetPromsie;
   }
 
   public getCornerstoneViewport(
@@ -370,14 +377,11 @@ class CornerstoneViewportService extends PubSubService
     viewportData: StackViewportData,
     viewportInfo: ViewportInfo,
     presentations: Presentations
-  ): void {
+  ): Promise<void> {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const {
-      imageIds,
-      initialImageIndex,
-      displaySetInstanceUID,
-    } = viewportData.data;
+    const { imageIds, initialImageIndex, displaySetInstanceUID } =
+      viewportData.data;
 
     this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
@@ -409,7 +413,7 @@ class CornerstoneViewportService extends PubSubService
       }
     }
 
-    viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
+    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
       const camera = presentations.positionPresentation?.camera;
       if (camera) viewport.setCamera(camera);
@@ -436,9 +440,8 @@ class CornerstoneViewportService extends PubSubService
       const viewport = this.getCornerstoneViewport(
         viewportInfo.getViewportId()
       );
-      const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(
-        viewport
-      );
+      const imageSliceData =
+        csUtils.getImageSliceDataForVolumeViewport(viewport);
 
       if (!imageSliceData) {
         return;
@@ -571,11 +574,9 @@ class CornerstoneViewportService extends PubSubService
     viewport,
     volumeInputArray,
     presentations
-  ) {
-    const {
-      displaySetService,
-      toolGroupService,
-    } = this.servicesManager.services;
+  ): Promise<void> {
+    const { displaySetService, toolGroupService } =
+      this.servicesManager.services;
 
     await viewport.setVolumes(volumeInputArray);
     this.setPresentations(viewport, presentations);
@@ -621,10 +622,8 @@ class CornerstoneViewportService extends PubSubService
     displaySetInstanceUIDs: string[],
     viewport: any
   ) {
-    const {
-      segmentationService,
-      toolGroupService,
-    } = this.servicesManager.services;
+    const { segmentationService, toolGroupService } =
+      this.servicesManager.services;
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
 
@@ -639,9 +638,10 @@ class CornerstoneViewportService extends PubSubService
 
       // if there is already a segmentation representation for this segmentation
       // for this toolGroup, don't bother at all
-      const isSegmentationInToolGroup = toolGroupSegmentationRepresentations.find(
-        representation => representation.segmentationId === segmentation.id
-      );
+      const isSegmentationInToolGroup =
+        toolGroupSegmentationRepresentations.find(
+          representation => representation.segmentationId === segmentation.id
+        );
 
       if (isSegmentationInToolGroup) {
         continue;
@@ -684,10 +684,8 @@ class CornerstoneViewportService extends PubSubService
     displaySet: any,
     viewport: any
   ) {
-    const {
-      segmentationService,
-      toolGroupService,
-    } = this.servicesManager.services;
+    const { segmentationService, toolGroupService } =
+      this.servicesManager.services;
 
     const { referencedVolumeId } = displaySet;
     const segmentationId = displaySet.displaySetInstanceUID;
@@ -713,7 +711,7 @@ class CornerstoneViewportService extends PubSubService
     viewportIndex: number,
     viewportData,
     keepCamera = false
-  ) {
+  ): Promise<void> {
     const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
 
     const viewportId = viewportInfo.getViewportId();
@@ -721,19 +719,18 @@ class CornerstoneViewportService extends PubSubService
     const viewportCamera = viewport.getCamera();
 
     if (viewport instanceof VolumeViewport) {
-      this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
-        if (keepCamera) {
-          viewport.setCamera(viewportCamera);
-          viewport.render();
+      return this._setVolumeViewport(viewport, viewportData, viewportInfo).then(
+        () => {
+          if (keepCamera) {
+            viewport.setCamera(viewportCamera);
+            viewport.render();
+          }
         }
-      });
-
-      return;
+      );
     }
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData, viewportInfo);
-      return;
+      return this._setStackViewport(viewport, viewportData, viewportInfo);
     }
   }
 
@@ -786,9 +783,9 @@ class CornerstoneViewportService extends PubSubService
     viewportData: StackViewportData | VolumeViewportData,
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
-  ): void {
+  ): Promise<void> {
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(
+      return this._setStackViewport(
         viewport,
         viewportData as StackViewportData,
         viewportInfo,
@@ -798,7 +795,7 @@ class CornerstoneViewportService extends PubSubService
       viewport instanceof VolumeViewport ||
       viewport instanceof VolumeViewport3D
     ) {
-      this._setVolumeViewport(
+      return this._setVolumeViewport(
         viewport,
         viewportData as VolumeViewportData,
         viewportInfo,
