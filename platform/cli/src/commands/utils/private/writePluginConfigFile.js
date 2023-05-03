@@ -6,9 +6,9 @@ export default function writePluginConfigFile(pluginConfig) {
 
   fs.writeFileSync(
     `./pluginConfig.json`,
-    jsonStringOfFileContents,
+    jsonStringOfFileContents + '\n', // Add a newline character at the end
     { flag: 'w+' },
-    (err) => {
+    err => {
       if (err) {
         console.error(err);
         return;
