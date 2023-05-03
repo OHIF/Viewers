@@ -216,11 +216,12 @@ const commandsModule = ({
           hangingProtocolService.setActiveStudyUID(activeStudyUID);
         }
 
-        const storedHanging = `${
+        const viewportGridStoreId = `${
           hangingProtocolService.getState().activeStudyUID
         }:${protocolId}:${useStageIdx || 0}`;
 
-        const restoreProtocol = !reset && viewportGridStore[storedHanging];
+        const restoreProtocol =
+          !reset && viewportGridStore[viewportGridStoreId];
 
         if (
           protocolId === hpInfo.protocolId &&
@@ -240,7 +241,7 @@ const commandsModule = ({
             restoreProtocol,
           });
           if (restoreProtocol) {
-            viewportGridService.set(viewportGridStore[storedHanging]);
+            viewportGridService.set(viewportGridStore[viewportGridStoreId]);
           }
         }
         // Do this after successfully applying the update
@@ -286,31 +287,41 @@ const commandsModule = ({
         activeStudy,
       } = hangingProtocolService.getActiveProtocol();
       const { toggleHangingProtocol } = stateSyncService.getState();
-      const storedHanging = `${
-        activeStudy.StudyInstanceUID
-      }:${protocolId}:${stageIndex | 0}`;
+      // Just use the protocol id as the toggle id for toggling
+      // as the stage shouldn't matter, and one wants to restore even across
+      // active studies.
+      const toggleID = protocolId;
       if (
         protocol.id === protocolId &&
-        (stageIndex === undefined || stageIndex === desiredStageIndex)
+        (stageIndex === undefined || stageIndex === desiredStageIndex) &&
+        !displaySetSelectorMap
       ) {
+        // It is trying to turn this on, so don't turn off
         // Toggling off - restore to previous state
-        const previousState = toggleHangingProtocol[storedHanging] || {
+        const previousState = toggleHangingProtocol[toggleID] || {
           protocolId: 'default',
         };
         return actions.setHangingProtocol(previousState);
       } else {
-        stateSyncService.store({
+        // If it is on and trying to turn on, leave on
+        if (toggledState === false) return;
+        // Store the old protocol only if not the current one
+        if (protocol.id !== protocolId) {
+          stateSyncService.store({
           toggleHangingProtocol: {
             ...toggleHangingProtocol,
-            [storedHanging]: {
+              [toggleID]: {
               protocolId: protocol.id,
               stageIndex: desiredStageIndex,
+                activeStudyUID: activeStudy.StudyInstanceUID,
             },
           },
         });
+        }
         return actions.setHangingProtocol({
           protocolId,
           stageIndex,
+          displaySetSelectorMap,
           reset: true,
         });
       }
