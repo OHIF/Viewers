@@ -11,6 +11,7 @@ window.config = {
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
+  defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',
@@ -45,5 +46,4 @@ window.config = {
       configuration: {},
     },
   ],
-  defaultDataSourceName: 'dicomweb',
 };
