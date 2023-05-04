@@ -36,10 +36,15 @@ const makeDisplaySet = instances => {
   const imageSet = new ImageSet(instances);
 
   const { isDynamicVolume } = getDynamicVolumeInfo(instances);
+
   // TODO: get 4D volume info and check if one of the time points is reconstructable
-  const displayReconstructableInfo = isDynamicVolume
-    ? { value: true }
+  const {
+    value: isReconstructable,
+    averageSpacingBetweenFrames,
+  } = isDynamicVolume
+    ? { value: true, averageSpacingBetweenFrames: 1 }
     : isDisplaySetReconstructable(instances);
+
   const volumeLoaderSchema = isDynamicVolume
     ? DYNAMIC_VOLUME_LOADER_SCHEME
     : DEFAULT_VOLUME_LOADER_SCHEME;
@@ -57,11 +62,11 @@ const makeDisplaySet = instances => {
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
-    countIcon: displayReconstructableInfo.value ? 'icon-mpr' : undefined,
+    countIcon: isReconstructable ? 'icon-mpr' : undefined,
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
-    isReconstructable: displayReconstructableInfo.value,
-    volumeLoaderSchema,
+    isReconstructable,
+    averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
   });
 
   // Sort the images in this series if needed

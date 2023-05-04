@@ -4,9 +4,9 @@ import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
 } from '@cornerstonejs/streaming-image-volume-loader';
-import cornerstoneWADOImageLoader, {
+import dicomImageLoader, {
   webWorkerManager,
-} from 'cornerstone-wado-image-loader';
+} from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler } from '@ohif/core';
 
@@ -31,7 +31,7 @@ function initWebWorkers(appConfig) {
   };
 
   if (!initialized) {
-    cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+    dicomImageLoader.webWorkerManager.initialize(config);
     initialized = true;
   }
 }
@@ -40,8 +40,8 @@ export default function initWADOImageLoader(
   userAuthenticationService,
   appConfig
 ) {
-  cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
-  cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
+  dicomImageLoader.external.cornerstone = cornerstone;
+  dicomImageLoader.external.dicomParser = dicomParser;
 
   registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
@@ -53,10 +53,10 @@ export default function initWADOImageLoader(
     cornerstoneStreamingDynamicImageVolumeLoader
   );
 
-  cornerstoneWADOImageLoader.configure({
+  dicomImageLoader.configure({
     decodeConfig: {
       // !! IMPORTANT !!
-      // We should set this flag to false, since, by default cornerstone-wado-image-loader
+      // We should set this flag to false, since, by default @cornerstonejs/dicom-image-loader
       // will convert everything to integers (to be able to work with cornerstone-2d).
       // Until the default is set to true (which is the case for cornerstone3D),
       // we should set this flag to false.

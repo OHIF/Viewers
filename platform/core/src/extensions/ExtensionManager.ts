@@ -41,6 +41,7 @@ export interface Extension {
   getCommandsModule?: (p: ExtensionParams) => CommandsModule;
   getViewportModule?: (p: ExtensionParams) => unknown;
   getUtilityModule?: (p: ExtensionParams) => unknown;
+  getCustomizationModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: () => void;
   onModeExit?: () => void;
 }
