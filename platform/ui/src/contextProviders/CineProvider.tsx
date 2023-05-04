@@ -30,11 +30,13 @@ export default function CineProvider({ children, service }) {
           .getSyncedViewports(id)
           .map(({ viewportIndex }) => viewportIndex);
         const cineIdsToUpdate = [id, ...syncedCineIds].filter(curId => {
-          const curCine = cines[curId] ?? {};
-          return (
-            curCine.frameRate !== (frameRate ?? curCine.frameRate) ||
-            curCine.isPlaying !== (isPlaying ?? curCine.isPlaying)
-          );
+          const currentCine = cines[curId] ?? {};
+          const shouldUpdateFrameRate =
+            currentCine.frameRate !== (frameRate ?? currentCine.frameRate);
+          const shouldUpdateIsPlaying =
+            currentCine.isPlaying !== (isPlaying ?? currentCine.isPlaying);
+
+          return shouldUpdateFrameRate || shouldUpdateIsPlaying;
         });
 
         cineIdsToUpdate.forEach(currId => {

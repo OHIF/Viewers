@@ -21,10 +21,7 @@ export default function Toolbar({ servicesManager }) {
     );
     const { unsubscribe: unsub2 } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => {
-        console.warn('>>>>> Toolbar :: state modified');
-        setButtonState({ ...toolbarService.state });
-      }
+      () => setButtonState({ ...toolbarService.state })
     );
 
     return () => {

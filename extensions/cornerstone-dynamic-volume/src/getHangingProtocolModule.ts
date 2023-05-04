@@ -1,4 +1,4 @@
-const DEFAULT_COLORMAP = 'hsv'; // hsv, jet, rainbow_2, 2hot, Black-Body Radiation
+const DEFAULT_COLORMAP = 'hsv';
 
 function getPTOptions({
   colormap,
