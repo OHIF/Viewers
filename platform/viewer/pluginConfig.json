@@ -57,6 +57,15 @@
     {
       "packageName": "@ohif/mode-test",
       "default": false
+    },
+    {
+      "packageName": "@ohif/mode-basic-dev-mode",
+      "default": false
+    }
+  ],
+  "public": [
+    {
+      "directory": "./platform/public"
     }
   ]
 }

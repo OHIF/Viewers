@@ -1,5 +1,6 @@
 const pluginConfig = require('../pluginConfig.json');
 const fs = require('fs');
+const os = require('os');
 const glob = require('glob');
 
 const autogenerationDisclaimer = `
@@ -85,20 +86,28 @@ function getRuntimeLoadModesExtensions(modules) {
   return dynamicLoad.join('\n');
 }
 
+const fromDirectory = (srcDir, path) => {
+  if (!path) return;
+  if (path[0] === '.') return srcDir + '/../../..' + path.substring(1);
+  if (path[0] === '~') return os.homedir() + path.substring(1);
+  return path;
+}
+
 const createCopyPluginToDistForLink = (
-  SRC_DIR,
-  DIST_DIR,
+  srcDir,
+  distDir,
   plugins,
   folderName
 ) => {
   return plugins
     .map(plugin => {
-      const from = `${SRC_DIR}/../node_modules/${plugin.packageName}/${folderName}/`;
+      const fromDir = fromDirectory(srcDir, plugin.directory);
+      const from = fromDir || `${srcDir}/../node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
       return exists
         ? {
             from,
-            to: DIST_DIR,
+          to: distDir,
             toType: 'dir',
           }
         : undefined;
@@ -144,7 +153,7 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
 
   pluginImportsJsContent += getRuntimeLoadModesExtensions([
     ...pluginConfig.extensions,
-    ...pluginConfig.modes
+    ...pluginConfig.modes,
   ]);
 
   fs.writeFileSync(
@@ -179,6 +188,7 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     [
       ...pluginConfig.modes,
       ...pluginConfig.extensions,
+      ...pluginConfig.public,
     ],
     'public'
   );
@@ -205,7 +215,7 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     'dist'
   );
 
-  console.log('copy plugins', [
+  console.warn('copy plugins', [
     ...copyPluginPublicToDistBuild,
     ...copyPluginPublicToDistLink,
     ...copyPluginDistToDistBuild,
