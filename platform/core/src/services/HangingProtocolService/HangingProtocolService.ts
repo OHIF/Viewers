@@ -102,8 +102,8 @@ export default class HangingProtocolService extends PubSubService {
     },
     numberOfDisplaySetsWithImages: {
       name: 'numberOfDisplaySetsWithImages',
-      desription: 'Number of displays sets with images',
-      numberOfDisplaySetsWithImages,
+      description: 'Number of displays sets with images',
+      callback: numberOfDisplaySetsWithImages,
     },
   };
   listeners = {};
@@ -1058,7 +1058,11 @@ export default class HangingProtocolService extends PubSubService {
         viewportMatchDetails.set(viewportIndex, matchDetails);
       }
     });
-    return { matchedViewports, viewportMatchDetails, displaySetMatchDetails };
+    return {
+      matchedViewports,
+      viewportMatchDetails,
+      displaySetMatchDetails,
+    };
   }
 
   protected findDeduplicatedMatchDetails(
@@ -1080,7 +1084,10 @@ export default class HangingProtocolService extends PubSubService {
         ) {
           const match = matchDetails.matchingScores[i];
           return match.matchingScore > 0
-            ? { matchingScores, ...matchDetails.matchingScores[i] }
+            ? {
+                matchingScores,
+                ...matchDetails.matchingScores[i],
+              }
             : null;
         }
       }
@@ -1309,11 +1316,11 @@ export default class HangingProtocolService extends PubSubService {
       const studyMatchDetails = this.protocolEngine.findMatch(
         study,
         studyMatchingRules,
-          {
-            studies: this.studies,
-            displaySets: studyDisplaySets,
-            displaySetMatchDetails: this.displaySetMatchDetails,
-          }
+        {
+          studies: this.studies,
+          displaySets: studyDisplaySets,
+          displaySetMatchDetails: this.displaySetMatchDetails,
+        }
       );
 
       // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
@@ -1337,12 +1344,12 @@ export default class HangingProtocolService extends PubSubService {
           displaySet,
           seriesMatchingRules,
           // Todo: why we have images here since the matching type does not have it
-            {
-              studies: this.studies,
-              instance: displaySet.images?.[0],
-              displaySetMatchDetails: this.displaySetMatchDetails,
-              displaySets: studyDisplaySets,
-            }
+          {
+            studies: this.studies,
+            instance: displaySet.images?.[0],
+            displaySetMatchDetails: this.displaySetMatchDetails,
+            displaySets: studyDisplaySets,
+          }
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
