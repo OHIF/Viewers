@@ -565,9 +565,6 @@ function commandsModule({
         viewportIndex
       );
 
-      console.log(viewport);
-      debugger;
-
       const actorEntries = viewport.getActors();
 
       const actorEntry = actorEntries.find(actorEntry => {
@@ -652,11 +649,11 @@ function commandsModule({
         const viewportInd = viewportInfo.getViewportIndex();
         console.log(viewportInd);
 
-        commandsManager.runCommand('setViewportColormap', {
-          viewportIndex: viewportInd,
-          displaySetInstanceUID: displayUID,
-          colormap,
-        });
+        // commandsManager.runCommand('setViewportColormap', {
+        //   viewportIndex: viewportInd,
+        //   displaySetInstanceUID: displayUID,
+        //   colormap,
+        // });
       });
     },
   };

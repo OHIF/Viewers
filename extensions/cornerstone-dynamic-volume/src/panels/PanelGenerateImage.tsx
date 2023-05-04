@@ -21,6 +21,7 @@ import {
   Types as cstTypes,
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
+import debounce from 'lodash.debounce';
 
 const DEFAULT_MEATADATA = {
   TimeFrames: null,
@@ -56,7 +57,7 @@ export default function PanelGenerateImage({
   } = servicesManager.services;
   const { t } = useTranslation('PanelGenerateImage');
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
-  const [options, setOptions] = useState([]);
+  const [timeOptions, setTimeOptions] = useState([]);
 
   const handleMetadataChange = metadata => {
     setMetadata(prevState => {
@@ -89,38 +90,48 @@ export default function PanelGenerateImage({
   const dynamicVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`;
   //TODO: get the referencedVolume using cache.getVolume(referencedVolumeId)
   const dynamicVolume = cache.getVolume(dynamicVolumeId);
-  console.log(dynamicVolume);
-  // let dynamicVolume;
-  const computedVolumeInit = createComputedVolume(
-    dynamicVolumeId,
-    computedVolumeId
-  );
-  console.log(dynamicVolumeId);
+
+  console.log(timeOptions);
+  let testDynamicVolume;
 
   useEffect(() => {
-    if (displaySetInstanceUID && dynamicVolumeId) {
-      const x = cache.getVolume(dynamicVolumeId);
-      console.log(`NEIL: `, x);
-    }
-  }, [displaySetInstanceUID, dynamicVolumeId]);
+    // ~~ Subscription
+    const added = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
+    const subscriptions = [];
 
-  // useEffect to wait for volume to load before getting options
-  // useEffect(() => {
-  //   console.log('useEffect has run');
-  //   if (!displaySetInstanceUID) return;
+    [added].forEach(evt => {
+      subscriptions.push(
+        cornerstoneViewportService.subscribe(evt, evtdetails => {
+          evtdetails.viewportData.data.forEach(volumeData => {
+            if (volumeData.volumeId.split(':')[0] === volumeLoaderScheme) {
+              console.log('NEIL');
+              if (testDynamicVolume === undefined) {
+                testDynamicVolume = volumeData.volume;
+                const opp = numTimePointsToOptions(
+                  testDynamicVolume._numTimePoints
+                );
+                setTimeOptions(prevArray => [...prevArray, ...opp]);
+                const computedVolumeInit = createComputedVolume(
+                  testDynamicVolume.volumeId,
+                  computedVolumeId
+                );
+              }
+            }
+          });
+        }).unsubscribe
+      );
+    });
 
-  //   console.log('there is a dynamic volume Id');
-  //   console.warn(displaySetInstanceUID);
-  //   getDynamicVolumeFromCache(dynamicVolumeId);
-  //   console.log(`TEST: ${dynamicVolumeId}`);
+    let counter = 1;
+    console.log(`How many times has useEffect run: ${counter}`);
+    counter++;
 
-  //   // dynamicVolume = cache.getVolume(dynamicVolumeId);
-  //   console.log(dynamicVolume);
-  //   if (!dynamicVolume) return;
-  //   // const timePoints = dynamicVolume.numTimePoints;
-  //   // console.log(`timepoints: ${timePoints}`);
-  //   console.log('There is a dynamic volume');
-  // }, [dynamicVolumeId, dynamicVolume, displaySetInstanceUID]);
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
+  }, []);
 
   function onGenerateImage() {
     console.log('onGenerateImage was run');
@@ -130,6 +141,7 @@ export default function PanelGenerateImage({
     }
     const computedVolume = cache.getVolume(computedVolumeId);
     console.log(metadata.Operation);
+    console.log(testDynamicVolume);
 
     const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
       dynamicVolume,
@@ -159,8 +171,7 @@ export default function PanelGenerateImage({
   }
 
   function returnTo4D() {
-    console.log(dynamicVolumeId);
-    renderGeneratedImage(dynamicVolumeId);
+    renderGeneratedImage(testDynamicVolume.volumeId);
   }
 
   function callRender() {
@@ -275,12 +286,14 @@ export default function PanelGenerateImage({
           label={t('TimeFrameOptions')}
           closeMenuOnSelect={false}
           className="mr-2 bg-black border-primary-main text-white "
-          options={timeFrameOptions}
-          placeholder={timeFrameOptions[0].placeHolder}
-          value={timeFrameOptions}
+          options={timeOptions}
+          placeholder={timeOptions.length ? timeOptions[0].placeHolder : ''}
+          value={timeOptions}
           isMulti={true}
           onChange={e => {
-            console.log('BEEP');
+            handleMetadataChange({
+              TimeFrames: e.target.value,
+            });
           }}
         />
       </div>
@@ -303,6 +316,14 @@ async function createComputedVolume(dynamicVolumeId, computedVolumeId) {
 async function getDynamicVolumeFromCache(dynamicVolumeId) {
   const dynamicVolumeFromCache = await cache.getVolume(dynamicVolumeId);
   return dynamicVolumeFromCache;
+}
+
+function numTimePointsToOptions(numTimePoints) {
+  const options = [];
+  for (let i = 0; i < numTimePoints; i++) {
+    options.push({ value: `${i}`, label: `${i}`, placeHolder: `${i}` });
+  }
+  return options;
 }
 
 async function getTimeFrames(dynamicVolumeId) {}
