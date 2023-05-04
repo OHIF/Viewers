@@ -5,6 +5,8 @@ import 'regenerator-runtime/runtime';
 import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { history } from './utils/history';
+
 /**
  * EXTENSIONS AND MODES
  * =================
@@ -33,3 +35,7 @@ const appProps = {
 const app = React.createElement(App, appProps, null);
 /** Render */
 ReactDOM.render(app, document.getElementById('root'));
+  });
+});
+
+export { history };

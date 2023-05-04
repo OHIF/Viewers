@@ -25,12 +25,8 @@ describe('OHIF Measurement Panel', function() {
   it('checks if measurement item can be Relabeled under Measurements panel', function() {
     // Add length measurement
     cy.addLengthMeasurement();
-    cy.get('[data-cy="measurement-tracking-prompt-begin-tracking"]').should(
-      'exist'
-    );
-    cy.get('[data-cy="measurement-tracking-prompt-begin-tracking"]').should(
-      'be.visible'
-    );
+    cy.get('[data-cy="viewport-notification"]').should('exist');
+    cy.get('[data-cy="viewport-notification"]').should('be.visible');
     cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
     cy.get('[data-cy="measurement-item"]').click();
 
@@ -59,7 +55,9 @@ describe('OHIF Measurement Panel', function() {
     cy.get('@viewportInfoTopRight').should('contains.text', '(14/');
 
     // Click on first measurement item
-    cy.get('[data-cy="measurement-item"]').click();
+    cy.get('[data-cy="measurement-item"]')
+      .eq(0)
+      .click();
 
     cy.get('@viewportInfoTopRight').should('contains.text', '(1/');
     cy.get('@viewportInfoTopRight').should('not.contains.text', '(14/');

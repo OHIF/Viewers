@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys } from '@ohif/core';
+import { utils, hotkeys, ServicesManager } from '@ohif/core';
 
 import {
   Icon,
@@ -47,6 +47,8 @@ function WorkList({
   dataSource,
   hotkeysManager,
   dataPath,
+  onRefresh,
+  servicesManager,
 }) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
@@ -429,6 +431,33 @@ function WorkList({
     });
   }
 
+  const { customizationService } = servicesManager.services;
+  const { component: dicomUploadComponent } =
+    customizationService.get('dicomUploadComponent') ?? {};
+  const uploadProps =
+    dicomUploadComponent && dataSource.getConfig().dicomUploadEnabled
+      ? {
+          title: 'Upload files',
+          closeButton: true,
+          shouldCloseOnEsc: false,
+          shouldCloseOnOverlayClick: false,
+          content: dicomUploadComponent.bind(null, {
+            dataSource,
+            onComplete: () => {
+              hide();
+              onRefresh();
+            },
+            onStarted: () => {
+              show({
+                ...uploadProps,
+                // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
+                closeButton: false,
+              });
+            },
+          }),
+        }
+      : undefined;
+
   return (
     <div className="bg-black h-screen flex flex-col ">
       <Header
@@ -445,6 +474,7 @@ function WorkList({
           onChange={setFilterValues}
           clearFilters={() => setFilterValues(defaultFilterValues)}
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
+          onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
         />
         {hasStudies ? (
           <>
@@ -478,8 +508,10 @@ WorkList.propTypes = {
   data: PropTypes.array.isRequired,
   dataSource: PropTypes.shape({
     query: PropTypes.object.isRequired,
+    getConfig: PropTypes.func,
   }).isRequired,
   isLoadingData: PropTypes.bool.isRequired,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 const defaultFilterValues = {

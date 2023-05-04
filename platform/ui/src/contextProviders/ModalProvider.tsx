@@ -32,13 +32,13 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     content: null,
     contentProps: null,
     shouldCloseOnEsc: true,
+    shouldCloseOnOverlayClick: true,
     isOpen: true,
     closeButton: true,
     title: null,
     customClassName: '',
   };
   const { t } = useTranslation('Modals');
-
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
@@ -57,9 +57,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
    *
    * @returns void
    */
-  const hide = useCallback(() => setOptions(DEFAULT_OPTIONS), [
-    DEFAULT_OPTIONS,
-  ]);
+  const hide = useCallback(() => {
+    setOptions(DEFAULT_OPTIONS);
+  }, [DEFAULT_OPTIONS]);
 
   /**
    * Sets the implementation of a modal service that can be used by extensions.
@@ -80,6 +80,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     customClassName,
     shouldCloseOnEsc,
     closeButton,
+    shouldCloseOnOverlayClick,
   } = options;
 
   return (
@@ -92,6 +93,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           title={t(title)}
           closeButton={closeButton}
           onClose={hide}
+          shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
         >
           <ModalContent {...contentProps} show={show} hide={hide} />
         </Modal>

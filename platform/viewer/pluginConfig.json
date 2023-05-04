@@ -20,6 +20,10 @@
       "default": false
     },
     {
+      "packageName": "@ohif/extension-dicom-microscopy",
+      "default": false
+    },
+    {
       "packageName": "@ohif/extension-dicom-pdf",
       "default": false
     },
@@ -34,6 +38,10 @@
     {
       "packageName": "@ohif/extension-test",
       "default": false
+    },
+    {
+      "packageName": "@ohif/extension-cornerstone-dicom-rt",
+      "version": "3.0.0"
     }
   ],
   "modes": [
@@ -41,15 +49,11 @@
       "packageName": "@ohif/mode-longitudinal"
     },
     {
-      "packageName": "@ohif/mode-tmtv"
+      "packageName": "@ohif/mode-tmtv",
     },
     {
-      "packageName": "@ohif/mode-basic-dev-mode",
-      "default": false
-    },
-    {
-      "packageName": "@ohif/mode-test",
-      "default": false
+      "packageName": "@ohif/mode-microscopy",
+      "version": "3.0.0"
     }
   ]
 }

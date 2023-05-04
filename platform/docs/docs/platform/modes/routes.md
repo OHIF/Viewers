@@ -313,3 +313,34 @@ function modeFactory() {
   };
 }
 ```
+
+> How can I navigate to (or show) a different study via the browser history/URL?
+
+There is a command that does this: `navigateHistory`. It takes an object
+argument with the `NavigateHistory` type:
+
+```
+export type NavigateHistory = {
+  to: string; // the URL to navigate to
+  options?: {
+    replace?: boolean; // replace or add/push to history?
+  };
+};
+```
+
+For instance one could bind a hot key to this command to show a specific study
+like this...
+
+```
+  {
+    commandName: 'navigateHistory',
+    commandOptions: {
+      to:
+        '/viewer?StudyInstanceUIDs=1.2.3',
+    },
+    context: 'DEFAULT',
+    label: 'Nav Study',
+    keys: ['n'],
+    isEditable: true,
+  },
+```

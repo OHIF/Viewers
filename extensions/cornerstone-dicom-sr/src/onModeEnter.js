@@ -4,7 +4,7 @@ export default function onModeEnter({ servicesManager }) {
   const { displaySetService } = servicesManager.services;
   const displaySetCache = displaySetService.getDisplaySetCache();
 
-  const srDisplaySets = displaySetCache.filter(
+  const srDisplaySets = [...displaySetCache.values()].filter(
     ds => ds.SOPClassHandlerId === SOPClassHandlerId
   );
 
