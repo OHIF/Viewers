@@ -15,14 +15,13 @@ export default function Toolbar({ servicesManager }) {
     const { unsubscribe: unsub1 } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_MODIFIED,
       () => {
+        console.warn('>>>>> Toolbar :: buttons modified');
         setToolbarButtons(toolbarService.getButtonSection('primary'));
       }
     );
     const { unsubscribe: unsub2 } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => {
-        setButtonState({ ...toolbarService.state });
-      }
+      () => setButtonState({ ...toolbarService.state })
     );
 
     return () => {

@@ -41,16 +41,21 @@ function modeFactory({ modeConfiguration }) {
         panelService,
       } = servicesManager.services;
 
-      measurementService.clearMeasurements();
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone.utilityModule.tools'
+      );
 
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      const { toolNames, Enums } = utilityModule.exports;
+
+      measurementService.clearMeasurements();
+      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
 
       let unsubscribe;
 
       ({ unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
-          console.warn('>>>>> onViewportAdded');
+          console.log('>>>>> onViewportAdded');
         }
       ));
 
@@ -60,12 +65,11 @@ function modeFactory({ modeConfiguration }) {
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
-        'Pan',
-        'Capture',
-        // 'Layout',
-        'MPR',
         'Crosshairs',
-        'MoreTools',
+        'Pan',
+        'RectangleROIStartEndThreshold',
+        'fusionPTColormap',
+        'Cine',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
@@ -83,7 +87,6 @@ function modeFactory({ modeConfiguration }) {
       cornerstoneViewportService.destroy();
     },
     get validationTags() {
-      debugger;
       return {
         study: [],
         series: [],
@@ -110,7 +113,7 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: 'whatisthis',
+        path: 'preclinical-4d',
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
@@ -131,7 +134,7 @@ function modeFactory({ modeConfiguration }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: ['default'],
+    hangingProtocol: ['default4D'],
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must

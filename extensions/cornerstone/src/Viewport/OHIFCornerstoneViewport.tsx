@@ -22,6 +22,7 @@ import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CornerstoneServices from '../types/CornerstoneServices';
+import getSyncedCineState from '../utils/cine/getSyncedCineState';
 
 const STACK = 'stack';
 
@@ -117,7 +118,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
-
   const elementRef = useRef();
 
   const {
@@ -132,7 +132,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
 
-  const cineHandler = () => {
+  const cineHandler = useCallback(() => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
       return;
     }
@@ -150,7 +150,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     } else {
       cineService.stopClip(enabledVPElement);
     }
-  };
+  }, [cines, viewportIndex, cineService, enabledVPElement]);
 
   useEffect(() => {
     eventTarget.addEventListener(
@@ -182,7 +182,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
   }, [cines, viewportIndex, cineService, enabledVPElement, cineHandler]);
 
   const cine = cines[viewportIndex];
-  const isPlaying = (cine && cine.isPlaying) || false;
+  const isPlaying = cine?.isPlaying ?? false;
+  const frameRate = cine?.frameRate ?? 24;
 
   const handleCineClose = () => {
     toolbarService.recordInteraction({
@@ -483,6 +484,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         <CinePlayer
           className="absolute left-1/2 -translate-x-1/2 bottom-3"
           isPlaying={isPlaying}
+          frameRate={frameRate}
           onClose={handleCineClose}
           onPlayPauseChange={isPlaying =>
             cineService.setCine({

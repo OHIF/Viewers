@@ -281,6 +281,12 @@ class MetadataProvider {
           sopInstanceUID: instance.SOPInstanceUID,
         };
         break;
+      case WADO_IMAGE_LOADER_TAGS.PET_IMAGE_MODULE:
+        metadata = {
+          frameReferenceTime: instance.FrameReferenceTime,
+          actualFrameDuration: instance.ActualFrameDuration,
+        };
+        break;
       case WADO_IMAGE_LOADER_TAGS.PET_ISOTOPE_MODULE:
         const { RadiopharmaceuticalInformationSequence } = instance;
 
@@ -503,6 +509,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   VOI_LUT_MODULE: 'voiLutModule',
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
+  PET_IMAGE_MODULE: 'petImageModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',

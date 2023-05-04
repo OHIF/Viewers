@@ -178,7 +178,7 @@ export default async function init({
     servicesManager
   );
 
-  initCineService(cineService);
+  initCineService(servicesManager);
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
