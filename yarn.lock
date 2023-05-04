@@ -1451,12 +1451,20 @@
     detect-gpu "^4.0.45"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.16.0":
-  version "0.16.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.16.0.tgz#513f868c285963fd2f2dbf54ed7840a2dc05e33a"
-  integrity sha512-+bbQ6/FN7ryCDdsuyheIPeRa5MO8mTDUDZusNIU97Q8fdmw1hB+eiy9fNThdGfCENd/GPANNsXe6K5olUX7QhQ==
+"@cornerstonejs/core@^0.43.1":
+  version "0.43.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.43.1.tgz#b51e3310156136e4407d56b1be9fc981022ae4dd"
+  integrity sha512-TT2EZHWFblkwYnMqiUWYCwtwzWEseXy819YnquWU8OzzsF14k/2JAQPvw8FB0ephv/LoVyXZPC/zARA6U30weg==
   dependencies:
-    "@cornerstonejs/core" "^0.40.0"
+    detect-gpu "^4.0.45"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/streaming-image-volume-loader@^0.17.0":
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.17.1.tgz#0e3e3385b004eed0c937c2227d30c4b6cb06c72c"
+  integrity sha512-Qf1clZAU78VM/HcIzXLQZMzQLDESBs8lpfc7ooDHIjIUxZYiSSaLiamWkQVpc3iwnftjhyCofG5HDkf8UdBItA==
+  dependencies:
+    "@cornerstonejs/core" "^0.43.1"
     cornerstone-wado-image-loader "^4.10.2"
 
 "@cornerstonejs/tools@^0.60.1":
@@ -8529,9 +8537,9 @@ cornerstone-math@^0.1.9:
   integrity sha512-23XSAyP7t70ANvhFyqwvva+zFd1bQ2d5GL7tg9qKE932WmImjA2Y9tiy5n0iTtnf51W/78Png8Lia2o4dCdJaQ==
 
 cornerstone-wado-image-loader@^4.10.2:
-  version "4.10.2"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.10.2.tgz#139956654324fd2b01fe5b4900d0f4ed8c52633d"
-  integrity sha512-qj9dThELqYCm3jAZfg9qnUl8d76gngOl55kYJabY5lh/dFeVIxno/hYxy3ydE7RtG2c/TUGXb+EMUl0CJSqKBQ==
+  version "4.13.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.13.1.tgz#99b90e15834b6e1b5f84f0495270400b18b07e8e"
+  integrity sha512-IKAeI2JLG2HFBFF+ANHYyHxOJmjbys+wfX15flC0bz3D9AhDU1HX34qJMRh+HMMZ/Jcqjc4EJJq1ttR0OwMdig==
   dependencies:
     "@babel/eslint-parser" "^7.19.1"
     "@cornerstonejs/codec-charls" "^1.2.3"
