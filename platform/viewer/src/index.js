@@ -35,7 +35,5 @@ const appProps = {
 const app = React.createElement(App, appProps, null);
 /** Render */
 ReactDOM.render(app, document.getElementById('root'));
-  });
-});
 
 export { history };
