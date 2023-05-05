@@ -521,16 +521,9 @@ class CornerstoneViewportService extends PubSubService
       const displaySetOptions = displaySetOptionsArray[index];
       const { volumeId } = volume;
 
-      const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
-
-      const callback = ({ volumeActor }) => {
-        voiCallbacks.forEach(callback => callback(volumeActor));
-      };
-
       volumeInputArray.push({
         imageIds,
         volumeId,
-        callback,
         blendMode: displaySetOptions.blendMode,
         slabThickness: this._getSlabThickness(displaySetOptions, volumeId),
       });
@@ -580,7 +573,7 @@ class CornerstoneViewportService extends PubSubService
     const volumesProperties = volumeInputArray.map((volumeInput, index) => {
       const { volumeId } = volumeInput;
       const displaySetOption = displaySetOptions[index];
-      const { voi, voiInverted, colormap } = displaySetOption;
+      const { voi, voiInverted, colormap, displayPreset } = displaySetOption;
       const properties = {};
 
       if (voi && (voi.windowWidth || voi.windowCenter)) {
@@ -597,6 +590,10 @@ class CornerstoneViewportService extends PubSubService
 
       if (colormap !== undefined) {
         properties.colormap = colormap;
+      }
+
+      if (displayPreset !== undefined) {
+        properties.preset = displayPreset;
       }
 
       return { properties, volumeId };
@@ -763,24 +760,6 @@ class CornerstoneViewportService extends PubSubService
       this._setStackViewport(viewport, viewportData, viewportInfo);
       return;
     }
-  }
-
-  _getVOICallbacks(volumeId, displaySetOptions) {
-    const { presetName } = displaySetOptions;
-
-    const voiCallbackArray = [];
-
-    if (presetName) {
-      voiCallbackArray.push(volumeActor => {
-        utilities.applyPreset(
-          volumeActor,
-          CONSTANTS.VIEWPORT_PRESETS.find(preset => {
-            return preset.name === presetName;
-          })
-        );
-      });
-    }
-    return voiCallbackArray;
   }
 
   _setDisplaySets(
