@@ -5,42 +5,52 @@
     },
     {
       "packageName": "@ohif/extension-cornerstone",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-measurement-tracking",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-sr",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-seg",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-dicom-microscopy",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-dicom-pdf",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-dicom-video",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-tmtv",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-test",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
+      "default": false,
       "version": "3.0.0"
     }
   ],
@@ -56,11 +66,13 @@
     },
     {
       "packageName": "@ohif/mode-test",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/mode-basic-dev-mode",
-      "default": false
+      "default": false,
+      "version": "3.0.0"
     }
   ],
   "public": [
