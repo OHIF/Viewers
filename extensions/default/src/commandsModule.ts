@@ -280,6 +280,8 @@ const commandsModule = ({
     toggleHangingProtocol: ({
       protocolId,
       stageIndex,
+      displaySetSelectorMap,
+      toggledState,
     }: HangingProtocolParams): boolean => {
       const {
         protocol,
