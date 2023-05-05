@@ -134,15 +134,6 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
     },
-    onModeExit: ({ servicesManager }) => {
-      const {
-        toolGroupService,
-        measurementService,
-        toolbarService,
-      } = servicesManager.services;
-
-      toolGroupService.destroy();
-    },
     validationTags: {
       study: [],
       series: [],
