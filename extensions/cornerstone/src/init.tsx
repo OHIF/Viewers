@@ -1,4 +1,4 @@
-import OHIF from '@ohif/core';
+import OHIF, { Types } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -39,6 +39,7 @@ window.cornerstoneTools = cornerstoneTools;
 export default async function init({
   servicesManager,
   commandsManager,
+  extensionManager,
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
@@ -86,6 +87,8 @@ export default async function init({
   } = servicesManager.services;
 
   window.services = servicesManager.services;
+  window.extensionManager = extensionManager;
+  window.commandsManager = commandsManager;
 
   if (
     appConfig.showWarningMessageForCrossOrigin &&

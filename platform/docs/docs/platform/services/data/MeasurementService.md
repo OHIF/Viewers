@@ -29,7 +29,8 @@ There are seven events that get publish in `MeasurementService`:
 | RAW_MEASUREMENT_ADDED | Fires when a raw measurement is added (e.g., dicom-sr) |
 | MEASUREMENT_REMOVED   | Fires when a measurement is removed                    |
 | MEASUREMENTS_CLEARED  | Fires when all measurements are deleted                |
-| JUMP_TO_MEASUREMENT   | Fires when a measurement is requested to be jump to    |
+| JUMP_TO_MEASUREMENT_VIEWPORT   | Fires when a measurement is requested to be jumped to, applying to individual viewports. |
+| JUMP_TO_MEASUREMENT_LAYOUT   | Fires when a measurement is requested to be jumped to, applying to the overall layout. |
 
 ## API
 

@@ -4,7 +4,7 @@
   border-radius: 4px;
   overflow: hidden;
   position: relative;
-  width: 12em;
+  width: 100%;
 }
 
 .infinite-loading-bar {
@@ -12,14 +12,6 @@
   height: 100%;
   position: absolute;
   border-radius: 4px;
-  width: 50%;
-}
-
-.loading-bar {
-  animation: side2side 2s ease-in-out infinite;
-  height: 100%;
-  border-radius: 4px;
-  position: absolute;
   width: 50%;
 }
 

@@ -2,7 +2,7 @@ input[type='text'] {
   -webkit-appearance: none;
 }
 
-input[type='text']:focus {
+.input-number:focus {
   border: none;
   outline: none;
 }
@@ -14,4 +14,8 @@ input[type='text']:focus {
 
 .up-arrowsize svg path {
   fill: #726f7e;
+}
+
+.input-small {
+  height: 26px;
 }

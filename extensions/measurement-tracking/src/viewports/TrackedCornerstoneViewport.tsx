@@ -159,18 +159,6 @@ function TrackedCornerstoneViewport(props) {
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {getCornerstoneViewport()}
-        <div className="absolute w-full">
-          {viewportDialogState.viewportIndex === viewportIndex && (
-            <Notification
-              id={viewportDialogState.id}
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-            />
-          )}
-        </div>
       </div>
     </>
   );

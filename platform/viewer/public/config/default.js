@@ -50,6 +50,15 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
+        useBulkDataURI: false,
+      },
+    },
+    {
+      friendlyName: 'dicomweb delegating proxy',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
+      sourceName: 'dicomwebproxy',
+      configuration: {
+        name: 'dicomwebproxy',
       },
     },
     {
