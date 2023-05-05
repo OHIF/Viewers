@@ -31,19 +31,42 @@ const isMultiFrame = instance => {
   return instance.NumberOfFrames > 1;
 };
 
+function getDisplaySetInfo(instances) {
+  const dynamicVolumeInfo = getDynamicVolumeInfo(instances);
+  const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
+  let displaySetInfo;
+
+  if (isDynamicVolume) {
+    const timePoint = timePoints[0];
+    const instancesMap = new Map();
+
+    // O(n) to convert it into a map and O(1) to find each instance
+    instances.forEach(instance => instancesMap.set(instance.imageId, instance));
+
+    const firstTimePointInstances = timePoint.map(imageId =>
+      instancesMap.get(imageId)
+    );
+
+    displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances);
+  } else {
+    displaySetInfo = isDisplaySetReconstructable(instances);
+  }
+
+  return {
+    isDynamicVolume,
+    ...displaySetInfo,
+  };
+}
+
 const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
-  const { isDynamicVolume } = getDynamicVolumeInfo(instances);
-
-  // TODO: get 4D volume info and check if one of the time points is reconstructable
   const {
+    isDynamicVolume,
     value: isReconstructable,
     averageSpacingBetweenFrames,
-  } = isDynamicVolume
-    ? { value: true, averageSpacingBetweenFrames: 1 }
-    : isDisplaySetReconstructable(instances);
+  } = getDisplaySetInfo(instances);
 
   const volumeLoaderSchema = isDynamicVolume
     ? DYNAMIC_VOLUME_LOADER_SCHEME
@@ -51,6 +74,7 @@ const makeDisplaySet = instances => {
 
   // set appropriate attributes to image set...
   imageSet.setAttributes({
+    volumeLoaderSchema,
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,
     SeriesTime: instance.SeriesTime,

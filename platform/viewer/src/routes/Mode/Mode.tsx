@@ -12,8 +12,6 @@ import { history } from '../../utils/history';
 
 const { getSplitParam } = utils;
 
-const { getSplitParam } = utils;
-
 /**
  * Initialize the route.
  *
