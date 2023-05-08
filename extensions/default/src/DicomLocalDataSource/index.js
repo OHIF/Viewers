@@ -115,6 +115,18 @@ function createDicomLocalApi(dicomLocalConfig) {
       },
     },
     retrieve: {
+      directURL: params => {
+        const { instance, tag, defaultType } = params;
+
+        const value = instance[tag];
+        if (value instanceof Array && value[0] instanceof ArrayBuffer) {
+          return URL.createObjectURL(
+            new Blob([value[0]], {
+              type: defaultType,
+            })
+          );
+        }
+      },
       series: {
         metadata: async ({ StudyInstanceUID, madeInClient = false } = {}) => {
           if (!StudyInstanceUID) {

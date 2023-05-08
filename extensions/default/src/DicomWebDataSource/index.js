@@ -178,7 +178,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
       directURL: params => {
-        return getDirectURL(wadoRoot, params);
+        return getDirectURL({ wadoRoot, singlepart }, params);
       },
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
         const options = {
@@ -394,7 +394,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
               };
               // Todo: this needs to be from wado dicom web client
               return qidoDicomWebClient.retrieveBulkData(options).then(val => {
-                const ret = (val && val[0]) || undefined;
+                // There are DICOM PDF cases where the first ArrayBuffer in the array is
+                // the bulk data and DICOM video cases where the second ArrayBuffer is
+                // the bulk data. Here we play it safe and do a find.
+                const ret =
+                  (val instanceof Array &&
+                    val.find(arrayBuffer => arrayBuffer?.byteLength)) ||
+                  undefined;
                 value.Value = ret;
                 return ret;
               });
