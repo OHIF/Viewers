@@ -37,12 +37,29 @@ const linkPackage = async (packageName, options, removeFromConfig) => {
 async function removePathFromWebpackConfig(webpackConfigPath, packageName) {
   const fileContent = await fs.promises.readFile(webpackConfigPath, 'utf8');
 
-  const regexPattern = new RegExp(
-    `\\s*path\\.resolve\\(__dirname, '(?:.*${packageName}.*)'\\),?`,
-    'g'
-  );
+  const packageNameSubstring = `${packageName}/node_modules`;
+  const pathResolveStart = 'path.resolve(';
+  const closingParenthesis = ')';
 
-  const modifiedFileContent = fileContent.replace(regexPattern, '');
+  let startIndex = fileContent.indexOf(packageNameSubstring);
+
+  if (startIndex === -1) {
+    return;
+  }
+
+  // Find the start of the "path.resolve" line.
+  startIndex = fileContent.lastIndexOf(pathResolveStart, startIndex);
+
+  // Find the end of the line with the closing parenthesis.
+  let endIndex = fileContent.indexOf(closingParenthesis, startIndex) + 1;
+
+  // Check if there's a comma after the closing parenthesis and remove it as well.
+  if (fileContent[endIndex] === ',') {
+    endIndex++;
+  }
+
+  const modifiedFileContent =
+    fileContent.slice(0, startIndex) + fileContent.slice(endIndex);
 
   await fs.promises.writeFile(webpackConfigPath, modifiedFileContent);
 }

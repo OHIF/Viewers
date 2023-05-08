@@ -1,7 +1,6 @@
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
-import initToolGroups from './initToolGroups.js';
-import toolbarButtons from './toolbarButtons.js';
+import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
