@@ -52,7 +52,7 @@ const Thumbnail = ({
             'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden min-h-32',
             isActive
               ? 'border-2 border-primary-light'
-              : 'border border-secondary-light group-focus:border-blue-300 hover:border-blue-300'
+              : 'border border-secondary-light hover:border-blue-300'
           )}
           style={{
             margin: isActive ? '0' : '1px',

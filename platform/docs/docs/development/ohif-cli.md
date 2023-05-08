@@ -292,7 +292,7 @@ are currently being used by the viewer.
 
 ## Private NPM Repos
 
-For the `yarn cli` to view private NPM repos, create a read-only token with the 
+For the `yarn cli` to view private NPM repos, create a read-only token with the
 following steps and export it as an environmental variable. You may also export
 an existing npm token.
 ```
@@ -300,3 +300,9 @@ npm login
 npm token create --read-only
 export NPM_TOKEN=<your readonly token>
 ```
+
+## External dependencies
+The ohif-cli will add the path to the external dependencies to the webpack config,
+so that you can install them in your project and use them in your custom
+extensions and modes. To achieve this ohif-cli will update the webpack.pwa.js
+file in the platform/viewer directory.
