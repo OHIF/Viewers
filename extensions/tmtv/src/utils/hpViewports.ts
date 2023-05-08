@@ -121,8 +121,7 @@ const ptAXIAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -163,8 +162,7 @@ const ptSAGITTAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -205,8 +203,7 @@ const ptCORONAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -260,8 +257,7 @@ const fusionAXIAL = {
       options: {
         colormap: 'hsv',
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
       id: 'ptDisplaySet',
@@ -314,8 +310,7 @@ const fusionSAGITTAL = {
       options: {
         colormap: 'hsv',
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
       id: 'ptDisplaySet',
@@ -368,8 +363,7 @@ const fusionCORONAL = {
       options: {
         colormap: 'hsv',
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
       id: 'ptDisplaySet',
@@ -414,8 +408,7 @@ const mipSAGITTAL = {
         blendMode: 'MIP',
         slabThickness: 'fullVolume',
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },

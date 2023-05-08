@@ -14,7 +14,6 @@ import { Types as OhifTypes } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
-import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -557,8 +556,9 @@ function commandsModule({
       });
 
       const { actor: volumeActor } = actorEntry;
+      const volumeId = volumeActor.uid;
 
-      setColormap(volumeActor, colormap);
+      viewport.setProperties({ colormap }, volumeId);
 
       if (immediate) {
         viewport.render();

@@ -49,6 +49,9 @@ export default class HangingProtocolService extends PubSubService {
   studies: StudyMetadata[];
   // stores all the protocols (object or function that returns an object) in a map
   protocols: Map<string, Protocol>;
+  // protocols copy for the case where protocols has computed values which override
+  // the original values
+  protocolsCopy: Map<string, Protocol>;
   // Contains the list of currently active keys
   activeProtocolIds: string[];
   // the current protocol that is being applied to the viewports in object format
@@ -135,6 +138,7 @@ export default class HangingProtocolService extends PubSubService {
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
     this.protocols = new Map();
+    this.protocolsCopy = new Map();
     this.protocolEngine = undefined;
     this.protocol = undefined;
     this.stageIndex = undefined;
@@ -294,6 +298,10 @@ export default class HangingProtocolService extends PubSubService {
     }
 
     this.protocols.set(protocolId, protocol);
+
+    // also insert it in the copy of the protocols map object, but make a deep
+    // copy of the protocol object first
+    this.protocolsCopy.set(protocolId, JSON.parse(JSON.stringify(protocol)));
   }
 
   /**
@@ -611,6 +619,12 @@ export default class HangingProtocolService extends PubSubService {
       return defaultReturn;
     }
 
+    const originalProtocol = this.protocolsCopy.get(this.protocol.id);
+    let originalProtocolStage;
+    if (!(originalProtocol instanceof Function)) {
+      originalProtocolStage = originalProtocol.stages[this.stageIndex];
+    }
+
     // if we reach here, it means that the displaySetInstanceUIDs to be dropped
     // in the viewportIndex are valid, and we can proceed with the update. However
     // we need to check if the displaySets that the viewport were showing
@@ -619,46 +633,68 @@ export default class HangingProtocolService extends PubSubService {
 
     // check if displaySetSelectors are used by other viewports, and
     // store the viewportIndex and displaySetInstanceUIDs that need to be updated
-
     const viewportsToUpdate = [];
     protocolViewports.forEach((viewport, index) => {
-      let viewportNeedsUpdate;
-      for (const displaySet of viewport.displaySets) {
-        if (
+      const viewportNeedsUpdate = viewport.displaySets.some(
+        displaySet =>
           displaySet.id === displaySetSelectorId &&
           (displaySet.matchedDisplaySetsIndex || 0) === matchedDisplaySetsIndex
-        ) {
-          viewportNeedsUpdate = true;
-          break;
-        }
-      }
+      );
 
       if (viewportNeedsUpdate) {
-        // we can then loop over the displaySets and choose all of them,
-        // but for the one that matches the oldDisplaySetInstanceUID we need to
-        // replace it with the newDisplaySetInstanceUID
-        const {
-          displaySetInstanceUIDs,
-          displaySetOptions,
-        } = viewport.displaySets.reduce(
-          (acc, displaySet) => {
-            const { id } = displaySet;
+        // Try to recompute the viewport options based on the current
+        // viewportIndex that needs update but from its old/original un-computed
+        // viewport & displaySet options
+        if (originalProtocolStage) {
+          const originalViewport = originalProtocolStage.viewports[index];
+          const originalViewportOptions = originalViewport.viewportOptions;
+          const originalDisplaySetOptions = originalViewport.displaySets;
 
-            let {
-              displaySetInstanceUID: displaySetInstanceUIDToUse,
-            } = this.displaySetMatchDetails.get(id);
+          const recomputedViewportOptions = this.getComputedOptions(
+            JSON.parse(JSON.stringify(originalViewportOptions)),
+            [newDisplaySetInstanceUID]
+          );
 
-            if (displaySet.id === displaySetSelectorId) {
-              displaySetInstanceUIDToUse = newDisplaySetInstanceUID;
-            }
+          if (recomputedViewportOptions) {
+            viewport.viewportOptions = {
+              ...viewport.viewportOptions,
+              ...recomputedViewportOptions,
+            };
+          }
 
-            acc.displaySetInstanceUIDs.push(displaySetInstanceUIDToUse);
-            acc.displaySetOptions.push(displaySet);
+          const recomputedDisplaySetOptions = this.getComputedOptions(
+            JSON.parse(JSON.stringify(originalDisplaySetOptions)),
+            [newDisplaySetInstanceUID]
+          );
 
-            return acc;
-          },
-          { displaySetInstanceUIDs: [], displaySetOptions: [] }
-        );
+          if (recomputedDisplaySetOptions) {
+            viewport.displaySets = viewport.displaySets.map(
+              (displaySet, index) => {
+                return {
+                  ...displaySet,
+                  ...recomputedDisplaySetOptions[index],
+                };
+              }
+            );
+          }
+        }
+
+        const displaySetInstanceUIDs = [];
+        const displaySetOptions = [];
+
+        for (const prevDisplaySet of viewport.displaySets) {
+          const { id } = prevDisplaySet;
+          const {
+            displaySetInstanceUID: oldDisplaySetInstanceUID,
+          } = this.displaySetMatchDetails.get(id);
+
+          displaySetInstanceUIDs.push(
+            prevDisplaySet.id === displaySetSelectorId
+              ? newDisplaySetInstanceUID
+              : oldDisplaySetInstanceUID
+          );
+          displaySetOptions.push(prevDisplaySet);
+        }
 
         viewportsToUpdate.push({
           viewportIndex: index,
@@ -681,27 +717,46 @@ export default class HangingProtocolService extends PubSubService {
    * simpler than recomputing the entire protocol.
    */
   public getComputedOptions(
-    options: Record<string, unknown>,
+    options: Record<string, unknown> | Array<Record<string, unknown>>,
     displaySetUIDs: string[]
   ) {
-    const computed = { ...options };
-    let displaySets;
-    for (const key in computed) {
-      const value = computed[key];
-      if (!value) continue;
-      if (value.custom) {
-        if (!displaySets) {
-          displaySets = this.displaySets.filter(
-            displaySet =>
-              displaySetUIDs.indexOf(displaySet.displaySetInstanceUID) !== -1
-          );
-        }
-        computed[key] = this.customAttributeRetrievalCallbacks[
-          value.custom
-        ].callback.call(computed, displaySets);
-        if (computed[key] === undefined) computed[key] = computed.defaultValue;
-      }
+    if (Array.isArray(options)) {
+      return options.map(option =>
+        this.getComputedOptions(option, displaySetUIDs)
+      );
     }
+
+    const computed = { ...options };
+
+    const processValue = (value: any, parent: any, key: string) => {
+      if (!value) return;
+
+      if (typeof value === 'object' && !value.custom) {
+        Object.keys(value).forEach(nestedKey => {
+          processValue(value[nestedKey], value, nestedKey);
+        });
+        return;
+      }
+
+      if (value.custom) {
+        const displaySets = this.displaySets.filter(displaySet =>
+          displaySetUIDs.includes(displaySet.displaySetInstanceUID)
+        );
+
+        const callback = this.customAttributeRetrievalCallbacks[value.custom]
+          .callback;
+        parent[key] = callback.call(computed, displaySets);
+
+        if (parent[key] === undefined) {
+          parent[key] = parent.defaultValue;
+        }
+      }
+    };
+
+    Object.keys(computed).forEach(key => {
+      processValue(computed[key], computed, key);
+    });
+
     return computed;
   }
 
