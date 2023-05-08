@@ -557,10 +557,6 @@ function commandsModule({
 
       const { actor: volumeActor, uid: volumeId } = actorEntry;
 
-      // viewport.setProperties({ colormap }, volumeId);
-      const mapper = volumeActor.getMapper();
-      mapper.setSampleDistance(1.0);
-
       viewport.setProperties({ colormap, volumeActor }, volumeId);
 
       if (immediate) {
