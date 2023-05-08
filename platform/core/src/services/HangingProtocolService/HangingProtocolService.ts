@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash.clonedeep';
+
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
@@ -301,7 +303,7 @@ export default class HangingProtocolService extends PubSubService {
 
     // also insert it in the copy of the protocols map object, but make a deep
     // copy of the protocol object first
-    this.protocolsCopy.set(protocolId, JSON.parse(JSON.stringify(protocol)));
+    this.protocolsCopy.set(protocolId, this._copyProtocol(protocol));
   }
 
   /**
@@ -1577,6 +1579,6 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   _copyProtocol(protocol: Protocol) {
-    return JSON.parse(JSON.stringify(protocol));
+    return cloneDeep(protocol);
   }
 }
