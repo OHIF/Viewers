@@ -3,6 +3,10 @@
  * @param {*} imageId
  */
 function getImageSrcFromImageId(cornerstone, imageId) {
+  if (!imageId) {
+    return;
+  }
+
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     cornerstone.utilities
