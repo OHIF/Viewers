@@ -555,10 +555,13 @@ function commandsModule({
         return actorEntry.uid.includes(displaySetInstanceUID);
       });
 
-      const { actor: volumeActor } = actorEntry;
-      const volumeId = volumeActor.uid;
+      const { actor: volumeActor, uid: volumeId } = actorEntry;
 
-      viewport.setProperties({ colormap }, volumeId);
+      // viewport.setProperties({ colormap }, volumeId);
+      const mapper = volumeActor.getMapper();
+      mapper.setSampleDistance(1.0);
+
+      viewport.setProperties({ colormap, volumeActor }, volumeId);
 
       if (immediate) {
         viewport.render();
