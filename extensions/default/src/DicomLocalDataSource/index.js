@@ -188,6 +188,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       displaySet.images.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames;
         if (NumberOfFrames > 1) {
+          // in multiframe we start at frame 1
           for (let i = 1; i <= NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,
