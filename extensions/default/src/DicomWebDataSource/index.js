@@ -62,8 +62,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   } = dicomWebConfig;
 
   const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
-  const headers = {};
-  headers.Authorization = `Bearer ${localStorage.getItem('gcp-jwt-token')}`;
+  // const headers = {};
+  // headers.Authorization = `Bearer ${localStorage.getItem('gcp-jwt-token')}`;
 
   const qidoConfig = {
     url: qidoRoot,
@@ -111,6 +111,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function(origParams) {
+          const headers= userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
           }

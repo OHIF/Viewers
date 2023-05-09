@@ -112,7 +112,7 @@ function OpenIdConnectRoutes({
     const user = userAuthenticationService.getUser();
 
     return {
-      Authorization: `Bearer ${user.access_token}`,
+      Authorization: `Bearer ${localStorage.getItem('gcp-jwt-token')}`,
     };
   };
 
