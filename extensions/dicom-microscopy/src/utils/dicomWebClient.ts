@@ -27,7 +27,10 @@ export default function getDicomWebClient({
     headers: userAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
-
+  wadoConfig.headers.append(
+    'Authorization',
+    `Bearer ${localStorage.getItem('gcp-jwt-token')}`
+  );
   const client = new api.DICOMwebClient(wadoConfig);
   client.wadoURL = wadoConfig.url;
 
