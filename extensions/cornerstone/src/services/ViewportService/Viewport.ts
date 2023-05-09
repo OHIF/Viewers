@@ -126,7 +126,7 @@ class ViewportInfo {
     if (!this.viewportData?.data) return false;
 
     if (this.viewportData.data.length) {
-      return !!this.viewportData.find(data =>
+      return !!this.viewportData.data.find(data =>
         dataContains(data, displaySetUID, imageId)
       );
     }
