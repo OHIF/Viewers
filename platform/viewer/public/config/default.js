@@ -24,6 +24,7 @@ window.config = {
     prefetch: 25,
   },
   // filterQueryParam: false,
+  defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',
@@ -96,13 +97,12 @@ window.config = {
   //       },
   //       React.createElement('img',
   //         {
-  //           src: './customLogo.svg',
+  //           src: './assets/customLogo.svg',
   //           className: 'w-8 h-8',
   //         }
   //       ))
   //   },
   // },
-  defaultDataSourceName: 'dicomweb',
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',

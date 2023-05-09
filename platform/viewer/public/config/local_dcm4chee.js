@@ -13,6 +13,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       friendlyName: 'DCM4CHEE Server',
@@ -49,5 +50,4 @@ window.config = {
     },
   ],
   studyListFunctionsEnabled: true,
-  defaultDataSourceName: 'dicomweb',
 };
