@@ -103,7 +103,10 @@ export default function ModeRoute({
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
-  const [allExtensionsLoaded, setAllExtensionsLoaded] = useState(false);
+  const [
+    ExtensionDependenciesLoaded,
+    setExtensionDependenciesLoaded,
+  ] = useState(false);
 
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
@@ -170,6 +173,23 @@ export default function ModeRoute({
   }
 
   useEffect(() => {
+    const loadExtensions = async () => {
+      const loadedExtensions = await loadModules(Object.keys(extensions));
+      for (const extension of loadedExtensions) {
+        const { id: extensionId } = extension;
+        if (
+          extensionManager.registeredExtensionIds.indexOf(extensionId) === -1
+        ) {
+          await extensionManager.registerExtension(extension);
+        }
+      }
+      setExtensionDependenciesLoaded(true);
+    };
+
+    loadExtensions();
+  }, []);
+
+  useEffect(() => {
     // Preventing state update for unmounted component
     isMounted.current = true;
     return () => {
@@ -178,6 +198,10 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
+    if (!ExtensionDependenciesLoaded) {
+      return;
+    }
+
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
       const studyInstanceUIDs = await dataSource.initialize({
@@ -191,9 +215,13 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [location]);
+  }, [location, ExtensionDependenciesLoaded]);
 
   useEffect(() => {
+    if (!ExtensionDependenciesLoaded) {
+      return;
+    }
+
     const retrieveLayoutData = async () => {
       const layoutData = await route.layoutTemplate({
         location,
@@ -211,10 +239,10 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [studyInstanceUIDs]);
+  }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!hotkeys) {
+    if (!hotkeys || !ExtensionDependenciesLoaded) {
       return;
     }
 
@@ -231,25 +259,14 @@ export default function ModeRoute({
     return () => {
       hotkeysManager.destroy();
     };
-  }, []);
+  }, [ExtensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!layoutTemplateData.current) {
+    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded) {
       return;
     }
 
     const setupRouteInit = async () => {
-      const loadedExtensions = await loadModules(Object.keys(extensions));
-      for (const extension of loadedExtensions) {
-        const { id: extensionId } = extension;
-        if (
-          extensionManager.registeredExtensionIds.indexOf(extensionId) === -1
-        ) {
-          await extensionManager.registerExtension(extension);
-        }
-      }
-      setAllExtensionsLoaded(true);
-
       // TODO: For some reason this is running before the Providers
       // are calling setServiceImplementation
       // TODO -> iterate through services.
@@ -370,6 +387,7 @@ export default function ModeRoute({
     mode,
     dataSourceName,
     location,
+    ExtensionDependenciesLoaded,
     route,
     servicesManager,
     extensionManager,
@@ -397,7 +415,7 @@ export default function ModeRoute({
         <DragAndDropProvider>
           {layoutTemplateData.current &&
             studyInstanceUIDs?.[0] !== undefined &&
-            allExtensionsLoaded &&
+            ExtensionDependenciesLoaded &&
             renderLayoutData({
               ...layoutTemplateData.current.props,
               ViewportGridComp: ViewportGridWithDataSource,
