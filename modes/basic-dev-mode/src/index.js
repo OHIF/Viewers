@@ -1,5 +1,5 @@
 import toolbarButtons from './toolbarButtons.js';
-import { hotkeys, ServicesManager } from '@ohif/core';
+import { hotkeys } from '@ohif/core';
 import { id } from './id';
 
 const configs = {

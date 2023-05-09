@@ -127,7 +127,9 @@ window.config = {
 
 > You can simply use the stylings from tailwind CSS in the whiteLabeling
 
-In addition to text, you can also add your custom logo
+In addition to text, you can also add your custom logo. You can put them
+inside the platform/viewer/public/assets folder and use them in the
+whiteLabeling section.
 
 ```js
 window.config = {
@@ -143,7 +145,7 @@ window.config = {
           href: '/',
         },
         React.createElement('img', {
-          src: './customLogo.svg',
+          src: './assets/customLogo.svg',
           // className: 'w-8 h-8',
         })
       );

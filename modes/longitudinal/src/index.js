@@ -254,3 +254,4 @@ const mode = {
 };
 
 export default mode;
+export { initToolGroups, toolbarButtons };
