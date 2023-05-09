@@ -336,7 +336,7 @@ function WorkList({
               : []
           }
         >
-          {appConfig.modes.map((mode, i) => {
+          {appConfig.loadedModes.map((mode, i) => {
             const isFirst = i === 0;
 
             const isValidMode = mode.isValidMode({ modalities });

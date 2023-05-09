@@ -9,6 +9,7 @@ import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
 import { history } from '../../utils/history';
+import loadModules from '../../pluginImports';
 
 const { getSplitParam } = utils;
 
@@ -102,6 +103,8 @@ export default function ModeRoute({
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
+  const [allExtensionsLoaded, setAllExtensionsLoaded] = useState(false);
+
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
   const isMounted = useRef(false);
@@ -235,41 +238,52 @@ export default function ModeRoute({
       return;
     }
 
-    // TODO: For some reason this is running before the Providers
-    // are calling setServiceImplementation
-    // TODO -> iterate through services.
-
-    // Extension
-
-    // Add SOPClassHandlers to a new SOPClassManager.
-    displaySetService.init(extensionManager, sopClassHandlers);
-
-    extensionManager.onModeEnter({
-      servicesManager,
-      extensionManager,
-      commandsManager,
-    });
-
-    // use the URL hangingProtocolId if it exists, otherwise use the one
-    // defined in the mode configuration
-    const hangingProtocolIdToUse = hangingProtocolService.getProtocolById(
-      runTimeHangingProtocolId
-    )
-      ? runTimeHangingProtocolId
-      : hangingProtocol;
-
-    // Sets the active hanging protocols - if hangingProtocol is undefined,
-    // resets to default.  Done before the onModeEnter to allow the onModeEnter
-    // to perform custom hanging protocol actions
-    hangingProtocolService.setActiveProtocolIds(hangingProtocolIdToUse);
-
-    mode?.onModeEnter({
-      servicesManager,
-      extensionManager,
-      commandsManager,
-    });
-
     const setupRouteInit = async () => {
+      const loadedExtensions = await loadModules(Object.keys(extensions));
+      for (const extension of loadedExtensions) {
+        const { id: extensionId } = extension;
+        if (
+          extensionManager.registeredExtensionIds.indexOf(extensionId) === -1
+        ) {
+          await extensionManager.registerExtension(extension);
+        }
+      }
+      setAllExtensionsLoaded(true);
+
+      // TODO: For some reason this is running before the Providers
+      // are calling setServiceImplementation
+      // TODO -> iterate through services.
+
+      // Extension
+
+      // Add SOPClassHandlers to a new SOPClassManager.
+      displaySetService.init(extensionManager, sopClassHandlers);
+
+      extensionManager.onModeEnter({
+        servicesManager,
+        extensionManager,
+        commandsManager,
+      });
+
+      // use the URL hangingProtocolId if it exists, otherwise use the one
+      // defined in the mode configuration
+      const hangingProtocolIdToUse = hangingProtocolService.getProtocolById(
+        runTimeHangingProtocolId
+      )
+        ? runTimeHangingProtocolId
+        : hangingProtocol;
+
+      // Sets the active hanging protocols - if hangingProtocol is undefined,
+      // resets to default.  Done before the onModeEnter to allow the onModeEnter
+      // to perform custom hanging protocol actions
+      hangingProtocolService.setActiveProtocolIds(hangingProtocolIdToUse);
+
+      mode?.onModeEnter({
+        servicesManager,
+        extensionManager,
+        commandsManager,
+      });
+
       /**
        * The next line should get all the query parameters provided by the URL
        * - except the StudyInstanceUIDs - and create an object called filters
@@ -382,8 +396,8 @@ export default function ModeRoute({
       <CombinedContextProvider>
         <DragAndDropProvider>
           {layoutTemplateData.current &&
-            studyInstanceUIDs?.length &&
-            studyInstanceUIDs[0] !== undefined &&
+            studyInstanceUIDs?.[0] !== undefined &&
+            allExtensionsLoaded &&
             renderLayoutData({
               ...layoutTemplateData.current.props,
               ViewportGridComp: ViewportGridWithDataSource,
