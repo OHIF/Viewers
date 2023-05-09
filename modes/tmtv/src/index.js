@@ -134,7 +134,7 @@ function modeFactory({ modeConfiguration }) {
         'fusionPTColormap',
       ]);
 
-      // For the hanging protocol we need to decided on the window level
+      // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard
       // code the window level in the hanging protocol but we add a custom
       // attribute to the hanging protocol that will be used to get the
