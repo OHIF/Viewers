@@ -1469,53 +1469,43 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.45.0":
-  version "0.45.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.45.0.tgz#c945e47a055df8a0c52c9376f9cedd3b29f1b431"
-  integrity sha512-kpMt9MwQ6LkoIA73F3Hg400W1v8nLH0WQBNlM0V1unYvvnEmMW6hhIK24T8KNEzrDep4znFYi5E3l6xbHfvlhw==
+"@cornerstonejs/core@^0.46.1":
+  version "0.46.1"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.46.1.tgz#3f3d752dbc7eb754399a181a090bc76605b8655f"
+  integrity sha512-LaFC348qhWAD+JkyAm5J+t5edC/n7c7jW/usK5mDMEifhjrgKoaL4yMLQjulJvPMaynRf5MRYOWQx8rSTyUaBQ==
   dependencies:
     "@kitware/vtk.js" "27.3.1"
     detect-gpu "^5.0.22"
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/core@^0.46.0":
-  version "0.46.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.46.0.tgz#c1ed15b88dab8d25869cadad97c441858a700164"
-  integrity sha512-BLSXb7dbnP5kU1DTc/k1IlgAPCrk/1A0rfCWTaQn3Pc5OQDPkazvxYlCxvr8UpdkKOk74aX6lXRXvdNuwz2G9Q==
-  dependencies:
-    "@kitware/vtk.js" "27.3.1"
-    detect-gpu "^5.0.22"
-    gl-matrix "^3.4.3"
-    lodash.clonedeep "4.5.0"
-
-"@cornerstonejs/dicom-image-loader@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.6.0.tgz#5c0a7e86124eec257e5bea77b9748705fe1e96c6"
-  integrity sha512-QmqA4H5i/nWEBPMAwewed5NEufQT+yhct1IgKEl9weWhjHPiYSV8mVFvb4LVrV02aUWcNex5X9mqev0VKQOxrA==
+"@cornerstonejs/dicom-image-loader@^0.6.3":
+  version "0.6.3"
+  resolved "https://registry.npmjs.org/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.6.3.tgz#9432ce09103b4bc6ef9429756cf854f2c6ef243f"
+  integrity sha512-MPNn4c+MQ2yIFTAYiJs9Q3ZOaMvBr3d8Wl5k55M8KaO0ZZFX4ZLUrCj2j9AsRBAOlVwgW02hs4ATbqy/J+vjHw==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.2"
-    "@cornerstonejs/core" "^0.45.0"
+    "@cornerstonejs/core" "^0.46.1"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.20.0":
-  version "0.20.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.20.0.tgz#14f9b6187542bf786e1b8a9c4faf1503c15fb433"
-  integrity sha512-LuIeFd8IR0G2uGvOLqpEPe2nswJKF2GXTd3NEz5lBWKGxzGAevFG6Yi29DgZATarhFoKAlXdugCmgBp9jxa8cQ==
+"@cornerstonejs/streaming-image-volume-loader@^0.20.1":
+  version "0.20.1"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.20.1.tgz#860a6a2022b68773d2f056a4495404d36a966caa"
+  integrity sha512-/t/ItjWJUQEe2BIckjO+IB7I/uycCMDnnQsG2GtT0d+XZchcVK4wLMWUtuRJ6X+LI8P3t9oKj3kNIGPRJl1UTw==
   dependencies:
-    "@cornerstonejs/core" "^0.46.0"
+    "@cornerstonejs/core" "^0.46.1"
 
-"@cornerstonejs/tools@^0.67.0":
-  version "0.67.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.67.0.tgz#f76f959e64eb1c3962cb273eef5560a889d57b3c"
-  integrity sha512-1iGIxjjEUJDZyePKszVQd4oAZDznwU8YLkZZpPYA1CnrX8DZos+BE5rzdW5Wx1yC6rZ8o7azecjByc4+IarlGw==
+"@cornerstonejs/tools@^0.67.1":
+  version "0.67.1"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.67.1.tgz#05e25119a37898693f8e684740dfa1b738d1cd6e"
+  integrity sha512-BeshjI0qyECiVLIIMp/kVLmG6QWraJbiHA3ktOpDiS69PPwP4Pm5q2/xCinVAj8xcxhACAXhbkWdNNXkA6f6zg==
   dependencies:
-    "@cornerstonejs/core" "^0.46.0"
+    "@cornerstonejs/core" "^0.46.1"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -12328,16 +12318,6 @@ istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/istanbul-lib-coverage/-/istanbul-lib-coverage-3.2.0.tgz#189e7909d0a39fa5a3dfad5b03f71947770191d3"
   integrity sha512-eOeJ5BHCmHYvQK7xt9GkdHuzuCGS1Y6g9Gvnx3Ym33fz/HpLRYxiS0wHNr+m/MBC8B647Xt608vCDEvhl9c6Mw==
-
-istanbul-lib-instrument@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.npmjs.org/istanbul-lib-instrument/-/istanbul-lib-instrument-4.0.3.tgz#873c6fff897450118222774696a3f28902d77c1d"
-  integrity sha512-BXgQl9kf4WTCPCCpmFGoJkz/+uhvm7h7PFKUYxh7qarQd3ER33vHG//qaE8eN25l07YqZPpHXU9I09l/RD5aGQ==
-  dependencies:
-    "@babel/core" "^7.7.5"
-    "@istanbuljs/schema" "^0.1.2"
-    istanbul-lib-coverage "^3.0.0"
-    semver "^6.3.0"
 
 istanbul-lib-instrument@^5.0.4, istanbul-lib-instrument@^5.1.0:
   version "5.2.1"
