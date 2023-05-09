@@ -41,6 +41,7 @@ export default class HangingProtocolService extends PubSubService {
   public static REGISTRATION = {
     name: 'hangingProtocolService',
     altName: 'HangingProtocolService',
+    moduleType: 'hangingProtocolModule',
     create: ({ configuration = {}, commandsManager, servicesManager }) => {
       return new HangingProtocolService(commandsManager, servicesManager);
     },
@@ -1523,5 +1524,15 @@ export default class HangingProtocolService extends PubSubService {
 
   _copyProtocol(protocol: Protocol) {
     return JSON.parse(JSON.stringify(protocol));
+  }
+
+  /** Register the hanging protocols from the extension module */
+  public initModule(extensionModule, extensionId: string): void {
+    extensionModule.forEach(({ name, protocol }) => {
+      if (protocol) {
+        // Only auto-register if protocol specified, otherwise let mode register
+        this.addProtocol(name, protocol);
+      }
+    });
   }
 }

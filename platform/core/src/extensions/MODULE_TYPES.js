@@ -1,3 +1,6 @@
+// @deprecated because this requires core knowledge of what modules have
+// associated types.  The recommended way to do this is to add
+// a `moduleType: 'myserviceNameModule'` to the service REGISTRATION object.
 export default {
   COMMANDS: 'commandsModule',
   CUSTOMIZATION: 'customizationModule',

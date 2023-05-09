@@ -29,6 +29,18 @@ The `ExtensionManager` only has a few public members:
 - `getActiveDataSource` - Returns the currently active data source
 - `getModuleEntry` - Returns the module entry by the give id.
 
+## Creating New Modules
+
+During the registration of a service, the service `REGISTRATION` object can
+create a new module type by declaring the moduleType, eg:
+
+```javascript
+  REGISTRATION = {
+    name:...,
+    moduleType: `serviceNameModule`,
+    ...
+```
+
 ## Accessing Modules
 
 We use `getModuleEntry` in our `ViewerLayout` logic to find the panels based on

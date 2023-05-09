@@ -4,11 +4,13 @@ import CommandsManager from '../classes/CommandsManager';
 
 export default class ServicesManager {
   public services: Services = {};
+  public registeredServiceNames: string[] = [];
+  public moduleTypes: Record<string, unknown> = {};
+
+  _commandsManager: CommandsManager;
 
   constructor(commandsManager: CommandsManager) {
     this._commandsManager = commandsManager;
-    this.services = {};
-    this.registeredServiceNames = [];
   }
 
   /**
@@ -50,6 +52,10 @@ export default class ServicesManager {
     } else {
       log.warn(`Service create factory function not defined. Exiting early.`);
       return;
+    }
+
+    if (service.moduleType) {
+      this.moduleTypes[service.moduleType] = this.services[service.name];
     }
 
     /* Track service registration */

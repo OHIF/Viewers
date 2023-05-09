@@ -51,17 +51,19 @@ By default, `OHIF-v3` registers the following services in the `appInit`.
 
 ```js title="platform/viewer/src/appInit.js"
 servicesManager.registerServices([
-  CustomizationService,
-  UINotificationService,
-  UIModalService,
-  UIDialogService,
-  UIViewportDialogService,
-  MeasurementService,
-  DisplaySetService,
-  ToolBarService,
-  ViewportGridService,
-  HangingProtocolService,
-  CineService,
+  CustomizationService.REGISTRATION,
+  UINotificationService.REGISTRATION,
+  UIModalService.REGISTRATION,
+  UIDialogService.REGISTRATION,
+  UIViewportDialogService.REGISTRATION,
+  MeasurementService.REGISTRATION,
+  DisplaySetService.REGISTRATION,
+  ToolBarService.REGISTRATION,
+  ViewportGridService.REGISTRATION,
+  HangingProtocolService.REGISTRATION,
+  CineService.REGISTRATION,
+  StateSyncService.REGISTRATION,
+  CustomizationService.REGISTRATION
 ]);
 ```
 
@@ -77,7 +79,12 @@ For instance, `ToolBarService` is exported as:
 import ToolBarService from './ToolBarService';
 
 export default {
-  name: 'ToolBarService',
+  name: 'toolbarService',
+  // Historical deprecated name
+  altName: 'ToolBarService',
+  // Declares a module type, avoiding needing to modify @ohif/core to add
+  // new module types in the extensions manager.
+  moduleType: 'toolbarModule',
   create: ({ configuration = {}, commandsManager }) => {
     return new ToolBarService(commandsManager);
   },

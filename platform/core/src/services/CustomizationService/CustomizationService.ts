@@ -53,6 +53,7 @@ const flattenNestedStrings = (
 export default class CustomizationService extends PubSubService {
   public static REGISTRATION = {
     name: 'customizationService',
+    moduleType: 'customizationModule',
     create: ({ configuration = {}, commandsManager }) => {
       return new CustomizationService({ configuration, commandsManager });
     },
@@ -84,6 +85,16 @@ export default class CustomizationService extends PubSubService {
       if (!defaultCustomizations) return;
       const { value } = defaultCustomizations;
       this.addReference(value, true);
+    });
+  }
+
+  /** Register the customizations from the extensions */
+  public initModule(extensionModule, extensionId: string): void {
+    extensionModule.forEach(({ name, value }) => {
+      if (name === 'default' && value) {
+        // Only auto-register if protocol specified, otherwise let mode register
+        this.addReference(value, true);
+      }
     });
   }
 

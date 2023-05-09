@@ -18,13 +18,14 @@ const PUBLIC_DIR = path.join(__dirname, '../public');
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
+const PLUGIN_CONFIG = process.env.PLUGIN_CONFIG || '../pluginConfig.json';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
 const writePluginImportFile = require('./writePluginImportsFile.js');
 
-const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
+const copyPluginFromExtensions = writePluginImportFile(PLUGIN_CONFIG, SRC_DIR, DIST_DIR);
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {

@@ -1,4 +1,4 @@
-const pluginConfig = require('../pluginConfig.json');
+let pluginConfig;
 const fs = require('fs');
 const os = require('os');
 const glob = require('glob');
@@ -136,7 +136,9 @@ const createCopyPluginToDistForBuild = (
     .filter(x => !!x);
 };
 
-function writePluginImportsFile(SRC_DIR, DIST_DIR) {
+function writePluginImportsFile(pluginConfigFile, SRC_DIR, DIST_DIR) {
+  pluginConfig = require(pluginConfigFile);
+
   let pluginImportsJsContent = autogenerationDisclaimer;
 
   const extensionLines = constructLines(pluginConfig.extensions, 'extensions');

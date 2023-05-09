@@ -62,13 +62,15 @@ export default class ExtensionManager {
   private _servicesManager: ServicesManager;
   private _hotkeysManager: HotkeysManager;
 
+  modules: Record<string, unknown[]> = {};
+  modulesMap: Record<string, unknown> = {};
+
   constructor({
     commandsManager,
     servicesManager,
     hotkeysManager,
     appConfig = {},
   }: ExtensionConstructor) {
-    this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
@@ -77,7 +79,6 @@ export default class ExtensionManager {
     this._hotkeysManager = hotkeysManager;
     this._appConfig = appConfig;
 
-    this.modulesMap = {};
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
@@ -260,6 +261,7 @@ export default class ExtensionManager {
         extensionId,
         configuration
       );
+      const service = this._servicesManager.moduleTypes[moduleType];
 
       if (extensionModule) {
         switch (moduleType) {
@@ -273,8 +275,6 @@ export default class ExtensionManager {
               dataSources
             );
             break;
-          case MODULE_TYPES.HANGING_PROTOCOL:
-            this._initHangingProtocolsModule(extensionModule, extensionId);
           case MODULE_TYPES.TOOLBAR:
           case MODULE_TYPES.VIEWPORT:
           case MODULE_TYPES.PANEL:
@@ -286,19 +286,25 @@ export default class ExtensionManager {
           case MODULE_TYPES.UTILITY:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
-            extensionModule.forEach(element => {
-              if (!element.name) {
-                throw new Error(
-                  `Extension ID ${extensionId} module ${moduleType} element has no name`
-                );
-              }
-              const id = `${extensionId}.${moduleType}.${element.name}`;
-              element.id = id;
-              this.modulesMap[id] = element;
-            });
+            this.addExtensionModule(
+              moduleType,
+              service,
+              extensionModule,
+              extensionId
+            );
             break;
+          case MODULE_TYPES.HANGING_PROTOCOL:
           default:
-            throw new Error(`Module type invalid: ${moduleType}`);
+            if (service) {
+              this.addExtensionModule(
+                moduleType,
+                service,
+                extensionModule,
+                extensionId
+              );
+            } else {
+              throw new Error(`Module type invalid: ${moduleType}`);
+            }
         }
 
         this.modules[moduleType].push({
@@ -311,6 +317,20 @@ export default class ExtensionManager {
     // Track extension registration
     this.registeredExtensionIds.push(extensionId);
   };
+
+  addExtensionModule(moduleType, service, extensionModule, extensionId) {
+    extensionModule.forEach(element => {
+      if (!element.name) {
+        throw new Error(
+          `Extension ID ${extensionId} module ${moduleType} element has no name`
+        );
+      }
+      const id = `${extensionId}.${moduleType}.${element.name}`;
+      element.id = id;
+      this.modulesMap[id] = element;
+    });
+    service?.initModule?.(extensionModule, extensionId);
+  }
 
   getModuleEntry = stringEntry => {
     return this.modulesMap[stringEntry];
@@ -371,16 +391,6 @@ export default class ExtensionManager {
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
     }
-  };
-
-  _initHangingProtocolsModule = (extensionModule, extensionId) => {
-    const { hangingProtocolService } = this._servicesManager.services;
-    extensionModule.forEach(({ name, protocol }) => {
-      if (protocol) {
-        // Only auto-register if protocol specified, otherwise let mode register
-        hangingProtocolService.addProtocol(name, protocol);
-      }
-    });
   };
 
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
