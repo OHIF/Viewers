@@ -9,6 +9,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       friendlyName: 'Orthanc Server',
@@ -39,5 +40,4 @@ window.config = {
       configuration: {},
     },
   ],
-  defaultDataSourceName: 'dicomweb',
 };

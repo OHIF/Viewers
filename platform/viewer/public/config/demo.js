@@ -8,6 +8,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   strictZSpacingForVolumeViewport: true,
   showCPUFallbackMessage: true,
+  defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       friendlyName: 'DCM4CHEE Server',
@@ -25,7 +26,6 @@ window.config = {
       },
     },
   ],
-  defaultDataSourceName: 'dicomweb',
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',

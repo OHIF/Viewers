@@ -106,7 +106,7 @@ module.exports = (env, argv) => {
               '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
             to: DIST_DIR,
             globOptions: {
-              ignore: ['*.js.map'],
+              ignore: ['**/*.min.js.map'],
             },
           },
           // Copy dicom-image-loader build files
