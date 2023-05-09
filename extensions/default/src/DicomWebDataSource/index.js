@@ -62,6 +62,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   } = dicomWebConfig;
 
   const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
+  const headers = {};
+  headers.Authorization = `Bearer ${localStorage.getItem('gcp-jwt-token')}`;
 
   const qidoConfig = {
     url: qidoRoot,
@@ -109,7 +111,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function(origParams) {
-          const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
           }
@@ -134,7 +135,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function(studyInstanceUid) {
-          const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
           }
@@ -151,6 +151,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           const headers = userAuthenticationService.getAuthorizationHeader();
+          console.log('headers:'+headers)
           if (headers) {
             qidoDicomWebClient.headers = headers;
           }
@@ -200,6 +201,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           madeInClient = false,
         } = {}) => {
           const headers = userAuthenticationService.getAuthorizationHeader();
+          console.log('headers:'+headers)
           if (headers) {
             wadoDicomWebClient.headers = headers;
           }
@@ -234,6 +236,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     store: {
       dicom: async (dataset, request) => {
         const headers = userAuthenticationService.getAuthorizationHeader();
+        console.log('headers:'+headers)
         if (headers) {
           wadoDicomWebClient.headers = headers;
         }
