@@ -170,14 +170,20 @@ export default function ModeRoute({
   }
 
   useEffect(() => {
+    if (!allExtensionsLoaded) {
+      return;
+    }
     // Preventing state update for unmounted component
     isMounted.current = true;
     return () => {
       isMounted.current = false;
     };
-  }, []);
+  }, [allExtensionsLoaded]);
 
   useEffect(() => {
+    if (!allExtensionsLoaded) {
+      return;
+    }
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
       const studyInstanceUIDs = await dataSource.initialize({
@@ -191,9 +197,13 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [location]);
+  }, [location, allExtensionsLoaded]);
 
   useEffect(() => {
+    if (!allExtensionsLoaded) {
+      return;
+    }
+
     const retrieveLayoutData = async () => {
       const layoutData = await route.layoutTemplate({
         location,
@@ -211,9 +221,12 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [studyInstanceUIDs]);
+  }, [studyInstanceUIDs, allExtensionsLoaded]);
 
   useEffect(() => {
+    if (!allExtensionsLoaded) {
+      return;
+    }
     if (!hotkeys) {
       return;
     }
@@ -231,14 +244,10 @@ export default function ModeRoute({
     return () => {
       hotkeysManager.destroy();
     };
-  }, []);
+  }, [allExtensionsLoaded]);
 
   useEffect(() => {
-    if (!layoutTemplateData.current) {
-      return;
-    }
-
-    const setupRouteInit = async () => {
+    const asyncLoad = async () => {
       const loadedExtensions = await loadModules(Object.keys(extensions));
       for (const extension of loadedExtensions) {
         const { id: extensionId } = extension;
@@ -249,7 +258,16 @@ export default function ModeRoute({
         }
       }
       setAllExtensionsLoaded(true);
+    };
+    asyncLoad();
+  }, []);
 
+  useEffect(() => {
+    if (!layoutTemplateData.current || !allExtensionsLoaded) {
+      return;
+    }
+
+    const setupRouteInit = async () => {
       // TODO: For some reason this is running before the Providers
       // are calling setServiceImplementation
       // TODO -> iterate through services.
@@ -376,6 +394,7 @@ export default function ModeRoute({
     hotkeysManager,
     studyInstanceUIDs,
     refresh,
+    allExtensionsLoaded,
   ]);
 
   const renderLayoutData = props => {
