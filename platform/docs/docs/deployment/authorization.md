@@ -29,7 +29,7 @@ oidc: [
   ],
 ```
 
-as you see, you need to provide the following information:
+You need to provide the following information:
 - authority: The URL of the authorization server.
 - client_id: The client id of your application (provided by the authorization server).
 - redirect_uri: The callback URL of your application.
