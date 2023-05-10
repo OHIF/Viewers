@@ -310,3 +310,51 @@ viewportOptions: {
     // This is the value returned if the above doesn't return anything
     defaultValue: { index: 5 },
 ```
+
+### Included Custom Attributes
+
+A few custom attributes are included under @ohif/extension-test, these are namely:
+*sameAs
+*maxNumImageFrames
+*numberOfDisplaySets
+
+To use these included custom attributes, the extension will need to be enabled under platform/viewer/pluginConfig.json:
+
+```javascript
+{
+  "extensions": [
+    ...
+    {
+      "packageName": "@ohif/extension-test",
+      "version": "0.0.1"
+    },
+    ...
+  ]
+}
+ ```
+
+Furthermore, the extension will also need to be included under extensionDependencies in the desired mode (e.g. modes/tmtv/src/index.js):
+
+```javascript
+const extensionDependencies = {
+   '@ohif/extension-default': '^3.0.0',
+   '@ohif/extension-cornerstone': '^3.0.0',
+   '@ohif/extension-tmtv': '^3.0.0',
+   '@ohif/extension-test': '^0.0.1',
+ };
+ ```
+
+The below example modifies the included hanging protocol (extensions/tmtv/src/getHangingProtocolModule.js) and uses the sameAs attribute included in the @ohif/extension-test extension to check that the selected PT has the same frame of reference as the CT:
+
+```javascript
+ptDisplaySet: {
+       ...
+       seriesMatchingRules: [
+        {
+          attribute: 'sameAs',
+          sameAttribute: 'FrameOfReferenceUID',
+          sameDisplaySetId: 'ctDisplaySet',
+          required: true,
+        },
+        ...
+```
