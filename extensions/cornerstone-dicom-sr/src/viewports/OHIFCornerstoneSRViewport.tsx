@@ -22,7 +22,6 @@ function OHIFCornerstoneSRViewport(props) {
     dataSource,
     displaySets,
     viewportIndex,
-    viewportOptions,
     viewportLabel,
     servicesManager,
     extensionManager,
@@ -210,8 +209,13 @@ function OHIFCornerstoneSRViewport(props) {
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
+        // Note: we shouldn't inherit the viewportOptions
+        // from the parent viewportGrid, since we are rendering the Key Image(s)
+        // for the OHIF SR Viewport, and for the case where the old viewport
+        // had volume data, the SR Viewport would try to render the volume data
+        // and it just fails miserably (since it's not a volume data, and SR
+        // is not hydrated to get the data.handles.points in world coordinates
         viewportOptions={{
-          ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
         }}
         onElementEnabled={onElementEnabled}
@@ -432,6 +436,15 @@ async function _getViewportReferencedDisplaySetData(
   }
 
   const referencedDisplaySet = displaySet.keyImageDisplaySet;
+
+  // const { measurements } = displaySet;
+  // const measurement = measurements[measurementSelected];
+
+  // const { displaySetInstanceUID } = measurement;
+
+  // const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+  //   displaySetInstanceUID
+  // );
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
