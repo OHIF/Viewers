@@ -286,7 +286,9 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
 
-  displaySets.forEach(ds => {
+  displaySets.
+    filter(ds => ds.excludeFromThumbnailBrowser!==true).
+    forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     const componentType = _getComponentType(ds.Modality);
 

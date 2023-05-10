@@ -420,124 +420,130 @@ function _mapDisplaySets(
 ) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
-  displaySets.forEach(ds => {
-    const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-    const componentType = _getComponentType(ds.Modality);
-    const numPanes = viewportGridService.getNumViewportPanes();
-    const viewportIdentificator =
-      numPanes === 1
-        ? []
-        : viewports.reduce((acc, viewportData, index) => {
-            if (
-              index < numPanes &&
-              viewportData?.displaySetInstanceUIDs?.includes(
-                ds.displaySetInstanceUID
-              )
-            ) {
-              acc.push(viewportData.viewportLabel);
-            }
-            return acc;
-          }, []);
+  displaySets
+    .filter(ds => ds.excludeFromThumbnailBrowser !== true)
+    .forEach(ds => {
+      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const componentType = _getComponentType(ds.Modality);
+      const numPanes = viewportGridService.getNumViewportPanes();
+      const viewportIdentificator =
+        numPanes === 1
+          ? []
+          : viewports.reduce((acc, viewportData, index) => {
+              if (
+                index < numPanes &&
+                viewportData?.displaySetInstanceUIDs?.includes(
+                  ds.displaySetInstanceUID
+                )
+              ) {
+                acc.push(viewportData.viewportLabel);
+              }
+              return acc;
+            }, []);
 
-    const array =
-      componentType === 'thumbnailTracked'
-        ? thumbnailDisplaySets
-        : thumbnailNoImageDisplaySets;
+      const array =
+        componentType === 'thumbnailTracked'
+          ? thumbnailDisplaySets
+          : thumbnailNoImageDisplaySets;
 
-    const { displaySetInstanceUID } = ds;
+      const { displaySetInstanceUID } = ds;
 
-    const thumbnailProps = {
-      displaySetInstanceUID,
-      description: ds.SeriesDescription,
-      seriesNumber: ds.SeriesNumber,
-      modality: ds.Modality,
-      seriesDate: formatDate(ds.SeriesDate),
-      numInstances: ds.numImageFrames,
-      countIcon: ds.countIcon,
-      StudyInstanceUID: ds.StudyInstanceUID,
-      componentType,
-      imageSrc,
-      dragData: {
-        type: 'displayset',
+      const thumbnailProps = {
         displaySetInstanceUID,
-        // .. Any other data to pass
-      },
-      isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
-      viewportIdentificator,
-    };
+        description: ds.SeriesDescription,
+        seriesNumber: ds.SeriesNumber,
+        modality: ds.Modality,
+        seriesDate: formatDate(ds.SeriesDate),
+        numInstances: ds.numImageFrames,
+        countIcon: ds.countIcon,
+        StudyInstanceUID: ds.StudyInstanceUID,
+        componentType,
+        imageSrc,
+        dragData: {
+          type: 'displayset',
+          displaySetInstanceUID,
+          // .. Any other data to pass
+        },
+        isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
+        viewportIdentificator,
+      };
 
-    if (componentType === 'thumbnailNoImage') {
-      if (dataSource.reject && dataSource.reject.series) {
-        thumbnailProps.canReject = true;
-        thumbnailProps.onReject = () => {
-          uiDialogService.create({
-            id: 'ds-reject-sr',
-            centralize: true,
-            isDraggable: false,
-            showOverlay: true,
-            content: Dialog,
-            contentProps: {
-              title: 'Delete Report',
-              body: () => (
-                <div className="p-4 text-white bg-primary-dark">
-                  <p>Are you sure you want to delete this report?</p>
-                  <p>This action cannot be undone.</p>
-                </div>
-              ),
-              actions: [
-                { id: 'cancel', text: 'Cancel', type: 'secondary' },
-                {
-                  id: 'yes',
-                  text: 'Yes',
-                  type: 'primary',
-                  classes: ['reject-yes-button'],
+      if (componentType === 'thumbnailNoImage') {
+        if (dataSource.reject && dataSource.reject.series) {
+          thumbnailProps.canReject = true;
+          thumbnailProps.onReject = () => {
+            uiDialogService.create({
+              id: 'ds-reject-sr',
+              centralize: true,
+              isDraggable: false,
+              showOverlay: true,
+              content: Dialog,
+              contentProps: {
+                title: 'Delete Report',
+                body: () => (
+                  <div className="p-4 text-white bg-primary-dark">
+                    <p>Are you sure you want to delete this report?</p>
+                    <p>This action cannot be undone.</p>
+                  </div>
+                ),
+                actions: [
+                  { id: 'cancel', text: 'Cancel', type: 'secondary' },
+                  {
+                    id: 'yes',
+                    text: 'Yes',
+                    type: 'primary',
+                    classes: ['reject-yes-button'],
+                  },
+                ],
+                onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
+                onShow: () => {
+                  const yesButton = document.querySelector(
+                    '.reject-yes-button'
+                  );
+
+                  yesButton.focus();
                 },
-              ],
-              onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
-              onShow: () => {
-                const yesButton = document.querySelector('.reject-yes-button');
-
-                yesButton.focus();
-              },
-              onSubmit: async ({ action }) => {
-                switch (action.id) {
-                  case 'yes':
-                    try {
-                      await dataSource.reject.series(
-                        ds.StudyInstanceUID,
-                        ds.SeriesInstanceUID
-                      );
-                      displaySetService.deleteDisplaySet(displaySetInstanceUID);
+                onSubmit: async ({ action }) => {
+                  switch (action.id) {
+                    case 'yes':
+                      try {
+                        await dataSource.reject.series(
+                          ds.StudyInstanceUID,
+                          ds.SeriesInstanceUID
+                        );
+                        displaySetService.deleteDisplaySet(
+                          displaySetInstanceUID
+                        );
+                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                        uiNotificationService.show({
+                          title: 'Delete Report',
+                          message: 'Report deleted successfully',
+                          type: 'success',
+                        });
+                      } catch (error) {
+                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                        uiNotificationService.show({
+                          title: 'Delete Report',
+                          message: 'Failed to delete report',
+                          type: 'error',
+                        });
+                      }
+                      break;
+                    case 'cancel':
                       uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                      uiNotificationService.show({
-                        title: 'Delete Report',
-                        message: 'Report deleted successfully',
-                        type: 'success',
-                      });
-                    } catch (error) {
-                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                      uiNotificationService.show({
-                        title: 'Delete Report',
-                        message: 'Failed to delete report',
-                        type: 'error',
-                      });
-                    }
-                    break;
-                  case 'cancel':
-                    uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                    break;
-                }
+                      break;
+                  }
+                },
               },
-            },
-          });
-        };
-      } else {
-        thumbnailProps.canReject = false;
+            });
+          };
+        } else {
+          thumbnailProps.canReject = false;
+        }
       }
-    }
 
-    array.push(thumbnailProps);
-  });
+      array.push(thumbnailProps);
+    });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
