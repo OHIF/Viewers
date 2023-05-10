@@ -549,6 +549,8 @@ const thumbnailNoImageModalities = [
   'RTSTRUCT',
   'RTPLAN',
   'RTDOSE',
+  'DOC',
+  'OT',
 ];
 
 function _getComponentType(Modality) {
