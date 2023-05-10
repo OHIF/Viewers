@@ -223,15 +223,6 @@
     json5 "^2.2.2"
     semver "^6.3.0"
 
-"@babel/eslint-parser@^7.19.1":
-  version "7.21.3"
-  resolved "https://registry.npmjs.org/@babel/eslint-parser/-/eslint-parser-7.21.3.tgz#d79e822050f2de65d7f368a076846e7184234af7"
-  integrity sha512-kfhmPimwo6k4P8zxNs8+T7yR44q1LdpsZdE1NkCsVlfiuTPRfnGgjaF8Qgug9q9Pou17u6wneYF0lDCZJATMFg==
-  dependencies:
-    "@nicolo-ribaudo/eslint-scope-5-internals" "5.1.1-v1"
-    eslint-visitor-keys "^2.1.0"
-    semver "^6.3.0"
-
 "@babel/generator@7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "https://registry.npmjs.org/@babel/generator/-/generator-7.0.0-beta.44.tgz#c7e67b9b5284afcf69b309b50d7d37f3e5033d42"
@@ -1478,54 +1469,43 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.44.0":
-  version "0.44.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.44.0.tgz#f1a9af5407b25510e91e3e17b55dd9f3c61c557b"
-  integrity sha512-EZURQAuILsmiUdp5nusUpL6pJjteVgY7DqrqkFSqeeSlDjt2j+0h+kFvvbpRAhjyWz/1OjK9vtvbRFCpwhnzJw==
-  dependencies:
-    detect-gpu "^4.0.45"
-    lodash.clonedeep "4.5.0"
-
-"@cornerstonejs/core@^0.44.2":
-  version "0.44.2"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.44.2.tgz#13febc0455c833b029fac4a00a2e98f67ef50609"
-  integrity sha512-McwG04aFbxhA8LAAgZuh4ttFFW35CMvHwNrfYnQqaExCb62w1lzQBIHDopX05aGe9VAmmIRhaAuhaxxnH8ZsfA==
+"@cornerstonejs/core@^0.46.2":
+  version "0.46.2"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.46.2.tgz#89ba0d27f491aab8b0a22d15ce5ed601ee23d2ec"
+  integrity sha512-HHActbdv3np/QXmQPl+DOqVMXPeOXbkqDov1SagF1om6Me4V7O8N2HbM4CgKCdf2VrEId6h0BL3+MG3Cxn7LPQ==
   dependencies:
     "@kitware/vtk.js" "27.3.1"
     detect-gpu "^5.0.22"
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.4.0.tgz#c7f5c5659a10a6f4f5e96367ab6d27784daeb424"
-  integrity sha512-ORnF/4qAbTninkesz7ADQu832PW+/xcbUhxSPU1ZPukjr9cglynsDzKjsEYJlY10+rWzbIQ+JEgefrXZgVoT1g==
+"@cornerstonejs/dicom-image-loader@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.npmjs.org/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.6.4.tgz#8020402b11dd78df52957345ca57ed8c05b2999b"
+  integrity sha512-+y9NklTFYlq61frxKcJ2u+0h9zfKKiv20N28N5qBr3Ie6CFcNrY51ETkujNnNKKRUBvxXDidjVdY+j+MSPPJKQ==
   dependencies:
-    "@babel/eslint-parser" "^7.19.1"
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.2"
-    "@cornerstonejs/core" "^0.44.0"
-    coverage-istanbul-loader "^3.0.5"
-    date-format "^4.0.14"
+    "@cornerstonejs/core" "^0.46.2"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.19.2":
-  version "0.19.2"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.19.2.tgz#2d83fda24d9fe7a4a1b8fda334a82bddd000fb40"
-  integrity sha512-N2ws5GBsBnvdQB1gNI03WdiF71LeL5CGcdmkgAZMqFdtiiNbOlf0jW8ZmDwALY3+eL8kv2viHM3aLraXVT9Wwg==
+"@cornerstonejs/streaming-image-volume-loader@^0.20.2":
+  version "0.20.2"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.20.2.tgz#0df2ed5afd012d2851356af01eed48646d3a6c60"
+  integrity sha512-2TYoJ0wpE9KDpn8adfmTq0xOb/Xg7jhEyOuBnrr3il/NFvOfMlJieJVCYM0v3hyoANfqmDcFBqqtlm346VOMdw==
   dependencies:
-    "@cornerstonejs/core" "^0.44.2"
+    "@cornerstonejs/core" "^0.46.2"
 
-"@cornerstonejs/tools@^0.66.2":
-  version "0.66.2"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.66.2.tgz#58e76ea1c239bcf87a7c00ff661429804e09533a"
-  integrity sha512-ykSqhjJUIjgFDi9Ua0HwDTbXip8IMeeyM/3oMUlIINKURwvhipzJY6eWrmgwFzIlsXID4oLFPZq3V/V9lSqkaQ==
+"@cornerstonejs/tools@^0.67.2":
+  version "0.67.2"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.67.2.tgz#7b7c6aac4ec7eaa84a438198837e657328e3c8a2"
+  integrity sha512-nOg2byAVrdMj3DqLYVT7qbrl2Sz6V82xtfFYJ4oQeGul/u/1AvHj4SSZs7MTV63Li3KP2ax/ZghCjral+exaVg==
   dependencies:
-    "@cornerstonejs/core" "^0.44.2"
+    "@cornerstonejs/core" "^0.46.2"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -2721,17 +2701,6 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@jsdevtools/coverage-istanbul-loader@3.0.5":
-  version "3.0.5"
-  resolved "https://registry.npmjs.org/@jsdevtools/coverage-istanbul-loader/-/coverage-istanbul-loader-3.0.5.tgz#2a4bc65d0271df8d4435982db4af35d81754ee26"
-  integrity sha512-EUCPEkaRPvmHjWAAZkWMT7JDzpw7FKB00WTISaiXsbNOd5hCHg77XLA8sLYLFDo1zepYLo2w7GstN8YBqRXZfA==
-  dependencies:
-    convert-source-map "^1.7.0"
-    istanbul-lib-instrument "^4.0.3"
-    loader-utils "^2.0.0"
-    merge-source-map "^1.1.0"
-    schema-utils "^2.7.0"
-
 "@juggle/resize-observer@^3.3.1":
   version "3.4.0"
   resolved "https://registry.npmjs.org/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
@@ -2954,13 +2923,6 @@
     gunzip-maybe "^1.4.2"
     pump "^3.0.0"
     tar-fs "^2.1.1"
-
-"@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
-  version "5.1.1-v1"
-  resolved "https://registry.npmjs.org/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz#dbf733a965ca47b1973177dc0bb6c889edcfb129"
-  integrity sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==
-  dependencies:
-    eslint-scope "5.1.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -7805,13 +7767,6 @@ cosmiconfig@^8.1.3:
     parse-json "^5.0.0"
     path-type "^4.0.0"
 
-coverage-istanbul-loader@^3.0.5:
-  version "3.0.5"
-  resolved "https://registry.npmjs.org/coverage-istanbul-loader/-/coverage-istanbul-loader-3.0.5.tgz#bf942efc0f4e3ac27565203c17dca5008eae6637"
-  integrity sha512-xsw2phF0VNqUPk47V/vHXkdcTyl0tkMSmaZfLrTOhoPhPMXFelNju7utl5s7I93KXzipqDEK0YwofQSSflPz8A==
-  dependencies:
-    "@jsdevtools/coverage-istanbul-loader" "3.0.5"
-
 cross-env@^5.2.0:
   version "5.2.1"
   resolved "https://registry.npmjs.org/cross-env/-/cross-env-5.2.1.tgz#b2c76c1ca7add66dc874d11798466094f551b34d"
@@ -8263,11 +8218,6 @@ date-fns@^1.27.2:
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
-date-format@^4.0.14:
-  version "4.0.14"
-  resolved "https://registry.npmjs.org/date-format/-/date-format-4.0.14.tgz#7a8e584434fb169a521c8b7aa481f355810d9400"
-  integrity sha512-39BOQLs9ZjKh0/patS9nrT8wc3ioX3/eA/zgbKNopnF2wCqJEoxywwwElATYvRsXdnOxA/OQeQoFZ3rFjVajhg==
-
 dateformat@^3.0.0:
   version "3.0.3"
   resolved "https://registry.npmjs.org/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
@@ -8569,7 +8519,7 @@ detab@2.0.4:
   dependencies:
     repeat-string "^1.5.4"
 
-detect-gpu@^4.0.16, detect-gpu@^4.0.45:
+detect-gpu@^4.0.16:
   version "4.0.50"
   resolved "https://registry.npmjs.org/detect-gpu/-/detect-gpu-4.0.50.tgz#ba9df7e6b8416b1160303811015102bbad283aa0"
   integrity sha512-T67HE5+ONONN8rPXCBJPupyCg2QT8+l2NUUMuPxAppsMJBDPG/Jg0URLs6GyDzLm2niUE+oncIHSuy3VinoPeQ==
@@ -9543,7 +9493,7 @@ eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0, eslint-visitor-keys@^1.3
   resolved "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-1.3.0.tgz#30ebd1ef7c2fdff01c3a4f151044af25fab0523e"
   integrity sha512-6J72N8UNa462wa/KFODt/PJ3IU60SDpC3QXC1Hjc1BXXpfL2C9R5+AU7jhe0F6GREqVMh4Juu+NY7xn+6dipUQ==
 
-eslint-visitor-keys@^2.0.0, eslint-visitor-keys@^2.1.0:
+eslint-visitor-keys@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-2.1.0.tgz#f65328259305927392c938ed44eb0a5c9b2bd303"
   integrity sha512-0rSmRBzXgDzIsD6mGdJgevzgezI534Cer5L/vyMX0kHzT/jiB43jRhd9YUlMGYLQy2zprNmoT8qasCGtY+QaKw==
@@ -12369,16 +12319,6 @@ istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
   resolved "https://registry.npmjs.org/istanbul-lib-coverage/-/istanbul-lib-coverage-3.2.0.tgz#189e7909d0a39fa5a3dfad5b03f71947770191d3"
   integrity sha512-eOeJ5BHCmHYvQK7xt9GkdHuzuCGS1Y6g9Gvnx3Ym33fz/HpLRYxiS0wHNr+m/MBC8B647Xt608vCDEvhl9c6Mw==
 
-istanbul-lib-instrument@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.npmjs.org/istanbul-lib-instrument/-/istanbul-lib-instrument-4.0.3.tgz#873c6fff897450118222774696a3f28902d77c1d"
-  integrity sha512-BXgQl9kf4WTCPCCpmFGoJkz/+uhvm7h7PFKUYxh7qarQd3ER33vHG//qaE8eN25l07YqZPpHXU9I09l/RD5aGQ==
-  dependencies:
-    "@babel/core" "^7.7.5"
-    "@istanbuljs/schema" "^0.1.2"
-    istanbul-lib-coverage "^3.0.0"
-    semver "^6.3.0"
-
 istanbul-lib-instrument@^5.0.4, istanbul-lib-instrument@^5.1.0:
   version "5.2.1"
   resolved "https://registry.npmjs.org/istanbul-lib-instrument/-/istanbul-lib-instrument-5.2.1.tgz#d10c8885c2125574e1c231cacadf955675e1ce3d"
@@ -14069,13 +14009,6 @@ merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha512-cCi6g3/Zr1iqQi6ySbseM1Xvooa98N0w31jzUYrXPX2xqObmFGHJ0tQ5u74H3mVh7wLouTseZyYIq39g8cNp1w==
-
-merge-source-map@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/merge-source-map/-/merge-source-map-1.1.0.tgz#2fdde7e6020939f70906a68f2d7ae685e4c8c646"
-  integrity sha512-Qkcp7P2ygktpMPh2mCQZaf3jhN6D3Z/qVZHSdWvQ+2Ef5HgRAPBO57A77+ENm0CPx2+1Ce/MYKi3ymqdfuqibw==
-  dependencies:
-    source-map "^0.6.1"
 
 merge-stream@^2.0.0:
   version "2.0.0"
