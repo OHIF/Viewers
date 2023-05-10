@@ -1,0 +1,47 @@
+"""Tiny testing File-set created using pydicom
+
+None of the managed SOP Instances are conformant, but they contain the minimum required to be included in a File-set
+"""
+#!/usr/bin/env python
+
+from pydicom import Dataset
+from pydicom.fileset import FileSet
+from pydicom.uid import ExplicitVRLittleEndian, generate_uid, CTImageStorage
+
+# True for alphanumeric filenames, False for numeric
+use_alphanumeric = True
+
+fs = FileSet()
+if use_alphanumeric:
+    fs.ID = "TINY ALPHA"
+    fs._use_alphanumeric = True
+else:
+    fs.ID = "TINY NUMERIC"
+fs.DescriptorFileID = "README"
+
+ds = Dataset()
+ds.file_meta = Dataset()
+ds.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+ds.SOPClassUID = CTImageStorage
+ds.PatientName = "Citizen^Jan"
+ds.PatientID = "12345678"
+ds.StudyDate = "20200913"
+ds.StudyTime = "161900"
+ds.StudyInstanceUID = generate_uid()
+ds.StudyDescription = "Testing File-set"
+ds.StudyID = "1"  # SH
+ds.AccessionNumber = "1"  # SH
+ds.Modality = "CT"
+ds.SeriesInstanceUID = generate_uid()
+ds.SeriesNumber = 1  # IS
+
+for ii in range(50):
+    ds.InstanceNumber = ii  # IS
+    ds.SOPInstanceUID = generate_uid()
+
+    fs.add(ds)
+
+if use_alphanumeric:
+    fs.write("tiny_alpha")
+else:
+    fs.write("tiny")

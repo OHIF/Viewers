@@ -75,7 +75,34 @@ function _createSetToolActiveCommands(toolName) {
   return temp;
 }
 
+function myCommand() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const studyInstanceUID = urlParams.get('StudyInstanceUIDs');
+  console.log(studyInstanceUID);
+  const url = `http://127.0.0.1:8000?studyInstanceUID=${studyInstanceUID}`;
+  window.open(url, '_blank');
+  // Open the URL in a new tab
+}
+
 const toolbarButtons = [
+  {
+    id: 'my-button',
+    type: 'ohif.action',
+    props: {
+      label: 'Click me!',
+      icon: 'fa fa-check',
+      type: 'action',
+      commands: [
+        {
+          commandName: 'myCommand',
+          commandOptions: {},
+        },
+      ],
+      onClick: () => {
+        myCommand();
+      },
+    },
+  },
   // Measurement
   {
     id: 'MeasurementTools',
