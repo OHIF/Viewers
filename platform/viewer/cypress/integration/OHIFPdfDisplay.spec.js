@@ -6,7 +6,7 @@ describe('OHIF PDF Display', function() {
   });
 
   it('checks if series thumbnails are being displayed', function() {
-    cy.get('[data-cy="study-browser-thumbnail"]')
+    cy.get('[data-cy="study-browser-thumbnail-no-image"]')
       .its('length')
       .should('be.gt', 0);
   });
