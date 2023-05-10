@@ -437,15 +437,6 @@ async function _getViewportReferencedDisplaySetData(
 
   const referencedDisplaySet = displaySet.keyImageDisplaySet;
 
-  // const { measurements } = displaySet;
-  // const measurement = measurements[measurementSelected];
-
-  // const { displaySetInstanceUID } = measurement;
-
-  // const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-  //   displaySetInstanceUID
-  // );
-
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
     PatientID: image0.PatientID,
