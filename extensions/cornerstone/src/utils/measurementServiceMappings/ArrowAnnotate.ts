@@ -103,6 +103,10 @@ function getMappedAnnotations(annotation, displaySetService) {
     frameNumber
   );
 
+  if (!displaySet) {
+    return annotations;
+  }
+
   const { SeriesNumber } = displaySet;
 
   annotations.push({
@@ -117,7 +121,7 @@ function getMappedAnnotations(annotation, displaySetService) {
 }
 
 function getDisplayText(mappedAnnotations, displaySet) {
-  if (!mappedAnnotations) {
+  if (!mappedAnnotations || mappedAnnotations.length === 0) {
     return '';
   }
 
