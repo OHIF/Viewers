@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "cornerstone-math": "0.1.9",
-    "@cornerstonejs/dicom-image-loader": "^0.4.0",
+    "@cornerstonejs/dicom-image-loader": "^0.6.4",
     "@cornerstonejs/codec-charls": "^1.2.3",
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
     "@cornerstonejs/codec-openjpeg": "^1.2.2",

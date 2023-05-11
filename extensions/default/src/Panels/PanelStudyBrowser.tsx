@@ -12,7 +12,7 @@ const { sortStudyInstances, formatDate } = utils;
 function PanelStudyBrowser({
   servicesManager,
   getImageSrc,
-  getStudiesForPatientByStudyInstanceUID,
+  getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
@@ -64,12 +64,24 @@ function PanelStudyBrowser({
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
     async function fetchStudiesForPatient(StudyInstanceUID) {
-      const qidoStudiesForPatient =
-        (await getStudiesForPatientByStudyInstanceUID(StudyInstanceUID)) || [];
+      // current study qido
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: StudyInstanceUID,
+      });
 
-      // TODO: This should be "naturalized DICOM JSON" studies
+      let qidoStudiesForPatient = qidoForStudyUID;
+
+      // try to fetch the prior studies based on the patientID if the
+      // server can respond.
+      try {
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(
+          qidoForStudyUID
+        );
+      } catch (error) {
+        console.warn(error);
+      }
+
       const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
-
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
@@ -77,29 +89,27 @@ function PanelStudyBrowser({
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
-          // displaySets: []
         };
       });
-      if (isMounted.current) {
-        setStudyDisplayList(prevArray => {
-          const ret = [...prevArray];
-          for (const study of actuallyMappedStudies) {
-            if (
-              !prevArray.find(
-                it => it.studyInstanceUid === study.studyInstanceUid
-              )
-            ) {
-              ret.push(study);
-            }
+
+      setStudyDisplayList(prevArray => {
+        const ret = [...prevArray];
+        for (const study of actuallyMappedStudies) {
+          if (
+            !prevArray.find(
+              it => it.studyInstanceUid === study.studyInstanceUid
+            )
+          ) {
+            ret.push(study);
           }
-          return ret;
-        });
-      }
+        }
+        return ret;
+      });
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
+  }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
@@ -254,7 +264,7 @@ PanelStudyBrowser.propTypes = {
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,
   getImageSrc: PropTypes.func.isRequired,
-  getStudiesForPatientByStudyInstanceUID: PropTypes.func.isRequired,
+  getStudiesForPatientByMRN: PropTypes.func.isRequired,
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
 

@@ -46,7 +46,7 @@
     "@babel/runtime": "^7.20.13",
     "classnames": "^2.3.2",
     "@cornerstonejs/adapters": "^0.6.0",
-    "@cornerstonejs/core": "^0.44.2",
-    "@cornerstonejs/tools": "^0.66.2"
+    "@cornerstonejs/core": "^0.46.2",
+    "@cornerstonejs/tools": "^0.67.2"
   }
 }
