@@ -23,6 +23,7 @@ function OHIFCornerstoneSRViewport(props) {
     displaySets,
     viewportIndex,
     viewportLabel,
+    viewportOptions,
     servicesManager,
     extensionManager,
   } = props;
@@ -216,7 +217,9 @@ function OHIFCornerstoneSRViewport(props) {
         // and it just fails miserably (since it's not a volume data, and SR
         // is not hydrated to get the data.handles.points in world coordinates
         viewportOptions={{
+          ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
+          viewportType: 'stack',
         }}
         onElementEnabled={onElementEnabled}
         initialImageIndex={initialImageIndex}

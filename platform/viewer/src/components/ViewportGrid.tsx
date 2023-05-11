@@ -2,26 +2,9 @@ import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
-import { utils } from '@ohif/core';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
-const { isEqualWithin } = utils;
-
-const ORIENTATION_MAP = {
-  axial: {
-    viewPlaneNormal: [0, 0, -1],
-    viewUp: [0, -1, 0],
-  },
-  sagittal: {
-    viewPlaneNormal: [1, 0, 0],
-    viewUp: [0, 0, 1],
-  },
-  coronal: {
-    viewPlaneNormal: [0, 1, 0],
-    viewUp: [0, 0, 1],
-  },
-};
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;

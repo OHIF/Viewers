@@ -52,10 +52,11 @@ function TrackedMeasurementsContextProvider(
         viewportGrid.activeViewportIndex,
         trackedMeasurements[0]
       );
-      viewportGridService.setDisplaySetsForViewport({
-        viewportIndex: viewportGrid.activeViewportIndex,
-        displaySetInstanceUIDs: [trackedMeasurements[0].displaySetInstanceUID],
-      });
+      // Note: the jump To Measurement action below will set the display
+      // sets at the correct image index once. Previously there were
+      // two calls to setDisplaySetsForViewport, which would cause the
+      // viewport to jump to the first image in the series, then jump
+      // to the correct image index. Causing lots of bugs.
       measurementService.jumpToMeasurement(
         viewportGrid.activeViewportIndex,
         uid
