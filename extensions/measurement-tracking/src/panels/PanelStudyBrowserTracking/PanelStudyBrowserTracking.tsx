@@ -421,7 +421,7 @@ function _mapDisplaySets(
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets
-    .filter(ds => ds.excludeFromThumbnailBrowser !== true)
+    .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds.Modality);

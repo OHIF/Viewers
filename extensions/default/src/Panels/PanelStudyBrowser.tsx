@@ -286,36 +286,36 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
 
-  displaySets.
-    filter(ds => ds.excludeFromThumbnailBrowser!==true).
-    forEach(ds => {
-    const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-    const componentType = _getComponentType(ds.Modality);
+  displaySets
+    .filter(ds => !ds.excludeFromThumbnailBrowser)
+    .forEach(ds => {
+      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const componentType = _getComponentType(ds.Modality);
 
-    const array =
-      componentType === 'thumbnail'
-        ? thumbnailDisplaySets
-        : thumbnailNoImageDisplaySets;
+      const array =
+        componentType === 'thumbnail'
+          ? thumbnailDisplaySets
+          : thumbnailNoImageDisplaySets;
 
-    array.push({
-      displaySetInstanceUID: ds.displaySetInstanceUID,
-      description: ds.SeriesDescription || '',
-      seriesNumber: ds.SeriesNumber,
-      modality: ds.Modality,
-      seriesDate: ds.SeriesDate,
-      seriesTime: ds.SeriesTime,
-      numInstances: ds.numImageFrames,
-      countIcon: ds.countIcon,
-      StudyInstanceUID: ds.StudyInstanceUID,
-      componentType,
-      imageSrc,
-      dragData: {
-        type: 'displayset',
+      array.push({
         displaySetInstanceUID: ds.displaySetInstanceUID,
-        // .. Any other data to pass
-      },
+        description: ds.SeriesDescription || '',
+        seriesNumber: ds.SeriesNumber,
+        modality: ds.Modality,
+        seriesDate: ds.SeriesDate,
+        seriesTime: ds.SeriesTime,
+        numInstances: ds.numImageFrames,
+        countIcon: ds.countIcon,
+        StudyInstanceUID: ds.StudyInstanceUID,
+        componentType,
+        imageSrc,
+        dragData: {
+          type: 'displayset',
+          displaySetInstanceUID: ds.displaySetInstanceUID,
+          // .. Any other data to pass
+        },
+      });
     });
-  });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
