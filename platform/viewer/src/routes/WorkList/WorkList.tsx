@@ -466,7 +466,7 @@ function WorkList({
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <div className="overflow-y-auto ohif-scrollbar">
+      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
@@ -477,19 +477,21 @@ function WorkList({
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
         />
         {hasStudies ? (
-          <>
+          <div className="grow flex flex-col">
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
               filtersMeta={filtersMeta}
             />
-            <StudyListPagination
-              onChangePage={onPageNumberChange}
-              onChangePerPage={onResultsPerPageChange}
-              currentPage={pageNumber}
-              perPage={resultsPerPage}
-            />
-          </>
+            <div className="grow">
+              <StudyListPagination
+                onChangePage={onPageNumberChange}
+                onChangePerPage={onResultsPerPageChange}
+                currentPage={pageNumber}
+                perPage={resultsPerPage}
+              />
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center pt-48">
             {appConfig.showLoadingIndicator && isLoadingData ? (

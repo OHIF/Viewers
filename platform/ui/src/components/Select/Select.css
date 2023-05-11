@@ -52,18 +52,19 @@
   border-radius: 6px;
 }
 
-.css-4ljt47-MenuList {
+.ohif-select .customSelect__menu-list {
   overflow-x: hidden !important;
   margin-right: 4px;
   margin-top: 4px;
   padding-top: 0px !important;
 }
-.css-4ljt47-MenuList::-webkit-scrollbar {
+
+.ohif-select .customSelect__menu-list::-webkit-scrollbar {
   width: 6px;
   border-radius: 10px;
 }
 
-.css-4ljt47-MenuList::-webkit-scrollbar-thumb {
+.ohif-select .customSelect__menu-list::-webkit-scrollbar-thumb {
   background-color: #0944b3;
   border-radius: 10px;
 }
@@ -71,26 +72,19 @@
 .customSelect__option:focus {
   background-color: #0944b391 !important;
 }
-.customSelect__option label {
+
+.ohif-select .customSelect__option, .ohif-select .customSelect__option label {
   color: #d6d6d6;
   font-size: 14px;
   display: flex;
   align-items: center;
 }
 
-.css-1n7v3ny-option {
-  background-color: #0944b391 !important;
-}
-
-.css-1n7v3ny-option:focus {
-  background-color: #0944b391 !important;
-}
-
-.customSelect__option:hover {
+.ohif-select .customSelect__option:hover {
   background-color: #0944b391;
 }
 
-.css-26l3qy-menu {
+.ohif-select .customSelect__menu {
   border: 2px solid #0944b3;
   border-radius: 6px;
   background-color: #151515 !important;
