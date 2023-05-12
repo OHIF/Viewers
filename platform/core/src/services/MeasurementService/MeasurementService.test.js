@@ -43,6 +43,9 @@ describe('MeasurementService.js', () => {
       ],
       source: source,
     };
+    // A measurement with various metadata missing (e.g. referenced SOPInstanceUID) that
+    // would not typically get mapped my the MeasurementService possibly because it was
+    // made in a non-acquisition plane of a volume.
     unmappedMeasurement = {
       uid: unmappedMeasurementUID,
       SOPInstanceUID: undefined,
