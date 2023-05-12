@@ -7,7 +7,6 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 
 import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
-import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const { formatDate } = utils;
 
@@ -210,16 +209,11 @@ function OHIFCornerstoneSRViewport(props) {
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
-        // Note: we shouldn't inherit the viewportOptions
-        // from the parent viewportGrid, since we are rendering the Key Image(s)
-        // for the OHIF SR Viewport, and for the case where the old viewport
-        // had volume data, the SR Viewport would try to render the volume data
-        // and it just fails miserably (since it's not a volume data, and SR
-        // is not hydrated to get the data.handles.points in world coordinates
+        // It is possible that there is a hanging protocol applying viewportOptions
+        // for the SR, so inherit the viewport options
         viewportOptions={{
           ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
-          viewportType: 'stack',
         }}
         onElementEnabled={onElementEnabled}
         initialImageIndex={initialImageIndex}
