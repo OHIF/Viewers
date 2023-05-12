@@ -112,6 +112,7 @@ class MeasurementService extends PubSubService {
   public readonly VALUE_TYPES = VALUE_TYPES;
 
   private measurements = new Map();
+  private unmappedMeasurements = new Set();
 
   constructor() {
     super(EVENTS);
@@ -532,6 +533,8 @@ class MeasurementService extends PubSubService {
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
+      this.unmappedMeasurements.add(sourceAnnotationDetail.uid);
+
       console.log('Failed to map', error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
@@ -594,11 +597,16 @@ class MeasurementService extends PubSubService {
    * @param {MeasurementSource} source The measurement source instance
    */
   remove(measurementUID, source, eventDetails) {
-    if (!measurementUID || !this.measurements.has(measurementUID)) {
+    if (
+      !measurementUID ||
+      (!this.measurements.has(measurementUID) &&
+        !this.unmappedMeasurements.has(measurementUID))
+    ) {
       log.warn(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
 
+    this.unmappedMeasurements.delete(measurementUID);
     this.measurements.delete(measurementUID);
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
@@ -608,6 +616,8 @@ class MeasurementService extends PubSubService {
   }
 
   clearMeasurements() {
+    this.unmappedMeasurements.clear();
+
     // Make a copy of the measurements
     const measurements = [...this.measurements.values()];
     this.measurements.clear();
