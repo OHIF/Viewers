@@ -214,6 +214,7 @@ function OHIFCornerstoneSRViewport(props) {
         viewportOptions={{
           ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
+          viewportType: 'stack',
         }}
         onElementEnabled={onElementEnabled}
         initialImageIndex={initialImageIndex}
