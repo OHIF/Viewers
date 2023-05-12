@@ -339,7 +339,11 @@ function WorkList({
           {appConfig.loadedModes.map((mode, i) => {
             const isFirst = i === 0;
 
-            const isValidMode = mode.isValidMode({ modalities });
+            const modalitiesToCheck = modalities.replaceAll('/', '\\');
+
+            const isValidMode = mode.isValidMode({
+              modalities: modalitiesToCheck,
+            });
             // TODO: Modes need a default/target route? We mostly support a single one for now.
             // We should also be using the route path, but currently are not
             // mode.routeName

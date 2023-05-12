@@ -151,11 +151,7 @@ function modeFactory({ modeConfiguration }) {
       series: [],
     },
     isValidMode: ({ modalities }) => {
-      let modalities_list = modalities.split('\\');
-      if (modalities_list.length === 1 && modalities.indexOf('/') !== -1) {
-        // Sometimes the forward slash is used.
-        modalities_list = modalities.split('/');
-      }
+      const modalities_list = modalities.split('\\');
       const invalidModalities = ['SM'];
 
       // there should be both CT and PT modalities and the modality should not be SM
