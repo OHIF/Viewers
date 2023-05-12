@@ -1645,28 +1645,49 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.40.0":
-  version "0.40.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-0.40.0.tgz#5b6409277362b26c6ddb55b54025ecf26b304f84"
-  integrity sha512-tjUGFyXuRNRSybpKpd/mP4tKMshc48n/TIt9x5mXU+zqywBPGmojkXOj/v+pG02XopKLg5XPSI4LPysZNVscsg==
+"@cornerstonejs/core@^0.44.2":
+  version "0.44.3"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.44.3.tgz#82452bd90bf40c4af84515e7ec87620330df399f"
+  integrity sha512-OnBsTQ4mPtwR1s9XELlvRGRy+AEmTqVgb9Hgq4cwraNP1cYVGzHVwLZ8MZrfXCDuYdUZikAL95Rleb3xQZ4SMA==
   dependencies:
-    detect-gpu "^4.0.45"
+    "@kitware/vtk.js" "27.3.1"
+    detect-gpu "^5.0.22"
+    gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.16.0":
-  version "0.16.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.16.0.tgz#513f868c285963fd2f2dbf54ed7840a2dc05e33a"
-  integrity sha512-+bbQ6/FN7ryCDdsuyheIPeRa5MO8mTDUDZusNIU97Q8fdmw1hB+eiy9fNThdGfCENd/GPANNsXe6K5olUX7QhQ==
+"@cornerstonejs/core@^0.45.1":
+  version "0.45.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.45.1.tgz#449b2e77e3dddecba71848058e18f783b84a7b46"
+  integrity sha512-8OC/VFQhwg/HsCyXcs4ALYRMAb3t+U/Pm4hHRe485RgG+0y5tp6aTcAE5We7XIj9UFHqTy58g8mmAnb7Ftvj8A==
   dependencies:
-    "@cornerstonejs/core" "^0.40.0"
-    cornerstone-wado-image-loader "^4.10.2"
+    "@kitware/vtk.js" "27.3.1"
+    detect-gpu "^5.0.22"
+    gl-matrix "^3.4.3"
+    lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/tools@^0.60.1":
-  version "0.60.1"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-0.60.1.tgz#88cf32fe79c7fb714a99c1a63c25822233a4d231"
-  integrity sha512-0GsxN8INh8/1/uKH4pU1ZT8XLNn4Xi2GJug9CQBT6plfnppru//+P+xl+LEQbYVpsydD1iYoWzLe8ykPuIeQCA==
+"@cornerstonejs/core@^0.46.2":
+  version "0.46.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.46.2.tgz#89ba0d27f491aab8b0a22d15ce5ed601ee23d2ec"
+  integrity sha512-HHActbdv3np/QXmQPl+DOqVMXPeOXbkqDov1SagF1om6Me4V7O8N2HbM4CgKCdf2VrEId6h0BL3+MG3Cxn7LPQ==
   dependencies:
-    "@cornerstonejs/core" "^0.40.0"
+    "@kitware/vtk.js" "27.3.1"
+    detect-gpu "^5.0.22"
+    gl-matrix "^3.4.3"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/streaming-image-volume-loader@^0.19.2":
+  version "0.19.5"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.19.5.tgz#dd97666f11d805de4c26c5d5c34a7f16b8343994"
+  integrity sha512-r4PK6x1kkkYX8mp8aOk5UGijEL54xAj/i/Jrpn8uwkJSqCF/WvFOXuSkGoi6ESnqZ/cQ9kUzgUAFG5l1af8Zug==
+  dependencies:
+    "@cornerstonejs/core" "^0.45.1"
+
+"@cornerstonejs/tools@^0.67.2":
+  version "0.67.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.67.2.tgz#7b7c6aac4ec7eaa84a438198837e657328e3c8a2"
+  integrity sha512-nOg2byAVrdMj3DqLYVT7qbrl2Sz6V82xtfFYJ4oQeGul/u/1AvHj4SSZs7MTV63Li3KP2ax/ZghCjral+exaVg==
+  dependencies:
+    "@cornerstonejs/core" "^0.46.2"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -3125,6 +3146,27 @@
   version "26.5.6"
   resolved "https://registry.npmjs.org/@kitware/vtk.js/-/vtk.js-26.5.6.tgz#58fb474ce6929c18988c53fc993d02a463fc7ce1"
   integrity sha512-1bTeo9xMa0hmeuAeRPp6JB98RuF36VCPTlq0A7I/zTmhP4XIsPQf/u468qE8Z3kXSb3RkCCNYo04GgaKlQr5VQ==
+  dependencies:
+    "@babel/runtime" "7.17.9"
+    commander "9.2.0"
+    d3-scale "4.0.2"
+    fast-deep-equal "^3.1.3"
+    fflate "0.7.3"
+    gl-matrix "3.4.3"
+    globalthis "1.0.3"
+    seedrandom "3.0.5"
+    shader-loader "1.3.1"
+    shelljs "0.8.5"
+    spark-md5 "3.0.2"
+    stream-browserify "3.0.0"
+    webworker-promise "0.5.0"
+    worker-loader "3.0.8"
+    xmlbuilder2 "3.0.2"
+
+"@kitware/vtk.js@27.3.1":
+  version "27.3.1"
+  resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-27.3.1.tgz#65004b041642663da94e6a488ebb813576e7de7d"
+  integrity sha512-GvAXdOKtDDbkaSdO+UhKnDST4CW1C3fHgaDvA0wn1ZWTLm/6SFAMzarTjpzsVGYCPoEYIhCAAlBQ7K7aDcu3Vg==
   dependencies:
     "@babel/runtime" "7.17.9"
     commander "9.2.0"
@@ -9804,22 +9846,6 @@ cornerstone-math@^0.1.9:
   resolved "https://registry.npmjs.org/cornerstone-math/-/cornerstone-math-0.1.10.tgz#a3f99db64d73c5adee61ae0d570128eca1682d07"
   integrity sha512-23XSAyP7t70ANvhFyqwvva+zFd1bQ2d5GL7tg9qKE932WmImjA2Y9tiy5n0iTtnf51W/78Png8Lia2o4dCdJaQ==
 
-cornerstone-wado-image-loader@^4.10.2:
-  version "4.10.2"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.10.2.tgz#139956654324fd2b01fe5b4900d0f4ed8c52633d"
-  integrity sha512-qj9dThELqYCm3jAZfg9qnUl8d76gngOl55kYJabY5lh/dFeVIxno/hYxy3ydE7RtG2c/TUGXb+EMUl0CJSqKBQ==
-  dependencies:
-    "@babel/eslint-parser" "^7.19.1"
-    "@cornerstonejs/codec-charls" "^1.2.3"
-    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
-    "@cornerstonejs/codec-openjpeg" "^1.2.2"
-    "@cornerstonejs/codec-openjph" "^2.4.2"
-    coverage-istanbul-loader "^3.0.5"
-    date-format "^4.0.14"
-    dicom-parser "^1.8.9"
-    pako "^2.0.4"
-    uuid "^9.0.0"
-
 cornerstone-wado-image-loader@^4.13.0:
   version "4.13.0"
   resolved "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.13.0.tgz#277173973b1d5ec90a2d10557df1f667065953da"
@@ -11040,10 +11066,17 @@ detab@2.0.4:
   dependencies:
     repeat-string "^1.5.4"
 
-detect-gpu@^4.0.16, detect-gpu@^4.0.45:
+detect-gpu@^4.0.16:
   version "4.0.50"
   resolved "https://registry.npmjs.org/detect-gpu/-/detect-gpu-4.0.50.tgz#ba9df7e6b8416b1160303811015102bbad283aa0"
   integrity sha512-T67HE5+ONONN8rPXCBJPupyCg2QT8+l2NUUMuPxAppsMJBDPG/Jg0URLs6GyDzLm2niUE+oncIHSuy3VinoPeQ==
+  dependencies:
+    webgl-constants "^1.1.1"
+
+detect-gpu@^5.0.22:
+  version "5.0.23"
+  resolved "https://registry.yarnpkg.com/detect-gpu/-/detect-gpu-5.0.23.tgz#b1a36f24ce0e15c33bc2dcf08ab21b1a6f4b973b"
+  integrity sha512-16bbvNSuGxlznAj7XNW8/7M/EtPuWoSGk1X1EJCipQ/F5JQK6tWMdU2xVInXGTRUMKmsDtZg+trnZ/bj0Vt/EA==
   dependencies:
     webgl-constants "^1.1.1"
 
