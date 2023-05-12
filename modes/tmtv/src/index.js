@@ -152,7 +152,7 @@ function modeFactory({ modeConfiguration }) {
     },
     isValidMode: ({ modalities }) => {
       let modalities_list = modalities.split('\\');
-      if (modalities_list?.length === 1) {
+      if (modalities_list.length === 1 && modalities.indexOf('/') !== -1) {
         // Sometimes the forward slash is used.
         modalities_list = modalities.split('/');
       }
