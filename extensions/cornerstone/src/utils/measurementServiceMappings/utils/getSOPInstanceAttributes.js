@@ -3,7 +3,7 @@ import * as cornerstone from '@cornerstonejs/core';
 /**
  * It checks if the imageId is provided then it uses it to query
  * the metadata and get the SOPInstanceUID, SeriesInstanceUID and StudyInstanceUID.
- * If the imageId is not provided then an empty object is returned.
+ * If the imageId is not provided then undefined is returned.
  * @param {string} imageId The image id of the referenced image
  * @returns
  */
@@ -12,7 +12,6 @@ export default function getSOPInstanceAttributes(imageId) {
     return _getUIDFromImageID(imageId);
   }
 
-  return {};
   // Todo: implement for volume viewports and use the referencedSeriesInstanceUID
 }
 

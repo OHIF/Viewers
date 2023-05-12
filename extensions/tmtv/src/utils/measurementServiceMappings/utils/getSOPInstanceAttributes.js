@@ -4,8 +4,6 @@ export default function getSOPInstanceAttributes(imageId) {
   if (imageId) {
     return _getUIDFromImageID(imageId);
   }
-
-  return {};
 }
 
 function _getUIDFromImageID(imageId) {
