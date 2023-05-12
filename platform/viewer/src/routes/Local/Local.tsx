@@ -40,7 +40,11 @@ const getLoadButton = (onDrop, text, isDir) => {
   );
 };
 
-function Local() {
+type LocalProps = {
+  modePath: string;
+};
+
+function Local({ modePath }: LocalProps) {
   const navigate = useNavigate();
   const dropzoneRef = useRef();
   const [dropInitiated, setDropInitiated] = React.useState(false);
@@ -63,8 +67,6 @@ function Local() {
   const microscopyExtensionLoaded = extensionManager.registeredExtensionIds.includes(
     '@ohif/extension-dicom-microscopy'
   );
-
-  let modePath = 'viewer';
 
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
@@ -93,8 +95,9 @@ function Local() {
 
     // Todo: navigate to work list and let user select a mode
     studies.forEach(id => query.append('StudyInstanceUIDs', id));
+    query.append('datasources', 'dicomlocal');
 
-    navigate(`/${modePath}/dicomlocal?${decodeURIComponent(query.toString())}`);
+    navigate(`/${modePath}?${decodeURIComponent(query.toString())}`);
   };
 
   // Set body style

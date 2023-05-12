@@ -1,4 +1,4 @@
-import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 import OHIF from '@ohif/core';
 import dcmjs from 'dcmjs';
 
@@ -87,7 +87,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 date: firstInstance.StudyDate,
                 description: firstInstance.StudyDescription,
                 mrn: firstInstance.PatientID,
-                patientName: { Alphabetic: firstInstance.PatientName },
+                patientName: utils.formatPN(firstInstance.PatientName),
                 studyInstanceUid: firstInstance.StudyInstanceUID,
                 time: firstInstance.StudyTime,
                 //
