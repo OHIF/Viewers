@@ -43,15 +43,15 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/codec-charls": "^0.1.1",
-    "@cornerstonejs/codec-libjpeg-turbo-8bit": "^0.0.7",
-    "@cornerstonejs/codec-openjpeg": "^0.1.1",
+    "@cornerstonejs/codec-charls": "^1.2.3",
+    "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
+    "@cornerstonejs/codec-openjpeg": "^1.2.2",
     "colormap": "^2.3",
     "dicom-microscopy-viewer": "^0.44.0",
     "dicomicc": "^0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.8",
+    "@babel/core": "^7.21.4",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
     "@babel/plugin-proposal-private-methods": "^7.18.6",

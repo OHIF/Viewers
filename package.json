@@ -64,7 +64,7 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.8",
+    "@babel/core": "^7.21.4",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
     "@babel/plugin-proposal-private-methods": "^7.18.6",
@@ -147,6 +147,7 @@
     ]
   },
   "resolutions": {
+    "@cornerstonejs/core": "^0.46.2",
     "**/@babel/runtime": "^7.20.13",
     "nth-check": "^2.1.1",
     "trim-newlines": "^5.0.0",
