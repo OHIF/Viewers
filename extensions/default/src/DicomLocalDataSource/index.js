@@ -75,7 +75,7 @@ function createDicomLocalApi(dicomLocalConfig) {
             const study = DicomMetadataStore.getStudy(StudyInstanceUID);
             study.series.forEach(aSeries => {
               numInstances += aSeries.instances.length;
-              modalities.add(aSeries.Modality);
+              modalities.add(aSeries.instances[0].Modality);
             });
 
             // first instance in the first series
