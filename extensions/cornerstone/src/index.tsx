@@ -23,6 +23,8 @@ import * as CornerstoneExtensionTypes from './types';
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
+import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
+import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
@@ -139,5 +141,5 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export type { PublicViewportOptions };
-export { measurementMappingUtils, CornerstoneExtensionTypes, toolNames };
+export { measurementMappingUtils, CornerstoneExtensionTypes, toolNames , getActiveViewportEnabledElement};
 export default cornerstoneExtension;

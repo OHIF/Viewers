@@ -75,7 +75,7 @@ function createDicomLocalApi(dicomLocalConfig) {
             const study = DicomMetadataStore.getStudy(StudyInstanceUID);
             study.series.forEach(aSeries => {
               numInstances += aSeries.instances.length;
-              modalities.add(aSeries.Modality);
+              modalities.add(aSeries.instances[0].Modality);
             });
 
             // first instance in the first series
@@ -115,6 +115,18 @@ function createDicomLocalApi(dicomLocalConfig) {
       },
     },
     retrieve: {
+      directURL: params => {
+        const { instance, tag, defaultType } = params;
+
+        const value = instance[tag];
+        if (value instanceof Array && value[0] instanceof ArrayBuffer) {
+          return URL.createObjectURL(
+            new Blob([value[0]], {
+              type: defaultType,
+            })
+          );
+        }
+      },
       series: {
         metadata: async ({ StudyInstanceUID, madeInClient = false } = {}) => {
           if (!StudyInstanceUID) {
@@ -188,6 +200,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       displaySet.images.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames;
         if (NumberOfFrames > 1) {
+          // in multiframe we start at frame 1
           for (let i = 1; i <= NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,

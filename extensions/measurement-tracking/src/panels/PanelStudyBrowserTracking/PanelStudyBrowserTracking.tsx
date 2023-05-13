@@ -18,7 +18,7 @@ const { formatDate } = utils;
 function PanelStudyBrowserTracking({
   servicesManager,
   getImageSrc,
-  getStudiesForPatientByStudyInstanceUID,
+  getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
@@ -76,8 +76,6 @@ function PanelStudyBrowserTracking({
   const activeViewportDisplaySetInstanceUIDs =
     viewports[activeViewportIndex]?.displaySetInstanceUIDs;
 
-  const isSingleViewport = numCols === 1 && numRows === 1;
-
   useEffect(() => {
     const added = measurementService.EVENTS.MEASUREMENT_ADDED;
     const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
@@ -108,15 +106,29 @@ function PanelStudyBrowserTracking({
     };
   }, [measurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
 
-  const { trackedStudy, trackedSeries } = trackedMeasurements.context;
+  const { trackedSeries } = trackedMeasurements.context;
 
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
     async function fetchStudiesForPatient(StudyInstanceUID) {
-      const qidoStudiesForPatient =
-        (await getStudiesForPatientByStudyInstanceUID(StudyInstanceUID)) || [];
-      // TODO: This should be "naturalized DICOM JSON" studies
+      // current study qido
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: StudyInstanceUID,
+      });
+
+      let qidoStudiesForPatient = qidoForStudyUID;
+
+      // try to fetch the prior studies based on the patientID if the
+      // server can respond.
+      try {
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(
+          qidoForStudyUID
+        );
+      } catch (error) {
+        console.warn(error);
+      }
+
       const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
@@ -125,7 +137,6 @@ function PanelStudyBrowserTracking({
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
-          // displaySets: []
         };
       });
 
@@ -146,11 +157,16 @@ function PanelStudyBrowserTracking({
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
+  }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
 
   // ~~ Initial Thumbnails
   useEffect(() => {
     const currentDisplaySets = displaySetService.activeDisplaySets;
+
+    if (!currentDisplaySets.length) {
+      return;
+    }
+
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(
@@ -170,13 +186,16 @@ function PanelStudyBrowserTracking({
         });
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displaySetService, dataSource, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
-    // TODO: Are we sure `activeDisplaySets` will always be accurate?
     const currentDisplaySets = displaySetService.activeDisplaySets;
+
+    if (!currentDisplaySets.length) {
+      return;
+    }
+
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
       thumbnailImageSrcMap,
@@ -194,9 +213,9 @@ function PanelStudyBrowserTracking({
   }, [
     displaySetService.activeDisplaySets,
     trackedSeries,
-    thumbnailImageSrcMap,
     viewports,
     dataSource,
+    thumbnailImageSrcMap,
   ]);
 
   // ~~ subscriptions --> displaySets
@@ -379,7 +398,7 @@ PanelStudyBrowserTracking.propTypes = {
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,
   getImageSrc: PropTypes.func.isRequired,
-  getStudiesForPatientByStudyInstanceUID: PropTypes.func.isRequired,
+  getStudiesForPatientByMRN: PropTypes.func.isRequired,
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
 
@@ -549,6 +568,8 @@ const thumbnailNoImageModalities = [
   'RTSTRUCT',
   'RTPLAN',
   'RTDOSE',
+  'DOC',
+  'OT',
 ];
 
 function _getComponentType(Modality) {
