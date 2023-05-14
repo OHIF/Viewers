@@ -345,12 +345,17 @@ function WorkList({
             // mode.routeName
             // mode.routes[x].path
             // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
-            // How do we know which params to pass? Today, it's just StudyInstanceUIDs
+            // How do we know which params to pass? Today, it's just StudyInstanceUIDs and configUrl if exists
+            const query = new URLSearchParams();
+            if (filterValues.configUrl) {
+              query.append('configUrl', filterValues.configUrl);
+            }
+            query.append('StudyInstanceUIDs', studyInstanceUid);
             return (
               <Link
                 key={i}
                 to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
-                  ''}?StudyInstanceUIDs=${studyInstanceUid}`}
+                  ''}?${decodeURIComponent(query.toString())}`}
                 // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
@@ -531,6 +536,7 @@ const defaultFilterValues = {
   pageNumber: 1,
   resultsPerPage: 25,
   datasources: '',
+  configUrl: null,
 };
 
 function _tryParseInt(str, defaultValue) {
@@ -561,6 +567,7 @@ function _getQueryFilterValues(params) {
     pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
     resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
     datasources: params.get('datasources'),
+    configUrl: params.get('configurl'),
   };
 
   // Delete null/undefined keys
