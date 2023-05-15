@@ -51,13 +51,16 @@ export default class HangingProtocolService extends PubSubService {
   studies: StudyMetadata[];
   // stores all the protocols (object or function that returns an object) in a map
   protocols: Map<string, Protocol>;
-  // protocols copy for the case where protocols has computed values which override
-  // the original values
-  protocolsCopy: Map<string, Protocol>;
   // Contains the list of currently active keys
   activeProtocolIds: string[];
   // the current protocol that is being applied to the viewports in object format
   protocol: HangingProtocol.Protocol;
+  // The version of the protocol that must not be modified with customizations
+  // if it was defined in the protocol definition. This is a copy of the protocol
+  // that is used to recompute the computedOptions when necessary as we override
+  // the computedOptions in the protocol object itself.
+  _originalProtocol: HangingProtocol.Protocol;
+
   stageIndex = 0;
   _commandsManager: CommandsManager;
   _servicesManager: ServicesManager;
@@ -621,7 +624,7 @@ export default class HangingProtocolService extends PubSubService {
       return defaultReturn;
     }
 
-    const originalProtocol = this.protocolsCopy.get(this.protocol.id);
+    const originalProtocol = this._originalProtocol;
     let originalProtocolStage;
     if (!(originalProtocol instanceof Function)) {
       originalProtocolStage = originalProtocol.stages[this.stageIndex];
@@ -652,17 +655,10 @@ export default class HangingProtocolService extends PubSubService {
           const originalViewportOptions = originalViewport.viewportOptions;
           const originalDisplaySetOptions = originalViewport.displaySets;
 
-          const recomputedViewportOptions = this.getComputedOptions(
+          viewport.viewportOptions = this.getComputedOptions(
             JSON.parse(JSON.stringify(originalViewportOptions)),
             [newDisplaySetInstanceUID]
           );
-
-          if (recomputedViewportOptions) {
-            viewport.viewportOptions = {
-              ...viewport.viewportOptions,
-              ...recomputedViewportOptions,
-            };
-          }
 
           const recomputedDisplaySetOptions = this.getComputedOptions(
             JSON.parse(JSON.stringify(originalDisplaySetOptions)),
@@ -721,45 +717,49 @@ export default class HangingProtocolService extends PubSubService {
   public getComputedOptions(
     options: Record<string, unknown> | Array<Record<string, unknown>>,
     displaySetUIDs: string[]
-  ) {
+  ): any {
+    // Base case: if options is an array, map over the array and recursively call getComputedOptions
     if (Array.isArray(options)) {
       return options.map(option =>
         this.getComputedOptions(option, displaySetUIDs)
       );
     }
 
-    const computed = { ...options };
-
-    const processValue = (value: any, parent: any, key: string) => {
-      if (!value) return;
-
-      if (typeof value === 'object' && !value.custom) {
-        Object.keys(value).forEach(nestedKey => {
-          processValue(value[nestedKey], value, nestedKey);
-        });
-        return;
-      }
-
-      if (value.custom) {
+    if (typeof options === 'object' && options !== null) {
+      // If options is an object with a custom attribute, compute a new options object
+      if ('custom' in options) {
         const displaySets = this.displaySets.filter(displaySet =>
           displaySetUIDs.includes(displaySet.displaySetInstanceUID)
         );
 
-        const callback = this.customAttributeRetrievalCallbacks[value.custom]
-          .callback;
-        parent[key] = callback.call(computed, displaySets);
-
-        if (parent[key] === undefined) {
-          parent[key] = parent.defaultValue;
+        const customKey = options.custom as string;
+        if (!(customKey in this.customAttributeRetrievalCallbacks)) {
+          throw new Error(
+            `Custom key "${customKey}" not found in customAttributeRetrievalCallbacks.`
+          );
         }
+
+        const callback = this.customAttributeRetrievalCallbacks[customKey]
+          .callback;
+        const newOptions = callback.call(null, displaySets);
+
+        if (newOptions === undefined) {
+          return options.defaultValue;
+        }
+
+        return this.getComputedOptions(newOptions, displaySetUIDs);
       }
-    };
 
-    Object.keys(computed).forEach(key => {
-      processValue(computed[key], computed, key);
-    });
+      // If options is an object without a custom attribute, recursively call getComputedOptions on its properties
+      const newOptions = {} as Record<string, unknown>;
+      for (const key in options) {
+        newOptions[key] = this.getComputedOptions(options[key], displaySetUIDs);
+      }
+      return newOptions;
+    }
 
-    return computed;
+    // If options is not an array or an object, return it as is
+    return options;
   }
 
   /**
