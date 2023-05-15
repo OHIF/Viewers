@@ -1,4 +1,4 @@
-import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 import OHIF from '@ohif/core';
 import dcmjs from 'dcmjs';
 
@@ -87,7 +87,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 date: firstInstance.StudyDate,
                 description: firstInstance.StudyDescription,
                 mrn: firstInstance.PatientID,
-                patientName: { Alphabetic: firstInstance.PatientName },
+                patientName: utils.formatPN(firstInstance.PatientName),
                 studyInstanceUid: firstInstance.StudyInstanceUID,
                 time: firstInstance.StudyTime,
                 //
@@ -103,9 +103,20 @@ function createDicomLocalApi(dicomLocalConfig) {
         },
       },
       series: {
-        // mapParams: mapParams.bind(),
-        search: () => {
-          console.debug(' DICOMLocal QUERY SERIES SEARCH');
+        search: studyInstanceUID => {
+          const study = DicomMetadataStore.getStudy(studyInstanceUID);
+          return study.series.map(aSeries => {
+            const firstInstance = aSeries?.instances[0];
+            return {
+              studyInstanceUid: studyInstanceUID,
+              seriesInstanceUid: firstInstance.SeriesInstanceUID,
+              modality: firstInstance.Modality,
+              seriesNumber: firstInstance.SeriesNumber,
+              seriesDate: firstInstance.SeriesDate,
+              numSeriesInstances: aSeries.instances.length,
+              description: firstInstance.SeriesDescription,
+            };
+          });
         },
       },
       instances: {
