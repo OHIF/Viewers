@@ -5,7 +5,7 @@
 
 module.exports = {
   verbose: true,
-  roots: ['<rootDir>/src'],
+  // roots: ['<rootDir>/src'],
   testMatch: ['<rootDir>/src/**/*.test.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testEnvironment: 'jsdom',
