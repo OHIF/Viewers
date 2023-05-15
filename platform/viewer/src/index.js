@@ -20,20 +20,28 @@ import {
   modes as defaultModes,
   extensions as defaultExtensions,
 } from './pluginImports';
+import loadDynamicConfig from './loadDynamicConfig';
 
-/**
- * Combine our appConfiguration with installed extensions and modes.
- * In the future appConfiguration may contain modes added at runtime.
- *  */
-const appProps = {
-  config: window ? window.config : {},
-  defaultExtensions,
-  defaultModes,
-};
+loadDynamicConfig(window.config).then(config_json => {
+  // Reset Dynamic config if defined
+  if (config_json !== null) {
+    window.config = config_json;
+  }
 
-/** Create App */
-const app = React.createElement(App, appProps, null);
-/** Render */
-ReactDOM.render(app, document.getElementById('root'));
+  /**
+   * Combine our appConfiguration with installed extensions and modes.
+   * In the future appConfiguration may contain modes added at runtime.
+   *  */
+  const appProps = {
+    config: window ? window.config : {},
+    defaultExtensions,
+    defaultModes,
+  };
+
+  /** Create App */
+  const app = React.createElement(App, appProps, null);
+  /** Render */
+  ReactDOM.render(app, document.getElementById('root'));
+});
 
 export { history };
