@@ -143,7 +143,6 @@ export default class HangingProtocolService extends PubSubService {
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
     this.protocols = new Map();
-    this.protocolsCopy = new Map();
     this.protocolEngine = undefined;
     this.protocol = undefined;
     this.stageIndex = undefined;
@@ -303,10 +302,6 @@ export default class HangingProtocolService extends PubSubService {
     }
 
     this.protocols.set(protocolId, protocol);
-
-    // also insert it in the copy of the protocols map object, but make a deep
-    // copy of the protocol object first
-    this.protocolsCopy.set(protocolId, this._copyProtocol(protocol));
   }
 
   /**
@@ -916,7 +911,8 @@ export default class HangingProtocolService extends PubSubService {
     try {
       if (!this.protocol || this.protocol.id !== protocol.id) {
         this.stageIndex = options?.stageIndex || 0;
-        this.protocol = this._copyProtocol(protocol);
+        this._originalProtocol = this._copyProtocol(protocol);
+        this.protocol = protocol;
 
         const { imageLoadStrategy } = protocol;
         if (imageLoadStrategy) {
