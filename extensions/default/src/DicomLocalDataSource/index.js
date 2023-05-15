@@ -103,9 +103,20 @@ function createDicomLocalApi(dicomLocalConfig) {
         },
       },
       series: {
-        // mapParams: mapParams.bind(),
-        search: () => {
-          console.debug(' DICOMLocal QUERY SERIES SEARCH');
+        search: studyInstanceUID => {
+          const study = DicomMetadataStore.getStudy(studyInstanceUID);
+          return study.series.map(aSeries => {
+            const firstInstance = aSeries?.instances[0];
+            return {
+              studyInstanceUid: studyInstanceUID,
+              seriesInstanceUid: firstInstance.SeriesInstanceUID,
+              modality: firstInstance.Modality,
+              seriesNumber: firstInstance.SeriesNumber,
+              seriesDate: firstInstance.SeriesDate,
+              numSeriesInstances: aSeries.instances.length,
+              description: firstInstance.SeriesDescription,
+            };
+          });
         },
       },
       instances: {
