@@ -355,7 +355,7 @@ function WorkList({
               <Link
                 key={i}
                 to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
-                  ''}?${decodeURIComponent(query.toString())}`}
+                  ''}?${query.toString()}`}
                 // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button

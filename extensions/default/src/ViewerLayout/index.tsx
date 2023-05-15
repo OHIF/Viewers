@@ -50,6 +50,8 @@ function ViewerLayout({
     //   dataSourceIdx === -1
     //     ? undefined
     //     : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
+
+    // Todo: Handle parameters in a better way.
     const query = new URLSearchParams(window.location.search);
     const configUrl = query.get('configUrl');
 
