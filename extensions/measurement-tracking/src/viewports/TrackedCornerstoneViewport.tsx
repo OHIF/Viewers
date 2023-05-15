@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 
@@ -19,13 +19,11 @@ const { formatDate } = utils;
 
 function TrackedCornerstoneViewport(props) {
   const {
-    children,
     displaySets,
     viewportIndex,
     viewportLabel,
     servicesManager,
     extensionManager,
-    commandsManager,
     viewportOptions,
   } = props;
 
@@ -40,7 +38,6 @@ function TrackedCornerstoneViewport(props) {
   const displaySet = displaySets[0];
 
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [viewportDialogState] = useViewportDialog();
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
 
@@ -48,7 +45,6 @@ function TrackedCornerstoneViewport(props) {
   const viewportId = viewportOptions.viewportId;
 
   const {
-    Modality,
     SeriesDate,
     SeriesDescription,
     SeriesInstanceUID,
@@ -93,8 +89,17 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
-  if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
-    setIsTracked(!isTracked);
+  // A current image will only exist for viewports that can have measurements tracked.
+  // Typically these are stack viewports and those volume viewports for the series of acquisition.
+  const currentImageId = cornerstoneViewportService
+    .getCornerstoneViewport(viewportId)
+    ?.getCurrentImageId();
+  if (currentImageId) {
+    if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
+      setIsTracked(!isTracked);
+    }
+  } else if (isTracked) {
+    setIsTracked(false);
   }
 
   function switchMeasurement(direction) {
