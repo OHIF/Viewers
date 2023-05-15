@@ -625,6 +625,32 @@ export default class HangingProtocolService extends PubSubService {
       originalProtocolStage = originalProtocol.stages[this.stageIndex];
     }
 
+    function updateDisplaySetInstanceUIDs(
+      viewport: HangingProtocol.Viewport,
+      displaySetSelectorId: string,
+      newDisplaySetInstanceUID: string,
+      displaySetMatchDetails: Map<
+        string,
+        HangingProtocol.DisplaySetMatchDetails
+      >,
+      displaySetInstanceUIDs: string[],
+      displaySetOptions: HangingProtocol.DisplaySetOptions[]
+    ) {
+      viewport.displaySets.forEach(displaySet => {
+        const { id } = displaySet;
+        const {
+          displaySetInstanceUID: oldDisplaySetInstanceUID,
+        } = displaySetMatchDetails.get(id);
+
+        displaySetInstanceUIDs.push(
+          displaySet.id === displaySetSelectorId
+            ? newDisplaySetInstanceUID
+            : oldDisplaySetInstanceUID
+        );
+        displaySetOptions.push(displaySet);
+      });
+    }
+
     // if we reach here, it means that the displaySetInstanceUIDs to be dropped
     // in the viewportIndex are valid, and we can proceed with the update. However
     // we need to check if the displaySets that the viewport were showing
@@ -655,39 +681,23 @@ export default class HangingProtocolService extends PubSubService {
             [newDisplaySetInstanceUID]
           );
 
-          const recomputedDisplaySetOptions = this.getComputedOptions(
+          viewport.displaySets = this.getComputedOptions(
             JSON.parse(JSON.stringify(originalDisplaySetOptions)),
             [newDisplaySetInstanceUID]
           );
-
-          if (recomputedDisplaySetOptions) {
-            viewport.displaySets = viewport.displaySets.map(
-              (displaySet, index) => {
-                return {
-                  ...displaySet,
-                  ...recomputedDisplaySetOptions[index],
-                };
-              }
-            );
-          }
         }
 
         const displaySetInstanceUIDs = [];
         const displaySetOptions = [];
 
-        for (const prevDisplaySet of viewport.displaySets) {
-          const { id } = prevDisplaySet;
-          const {
-            displaySetInstanceUID: oldDisplaySetInstanceUID,
-          } = this.displaySetMatchDetails.get(id);
-
-          displaySetInstanceUIDs.push(
-            prevDisplaySet.id === displaySetSelectorId
-              ? newDisplaySetInstanceUID
-              : oldDisplaySetInstanceUID
-          );
-          displaySetOptions.push(prevDisplaySet);
-        }
+        updateDisplaySetInstanceUIDs(
+          viewport,
+          displaySetSelectorId,
+          newDisplaySetInstanceUID,
+          this.displaySetMatchDetails,
+          displaySetInstanceUIDs,
+          displaySetOptions
+        );
 
         viewportsToUpdate.push({
           viewportIndex: index,
@@ -753,8 +763,8 @@ export default class HangingProtocolService extends PubSubService {
       return newOptions;
     }
 
-    // If options is not an array or an object, return it as is
-    return options;
+    // give the copy
+    return JSON.parse(JSON.stringify(options));
   }
 
   /**
