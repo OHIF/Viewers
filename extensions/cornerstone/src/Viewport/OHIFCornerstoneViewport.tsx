@@ -567,8 +567,9 @@ function _subscribeToJumpToMeasurementEvents(
           { referencedImageId: measurement.referencedImageId }
         );
       }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportIndex)
+      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportIndex) {
         return;
+      }
       _jumpToMeasurement(
         measurement,
         elementRef,

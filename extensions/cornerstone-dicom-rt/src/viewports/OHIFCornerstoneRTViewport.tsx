@@ -113,7 +113,6 @@ function OHIFCornerstoneRTViewport(props) {
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}
-        // initialImageIndex={initialImageIndex}
       ></Component>
     );
   }, [viewportIndex, rtDisplaySet, toolGroupId]);

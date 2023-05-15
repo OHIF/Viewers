@@ -50,7 +50,7 @@ const findReferencedInstances = (
 const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
   const instances = findReferencedInstances(displaySetService, displaySet);
   // This will be a  member function of the created image set
-  const updateInstances = function () {
+  const updateInstances = function() {
     this.images.splice(
       0,
       this.images.length,
@@ -78,6 +78,7 @@ const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
     // This object is made of multiple instances from other series
     isCompositeStack: true,
     madeInClient: true,
+    excludeFromThumbnailBrowser: true,
     updateInstances,
   });
 

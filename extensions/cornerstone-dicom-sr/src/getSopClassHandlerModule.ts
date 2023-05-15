@@ -82,13 +82,6 @@ function addInstances(
   // gets loaded, and to navigate among them.
   this.instance = this.instances[this.instances.length - 1];
   this.isLoaded = false;
-  if (this.keyImageDisplaySet) {
-    this.load();
-    this.keyImageDisplaySet.updateInstances();
-    displaySetService.setDisplaySetMetadataInvalidated(
-      this.keyImageDisplaySet.displaySetInstanceUID
-    );
-  }
   return this;
 }
 
