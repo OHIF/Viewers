@@ -14,7 +14,8 @@ function segmentationItemEditHandler({ id, servicesManager }) {
             ...segmentation,
             ...value,
           },
-          true
+          false, // don't suppress event
+          true // it should update cornerstone
         );
       }
     }

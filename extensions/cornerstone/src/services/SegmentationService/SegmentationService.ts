@@ -996,10 +996,16 @@ class SegmentationService extends PubSubService {
       label: string;
     }
   ): Promise<string> => {
+    const { displaySetService } = this.servicesManager.services;
+
+    const displaySet = displaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+
     // Todo: we currently only support labelmap for segmentation for a displaySet
     const representationType = LABELMAP;
 
-    const volumeId = this._getVolumeIdForDisplaySet(displaySetInstanceUID);
+    const volumeId = this._getVolumeIdForDisplaySet(displaySet);
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 

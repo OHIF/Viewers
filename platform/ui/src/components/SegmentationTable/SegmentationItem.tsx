@@ -71,8 +71,8 @@ const SegmentationItem = ({
         )}
       </div>
       <div className="relative flex flex-col w-full p-1">
-        <div className="flex items-center mb-1 ml-2">
-          <div className="flex items-center flex-1 text-base text-primary-light">
+        <div className="flex items-center ml-2">
+          <div className="flex flex-1 text-base text-primary-light">
             <div
               className="w-3 h-3 mt-1 mr-2 rounded-full"
               style={{ backgroundColor: 'red' }}
