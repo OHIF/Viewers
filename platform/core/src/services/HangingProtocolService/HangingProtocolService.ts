@@ -625,32 +625,6 @@ export default class HangingProtocolService extends PubSubService {
       originalProtocolStage = originalProtocol.stages[this.stageIndex];
     }
 
-    function updateDisplaySetInstanceUIDs(
-      viewport: HangingProtocol.Viewport,
-      displaySetSelectorId: string,
-      newDisplaySetInstanceUID: string,
-      displaySetMatchDetails: Map<
-        string,
-        HangingProtocol.DisplaySetMatchDetails
-      >,
-      displaySetInstanceUIDs: string[],
-      displaySetOptions: HangingProtocol.DisplaySetOptions[]
-    ) {
-      viewport.displaySets.forEach(displaySet => {
-        const { id } = displaySet;
-        const {
-          displaySetInstanceUID: oldDisplaySetInstanceUID,
-        } = displaySetMatchDetails.get(id);
-
-        displaySetInstanceUIDs.push(
-          displaySet.id === displaySetSelectorId
-            ? newDisplaySetInstanceUID
-            : oldDisplaySetInstanceUID
-        );
-        displaySetOptions.push(displaySet);
-      });
-    }
-
     // if we reach here, it means that the displaySetInstanceUIDs to be dropped
     // in the viewportIndex are valid, and we can proceed with the update. However
     // we need to check if the displaySets that the viewport were showing
@@ -690,7 +664,7 @@ export default class HangingProtocolService extends PubSubService {
         const displaySetInstanceUIDs = [];
         const displaySetOptions = [];
 
-        updateDisplaySetInstanceUIDs(
+        this._updateDisplaySetInstanceUIDs(
           viewport,
           displaySetSelectorId,
           newDisplaySetInstanceUID,
@@ -709,6 +683,29 @@ export default class HangingProtocolService extends PubSubService {
     });
 
     return viewportsToUpdate;
+  }
+
+  private _updateDisplaySetInstanceUIDs(
+    viewport: HangingProtocol.Viewport,
+    displaySetSelectorId: string,
+    newDisplaySetInstanceUID: string,
+    displaySetMatchDetails: Map<string, HangingProtocol.DisplaySetMatchDetails>,
+    displaySetInstanceUIDs: string[],
+    displaySetOptions: HangingProtocol.DisplaySetOptions[]
+  ) {
+    viewport.displaySets.forEach(displaySet => {
+      const { id } = displaySet;
+      const {
+        displaySetInstanceUID: oldDisplaySetInstanceUID,
+      } = displaySetMatchDetails.get(id);
+
+      displaySetInstanceUIDs.push(
+        displaySet.id === displaySetSelectorId
+          ? newDisplaySetInstanceUID
+          : oldDisplaySetInstanceUID
+      );
+      displaySetOptions.push(displaySet);
+    });
   }
 
   /**
@@ -730,47 +727,44 @@ export default class HangingProtocolService extends PubSubService {
       );
     }
 
-    if (typeof options === 'object' && options !== null) {
-      // If options is an object with a custom attribute, compute a new options object
-      if ('custom' in options) {
-        const displaySets = this.displaySets.filter(displaySet =>
-          displaySetUIDs.includes(displaySet.displaySetInstanceUID)
+    if (options === null) return options;
+    if (typeof options !== 'object') return options;
+
+    // If options is an object with a custom attribute, compute a new options object
+    if (options.custom) {
+      const displaySets = this.displaySets.filter(displaySet =>
+        displaySetUIDs.includes(displaySet.displaySetInstanceUID)
+      );
+
+      const customKey = options.custom as string;
+      if (!(customKey in this.customAttributeRetrievalCallbacks)) {
+        throw new Error(
+          `Custom key "${customKey}" not found in customAttributeRetrievalCallbacks.`
         );
-
-        const customKey = options.custom as string;
-        if (!(customKey in this.customAttributeRetrievalCallbacks)) {
-          throw new Error(
-            `Custom key "${customKey}" not found in customAttributeRetrievalCallbacks.`
-          );
-        }
-
-        const callback = this.customAttributeRetrievalCallbacks[customKey]
-          .callback;
-        const newOptions = callback.call(null, displaySets);
-
-        if (newOptions === undefined) {
-          return options.defaultValue;
-        }
-
-        return this.getComputedOptions(newOptions, displaySetUIDs);
       }
 
-      // If options is an object without a custom attribute, recursively call getComputedOptions on its properties
-      const newOptions = {} as Record<string, unknown>;
-      for (const key in options) {
-        // if not undefined
-        if (options[key]) {
-          newOptions[key] = this.getComputedOptions(
-            options[key],
-            displaySetUIDs
-          );
-        }
+      const callback = this.customAttributeRetrievalCallbacks[customKey]
+        .callback;
+      const newOptions = callback.call(options, displaySets);
+
+      if (newOptions === undefined) {
+        return options.defaultValue;
       }
-      return newOptions;
+
+      return this.getComputedOptions(newOptions, displaySetUIDs);
+    }
+
+    // If options is an object without a custom attribute, recursively call getComputedOptions on its properties
+    const newOptions = {} as Record<string, unknown>;
+    for (const key in options) {
+      // if not undefined
+      if (options[key]) {
+        newOptions[key] = this.getComputedOptions(options[key], displaySetUIDs);
+      }
     }
 
     // give the copy
-    return JSON.parse(JSON.stringify(options));
+    return JSON.parse(JSON.stringify(newOptions));
   }
 
   /**
