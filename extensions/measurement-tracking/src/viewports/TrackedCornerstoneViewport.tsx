@@ -1,14 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 
-import {
-  Notification,
-  ViewportActionBar,
-  useViewportDialog,
-  Tooltip,
-  Icon,
-} from '@ohif/ui';
+import { ViewportActionBar, Tooltip, Icon } from '@ohif/ui';
 
 import { useTranslation } from 'react-i18next';
 
