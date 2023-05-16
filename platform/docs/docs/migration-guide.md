@@ -12,14 +12,16 @@ This document is not meant to be used as a migration recipe but as a migration o
 
 # Introduction
 
-## Importance of Migration:
+## Importance of Migration
 
 - Enhanced UX: the new design and UI of OHIF v3 provides a more intuitive and user-friendly experience.
   OHIF v3 adds an improved side panels and toolbar, and a new layout system that lets you customize
   the layout of your application.
 - Improved Performance: OHIF v3 leverages the new Cornerstone3D rendering and tooling libraries, which
   significantly improve performance and provide a more robust and stable foundation for your application
-  for rendering and interacting with medical images.
+  for rendering and interacting with medical images. Some of the new advanced features in Cornerstone3D
+  include: OffScreen Rendering and GPU Acceleration for all viewports, streaming of the volume data, 3D annotations and measurements,
+  sharing tool states between viewports and more.
 - Improved Customizability: With addition of Modes and Extensions, OHIF v3 provides a more modular
   and customizable framework for building medical imaging applications, this will let you
   focus on your use case and not worry about the underlying infrastructure and also have less worry
@@ -29,14 +31,14 @@ This document is not meant to be used as a migration recipe but as a migration o
 - Future-Proofing: By migrating to v3, you align your application with the latest advancements in the OHIF framework, ensuring ongoing support, updates, and access to new features.
 - Community Support: OHIF v3 benefits from an active community of developers and contributors who provide valuable support, bug fixes, and continuous improvements.
 
-## Migration Timeframe:
+## Migration Timeframe
 
 The duration of the migration process can vary depending on factors such as the complexity of custom changes made in v2, familiarity with v3's architecture, and the size of the codebase.
 If you don't have any custom changes in v2, the migration process should be relatively straightforward. If you have custom changes, you will need to update them to work with the new architecture and new
 rendering and tooling engines.
 
 
-## Complexity and Pain Points:
+## Complexity and Pain Points
 
 Certain scenarios can make the migration process more complex and potentially introduce pain points:
 
@@ -84,7 +86,7 @@ far more capable than servers. Read more about dataSources [here](./platform/ext
 
 - `StudyPrefetcher` is not currently supported in OHIF v3.
 - The `servers` object has been replaced with a `dataSources` array containing objects representing different data sources.
-- The cornerstoneExtensionConfig property has been removed, you should use `customizationService` instead.
+- The cornerstoneExtensionConfig property has been removed, you should use `customizationService` instead (you can read more [here](./platform/services/ui/customization-service.md))
 - The maxConcurrentMetadataRequests property has been removed in favor of `maxNumRequests`
 - The hotkeys array has been updated with different command names and options, and some keys have been removed.
 - New properties have been added, including `maxNumberOfWebWorkers`, `omitQuotationForMultipartRequest`, `showWarningMessageForCrossOrigin`, `showCPUFallbackMessage`, `showLoadingIndicator`, `strictZSpacingForVolumeViewport`.
@@ -97,7 +99,15 @@ you as the user can focus on creating modes having your own use case and configu
 
 Separating the configuration from the extensions also makes it so that you can
 have multiple modes in a single application each focusing on certain tasks. For example, you can have a mode for segmentation which uses specific panels and tools which you don't need
-for a mode that will be used for reading.
+for a mode that will be used for reading (read more about modes [here](./platform/modes/index.md))
+
+:::info
+Previously, the viewer was designed around registered extensions. If you had a specific use case, you had to duplicate the viewer code and incorporate your customizations through extensions. However, with the introduction of a new layer of abstraction called Modes, you no longer need to fork the viewer.
+
+Modes provide a flexible approach where you can create your own mode and utilize the necessary extensions within that mode. This eliminates the need for duplicating the viewer codebase.
+
+Furthermore, Modes offer the advantage of having multiple applications within a single viewer. For instance, you can have a mode dedicated to segmentation tasks and another mode focused on reading. Each mode can have its own unique configuration, initialization logic, layout, tools, and hanging protocols. This ensures a cleaner user interface in the viewer and an improved user experience overall.
+:::
 
 Upon entering a mode, the Viewer will register its declared extensions and load them. And you
 can specify which modules you need from each extension in the mode configuration. For instance
@@ -147,7 +157,32 @@ function modeFactory({ modeConfiguration }) {
 
 In the example above, we are using the `tmtv` mode which is a mode for reading PET/CT scans
 and as you can see we are specifying the layout, the panels and the viewports that we need
-for this mode. The `tmtv` mode is using the `cs3d` extension for rendering and the `ohif` extension. As you see you can reference the modules from the extensions using the `namespace` via strings. So for instance, if you need to use the `viewportModule` from the `cornerstone` extension you can use `@ohif/extension-cornerstone.viewportModule.cornerstone` as the namespace.
+for this mode. The `tmtv` mode is using the `cs3d` extension for rendering and the `ohif` extension. As you see you can reference the modules from the extensions using the `namespace` via strings. So for instance, if you need to use the `viewportModule` from the `@ohif/extension-cornerstone` you can use `@ohif/extension-cornerstone.viewportModule.cornerstone` as the namespace.
+
+:::tip
+`ExtensionManager` will register and load the modules from the extensions and make them available to the viewer by their namespaces.
+:::
+
+Below you can see a screen shot from the demo showcasing 3 modes for the opened study.
+
+![Alt text](assets/img/migration-modes.png)
+
+:::tip
+How do I decide certain thing should go inside a mode or extension, Here are some considerations to help you make the decision:
+
+- **Functionality Scope**: If the functionality is specific to a particular use case or task within your viewer, it is often best suited to be included within a mode. Modes allow you to create customized configurations, layouts, panels, tools, and other components specific to a particular task or workflow. This includes which tool to be active by default, which panels to be displayed, and which layout to be used.
+
+- **Reusability**: If the functionality can be used across multiple modes, it is better to implement it as an extension. Extensions provide a modular approach where you can encapsulate and share functionality across different modes. For instance, if you have a custom panel that you want to use in multiple modes, you can implement it as an extension and include it in
+  the mode configuration.
+
+- **Complexity**: If the functionality requires significant customizations, complex logic, or extensive modifications to the viewer's core behavior, it might be better suited as an extension.
+
+- **New Service**: If you are writing a new service, it is preferable to implement it as an extension. Services are used to provide a common interface for interacting with external systems and data sources.
+
+Remember that there is no strict rule for deciding between modes and extensions. It's a matter of understanding the specific requirements of your application.
+
+:::
+
 
 ## Routes
 
@@ -161,10 +196,26 @@ This makes a mode flexible enough to be able to connect to multiple datasources
 without rebuild of the app for use cases such as reading from one PACS and
 writing to another.
 
+<details>
+<summary>
+Can I register a custom route to OHIF v3?
+</summary>
+
+Yes, you can take advantage of the customizationService and register your own routes.
+see [custom routes](./platform/services/ui/customization-service.md#customroutes)
+
+
+</details>
+
+
 ## LifeCycle Hooks
 
 OHIF v2 had `preRegistration` hook for extensions for initialization. In OHIF v3 you have
 even more control using `onModeEnter` and `onModeExit` hooks on the extensions and on the modes.
+
+- `preRegistration`: is called before the extension is registered to the viewer. So very early in the lifecycle of the viewer.
+- `onModeEnter` is called when the mode is entered (component on the route is mounted, e.g., when you click on the mode to enter it)
+- `onModeExit` is called when the mode is exited (component on the route is unmounted, e.g., when you navigate back to the worklist)
 
 ## Extensions
 
@@ -182,6 +233,27 @@ in the viewer and it provides the following functionalities:
 - common toolbar button layouts
 - common hanging protocol configurations
 
+<details>
+<summary>
+how can I integrate to my google health api? is there support for that?
+</summary>
+
+You can right now, take a look into our google configuration that we use for our QA located at
+`config/google.js`. Also we have some exciting UI changes coming up for the next release
+that will make it easier to integrate with google health api.
+</details>
+
+<details>
+<summary>
+Is there any recommendation for PACS integration
+</summary>
+
+You can take a look at open source PACS such as dcm4chee or orthanc. We have support for them. Also
+we have a new static wado datasource that you can use to take benefit of new deduplicated metadata
+and caching features.
+
+</details>
+
 ### Cornerstone Extension
 
 In OHIF v2, the Cornerstone extension provided modules like Cornerstone ViewportModule, ToolbarModule, and CommandsModule for controlling viewport actions.
@@ -189,22 +261,112 @@ It relied on `react-cornerstone-viewport` for rendering viewports, `cornerstone-
 
 However, in OHIF v3, there have been significant changes. The rendering and tooling logic has been migrated to a new library called [`Cornerstone3D`](https://github.com/cornerstonejs/cornerstone3D-beta/). This means that all viewport rendering and tool functionalities are now handled by Cornerstone3D.
 
-Additionally, in OHIF v3, the native support for 3D functionalities previously provided by the `vtk` extension has been integrated into Cornerstone3D. As a result, there is no longer a need to use the vtk extension.
+Additionally, in OHIF v3, the native support for 3D functionalities previously provided by the `vtk` extension has been integrated into Cornerstone3D. As a result, any vtkjs logic is encapsulated on CS3D. Things now are much more cleaner and simpler.
 
 To migrate from OHIF v2 to OHIF v3:
 
-- Update your code to use Cornerstone3D for viewport rendering and tools. If you don't have any custom tools or commands, you most likely won't need to make any changes.
-- If you have custom tools in `cornerstone-tools`, you will need to migrate them to Cornerstone3D. We have migrated various tools from `cornerstone-tools` to Cornerstone3D and you can
-use them as a reference (the main difference for tools are that now all toolData are stored in the world coordinate system).
-- Remove any dependencies on `react-cornerstone-viewport`, `cornerstone-tools`, and `cornerstone-core`.
-- Replace any usages of 3D functionalities from the vtk extension with the native 3D support provided by Cornerstone3D using its `VolumeViewport` component.
+#### Loading
 
-By following these steps, you can leverage the improved rendering and tooling capabilities of Cornerstone3D and eliminate the need for the vtk extension in OHIF v3.
+Previously we used `cornerstone-wado-image-loader` for loading images. However, we have fully switched the a new
+library called `@cornerstonejs/dicom-image-loader` which is a fork of `cornerstone-wado-image-loader` with typescript support and bug fixes.
+We have deprecated `cornerstone-wado-image-loader` and you should also switch to `@cornerstonejs/dicom-image-loader` as well.
+The process is very simple, you can follow this [PR](https://github.com/OHIF/Viewers/pull/3339) to see how we have migrated.
+
+There is also a new loader and package `@cornerstonejs/streaming-image-volume-loader`, which provides streaming of the image data
+into a volume using web workers and web assembly. You can look into the cornerstone documentation and read more about the
+volumeViewport and volumeLoader.
+
+
+#### Rendering
+
+The significant difference between cornerstone-core and cornerstone3D is that cornerstone3D fully utilizes
+[vtk.js](https://kitware.github.io/vtk-js/) for rendering, however in cornerstone-core we used a mix of webGL and vtk
+for rendering. While you don't need to do a migration for this, you should be aware that the rendering is now fully performed in the
+world coordinate system and the image is placed in the world coordinate system using the `imagePositionPatient` and `imageOrientationPatient`
+attributes of the image. This means that you can now share the tool states between multiple viewports and you can also
+use the same tool states for 2D and 3D viewports.
+
+:::tip
+
+In OHIF v3, we have removed the OHIF's vtk extension and migrated all the 3D functionalities to Cornerstone3D.
+
+Also you need to remove any dependencies on `react-cornerstone-viewport`, `cornerstone-tools`, and `cornerstone-core`.
+:::
+
+#### Tools
+
+If you don't have any custom tools, you most likely won't need to make any changes as have tried
+to migrate all the tools from `cornerstone-tools` to Cornerstone3D (except `ROIWindowLevel` which is work in progress right now).
+
+Cornerstone3D has moved the coordinate system of tools to the world coordinate system enabling sharing
+tool states between multiple viewports, and as a result the toolData is now stored in the world coordinate system as well.
+So to migrate your tools, you will need to update your toolData to be stored in the world coordinate system. You can look
+into the simplest tool for instance LengthTool in both `cornerstone-tools` and `cornerstone3D` to see the difference.
+
+
+
+By following these steps, you can leverage the improved rendering and tooling capabilities of Cornerstone3D and eliminate the need for the old ohif's vtk extension in OHIF v3.
+
+
+<details>
+<summary>
+Is there any name standard for modes and extensions?
+</summary>
+
+No naming standard, you can have your organization name as a prefix for your modes and extensions as we
+do for ohif (`@ohif/extension-*` and `@ohif/mode-*`).
+
+</details>
+
+
+<details>
+<summary>
+What happens if I have create a mode with same name as existing one
+</summary>
+
+You shouldn't. Modes are configuration objects that you can simply. There is no real use case
+for creating a mode with same name as existing one. If you do so, the last one will override the previous one
+
+
+</details>
+
+
+<details>
+<summary>
+How to remove an "core" extension/mode?
+</summary>
+
+You can use the OHIF cli tool to add/remove/link and unlink extensions and modes. You can find more information
+about the cli tool [here](./development/ohif-cli.md)
+
+</details>
+
+<details>
+<summary>
+If I have vtkjs implementation how can I port it? Should I create a specific extension for that?
+</summary>
+
+Cornerstone3D has support for some vtk.js actor and mappers including imageData, polyData and volume. If you have another
+implementation of vtk.js actor or mapper, you might be able to use `viewport.addActor` to include it in the rendering
+pipeline, but depending on the implementation and how much it interfere with the cornerstone3D rendering pipeline, you might
+not get the expected result.
+
+</details>
+
+
 
 ### DICOM Segmentation & DICOM RT
 
-In OHIF v3, the equivalent extensions for RT and SEG exists with similar logic, but with various bug fixes and improvements.
-Additionally, OHIF v3 introduces new functionalities with the SEG Viewport and RT Viewport.
+In OHIF v3, the equivalent extensions for RT and SEG exists with similar logic, but with various improvements such as
+enhanced ui/ux for segmentation panel, faster loading and interaction, and better support for multiple viewports,
+animations for jump to segment, volumetric rendering, and more. Additionally, OHIF v3 introduces new functionalities with the SEG Viewport and RT Viewport.
+
+:::tip
+
+In OHIF v3, Segmentation objects
+are loading using the frame of reference by default which means that if there are two viewports that are using the same frame of reference,
+if you load a segmentation (labelmap or RT) which lives in the same frame of reference, it will be loaded in both viewports.
+:::
 
 When loading a series that contains SEG (Segmentation) or RT (RT Structure Set) data, the viewport will automatically
 switch to the corresponding SEG or RT viewport. The user will then be prompted to decide whether to load the segmentation
@@ -221,13 +383,45 @@ loading and providing a more efficient workflow.
 This enhancement in OHIF v3 allows users to selectively load specific segmentations or RT structure sets,
 improving the usability and efficiency of the viewer when working with multiple SEG or RT series.
 
+
+
+
+<details>
+<summary>
+Can I load one seg in one viewport and another in another viewport?
+</summary>
+
+If there is another viewport in the grid that is using the same frame of reference, the segmentation will be loaded in that viewport as well.
+
+However, since we split the concept of `load` (`hydration`) and `preview`, you can use the preview (not load), which
+makes sure the SEG is contained within the viewport, but it is not hydrated so you cannot edit it.
+
+In future however, we will add more controls over, hiding the segmentation in other viewports via UI, however, you can
+right now do it via code.
+
+
+
+</details>
+
+<details>
+<summary>
+Does it support nifti?
+</summary>
+
+Nifit support for both image and segmentation is coming soon. We are working on it.
+
+
+</details>
+
 ### DICOM SR
 
 In OHIF v2, DICOM SR functionality was integrated into the Cornerstone extension. However, in OHIF v3, DICOM SR is now a separate extension. The DICOM SR extension in OHIF v3 retains the same loading and hydrating logic using dcmjs adapters. Additionally, it introduces a new type of viewport called the SR Viewport, which is used to display SR data.
 
 Similar to the temporary SEG and RT viewports, when a SR display set is selected in OHIF v3, the user is prompted to decide whether to load the SR data into the viewer and initiate the tracking. The SR viewport allows the user to switch between different measurements within the SR instance by utilizing the arrow buttons located at the top of the viewport.
 
+:::tip
 This separation of DICOM SR into its own extension in OHIF v3 provides a dedicated viewport type for SR data and offers enhanced functionality for interacting with SR measurements within the viewer.
+:::
 
 
 ### DICOM Tag Browser
@@ -237,9 +431,40 @@ In OHIF v2, the DICOM Tag Browser was a separate extension that provided a dedic
 The DICOM Tag Browser is a powerful tool for debugging and inspecting DICOM metadata, and we wanted to make it easily accessible to users. As a result, it is now available as a toolbar icon within the `default` extension. This allows users to conveniently access the DICOM Tag Browser directly from the toolbar, eliminating the need for a separate extension.
 
 
+<details>
+<summary>
+Now that dicom tag is integrated back to default extension, how can I port my code that was implemented in the old extension? Should I create an extension or change directly into default?
+</summary>
+
+If you have a custom tag browser, you have two options, either modify the default tag browser (if you think the features
+you added is useful for everyone, feel free to open a PR!), or create your own extension with your custom tag browser
+which then you can add to the toolbar.
+
+
+
+</details>
+
+
 ### DICOM HTML
 
 Since we have added graphical overlay of DICOM SR in OHIF v3, we have temporarily downgraded the priority of displaying DICOM HTML within the viewer. While DICOM HTML support is not available in the current version of OHIF v3, we acknowledge its importance and plan to reintroduce this functionality in future updates.
+
+
+
+<details>
+<summary>
+is there any easy way for supporting my own dicom html viewer? Should I use extension?
+</summary>
+
+Yes, you can write your own sopClassHandler and custom viewport in your custom extensions.
+After, you need to associate that with the viewport that you
+will use in the mode configuration, this way when that sopClassUID is requested it will use your custom viewport.
+
+
+
+</details>
+
+
 
 ### DICOM Microscopy
 
@@ -247,18 +472,25 @@ In OHIF v2, the DICOM microscopy engine was based on an older version of the [DI
 
 One notable addition in the latest DICOM microscopy viewer is the support for annotations within the whole slide images (SM images). This feature allows users to annotate and mark specific regions of interest directly within the microscopy images.
 
+:::tip
 Looking ahead, our future plans include adding DICOM SR (Structured Reporting) support for export of annotations in microscopy images. While we will enhance our support for SM images (color profiles etc.), we recommend utilizing the [SLIM Viewer](https://github.com/ImagingDataCommons/slim) developed by IDC for more sophisticated microscopy use cases.
+:::
 
 
 
 ## Extension Modules
 
 
-The way you write extensions is the same as before. Extensions can (like before) have
-modules exported via `get{ModuleName}Module` (e.g., `getViewportModule`). There are new
-types of modules that can be exported from extensions.
+v3 Extension is likely the same as in v2. Extensions can (like before) have
+modules exported via `get{ModuleName}Module` (e.g., `getViewportModule`).
 
-In OHIF v2, exported modules were represented as a single object, whereas in OHIF v3, they are
+:::info
+There are new
+types of modules that can be exported from extensions (such as `HangingProtocolModule`, `LayoutModule`, read more about
+modules in v3 [here](platform/extensions/index.md)).
+:::
+
+The main difference between v3 and v2 is that exported modules were represented as a single object, whereas in OHIF v3, they are
 represented as an array of objects, each having a name property. This change was implemented to
 enable extensions to export multiple named submodules, providing more flexibility and modularity.
 
@@ -408,6 +640,10 @@ onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
 
 By using the updated toolbarModule in OHIF v3, you can define and add toolbar buttons specific to each mode, providing greater flexibility and customization options for the toolbar configuration.
 
+An example of split button icon in v3 is shown below
+
+![Alt text](assets/img/migration-split-button.png)
+
 <details>
 <summary>
 Is the tool state shared between two different modes?
@@ -443,6 +679,16 @@ Can I have different tool sets for each viewport?
 We don't have fully support for this yet, but we have plans for it. Basically, the plan
 is to use the viewport action bar in the top of the viewport to provide viewport-specific
 tool sets.
+</details>
+
+<details>
+<summary>
+Are all tools from v2 support in v3?
+</summary>
+
+Almost all with the exception of ROIWindow, but we have plans to add it in the future. However, there are
+much more tools in v3 that are not available in v2 such as referenceLines, Stack Image Sync, and
+Calibration tool.
 </details>
 
 ### CommandsModule
@@ -702,3 +948,13 @@ In OHIF v3, we made the decision to move away from the Redux store and adopt a n
 - Modularity and Scalability: Context providers and services enable a modular architecture for easy addition and removal of plugins and extensions.
 - Reduced Boilerplate: eliminate Redux boilerplate for simpler development.
 - Flexible Pub/Sub Pattern: Services provide a pub/sub pattern for inter-component communication.
+
+<details>
+
+<summary>
+Now that redux store is gone, how can I access the user information?
+</summary>
+
+You can use the `authenticationService` for that purpose.
+
+</details>
