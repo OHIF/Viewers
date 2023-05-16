@@ -996,10 +996,16 @@ class SegmentationService extends PubSubService {
       label: string;
     }
   ): Promise<string> => {
+    const { displaySetService } = this.servicesManager.services;
+
+    const displaySet = displaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+
     // Todo: we currently only support labelmap for segmentation for a displaySet
     const representationType = LABELMAP;
 
-    const volumeId = this._getVolumeIdForDisplaySet(displaySetInstanceUID);
+    const volumeId = this._getVolumeIdForDisplaySet(displaySet);
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
@@ -1241,37 +1247,39 @@ class SegmentationService extends PubSubService {
 
     const { fillAlpha } = this.getConfiguration(toolGroupId);
 
-    let count = 0;
-    const intervalTime = 16;
-    const numberOfFrames = Math.ceil(animationLength / intervalTime);
+    let startTime: number = null;
+    const animation = (timestamp: number) => {
+      if (startTime === null) {
+        startTime = timestamp;
+      }
 
-    this.highlightIntervalId = setInterval(() => {
-      const x = (count * intervalTime) / animationLength;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / animationLength, 1);
+
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
         segmentationRepresentation.segmentationRepresentationUID,
         {
           [segmentIndex]: {
             LABELMAP: {
-              fillAlpha: easeInOutBell(x, fillAlpha),
+              fillAlpha: easeInOutBell(progress, fillAlpha),
             },
           },
         }
       );
 
-      count++;
-
-      if (count === numberOfFrames) {
-        clearInterval(this.highlightIntervalId);
+      if (progress < 1) {
+        requestAnimationFrame(animation);
+      } else {
         cstSegmentation.config.setSegmentSpecificConfig(
           toolGroupId,
           segmentationRepresentation.segmentationRepresentationUID,
           {}
         );
-
-        this.highlightIntervalId = null;
       }
-    }, intervalTime);
+    };
+
+    requestAnimationFrame(animation);
   }
 
   private _highlightContour(

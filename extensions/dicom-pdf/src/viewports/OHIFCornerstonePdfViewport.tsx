@@ -14,15 +14,14 @@ function OHIFCornerstonePdfViewport({ displaySets }) {
 
   useEffect(() => {
     const load = async () => {
-      await pdfUrl;
-      setUrl(pdfUrl);
+      setUrl(await pdfUrl);
     };
 
     load();
   }, [pdfUrl]);
 
   return (
-    <div className="bg-primary-black w-full h-full">
+    <div className="bg-primary-black w-full h-full text-white">
       <object data={url} type="application/pdf" className="w-full h-full">
         <div>No online PDF viewer installed</div>
       </object>

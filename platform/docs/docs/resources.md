@@ -9,6 +9,23 @@ Throughout the development of the OHIF Viewer, we have participated in various
 conferences and "hackathons". In this page, we will provide the presentations
 and other resources that we have provided to the community in the past:
 
+## 2023
+### SIIM 2023 Tech Tools Webinar |  April 12th, 2023
+
+Free, Open Source Tools for Research: MONAI and OHIF Viewer
+[[Slides](https://docs.google.com/presentation/d/1afJ5Y9Tzukgn7eAbaO1oiCtN7XvIimFdmZP-HcOUofA/edit?usp=sharing)][[Video](https://www.youtube.com/watch?v=lo8J5w5jUJI)]
+
+
+### [NA-MIC Project Week 38th 2023 - Remote]
+
+We participated in the 38th Project Week with three projects around OHIF. [[Website](https://projectweek.na-mic.org/PW38_2023_GranCanaria/)]
+
+- PolySeg representations for OHIF Viewer ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_PolySeg/))
+- Cross study sychronizer for OHIF Crosshair ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_SyncCrosshair/))
+- DATSCAN Viewer implementation in OHIF ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_DATSCAN/))
+
+
+
 ## 2022
 
 ### OHIF Demo to Interns

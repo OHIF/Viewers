@@ -37,7 +37,18 @@ const _getDisplaySetsFromSeries = (
         metadata.AvailableTransferSyntaxUID ||
         metadata.TransferSyntaxUID ||
         metadata['00083002'];
-      return supportedTransferSyntaxUIDs.includes(tsuid);
+
+      if (supportedTransferSyntaxUIDs.includes(tsuid)) {
+        return true;
+      }
+
+      // Assume that an instance with certain SOPClassUID and
+      // with at least 90 frames (i.e. typically 3 seconds of video) is indeed a video.
+      return (
+        metadata.SOPClassUID ===
+          SOP_CLASS_UIDS.MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE &&
+        metadata.NumberOfFrames >= 90
+      );
     })
     .map(instance => {
       const {

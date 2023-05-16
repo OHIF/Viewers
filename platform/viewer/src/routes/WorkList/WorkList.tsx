@@ -339,18 +339,27 @@ function WorkList({
           {appConfig.loadedModes.map((mode, i) => {
             const isFirst = i === 0;
 
-            const isValidMode = mode.isValidMode({ modalities });
+            const modalitiesToCheck = modalities.replaceAll('/', '\\');
+
+            const isValidMode = mode.isValidMode({
+              modalities: modalitiesToCheck,
+            });
             // TODO: Modes need a default/target route? We mostly support a single one for now.
             // We should also be using the route path, but currently are not
             // mode.routeName
             // mode.routes[x].path
             // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
-            // How do we know which params to pass? Today, it's just StudyInstanceUIDs
+            // How do we know which params to pass? Today, it's just StudyInstanceUIDs and configUrl if exists
+            const query = new URLSearchParams();
+            if (filterValues.configUrl) {
+              query.append('configUrl', filterValues.configUrl);
+            }
+            query.append('StudyInstanceUIDs', studyInstanceUid);
             return (
               <Link
                 key={i}
                 to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
-                  ''}?StudyInstanceUIDs=${studyInstanceUid}`}
+                  ''}?${query.toString()}`}
                 // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
@@ -466,7 +475,7 @@ function WorkList({
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <div className="overflow-y-auto ohif-scrollbar">
+      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
@@ -477,19 +486,21 @@ function WorkList({
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
         />
         {hasStudies ? (
-          <>
+          <div className="grow flex flex-col">
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
               filtersMeta={filtersMeta}
             />
-            <StudyListPagination
-              onChangePage={onPageNumberChange}
-              onChangePerPage={onResultsPerPageChange}
-              currentPage={pageNumber}
-              perPage={resultsPerPage}
-            />
-          </>
+            <div className="grow">
+              <StudyListPagination
+                onChangePage={onPageNumberChange}
+                onChangePerPage={onResultsPerPageChange}
+                currentPage={pageNumber}
+                perPage={resultsPerPage}
+              />
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center pt-48">
             {appConfig.showLoadingIndicator && isLoadingData ? (
@@ -529,6 +540,7 @@ const defaultFilterValues = {
   pageNumber: 1,
   resultsPerPage: 25,
   datasources: '',
+  configUrl: null,
 };
 
 function _tryParseInt(str, defaultValue) {
@@ -559,6 +571,7 @@ function _getQueryFilterValues(params) {
     pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
     resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
     datasources: params.get('datasources'),
+    configUrl: params.get('configurl'),
   };
 
   // Delete null/undefined keys

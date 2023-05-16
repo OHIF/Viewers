@@ -7,7 +7,6 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 
 import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
-import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const { formatDate } = utils;
 
@@ -22,8 +21,8 @@ function OHIFCornerstoneSRViewport(props) {
     dataSource,
     displaySets,
     viewportIndex,
-    viewportOptions,
     viewportLabel,
+    viewportOptions,
     servicesManager,
     extensionManager,
   } = props;
@@ -80,9 +79,9 @@ function OHIFCornerstoneSRViewport(props) {
         { servicesManager, extensionManager },
         displaySetInstanceUID
       );
-      const displaySets = srDisplaySet.keyImageDisplaySet
-        ? [srDisplaySet.keyImageDisplaySet]
-        : displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
+      const displaySets = displaySetService.getDisplaySetsForSeries(
+        SeriesInstanceUIDs[0]
+      );
       if (displaySets.length) {
         viewportGridService.setDisplaySetsForViewports([
           {
@@ -210,9 +209,19 @@ function OHIFCornerstoneSRViewport(props) {
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
+        // It is possible that there is a hanging protocol applying viewportOptions
+        // for the SR, so inherit the viewport options
+        // TODO: Ensure the viewport options are set correctly with respect to
+        // stack etc, in the incoming viewport options.
         viewportOptions={{
           ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
+          // viewportType should not be required, as the stack type should be
+          // required already in order to view SR, but sometimes segmentation
+          // views set the viewport type without fixing the allowed display
+          viewportType: 'stack',
+          // The positionIds for the viewport aren't meaningful for the child display sets
+          positionIds: null,
         }}
         onElementEnabled={onElementEnabled}
         initialImageIndex={initialImageIndex}
@@ -420,18 +429,14 @@ async function _getViewportReferencedDisplaySetData(
   measurementSelected,
   displaySetService
 ) {
-  if (!displaySet.keyImageDisplaySet) {
-    // Create a new display set, and preserve a reference to it here,
-    // so that it can be re-displayed and shown inside the SR viewport.
-    // This is only for ease of redisplay - the display set is stored in the
-    // usual manner in the display set service.
-    displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(
-      displaySetService,
-      displaySet
-    );
-  }
+  const { measurements } = displaySet;
+  const measurement = measurements[measurementSelected];
 
-  const referencedDisplaySet = displaySet.keyImageDisplaySet;
+  const { displaySetInstanceUID } = measurement;
+
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+    displaySetInstanceUID
+  );
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {

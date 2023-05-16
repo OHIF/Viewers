@@ -32,6 +32,7 @@ window.config = {
           auth: 'admin:admin',
         },
         dicomUploadEnabled: true,
+        singlepart: 'pdf,video',
       },
     },
     {

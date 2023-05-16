@@ -19,7 +19,11 @@ const bakedInRoutes = [
   },
   {
     path: '/local',
-    children: Local,
+    children: Local.bind(null, { modePath: '' }), // navigate to the worklist
+  },
+  {
+    path: '/localbasic',
+    children: Local.bind(null, { modePath: 'viewer' }),
   },
 ];
 
