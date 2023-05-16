@@ -7,7 +7,46 @@ sidebar_label: Migration Guide
 
 On this page, we will provide a guide to migrating from OHIF v2 to v3. Please note
 that this document is a work in progress and will be updated as we move forward.
+This document is not meant to be used as a migration recipe but as a migration overview.
 
+
+# Introduction
+
+## Importance of Migration:
+
+- Enhanced UX: the new design and UI of OHIF v3 provides a more intuitive and user-friendly experience.
+  OHIF v3 adds an improved side panels and toolbar, and a new layout system that lets you customize
+  the layout of your application.
+- Improved Performance: OHIF v3 leverages the new Cornerstone3D rendering and tooling libraries, which
+  significantly improve performance and provide a more robust and stable foundation for your application
+  for rendering and interacting with medical images.
+- Improved Customizability: With addition of Modes and Extensions, OHIF v3 provides a more modular
+  and customizable framework for building medical imaging applications, this will let you
+  focus on your use case and not worry about the underlying infrastructure and also have less worry
+  to keep up to date with the latest changes.
+- Community driven Modes: OHIF v3 provides a gallery of modes that you can use as a starting point
+  for your application. These
+- Future-Proofing: By migrating to v3, you align your application with the latest advancements in the OHIF framework, ensuring ongoing support, updates, and access to new features.
+- Community Support: OHIF v3 benefits from an active community of developers and contributors who provide valuable support, bug fixes, and continuous improvements.
+
+## Migration Timeframe:
+
+The duration of the migration process can vary depending on factors such as the complexity of custom changes made in v2, familiarity with v3's architecture, and the size of the codebase.
+If you don't have any custom changes in v2, the migration process should be relatively straightforward. If you have custom changes, you will need to update them to work with the new architecture and new
+rendering and tooling engines.
+
+
+## Complexity and Pain Points:
+
+Certain scenarios can make the migration process more complex and potentially introduce pain points:
+
+- Extensive Customizations: If your v2 implementation includes extensive custom changes and overrides, adapting those customizations to the new structure and APIs of v3 may require additional effort and careful refactoring.
+- UI Customizations: Since in OHIF v3 we moved our component library to tailwindcss
+  if you have any custom UI components, you will need to migrate them to tailwindcss too, and this might be a bit time consuming.
+- Hardware requirements: Since Cornerstone3D uses WebGL for rendering volumeViewport (although it has
+  a CPU rendering fallback), you need to make sure that your target hardware supports WebGL. You can check
+  if your hardware supports WebGL [here](https://get.webgl.org/). Also regarding the GPU requirements, you can check the tier of your GPU [here](https://pmndrs.github.io/detect-gpu/), if it is tier 1 and above, you
+  should be good to go.
 
 ## Summary of Changes
 
