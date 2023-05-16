@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { Button, Input, Select } from '@ohif/ui';
+import { Button, Input, Select, InputDoubleRange, Label } from '@ohif/ui';
 // import { useViewportSettings } from '@ohif/ui';
 // import { useViewer } from '@ohif/ui';
 // import cornerstone from 'cornerstone-core';
@@ -58,6 +58,9 @@ export default function PanelGenerateImage({
   const { t } = useTranslation('PanelGenerateImage');
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [timeOptions, setTimeOptions] = useState([]);
+  const [rangeValues, setRangeValues] = useState([]);
+  const [sliderValues, setSliderValues] = useState([]);
+  const [timeFramesToUse, setTimeFramesToUse] = useState([]);
 
   const handleMetadataChange = metadata => {
     setMetadata(prevState => {
@@ -91,8 +94,10 @@ export default function PanelGenerateImage({
   //TODO: get the referencedVolume using cache.getVolume(referencedVolumeId)
   const dynamicVolume = cache.getVolume(dynamicVolumeId);
 
-  console.log(timeOptions);
+  // console.log(timeOptions);
   let testDynamicVolume;
+
+  // console.log(`rangeValues: ${rangeValues}`);
 
   useEffect(() => {
     // ~~ Subscription
@@ -107,10 +112,16 @@ export default function PanelGenerateImage({
               console.log('NEIL');
               if (testDynamicVolume === undefined) {
                 testDynamicVolume = volumeData.volume;
+                const { metadata } = testDynamicVolume;
+                console.log(metadata);
                 const opp = numTimePointsToOptions(
                   testDynamicVolume._numTimePoints
                 );
+                const range = [1, testDynamicVolume._numTimePoints];
+                console.log(range);
                 setTimeOptions(prevArray => [...prevArray, ...opp]);
+                setRangeValues(prevArray => [...prevArray, ...range]);
+                setSliderValues(range);
                 const computedVolumeInit = createComputedVolume(
                   testDynamicVolume.volumeId,
                   computedVolumeId
@@ -133,20 +144,21 @@ export default function PanelGenerateImage({
     };
   }, []);
 
+  // Get computed volume from cache, calculate the data across the time frames,
+  // set the scalar data to the computedVolume
   function onGenerateImage() {
     console.log('onGenerateImage was run');
-    const timeFramesArray = metadata.TimeFrames.split(',');
-    for (let i = 0; i < timeFramesArray.length; i++) {
-      timeFramesArray[i] = ~~timeFramesArray[i];
-    }
+    // const timeFramesArray = metadata.TimeFrames.split(',');
+    // for (let i = 0; i < timeFramesArray.length; i++) {
+    //   timeFramesArray[i] = ~~timeFramesArray[i];
+    // }
     const computedVolume = cache.getVolume(computedVolumeId);
     console.log(metadata.Operation);
-    console.log(testDynamicVolume);
 
     const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
       dynamicVolume,
       metadata.Operation,
-      timeFramesArray
+      timeFramesToUse
     );
 
     const scalarData = computedVolume.getScalarData();
@@ -178,76 +190,44 @@ export default function PanelGenerateImage({
     renderGeneratedImage(computedVolumeId);
   }
 
-  // const handleAsyncFunction = useCallback(async () => {
-  //   console.log(`NEIL: `, { displaySetInstanceUID });
-  //   if (!displaySetInstanceUID) return;
-  //   dynamicVolume = await cache.getVolume(dynamicVolumeId);
-  //   console.log(`NEIL: `, { dynamicVolume });
-  //   if (!dynamicVolume) return;
-  // }, [dynamicVolumeId, dynamicVolume, displaySetInstanceUID]);
-  // useEffect(() => {
-  //   if (displaySetInstanceUID) {
-  //     handleAsyncFunction();
-  //   }
-  // }, [displaySetInstanceUID]);
-
-  // const [hasVolume, setHasVolume] = useState(false);
-  // const [dynVolume, setDynVolume] = useState(undefined);
-
-  // const getDynamicVolumeFromCache = async dynamicVolumeId => {
-  //   console.log({ dynamicVolumeId });
-  //   const dynamicVolumeFromCache = await cache.getVolume(dynamicVolumeId);
-  //   setDynVolume(true);
-
-  //   return dynamicVolumeFromCache;
-  // };
-  // useEffect(() => {
-  //   console.log(dynVolume);
-  // }, [dynVolume]);
-
-  //TODO: uncomment this section that checks for referencedVolume
-  // if (!referencedVolume) {
-  //   throw new Error(
-  //     `No volume found for referencedVolumeId: ${referencedVolumeId}`
-  //   );
-  // }
-
-  //TODO: Derive volume to use for generating data
-  // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
-  // it is easily compressible in worker thread.
-
-  //NOTE: function generateImageFromTimeData(dynamicVolume, operation, frameNumbers)
-
-  // const { viewportSpecificData } = useViewer(activeViewportIndex);
-
-  // // Retrieve the current viewport settings
-  // const { viewports } = useViewportSettings();
-
-  // // Extract the current viewport's active tool from the viewports object
-  // const activeTool = viewports[activeViewportIndex].activeTool;
-
-  // // Use cornerstoneTools to get the image data from the active tool
-  // const timeData = cornerstoneTools[activeTool].getToolState(
-  //   cornerstone.getEnabledElements()[0].element,
-  //   'time'
-  // ).data;
-
-  // function handleClick() {
-  //   // Call the generateImageFromTimeData function from CornerstoneJS
-  //   const image = cornerstone.generateImageFromTimeData(timeData[0], {});
-
-  //   // Do something with the generated image
-  //   console.log(image);
-  // console.log(`TEST ${dynamicVolume}`);
   if (!metadata.TimeFrames) {
     // console.log(dynamicVolume);
   }
 
+  const handleChange = (leftVal, rightVal) => {
+    console.log('Left value:', leftVal);
+    console.log('Right value:', rightVal);
+  };
+
+  function handleSliderChange(newValues) {
+    setSliderValues(newValues);
+    const timeFrameValuesArray = Array.from(
+      { length: newValues[1] - newValues[0] + 1 },
+      (_, i) => i + newValues[0] - 1
+    );
+    setTimeFramesToUse(timeFrameValuesArray);
+    console.log(`newValues: ${newValues}`);
+  }
+
+  console.log(`timeFramesToUse: ${timeFramesToUse}`);
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
-        <Input
-          label={t('Time Frames')}
+        <div className="w-3">
+          <InputDoubleRange
+            labelClassName="text-black"
+            maxValue={rangeValues[1] || 2}
+            minValue={rangeValues[0] || 1}
+            onSliderChange={handleSliderChange}
+            onChange={handleChange}
+            step={10}
+            unit="%"
+            valueLeft={rangeValues[0] || 1}
+            valueRight={rangeValues[1] || 2}
+          />
+        </div>
+        {/* <Input
           labelClassName="text-white mb-2"
           className="mt-1"
           value={metadata.TimeFrames || ''}
@@ -256,7 +236,7 @@ export default function PanelGenerateImage({
               TimeFrames: e.target.value,
             });
           }}
-        />
+        /> */}
         <Select
           label={t('Strategy')}
           closeMenuOnSelect={true}

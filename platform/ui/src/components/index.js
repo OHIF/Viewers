@@ -74,6 +74,7 @@ import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
+import InputDoubleRange from './InputDoubleRange';
 
 export {
   AboutModal,
@@ -153,4 +154,5 @@ export {
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  InputDoubleRange,
 };

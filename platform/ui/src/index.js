@@ -56,6 +56,7 @@ export {
   IconButton,
   Input,
   InputRange,
+  InputDoubleRange,
   InputDateRange,
   InputGroup,
   InputLabelWrapper,
