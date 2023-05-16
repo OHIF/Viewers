@@ -89,7 +89,7 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
-  // A current image will only exist for viewports that can have measurements tracked.
+  // A current image id will only exist for viewports that can have measurements tracked.
   // Typically these are stack viewports and those volume viewports for the series of acquisition.
   const currentImageId = cornerstoneViewportService
     .getCornerstoneViewport(viewportId)
