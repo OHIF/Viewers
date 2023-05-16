@@ -651,12 +651,12 @@ export default class HangingProtocolService extends PubSubService {
           const originalDisplaySetOptions = originalViewport.displaySets;
 
           viewport.viewportOptions = this.getComputedOptions(
-            JSON.parse(JSON.stringify(originalViewportOptions)),
+            originalViewportOptions,
             [newDisplaySetInstanceUID]
           );
 
           viewport.displaySets = this.getComputedOptions(
-            JSON.parse(JSON.stringify(originalDisplaySetOptions)),
+            originalDisplaySetOptions,
             [newDisplaySetInstanceUID]
           );
         }
