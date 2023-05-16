@@ -885,7 +885,9 @@ import('path/to/module').then((module) => {
 });
 ```
 
-By using dynamic imports, you can selectively load modules or components at runtime when they are needed, enhancing the efficiency and responsiveness of your application.
+By using dynamic imports, you can selectively load modules or components at runtime when they are needed, enhancing the efficiency and responsiveness of your application.  However, note
+that these components must be available at BUILD time, and cannot be updated after
+build.
 
 </details>
 
