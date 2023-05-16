@@ -1589,7 +1589,7 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   /** Register the hanging protocols from the extension module */
-  public initModule(extensionModule, extensionId: string): void {
+  public onServiceModuleRegistration(extensionModule): void {
     extensionModule.forEach(({ name, protocol }) => {
       if (protocol) {
         // Only auto-register if protocol specified, otherwise let mode register

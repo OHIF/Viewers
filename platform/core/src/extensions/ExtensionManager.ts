@@ -329,7 +329,7 @@ export default class ExtensionManager {
       element.id = id;
       this.modulesMap[id] = element;
     });
-    service?.initModule?.(extensionModule, extensionId);
+    service?.onServiceModuleRegistration?.(extensionModule, extensionId);
   }
 
   getModuleEntry = stringEntry => {

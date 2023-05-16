@@ -89,7 +89,7 @@ export default class CustomizationService extends PubSubService {
   }
 
   /** Register the customizations from the extensions */
-  public initModule(extensionModule, extensionId: string): void {
+  public onServiceModuleRegistration(extensionModule): void {
     extensionModule.forEach(({ name, value }) => {
       if (name === 'default' && value) {
         // Only auto-register if protocol specified, otherwise let mode register
