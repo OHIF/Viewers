@@ -95,11 +95,11 @@ const ViewportDownloadForm = ({
 
   const onKeepAspectToggle = () => {
     const { width, height } = dimensions;
-    const aspectMultiplier = { ...aspectMultiplier };
     if (!keepAspect) {
-      const base = Math.min(width, height);
-      aspectMultiplier.width = width / base;
-      aspectMultiplier.height = height / base;
+      const aspectMultiplier = {
+        width: width / height,
+        height: height / width,
+      };
       setAspectMultiplier(aspectMultiplier);
     }
 
@@ -379,7 +379,7 @@ const ViewportDownloadForm = ({
 
       <div className="mt-8">
         <div
-          className="p-4 rounded bg-secondary-dark border-secondary-primary"
+          className="p-4 rounded bg-secondary-dark border-secondary-primary w-max-content min-w-full"
           data-cy="image-preview"
         >
           <Typography variant="h5">{t('Image preview')}</Typography>
