@@ -758,7 +758,13 @@ export default class HangingProtocolService extends PubSubService {
       // If options is an object without a custom attribute, recursively call getComputedOptions on its properties
       const newOptions = {} as Record<string, unknown>;
       for (const key in options) {
-        newOptions[key] = this.getComputedOptions(options[key], displaySetUIDs);
+        // if not undefined
+        if (options[key]) {
+          newOptions[key] = this.getComputedOptions(
+            options[key],
+            displaySetUIDs
+          );
+        }
       }
       return newOptions;
     }
