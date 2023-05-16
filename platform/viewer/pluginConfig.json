@@ -23,11 +23,6 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "@ohif/extension-dicom-microscopy",
-      "default": false,
-      "version": "3.0.0"
-    },
-    {
       "packageName": "@ohif/extension-dicom-pdf",
       "default": false,
       "version": "3.0.0"
@@ -75,6 +70,9 @@
     }
   ],
   "public": [
+    {
+      "directory": "./lazy/dicom-microscopy-viewer/dist"
+    },
     {
       "directory": "./platform/public"
     }

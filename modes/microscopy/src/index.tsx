@@ -34,6 +34,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
   '@ohif/extension-dicom-microscopy': '^3.0.0',
+  './umd/@ohif/microscopy-dicom': '^3.0.0',
 };
 
 function modeFactory() {
