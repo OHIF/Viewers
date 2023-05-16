@@ -5,10 +5,9 @@ sidebar_label: SOP Class Handler
 # Module: SOP Class Handler
 
 ## Overview
-This module defines how a specific DICOM SOP class should be processed to make a displaySet, something that can be hung in a viewport. An extension can register a [SOP Class][sop-class-link] Handler Module by defining a `getSopClassHandlerModule` method. The [SOP Class][sop-class-link].
+This module defines how a specific DICOM SOP class should be processed to make a list of `DisplaySet`, things which can be hung in a viewport. An extension can register a [SOP Class][sop-class-link] Handler Module by defining a `getSopClassHandlerModule` method. The [SOP Class][sop-class-link].
 
 The mode chooses what SOPClassHandlers to use, so you could process a series in a different way depending on mode within the same application.
-
 
 SOPClassHandler is a bit different from the other modules, as it doesn't provide a `1:1`
 schema for UI or provide its own components. It instead defines:
@@ -34,6 +33,7 @@ return {
   isMultiFrame,
   numImageFrames,
   SOPClassHandlerId,
+  madeInClient,
 }
 ```
 
@@ -55,6 +55,10 @@ const sopClassUids = [
   sopClassDictionary.MRImageStorage,
 ];
 
+function addInstances(instances)  {
+   // Add instances to this display set, and return the display set updated.
+}
+
 const makeDisplaySet = (instances) => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
@@ -72,9 +76,11 @@ const makeDisplaySet = (instances) => {
     isMultiFrame: isMultiFrame(instance),
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
+    addInstances,
   });
 
-  return imageSet;
+  // Note returns an array now
+  return [imageSet];
 };
 
 getSopClassHandlerModule = () => {
@@ -88,6 +94,12 @@ getSopClassHandlerModule = () => {
 };
 
 ```
+
+### addInstances
+In order to allow new SOP instances to be received and added to an existing display
+set, the addInstances method can be added to a display set.  It is called
+on the display set to be updated, and returns it when it has added at least one
+of the instances to the display set.
 
 ### More examples :
 You can find another example for this mapping between raw metadata and displaySet for
