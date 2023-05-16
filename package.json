@@ -147,7 +147,7 @@
     ]
   },
   "resolutions": {
-    "@cornerstonejs/core": "^0.46.2",
+    "@cornerstonejs/core": "^0.47.1",
     "**/@babel/runtime": "^7.20.13",
     "nth-check": "^2.1.1",
     "trim-newlines": "^5.0.0",
