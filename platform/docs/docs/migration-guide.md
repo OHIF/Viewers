@@ -178,6 +178,7 @@ How do I decide certain thing should go inside a mode or extension, Here are som
 - **Complexity**: If the functionality requires significant customizations, complex logic, or extensive modifications to the viewer's core behavior, it might be better suited as an extension.
 
 - **New Service**: If you are writing a new service, it is preferable to implement it as an extension. Services are used to provide a common interface for interacting with external systems and data sources.
+There is a new way to register new services which are extendible by other extensions.
 
 Remember that there is no strict rule for deciding between modes and extensions. It's a matter of understanding the specific requirements of your application.
 
@@ -776,10 +777,19 @@ in the `getLayoutModule` which you can reference in the `layout` property of the
 
 ### SopClassHandlerModule
 
-By far the least changed module is the SopClassHandlerModules. The purpose of this
-module is to create a displaySet based on the metadata. OHIF App uses this module to
-create a displaySet for each series. The displaySet is then used to then get assigned
+The least changed module is the SopClassHandlerModule, although this now returns
+an array instead of a single instance. The purpose of this module is to create
+a list of displaySets based on the metadata.  OHIF App uses this module to
+create one or more displaySets for each series.
+The displaySet is then used to then get assigned
 on each viewport and the viewport renders the image.
+
+The `DisplaySet` created by the handler can have a member function `addInstances`
+which will update the display set with new SOP instance data, allowing the
+preservation of the display set UID when required.
+
+Multiple display sets will be returned when different parts of the series are
+to be shown separately, for example, to split scout images from volume images.
 
 
 ### ViewportModule
