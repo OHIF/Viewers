@@ -15,12 +15,17 @@ describe('ExtensionManager.ts', () => {
     };
     servicesManager = {
       registerService: jest.fn(),
+      moduleTypes: {
+        customizationModule: 'customizationService',
+        hangingProtocolModule: 'hangingProtocolService',
+      },
       services: {
         // Required for DataSource Module initiation
-        UserAuthenticationService: jest.fn(),
-        HangingProtocolService: {
+        userAuthenticationService: jest.fn(),
+        hangingProtocolService: {
           addProtocol: jest.fn(),
         },
+        customizationService: {},
       },
     };
     appConfig = {

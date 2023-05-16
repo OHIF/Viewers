@@ -103,7 +103,7 @@ export default function ModeRoute({
 
   const [refresh, setRefresh] = useState(false);
   const [
-    ExtensionDependenciesLoaded,
+    extensionDependenciesLoaded,
     setExtensionDependenciesLoaded,
   ] = useState(false);
 
@@ -226,7 +226,7 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!extensionDependenciesLoaded) {
       return;
     }
 
@@ -243,10 +243,10 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [location, ExtensionDependenciesLoaded]);
+  }, [location, extensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!extensionDependenciesLoaded) {
       return;
     }
 
@@ -267,10 +267,10 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
+  }, [studyInstanceUIDs, extensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!hotkeys || !ExtensionDependenciesLoaded) {
+    if (!hotkeys || !extensionDependenciesLoaded) {
       return;
     }
 
@@ -287,10 +287,10 @@ export default function ModeRoute({
     return () => {
       hotkeysManager.destroy();
     };
-  }, [ExtensionDependenciesLoaded]);
+  }, [extensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded) {
+    if (!layoutTemplateData.current || !extensionDependenciesLoaded) {
       return;
     }
 
@@ -415,7 +415,7 @@ export default function ModeRoute({
     mode,
     dataSourceName,
     location,
-    ExtensionDependenciesLoaded,
+    extensionDependenciesLoaded,
     route,
     servicesManager,
     extensionManager,
@@ -443,7 +443,7 @@ export default function ModeRoute({
         <DragAndDropProvider>
           {layoutTemplateData.current &&
             studyInstanceUIDs?.[0] !== undefined &&
-            ExtensionDependenciesLoaded &&
+            extensionDependenciesLoaded &&
             renderLayoutData({
               ...layoutTemplateData.current.props,
               ViewportGridComp: ViewportGridWithDataSource,
