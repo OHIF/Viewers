@@ -745,10 +745,10 @@ export default class HangingProtocolService extends PubSubService {
 
       const callback = this.customAttributeRetrievalCallbacks[customKey]
         .callback;
-      const newOptions = callback.call(options, displaySets);
+      let newOptions = callback.call(options, displaySets);
 
       if (newOptions === undefined) {
-        return options.defaultValue;
+        newOptions = options.defaultValue;
       }
 
       return this.getComputedOptions(newOptions, displaySetUIDs);
@@ -758,13 +758,12 @@ export default class HangingProtocolService extends PubSubService {
     const newOptions = {} as Record<string, unknown>;
     for (const key in options) {
       // if not undefined
-      if (options[key]) {
+      if (options[key] !== undefined) {
         newOptions[key] = this.getComputedOptions(options[key], displaySetUIDs);
       }
     }
 
-    // give the copy
-    return JSON.parse(JSON.stringify(newOptions));
+    return newOptions;
   }
 
   /**
