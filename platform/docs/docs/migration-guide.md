@@ -1,6 +1,6 @@
 ---
 sidebar_position: 10
-sidebar_label: Migration Guide
+sidebar_label: 💥 Migration Guide (NEW)💥
 ---
 
 # Migration Guide
@@ -41,8 +41,8 @@ rendering and tooling engines.
 Certain scenarios can make the migration process more complex and potentially introduce pain points:
 
 - Extensive Customizations: If your v2 implementation includes extensive custom changes and overrides, adapting those customizations to the new structure and APIs of v3 may require additional effort and careful refactoring.
-- UI Customizations: Since in OHIF v3 we moved our component library to tailwindcss
-  if you have any custom UI components, you will need to migrate them to tailwindcss too, and this might be a bit time consuming.
+- UI Customizations: Since in OHIF v3 we moved our component library to Tailwind CSS
+  if you have any custom UI components, you will need to migrate them to Tailwind CSS too, and this might be a bit time consuming.
 - Hardware requirements: Since Cornerstone3D uses WebGL for rendering volumeViewport (although it has
   a CPU rendering fallback), you need to make sure that your target hardware supports WebGL. You can check
   if your hardware supports WebGL [here](https://get.webgl.org/). Also regarding the GPU requirements, you can check the tier of your GPU [here](https://pmndrs.github.io/detect-gpu/), if it is tier 1 and above, you
@@ -50,17 +50,21 @@ Certain scenarios can make the migration process more complex and potentially in
 
 ## Summary of Changes
 
-OHIF v3 is a complete re-architecture of the OHIF v2 to make it more modular and
+OHIF v3 is a major re-architecture of the OHIF v2 to make it more modular and
 easier to maintain. The main differences are:
 
-- Extensions don't inject their modules into the viewer, they will make them available
-  to be used by the viewer.
-- To use the modules provided by the extensions, you need to write a [Modes](./platform/modes/index.md). Modes
-are configuration objects that will be used by the viewer to load the modules.
+- Extensions are available to be used by modes on request, but are still injected as module components.
+- To use the modules provided by the extensions, you need to write a [Mode](./platform/modes/index.md). Modes
+are configuration objects that will be used by the viewer to load the modules. This lets users to be able to use common extensions with different configurations, and enhances the customizability of the viewer.
 - App configuration structure is different, mainly the `servers` is renamed to `dataSources`.
-- The viewer UI is completely re-written in tailwindcss for better maintainability.
-- cornerstone-core and cornerstone-tools are deprecated and OHIF v3 is using the new Cornerstone3D rendering library and tools
-- A new CLI tool to help you create extensions and modes.
+- Apps can be customized significantly more than previously by providing configuration code int he customizationModule section.
+- The viewer UI is completely re-written in Tailwind CSS for better maintainability, although it is a WIP but
+  already provides a better user experience.
+- cornerstone-core and cornerstone-tools are removed and OHIF v3 is using the new Cornerstone3D rendering library and tools. Moving to Cornerstone3D has enabled us to provide a more robust and stable foundation
+  for 3D rendering and 3D annotations and measurements. In addition, Cornerstone3D provides APIs to load
+  and stream data into a volume which has huge performance benefits.
+- A new CLI tool to help you create extensions and modes (more [here]((./development/ohif-cli.md)))
+- redux store has been removed and replaced with a simpler state management system via React Context API.
 
 New significant additions that might be useful for you that weren't available in OHIF v2:
 - [OHIF CLI](./development/ohif-cli.md)
@@ -75,8 +79,8 @@ New significant additions that might be useful for you that weren't available in
 
 ## Configuration
 
-OHIF v3 has a new configuration structure. The main difference is that the `servers` is renamed to `dataSources`
-and the configuration is now asynchronous.
+OHIF v3 has a new configuration structure. The main difference is that the `servers` is renamed to `dataSources` and the configuration is now asynchronous. Datasources are more abstract and
+far more capable than servers. Read more about dataSources [here](./platform/extensions/modules/data-source.md).
 
 - `StudyPrefetcher` is not currently supported in OHIF v3.
 - The `servers` object has been replaced with a `dataSources` array containing objects representing different data sources.
@@ -306,27 +310,41 @@ extensionManager.getModuleEntry(
 This allows you to access the specific submodule provided by the extension and utilize its functionalities within your application.
 
 
+<details>
+<summary>
+How can I have a lazy-loaded component and import it from another extension?
+</summary>
+
+If an extension is exporting a component, you can import it from another extension. For example, if you have an extension that exports a component called `MyComponent`, you can import it from another extension like this:
+
+```js
+import { MyComponent } from '@ohif/extension-my-extension';
+```
+
+
+</details>
+
 
 ### ToolbarModule
 
 In OHIF v2, the toolbarModule was used to add buttons to the toolbar. For example, the following code snippet demonstrates adding a zoom tool button to the toolbar:
 
+In OHIF v2
 
 ```js
 {
-    id: 'Zoom',
-    label: 'Zoom',
-    icon: 'search-plus',
-    //
-    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'Zoom' },
+  id: 'Zoom',
+  label: 'Zoom',
+  icon: 'search-plus',
+  //
+  type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+  commandName: 'setToolActive',
+  commandOptions: { toolName: 'Zoom' },
 },
 ```
 
 However, in OHIF v3, the toolbarModule has been repurposed to define different button types. For instance, OHIF v3 introduces the ohif.radioGroup and ohif.splitButton button types, which provide more flexibility in defining toolbar buttons for each mode.
 
-To use these button types within your modes, you can define the buttons in your mode's configuration. For example:
 
 
 ```js
@@ -342,7 +360,7 @@ To use these button types within your modes, you can define the buttons in your 
 },
 ```
 
-In the onModeEnter hook, you can add the defined buttons to the toolbar using the toolbarService. Here's an example of how to add buttons to the toolbar:
+To use these button types within your modes, you can define the buttons in your mode's configuration. In the onModeEnter hook, you can add the defined buttons to the toolbar using the toolbarService. Here's an example of how to add buttons to the toolbar:
 
 
 
@@ -390,7 +408,42 @@ onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
 
 By using the updated toolbarModule in OHIF v3, you can define and add toolbar buttons specific to each mode, providing greater flexibility and customization options for the toolbar configuration.
 
+<details>
+<summary>
+Is the tool state shared between two different modes?
+</summary>
+No, the tool state is not shared between different modes in OHIF v3. Each mode operates independently and maintains its own tool state.
 
+</details>
+
+<details>
+<summary>
+I have a custom icon. How can I add it to the toolbar?
+</summary>
+
+You need to first register it via `addIcon` in the src/components/Icon, and then you can
+referenced it by name in the toolbar configuration for mode
+</details>
+
+
+<details>
+<summary>
+Can I change the toolbar's location? Can I add a secondary toolbar?
+</summary>
+Not in our default layout, but you can write your own layout in your custom extension
+and use it instead of the default one.
+
+</details>
+
+<details>
+<summary>
+Can I have different tool sets for each viewport?
+</summary>
+
+We don't have fully support for this yet, but we have plans for it. Basically, the plan
+is to use the viewport action bar in the top of the viewport to provide viewport-specific
+tool sets.
+</details>
 
 ### CommandsModule
 
@@ -438,10 +491,49 @@ return [
 ];
 ```
 
+<details>
+<summary>
+How can I add my own custom panel?
+</summary>
+To add your own custom panel in OHIF v3, you can follow these steps:
+
+- Create a new React component that represents your custom panel.
+- Provide it in the getPanelModule of your extension.
+- Inside your mode, add the panel namespace to the mode's configuration for the layout module.
+
+</details>
+
+<details>
+<summary>
+How to enhance an existing panel?
+</summary>
+To enhance an existing panel in OHIF v3, you can create a new React component that extends or wraps the existing panel component. In your enhanced component, you can add additional functionality, modify the appearance, or incorporate new features specific to your use case. You can also look into the customizationService to see
+how you can use the registered points to customize the panel.
+
+</details>
+
+<details>
+<summary>
+How to change the order of appearance of panels?
+</summary>
+To change the order of appearance of panels in OHIF v3, you can modify the panel layout configuration in the mode configuration. The panel layout configuration specifies the order and arrangement of panels within the viewer interface.
+
+</details>
+
+<details>
+<summary>
+Is there a way to change the viewer layout to present right panels on the left and the toolbar on the right?
+</summary>
+Not with our default layout which the default extension provides. However, you can write a new layout and provide it
+in the `getLayoutModule` which you can reference in the `layout` property of the mode configuration.
+</details>
+
 ### SopClassHandlerModule
 
 By far the least changed module is the SopClassHandlerModules. The purpose of this
-module is to create a displaySet based on the metadata.
+module is to create a displaySet based on the metadata. OHIF App uses this module to
+create a displaySet for each series. The displaySet is then used to then get assigned
+on each viewport and the viewport renders the image.
 
 
 ### ViewportModule
@@ -513,16 +605,97 @@ An alternative option for script tag usage is to employ an `iframe`. You can uti
 
 Please note that while these alternatives exist, we recommend utilizing modern development practices and incorporating OHIF viewer within your application using a more modular and integrated approach, such as leveraging bundlers, and import statements to ensure better maintainability, extensibility, and compatibility with the OHIF ecosystem.
 
+
+<details>
+<summary>
+I use OHIF v2 in an iframe. Is there any impediment for v3?
+</summary>
+No, there is no impediment for using OHIF v3 in an iframe. OHIF v3 is designed to be compatible with iframe usage, allowing you to embed the viewer within other applications or web pages seamlessly. You can still communicate with the OHIF v3 viewer using the postMessage API to exchange information and trigger actions between the parent window and the embedded iframe.
+
+</details>
+
+
+<details>
+<summary>
+Does the build support dynamic imports? How can I use it?
+</summary>
+Yes, the build configuration in OHIF v3 supports dynamic imports. Dynamic imports allow you to asynchronously load modules or components on demand, improving performance and reducing the initial bundle size. In fact we are using this method for our viewport components. In general you can:
+
+```
+import('path/to/module').then((module) => {
+  // Use the imported module here
+}).catch((error) => {
+  // Handle any error that occurs during dynamic import
+});
+```
+
+By using dynamic imports, you can selectively load modules or components at runtime when they are needed, enhancing the efficiency and responsiveness of your application.
+
+</details>
+
+<details>
+
+<summary>
+How can I enhance the existing build to consume my own webpack script?
+</summary>
+You can't enhance the existing build to consume your own webpack script as of now. However, you can
+modify the webpack.base.js and webpakc.pwa.js files to add your own webpack script/modules if needed.
+
+</details>
+
 ## UI Components
 
 Migrating to Tailwind CSS, OHIF v3 is now able to have a component-oriented styling approach, speeding up development, ensuring consistent styling, making responsive design easier, and enabling extensibility
 
 We have gone through extensive re-design of each part of the UI, and we have also added new components to the OHIF viewer.
 
+<details>
+<summary>
+I have a huge complex styles using native CSS, how can I re-use them?
+</summary>
+You can leverage the power of Tailwind CSS (https://TailwindCSS.com/) in OHIF v3 to reuse your existing styles. Tailwind CSS is a utility-first approach, allowing you to create reusable CSS classes by composing utility classes together. You can migrate your existing styles to Tailwind CSS by breaking them down into utility classes and utilizing the extensive set of predefined utilities provided by Tailwind CSS.
 
+</details>
+
+<details>
+<summary>
+How can I change the page color from being purplish to blueish?
+</summary>
+In OHIF v3, you can easily modify the page color by customizing the Tailwind CSS configuration. You can locate the tailwind.config.js file in your project and update the theme section, specifically the colors property, to define your desired color palette. By adjusting the values for the colors, you can change the page color to any shade of blue or other colors according to your preference.
+
+</details>
+
+<details>
+<summary>
+Can I have my own React UI component working in the application? Is there a way to use the current build for it as well?
+</summary>
+Yes, you can integrate your own React UI components seamlessly into the OHIF v3 application. You can even have external
+UI dependencies and by creating your own component inside your extensions and importing it into the application, you can
+use it as if it was part of the OHIF v3 application.
+
+</details>
+
+<details>
+<summary>
+How can I replace the existing component ui/tooltip?
+</summary>
+You need to write your own component, and inside your mode layout you can replace the existing component with your own.
+As of now, for the tooltip component, you need to use the customizationService to customize it; however, the customizationService
+requires a registration of the to-be-customized property before you can customize it. Read more about customizationService.
+
+</details>
+
+<details>
+<summary>
+How can I add/consume logos/images/icons?
+</summary>
+
+For logos you can use the whiteLabelling inside the configuration. However, if you need a more complex UI for your toolbar
+you need to create you own layout. See `getLayoutModule`.
+
+</details>
 
 ## Redux store
-
 
 In OHIF v3, we made the decision to move away from the Redux store and adopt a new approach utilizing React context providers and services with a pub/sub pattern. This shift was driven by the need for a more flexible and scalable architecture that better aligns with the plugin and extension system of OHIF. This offers
 
