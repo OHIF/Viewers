@@ -309,6 +309,8 @@ viewportOptions: {
     custom: 'sopInstanceLocation',
     // This is the value returned if the above doesn't return anything
     defaultValue: { index: 5 },
+  }
+}
 ```
 
 ### Included Custom Attributes

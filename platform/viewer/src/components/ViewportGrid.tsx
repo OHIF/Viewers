@@ -72,13 +72,20 @@ function ViewerViewportGrid(props) {
         }
       );
 
+      const computedViewportOptions = hangingProtocolService.getComputedOptions(
+        viewportOptions,
+        displaySetUIDsToHang
+      );
+
+      const computedDisplaySetOptions = hangingProtocolService.getComputedOptions(
+        displaySetUIDsToHangOptions,
+        displaySetUIDsToHang
+      );
+
       return {
         displaySetInstanceUIDs: displaySetUIDsToHang,
-        displaySetOptions: displaySetUIDsToHangOptions,
-        viewportOptions: hangingProtocolService.getComputedOptions(
-          viewportOptions,
-          displaySetUIDsToHang
-        ),
+        displaySetOptions: computedDisplaySetOptions,
+        viewportOptions: computedViewportOptions,
       };
     };
 

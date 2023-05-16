@@ -1,9 +1,11 @@
-import { hotkeys } from '@ohif/core';
+import { hotkeys, classes } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups, { toolGroupIds } from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
 import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
+
+const { MetadataProvider } = classes;
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -131,6 +133,43 @@ function modeFactory({ modeConfiguration }) {
         'RectangleROIStartEndThreshold',
         'fusionPTColormap',
       ]);
+
+      // For the hanging protocol we need to decide on the window level
+      // based on whether the SUV is corrected or not, hence we can't hard
+      // code the window level in the hanging protocol but we add a custom
+      // attribute to the hanging protocol that will be used to get the
+      // window level based on the metadata
+      hangingProtocolService.addCustomAttribute(
+        'getPTVOIRange',
+        'get PT VOI based on corrected or not',
+        props => {
+          const ptDisplaySet = props.find(
+            imageSet => imageSet.Modality === 'PT'
+          );
+
+          if (!ptDisplaySet) {
+            return;
+          }
+
+          const { imageId } = ptDisplaySet.images[0];
+          const imageIdScalingFactor = MetadataProvider.get(
+            'scalingModule',
+            imageId
+          );
+
+          const isSUVAvailable =
+            imageIdScalingFactor && imageIdScalingFactor.suvbw;
+
+          if (isSUVAvailable) {
+            return {
+              windowWidth: 5,
+              windowCenter: 2.5,
+            };
+          }
+
+          return;
+        }
+      );
     },
     onModeExit: ({ servicesManager }) => {
       const {

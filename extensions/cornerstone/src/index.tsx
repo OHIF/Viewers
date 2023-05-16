@@ -121,7 +121,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
           },
           getEnabledElement,
           dicomLoaderService,
-          registerColormap,
         },
       },
       {

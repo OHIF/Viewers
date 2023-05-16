@@ -30,10 +30,6 @@ import {
   VolumeViewportData,
 } from '../../types/CornerstoneCacheService';
 import { Presentation, Presentations } from '../../types/Presentation';
-import {
-  setColormap,
-  setLowerUpperColorTransferFunction,
-} from '../../utils/colormap/transferFunctionHelpers';
 
 import JumpPresets from '../../utils/JumpPresets';
 
@@ -525,16 +521,9 @@ class CornerstoneViewportService extends PubSubService
       const displaySetOptions = displaySetOptionsArray[index];
       const { volumeId } = volume;
 
-      const voiCallbacks = this._getVOICallbacks(volumeId, displaySetOptions);
-
-      const callback = ({ volumeActor }) => {
-        voiCallbacks.forEach(callback => callback(volumeActor));
-      };
-
       volumeInputArray.push({
         imageIds,
         volumeId,
-        callback,
         blendMode: displaySetOptions.blendMode,
         slabThickness: this._getSlabThickness(displaySetOptions, volumeId),
       });
@@ -577,7 +566,44 @@ class CornerstoneViewportService extends PubSubService
       toolGroupService,
     } = this.servicesManager.services;
 
+    const viewportInfo = this.getViewportInfo(viewport.id);
+    const displaySetOptions = viewportInfo.getDisplaySetOptions();
+
+    // Todo: use presentations states
+    const volumesProperties = volumeInputArray.map((volumeInput, index) => {
+      const { volumeId } = volumeInput;
+      const displaySetOption = displaySetOptions[index];
+      const { voi, voiInverted, colormap, displayPreset } = displaySetOption;
+      const properties = {};
+
+      if (voi && (voi.windowWidth || voi.windowCenter)) {
+        const { lower, upper } = csUtils.windowLevel.toLowHighRange(
+          voi.windowWidth,
+          voi.windowCenter
+        );
+        properties.voiRange = { lower, upper };
+      }
+
+      if (voiInverted !== undefined) {
+        properties.invert = voiInverted;
+      }
+
+      if (colormap !== undefined) {
+        properties.colormap = colormap;
+      }
+
+      if (displayPreset !== undefined) {
+        properties.preset = displayPreset;
+      }
+
+      return { properties, volumeId };
+    });
+
     await viewport.setVolumes(volumeInputArray);
+    volumesProperties.forEach(({ properties, volumeId }) => {
+      viewport.setProperties(properties, volumeId);
+    });
+
     this.setPresentations(viewport, presentations);
 
     // load any secondary displaySets
@@ -602,7 +628,6 @@ class CornerstoneViewportService extends PubSubService
       );
     }
 
-    const viewportInfo = this.getViewportInfo(viewport.id);
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
 
@@ -735,50 +760,6 @@ class CornerstoneViewportService extends PubSubService
       this._setStackViewport(viewport, viewportData, viewportInfo);
       return;
     }
-  }
-
-  _getVOICallbacks(volumeId, displaySetOptions) {
-    const {
-      voi,
-      voiInverted: inverted,
-      colormap,
-      presetName,
-    } = displaySetOptions;
-
-    const voiCallbackArray = [];
-
-    // If colormap is set, use it to set the color transfer function
-    if (colormap) {
-      voiCallbackArray.push(volumeActor => setColormap(volumeActor, colormap));
-    }
-
-    if (voi instanceof Object && voi.windowWidth && voi.windowCenter) {
-      const { windowWidth, windowCenter } = voi;
-      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
-        windowWidth,
-        windowCenter
-      );
-      voiCallbackArray.push(volumeActor =>
-        setLowerUpperColorTransferFunction({
-          volumeActor,
-          lower,
-          upper,
-          inverted,
-        })
-      );
-    }
-
-    if (presetName) {
-      voiCallbackArray.push(volumeActor => {
-        utilities.applyPreset(
-          volumeActor,
-          CONSTANTS.VIEWPORT_PRESETS.find(preset => {
-            return preset.name === presetName;
-          })
-        );
-      });
-    }
-    return voiCallbackArray;
   }
 
   _setDisplaySets(

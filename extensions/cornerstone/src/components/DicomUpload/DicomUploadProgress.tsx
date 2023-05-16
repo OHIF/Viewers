@@ -315,7 +315,7 @@ function DicomUploadProgress({
               className="ml-auto"
               onClick={onComplete}
             >
-              {'Open Viewer'}
+              {'Close'}
             </Button>
           </>
         ) : (
