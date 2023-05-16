@@ -368,6 +368,21 @@ function commandsModule({
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();
+
+      if (
+        !cornerstoneViewportService.getCornerstoneViewportByIndex(
+          activeViewportIndex
+        )
+      ) {
+        // Cannot download a non-cornerstone viewport (image).
+        uiNotificationService.show({
+          title: 'Download Image',
+          message: 'Image cannot be downloaded',
+          type: 'error',
+        });
+        return;
+      }
+
       const { uiModalService } = servicesManager.services;
 
       if (uiModalService) {
