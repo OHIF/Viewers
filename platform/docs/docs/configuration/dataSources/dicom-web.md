@@ -153,6 +153,18 @@ window.config = {
 };
 ```
 
+##### Data Source Configuration Options
+
+The following properties can be added to the `configuration` property of each data source.
+
+
+- `dicomUploadEnabled`: A boolean indicating if the DICOM upload to the data source is permitted/accepted or not. A value of true provides a link on the OHIF work list page that allows for DICOM files from the local file system to be uploaded to the data source
+
+    ![toolbarModule-layout](../../assets/img/uploader.gif)
+
+- `singlepart`: A comma delimited string specifying which payloads the data source responds with as single part. Those not listed are considered multipart. Values that can be included here are `pdf`, `video`, `bulkdata`, `thumbnail` and `image`. If say for example, DICOM PDF is not loading for a particular data source try including or excluding `pdf` from this list to determine if that makes a difference.
+
+
 To learn more about how you can configure the OHIF Viewer, check out our
 [Configuration Guide](../index.md).
 
