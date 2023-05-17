@@ -9,8 +9,8 @@
 #
 
 [build]
-  base = "../../"
-  command = "yarn run build:ci"
+  base = "platform/viewer"
+  command = "yarn run build:viewer:ci"
   publish = "platform/viewer/dist"
 
 
