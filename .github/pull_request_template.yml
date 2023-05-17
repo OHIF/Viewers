@@ -1,0 +1,110 @@
+name: Pull Request
+description: Create a pull request
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        👋 Hello, and thank you for contributing to our project! Your support is
+        greatly appreciated.
+
+        🔍 Before proceeding, please make sure to read our Rules of Conduct
+        (https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md) and
+        familiarize yourself with our development process
+        (https://v3-docs.ohif.org/development/our-process).
+
+        🖊️ Please provide as much detail as possible for your feature request.
+        Mock-up screenshots, workflow or logic flow diagrams are very helpful.
+        Discuss how your requested feature would interact with existing
+        features.
+
+  - type: textarea
+    attributes:
+      label: 'Context'
+      description:
+        'Provide a clear explanation of the reasoning behind this change.
+        Provide a link to the issue being addressed, any images showing the
+        issue or problem being addressed, or error logs or callStacks to help
+        with understanding the problem.'
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: 'Changes & Results'
+      description:
+        'List all the changes that have been done and describe the effects of
+        this change. Provide before and after comparisons, screenshots, GIFs, or
+        videos.'
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: 'Testing'
+      description: 'Describe how we can test your changes.'
+      placeholder: '1. Go to this url \n2. Click on...'
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: pr
+    attributes:
+      label: 'PR'
+      description:
+        'My Pull Request title is descriptive, accurate and follows the
+        semantic-release format and guidelines.'
+      options:
+        - label:
+            'My Pull Request title is descriptive, accurate and follows the
+            semantic-release format and guidelines.'
+          required: true
+
+  - type: checkboxes
+    id: code
+    attributes:
+      label: 'Code'
+      description: 'My code has been well-documented.'
+      options:
+        - label: 'My code has been well-documented.'
+          required: true
+
+  - type: checkboxes
+    id: public-documentation-updates
+    attributes:
+      label: 'Public Documentation Updates'
+      description:
+        'The documentation page has been updated as necessary for any public API
+        additions or removals.'
+      options:
+        - label:
+            'The documentation page has been updated as necessary for any public
+            API additions or removals.'
+          required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: 'OS'
+      description: 'Your operating system.'
+      placeholder: 'e.g., Windows 10, macOS 10.15.4'
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: 'Node version'
+      description: 'Your Node.js version.'
+      placeholder: 'e.g., 16.14.0'
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: 'Browser'
+      description: 'Your browser.'
+      placeholder: 'e.g., Chrome 83.0.4103.116, Firefox 77.0.1, Safari 13.1.1'
+    validations:
+      required: true
