@@ -23,7 +23,7 @@ const bakedInRoutes = [
   },
   {
     path: '/localbasic',
-    children: Local.bind(null, { modePath: 'viewer' }),
+    children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
   },
 ];
 
