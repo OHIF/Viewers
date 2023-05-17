@@ -5,17 +5,16 @@ title: '[Feature Request] '
 body:
   - type: markdown
     attributes:
-      value: >
+      value: |
         👋 Hello and thank you for your interest in our project!
 
-        🔍 Before you proceed, please read our Rules of Conduct
-        (https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md).
+        🔍 Before you proceed, please read our [Rules of
+        Conduct](https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md).
 
         🚀 If your request is specific to your needs, consider contributing it
-        yourself! Read our contributing guide here:
-        (https://v3-docs.ohif.org/development/contributing). You can also reach
-        out to a community member who offers consulting services
-        (https://docs.ohif.org/help.html#paid--commercial).
+        yourself! Read our [contributing
+        guides](https://v3-docs.ohif.org/development/contributing) to get
+        started.
 
         🖊️ Please provide as much detail as possible for your feature request.
         Mock-up screenshots, workflow or logic flow diagrams are very helpful.
