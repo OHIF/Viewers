@@ -82,10 +82,10 @@ after the commits are squashed.
 
 #### Tested Environment
 
-- [] OS: <!--[e.g. Windows 10, macOS 10.15.4]"-->
-- [] Node version: <!--[e.g. 16.14.0]"-->
+- [] OS: <!--[e.g. Windows 10, macOS 10.15.4]-->
+- [] Node version: <!--[e.g. 16.14.0]-->
 - [] Browser:
-  <!--[e.g. Chrome 83.0.4103.116, Firefox 77.0.1, Safari 13.1.1]"-->
+  <!--[e.g. Chrome 83.0.4103.116, Firefox 77.0.1, Safari 13.1.1]-->
 
 <!-- prettier-ignore-start -->
 [blog]: https://circleci.com/blog/triggering-trusted-ci-jobs-on-untrusted-forks/

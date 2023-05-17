@@ -10,7 +10,7 @@
 
 [build]
   base = "/"
-  command = "cd platform/viewer && yarn run build:viewer:ci"
+  command = "yarn run build:viewer:ci"
   publish = "platform/viewer/dist"
 
 
