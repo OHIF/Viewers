@@ -4,14 +4,14 @@ description: Create a pull request
 body:
   - type: markdown
     attributes:
-      value: >
+      value: |
         👋 Hello, and thank you for contributing to our project! Your support is
         greatly appreciated.
 
-        🔍 Before proceeding, please make sure to read our Rules of Conduct
-        (https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md) and
-        familiarize yourself with our development process
-        (https://v3-docs.ohif.org/development/our-process).
+        🔍 Before proceeding, please make sure to read our [Rules of
+        Conduct](https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md)
+        and familiarize yourself with our [development
+        process](https://v3-docs.ohif.org/development/our-process).
 
         🖊️ Please provide as much detail as possible for your feature request.
         Mock-up screenshots, workflow or logic flow diagrams are very helpful.
