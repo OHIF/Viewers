@@ -153,3 +153,9 @@ http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.38
 You can select the initial hanging protocol to apply by using the
 hangingProtocolId parameter.  The selected parameter must be available in a
 hangingProtocolModule registration, but does not have to be active.
+
+
+### token
+
+Although not recommended, you can use the token param in the URL which will inject
+the token into the Authorization header of the request.
