@@ -9,9 +9,9 @@
 #
 
 [build]
-  base = "platform/viewer"
-  command = "yarn run build:viewer:ci"
-  publish = "platform/viewer/dist"
+  base = ""
+  build = "yarn run build:viewer:ci"
+  publish = "dist"
 
 
 # NODE_VERSION in root `.nvmrc` takes priority
