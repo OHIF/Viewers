@@ -8,21 +8,13 @@ body:
       value: |
         👋 Hello and thank you for your interest in our project!
 
-        🔍 Before you proceed, please read our [Rules of
-        Conduct](https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md).
+        🔍 Before you proceed, please read our [Rules of Conduct](https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md).
 
-        🚀 If your request is specific to your needs, consider contributing it
-        yourself! Read our [contributing
-        guides](https://v3-docs.ohif.org/development/contributing) to get
-        started.
+        🚀 If your request is specific to your needs, consider contributing it yourself! Read our [contributing guides](https://v3-docs.ohif.org/development/contributing) to get started.
 
-        🖊️ Please provide as much detail as possible for your feature request.
-        Mock-up screenshots, workflow or logic flow diagrams are very helpful.
-        Discuss how your requested feature would interact with existing
-        features.
+        🖊️ Please provide as much detail as possible for your feature request. Mock-up screenshots, workflow or logic flow diagrams are very helpful. Discuss how your requested feature would interact with existing features.
 
-        ⏱️ Lastly, tell us why we should prioritize your feature. What impact
-        would it have?
+        ⏱️ Lastly, tell us why we should prioritize your feature. What impact would it have?
 
   - type: textarea
     attributes:
