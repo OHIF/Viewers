@@ -76,18 +76,24 @@ const bindings = [
     keys: ['left'],
     isEditable: true,
   },
-  // {
-  //   commandName: 'nextViewportDisplaySet',
-  //   label: 'Next Series',
-  //   keys: ['pageup'],
-  //   isEditable: true,
-  // },
-  // {
-  //   commandName: 'previousViewportDisplaySet',
-  //   label: 'Previous Series',
-  //   keys: ['pagedown'],
-  //   isEditable: true,
-  // },
+  {
+    commandName: 'updateViewportDisplaySet',
+    commandOptions: {
+      direction: -1,
+    },
+    label: 'Previous Series',
+    keys: ['pageup'],
+    isEditable: true,
+  },
+  {
+    commandName: 'updateViewportDisplaySet',
+    commandOptions: {
+      direction: 1,
+    },
+    label: 'Next Series',
+    keys: ['pagedown'],
+    isEditable: true,
+  },
   {
     commandName: 'nextStage',
     context: 'DEFAULT',

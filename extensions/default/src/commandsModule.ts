@@ -23,6 +23,11 @@ export type HangingProtocolParams = {
   stageId?: string;
 };
 
+export type UpdateViewportDisplaySetParams = {
+  direction: number;
+  excludeNonImageModalities?: boolean;
+};
+
 /**
  * Determine if a command is a hanging protocol one.
  * For now, just use the two hanging protocol commands that are in this
@@ -541,6 +546,82 @@ const commandsModule = ({
         overlays.item(i).classList.toggle('hidden');
       }
     },
+
+    updateViewportDisplaySet: ({
+      direction,
+      excludeNonImageModalities,
+    }: UpdateViewportDisplaySetParams) => {
+      const nonImageModalities = [
+        'SR',
+        'SEG',
+        'SM',
+        'RTSTRUCT',
+        'RTPLAN',
+        'RTDOSE',
+      ];
+
+      const currentDisplaySets = displaySetService.activeDisplaySets;
+
+      // Sort the display sets as per the thumbnail/study browser list
+      utils.sortBySeriesDate(currentDisplaySets);
+
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+
+      const { displaySetInstanceUIDs } = viewports[activeViewportIndex];
+
+      const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
+        displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
+      );
+
+      let displaySetIndexToShow: number;
+
+      for (
+        displaySetIndexToShow = activeDisplaySetIndex + direction;
+        displaySetIndexToShow > -1 &&
+        displaySetIndexToShow < currentDisplaySets.length;
+        displaySetIndexToShow += direction
+      ) {
+        if (
+          !excludeNonImageModalities ||
+          !nonImageModalities.includes(
+            currentDisplaySets[displaySetIndexToShow].Modality
+          )
+        ) {
+          break;
+        }
+      }
+
+      if (
+        displaySetIndexToShow < 0 ||
+        displaySetIndexToShow >= currentDisplaySets.length
+      ) {
+        return;
+      }
+
+      const { displaySetInstanceUID } = currentDisplaySets[
+        displaySetIndexToShow
+      ];
+
+      let updatedViewports = [];
+
+      try {
+        updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+          activeViewportIndex,
+          displaySetInstanceUID
+        );
+      } catch (error) {
+        console.warn(error);
+        uiNotificationService.show({
+          title: 'Navigate Viewport Display Set',
+          message:
+            'The requested display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          type: 'info',
+          duration: 3000,
+        });
+      }
+
+      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+    },
   };
 
   const definitions = {
@@ -597,6 +678,11 @@ const commandsModule = ({
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
+    },
+    updateViewportDisplaySet: {
+      commandFn: actions.updateViewportDisplaySet,
+      storeContexts: [],
+      options: {},
     },
   };
 
