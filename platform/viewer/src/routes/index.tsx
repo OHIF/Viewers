@@ -19,18 +19,16 @@ const bakedInRoutes = [
   },
   {
     path: '/local',
-    children: Local,
+    children: Local.bind(null, { modePath: '' }), // navigate to the worklist
+  },
+  {
+    path: '/localbasic',
+    children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
   },
 ];
 
 // NOT FOUND (404)
 const notFoundRoute = { component: NotFound };
-const WorkListRoute = {
-  path: '/',
-  children: DataSourceWrapper,
-  private: true,
-  props: { children: WorkList },
-};
 
 const createRoutes = ({
   modes,
@@ -53,6 +51,13 @@ const createRoutes = ({
     }) || [];
 
   const { customizationService } = servicesManager.services;
+
+  const WorkListRoute = {
+    path: '/',
+    children: DataSourceWrapper,
+    private: true,
+    props: { children: WorkList, servicesManager },
+  };
 
   const customRoutes = customizationService.getGlobalCustomization(
     'customRoutes'

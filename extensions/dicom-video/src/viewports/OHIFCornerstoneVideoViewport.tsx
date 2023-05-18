@@ -14,8 +14,7 @@ function OHIFCornerstoneVideoViewport({ displaySets }) {
 
   useEffect(() => {
     const load = async () => {
-      await videoUrl;
-      setUrl(videoUrl);
+      setUrl(await videoUrl);
     };
 
     load();

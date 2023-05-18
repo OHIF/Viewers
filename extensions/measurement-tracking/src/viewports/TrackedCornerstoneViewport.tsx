@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 
-import {
-  Notification,
-  ViewportActionBar,
-  useViewportDialog,
-  Tooltip,
-  Icon,
-} from '@ohif/ui';
+import { ViewportActionBar, Tooltip, Icon } from '@ohif/ui';
 
 import { useTranslation } from 'react-i18next';
 
@@ -19,13 +13,11 @@ const { formatDate } = utils;
 
 function TrackedCornerstoneViewport(props) {
   const {
-    children,
     displaySets,
     viewportIndex,
     viewportLabel,
     servicesManager,
     extensionManager,
-    commandsManager,
     viewportOptions,
   } = props;
 
@@ -40,7 +32,6 @@ function TrackedCornerstoneViewport(props) {
   const displaySet = displaySets[0];
 
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [viewportDialogState] = useViewportDialog();
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
 
@@ -48,7 +39,6 @@ function TrackedCornerstoneViewport(props) {
   const viewportId = viewportOptions.viewportId;
 
   const {
-    Modality,
     SeriesDate,
     SeriesDescription,
     SeriesInstanceUID,
@@ -93,8 +83,17 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
-  if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
-    setIsTracked(!isTracked);
+  // A current image id will only exist for viewports that can have measurements tracked.
+  // Typically these are stack viewports and those volume viewports for the series of acquisition.
+  const currentImageId = cornerstoneViewportService
+    .getCornerstoneViewport(viewportId)
+    ?.getCurrentImageId();
+  if (currentImageId) {
+    if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
+      setIsTracked(!isTracked);
+    }
+  } else if (isTracked) {
+    setIsTracked(false);
   }
 
   function switchMeasurement(direction) {
@@ -159,18 +158,6 @@ function TrackedCornerstoneViewport(props) {
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {getCornerstoneViewport()}
-        <div className="absolute w-full">
-          {viewportDialogState.viewportIndex === viewportIndex && (
-            <Notification
-              id={viewportDialogState.id}
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-            />
-          )}
-        </div>
       </div>
     </>
   );

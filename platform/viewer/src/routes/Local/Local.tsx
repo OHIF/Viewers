@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
-import { MODULE_TYPES } from '@ohif/core';
+import { DicomMetadataStore, MODULE_TYPES } from '@ohif/core';
 
 import Dropzone from 'react-dropzone';
 import filesToStudies from './filesToStudies';
@@ -40,7 +40,11 @@ const getLoadButton = (onDrop, text, isDir) => {
   );
 };
 
-function Local() {
+type LocalProps = {
+  modePath: string;
+};
+
+function Local({ modePath }: LocalProps) {
   const navigate = useNavigate();
   const dropzoneRef = useRef();
   const [dropInitiated, setDropInitiated] = React.useState(false);
@@ -60,12 +64,40 @@ function Local() {
   const firstLocalDataSource = localDataSources[0];
   const dataSource = firstLocalDataSource.createDataSource({});
 
+  const microscopyExtensionLoaded = extensionManager.registeredExtensionIds.includes(
+    '@ohif/extension-dicom-microscopy'
+  );
+
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
-    // Todo: navigate to work list and let user select a mode
+
     const query = new URLSearchParams();
+
+    if (microscopyExtensionLoaded) {
+      // TODO: for microscopy, we are forcing microscopy mode, which is not ideal.
+      //     we should make the local drag and drop navigate to the worklist and
+      //     there user can select microscopy mode
+      const smStudies = studies.filter(id => {
+        const study = DicomMetadataStore.getStudy(id);
+        return (
+          study.series.findIndex(
+            s => s.Modality === 'SM' || s.instances[0].Modality === 'SM'
+          ) >= 0
+        );
+      });
+
+      if (smStudies.length > 0) {
+        smStudies.forEach(id => query.append('StudyInstanceUIDs', id));
+
+        modePath = 'microscopy';
+      }
+    }
+
+    // Todo: navigate to work list and let user select a mode
     studies.forEach(id => query.append('StudyInstanceUIDs', id));
-    navigate(`/viewer/dicomlocal?${decodeURIComponent(query.toString())}`);
+    query.append('datasources', 'dicomlocal');
+
+    navigate(`/${modePath}?${decodeURIComponent(query.toString())}`);
   };
 
   // Set body style

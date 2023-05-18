@@ -1,11 +1,13 @@
 import cloneDeep from 'lodash.clonedeep';
 
+import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
 import {
   cache,
+  Enums as csEnums,
+  geometryLoader,
   eventTarget,
   getEnabledElementByIds,
   metaData,
-  Types,
   utilities as csUtils,
   volumeLoader,
 } from '@cornerstonejs/core';
@@ -16,17 +18,19 @@ import {
   Types as cstTypes,
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
-import { pubSubServiceInterface } from '@ohif/core';
 import isEqual from 'lodash.isequal';
-import { easeInOutBell } from '../../utils/transitions';
+import { Types as ohifTypes } from '@ohif/core';
+import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import {
+  Segment,
   Segmentation,
   SegmentationConfig,
-  SegmentationSchema,
 } from './SegmentationServiceTypes';
+import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
+const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
 const EVENTS = {
   // fired when the segmentation is updated (e.g. when a segment is added, removed, or modified, locked, visibility changed etc.)
@@ -40,26 +44,42 @@ const EVENTS = {
   // fired when the configuration for the segmentation is changed (e.g., brush size, render fill, outline thickness, etc.)
   SEGMENTATION_CONFIGURATION_CHANGED:
     'event::segmentation_configuration_changed',
-  SEGMENT_PIXEL_DATA_CREATED: 'event::segment_pixel_data_created',
+  // fired when the active segment is loaded in SEG or RTSTRUCT
+  SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
   // for all segments
-  SEGMENTATION_PIXEL_DATA_CREATED: 'event::segmentation_pixel_data_created',
+  SEGMENTATION_LOADING_COMPLETE: 'event::segmentation_loading_complete',
 };
 
 const VALUE_TYPES = {};
 
-class SegmentationService {
-  listeners = {};
+const SEGMENT_CONSTANT = {
+  opacity: 255,
+  isVisible: true,
+  isLocked: false,
+};
+
+const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
+
+class SegmentationService extends PubSubService {
+  static REGISTRATION = {
+    name: 'segmentationService',
+    altName: 'SegmentationService',
+    create: ({
+      servicesManager,
+    }: OhifTypes.Extensions.ExtensionParams): SegmentationService => {
+      return new SegmentationService({ servicesManager });
+    },
+  };
+
   segmentations: Record<string, Segmentation>;
-  servicesManager = null;
+  readonly servicesManager: ServicesManager;
   highlightIntervalId = null;
-  _broadcastEvent: (eventName: string, callbackProps: any) => void;
   readonly EVENTS = EVENTS;
 
   constructor({ servicesManager }) {
+    super(EVENTS);
     this.segmentations = {};
-    this.listeners = {};
 
-    Object.assign(this, pubSubServiceInterface);
     this.servicesManager = servicesManager;
 
     this._initSegmentationService();
@@ -68,7 +88,7 @@ class SegmentationService {
   public destroy = () => {
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_MODIFIED,
-      this._onSegmentationModified
+      this._onSegmentationModifiedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -105,7 +125,7 @@ class SegmentationService {
     toolGroupId?: string,
     properties?: {
       label?: string;
-      color?: Types.Point3;
+      color?: ohifTypes.RGB;
       opacity?: number;
       visibility?: boolean;
       isLocked?: boolean;
@@ -232,7 +252,8 @@ class SegmentationService {
     // Todo: handle other segmentations other than labelmap
     const labelmapVolume = this.getLabelmapVolume(segmentationId);
 
-    const { scalarData, dimensions } = labelmapVolume;
+    const { dimensions } = labelmapVolume;
+    const scalarData = labelmapVolume.getScalarData();
 
     // Set all values of this segment to zero and get which frames have been edited.
     const frameLength = dimensions[0] * dimensions[1];
@@ -317,7 +338,7 @@ class SegmentationService {
   public setSegmentColor(
     segmentationId: string,
     segmentIndex: number,
-    color: Types.Point3,
+    color: ohifTypes.RGB,
     toolGroupId?: string
   ): void {
     this._setSegmentColor(segmentationId, segmentIndex, color, toolGroupId);
@@ -431,15 +452,15 @@ class SegmentationService {
   }
 
   public addOrUpdateSegmentation(
-    segmentationSchema: SegmentationSchema,
+    segmentation: Segmentation,
     suppressEvents = false,
     notYetUpdatedAtSource = false
   ): string {
-    const { id: segmentationId } = segmentationSchema;
-    let segmentation = this.segmentations[segmentationId];
-    if (segmentation) {
+    const { id: segmentationId } = segmentation;
+    let cachedSegmentation = this.segmentations[segmentationId];
+    if (cachedSegmentation) {
       // Update the segmentation (mostly for assigning metadata/labels)
-      Object.assign(segmentation, segmentationSchema);
+      Object.assign(cachedSegmentation, segmentation);
 
       this._updateCornerstoneSegmentations({
         segmentationId,
@@ -448,53 +469,47 @@ class SegmentationService {
 
       if (!suppressEvents) {
         this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-          segmentation,
+          segmentation: cachedSegmentation,
         });
       }
 
       return segmentationId;
     }
 
-    // Add the segmentation otherwise
+    const representationType = segmentation.type;
+    const representationData =
+      segmentation.representationData[representationType];
     cstSegmentation.addSegmentations([
       {
         segmentationId,
         representation: {
-          type: LABELMAP,
-          // Todo: need to be generalized
+          type: representationType,
           data: {
-            volumeId: segmentationId,
+            ...representationData,
           },
         },
       },
     ]);
 
     // Define a new color LUT and associate it with this segmentation.
-
     // Todo: need to be generalized to accept custom color LUTs
     const newColorLUT = this.generateNewColorLUT();
     const newColorLUTIndex = this.getNextColorLUTIndex();
 
     cstSegmentation.config.color.addColorLUT(newColorLUT, newColorLUTIndex);
 
-    if (
-      segmentationSchema.label === undefined ||
-      segmentationSchema.label === ''
-    ) {
-      segmentationSchema.label = 'Segmentation';
-    }
-
     this.segmentations[segmentationId] = {
-      ...segmentationSchema,
-      segments: segmentationSchema.segments || [null],
-      activeSegmentIndex: segmentationSchema.activeSegmentIndex ?? null,
-      segmentCount: segmentationSchema.segmentCount ?? 0,
+      ...segmentation,
+      label: segmentation.label || '',
+      segments: segmentation.segments || [null],
+      activeSegmentIndex: segmentation.activeSegmentIndex ?? null,
+      segmentCount: segmentation.segmentCount ?? 0,
       isActive: false,
       colorLUTIndex: newColorLUTIndex,
       isVisible: true,
     };
 
-    segmentation = this.segmentations[segmentationId];
+    cachedSegmentation = this.segmentations[segmentationId];
 
     this._updateCornerstoneSegmentations({
       segmentationId,
@@ -503,11 +518,11 @@ class SegmentationService {
 
     if (!suppressEvents) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
-        segmentation,
+        segmentation: cachedSegmentation,
       });
     }
 
-    return segmentation.id;
+    return cachedSegmentation.id;
   }
 
   public async createSegmentationForSEGDisplaySet(
@@ -515,7 +530,38 @@ class SegmentationService {
     segmentationId?: string,
     suppressEvents = false
   ): Promise<string> {
+    // Todo: we only support creating labelmap for SEG displaySets for now
+    const representationType = LABELMAP;
+
     segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
+
+    const defaultScheme = this._getDefaultSegmentationScheme();
+
+    const segmentation: Segmentation = {
+      ...defaultScheme,
+      id: segmentationId,
+      displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
+      type: representationType,
+      representationData: {
+        [LABELMAP]: {
+          volumeId: segmentationId,
+          referencedVolumeId: segDisplaySet.referencedVolumeId,
+        },
+      },
+    };
+
+    const labelmap = this.getLabelmapVolume(segmentationId);
+    const cachedSegmentation = this.getSegmentation(segmentationId);
+    if (labelmap && cachedSegmentation) {
+      // if the labelmap with the same segmentationId already exists, we can
+      // just assume that the segmentation is already created and move on with
+      // updating the state
+      return this.addOrUpdateSegmentation(
+        Object.assign(segmentation, cachedSegmentation),
+        suppressEvents
+      );
+    }
+
     const { segments, referencedVolumeId } = segDisplaySet;
 
     if (!segments || !referencedVolumeId) {
@@ -524,38 +570,8 @@ class SegmentationService {
       );
     }
 
-    const segmentationSchema: SegmentationSchema = {
-      id: segmentationId,
-      volumeId: segmentationId,
-      displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
-      referencedVolumeURI: segDisplaySet.referencedVolumeURI,
-      activeSegmentIndex: 1,
-      cachedStats: {},
-      label: '',
-      segmentsLocked: [],
-      type: LABELMAP,
-      displayText: [],
-      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
-      segmentCount: 0,
-      segments: [],
-    };
-
-    const labelmap = this.getLabelmapVolume(segmentationId);
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (labelmap && segmentation) {
-      // if the labalemap with the same segmentationId already exists, we can
-      // just assume that the segmentation is already created and move on with
-      // updating the state
-      return this.addOrUpdateSegmentation(
-        Object.assign(segmentationSchema, segmentation),
-        suppressEvents
-      );
-    }
-
     // if the labelmap doesn't exist, we need to create it first from the
     // DICOM SEG displaySet data
-
     const referencedVolume = cache.getVolume(referencedVolumeId);
 
     if (!referencedVolume) {
@@ -577,7 +593,7 @@ class SegmentationService {
       }
     );
     const [rows, columns] = derivedVolume.dimensions;
-    const derivedVolumeScalarData = derivedVolume.scalarData;
+    const derivedVolumeScalarData = derivedVolume.getScalarData();
 
     const { imageIds } = referencedVolume;
     const sopUIDImageIdIndexMap = imageIds.reduce((acc, imageId, index) => {
@@ -660,25 +676,33 @@ class SegmentationService {
 
       const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
 
-      segmentationSchema.cachedStats = {
-        ...segmentationSchema.cachedStats,
+      segmentation.cachedStats = {
+        ...segmentation.cachedStats,
         segmentCenter: {
-          ...segmentationSchema.cachedStats.segmentCenter,
+          ...segmentation.cachedStats.segmentCenter,
           [segmentIndex]: {
             center: {
               image: [x, y, z],
               world: centerWorld,
             },
-            modifiedTime: Date.now(),
+            modifiedTime: segDisplaySet.SeriesDate,
           },
         },
       };
 
-      this._broadcastEvent(EVENTS.SEGMENT_PIXEL_DATA_CREATED, {
-        segmentIndex: Number(segmentIndex),
-        numSegments,
+      const numInitialized = Object.keys(segmentation.cachedStats.segmentCenter)
+        .length;
+
+      // Calculate percentage completed
+      const percentComplete = Math.round((numInitialized / numSegments) * 100);
+
+      this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
+        percentComplete,
+        numSegments: numSegments,
       });
     };
+
+    const promiseArray = [];
 
     for (const segmentIndex in segments) {
       const segmentInfo = segments[segmentIndex];
@@ -693,17 +717,19 @@ class SegmentationService {
         }, 0);
       });
 
-      await promise;
+      promiseArray.push(promise);
     }
 
-    segmentationSchema.segmentCount = Object.keys(segments).length;
-    segmentationSchema.segments = [null]; // segment 0
+    await Promise.all(promiseArray);
+
+    segmentation.segmentCount = Object.keys(segments).length;
+    segmentation.segments = [null]; // segment 0
 
     Object.keys(segments).forEach(segmentIndex => {
       const segmentInfo = segments[segmentIndex];
       const segIndex = Number(segmentIndex);
 
-      segmentationSchema.segments[segIndex] = {
+      segmentation.segments[segIndex] = {
         label: segmentInfo.label || `Segment ${segIndex}`,
         segmentIndex: Number(segmentIndex),
         color: [
@@ -719,13 +745,151 @@ class SegmentationService {
 
     segDisplaySet.isLoaded = true;
 
-    this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
+    this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
       segDisplaySet,
       overlappingSegments,
     });
 
-    return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);
+    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
+  }
+
+  public async createSegmentationForRTDisplaySet(
+    rtDisplaySet,
+    segmentationId?: string,
+    suppressEvents = false
+  ): Promise<string> {
+    // Todo: we currently only have support for contour representation for initial
+    // RT display
+    const representationType = CONTOUR;
+    segmentationId = segmentationId ?? rtDisplaySet.displaySetInstanceUID;
+    const { structureSet } = rtDisplaySet;
+
+    if (!structureSet) {
+      throw new Error(
+        'To create the contours from RT displaySet, the displaySet should be loaded first, you can perform rtDisplaySet.load() before calling this method.'
+      );
+    }
+
+    const defaultScheme = this._getDefaultSegmentationScheme();
+    const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
+
+    const allRTStructData = mapROIContoursToRTStructData(
+      structureSet,
+      rtDisplaySetUID
+    );
+
+    // sort by segmentIndex
+    allRTStructData.sort((a, b) => a.segmentIndex - b.segmentIndex);
+
+    const geometryIds = allRTStructData.map(({ geometryId }) => geometryId);
+
+    const segmentation: Segmentation = {
+      ...defaultScheme,
+      id: segmentationId,
+      displaySetInstanceUID: rtDisplaySetUID,
+      type: representationType,
+      representationData: {
+        [CONTOUR]: {
+          geometryIds,
+        },
+      },
+    };
+
+    const cachedSegmentation = this.getSegmentation(segmentationId);
+
+    if (cachedSegmentation) {
+      // if the labelmap with the same segmentationId already exists, we can
+      // just assume that the segmentation is already created and move on with
+      // updating the state
+      return this.addOrUpdateSegmentation(
+        Object.assign(segmentation, cachedSegmentation),
+        suppressEvents
+      );
+    }
+
+    if (!structureSet.ROIContours?.length) {
+      throw new Error(
+        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
+      );
+    }
+    const segmentsCachedStats = {};
+    const initializeContour = async rtStructData => {
+      const { data, id, color, segmentIndex, geometryId } = rtStructData;
+      const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
+        geometryData: {
+          data,
+          id,
+          color,
+          frameOfReferenceUID: structureSet.frameOfReferenceUID,
+          segmentIndex,
+        },
+        type: csEnums.GeometryType.CONTOUR,
+      });
+
+      const contourSet = geometry.data;
+      const centroid = contourSet.getCentroid();
+
+      segmentsCachedStats[segmentIndex] = {
+        center: { world: centroid },
+        modifiedTime: rtDisplaySet.SeriesDate, // we use the SeriesDate as the modifiedTime since this is the first time we are creating the segmentation
+      };
+
+      segmentation.segments[segmentIndex] = {
+        label: id,
+        segmentIndex,
+        color,
+        ...SEGMENT_CONSTANT,
+      };
+
+      const numInitialized = Object.keys(segmentsCachedStats).length;
+
+      // Calculate percentage completed
+      const percentComplete = Math.round(
+        (numInitialized / allRTStructData.length) * 100
+      );
+
+      this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
+        percentComplete,
+        // Note: this is not the geometryIds length since there might be
+        // some missing ROINumbers
+        numSegments: allRTStructData.length,
+      });
+    };
+
+    const promiseArray = [];
+
+    for (let i = 0; i < allRTStructData.length; i++) {
+      const promise = new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          initializeContour(allRTStructData[i]).then(() => {
+            resolve();
+          });
+        }, 0);
+      });
+
+      promiseArray.push(promise);
+    }
+
+    await Promise.all(promiseArray);
+
+    segmentation.segmentCount = allRTStructData.length;
+    rtDisplaySet.isLoaded = true;
+
+    segmentation.cachedStats = {
+      ...segmentation.cachedStats,
+      segmentCenter: {
+        ...segmentation.cachedStats.segmentCenter,
+        ...segmentsCachedStats,
+      },
+    };
+
+    this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
+      segmentationId,
+      rtDisplaySet,
+    });
+
+    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
   }
 
   public jumpToSegmentCenter(
@@ -736,7 +900,7 @@ class SegmentationService {
     highlightSegment = true,
     animationLength = 750,
     highlightHideOthers = false,
-    highlightFunctionType: 'ease-in-out' // todo: make animation functions configurable from outside
+    highlightFunctionType = 'ease-in-out' // todo: make animation functions configurable from outside
   ): void {
     const { toolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
@@ -790,7 +954,7 @@ class SegmentationService {
     alpha = 0.9,
     animationLength = 750,
     hideOthers = true,
-    highlightFunctionType: 'ease-in-out'
+    highlightFunctionType = 'ease-in-out'
   ): void {
     if (this.highlightIntervalId) {
       clearInterval(this.highlightIntervalId);
@@ -804,61 +968,25 @@ class SegmentationService {
       toolGroupId
     );
 
+    const { type } = segmentationRepresentation;
     const { segments } = segmentation;
 
-    const newSegmentSpecificConfig = {
-      [segmentIndex]: {
-        LABELMAP: {
-          fillAlpha: alpha,
-        },
-      },
-    };
+    const highlightFn =
+      type === LABELMAP
+        ? this._highlightLabelmap.bind(this)
+        : this._highlightContour.bind(this);
 
-    if (hideOthers) {
-      for (let i = 0; i < segments.length; i++) {
-        if (i !== segmentIndex) {
-          newSegmentSpecificConfig[i] = {
-            LABELMAP: {
-              fillAlpha: 0,
-            },
-          };
-        }
-      }
-    }
+    const adjustedAlpha = type === LABELMAP ? alpha : 1 - alpha;
 
-    const { fillAlpha } = this.getConfiguration(toolGroupId);
-
-    let count = 0;
-    const intervalTime = 16;
-    const numberOfFrames = Math.ceil(animationLength / intervalTime);
-
-    this.highlightIntervalId = setInterval(() => {
-      const x = (count * intervalTime) / animationLength;
-      cstSegmentation.config.setSegmentSpecificConfig(
-        toolGroupId,
-        segmentationRepresentation.segmentationRepresentationUID,
-        {
-          [segmentIndex]: {
-            LABELMAP: {
-              fillAlpha: easeInOutBell(x, fillAlpha),
-            },
-          },
-        }
-      );
-
-      count++;
-
-      if (count === numberOfFrames) {
-        clearInterval(this.highlightIntervalId);
-        cstSegmentation.config.setSegmentSpecificConfig(
-          toolGroupId,
-          segmentationRepresentation.segmentationRepresentationUID,
-          {}
-        );
-
-        this.highlightIntervalId = null;
-      }
-    }, intervalTime);
+    highlightFn(
+      segmentIndex,
+      adjustedAlpha,
+      hideOthers,
+      segments,
+      toolGroupId,
+      animationLength,
+      segmentationRepresentation
+    );
   }
 
   public createSegmentationForDisplaySet = async (
@@ -868,8 +996,16 @@ class SegmentationService {
       label: string;
     }
   ): Promise<string> => {
-    const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
-    const volumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`; // VolumeId with loader id + volume id
+    const { displaySetService } = this.servicesManager.services;
+
+    const displaySet = displaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+
+    // Todo: we currently only support labelmap for segmentation for a displaySet
+    const representationType = LABELMAP;
+
+    const volumeId = this._getVolumeIdForDisplaySet(displaySet);
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
@@ -883,23 +1019,25 @@ class SegmentationService {
       },
     });
 
-    const segmentationSchema: SegmentationSchema = {
+    const defaultScheme = this._getDefaultSegmentationScheme();
+
+    const segmentation: Segmentation = {
+      ...defaultScheme,
       id: segmentationId,
-      volumeId: segmentationId,
       displaySetInstanceUID,
-      referencedVolumeURI: volumeId.split(':')[0], // Todo: this is so ugly
-      activeSegmentIndex: 1,
-      cachedStats: {},
       label: options?.label,
-      segmentsLocked: [],
-      type: LABELMAP,
-      displayText: [],
-      hydrated: false,
-      segmentCount: 0,
-      segments: [],
+      // We should set it as active by default, as it created for display
+      isActive: true,
+      type: representationType,
+      representationData: {
+        LABELMAP: {
+          volumeId: segmentationId,
+          referencedVolumeId: volumeId, // Todo: this is so ugly
+        },
+      },
     };
 
-    this.addOrUpdateSegmentation(segmentationSchema);
+    this.addOrUpdateSegmentation(segmentation);
 
     return segmentationId;
   };
@@ -1078,21 +1216,133 @@ class SegmentationService {
     }
   };
 
+  private _highlightLabelmap(
+    segmentIndex: number,
+    alpha: number,
+    hideOthers: boolean,
+    segments: Segment[],
+    toolGroupId: string,
+    animationLength: number,
+    segmentationRepresentation: cstTypes.ToolGroupSpecificRepresentation
+  ) {
+    const newSegmentSpecificConfig = {
+      [segmentIndex]: {
+        LABELMAP: {
+          fillAlpha: alpha,
+        },
+      },
+    };
+
+    if (hideOthers) {
+      for (let i = 0; i < segments.length; i++) {
+        if (i !== segmentIndex) {
+          newSegmentSpecificConfig[i] = {
+            LABELMAP: {
+              fillAlpha: 0,
+            },
+          };
+        }
+      }
+    }
+
+    const { fillAlpha } = this.getConfiguration(toolGroupId);
+
+    let startTime: number = null;
+    const animation = (timestamp: number) => {
+      if (startTime === null) {
+        startTime = timestamp;
+      }
+
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / animationLength, 1);
+
+      cstSegmentation.config.setSegmentSpecificConfig(
+        toolGroupId,
+        segmentationRepresentation.segmentationRepresentationUID,
+        {
+          [segmentIndex]: {
+            LABELMAP: {
+              fillAlpha: easeInOutBell(progress, fillAlpha),
+            },
+          },
+        }
+      );
+
+      if (progress < 1) {
+        requestAnimationFrame(animation);
+      } else {
+        cstSegmentation.config.setSegmentSpecificConfig(
+          toolGroupId,
+          segmentationRepresentation.segmentationRepresentationUID,
+          {}
+        );
+      }
+    };
+
+    requestAnimationFrame(animation);
+  }
+
+  private _highlightContour(
+    segmentIndex: number,
+    alpha: number,
+    hideOthers: boolean,
+    segments: Segment[],
+    toolGroupId: string,
+    animationLength: number,
+    segmentationRepresentation: cstTypes.ToolGroupSpecificRepresentation
+  ) {
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const progress = (currentTime - startTime) / animationLength;
+      if (progress >= 1) {
+        cstSegmentation.config.setSegmentSpecificConfig(
+          toolGroupId,
+          segmentationRepresentation.segmentationRepresentationUID,
+          {}
+        );
+        return;
+      }
+
+      const reversedProgress = reverseEaseInOutBell(progress, 0.1);
+      cstSegmentation.config.setSegmentSpecificConfig(
+        toolGroupId,
+        segmentationRepresentation.segmentationRepresentationUID,
+        {
+          [segmentIndex]: {
+            CONTOUR: {
+              fillAlpha: reversedProgress,
+            },
+          },
+        }
+      );
+
+      requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+  }
+
   public removeSegmentationRepresentationFromToolGroup(
     toolGroupId: string,
-    segmentationIds?: string[]
+    segmentationRepresentationUIDsIds?: string[]
   ): void {
-    segmentationIds =
-      segmentationIds ??
-      cstSegmentation.state
-        .getSegmentationRepresentations(toolGroupId)
-        .map(rep => rep.segmentationRepresentationUID);
+    const uids = segmentationRepresentationUIDsIds || [];
+    if (!uids.length) {
+      const representations = cstSegmentation.state.getSegmentationRepresentations(
+        toolGroupId
+      );
 
-    cstSegmentation.removeSegmentationsFromToolGroup(
-      toolGroupId,
-      segmentationIds,
-      true // immediate render
-    );
+      if (!representations || !representations.length) {
+        return;
+      }
+
+      uids.push(
+        ...representations.map(rep => rep.segmentationRepresentationUID)
+      );
+    }
+
+    cstSegmentation.removeSegmentationsFromToolGroup(toolGroupId, uids);
   }
 
   /**
@@ -1155,10 +1405,16 @@ class SegmentationService {
     //   toolGroupId
     // );
 
+    const segmentationRepresentations = this.getSegmentationRepresentationsForToolGroup(
+      toolGroupId
+    );
+
+    const typeToUse = segmentationRepresentations?.[0]?.type || LABELMAP;
+
     const config = cstSegmentation.config.getGlobalConfig();
     const { renderInactiveSegmentations } = config;
 
-    const labelmapRepresentationConfig = config.representations.LABELMAP;
+    const representation = config.representations[typeToUse];
 
     const {
       renderOutline,
@@ -1168,7 +1424,7 @@ class SegmentationService {
       fillAlphaInactive,
       outlineOpacity,
       outlineOpacityInactive,
-    } = labelmapRepresentationConfig;
+    } = representation;
 
     return {
       brushSize,
@@ -1197,46 +1453,31 @@ class SegmentationService {
       renderOutline,
     } = configuration;
 
-    if (renderOutline !== undefined) {
-      this._setLabelmapConfigValue('renderOutline', renderOutline);
-    }
+    const setConfigValueIfDefined = (key, value, transformFn = null) => {
+      if (value !== undefined) {
+        const transformedValue = transformFn ? transformFn(value) : value;
+        this._setSegmentationConfig(key, transformedValue);
+      }
+    };
 
-    if (outlineWidthActive !== undefined) {
-      this._setLabelmapConfigValue('outlineWidthActive', outlineWidthActive);
-      // this._setLabelmapConfigValue('outlineWidthInactive', outlineWidthActive);
-    }
-
-    if (outlineOpacity !== undefined) {
-      this._setLabelmapConfigValue('outlineOpacity', outlineOpacity / 100);
-    }
-
-    if (fillAlpha !== undefined) {
-      this._setLabelmapConfigValue('fillAlpha', fillAlpha / 100);
-    }
-
-    if (renderFill !== undefined) {
-      this._setLabelmapConfigValue('renderFill', renderFill);
-    }
+    setConfigValueIfDefined('renderOutline', renderOutline);
+    setConfigValueIfDefined('outlineWidthActive', outlineWidthActive);
+    setConfigValueIfDefined('outlineOpacity', outlineOpacity, v => v / 100);
+    setConfigValueIfDefined('fillAlpha', fillAlpha, v => v / 100);
+    setConfigValueIfDefined('renderFill', renderFill);
+    setConfigValueIfDefined(
+      'fillAlphaInactive',
+      fillAlphaInactive,
+      v => v / 100
+    );
+    setConfigValueIfDefined('outlineOpacityInactive', fillAlphaInactive, v =>
+      Math.max(0.75, v / 100)
+    );
 
     if (renderInactiveSegmentations !== undefined) {
       const config = cstSegmentation.config.getGlobalConfig();
-
       config.renderInactiveSegmentations = renderInactiveSegmentations;
       cstSegmentation.config.setGlobalConfig(config);
-    }
-
-    if (fillAlphaInactive !== undefined) {
-      this._setLabelmapConfigValue(
-        'fillAlphaInactive',
-        fillAlphaInactive / 100
-      );
-
-      // we assume that if the user changes the inactive fill alpha, they
-      // want the inactive outline to be also changed
-      this._setLabelmapConfigValue(
-        'outlineOpacityInactive',
-        Math.max(0.75, fillAlphaInactive / 100) // don't go below 0.7 for outline
-      );
     }
 
     // if (brushSize !== undefined) {
@@ -1313,6 +1554,7 @@ class SegmentationService {
       });
     }
   }
+
   public shouldRenderSegmentation(
     viewportDisplaySetInstanceUIDs,
     segDisplaySetInstanceUID
@@ -1332,11 +1574,13 @@ class SegmentationService {
       segDisplaySetInstanceUID
     );
 
-    const segFrameOfReferenceUID = segDisplaySet.instance?.FrameOfReferenceUID;
+    const segFrameOfReferenceUID = this._getFrameOfReferenceUIDForSeg(
+      segDisplaySet
+    );
 
-    viewportDisplaySetInstanceUIDs.forEach(displaySetInstanceUID => {
-      // check if the displaySet is sharing the same frameOfReferenceUID
-      // with the new segmentation
+    // check if the displaySet is sharing the same frameOfReferenceUID
+    // with the new segmentation
+    for (const displaySetInstanceUID of viewportDisplaySetInstanceUIDs) {
       const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
@@ -1348,10 +1592,27 @@ class SegmentationService {
         displaySet?.images?.[0]?.FrameOfReferenceUID === segFrameOfReferenceUID
       ) {
         shouldDisplaySeg = true;
+        break;
       }
-    });
+    }
 
     return shouldDisplaySeg;
+  }
+
+  private _getDefaultSegmentationScheme() {
+    return {
+      activeSegmentIndex: 1,
+      cachedStats: {},
+      label: '',
+      segmentsLocked: [],
+      displayText: [],
+      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
+      segmentCount: 0,
+      segments: [],
+      isVisible: true,
+      isActive: false,
+      colorLUTIndex: 0,
+    };
   }
 
   private _setActiveSegmentationForToolGroup(
@@ -1447,10 +1708,17 @@ class SegmentationService {
     }
   }
 
+  private _getVolumeIdForDisplaySet(displaySet) {
+    const volumeLoaderSchema =
+      displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
+
+    return `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
+  }
+
   private _setSegmentColor = (
     segmentationId: string,
     segmentIndex: number,
-    color: Types.Point3,
+    color: ohifTypes.RGB,
     toolGroupId?: string,
     suppressEvents = false
   ) => {
@@ -1716,12 +1984,16 @@ class SegmentationService {
     return representation;
   }
 
-  private _setLabelmapConfigValue = (property, value) => {
+  private _setSegmentationConfig = (property, value) => {
+    // Todo: currently we only support global config, and we get the type
+    // from the first segmentation
+    const typeToUse = this.getSegmentations()[0].type;
+
     const { cornerstoneViewportService } = this.servicesManager.services;
 
     const config = cstSegmentation.config.getGlobalConfig();
 
-    config.representations.LABELMAP[property] = value;
+    config.representations[typeToUse][property] = value;
 
     // Todo: add non global (representation specific config as well)
     cstSegmentation.config.setGlobalConfig(config);
@@ -1736,7 +2008,7 @@ class SegmentationService {
     // Connect Segmentation Service to Cornerstone3D.
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_MODIFIED,
-      this._onSegmentationModified
+      this._onSegmentationModifiedFromSource
     );
 
     eventTarget.addEventListener(
@@ -1760,7 +2032,7 @@ class SegmentationService {
     });
   };
 
-  private _onSegmentationModified = evt => {
+  private _onSegmentationModifiedFromSource = evt => {
     const { segmentationId } = evt.detail;
 
     const segmentation = this.segmentations[segmentationId];
@@ -1778,23 +2050,25 @@ class SegmentationService {
       return;
     }
 
-    if (!Object.keys(segmentationState.representationData).includes(LABELMAP)) {
-      throw new Error('Non-labelmap representations are not supported yet');
-    }
-
     const {
       activeSegmentIndex,
       cachedStats,
       segmentsLocked,
-      representationData,
       label,
       type,
     } = segmentationState;
 
-    const labelmapRepresentationData = representationData[LABELMAP];
+    if (![LABELMAP, CONTOUR].includes(type)) {
+      throw new Error(
+        `Unsupported segmentation type: ${type}. Only ${LABELMAP} and ${CONTOUR} are supported.`
+      );
+    }
+
+    const representationData = segmentationState.representationData[type];
 
     // TODO: handle other representations when available in cornerstone3D
     const segmentationSchema = {
+      ...segmentation,
       activeSegmentIndex,
       cachedStats,
       displayText: [],
@@ -1802,7 +2076,11 @@ class SegmentationService {
       label,
       segmentsLocked,
       type,
-      volumeId: labelmapRepresentationData.volumeId,
+      representationData: {
+        [type]: {
+          ...representationData,
+        },
+      },
     };
 
     try {
@@ -1874,7 +2152,7 @@ class SegmentationService {
     // cleanup the segmentation state too
     segmentationState.removeSegmentation(segmentationId);
 
-    if (removeFromCache) {
+    if (removeFromCache && cache.getVolumeLoadObject(segmentationId)) {
       cache.removeVolumeLoadObject(segmentationId);
     }
   }
@@ -1956,6 +2234,22 @@ class SegmentationService {
     );
 
     return toolGroupIds;
+  }
+
+  private _getFrameOfReferenceUIDForSeg(displaySet) {
+    const frameOfReferenceUID = displaySet.instance?.FrameOfReferenceUID;
+
+    if (frameOfReferenceUID) {
+      return frameOfReferenceUID;
+    }
+
+    // if not found we should try the ReferencedFrameOfReferenceSequence
+    const referencedFrameOfReferenceSequence =
+      displaySet.instance?.ReferencedFrameOfReferenceSequence;
+
+    if (referencedFrameOfReferenceSequence) {
+      return referencedFrameOfReferenceSequence.FrameOfReferenceUID;
+    }
   }
 
   private _getFirstToolGroupId = () => {

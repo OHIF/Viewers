@@ -1,11 +1,11 @@
 import dcmjs from 'dcmjs';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import FileLoader from './fileLoader';
 
 const DICOMFileLoader = new (class extends FileLoader {
   fileType = 'application/dicom';
   loadFile(file, imageId) {
-    return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
+    return dicomImageLoader.wadouri.loadFileRequest(imageId);
   }
 
   getDataset(image, imageId) {
@@ -20,6 +20,10 @@ const DICOMFileLoader = new (class extends FileLoader {
     dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(
       dicomData.meta
     );
+
+    dataset.AvailableTransferSyntaxUID =
+      dataset.AvailableTransferSyntaxUID ||
+      dataset._meta.TransferSyntaxUID?.Value?.[0];
 
     return dataset;
   }

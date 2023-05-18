@@ -11,6 +11,7 @@ const StudyListFilter = ({
   clearFilters,
   isFiltering,
   numOfStudies,
+  onUploadClick,
 }) => {
   const { t } = useTranslation('StudyList');
   const { sortBy, sortDirection } = filterValues;
@@ -33,6 +34,15 @@ const StudyListFilter = ({
                 <Typography variant="h4" className="mr-6 text-primary-light">
                   {t('StudyList')}
                 </Typography>
+                {onUploadClick && (
+                  <div
+                    className="flex items-center gap-2 cursor-pointer text-primary-active text-lg self-center font-semibold"
+                    onClick={onUploadClick}
+                  >
+                    <Icon name="icon-upload"></Icon>
+                    <span>Upload</span>
+                  </div>
+                )}
               </div>
               <div className="flex flex-row">
                 {isFiltering && (
@@ -119,6 +129,7 @@ StudyListFilter.propTypes = {
   onChange: PropTypes.func.isRequired,
   clearFilters: PropTypes.func.isRequired,
   isFiltering: PropTypes.bool.isRequired,
+  onUploadClick: PropTypes.func,
 };
 
 export default StudyListFilter;

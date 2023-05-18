@@ -10,7 +10,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 // ~~ Directories
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -101,6 +100,21 @@ module.exports = (env, argv) => {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
+          // Copy Dicom Microscopy Viewer build files
+          {
+            from:
+              '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+            to: DIST_DIR,
+            globOptions: {
+              ignore: ['**/*.min.js.map'],
+            },
+          },
+          // Copy dicom-image-loader build files
+          {
+            from:
+              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
+            to: DIST_DIR,
+          },
         ],
       }),
       // Generate "index.html" w/ correct includes/imports
@@ -120,15 +134,6 @@ module.exports = (env, argv) => {
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
       }),
-      new CopyPlugin({
-        patterns: [
-          {
-            from:
-              '../../../node_modules/cornerstone-wado-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
-        ],
-      }),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
@@ -137,7 +142,6 @@ module.exports = (env, argv) => {
       // compress: true,
       // http2: true,
       // https: true,
-      hot: true,
       open: true,
       port: 3000,
       client: {

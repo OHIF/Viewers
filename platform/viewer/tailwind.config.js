@@ -46,6 +46,13 @@ module.exports = {
         active: '#348cfd',
       },
 
+      inputfield: {
+        main: '#3a3f99',
+        disabled: '#2b166b',
+        focus: '#5acce6',
+        placeholder: '#39383f'
+      },
+
       secondary: {
         light: '#3a3f99',
         main: '#2b166b',
