@@ -54,7 +54,7 @@ export default function initWADOImageLoader(
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },
-    beforeSend: function(xhr) {
+    beforeSend: function (xhr) {
       const headers = userAuthenticationService.getAuthorizationHeader();
 
       // Request:
@@ -62,12 +62,31 @@ export default function initWADOImageLoader(
       // whatever transfer-syntax the origin server provides.
       // For now we use image/jls and image/x-jls because some servers still use the old type
       // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
+
+      //Initialize the accept header content
+      const acceptHeader = ['multipart/related']
+      //Storing the requesting transfer syntax specified in OHIF config
+      const requestTransferSyntaxUID = appConfig.requestTransferSyntaxUID
+
+      if (requestTransferSyntaxUID) {
+        //Check TS is valid
+        if (!Object.keys(typeForTS).includes(requestTransferSyntaxUID)) {
+          console.warn(requestTransferSyntaxUID + 'is unexpected')
+        } else {
+          //Fetch type header according to requesting TS
+          let type = typeForTS[requestTransferSyntaxUID]
+          if (type === 'application/octet-stream' && !appConfig.omitQuotationForMultipartRequest) {
+            type = '"application/octet-stream"'
+          }
+          acceptHeader.push('type=' + type)
+          acceptHeader.push('transfer-syntax=' + requestTransferSyntaxUID)
+        }
+
+      }
       const xhrRequestHeaders = {
-        Accept: appConfig.omitQuotationForMultipartRequest
-          ? 'multipart/related; type=application/octet-stream'
-          : 'multipart/related; type="application/octet-stream"',
-        // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
-      };
+        //Serialize Accept header
+        Accept: acceptHeader.join('; ')
+      }
 
       if (headers && headers.Authorization) {
         xhrRequestHeaders.Authorization = headers.Authorization;
@@ -81,6 +100,23 @@ export default function initWADOImageLoader(
   });
 
   initWebWorkers(appConfig);
+}
+const typeForTS = {
+  "*": "application/octet-stream",
+  "1.2.840.10008.1.2.1": "application/octet-stream",
+  "1.2.840.10008.1.2": "application/octet-stream",
+  "1.2.840.10008.1.2.2": "application/octet-stream",
+  "1.2.840.10008.1.2.4.70": "image/jpeg",
+  "1.2.840.10008.1.2.4.50": "image/jpeg",
+  "1.2.840.10008.1.2.4.51": "image/dicom+jpeg",
+  "1.2.840.10008.1.2.4.57": "image/jpeg",
+  "1.2.840.10008.1.2.5": "image/dicom-rle",
+  "1.2.840.10008.1.2.4.80": "image/jls",
+  "1.2.840.10008.1.2.4.81": "image/jls",
+  "1.2.840.10008.1.2.4.90": "image/jp2",
+  "1.2.840.10008.1.2.4.91": "image/jp2",
+  "1.2.840.10008.1.2.4.92": "image/jpx",
+  "1.2.840.10008.1.2.4.93": "image/jpx",
 }
 
 export function destroy() {
