@@ -16,7 +16,6 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
-  requestTransferSyntaxUID: '1.2.840.10008.1.2.4.80',
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
