@@ -101,6 +101,11 @@ export default function initWADOImageLoader(
 
   initWebWorkers(appConfig);
 }
+
+/*
+taken from
+https://hg.orthanc-server.com/orthanc-dicomweb/file/tip/Plugin/WadoRsRetrieveFrames.cpp
+*/
 const typeForTS = {
   "*": "application/octet-stream",
   "1.2.840.10008.1.2.1": "application/octet-stream",
