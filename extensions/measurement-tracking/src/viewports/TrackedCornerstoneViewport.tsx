@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
-import { BaseVolumeViewport, Enums, VolumeViewport } from '@cornerstonejs/core';
+import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 
 const { formatDate } = utils;
 
@@ -83,35 +83,42 @@ function TrackedCornerstoneViewport(props) {
   const onElementEnabled = useCallback(
     evt => {
       if (evt.detail.element !== viewportElem) {
+        // The VOLUME_VIEWPORT_NEW_VOLUME event allows updateIsTracked to reliably fetch the image id for a volume viewport.
+        evt.detail.element?.addEventListener(
+          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+          updateIsTracked
+        );
         setViewportElem(evt.detail.element);
       }
     },
-    [viewportElem]
+    [updateIsTracked, viewportElem]
   );
 
-  const onElementDisabled = useCallback(evt => {
-    setViewportElem(null);
-  }, []);
-
-  useEffect(updateIsTracked, [updateIsTracked]);
-
-  /**
-   * This useEffect is needed for volume viewports so that an current image id
-   * can be reliably fetched once the volume is actually loaded.
-   */
-  useEffect(() => {
-    viewportElem?.addEventListener(
+  const onElementDisabled = useCallback(() => {
+    viewportElem?.removeEventListener(
       Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
       updateIsTracked
     );
+  }, [updateIsTracked, viewportElem]);
+
+  useEffect(updateIsTracked, [updateIsTracked]);
+
+  useEffect(() => {
+    const { unsubscribe } = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+      props => {
+        if (props.viewportIndex !== viewportIndex) {
+          return;
+        }
+
+        updateIsTracked();
+      }
+    );
 
     return () => {
-      viewportElem?.removeEventListener(
-        Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-        updateIsTracked
-      );
+      unsubscribe();
     };
-  }, [updateIsTracked, viewportElem]);
+  }, [updateIsTracked, viewportIndex]);
 
   useEffect(() => {
     if (isTracked) {
