@@ -1,5 +1,9 @@
 window.config = {
   routerBasename: '/',
+  customizationService: {
+    dicomUploadComponent:
+      '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+  },
   showStudyList: true,
   extensions: [],
   modes: [],
@@ -9,6 +13,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       friendlyName: 'DCM4CHEE Server',
@@ -26,6 +31,8 @@ window.config = {
         requestOptions: {
           auth: 'admin:admin',
         },
+        dicomUploadEnabled: true,
+        singlepart: 'pdf,video',
       },
     },
     {
@@ -44,5 +51,4 @@ window.config = {
     },
   ],
   studyListFunctionsEnabled: true,
-  defaultDataSourceName: 'dicomweb',
 };

@@ -218,7 +218,8 @@ the display set is the same as the other viewports, but the
 from the display set selector which isn't already filling a view.
 
 ## Custom Attribute
-In some situations, you might want to match based on a custom attribute and not the DICOM tags. For instance,
+In some situations, you might want to match based on a custom
+attribute and not the DICOM tags. For instance,
 if you have assigned a `timepointId` to each study, and you want to match based on it.
 Good news is that, in `OHIF-v3` you can define you custom attribute and use it for matching.
 
@@ -293,4 +294,69 @@ function modeFactory() {
     /** ... **/
   };
 }
+```
+
+### Custom Attributes for Viewport Options
+
+The custom attributes can also be used for viewport options.  This example,
+from the default hanging protocol navigates the image to the image
+specified in the URL:
+
+```javascript
+viewportOptions: {
+  initialImageOptions: {
+    // custom attribute name is selected by 'custom'
+    custom: 'sopInstanceLocation',
+    // This is the value returned if the above doesn't return anything
+    defaultValue: { index: 5 },
+  }
+}
+```
+
+### Included Custom Attributes
+
+A few custom attributes are included under @ohif/extension-test, these are namely:
+*sameAs
+*maxNumImageFrames
+*numberOfDisplaySets
+
+To use these included custom attributes, the extension will need to be enabled under platform/viewer/pluginConfig.json:
+
+```javascript
+{
+  "extensions": [
+    ...
+    {
+      "packageName": "@ohif/extension-test",
+      "version": "0.0.1"
+    },
+    ...
+  ]
+}
+ ```
+
+Furthermore, the extension will also need to be included under extensionDependencies in the desired mode (e.g. modes/tmtv/src/index.js):
+
+```javascript
+const extensionDependencies = {
+   '@ohif/extension-default': '^3.0.0',
+   '@ohif/extension-cornerstone': '^3.0.0',
+   '@ohif/extension-tmtv': '^3.0.0',
+   '@ohif/extension-test': '^0.0.1',
+ };
+ ```
+
+The below example modifies the included hanging protocol (extensions/tmtv/src/getHangingProtocolModule.js) and uses the sameAs attribute included in the @ohif/extension-test extension to check that the selected PT has the same frame of reference as the CT:
+
+```javascript
+ptDisplaySet: {
+       ...
+       seriesMatchingRules: [
+        {
+          attribute: 'sameAs',
+          sameAttribute: 'FrameOfReferenceUID',
+          sameDisplaySetId: 'ctDisplaySet',
+          required: true,
+        },
+        ...
 ```

@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash.clonedeep';
+
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
@@ -6,6 +8,12 @@ import IDisplaySet from '../DisplaySetService/IDisplaySet';
 import { CommandsManager } from '../../classes';
 import ServicesManager from '../ServicesManager';
 import * as HangingProtocol from '../../types/HangingProtocol';
+import {
+  isDisplaySetFromUrl,
+  sopInstanceLocation,
+} from './custom-attribute/isDisplaySetFromUrl';
+import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
+import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
@@ -47,6 +55,12 @@ export default class HangingProtocolService extends PubSubService {
   activeProtocolIds: string[];
   // the current protocol that is being applied to the viewports in object format
   protocol: HangingProtocol.Protocol;
+  // The version of the protocol that must not be modified with customizations
+  // if it was defined in the protocol definition. This is a copy of the protocol
+  // that is used to recompute the computedOptions when necessary as we override
+  // the computedOptions in the protocol object itself.
+  _originalProtocol: HangingProtocol.Protocol;
+
   stageIndex = 0;
   _commandsManager: CommandsManager;
   _servicesManager: ServicesManager;
@@ -80,6 +94,24 @@ export default class HangingProtocolService extends PubSubService {
       name: 'Checks if the display set is reconstructable',
       // we can add more advanced checking here
       callback: displaySet => displaySet.isReconstructable ?? false,
+    },
+    isDisplaySetFromUrl: {
+      name: 'Checks if the display set is as specified in the URL',
+      callback: isDisplaySetFromUrl,
+    },
+    sopInstanceLocation: {
+      name: 'Gets the position of the specified sop instance',
+      callback: sopInstanceLocation,
+    },
+    seriesDescriptions: {
+      name: 'seriesDescriptions',
+      description: 'List of Series Descriptions',
+      callback: seriesDescriptionsFromDisplaySets,
+    },
+    numberOfDisplaySetsWithImages: {
+      name: 'numberOfDisplaySetsWithImages',
+      description: 'Number of displays sets with images',
+      callback: numberOfDisplaySetsWithImages,
     },
   };
   listeners = {};
@@ -587,6 +619,12 @@ export default class HangingProtocolService extends PubSubService {
       return defaultReturn;
     }
 
+    const originalProtocol = this._originalProtocol;
+    let originalProtocolStage;
+    if (!(originalProtocol instanceof Function)) {
+      originalProtocolStage = originalProtocol.stages[this.stageIndex];
+    }
+
     // if we reach here, it means that the displaySetInstanceUIDs to be dropped
     // in the viewportIndex are valid, and we can proceed with the update. However
     // we need to check if the displaySets that the viewport were showing
@@ -595,45 +633,44 @@ export default class HangingProtocolService extends PubSubService {
 
     // check if displaySetSelectors are used by other viewports, and
     // store the viewportIndex and displaySetInstanceUIDs that need to be updated
-
     const viewportsToUpdate = [];
     protocolViewports.forEach((viewport, index) => {
-      let viewportNeedsUpdate;
-      for (const displaySet of viewport.displaySets) {
-        if (
+      const viewportNeedsUpdate = viewport.displaySets.some(
+        displaySet =>
           displaySet.id === displaySetSelectorId &&
           (displaySet.matchedDisplaySetsIndex || 0) === matchedDisplaySetsIndex
-        ) {
-          viewportNeedsUpdate = true;
-          break;
-        }
-      }
+      );
 
       if (viewportNeedsUpdate) {
-        // we can then loop over the displaySets and choose all of them,
-        // but for the one that matches the oldDisplaySetInstanceUID we need to
-        // replace it with the newDisplaySetInstanceUID
-        const {
+        // Try to recompute the viewport options based on the current
+        // viewportIndex that needs update but from its old/original un-computed
+        // viewport & displaySet options
+        if (originalProtocolStage) {
+          const originalViewport = originalProtocolStage.viewports[index];
+          const originalViewportOptions = originalViewport.viewportOptions;
+          const originalDisplaySetOptions = originalViewport.displaySets;
+
+          viewport.viewportOptions = this.getComputedOptions(
+            originalViewportOptions,
+            [newDisplaySetInstanceUID]
+          );
+
+          viewport.displaySets = this.getComputedOptions(
+            originalDisplaySetOptions,
+            [newDisplaySetInstanceUID]
+          );
+        }
+
+        const displaySetInstanceUIDs = [];
+        const displaySetOptions = [];
+
+        this._updateDisplaySetInstanceUIDs(
+          viewport,
+          displaySetSelectorId,
+          newDisplaySetInstanceUID,
+          this.displaySetMatchDetails,
           displaySetInstanceUIDs,
-          displaySetOptions,
-        } = viewport.displaySets.reduce(
-          (acc, displaySet) => {
-            const { id } = displaySet;
-
-            let {
-              displaySetInstanceUID: displaySetInstanceUIDToUse,
-            } = this.displaySetMatchDetails.get(id);
-
-            if (displaySet.id === displaySetSelectorId) {
-              displaySetInstanceUIDToUse = newDisplaySetInstanceUID;
-            }
-
-            acc.displaySetInstanceUIDs.push(displaySetInstanceUIDToUse);
-            acc.displaySetOptions.push(displaySet);
-
-            return acc;
-          },
-          { displaySetInstanceUIDs: [], displaySetOptions: [] }
+          displaySetOptions
         );
 
         viewportsToUpdate.push({
@@ -646,6 +683,87 @@ export default class HangingProtocolService extends PubSubService {
     });
 
     return viewportsToUpdate;
+  }
+
+  private _updateDisplaySetInstanceUIDs(
+    viewport: HangingProtocol.Viewport,
+    displaySetSelectorId: string,
+    newDisplaySetInstanceUID: string,
+    displaySetMatchDetails: Map<string, HangingProtocol.DisplaySetMatchDetails>,
+    displaySetInstanceUIDs: string[],
+    displaySetOptions: HangingProtocol.DisplaySetOptions[]
+  ) {
+    viewport.displaySets.forEach(displaySet => {
+      const { id } = displaySet;
+      const {
+        displaySetInstanceUID: oldDisplaySetInstanceUID,
+      } = displaySetMatchDetails.get(id);
+
+      displaySetInstanceUIDs.push(
+        displaySet.id === displaySetSelectorId
+          ? newDisplaySetInstanceUID
+          : oldDisplaySetInstanceUID
+      );
+      displaySetOptions.push(displaySet);
+    });
+  }
+
+  /**
+   *  Gets a computed options value, or a copy of the options
+   * This allows computing values such as the initial image index to use
+   * based on custom attribute functions, the same as the validators.
+   * Computing individual values is something that can be declared statically
+   * as long as the named functions are provided ahead of time, which is much
+   * simpler than recomputing the entire protocol.
+   */
+  public getComputedOptions(
+    options: Record<string, unknown> | Array<Record<string, unknown>>,
+    displaySetUIDs: string[]
+  ): any {
+    // Base case: if options is an array, map over the array and recursively call getComputedOptions
+    if (Array.isArray(options)) {
+      return options.map(option =>
+        this.getComputedOptions(option, displaySetUIDs)
+      );
+    }
+
+    if (options === null) return options;
+    if (typeof options !== 'object') return options;
+
+    // If options is an object with a custom attribute, compute a new options object
+    if (options.custom) {
+      const displaySets = this.displaySets.filter(displaySet =>
+        displaySetUIDs.includes(displaySet.displaySetInstanceUID)
+      );
+
+      const customKey = options.custom as string;
+      if (!(customKey in this.customAttributeRetrievalCallbacks)) {
+        throw new Error(
+          `Custom key "${customKey}" not found in customAttributeRetrievalCallbacks.`
+        );
+      }
+
+      const callback = this.customAttributeRetrievalCallbacks[customKey]
+        .callback;
+      let newOptions = callback.call(options, displaySets);
+
+      if (newOptions === undefined) {
+        newOptions = options.defaultValue;
+      }
+
+      return this.getComputedOptions(newOptions, displaySetUIDs);
+    }
+
+    // If options is an object without a custom attribute, recursively call getComputedOptions on its properties
+    const newOptions = {} as Record<string, unknown>;
+    for (const key in options) {
+      // if not undefined
+      if (options[key] !== undefined) {
+        newOptions[key] = this.getComputedOptions(options[key], displaySetUIDs);
+      }
+    }
+
+    return newOptions;
   }
 
   /**
@@ -802,7 +920,8 @@ export default class HangingProtocolService extends PubSubService {
     try {
       if (!this.protocol || this.protocol.id !== protocol.id) {
         this.stageIndex = options?.stageIndex || 0;
-        this.protocol = this._copyProtocol(protocol);
+        this._originalProtocol = this._copyProtocol(protocol);
+        this.protocol = protocol;
 
         const { imageLoadStrategy } = protocol;
         if (imageLoadStrategy) {
@@ -1001,7 +1120,11 @@ export default class HangingProtocolService extends PubSubService {
         viewportMatchDetails.set(viewportIndex, matchDetails);
       }
     });
-    return { matchedViewports, viewportMatchDetails, displaySetMatchDetails };
+    return {
+      matchedViewports,
+      viewportMatchDetails,
+      displaySetMatchDetails,
+    };
   }
 
   protected findDeduplicatedMatchDetails(
@@ -1023,7 +1146,10 @@ export default class HangingProtocolService extends PubSubService {
         ) {
           const match = matchDetails.matchingScores[i];
           return match.matchingScore > 0
-            ? { matchingScores, ...matchDetails.matchingScores[i] }
+            ? {
+                matchingScores,
+                ...matchDetails.matchingScores[i],
+              }
             : null;
         }
       }
@@ -1252,7 +1378,11 @@ export default class HangingProtocolService extends PubSubService {
       const studyMatchDetails = this.protocolEngine.findMatch(
         study,
         studyMatchingRules,
-        { studies: this.studies, displaySets: studyDisplaySets }
+        {
+          studies: this.studies,
+          displaySets: studyDisplaySets,
+          displaySetMatchDetails: this.displaySetMatchDetails,
+        }
       );
 
       // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
@@ -1276,7 +1406,12 @@ export default class HangingProtocolService extends PubSubService {
           displaySet,
           seriesMatchingRules,
           // Todo: why we have images here since the matching type does not have it
-          { studies: this.studies, instance: displaySet.images?.[0] }
+          {
+            studies: this.studies,
+            instance: displaySet.images?.[0],
+            displaySetMatchDetails: this.displaySetMatchDetails,
+            displaySets: studyDisplaySets,
+          }
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
@@ -1449,6 +1584,6 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   _copyProtocol(protocol: Protocol) {
-    return JSON.parse(JSON.stringify(protocol));
+    return cloneDeep(protocol);
   }
 }

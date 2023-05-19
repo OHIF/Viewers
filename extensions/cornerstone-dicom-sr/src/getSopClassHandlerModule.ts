@@ -1,12 +1,15 @@
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
-import { utils, classes } from '@ohif/core';
+import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
+type InstanceMetadata = Types.InstanceMetadata;
+
 const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 const { ImageSet, MetadataProvider: metadataProvider } = classes;
+
 // TODO ->
 // Add SR thumbnail
 // Make viewport
@@ -21,6 +24,17 @@ const sopClassUids = [
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
+
+const validateSameStudyUID = (uid: string, instances): void => {
+  instances.forEach(it => {
+    if (it.StudyInstanceUID !== uid) {
+      console.warn('Not all instances have the same UID', uid, it);
+      throw new Error(
+        `Instances ${it.SOPInstanceUID} does not belong to ${uid}`
+      );
+    }
+  });
+};
 
 const CodeNameCodeSequenceValues = {
   ImagingMeasurementReport: '126000',
@@ -51,14 +65,30 @@ const RELATIONSHIP_TYPE = {
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
 /**
+ * Adds instances to the DICOM SR series, rather than creating a new
+ * series, so that as SR's are saved, they append to the series, and the
+ * key image display set gets updated as well, containing just the new series.
+ * @param instances is a list of instances from THIS series that are not
+ *     in this DICOM SR Display Set already.
+ */
+function addInstances(
+  instances: InstanceMetadata[],
+  displaySetService: DisplaySetService
+) {
+  this.instances.push(...instances);
+  utils.sortStudyInstances(this.instances);
+  // The last instance is the newest one, so is the one most interesting.
+  // Eventually, the SR viewer should have the ability to choose which SR
+  // gets loaded, and to navigate among them.
+  this.instance = this.instances[this.instances.length - 1];
+  this.isLoaded = false;
+  return this;
+}
+
+/**
  * DICOM SR SOP Class Handler
  * For all referenced images in the TID 1500/300 sections, add an image to the
- * display (this is TODO - it is not the actual behaviour below unfortunately)
- *
- * This will only display and rehydrate the latest DICOM SR in the given series
- * It would be possible to add the ability to view older series rehydrations
- * in the future.
- *
+ * display.
  * @param instances is a set of instances all from the same series
  * @param servicesManager is the services that can be used for creating
  * @returns The list of display sets created for the given instances object
@@ -74,6 +104,9 @@ function _getDisplaySetsFromSeries(
   }
 
   utils.sortStudyInstances(instances);
+  // The last instance is the newest one, so is the one most interesting.
+  // Eventually, the SR viewer should have the ability to choose which SR
+  // gets loaded, and to navigate among them.
   const instance = instances[instances.length - 1];
 
   const {
@@ -86,15 +119,20 @@ function _getDisplaySetsFromSeries(
     ConceptNameCodeSequence,
     SOPClassUID,
   } = instance;
+  validateSameStudyUID(instance.StudyInstanceUID, instances);
 
   if (
     !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-    CodeNameCodeSequenceValues.ImagingMeasurementReport
+      CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
-    console.log(
-      'Only support Imaging Measurement Report SRs (TID1500) for this renderer.'
-    );
+    servicesManager.services.uiNotificationService.show({
+      title: 'DICOM SR',
+      message:
+        'OHIF only supports TID1500 Imaging Measurement Report Structured Reports. The SR you’re trying to view is not supported.',
+      type: 'warning',
+      duration: 6000,
+    });
     return [];
   }
 
@@ -111,14 +149,13 @@ function _getDisplaySetsFromSeries(
     SOPClassHandlerId,
     SOPClassUID,
     instances,
-    // Others is a historical value used for instances which is deprecated and will be removed
-    others: instances,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,
     isLoaded: false,
     sopClassUids,
     instance,
+    addInstances,
   };
 
   displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
@@ -327,7 +364,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     trackingUniqueIdentifier => {
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
+          trackingUniqueIdentifier
         ];
 
       const measurement = _processMeasurement(mergedContentSequence);
@@ -367,7 +404,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
 
     if (
       mergedContentSequencesByTrackingUniqueIdentifiers[
-      trackingUniqueIdentifier
+        trackingUniqueIdentifier
       ] === undefined
     ) {
       // Add the full ContentSequence
@@ -473,18 +510,18 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
-  const Finding = mergedContentSequence.find(
+  const finding = mergedContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.Finding
   );
 
-  const FindingSites = mergedContentSequence.filter(
+  const findingSites = mergedContentSequence.filter(
     item =>
       item.ConceptNameCodeSequence.CodingSchemeDesignator ===
-      CodingSchemeDesignators.SRT &&
+        CodingSchemeDesignators.SRT &&
       item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.FindingSite
+        CodeNameCodeSequenceValues.FindingSite
   );
 
   const measurement = {
@@ -496,28 +533,28 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   };
 
   if (
-    Finding &&
+    finding &&
     CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
-      Finding.ConceptCodeSequence.CodingSchemeDesignator
+      finding.ConceptCodeSequence.CodingSchemeDesignator
     ) &&
-    Finding.ConceptCodeSequence.CodeValue ===
-    CodeNameCodeSequenceValues.CornerstoneFreeText
+    finding.ConceptCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.CornerstoneFreeText
   ) {
     measurement.labels.push({
       label: CORNERSTONE_FREETEXT_CODE_VALUE,
-      value: Finding.ConceptCodeSequence.CodeMeaning,
+      value: finding.ConceptCodeSequence.CodeMeaning,
     });
   }
 
   // TODO -> Eventually hopefully support SNOMED or some proper code library, just free text for now.
-  if (FindingSites.length) {
-    const cornerstoneFreeTextFindingSite = FindingSites.find(
+  if (findingSites.length) {
+    const cornerstoneFreeTextFindingSite = findingSites.find(
       FindingSite =>
         CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
           FindingSite.ConceptCodeSequence.CodingSchemeDesignator
         ) &&
         FindingSite.ConceptCodeSequence.CodeValue ===
-        CodeNameCodeSequenceValues.CornerstoneFreeText
+          CodeNameCodeSequenceValues.CornerstoneFreeText
     );
 
     if (cornerstoneFreeTextFindingSite) {
@@ -633,17 +670,16 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
 
   _getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;
+    if (!ReferencedSOPSequence) return;
+    for (const ref of _getSequenceAsArray(ReferencedSOPSequence)) {
+      if (ref.ReferencedSOPClassUID) {
+        const { ReferencedSOPClassUID, ReferencedSOPInstanceUID } = ref;
 
-    if (item.hasOwnProperty('ReferencedSOPClassUID')) {
-      const {
-        ReferencedSOPClassUID,
-        ReferencedSOPInstanceUID,
-      } = ReferencedSOPSequence;
-
-      referencedImages.push({
-        ReferencedSOPClassUID,
-        ReferencedSOPInstanceUID,
-      });
+        referencedImages.push({
+          ReferencedSOPClassUID,
+          ReferencedSOPInstanceUID,
+        });
+      }
     }
   });
 
@@ -651,6 +687,7 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
 }
 
 function _getSequenceAsArray(sequence) {
+  if (!sequence) return [];
   return Array.isArray(sequence) ? sequence : [sequence];
 }
 

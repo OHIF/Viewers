@@ -54,6 +54,9 @@ const InputRange: React.FC<{
   const rangeValuePercentage =
     ((rangeValue - minValue) / (maxValue - minValue)) * 100;
 
+  const rangeValueForStr =
+    step >= 1 ? rangeValue.toFixed(0) : rangeValue.toFixed(1);
+
   return (
     <div
       className={`flex items-center cursor-pointer space-x-1 ${
@@ -82,7 +85,7 @@ const InputRange: React.FC<{
           component="p"
           className={classNames('w-8', labelClassName ?? 'text-white')}
         >
-          {rangeValue}
+          {rangeValueForStr}
           {unit}
         </Typography>
       )}

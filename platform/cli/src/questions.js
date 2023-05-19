@@ -1,4 +1,5 @@
 import path from 'path';
+import os from 'os';
 
 function getPathQuestions(packageType) {
   return [
@@ -6,7 +7,7 @@ function getPathQuestions(packageType) {
       type: 'input',
       name: 'name',
       message: `What is the name of your ${packageType}?`,
-      validate: (input) => {
+      validate: input => {
         if (!input) {
           return 'Please enter a name';
         }
@@ -17,8 +18,8 @@ function getPathQuestions(packageType) {
     {
       type: 'input',
       name: 'baseDir',
-      message: `What is the target absolute path to create your ${packageType} (we recommend you do not use the OHIF ${packageType} folder (./${packageType}s) unless you are developing a core ${packageType}):`,
-      validate: (input) => {
+      message: `What is the target path to create your ${packageType} (we recommend you do not use the OHIF ${packageType} folder (./${packageType}s) unless you are developing a core ${packageType}):`,
+      validate: input => {
         if (!input) {
           console.log('Please provide a valid target directory path');
           return;
@@ -26,7 +27,13 @@ function getPathQuestions(packageType) {
         return true;
       },
       filter: (input, answers) => {
-        return path.resolve(input, answers.name);
+        // Replace ~ with the user's home directory
+        const expandedPath = input.replace(/^~(?=$|\/|\\)/, os.homedir());
+
+        // Resolve the path to an absolute path
+        const resolvedPath = path.resolve(expandedPath, answers.name);
+
+        return resolvedPath;
       },
     },
     {
@@ -43,6 +50,7 @@ function getRepoQuestions(packageType) {
       type: 'confirm',
       name: 'gitRepository',
       message: 'Should it be a git repository?',
+      default: false,
     },
     {
       type: 'confirm',

@@ -5,6 +5,8 @@ import 'regenerator-runtime/runtime';
 import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { history } from './utils/history';
+
 /**
  * EXTENSIONS AND MODES
  * =================
@@ -14,23 +16,32 @@ import ReactDOM from 'react-dom';
  * pluginImports.js imports all of the modes and extensions and adds them
  * to the window for processing.
  */
-import loadDynamicImports, { loadRuntimeImports } from './pluginImports.js';
+import {
+  modes as defaultModes,
+  extensions as defaultExtensions,
+} from './pluginImports';
+import loadDynamicConfig from './loadDynamicConfig';
 
-loadDynamicImports().then(() => {
-  loadRuntimeImports(window.config).then(() => {
-    /**
-     * Combine our appConfiguration with installed extensions and modes.
-     * In the future appConfiguration may contain modes added at runtime.
-     *  */
-    const appProps = {
-      config: window ? window.config : {},
-      defaultExtensions: window.extensions,
-      defaultModes: window.modes,
-    };
+loadDynamicConfig(window.config).then(config_json => {
+  // Reset Dynamic config if defined
+  if (config_json !== null) {
+    window.config = config_json;
+  }
 
-    /** Create App */
-    const app = React.createElement(App, appProps, null);
-    /** Render */
-    ReactDOM.render(app, document.getElementById('root'));
-  });
+  /**
+   * Combine our appConfiguration with installed extensions and modes.
+   * In the future appConfiguration may contain modes added at runtime.
+   *  */
+  const appProps = {
+    config: window ? window.config : {},
+    defaultExtensions,
+    defaultModes,
+  };
+
+  /** Create App */
+  const app = React.createElement(App, appProps, null);
+  /** Render */
+  ReactDOM.render(app, document.getElementById('root'));
 });
+
+export { history };

@@ -37,15 +37,9 @@ const SnackbarItem = ({ options, onClose }) => {
         typeClasses[options.type]
       )}
     >
-      <div className="flex ">
-        <div
-          onClick={handleClose}
-          className="w-5 h-5 rounded-full absolute flex items-center justify-center right-0 top-0 mr-2 mt-2 text-[#0944b3]"
-        >
-          <Icon name="close" className="w-5 h-5 text-black" />
-        </div>
+      <div className="flex">
         <Icon name={iconClasses[options.type]} className="w-5 h-5 mt-[1px]" />
-        <div className="flex-col ml-2">
+        <div className="flex-col mx-2">
           {/* </span> */}
           {options.title && (
             <div className="break-normal text-lg font-bold text-black">
@@ -57,6 +51,12 @@ const SnackbarItem = ({ options, onClose }) => {
               {options.message}
             </div>
           )}
+        </div>
+        <div
+          onClick={handleClose}
+          className="w-5 h-5 rounded-full flex items-center justify-center self-start ml-auto relative left-[3px] top-[-3px] text-[#0944b3]"
+        >
+          <Icon name="close" className="w-5 h-5 text-black" />
         </div>
       </div>
     </div>
