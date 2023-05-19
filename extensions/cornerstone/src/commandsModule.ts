@@ -10,7 +10,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
-import { Types as OhifTypes } from '@ohif/core';
+import { HangingProtocolService, Types as OhifTypes } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
@@ -19,6 +19,8 @@ import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/u
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
 import { split } from 'lodash';
+import getSopClassHandlerModule from 'extensions/default/src/getSopClassHandlerModule';
+import { HangingProtocol } from 'platform/core/src/types';
 
 function commandsModule({
   servicesManager,
@@ -33,6 +35,8 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    displaySetService,
+    hangingProtocolService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -619,42 +623,66 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    setVolumeToViewport: ({ volumeId }) => {
+    setVolumeToViewport: ({ displaySet }) => {
       console.log('setVolumeToViewport has run');
-      const colormap = 'gray';
+      const displaySetKey = Object.keys(displaySet)[0];
+      displaySetService._addDisplaySetsToCache([displaySet[displaySetKey]]);
+      const testttt = displaySetService.getDisplaySetCache();
+      console.log(`Test:`);
+      console.log(testttt);
+      // const makeTest = displaySetService.addDisplaySets();
 
-      const displayUID = volumeId.split(':')[1];
+      // console.log(makeTest);
+
+      // const displayUID = volumeId.split(':')[1];
       // Get all viewports and their corresponding indexs
       const { viewports } = viewportGridService.getState();
-      const viewportIndex = Object.keys(viewports);
+      const viewportIndex = Object.keys(viewports)[0];
+      const viewportsToUpdate = [];
+
+      viewports.forEach((viewport, index) => {
+        viewportsToUpdate.push({
+          viewportIndex: index,
+          displaySetInstanceUIDs: [displaySetKey],
+          viewportOptions: {
+            initialImageOptions: {
+              preset: 'middle',
+            },
+          },
+        });
+      });
+
+      console.log(viewportsToUpdate);
+
+      viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
 
       // For each viewport index, get the cornerstone viewport and set the
       // computed volume
-      viewportIndex.forEach(viewportNum => {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(
-          viewports[viewportNum].viewportId
-        );
+      // viewportIndex.forEach(viewportNum => {
+      //   const viewport = cornerstoneViewportService.getCornerstoneViewport(
+      //     viewports[viewportNum].viewportId
+      //   );
 
-        console.log(viewport.getActors());
+      //   console.log(viewport.getActors());
 
-        viewport.setVolumes([
-          {
-            volumeId,
-          },
-        ]);
-        const viewportInfo = cornerstoneViewportService.getViewportInfo(
-          viewports[viewportNum].viewportId
-        );
+      //   viewport.setVolumes([
+      //     {
+      //       volumeId,
+      //     },
+      //   ]);
+      //   const viewportInfo = cornerstoneViewportService.getViewportInfo(
+      //     viewports[viewportNum].viewportId
+      //   );
 
-        const viewportInd = viewportInfo.getViewportIndex();
-        console.log(viewportInd);
+      //   const viewportInd = viewportInfo.getViewportIndex();
+      //   console.log(viewportInd);
 
-        // commandsManager.runCommand('setViewportColormap', {
-        //   viewportIndex: viewportInd,
-        //   displaySetInstanceUID: displayUID,
-        //   colormap,
-        // });
-      });
+      //   // commandsManager.runCommand('setViewportColormap', {
+      //   //   viewportIndex: viewportInd,
+      //   //   displaySetInstanceUID: displayUID,
+      //   //   colormap,
+      //   // });
+      // });
     },
   };
 

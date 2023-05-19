@@ -18,12 +18,12 @@ input[type='range'] {
   height: 3px;
 }
 .slider__track {
-  background-color: #5acce6;
+  background-color: #3a3f99;
   width: 100%;
   z-index: 1;
 }
 .slider__range {
-  background-color: #3a3f99;
+  background-color: #5acce6;
   z-index: 2;
 }
 .slider__left-value,

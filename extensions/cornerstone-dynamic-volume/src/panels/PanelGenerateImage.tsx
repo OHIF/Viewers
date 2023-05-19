@@ -61,6 +61,14 @@ export default function PanelGenerateImage({
   const [rangeValues, setRangeValues] = useState([]);
   const [sliderValues, setSliderValues] = useState([]);
   const [timeFramesToUse, setTimeFramesToUse] = useState([]);
+  const [computedDisplaySet, setComputedDisplaySet] = useState(null);
+  const [myDynamicVolume, setMyDynamicVolume] = useState(null);
+  const [myComputedVolume, setMyComputedVolume] = useState(null);
+  const [uuidComputedVolume, setUuidComputedVolume] = useState(
+    csUtils.uuidv4()
+  );
+
+  console.log(uuidComputedVolume);
 
   const handleMetadataChange = metadata => {
     setMetadata(prevState => {
@@ -87,7 +95,7 @@ export default function PanelGenerateImage({
   const toolGroupIds = toolGroupService.getToolGroupIds();
 
   const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader id which defines which volume loader to use
-  const computedVolumeId = `cornerstoneStreamingImageVolume:MY_COMPUTED_VOLUME`;
+  const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume}`;
 
   //TODO: get referenceVolumeId from viewport
   const dynamicVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`;
@@ -107,11 +115,13 @@ export default function PanelGenerateImage({
     [added].forEach(evt => {
       subscriptions.push(
         cornerstoneViewportService.subscribe(evt, evtdetails => {
+          console.log('EVTDETAILS');
+          console.log(evtdetails.viewportData.data);
           evtdetails.viewportData.data.forEach(volumeData => {
             if (volumeData.volumeId.split(':')[0] === volumeLoaderScheme) {
-              console.log('NEIL');
               if (testDynamicVolume === undefined) {
                 testDynamicVolume = volumeData.volume;
+                setMyDynamicVolume(volumeData.volume);
                 const { metadata } = testDynamicVolume;
                 console.log(metadata);
                 const opp = numTimePointsToOptions(
@@ -126,16 +136,13 @@ export default function PanelGenerateImage({
                   testDynamicVolume.volumeId,
                   computedVolumeId
                 );
+                setMyComputedVolume(computedVolumeInit);
               }
             }
           });
         }).unsubscribe
       );
     });
-
-    let counter = 1;
-    console.log(`How many times has useEffect run: ${counter}`);
-    counter++;
 
     return () => {
       subscriptions.forEach(unsub => {
@@ -145,15 +152,10 @@ export default function PanelGenerateImage({
   }, []);
 
   // Get computed volume from cache, calculate the data across the time frames,
-  // set the scalar data to the computedVolume
+  // set the scalar data to the computedVolume, and create displaySet
   function onGenerateImage() {
     console.log('onGenerateImage was run');
-    // const timeFramesArray = metadata.TimeFrames.split(',');
-    // for (let i = 0; i < timeFramesArray.length; i++) {
-    //   timeFramesArray[i] = ~~timeFramesArray[i];
-    // }
     const computedVolume = cache.getVolume(computedVolumeId);
-    console.log(metadata.Operation);
 
     const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
       dynamicVolume,
@@ -165,20 +167,50 @@ export default function PanelGenerateImage({
     for (let i = 0; i < dataInTime.length; i++) {
       scalarData[i] = dataInTime[i];
     }
+    if (!computedDisplaySet) {
+      const computedUuid = csUtils.uuidv4();
+      const obj = {
+        [uuidComputedVolume]: {
+          volumeLoaderSchema: computedVolume.volumeId.split(':')[0],
+          displaySetInstanceUID: uuidComputedVolume,
+          SOPClassHandlerId:
+            '@ohif/extension-default.sopClassHandlerModule.stack',
+          SOPClassUID: '1.2.840.10008.5.1.4.1.1.128',
+          SeriesInstanceUID: 'test',
+          StudyInstanceUID: 'test',
+          SeriesNumber: 0,
+          FrameRate: 0,
+          SeriesDescription: '',
+          Modality: myDynamicVolume.metadata.Modality,
+          isMultiFrame: false,
+          countIcon: undefined,
+          numImageFrames: 1,
+          averageSpacingBetweenFrames: null,
+        },
+      };
+      setComputedDisplaySet(obj);
+    }
     // renderGeneratedImage(dynamicVolumeId);
   }
 
-  function renderGeneratedImage(volumeIdToUse) {
+  // if computedDisplaySet is defined, render when the data changes
+  useEffect(() => {
+    if (computedDisplaySet) {
+      renderGeneratedImage(computedDisplaySet);
+    }
+  }, [computedDisplaySet]);
+
+  function renderGeneratedImage(displaySet) {
     // console.log(viewports);
     console.log('renderGenerateImage was run');
-    console.log(volumeIdToUse);
+    console.log(displaySet);
     // const test = cornerstoneViewportService;
     // const viewport1 = cornerstoneViewportService.getCornerstoneViewportByIndex(
     //   0
     // );
     // cornerstoneViewportService.set;
     commandsManager.runCommand('setVolumeToViewport', {
-      volumeId: volumeIdToUse,
+      displaySet,
     });
   }
 
