@@ -1034,6 +1034,25 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   /**
+   * Gets a sort function that is consistent with the display set sorting performed
+   * to match display sets to viewports.
+   * @returns a display set sort function
+   */
+  public getDisplaySetSortFunction(): (
+    displaySetA: IDisplaySet,
+    displaySetB: IDisplaySet
+  ) => number {
+    const sortingFunction = (displaySetA, displaySetB) => {
+      const seriesA = this._getDisplaySetSortInfo(displaySetA);
+      const seriesB = this._getDisplaySetSortInfo(displaySetB);
+
+      return sortBy(this._getDisplaySetSortByField())(seriesA, seriesB);
+    };
+
+    return sortingFunction;
+  }
+
+  /**
    * Updates the viewports with the selected protocol stage.
    */
   _updateViewports(options = null as HangingProtocol.SetProtocolOptions): void {
@@ -1461,7 +1480,7 @@ export default class HangingProtocolService extends PubSubService {
           sortingInfo: {
             score: totalMatchScore,
             study: study.StudyInstanceUID,
-            series: parseInt(displaySet.SeriesNumber),
+            ...this._getDisplaySetSortInfo(displaySet),
           },
         };
 
@@ -1484,9 +1503,7 @@ export default class HangingProtocolService extends PubSubService {
         name: 'study',
         reverse: true,
       },
-      {
-        name: 'series',
-      }
+      this._getDisplaySetSortByField()
     );
     matchingScores.sort((a, b) =>
       sortingFunction(a.sortingInfo, b.sortingInfo)
@@ -1504,6 +1521,19 @@ export default class HangingProtocolService extends PubSubService {
       bestMatch,
       matchingScores,
     };
+  }
+
+  private _getDisplaySetSortInfo(displaySet) {
+    return {
+      [this._getDisplaySetSortByField().name]:
+        displaySet.SeriesNumber != null
+          ? parseInt(displaySet.SeriesNumber)
+          : parseInt(displaySet.seriesNumber),
+    };
+  }
+
+  private _getDisplaySetSortByField() {
+    return { name: 'series' };
   }
 
   /**

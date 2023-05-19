@@ -560,10 +560,11 @@ const commandsModule = ({
         'RTDOSE',
       ];
 
-      const currentDisplaySets = displaySetService.activeDisplaySets;
+      // Sort the display sets as per the hanging protocol service which is also consistent with the thumbnail list.
+      const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
+      const currentDisplaySets = [...displaySetService.activeDisplaySets];
 
-      // Sort the display sets as per the thumbnail/study browser list
-      utils.sortBySeriesDate(currentDisplaySets);
+      currentDisplaySets.sort(dsSortFn);
 
       const { activeViewportIndex, viewports } = viewportGridService.getState();
 

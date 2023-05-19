@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
+import { HangingProtocolService, utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
@@ -292,7 +292,8 @@ function PanelStudyBrowserTracking({
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
     studyDisplayList,
-    displaySets
+    displaySets,
+    hangingProtocolService
   );
 
   // TODO: Should not fire this on "close"
@@ -601,7 +602,8 @@ function _getComponentType(Modality) {
 function _createStudyBrowserTabs(
   primaryStudyInstanceUIDs,
   studyDisplayList,
-  displaySets
+  displaySets,
+  hangingProtocolService
 ) {
   const primaryStudies = [];
   const recentStudies = [];
@@ -615,9 +617,8 @@ function _createStudyBrowserTabs(
     );
 
     // Sort them
-    const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
-      displaySetsForStudy
-    );
+    const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
+    displaySetsForStudy.sort(dsSortFn);
 
     /* Sort by series number, then by series date
       displaySetsForStudy.sort((a, b) => {
