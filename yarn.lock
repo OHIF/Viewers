@@ -1469,7 +1469,7 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.47.1", "@cornerstonejs/core@^1.1.0":
+"@cornerstonejs/core@^0.47.3", "@cornerstonejs/core@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-1.1.0.tgz#bedac4d7583be931f289e5e645a1531b605cbb83"
   integrity sha512-YLbb47rCrxf04XZ1+qR1ATnbKlV6WXOsEc4pAmty5WfTqL9zlmSx72IoXx034m39Nz9JvZB+VUN8MKvVrYv3bw==
