@@ -164,7 +164,11 @@ class DicomMicroscopyViewport extends Component {
         const image = new metadataUtils.VLWholeSlideMicroscopyImage({
           metadata: inst,
         });
-        const imageFlavor = image.ImageType[2];
+        const imageType =
+          typeof image.ImageType === 'string'
+            ? image.ImageType.split('\\')
+            : image.ImageType;
+        const imageFlavor = imageType[2];
         if (imageFlavor === 'VOLUME' || imageFlavor === 'THUMBNAIL') {
           volumeImages.push(image);
         }
