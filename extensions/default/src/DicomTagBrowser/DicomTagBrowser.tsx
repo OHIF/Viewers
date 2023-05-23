@@ -1,8 +1,8 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { classes } from '@ohif/core';
-import { InputRange, Select, Typography } from '@ohif/ui';
+import { InputRange, ProgressLoadingBar, Select, Typography } from '@ohif/ui';
 
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
@@ -17,6 +17,8 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     setSelectedDisplaySetInstanceUID,
   ] = useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
+  const [rows, setRows] = useState([]);
+  const [showLoading, setShowLoadingIndicator] = useState(false);
 
   const onSelectChange = value => {
     setSelectedDisplaySetInstanceUID(value.value);
@@ -55,14 +57,28 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     });
   }, [displaySets]);
 
-  let metadata;
-  if (isImageStack) {
-    metadata = activeDisplaySet.images[instanceNumber - 1];
-  } else {
-    metadata = activeDisplaySet.instance || activeDisplaySet;
-  }
-  const tags = getSortedTags(metadata);
-  const rows = getFormattedRowsFromTags(tags, metadata);
+  useEffect(() => {
+    let metadata;
+    if (isImageStack) {
+      metadata = activeDisplaySet.images[instanceNumber - 1];
+    } else {
+      metadata = activeDisplaySet.instance || activeDisplaySet;
+    }
+    const tags = getSortedTags(metadata);
+    const rows = getFormattedRowsFromTags(tags, metadata);
+
+    // Empirically determined to show a loading indicator when more than 1000 rows.
+    if (rows.length > 1000) {
+      setShowLoadingIndicator(true);
+      setTimeout(() => setRows(rows), 0);
+    } else {
+      setRows(rows);
+    }
+  }, [instanceNumber, activeDisplaySet]);
+
+  useEffect(() => {
+    setShowLoadingIndicator(false);
+  }, [rows]);
 
   return (
     <div className="dicom-tag-browser-content">
@@ -104,7 +120,13 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
           </div>
         ) : null}
       </div>
-      <DicomTagTable rows={rows} />
+      <div className="flex flex-col h-[34rem]">
+        {showLoading ? (
+          <ProgressLoadingBar></ProgressLoadingBar>
+        ) : (
+          <DicomTagTable rows={rows} />
+        )}
+      </div>
     </div>
   );
 };
