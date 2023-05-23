@@ -164,6 +164,9 @@ class DicomMicroscopyViewport extends Component {
         const image = new metadataUtils.VLWholeSlideMicroscopyImage({
           metadata: inst,
         });
+
+        // NOTE: depending on different data source, image.ImageType sometimes
+        //    is a string, not a string array.
         const imageType =
           typeof image.ImageType === 'string'
             ? image.ImageType.split('\\')
