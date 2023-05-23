@@ -547,6 +547,27 @@ const commandsModule = ({
       }
     },
 
+    scrollActiveThumbnailIntoView: () => {
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+
+      if (
+        !viewports ||
+        activeViewportIndex < 0 ||
+        activeViewportIndex > viewports.length - 1
+      ) {
+        return;
+      }
+
+      const activeViewport = viewports[activeViewportIndex];
+      const activeDisplaySetInstanceUID =
+        activeViewport.displaySetInstanceUIDs[0];
+
+      const thumbnail = document.querySelector(
+        `#thumbnail-${activeDisplaySetInstanceUID}`
+      );
+      thumbnail.scrollIntoView({ behavior: 'smooth' });
+    },
+
     updateViewportDisplaySet: ({
       direction,
       excludeNonImageModalities,
@@ -623,6 +644,8 @@ const commandsModule = ({
       }
 
       viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+      setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },
   };
 
