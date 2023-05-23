@@ -562,10 +562,33 @@ const commandsModule = ({
       const activeDisplaySetInstanceUID =
         activeViewport.displaySetInstanceUIDs[0];
 
+      const thumbnailList = document.querySelector('#ohif-thumbnail-list');
+
+      if (!thumbnailList) {
+        return;
+      }
+
+      const thumbnailListBounds = thumbnailList.getBoundingClientRect();
+
       const thumbnail = document.querySelector(
         `#thumbnail-${activeDisplaySetInstanceUID}`
       );
-      thumbnail?.scrollIntoView({ behavior: 'smooth' });
+
+      if (!thumbnail) {
+        return;
+      }
+
+      const thumbnailBounds = thumbnail.getBoundingClientRect();
+
+      // This only handles a vertical thumbnail list.
+      if (
+        thumbnailBounds.top >= thumbnailListBounds.top &&
+        thumbnailBounds.top <= thumbnailListBounds.bottom
+      ) {
+        return;
+      }
+
+      thumbnail.scrollIntoView({ behavior: 'smooth' });
     },
 
     updateViewportDisplaySet: ({
