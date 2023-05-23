@@ -565,7 +565,7 @@ const commandsModule = ({
       const thumbnail = document.querySelector(
         `#thumbnail-${activeDisplaySetInstanceUID}`
       );
-      thumbnail.scrollIntoView({ behavior: 'smooth' });
+      thumbnail?.scrollIntoView({ behavior: 'smooth' });
     },
 
     updateViewportDisplaySet: ({
