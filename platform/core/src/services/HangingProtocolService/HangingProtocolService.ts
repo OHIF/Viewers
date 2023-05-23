@@ -1034,6 +1034,23 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   /**
+   * Gets a sort function that is consistent with the display set sorting performed
+   * to match display sets to viewports.
+   * @returns a display set sort function
+   */
+  public getDisplaySetSortFunction(): (
+    displaySetA: IDisplaySet,
+    displaySetB: IDisplaySet
+  ) => number {
+    return (displaySetA, displaySetB) => {
+      const seriesA = this._getSeriesSortInfoForDisplaySetSort(displaySetA);
+      const seriesB = this._getSeriesSortInfoForDisplaySetSort(displaySetB);
+
+      return sortBy(this._getSeriesFieldForDisplaySetSort())(seriesA, seriesB);
+    };
+  }
+
+  /**
    * Updates the viewports with the selected protocol stage.
    */
   _updateViewports(options = null as HangingProtocol.SetProtocolOptions): void {
@@ -1461,7 +1478,7 @@ export default class HangingProtocolService extends PubSubService {
           sortingInfo: {
             score: totalMatchScore,
             study: study.StudyInstanceUID,
-            series: parseInt(displaySet.SeriesNumber),
+            ...this._getSeriesSortInfoForDisplaySetSort(displaySet),
           },
         };
 
@@ -1484,9 +1501,7 @@ export default class HangingProtocolService extends PubSubService {
         name: 'study',
         reverse: true,
       },
-      {
-        name: 'series',
-      }
+      this._getSeriesFieldForDisplaySetSort()
     );
     matchingScores.sort((a, b) =>
       sortingFunction(a.sortingInfo, b.sortingInfo)
@@ -1504,6 +1519,19 @@ export default class HangingProtocolService extends PubSubService {
       bestMatch,
       matchingScores,
     };
+  }
+
+  private _getSeriesSortInfoForDisplaySetSort(displaySet) {
+    return {
+      [this._getSeriesFieldForDisplaySetSort().name]:
+        displaySet.SeriesNumber != null
+          ? parseInt(displaySet.SeriesNumber)
+          : parseInt(displaySet.seriesNumber),
+    };
+  }
+
+  private _getSeriesFieldForDisplaySetSort() {
+    return { name: 'series' };
   }
 
   /**
