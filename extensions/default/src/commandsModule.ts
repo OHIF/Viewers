@@ -560,7 +560,8 @@ const commandsModule = ({
         'RTDOSE',
       ];
 
-      // Sort the display sets as per the hanging protocol service which is also consistent with the thumbnail list.
+      // Sort the display sets as per the hanging protocol service viewport/display set scoring system.
+      // The thumbnail list uses the same sorting.
       const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
       const currentDisplaySets = [...displaySetService.activeDisplaySets];
 

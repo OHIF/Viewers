@@ -1042,14 +1042,12 @@ export default class HangingProtocolService extends PubSubService {
     displaySetA: IDisplaySet,
     displaySetB: IDisplaySet
   ) => number {
-    const sortingFunction = (displaySetA, displaySetB) => {
-      const seriesA = this._getDisplaySetSortInfo(displaySetA);
-      const seriesB = this._getDisplaySetSortInfo(displaySetB);
+    return (displaySetA, displaySetB) => {
+      const seriesA = this._getSeriesSortInfoForDisplaySetSort(displaySetA);
+      const seriesB = this._getSeriesSortInfoForDisplaySetSort(displaySetB);
 
-      return sortBy(this._getDisplaySetSortByField())(seriesA, seriesB);
+      return sortBy(this._getSeriesFieldForDisplaySetSort())(seriesA, seriesB);
     };
-
-    return sortingFunction;
   }
 
   /**
@@ -1480,7 +1478,7 @@ export default class HangingProtocolService extends PubSubService {
           sortingInfo: {
             score: totalMatchScore,
             study: study.StudyInstanceUID,
-            ...this._getDisplaySetSortInfo(displaySet),
+            ...this._getSeriesSortInfoForDisplaySetSort(displaySet),
           },
         };
 
@@ -1503,7 +1501,7 @@ export default class HangingProtocolService extends PubSubService {
         name: 'study',
         reverse: true,
       },
-      this._getDisplaySetSortByField()
+      this._getSeriesFieldForDisplaySetSort()
     );
     matchingScores.sort((a, b) =>
       sortingFunction(a.sortingInfo, b.sortingInfo)
@@ -1523,16 +1521,16 @@ export default class HangingProtocolService extends PubSubService {
     };
   }
 
-  private _getDisplaySetSortInfo(displaySet) {
+  private _getSeriesSortInfoForDisplaySetSort(displaySet) {
     return {
-      [this._getDisplaySetSortByField().name]:
+      [this._getSeriesFieldForDisplaySetSort().name]:
         displaySet.SeriesNumber != null
           ? parseInt(displaySet.SeriesNumber)
           : parseInt(displaySet.seriesNumber),
     };
   }
 
-  private _getDisplaySetSortByField() {
+  private _getSeriesFieldForDisplaySetSort() {
     return { name: 'series' };
   }
 
