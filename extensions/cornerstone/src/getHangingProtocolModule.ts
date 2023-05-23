@@ -89,6 +89,7 @@ const mpr: Types.HangingProtocol.Protocol = {
       viewports: [
         {
           viewportOptions: {
+            id: 'viewport-0', //!Important: This ID is used by Hairs tool to identify the viewport
             toolGroupId: 'mpr',
             viewportType: 'volume',
             orientation: 'axial',
@@ -112,6 +113,7 @@ const mpr: Types.HangingProtocol.Protocol = {
         },
         {
           viewportOptions: {
+            id: 'viewport-1', //!Important: This ID is used by Hairs tool to identify the viewport
             toolGroupId: 'mpr',
             viewportType: 'volume',
             orientation: 'sagittal',
@@ -135,6 +137,7 @@ const mpr: Types.HangingProtocol.Protocol = {
         },
         {
           viewportOptions: {
+            id: 'viewport-2', //!Important: This ID is used by Hairs tool to identify the viewport
             toolGroupId: 'mpr',
             viewportType: 'volume',
             orientation: 'coronal',
@@ -211,6 +214,7 @@ const mprAnd3DVolumeViewport = {
       viewports: [
         {
           viewportOptions: {
+            id: 'viewport-0', //!Important: This ID is used by Hairs tool to identify the viewport
             toolGroupId: 'mpr',
             viewportType: 'volume',
             orientation: 'axial',
@@ -252,6 +256,7 @@ const mprAnd3DVolumeViewport = {
         },
         {
           viewportOptions: {
+            id: 'viewport-2', //!Important: This ID is used by Hairs tool to identify the viewport
             toolGroupId: 'mpr',
             viewportType: 'volume',
             orientation: 'coronal',
@@ -275,6 +280,7 @@ const mprAnd3DVolumeViewport = {
         },
         {
           viewportOptions: {
+            id: 'viewport-1', //!Important: This ID is used by Hairs tool to identify the viewport
             toolGroupId: 'mpr',
             viewportType: 'volume',
             orientation: 'sagittal',
