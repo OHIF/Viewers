@@ -39,7 +39,7 @@ module.exports = {
         main: '#3a3f99',
         disabled: '#2b166b',
         focus: '#5acce6',
-        placeholder: '#39383f'
+        placeholder: '#39383f',
       },
 
       secondary: {

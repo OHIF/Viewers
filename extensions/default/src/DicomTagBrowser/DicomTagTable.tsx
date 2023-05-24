@@ -1,21 +1,26 @@
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
 
 const lineHeightPx = 20;
 const lineHeightClassName = `leading-[${lineHeightPx}px]`;
 const rowVerticalPaddingPx = 10;
-const rowVerticalPaddingClassName = `py-[${rowVerticalPaddingPx}px]`;
+const rowBottomBorderPx = 1;
+const rowVerticalPaddingStyle = { padding: `${rowVerticalPaddingPx}px 0` };
+const rowStyle = {
+  borderBottomWidth: `${rowBottomBorderPx}px`,
+  ...rowVerticalPaddingStyle,
+};
 
 function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
   return (
     <div
       className={classNames(
-        'flex flex-row w-full bg-secondary-light ohif-scrollbar overflow-y-scroll',
-        rowVerticalPaddingClassName
+        'flex flex-row w-full bg-secondary-dark ohif-scrollbar overflow-y-scroll'
       )}
+      style={rowVerticalPaddingStyle}
     >
-      <div className="px-3 w-5/24">
+      <div className="px-3 w-4/24">
         <label
           ref={tagRef}
           className="flex flex-col flex-1 text-white text-lg pl-1 select-none"
@@ -25,7 +30,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
           </span>
         </label>
       </div>
-      <div className="px-3 w-4/24">
+      <div className="px-3 w-2/24">
         <label
           ref={vrRef}
           className="flex flex-col flex-1 text-white text-lg pl-1 select-none"
@@ -95,16 +100,15 @@ function DicomTagTable({ rows }) {
 
     return (
       <div
-        style={style}
+        style={{ ...style, ...rowStyle }}
         className={classNames(
-          'hover:bg-secondary-main transition duration-300 bg-primary-dark flex flex-row py-2 w-full border-b border-secondary-light items-center text-base break-all',
-          rowVerticalPaddingClassName,
+          'hover:bg-secondary-main transition duration-300 bg-black flex flex-row w-full border-secondary-light items-center text-base break-all',
           lineHeightClassName
         )}
         key={`DICOMTagRow-${index}`}
       >
-        <div className="px-3 w-5/24">{row[0]}</div>
-        <div className="px-3 w-4/24">{row[1]}</div>
+        <div className="px-3 w-4/24">{row[0]}</div>
+        <div className="px-3 w-2/24">{row[1]}</div>
         <div className="px-3 w-6/24">{row[2]}</div>
         <div className="px-3 w-5/24 grow">{row[3]}</div>
       </div>
@@ -158,7 +162,9 @@ function DicomTagTable({ rows }) {
       .map((colText, index) => {
         const colOneLineWidth = context.measureText(colText).width;
         const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
-        return numLines * lineHeightPx + 2 * rowVerticalPaddingPx;
+        return (
+          numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx
+        );
       })
       .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight));
   };
@@ -177,7 +183,7 @@ function DicomTagTable({ rows }) {
         valueRef={valueRef}
       />
       <div
-        className="m-auto relative border-2 border-secondary-light"
+        className="m-auto relative border-2 border-black bg-black"
         style={{ height: '32rem' }}
       >
         {isHeaderRendered() && (

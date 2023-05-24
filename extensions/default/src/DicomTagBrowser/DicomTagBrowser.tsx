@@ -1,8 +1,16 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, { useState, useMemo } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import { classes } from '@ohif/core';
-import { InputRange, Select, Typography } from '@ohif/ui';
+import { Icon, InputRange, Select, Typography } from '@ohif/ui';
+import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
@@ -12,16 +20,21 @@ const { DicomMetaDictionary } = dcmjs.data;
 const { nameMap } = DicomMetaDictionary;
 
 const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
+  const excludedColumnIndicesForFilter: Set<number> = new Set([1]);
+
   const [
     selectedDisplaySetInstanceUID,
     setSelectedDisplaySetInstanceUID,
   ] = useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
+  const [filterValue, setFilterValue] = useState('');
 
   const onSelectChange = value => {
     setSelectedDisplaySetInstanceUID(value.value);
     setInstanceNumber(1);
   };
+
+  const searchInputRef = useRef(null);
 
   const activeDisplaySet = displaySets.find(
     ds => ds.displaySetInstanceUID === selectedDisplaySetInstanceUID
@@ -55,56 +68,120 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     });
   }, [displaySets]);
 
-  let metadata;
-  if (isImageStack) {
-    metadata = activeDisplaySet.images[instanceNumber - 1];
-  } else {
-    metadata = activeDisplaySet.instance || activeDisplaySet;
-  }
-  const tags = getSortedTags(metadata);
-  const rows = getFormattedRowsFromTags(tags, metadata);
+  const rows = useMemo(() => {
+    let metadata;
+    if (isImageStack) {
+      metadata = activeDisplaySet.images[instanceNumber - 1];
+    } else {
+      metadata = activeDisplaySet.instance || activeDisplaySet;
+    }
+    const tags = getSortedTags(metadata);
+    return getFormattedRowsFromTags(tags, metadata);
+  }, [instanceNumber, selectedDisplaySetInstanceUID]);
+
+  const filteredRows = useMemo(() => {
+    const filterValueLowerCase = filterValue.toLowerCase();
+    return rows.filter(row => {
+      return row.reduce((keepRow, col, colIndex) => {
+        if (keepRow) {
+          // We are already keeping the row, why do more work so return now.
+          return keepRow;
+        }
+
+        if (excludedColumnIndicesForFilter.has(colIndex)) {
+          return keepRow;
+        }
+
+        return keepRow || col.toLowerCase().includes(filterValueLowerCase);
+      }, false);
+    });
+  }, [rows, filterValue]);
+
+  const debouncedSetFilterValue = useMemo(() => {
+    return debounce(setFilterValue, 200);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedSetFilterValue?.cancel();
+    };
+  }, []);
 
   return (
     <div className="dicom-tag-browser-content">
-      <div className="flex flex-row items-center mb-2">
-        <Typography variant="subtitle" className="w-1/2 mr-8">
-          Series
-        </Typography>
-        {showInstanceList && (
-          <Typography variant="subtitle" className="w-1/2">
-            Instance Number
+      <div className="flex flex-row mb-6 items-center pl-1">
+        <div className="flex flex-row items-center w-1/2">
+          <Typography variant="subtitle" className="mr-4">
+            Series
           </Typography>
-        )}
-      </div>
-      <div className="flex flex-row items-center mb-6">
-        <div className="w-1/2 mr-8">
-          <Select
-            id="display-set-selector"
-            isClearable={false}
-            onChange={onSelectChange}
-            options={displaySetList}
-            value={displaySetList.find(
-              ds => ds.value === selectedDisplaySetInstanceUID
-            )}
-            className="text-white"
-          />
-        </div>
-        {showInstanceList ? (
-          <div className="w-1/2">
-            <InputRange
-              value={instanceNumber}
-              key={selectedDisplaySetInstanceUID}
-              onChange={value => {
-                setInstanceNumber(parseInt(value));
-              }}
-              minValue={1}
-              maxValue={activeDisplaySet.images.length}
-              step={1}
+          <div className="grow mr-8">
+            <Select
+              id="display-set-selector"
+              isClearable={false}
+              onChange={onSelectChange}
+              options={displaySetList}
+              value={displaySetList.find(
+                ds => ds.value === selectedDisplaySetInstanceUID
+              )}
+              className="text-white"
             />
           </div>
-        ) : null}
+        </div>
+        <div className="flex flex-row items-center w-1/2">
+          {showInstanceList && (
+            <Typography variant="subtitle" className="mr-4">
+              Instance Number
+            </Typography>
+          )}
+          {showInstanceList && (
+            <div className="grow">
+              <InputRange
+                value={instanceNumber}
+                key={selectedDisplaySetInstanceUID}
+                onChange={value => {
+                  setInstanceNumber(parseInt(value));
+                }}
+                minValue={1}
+                maxValue={activeDisplaySet.images.length}
+                step={1}
+                inputClassName="w-full"
+                labelPosition="left"
+                solidTrackBackground={true}
+              />
+            </div>
+          )}
+        </div>
       </div>
-      <DicomTagTable rows={rows} />
+      <div className="w-full h-1 bg-black"></div>
+      <div className="flex flex-row mt-2 mb-4 w-1/2">
+        <label className="relative block w-full mr-8">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-2">
+            <Icon name="icon-search"></Icon>
+          </span>
+          <input
+            ref={searchInputRef}
+            type="text"
+            className="block bg-black w-full shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded w-full py-2 px-9 text-lg leading-tight placeholder:text-inputfield-placeholder"
+            placeholder="Search metadata..."
+            onChange={event => debouncedSetFilterValue(event.target.value)}
+            autoComplete="off"
+          ></input>
+          <span className="absolute inset-y-0 right-0 flex items-center pr-2">
+            <Icon
+              name="icon-clear-field"
+              className={classNames(
+                'cursor-pointer',
+                filterValue ? '' : 'hidden'
+              )}
+              onClick={() => {
+                searchInputRef.current.value = '';
+                debouncedSetFilterValue('');
+              }}
+            ></Icon>
+          </span>
+        </label>
+      </div>
+      <DicomTagTable rows={filteredRows} />
     </div>
   );
 };

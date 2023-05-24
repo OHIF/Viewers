@@ -53,12 +53,14 @@ import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
 import iconAlertOutline from './../../assets/icons/icons-alert-outline.svg';
 import iconAlertSmall from './../../assets/icons/icon-alert-small.svg';
 import iconClose from './../../assets/icons/icon-close.svg';
+import iconClearField from './../../assets/icons/icon-clear-field.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
 import iconNext from './../../assets/icons/icon-next.svg';
 import iconPlay from './../../assets/icons/icon-play.svg';
 import iconPause from './../../assets/icons/icon-pause.svg';
 import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
 import iconPrev from './../../assets/icons/icon-prev.svg';
+import iconSearch from './../../assets/icons/icon-search.svg';
 import iconStatusAlert from './../../assets/icons/icon-status-alert.svg';
 import iconTransferring from './../../assets/icons/icon-transferring.svg';
 import iconUpload from './../../assets/icons/icon-upload.svg';
@@ -151,9 +153,11 @@ const ICONS = {
   info: info,
   'icon-alert-outline': iconAlertOutline,
   'icon-alert-small': iconAlertSmall,
+  'icon-clear-field': iconClearField,
   'icon-close': iconClose,
   'icon-play': iconPlay,
   'icon-pause': iconPause,
+  'icon-search': iconSearch,
   'icon-status-alert': iconStatusAlert,
   'icon-transferring': iconTransferring,
   'info-action': infoAction,
