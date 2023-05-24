@@ -64,7 +64,7 @@ const Summary = props => {
               color: '#00c7ee',
             }}
           >
-            Patient ID :{' '}
+            Patient ID : {' '}
           </h2>
           <h2> {patientData.PatientID} </h2>
         </div>
@@ -84,7 +84,7 @@ const Summary = props => {
               color: '#00c7ee',
             }}
           >
-            Patient Name :{' '}
+            Patient Name : {' '}
           </h2>
           <h2> {patientData.PatientName} </h2>
         </div>
@@ -104,7 +104,7 @@ const Summary = props => {
               color: '#00c7ee',
             }}
           >
-            Classifier:{' '}
+            Classifier : {' '}
           </h2>
           <h2>Resnet-18 </h2>
         </div>
@@ -123,7 +123,7 @@ const Summary = props => {
               color: '#00c7ee',
             }}
           >
-            Malignant Score :{' '}
+            Malignant Score : {' '}
           </h2>
           <h2>
             {similarityResultState.score

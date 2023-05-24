@@ -138,9 +138,6 @@ class OHIFCornerstoneViewport extends Component {
   };
 
   setStateFromProps() {
-    console.log({
-      setStateFromProps: this.props,
-    });
     const { studies, displaySet } = this.props.viewportData;
     const {
       StudyInstanceUID,
@@ -224,13 +221,7 @@ class OHIFCornerstoneViewport extends Component {
       const { displaySet } = this.props.viewportData;
       const { StudyInstanceUID } = displaySet;
 
-      console.log({
-        currentImageIdIndex,
-        StudyInstanceUID,
-      });
-
       if (currentImageIdIndex > 0) {
-        localStorage.setItem('currentImageIdIndex', currentImageIdIndex + '');
         this.props.onNewImage({
           StudyInstanceUID,
           SOPInstanceUID: sopInstanceUid,

@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import Viewer from './SelectMask';
 import OHIF from '@ohif/core';
 import findDisplaySetByUID from './findDisplaySetByUID.js';
+import { servicesManager } from '../App';
 
 const {
   setTimepoints,
@@ -24,7 +25,7 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onTimepointsUpdated: timepoints => {
       dispatch(setTimepoints(timepoints));
@@ -32,9 +33,9 @@ const mapDispatchToProps = dispatch => {
     onMeasurementsUpdated: measurements => {
       dispatch(setMeasurements(measurements));
     },
-    onThumbnailClick: (displaySetInstanceUID, studyMetadata) => {
+    onThumbnailClick: displaySetInstanceUID => {
       let displaySet = findDisplaySetByUID(
-        studyMetadata,
+        ownProps.studyMetadata,
         displaySetInstanceUID
       );
 
@@ -59,7 +60,7 @@ const mapDispatchToProps = dispatch => {
             referencedDisplaySet,
             activatedLabelmapPromise,
           } = displaySet.getSourceDisplaySet(
-            studyMetadata,
+            ownProps.studyMetadata,
             true,
             onDisplaySetLoadFailureHandler
           );
@@ -75,7 +76,7 @@ const mapDispatchToProps = dispatch => {
             document.dispatchEvent(selectionFired);
           });
         } else {
-          displaySet = displaySet.getSourceDisplaySet(studyMetadata);
+          displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
         }
 
         if (!displaySet) {

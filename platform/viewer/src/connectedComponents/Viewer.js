@@ -12,7 +12,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
-import { commandsManager, extensionManager } from './../App.js';
+import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
 import circularLoading from '../appExtensions/ThetaDetailsPanel/TextureFeatures/utils/circular-loading.json';
 import '../googleCloud/googleCloud.css';
@@ -29,10 +29,9 @@ import {
   handleRestoreToolState,
   handleSaveToolState,
 } from '../utils/syncrhonizeToolState.js';
+import { getItem, setItem } from '../lib/localStorageUtils.js';
 
-const MINIMUM_SIZE = 100;
-const DEFAULT_SIZE = 512;
-const MAX_TEXTURE_SIZE = 10000;
+let hasRestoredState = false;
 
 class Viewer extends Component {
   static propTypes = {
@@ -98,6 +97,8 @@ class Viewer extends Component {
     });
 
     this._getActiveViewport = this._getActiveViewport.bind(this);
+    this.saveToolState = this.saveToolState.bind(this);
+    this.onImageRendered = this.onImageRendered.bind(this);
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
   }
@@ -113,29 +114,6 @@ class Viewer extends Component {
     // selectedRightSidePanel: 'xnat-segmentation-panel',
     thumbnails: [],
   };
-
-  componentWillUnmount() {
-    if (this.props.dialog) {
-      this.props.dialog.dismissAll();
-    }
-
-    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
-    if (enabledElement) {
-      // cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
-      //   enabledElement
-      // );
-      let viewport = cornerstone.getViewport(enabledElement);
-      const image = cornerstone.getImage(enabledElement);
-      const instance_uid = image.imageId.split('/')[14];
-
-      handleSaveToolState(instance_uid, viewport);
-    }
-
-    cornerstone.events.removeEventListener(
-      cornerstone.EVENTS.ELEMENT_ENABLED,
-      this.onCornerstageLoaded
-    );
-  }
 
   retrieveTimepoints = filter => {
     OHIF.log.info('retrieveTimepoints');
@@ -202,6 +180,43 @@ class Viewer extends Component {
     }
   };
 
+  componentWillUnmount() {
+    eventBus.remove('handleThumbnailClick');
+    eventBus.remove('handleThumbnailClick::savetoolstate');
+
+    if (this.props.dialog) {
+      this.props.dialog.dismissAll();
+    }
+
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    if (enabledElement) {
+      // cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
+      //   enabledElement
+      // );
+      let viewport = cornerstone.getViewport(enabledElement);
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+
+      handleSaveToolState(instance_uid, viewport);
+      enabledElement.element.removeEventListener(
+        'cornerstonetoolsmouseup',
+        this.saveToolState
+      );
+      enabledElement.element.removeEventListener(
+        'cornerstonetoolstouchend',
+        this.saveToolState
+      );
+      enabledElement.element.removeEventListener(
+        'cornerstonetoolsmeasurementcompleted',
+        this.saveToolState
+      );
+    }
+    cornerstone.events.removeEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
+  }
+
   componentDidMount() {
     const { studies, isStudyLoaded, ...rest } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
@@ -246,8 +261,6 @@ class Viewer extends Component {
       this.setState({
         thumbnails,
       });
-
-      this.loadLastActiveStudy(thumbnails);
     }
 
     this.setState({
@@ -264,10 +277,123 @@ class Viewer extends Component {
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
+
+    eventBus.on('handleThumbnailClick', data => {
+      setTimeout(() => {
+        this.onHandleThumbnailClick();
+      }, 3000);
+    });
+
+    eventBus.on('handleThumbnailClick::savetoolstate', data => {
+      this.saveToolState();
+    });
   }
 
+  onHandleThumbnailClick = () => {
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    try {
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+      const strippedImageId = image.imageId.split('studies/')[1];
+      const seriesUid = strippedImageId.split('/')[2]; // get series UID instead of SOP instance UID
+      handleScrolltoIndex(enabledElement, seriesUid);
+      handleRestoreToolState(cornerstone, enabledElement, instance_uid);
+      let viewport = cornerstone.getViewport(enabledElement);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   onCornerstageLoaded = enabledEvt => {
+    const enabledElement = enabledEvt.detail.element;
+    enabledElement.addEventListener(
+      cornerstone.EVENTS.IMAGE_RENDERED,
+      this.onImageRendered
+    );
+
+    // setTimeout(() => {
+    //   if (
+    //     matchPath(this.props.location.pathname, {
+    //       path:
+    //         '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+    //       exact: true,
+    //     })
+    //   ) {
+    //     this.handleSidePanelChange('right', 'xnat-segmentation-panel');
+    //   }
+    // }, 3000);
+
     setTimeout(() => {
+      try {
+        enabledElement.addEventListener(
+          'cornerstonetoolsstackscroll',
+          this.onStackScroll
+        );
+
+        enabledElement.addEventListener(
+          'cornerstonetoolsmouseup',
+          this.saveToolState
+        );
+        enabledElement.addEventListener(
+          'cornerstonetoolstouchend',
+          this.saveToolState
+        );
+        enabledElement.addEventListener(
+          'cornerstonetoolsmeasurementcompleted',
+          this.saveToolState
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }, 3000);
+  };
+
+  saveToolState() {
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+    setItem('toolState', toolState);
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    let viewport = cornerstone.getViewport(enabledElement);
+    const image = cornerstone.getImage(enabledElement);
+    const instance_uid = image.imageId.split('/')[14];
+    handleSaveToolState(instance_uid, viewport);
+  }
+
+  loadToolState() {
+    const toolState = getItem('toolState');
+    if (toolState) {
+      cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+        toolState
+      );
+    }
+  }
+
+  onStackScroll = event => {
+    // Event-specific data
+    const eventData = event.detail;
+    // Get the current image from the enabled element
+    const image = cornerstone.getImage(event.currentTarget);
+
+    // If the image is available
+    if (image) {
+      const instance_uid = image.imageId.split('/')[14];
+      const strippedImageId = image.imageId.split('studies/')[1];
+      const seriesUid = strippedImageId.split('/')[2]; // get series UID instead of SOP instance UID
+
+      setItem(`stackScroll:${seriesUid}`, {
+        instance_uid,
+        newImageIdIndex: eventData.newImageIdIndex,
+      });
+    }
+  };
+
+  // Handle the event with a function that applies the synchronization logic
+  onImageRendered(event) {
+    if (!hasRestoredState) {
+      const element = event.target;
+      const enabledElements = cornerstone.getEnabledElements();
+      const imageIdIndex = enabledElements.indexOf(element);
+      const enabledElement = event.detail.element;
+
       if (
         matchPath(this.props.location.pathname, {
           path:
@@ -277,22 +403,36 @@ class Viewer extends Component {
       ) {
         this.handleSidePanelChange('right', 'xnat-segmentation-panel');
       }
-    }, 3000);
 
-    setTimeout(() => {
-      const enabledElement = enabledEvt.detail.element;
-      try {
-        const image = cornerstone.getImage(enabledElement);
-        const instance_uid = image.imageId.split('/')[14];
+      hasRestoredState = true;
+    }
 
-        handleScrolltoIndex(enabledElement);
-        handleRestoreToolState(cornerstone, enabledElement, instance_uid);
-      } catch (error) {
-        console.log(error);
-      }
-      // }
-    }, 4000);
-  };
+    // let viewport = cornerstone.getViewport(enabledElements);
+    // const image = cornerstone.getImage(enabledElements);
+    // const instance_uid = image.imageId.split('/')[14];
+    // handleSaveToolState(instance_uid, viewport);
+
+    // if (imageIdIndex === -1) {
+    //   return;
+    // }
+
+    // // Update the viewports to match the new index
+    // for (let i = 0; i < enabledElements.length; i++) {
+    //   if (i === imageIdIndex) {
+    //     continue;
+    //   }
+    //   const viewport = cornerstone.getViewport(enabledElements[i]);
+    //   const maxImageIdIndex = cornerstoneTools.getMaxImageIdIndex(
+    //     enabledElements[i]
+    //   );
+    //   const newImageIdIndex = Math.min(imageIdIndex, maxImageIdIndex);
+    //   cornerstone.setViewport(
+    //     enabledElements[i],
+    //     viewport,
+    //     enabledElements[newImageIdIndex]
+    //   );
+    // }
+  }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
     const fetchedSeries = await (async () => {
@@ -353,10 +493,6 @@ class Viewer extends Component {
       this.setState({
         thumbnails,
       });
-
-      // this.loadLastActiveStudy(thumbnails);
-
-      // if (activeDisplaySetInstanceUID)
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
       const PatientID = studies[0] && studies[0].PatientID;
@@ -369,20 +505,6 @@ class Viewer extends Component {
 
   _getActiveViewport() {
     return this.props.viewports[this.props.activeViewportIndex];
-  }
-
-  loadLastActiveStudy(thumbnails) {
-    // let active_study = JSON.parse(localStorage.getItem('active_study'));
-
-    try {
-      // if (thumbnails[0].thumbnails[2].displaySetInstanceUID)
-      //   this.props.onThumbnailClick(
-      //     thumbnails[0].thumbnails[2].displaySetInstanceUID,
-      //     this.props.studies
-      //   );
-    } catch (error) {
-      console.error(error);
-    }
   }
 
   handleSidePanelChange = (side, selectedPanel) => {

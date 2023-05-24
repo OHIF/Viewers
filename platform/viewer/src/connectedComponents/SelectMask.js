@@ -29,6 +29,9 @@ import {
   handleSaveToolState,
 } from '../utils/syncrhonizeToolState';
 import handleScrolltoIndex from '../utils/handleScrolltoIndex';
+import { getItem, setItem } from '../lib/localStorageUtils';
+import eventBus from '../lib/eventBus';
+let hasRestoredState = false;
 
 class SelectMask extends Component {
   static propTypes = {
@@ -93,6 +96,9 @@ class SelectMask extends Component {
       },
     });
 
+    this.saveToolState = this.saveToolState.bind(this);
+    this.onImageRendered = this.onImageRendered.bind(this);
+    this.onHandleThumbnailClick = this.onHandleThumbnailClick.bind(this);
     this._getActiveViewport = this._getActiveViewport.bind(this);
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
@@ -100,7 +106,7 @@ class SelectMask extends Component {
 
   state = {
     loading: true,
-    isLeftSidePanelOpen: false,
+    isLeftSidePanelOpen: true,
     selectedLeftSidePanel: '', // TODO: Don't hardcode this
     isRightSidePanelOpen: false,
     selectedRightSidePanel: '',
@@ -108,63 +114,6 @@ class SelectMask extends Component {
     thumbnails: [],
     isEditSelection: false,
   };
-
-  onCornerstageLoaded = enabledEvt => {
-    setTimeout(() => {
-      const options = {
-        type: 'click',
-      };
-
-      commandsManager.runCommand('triggerAlgorithm', options);
-    }, 2000);
-
-    setTimeout(() => {
-      const enabledElement = enabledEvt.detail.element;
-
-      try {
-        const image = cornerstone.getImage(enabledElement);
-        const instance_uid = image.imageId.split('/')[14];
-
-        handleScrolltoIndex(enabledElement);
-        handleRestoreToolState(cornerstone, enabledElement, instance_uid);
-      } catch (error) {
-        console.log(error);
-      }
-    }, 2000);
-  };
-
-  componentWillUnmount() {
-    if (this.props.dialog) {
-      this.props.dialog.dismissAll();
-    }
-    // const { EVENTS } = cornerstoneTools;
-    // const view_ports = cornerstone.getEnabledElements();
-    // const viewports = view_ports[0];
-
-    // const element = getEnabledElement(view_ports.indexOf(viewports));
-    // if (element) {
-    //   element.removeEventListener(EVENTS.MEASUREMENT_COMPLETED, event => {
-    //     console.log('measurement completed', event);
-    //   });
-    // }
-    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
-    if (enabledElement) {
-      let viewport = cornerstone.getViewport(enabledElement);
-
-      const image = cornerstone.getImage(enabledElement);
-      const instance_uid = image.imageId.split('/')[14];
-      handleSaveToolState(instance_uid, viewport);
-
-      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
-        enabledElement
-      );
-    }
-
-    cornerstone.events.removeEventListener(
-      cornerstone.EVENTS.ELEMENT_ENABLED,
-      this.onCornerstageLoaded
-    );
-  }
 
   retrieveTimepoints = filter => {
     OHIF.log.info('retrieveTimepoints');
@@ -231,6 +180,42 @@ class SelectMask extends Component {
     }
   };
 
+  componentWillUnmount() {
+    eventBus.remove('handleThumbnailClick');
+
+    if (this.props.dialog) {
+      this.props.dialog.dismissAll();
+    }
+
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    if (enabledElement) {
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(
+        enabledElement
+      );
+      let viewport = cornerstone.getViewport(enabledElement);
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+
+      handleSaveToolState(instance_uid, viewport);
+      enabledElement.element.removeEventListener(
+        'cornerstonetoolsmouseup',
+        this.saveToolState
+      );
+      enabledElement.element.removeEventListener(
+        'cornerstonetoolstouchend',
+        this.saveToolState
+      );
+      enabledElement.element.removeEventListener(
+        'cornerstonetoolsmeasurementcompleted',
+        this.saveToolState
+      );
+    }
+    cornerstone.events.removeEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
+  }
+
   componentDidMount() {
     const { studies, isStudyLoaded, ...rest } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
@@ -283,6 +268,131 @@ class SelectMask extends Component {
       cornerstone.EVENTS.ELEMENT_ENABLED,
       this.onCornerstageLoaded
     );
+
+    eventBus.on('handleThumbnailClick', data => {
+      setTimeout(() => {
+        this.onHandleThumbnailClick();
+      }, 3000);
+    });
+
+    eventBus.on('handleThumbnailClick::savetoolstate', data => {
+      this.saveToolState();
+    });
+  }
+
+  onHandleThumbnailClick = () => {
+    try {
+      const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+      const strippedImageId = image.imageId.split('studies/')[1];
+      const seriesUid = strippedImageId.split('/')[2]; // get series UID instead of SOP instance UID
+      handleScrolltoIndex(enabledElement, seriesUid);
+      handleRestoreToolState(cornerstone, enabledElement, instance_uid);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  onCornerstageLoaded = enabledEvt => {
+    const enabledElement = enabledEvt.detail.element;
+    enabledElement.addEventListener(
+      cornerstone.EVENTS.IMAGE_RENDERED,
+      this.onImageRendered
+    );
+
+    setTimeout(() => {
+      const options = {
+        type: 'click',
+      };
+
+      commandsManager.runCommand('triggerAlgorithm', options);
+    }, 2000);
+
+    setTimeout(() => {
+      try {
+        enabledElement.addEventListener(
+          'cornerstonetoolsstackscroll',
+          this.onStackScroll
+        );
+
+        enabledElement.addEventListener(
+          'cornerstonetoolsmouseup',
+          this.saveToolState
+        );
+        enabledElement.addEventListener(
+          'cornerstonetoolstouchend',
+          this.saveToolState
+        );
+        enabledElement.addEventListener(
+          'cornerstonetoolsmeasurementcompleted',
+          this.saveToolState
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }, 3000);
+  };
+
+  saveToolState() {
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+    setItem('toolState', toolState);
+    const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+    let viewport = cornerstone.getViewport(enabledElement);
+    const image = cornerstone.getImage(enabledElement);
+    const instance_uid = image.imageId.split('/')[14];
+    handleSaveToolState(instance_uid, viewport);
+  }
+
+  loadToolState() {
+    const toolState = getItem('toolState');
+    if (toolState) {
+      cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+        toolState
+      );
+    }
+  }
+
+  onStackScroll = event => {
+    // Event-specific data
+    const eventData = event.detail;
+    // Get the current image from the enabled element
+    const image = cornerstone.getImage(event.currentTarget);
+
+    // If the image is available
+    if (image) {
+      const instance_uid = image.imageId.split('/')[14];
+      const strippedImageId = image.imageId.split('studies/')[1];
+      const seriesUid = strippedImageId.split('/')[2]; // get series UID instead of SOP instance UID
+
+      setItem(`stackScroll:${seriesUid}`, {
+        instance_uid,
+        newImageIdIndex: eventData.newImageIdIndex,
+      });
+    }
+  };
+
+  // Handle the event with a function that applies the synchronization logic
+  onImageRendered(event) {
+    if (!hasRestoredState) {
+      const element = event.target;
+      const enabledElements = cornerstone.getEnabledElements();
+      const imageIdIndex = enabledElements.indexOf(element);
+
+      const enabledElement = event.detail.element;
+
+      if (
+        matchPath(this.props.location.pathname, {
+          path:
+            '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+          exact: true,
+        })
+      ) {
+        this.handleSidePanelChange('right', 'xnat-segmentation-panel');
+      }
+
+      hasRestoredState = true;
+    }
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
@@ -311,8 +421,6 @@ class SelectMask extends Component {
       series: fetchedSeries,
     });
   }
-
-  triggerReload() {}
 
   handleGoRadionics = () => {
     const location = this.props.location;
@@ -362,16 +470,6 @@ class SelectMask extends Component {
       this.timepointApi.retrieveTimepoints({ PatientID });
       this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
-  }
-
-  loadLastActiveStudy() {
-    // let active_study = JSON.parse(localStorage.getItem('active_study'));
-
-    if (this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID)
-      this.props.onThumbnailClick(
-        this.state.thumbnails[0].thumbnails[1].displaySetInstanceUID,
-        this.props.studies
-      );
   }
 
   _getActiveViewport() {
@@ -444,94 +542,39 @@ class SelectMask extends Component {
         />
         {/* layout */}
 
-        <div>
-          <div className="container">
-            {/* VIEWPORTS + SIDEPANELS */}
-            <div
-              style={{
-                width: '100%',
-                padding: '20px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                {/* <div>
-                  <h2
-                    style={{
-                      textAlign: 'left',
-                    }}
-                  >
-                    Edit Selection
-                  </h2>
-                </div> */}
-                {/* <div>
-                  <button
-                    className="btn btn-primary"
-                    onClick={this.handleGoRadionics}
-                  >
-                    Generate
-                  </button>
-                </div> */}
-              </div>
-
-              <ErrorBoundaryDialog context="ToolbarRow">
-                <ToolbarRow
-                  activeViewport={
-                    this.props.viewports[this.props.activeViewportIndex]
-                  }
-                  inEditSegmentationMode={this.state.inEditSegmentationMode}
-                  isDerivedDisplaySetsLoaded={
-                    this.props.isDerivedDisplaySetsLoaded
-                  }
-                  isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-                  isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-                  selectedLeftSidePanel={
-                    this.state.isLeftSidePanelOpen
-                      ? this.state.selectedLeftSidePanel
-                      : ''
-                  }
-                  selectedRightSidePanel={
-                    this.state.isRightSidePanelOpen
-                      ? this.state.selectedRightSidePanel
-                      : ''
-                  }
-                  handleSidePanelChange={this.handleSidePanelChange}
-                  studies={this.props.studies}
-                />
-              </ErrorBoundaryDialog>
-
-              {/* MAIN */}
-              <div
-                className={classNames('main-content')}
-                ref={this.componentRef}
-              >
-                <ErrorBoundaryDialog context="ViewerMain">
-                  <ConnectedViewerMain
-                    studies={_removeUnwantedSeries(
-                      this.props.studies,
-                      this.source_series_ref
-                    )}
-                    isStudyLoaded={this.props.isStudyLoaded}
-                  />
-                </ErrorBoundaryDialog>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
 
         {/* VIEWPORTS + SIDEPANELS */}
         {/* LEFT */}
-        {/* <div className="FlexboxLayout">
+
+        <ErrorBoundaryDialog context="ToolbarRow">
+          <ToolbarRow
+            activeViewport={
+              this.props.viewports[this.props.activeViewportIndex]
+            }
+            inEditSegmentationMode={this.state.inEditSegmentationMode}
+            isDerivedDisplaySetsLoaded={this.props.isDerivedDisplaySetsLoaded}
+            isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
+            isRightSidePanelOpen={this.state.isRightSidePanelOpen}
+            selectedLeftSidePanel={
+              this.state.isLeftSidePanelOpen
+                ? this.state.selectedLeftSidePanel
+                : ''
+            }
+            selectedRightSidePanel={
+              this.state.isRightSidePanelOpen
+                ? this.state.selectedRightSidePanel
+                : ''
+            }
+            handleSidePanelChange={this.handleSidePanelChange}
+            studies={this.props.studies}
+          />
+        </ErrorBoundaryDialog>
+
+        <div className="FlexboxLayout">
           <ErrorBoundaryDialog context="LeftSidePanel">
-            <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
+            <SidePanel from="left" isOpen={false}>
               {VisiblePanelLeft ? (
                 <VisiblePanelLeft
                   viewports={this.props.viewports}
@@ -546,7 +589,19 @@ class SelectMask extends Component {
               )}
             </SidePanel>
           </ErrorBoundaryDialog>
-        </div> */}
+
+          <div className={classNames('main-content')} ref={this.componentRef}>
+            <ErrorBoundaryDialog context="ViewerMain">
+              <ConnectedViewerMain
+                studies={_removeUnwantedSeries(
+                  this.props.studies,
+                  this.source_series_ref
+                )}
+                isStudyLoaded={this.props.isStudyLoaded}
+              />
+            </ErrorBoundaryDialog>
+          </div>
+        </div>
       </>
     );
   }

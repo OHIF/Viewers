@@ -103,6 +103,7 @@ const NavigateIcons = () => {
 
   useEffect(() => {
     setItem('canSave', 0);
+
     cornerstone.events.addEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
       onCornerstoneLoaded

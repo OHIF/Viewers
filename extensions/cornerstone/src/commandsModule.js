@@ -11,6 +11,7 @@ import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 import store from '@ohif/viewer/src/store';
 import { BrainMode } from '@ohif/viewer/src/utils/constants';
+import eventBus from '@ohif/viewer/src/lib/eventBus';
 const scroll = cornerstoneTools.import('util/scroll');
 const scrollTo = cornerstoneTools.import('util/scrollToIndex');
 
@@ -87,6 +88,7 @@ const commandsModule = ({ servicesManager }) => {
           windowCenter: Number(level),
         };
         cornerstone.setViewport(enabledElement, viewport);
+        eventBus.dispatch('handleThumbnailClick::savetoolstate', {});
 
         // clearToolState(enabledElement, 'brushTools');
         // cornerstone.updateImage(enabledElement);

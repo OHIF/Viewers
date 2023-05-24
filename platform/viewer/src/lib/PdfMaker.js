@@ -72,15 +72,44 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
     const malignant = data.malignant ? ' Yes' : 'No';
     // if (index == 0)
     contents.push({
-      margin: [0, 10],
-      stack: [
+      // margin: [0, 10],
+      // stack: [
+      //   {
+      //     image: 'query',
+      //     fit: [150, 150],
+      //   },
+      //   {
+      //     text: 'Original Query',
+      //     fontsize: 14,
+      //   },
+      // ],
+
+      alignment: 'right',
+      // pageBreak: 'before',
+      columns: [
         {
-          image: 'query',
-          fit: [150, 150],
+          alignment: 'left',
+          fontSize: 14,
+          stack: [
+            {
+              image: 'query',
+              fit: [150, 150],
+            },
+            {
+              text: 'Original Query',
+              fontsize: 14,
+            },
+          ],
         },
         {
-          text: 'Original Query',
-          fontsize: 14,
+          width: 400,
+          stack: [
+            'Number :' + (index + 1),
+            'Similarity:' + data.similarity_score,
+            'Dataset:' + data.dataset,
+            'Dataset Id:' + data.data_id,
+            'Malignant: ' + malignant,
+          ],
         },
       ],
     });

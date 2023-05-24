@@ -44,12 +44,14 @@ import Summary from '../components/Summary';
 import PdfMaker from '../lib/PdfMaker';
 import handleScrolltoIndex from '../utils/handleScrolltoIndex';
 import { handleRestoreToolState } from '../utils/syncrhonizeToolState';
+import ConnectedStudyBrowser from './ConnectedStudyBrowser';
 
 const toolImport = cornerstoneTools.import;
-const scrollToIndex = toolImport('util/scrollToIndex');
 
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 // const currentMode = BrainMode;
+
+let hasRestoredState = false;
 
 class Radiomics extends Component {
   static propTypes = {
@@ -137,65 +139,11 @@ class Radiomics extends Component {
         disassociate: this.disassociateStudy,
       },
     });
-
+    this.onImageRendered = this.onImageRendered.bind(this);
+    this.onHandleThumbnailClick = this.onHandleThumbnailClick.bind(this);
     this._getActiveViewport = this._getActiveViewport.bind(this);
     this.fetchSeriesRef = false;
     this.source_series_ref = [];
-
-    // this.canvas = this.canvas.bind(this);
-    // this.componentRef = this.componentRef.bind(this);
-  }
-
-  onCornerstageLoaded = enabledEvt => {
-    // setTimeout(() => {}, 2000);
-
-    setTimeout(() => {
-      const radiomicsDone = JSON.parse(
-        localStorage.getItem('radiomicsDone') || 0
-      );
-      this.setState({
-        isComplete: radiomicsDone == 1 ? true : false,
-      });
-
-      this.handleSidePanelChange('right', 'theta-details-panel');
-      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
-
-      this.triggerReload();
-    }, 2000);
-
-    setTimeout(() => {
-      const enabledElement = enabledEvt.detail.element;
-
-      commandsManager.runCommand('setToolActive', {
-        toolName: 'Pan',
-      });
-
-      handleScrolltoIndex(enabledElement);
-
-      const image = cornerstone.getImage(enabledElement);
-      const instance_uid = image.imageId.split('/')[14];
-
-      handleRestoreToolState(cornerstone, enabledElement, instance_uid);
-    }, 3000);
-  };
-
-  componentWillUnmount() {
-    eventBus.remove('fetchscans');
-    eventBus.remove('jobstatus');
-
-    if (this.props.dialog) {
-      this.props.dialog.dismissAll();
-    }
-    const view_ports = cornerstone.getEnabledElements();
-    const viewports = view_ports[0];
-    const element = getEnabledElement(view_ports.indexOf(viewports));
-    if (element)
-      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
-
-    cornerstone.events.removeEventListener(
-      cornerstone.EVENTS.ELEMENT_ENABLED,
-      this.onCornerstageLoaded
-    );
   }
 
   retrieveTimepoints = filter => {
@@ -263,6 +211,26 @@ class Radiomics extends Component {
     }
   };
 
+  componentWillUnmount() {
+    eventBus.remove('fetchscans');
+    eventBus.remove('jobstatus');
+
+    if (this.props.dialog) {
+      this.props.dialog.dismissAll();
+    }
+
+    const view_ports = cornerstone.getEnabledElements();
+    const viewports = view_ports[0];
+    const element = getEnabledElement(view_ports.indexOf(viewports));
+    if (element)
+      cornerstoneTools.globalImageIdSpecificToolStateManager.clear(element);
+
+    cornerstone.events.removeEventListener(
+      cornerstone.EVENTS.ELEMENT_ENABLED,
+      this.onCornerstageLoaded
+    );
+  }
+
   componentDidMount() {
     const { studies, isStudyLoaded, ...rest } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
@@ -312,6 +280,12 @@ class Radiomics extends Component {
       this.onCornerstageLoaded
     );
 
+    eventBus.on('handleThumbnailClick', data => {
+      setTimeout(() => {
+        this.onHandleThumbnailClick();
+      }, 4000);
+    });
+
     eventBus.on('fetchscans', data => {
       console.log({
         fetchscans: data,
@@ -328,6 +302,80 @@ class Radiomics extends Component {
         job: data,
       });
     });
+  }
+
+  onHandleThumbnailClick = () => {
+    try {
+      const enabledElement = getEnabledElement(this.props.activeViewportIndex);
+      const image = cornerstone.getImage(enabledElement);
+      const instance_uid = image.imageId.split('/')[14];
+      const strippedImageId = image.imageId.split('studies/')[1];
+      const seriesUid = strippedImageId.split('/')[2]; // get series UID instead of SOP instance UID
+      handleScrolltoIndex(enabledElement, seriesUid);
+      // handleRestoreToolState(cornerstone, enabledElement, instance_uid);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  onCornerstageLoaded = enabledEvt => {
+    commandsManager.runCommand('setToolActive', {
+      toolName: 'Pan',
+    });
+
+    // enabledElement.addEventListener(
+    //   cornerstone.EVENTS.IMAGE_RENDERED,
+    //   this.onImageRendered
+    // );
+
+    setTimeout(() => {
+      const radiomicsDone = JSON.parse(
+        localStorage.getItem('radiomicsDone') || 0
+      );
+      this.setState({
+        isComplete: radiomicsDone == 1 ? true : false,
+      });
+
+      this.handleSidePanelChange('right', 'theta-details-panel');
+      this.handleSidePanelChange('left', 'lung-module-similarity-panel');
+
+      this.triggerReload();
+    }, 2000);
+
+    setTimeout(() => {
+      try {
+        const enabledElement = enabledEvt.detail.element;
+        handleScrolltoIndex(enabledElement);
+        const image = cornerstone.getImage(enabledElement);
+        const instance_uid = image.imageId.split('/')[14];
+        handleRestoreToolState(cornerstone, enabledElement, instance_uid);
+      } catch (error) {
+        console.log(error);
+      }
+    }, 2500);
+  };
+
+  // Handle the event with a function that applies the synchronization logic
+  onImageRendered(event) {
+    if (!hasRestoredState) {
+      const element = event.target;
+      const enabledElements = cornerstone.getEnabledElements();
+      const imageIdIndex = enabledElements.indexOf(element);
+
+      const enabledElement = event.detail.element;
+
+      if (
+        matchPath(this.props.location.pathname, {
+          path:
+            '/edit/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUIDs',
+          exact: true,
+        })
+      ) {
+        this.handleSidePanelChange('right', 'xnat-segmentation-panel');
+      }
+
+      hasRestoredState = true;
+    }
   }
 
   async handleFetchAndSetSeries(studyInstanceUID) {
@@ -363,14 +411,6 @@ class Radiomics extends Component {
         document.getElementById('trigger').click();
       } catch (error) {}
     }, 5000);
-    // if (window && window.parent) {
-    //   window.parent.postMessage(
-    //     {
-    //       action: 'triggerExternalReload',
-    //     },
-    //     '*'
-    //   );
-    // }
   }
 
   handleBack = () => {
@@ -809,6 +849,15 @@ class Radiomics extends Component {
                       </div>
                     </ErrorBoundaryDialog>{' '}
                   </div>
+
+                  <ErrorBoundaryDialog context="LeftSidePanel">
+                    <div>
+                      <ConnectedStudyBrowser
+                        studies={this.state.thumbnails}
+                        studyMetadata={this.props.studies}
+                      />
+                    </div>
+                  </ErrorBoundaryDialog>
                 </div>
               </div>
             </div>

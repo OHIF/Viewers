@@ -30,7 +30,7 @@ import refreshViewports from '../../../../../extensions/dicom-segmentation/src/u
 import { triggerEvent } from 'cornerstone-core';
 import { RenderLoadingModal } from '../../appExtensions/LungModuleSimilarityPanel/SearchParameters/SearchDetails';
 import { useLocation } from 'react-router';
-import { radcadapi } from '../../utils/constants';
+import { BrainMode, radcadapi } from '../../utils/constants';
 import { JobsContext } from '../../context/JobsContext';
 import { servicesManager } from '../../App';
 const { UINotificationService } = servicesManager.services;
@@ -50,6 +50,7 @@ const ViewportGrid = function(props) {
     viewportData,
     children,
     isStudyLoaded,
+    currentMode,
   } = props;
 
   const segmentationModule = cornerstoneTools.getModule('segmentation');
@@ -321,12 +322,13 @@ const ViewportGrid = function(props) {
       });
       if (
         location.pathname.includes('/edit') ||
-        (location.pathname.includes('/selectmask') && fetchedSegmentations === 'idle')
+        (location.pathname.includes('/selectmask') &&
+          fetchedSegmentations === 'idle')
       ) {
-        // CALLED ATER 2 SECONDS
-        setTimeout(() => {
-          onImportButtonClick();
-        }, 5000);
+        if (currentMode === BrainMode)
+          setTimeout(() => {
+            onImportButtonClick();
+          }, 5000);
       }
     }
   }, [
@@ -829,7 +831,10 @@ const ViewportGrid = function(props) {
   };
 
   const onImportButtonClick = async () => {
-    if (location.pathname.includes('/edit') || location.pathname.includes('/selectmask')) {
+    if (
+      location.pathname.includes('/edit') ||
+      location.pathname.includes('/selectmask')
+    ) {
       let isSegmentsLoadedSuccessfullyll = JSON.parse(
         localStorage.getItem('fetchsegments') || 0
       );
@@ -1013,6 +1018,7 @@ const mapStateToProps = state => {
   return {
     user: state.oidc.user,
     viewport: state.viewports,
+    currentMode: state.mode.active,
   };
 };
 

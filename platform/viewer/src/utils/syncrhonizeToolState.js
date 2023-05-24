@@ -1,4 +1,4 @@
-import { setItem } from '../lib/localStorageUtils';
+import { getItem, setItem } from '../lib/localStorageUtils';
 import store from '../store';
 import { BrainMode } from './constants';
 
@@ -12,10 +12,6 @@ export const handleRestoreToolState = (
   tool_data =
     tool_data && tool_data !== 'undefined' ? JSON.parse(tool_data) : null;
 
-  console.log('handleRestoreToolState::tool_data', {
-    tool_data,
-    studyInstanceUID,
-  });
   if (enabledElement && tool_data) {
     let viewport = cornerstone.getViewport(enabledElement);
     if (tool_data.x) viewport.translation.x = tool_data.x;
@@ -31,6 +27,11 @@ export const handleRestoreToolState = (
     });
 
     cornerstone.setViewport(enabledElement, viewport);
+    // console.log('handleRestoreToolState::update::viewport', {
+    //   viewport,
+    // });
+
+    setItem('restoreToolStateRan', true); // 1 means true
   } else {
     const state = store.getState();
     const preset = state.mode.active === BrainMode ? 5 : 2;
@@ -49,17 +50,21 @@ export const handleRestoreToolState = (
         viewport,
       });
     }
+    setItem('restoreToolStateRan', true); // 1 means true
   }
 
   setItem('canSave', 1);
-
 };
 
 export const handleSaveToolState = (studyInstanceUID, viewport) => {
+  const restoreToolStateRan = getItem('restoreToolStateRan', true); // 1 means true
+
   console.log('handleSaveToolState', {
     studyInstanceUID,
+    restoreToolStateRan,
     viewport,
   });
+  if (!restoreToolStateRan) return;
   localStorage.setItem(
     studyInstanceUID,
     JSON.stringify({
