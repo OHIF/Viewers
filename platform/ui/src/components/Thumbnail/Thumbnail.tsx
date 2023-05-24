@@ -8,7 +8,6 @@ import { StringNumber } from '../../types';
 /**
  * Display a thumbnail for a display set.
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const Thumbnail = ({
   displaySetInstanceUID,
   className,
