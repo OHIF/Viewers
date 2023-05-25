@@ -1,7 +1,7 @@
 import * as OHIF from './index';
 
 describe('Top level exports', () => {
-  test('have not changed', () => {
+  test.only('have not changed', () => {
     const expectedExports = [
       'MODULE_TYPES',
       //
@@ -42,6 +42,7 @@ describe('Top level exports', () => {
       'pubSubServiceInterface',
       'PubSubService',
       'PanelService',
+      'WorkflowStagesService',
     ].sort();
 
     const exports = Object.keys(OHIF).sort();
