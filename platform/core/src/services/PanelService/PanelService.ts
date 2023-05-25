@@ -1,21 +1,123 @@
 import { ActivatePanelTriggers } from '../../types';
 import { Subscription } from '../../types/IPubSub';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { ExtensionManager } from '../../extensions';
 
 export const EVENTS = {
+  PANELS_CHANGED: 'event::panelService:panelsChanged',
   ACTIVATE_PANEL: 'event::panelService:activatePanel',
 };
 
+type PanelData = {
+  id: string;
+  iconName: string;
+  iconLabel: string;
+  label: string;
+  name: string;
+  content: unknown;
+};
+
+export enum PanelPosition {
+  Left = 'left',
+  Right = 'right',
+  Bottom = 'bottom',
+}
+
 export default class PanelService extends PubSubService {
+  private _extensionManager: ExtensionManager;
+
   public static REGISTRATION = {
     name: 'panelService',
-    create: (): PanelService => {
-      return new PanelService();
+    create: ({ extensionManager }): PanelService => {
+      return new PanelService(extensionManager);
     },
   };
 
-  constructor() {
+  private _panelsGroups: Map<PanelPosition, PanelData[]> = new Map();
+
+  constructor(extensionManager: ExtensionManager) {
     super(EVENTS);
+    this._extensionManager = extensionManager;
+  }
+
+  public get PanelPosition(): typeof PanelPosition {
+    return PanelPosition;
+  }
+
+  private _getPanelComponent(panelId: string) {
+    const entry = this._extensionManager.getModuleEntry(panelId);
+
+    if (!entry) {
+      throw new Error(
+        `${panelId} is not a valid entry for an extension module, please check your configuration or make sure the extension is registered.`
+      );
+    }
+
+    if (!entry?.component) {
+      throw new Error(
+        `No component found from extension ${panelId}. Check the reference string to the extension in your Mode configuration`
+      );
+    }
+
+    const content = entry.component;
+
+    return { entry, content };
+  }
+
+  private _getPanelData(panelId): PanelData {
+    const { content, entry } = this._getPanelComponent(panelId);
+
+    return {
+      id: entry.id,
+      iconName: entry.iconName,
+      iconLabel: entry.iconLabel,
+      label: entry.label,
+      name: entry.name,
+      content,
+    };
+  }
+
+  public addPanel(position: PanelPosition, panelId: string): void {
+    let panels = this._panelsGroups.get(position);
+
+    if (!panels) {
+      panels = [];
+      this._panelsGroups.set(position, panels);
+    }
+
+    const panelComponent = this._getPanelData(panelId);
+
+    panels.push(panelComponent);
+    this._broadcastEvent(EVENTS.PANELS_CHANGED, { position });
+  }
+
+  public addPanels(position: PanelPosition, panelsIds: string[]): void {
+    if (!Array.isArray(panelsIds)) {
+      throw new Error('Invalid "panelsIds" array');
+    }
+
+    panelsIds.forEach(panelId => this.addPanel(position, panelId));
+  }
+
+  public getPanels(position: PanelPosition): PanelData[] {
+    const panels = this._panelsGroups.get(position) ?? [];
+
+    // Return a new array to preserve the internal state
+    return [...panels];
+  }
+
+  public reset(): void {
+    const affectedPositions = Array.from(this._panelsGroups.keys());
+
+    this._panelsGroups.clear();
+
+    affectedPositions.forEach(position =>
+      this._broadcastEvent(EVENTS.PANELS_CHANGED, { position })
+    );
+  }
+
+  public onModeExit(): void {
+    this.reset();
   }
 
   /**
@@ -28,7 +130,7 @@ export default class PanelService extends PubSubService {
    * @param panelId the panel's id
    * @param forceActive optional flag indicating if the panel should be forced to be activated or not
    */
-  activatePanel(panelId: string, forceActive = false): void {
+  public activatePanel(panelId: string, forceActive = false): void {
     this._broadcastEvent(EVENTS.ACTIVATE_PANEL, { panelId, forceActive });
   }
 
@@ -43,7 +145,7 @@ export default class PanelService extends PubSubService {
    * @param forceActive optional flag indicating if the panel should be forced to be activated or not
    * @returns an array of the subscriptions subscribed to
    */
-  addActivatePanelTriggers(
+  public addActivatePanelTriggers(
     panelId: string,
     activatePanelTriggers: ActivatePanelTriggers[],
     forceActive = false

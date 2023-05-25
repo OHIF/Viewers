@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -34,14 +34,22 @@ function ViewerLayout({
   // From Modes
   viewports,
   ViewportGridComp,
-  leftPanels = [],
-  rightPanels = [],
   leftPanelDefaultClosed = false,
   rightPanelDefaultClosed = false,
 }): React.FunctionComponent {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { panelService, hangingProtocolService } = servicesManager.services;
+
+  const hasPanels = useCallback(
+    (side): boolean => !!panelService.getPanels(side).length,
+    [panelService]
+  );
+
+  const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
+  const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
 
   const onClickReturnButton = () => {
     const { pathname } = location;
@@ -62,8 +70,6 @@ function ViewerLayout({
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(
     appConfig.showLoadingIndicator
   );
-
-  const { hangingProtocolService } = servicesManager.services;
 
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
@@ -159,19 +165,6 @@ function ViewerLayout({
     return { entry, content };
   };
 
-  const getPanelData = id => {
-    const { content, entry } = getComponent(id);
-
-    return {
-      id: entry.id,
-      iconName: entry.iconName,
-      iconLabel: entry.iconLabel,
-      label: entry.label,
-      name: entry.name,
-      content,
-    };
-  };
-
   useEffect(() => {
     const { unsubscribe } = hangingProtocolService.subscribe(
       HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
@@ -198,8 +191,20 @@ function ViewerLayout({
     };
   };
 
-  const leftPanelComponents = leftPanels.map(getPanelData);
-  const rightPanelComponents = rightPanels.map(getPanelData);
+  useEffect(() => {
+    const { unsubscribe } = panelService.subscribe(
+      panelService.EVENTS.PANELS_CHANGED,
+      () => {
+        setHasLeftPanels(hasPanels('left'));
+        setHasRightPanels(hasPanels('right'));
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [panelService]);
+
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
@@ -225,12 +230,11 @@ function ViewerLayout({
             <LoadingIndicatorProgress className="h-full w-full bg-black" />
           )}
           {/* LEFT SIDEPANELS */}
-          {leftPanelComponents.length ? (
+          {hasLeftPanels ? (
             <ErrorBoundary context="Left Panel">
               <SidePanel
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
-                tabs={leftPanelComponents}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>
@@ -247,12 +251,11 @@ function ViewerLayout({
               </ErrorBoundary>
             </div>
           </div>
-          {rightPanelComponents.length ? (
+          {hasRightPanels ? (
             <ErrorBoundary context="Right Panel">
               <SidePanel
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
-                tabs={rightPanelComponents}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>

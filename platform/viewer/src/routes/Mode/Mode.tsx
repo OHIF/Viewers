@@ -21,7 +21,7 @@ const { getSplitParam } = utils;
  * @param props.filters filters from query params to read the data from
  * @returns array of subscriptions to cancel
  */
-function defaultRouteInit(
+async function defaultRouteInit(
   { servicesManager, studyInstanceUIDs, dataSource, filters },
   hangingProtocolId
 ) {
@@ -60,28 +60,42 @@ function defaultRouteInit(
   // is retrieved (which will synchronously trigger the display set creation)
   // until we run the hanging protocol matching service.
 
-  Promise.allSettled(allRetrieves).then(() => {
-    const displaySets = displaySetService.getActiveDisplaySets();
+  await Promise.allSettled(allRetrieves);
 
-    if (!displaySets || !displaySets.length) {
-      return;
-    }
+  const displaySets = displaySetService.getActiveDisplaySets();
 
-    // Gets the studies list to use
-    const studies = getStudies(studyInstanceUIDs, displaySets);
+  if (!displaySets || !displaySets.length) {
+    return;
+  }
 
-    // study being displayed, and is thus the "active" study.
-    const activeStudy = studies[0];
+  // Gets the studies list to use
+  const studies = getStudies(studyInstanceUIDs, displaySets);
 
-    // run the hanging protocol matching on the displaySets with the predefined
-    // hanging protocol in the mode configuration
-    hangingProtocolService.run(
-      { studies, activeStudy, displaySets },
-      hangingProtocolId
-    );
-  });
+  // study being displayed, and is thus the "active" study.
+  const activeStudy = studies[0];
+
+  // run the hanging protocol matching on the displaySets with the predefined
+  // hanging protocol in the mode configuration
+  hangingProtocolService.run(
+    { studies, activeStudy, displaySets },
+    hangingProtocolId
+  );
 
   return unsubscriptions;
+}
+
+function initWorkflowStages({ mode, servicesManager }) {
+  const { workflowStagesService } = servicesManager.services;
+  const { workflow } = mode;
+
+  if (!workflow?.stages) {
+    return;
+  }
+
+  const initialStageId = workflow.initialStageId ?? workflow.stages[0].id;
+
+  workflowStagesService.addStages(workflow.stages);
+  workflowStagesService.setActiveStage(initialStageId);
 }
 
 export default function ModeRoute({
@@ -116,6 +130,7 @@ export default function ModeRoute({
 
   const {
     displaySetService,
+    panelService,
     hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
 
@@ -197,7 +212,21 @@ export default function ModeRoute({
         servicesManager,
         studyInstanceUIDs,
       });
+
       if (isMounted.current) {
+        const {
+          leftPanels = [],
+          rightPanels = [],
+          ...layoutProps
+        } = layoutData.props;
+
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+
+        // layoutProps contains all props but leftPanels and rightPanels
+        layoutData.props = layoutProps;
+
         layoutTemplateData.current = layoutData;
         setRefresh(!refresh);
       }
@@ -301,8 +330,10 @@ export default function ModeRoute({
           {}
         ) ?? {};
 
+      let unsubs;
+
       if (route.init) {
-        return await route.init(
+        unsubs = await route.init(
           {
             servicesManager,
             extensionManager,
@@ -313,22 +344,28 @@ export default function ModeRoute({
           },
           hangingProtocolIdToUse
         );
+      } else {
+        unsubs = await defaultRouteInit(
+          {
+            servicesManager,
+            studyInstanceUIDs,
+            dataSource,
+            filters,
+          },
+          hangingProtocolIdToUse
+        );
       }
 
-      return defaultRouteInit(
-        {
-          servicesManager,
-          studyInstanceUIDs,
-          dataSource,
-          filters,
-        },
-        hangingProtocolIdToUse
-      );
+      return unsubs;
     };
 
     let unsubscriptions;
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
+
+      // This needs to run after hanging protocol matching process because
+      // it may change the protocol/stage based on workflow stage settings
+      initWorkflowStages({ mode, servicesManager });
     });
 
     return () => {

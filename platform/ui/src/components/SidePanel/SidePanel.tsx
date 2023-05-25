@@ -73,7 +73,7 @@ const SidePanel = ({
   side,
   className,
   activeTabIndex: activeTabIndexProp,
-  tabs,
+  tabs: tabsProp,
 }) => {
   const panelService: PanelService = servicesManager.services.panelService;
 
@@ -84,6 +84,8 @@ const SidePanel = ({
   const [hasBeenOpened, setHasBeenOpened] = useState(
     activeTabIndexProp !== null
   );
+  const initialTabsState = tabsProp ?? panelService.getPanels(side);
+  const [tabs, setTabs] = useState(initialTabsState);
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
   const swiperRef = useRef() as any;
@@ -95,7 +97,8 @@ const SidePanel = ({
   const openStatus = panelOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
-  const ActiveComponent = tabs[activeTabIndex].content;
+  const ActiveComponent =
+    activeTabIndex < tabs.length ? tabs[activeTabIndex].content : null;
 
   useEffect(() => {
     if (panelOpen && swiper) {
@@ -126,6 +129,23 @@ const SidePanel = ({
     },
     [updatePanelOpen]
   );
+
+  useEffect(() => {
+    const { unsubscribe } = panelService.subscribe(
+      panelService.EVENTS.PANELS_CHANGED,
+      panelChangedEvent => {
+        if (panelChangedEvent.position !== side) {
+          return;
+        }
+
+        setTabs(panelService.getPanels(side));
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [panelService, side]);
 
   useEffect(() => {
     const activatePanelSubscription = panelService.subscribe(
@@ -279,7 +299,7 @@ const SidePanel = ({
               </button>
             </div>
           )}
-          <ActiveComponent />
+          {ActiveComponent && <ActiveComponent />}
         </React.Fragment>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>

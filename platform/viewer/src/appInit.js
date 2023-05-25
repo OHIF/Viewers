@@ -18,6 +18,7 @@ import {
   errorHandler,
   CustomizationService,
   PanelService,
+  WorkflowStagesService,
   // utils,
 } from '@ohif/core';
 
@@ -47,6 +48,8 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     appConfig,
   });
 
+  servicesManager.init({ extensionManager });
+
   servicesManager.registerServices([
     UINotificationService.REGISTRATION,
     UIModalService.REGISTRATION,
@@ -61,6 +64,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
+    WorkflowStagesService.REGISTRATION,
     StateSyncService.REGISTRATION,
   ]);
 

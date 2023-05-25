@@ -8,6 +8,7 @@ import {
   StateSyncService,
   UINotificationService,
   UIModalService,
+  WorkflowStagesService,
 } from '../services';
 
 /**
@@ -33,4 +34,5 @@ export default interface Services {
   segmentationService?: Record<string, unknown>;
   stateSyncService?: StateSyncService;
   panelService?: Record<string, unknown>;
+  workflowStagesService: WorkflowStagesService;
 }
