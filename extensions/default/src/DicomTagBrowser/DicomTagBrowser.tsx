@@ -1,12 +1,6 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, {
-  useState,
-  useMemo,
-  useEffect,
-  useCallback,
-  useRef,
-} from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { classes } from '@ohif/core';
 import { Icon, InputRange, Select, Typography } from '@ohif/ui';
 import debounce from 'lodash.debounce';
