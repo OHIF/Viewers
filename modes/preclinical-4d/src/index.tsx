@@ -33,12 +33,15 @@ function modeFactory({ modeConfiguration }) {
     id,
     routeName: 'dynamic-volume',
     displayName: '4D Volume',
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+    onModeEnter: function({
+      servicesManager,
+      extensionManager,
+      commandsManager,
+    }) {
       const {
         measurementService,
         toolbarService,
         toolGroupService,
-        panelService,
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -49,15 +52,6 @@ function modeFactory({ modeConfiguration }) {
 
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
-
-      let unsubscribe;
-
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        () => {
-          console.log('>>>>> onViewportAdded');
-        }
-      ));
 
       toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
@@ -76,7 +70,6 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
       } = servicesManager.services;
@@ -98,6 +91,66 @@ function modeFactory({ modeConfiguration }) {
       return REQUIRED_MODALITIES.every(modality =>
         modalities_list.includes(modality)
       );
+    },
+    workflow: {
+      // initialStageId: 'registration',
+      stages: [
+        {
+          id: 'dataPreparation',
+          name: 'Data Preparation',
+          // toolbar: {
+          //   buttons: dataPreparationToolbarButtons,
+          //   sections: [
+          //     {
+          //       key: 'primary',
+          //       buttons: [ 'MeasurementTools', 'Zoom', ... ],
+          //     },
+          //   ],
+          // },
+          // layout: {
+          //   panels: {
+          //     left: [dynamicVolume.leftPanel],
+          //     right: [ohif.rightPanel],
+          //   },
+          // },
+          hangingProtocol: {
+            protocolId: 'default4D',
+            stageId: 'dataPreparation',
+          },
+        },
+        {
+          id: 'registration',
+          name: 'Registration',
+          hangingProtocol: {
+            protocolId: 'default4D',
+            stageId: 'registration',
+          },
+        },
+        {
+          id: 'review',
+          name: 'Review',
+          hangingProtocol: {
+            protocolId: 'default4D',
+            stageId: 'review',
+          },
+        },
+        {
+          id: 'roiQuantification',
+          name: 'ROI Quantification',
+          hangingProtocol: {
+            protocolId: 'default4D',
+            stageId: 'roiQuantification',
+          },
+        },
+        {
+          id: 'kineticAnalysis',
+          name: 'Kinect Analysis',
+          hangingProtocol: {
+            protocolId: 'default4D',
+            stageId: 'kinectAnalysis',
+          },
+        },
+      ],
     },
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route

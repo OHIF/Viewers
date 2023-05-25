@@ -1,13 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-const workflowStages = [
-  { id: 0, name: 'Data Preparation', hpStageId: 'dataPreparation' },
-  { id: 1, name: 'Registration', hpStageId: 'registration' },
-  { id: 2, name: 'Review', hpStageId: 'review' },
-  { id: 3, name: 'ROI Quantification', hpStageId: 'roiQuantification' },
-  { id: 4, name: 'Kinectic Analysis', hpStageId: 'kinectAnalysis' },
-];
-
 const styles = {
   panel: {
     marginBottom: '10px'
@@ -27,34 +19,45 @@ const styles = {
   },
 }
 
-function WorkflowPanel({ commandsManager }) {
-  const [stageId, setStageId] = useState(0);
+function WorkflowPanel({ servicesManager }) {
+  const { workflowStagesService } = servicesManager.services;
+  const [stages, setStages] = useState(workflowStagesService.stages);
+  const [activeStage, setActiveStage] = useState(workflowStagesService.activeStage);
 
-  const runCommand = useCallback(
-    (commandName, commandOptions = {}) => {
-      return commandsManager.runCommand(commandName, commandOptions);
-    },
-    [commandsManager]
-  );
+  const handleClick = useCallback((stage) => {
+    workflowStagesService.setActiveStage(stage.id);
+  }, [workflowStagesService]);
 
-  function handleClick({ id, hpStageId }) {
-    setStageId(id);
-    console.log(id, hpStageId);
+  useEffect(() => {
+    const { unsubscribe } = workflowStagesService.subscribe(
+      workflowStagesService.EVENTS.STAGES_CHANGED,
+      () => setStages(workflowStagesService.stages)
+    );
 
-    runCommand('setHangingProtocol', {
-      protocolId: 'default4D',
-      stageId: hpStageId
-    });
-  }
+    return () => {
+      unsubscribe();
+    }
+  }, [servicesManager]);
 
-  const stages = workflowStages.map(stage => {
+  useEffect(() => {
+    const { unsubscribe } = workflowStagesService.subscribe(
+      workflowStagesService.EVENTS.ACTIVE_STAGE_CHANGED,
+      () => setActiveStage(workflowStagesService.activeStage)
+    );
+
+    return () => {
+      unsubscribe();
+    }
+  }, [servicesManager]);
+
+  const stagesContent = stages.map(stage => {
     return (
       <div
         key={stage.id}
         onClick={() => handleClick(stage)}
-        style={ stage.id === stageId ? styles.listItemSelected : styles.listItem }
+        style={ stage.id === activeStage?.id ? styles.listItemSelected : styles.listItem }
       >
-        { stage.id === stageId && '[' } { stage.name } { stage.id === stageId && ']' }
+        { stage.id === activeStage?.id && '[' } { stage.name } { stage.id === activeStage?.id && ']' }
       </div>
     );
   })
@@ -63,7 +66,7 @@ function WorkflowPanel({ commandsManager }) {
     <div data-cy={'workflow-panel'} style={styles.panel}>
       <div style={styles.title}>Workflow</div>
       <div style={styles.container}>
-        { stages }
+        { stagesContent }
       </div>
     </div>
   );
