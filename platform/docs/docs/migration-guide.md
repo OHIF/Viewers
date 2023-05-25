@@ -209,6 +209,13 @@ see [custom routes](./platform/services/ui/customization-service.md#customroutes
 </details>
 
 
+## DICOM Endpoints
+
+In OHIF v3 there is a new end point that your DICOM server should be able to respond to
+`WADO-RS GET studies/{studyInstanceUid}/series`
+
+This is used in the viewer for fetching the series list for a study to use for the hanging protocol.
+
 ## LifeCycle Hooks
 
 OHIF v2 had `preRegistration` hook for extensions for initialization. In OHIF v3 you have
