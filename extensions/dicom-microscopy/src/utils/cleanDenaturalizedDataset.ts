@@ -24,10 +24,16 @@ const vrNumerics = [
  * @param obj
  * @returns
  */
-export default function cleanDenaturalizedDataset(obj: any): any {
+export default function cleanDenaturalizedDataset(
+  obj: any,
+  options: {
+    StudyInstanceUID: string;
+    baseURL: string;
+  }
+): any {
   if (Array.isArray(obj)) {
     const newAry = obj.map(o =>
-      isPrimitive(o) ? o : cleanDenaturalizedDataset(o)
+      isPrimitive(o) ? o : cleanDenaturalizedDataset(o, options)
     );
     return newAry;
   } else if (isPrimitive(obj)) {
@@ -38,7 +44,15 @@ export default function cleanDenaturalizedDataset(obj: any): any {
         delete obj[key].Value;
       } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
         if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
-          obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
+          // If the BulkDataURI is not a study level URI, then we need to convert the
+          // relative URI to an absolute URI (see open PR https://github.com/dcmjs-org/dicomweb-client/pull/54)
+          if (!obj[key].Value[0].BulkDataURI.includes('studies/')) {
+            obj[
+              key
+            ].BulkDataURI = `${options.baseURL}/studies/${options.StudyInstanceUID}/${obj[key].Value[0].BulkDataURI}`;
+          } else {
+            obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
+          }
 
           // prevent mixed-content blockage
           if (
@@ -54,7 +68,9 @@ export default function cleanDenaturalizedDataset(obj: any): any {
         } else if (vrNumerics.includes(obj[key].vr)) {
           obj[key].Value = obj[key].Value.map(v => +v);
         } else {
-          obj[key].Value = obj[key].Value.map(cleanDenaturalizedDataset);
+          obj[key].Value = obj[key].Value.map(entry =>
+            cleanDenaturalizedDataset(entry, options)
+          );
         }
       }
     });

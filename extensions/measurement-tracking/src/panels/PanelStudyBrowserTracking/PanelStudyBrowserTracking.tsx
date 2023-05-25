@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { HangingProtocolService, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,

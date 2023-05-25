@@ -10,6 +10,16 @@ import dcmjs from 'dcmjs';
 import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
 import MicroscopyService from './services/MicroscopyService';
 
+function transformImageTypeUnnaturalized(entry) {
+  if (entry.vr === 'CS') {
+    return {
+      vr: 'US',
+      Value: entry.Value[0].split('\\'),
+    };
+  }
+  return entry;
+}
+
 class DicomMicroscopyViewport extends Component {
   state = {
     error: null as any,
@@ -132,6 +142,10 @@ class DicomMicroscopyViewport extends Component {
       //       );
       //       m['00200052'].Value[0] = volumeImages[0].FrameOfReferenceUID;
       //     }
+      //     NOTE: depending on different data source, image.ImageType sometimes
+      //     is a string, not a string array.
+      //     m['00080008'] = transformImageTypeUnnaturalized(m['00080008']);
+
       //     const image = new metadataUtils.VLWholeSlideMicroscopyImage({
       //       metadata: m,
       //     });
@@ -143,8 +157,16 @@ class DicomMicroscopyViewport extends Component {
       // }
 
       metadata.forEach(m => {
+        // NOTE: depending on different data source, image.ImageType sometimes
+        //    is a string, not a string array.
+        m.ImageType =
+          typeof m.ImageType === 'string'
+            ? m.ImageType.split('\\')
+            : m.ImageType;
+
         const inst = cleanDenaturalizedDataset(
-          dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m)
+          dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m),
+          { StudyInstanceUID: m.StudyInstanceUID, baseURL: client.baseURL }
         );
         if (!inst['00480105']) {
           // Optical Path Sequence, no OpticalPathIdentifier?
@@ -165,13 +187,7 @@ class DicomMicroscopyViewport extends Component {
           metadata: inst,
         });
 
-        // NOTE: depending on different data source, image.ImageType sometimes
-        //    is a string, not a string array.
-        const imageType =
-          typeof image.ImageType === 'string'
-            ? image.ImageType.split('\\')
-            : image.ImageType;
-        const imageFlavor = imageType[2];
+        const imageFlavor = image.ImageType[2];
         if (imageFlavor === 'VOLUME' || imageFlavor === 'THUMBNAIL') {
           volumeImages.push(image);
         }
@@ -182,7 +198,7 @@ class DicomMicroscopyViewport extends Component {
         client,
         metadata: volumeImages,
         retrieveRendered: false,
-        controls: ['overview', 'position', 'zoom'],
+        controls: ['overview', 'position'],
       };
 
       this.viewer = new microscopyViewer(options);
