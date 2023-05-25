@@ -12,7 +12,8 @@ async function checkAndLoadContourData(instance, datasource) {
 
   for (const ROIContour of instance.ROIContourSequence) {
     if (!ROIContour || !ROIContour.ContourSequence) {
-      return Promise.reject('Invalid ROIContour or ContourSequence');
+      promises.push(Promise.resolve([]));
+      return
     }
 
     for (const Contour of ROIContour.ContourSequence) {
@@ -55,42 +56,54 @@ async function checkAndLoadContourData(instance, datasource) {
 
   // Modify contourData and replace it in its corresponding ROIContourSequence's Contour's contourData
   let index = 0;
-  instance.ROIContourSequence.forEach((ROIContour, roiIndex) => {
-    ROIContour.ContourSequence.forEach((Contour, contourIndex) => {
-      const promise = resolvedPromises[index++];
+  instance.ROIContourSequence.forEach(ROIContour => {
+    try {
+      ROIContour.ContourSequence.forEach((Contour, contourIndex) => {
+        const promise = resolvedPromises[index++];
+        if (promise.status === 'fulfilled') {
+          if (
+            Array.isArray(promise.value) &&
+            promise.value.every(Number.isFinite)
+          ) {
+            // If promise.value is already an array of numbers, use it directly
+            Contour.ContourData = promise.value;
+          } else {
+            // Otherwise, proceed with existing logic
+            const uint8Array = new Uint8Array(promise.value);
+            const textDecoder = new TextDecoder();
+            const dataUint8Array = textDecoder.decode(uint8Array);
+            if (
+              typeof dataUint8Array === 'string' &&
+              dataUint8Array.includes('\\')
+            ) {
+              const numSlashes = (dataUint8Array.match(/\\/g) || []).length;
+              let startIndex = 0;
+              let endIndex = dataUint8Array.indexOf('\\', startIndex);
+              let numbersParsed = 0;
+              const ContourData = [];
 
-      if (promise.status === 'fulfilled') {
-        const uint8Array = new Uint8Array(promise.value);
-        const textDecoder = new TextDecoder();
-        const dataUint8Array = textDecoder.decode(uint8Array);
-        if (
-          typeof dataUint8Array === 'string' &&
-          dataUint8Array.includes('\\')
-        ) {
-          const numSlashes = (dataUint8Array.match(/\\/g) || []).length;
-          let startIndex = 0;
-          let endIndex = dataUint8Array.indexOf('\\', startIndex);
-          let numbersParsed = 0;
-          const ContourData = [];
+              while (numbersParsed !== numSlashes + 1) {
+                const str = dataUint8Array.substring(startIndex, endIndex);
+                let value = parseFloat(str);
 
-          while (numbersParsed !== numSlashes + 1) {
-            const str = dataUint8Array.substring(startIndex, endIndex);
-            let value = parseFloat(str);
-
-            ContourData.push(value);
-            startIndex = endIndex + 1;
-            endIndex = dataUint8Array.indexOf('\\', startIndex);
-            endIndex === -1 ? (endIndex = dataUint8Array.length) : endIndex;
-            numbersParsed++;
+                ContourData.push(value);
+                startIndex = endIndex + 1;
+                endIndex = dataUint8Array.indexOf('\\', startIndex);
+                endIndex === -1 ? (endIndex = dataUint8Array.length) : endIndex;
+                numbersParsed++;
+              }
+              Contour.ContourData = ContourData;
+            } else {
+              Contour.ContourData = [];
+            }
           }
-          Contour.ContourData = ContourData;
         } else {
-          Contour.ContourData = [];
+          console.error(promise.reason);
         }
-      } else {
-        console.error(promise.reason);
-      }
-    });
+      });
+    } catch (error) {
+      console.error(error);
+    }
   });
 }
 
