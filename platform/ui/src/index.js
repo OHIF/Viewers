@@ -70,6 +70,7 @@ export {
   Modal,
   NavBar,
   Notification,
+  ProgressLoadingBar,
   Select,
   SegmentationTable,
   SegmentationGroupTable,

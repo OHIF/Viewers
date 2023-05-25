@@ -10,16 +10,19 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
+import { Types as OhifTypes } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
-import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
 
-function commandsModule({ servicesManager, commandsManager }) {
+function commandsModule({
+  servicesManager,
+  commandsManager,
+}: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
     toolGroupService,
@@ -365,6 +368,21 @@ function commandsModule({ servicesManager, commandsManager }) {
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();
+
+      if (
+        !cornerstoneViewportService.getCornerstoneViewportByIndex(
+          activeViewportIndex
+        )
+      ) {
+        // Cannot download a non-cornerstone viewport (image).
+        uiNotificationService.show({
+          title: 'Download Image',
+          message: 'Image cannot be downloaded',
+          type: 'error',
+        });
+        return;
+      }
+
       const { uiModalService } = servicesManager.services;
 
       if (uiModalService) {
@@ -484,33 +502,22 @@ function commandsModule({ servicesManager, commandsManager }) {
         }
       }
     },
-    firstImage: () => {
-      // Get current active viewport (return if none active)
-      const enabledElement = _getActiveViewportEnabledElement();
-      if (!enabledElement) {
-        return;
-      }
-      const { viewport } = enabledElement;
 
-      // Check viewport is supported
-      if (
-        viewport! instanceof StackViewport &&
-        viewport! instanceof VolumeViewport
-      ) {
-        throw new Error('Unsupported viewport type');
-      }
-
-      // Set slice to first slice
-      const options = { imageIndex: 0 };
-      cstUtils.jumpToSlice(viewport.element, options);
-    },
-    lastImage: () => {
+    /** Jumps the active viewport or the specified one to the given slice index */
+    jumpToImage: ({ imageIndex, viewport: gridViewport }): void => {
       // Get current active viewport (return if none active)
-      const enabledElement = _getActiveViewportEnabledElement();
-      if (!enabledElement) {
-        return;
+      let viewport;
+      if (!gridViewport) {
+        const enabledElement = _getActiveViewportEnabledElement();
+        if (!enabledElement) {
+          return;
+        }
+        viewport = enabledElement.viewport;
+      } else {
+        viewport = cornerstoneViewportService.getCornerstoneViewport(
+          gridViewport.id
+        );
       }
-      const { viewport } = enabledElement;
 
       // Get number of slices
       // -> Copied from cornerstone3D jumpToSlice\_getImageSliceData()
@@ -525,8 +532,14 @@ function commandsModule({ servicesManager, commandsManager }) {
         throw new Error('Unsupported viewport type');
       }
 
+      const jumpIndex =
+        imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
+      if (jumpIndex >= numberOfSlices || jumpIndex < 0) {
+        throw new Error(`Can't jump to ${imageIndex}`);
+      }
+
       // Set slice to last slice
-      const options = { imageIndex: numberOfSlices - 1 };
+      const options = { imageIndex: jumpIndex };
       cstUtils.jumpToSlice(viewport.element, options);
     },
     scroll: ({ direction }) => {
@@ -557,9 +570,9 @@ function commandsModule({ servicesManager, commandsManager }) {
         return actorEntry.uid.includes(displaySetInstanceUID);
       });
 
-      const { actor: volumeActor } = actorEntry;
+      const { actor: volumeActor, uid: volumeId } = actorEntry;
 
-      setColormap(volumeActor, colormap);
+      viewport.setProperties({ colormap, volumeActor }, volumeId);
 
       if (immediate) {
         viewport.render();
@@ -625,8 +638,6 @@ function commandsModule({ servicesManager, commandsManager }) {
 
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
-      storeContexts: [],
-      options: {},
     },
     getNearbyAnnotation: {
       commandFn: actions.getNearbyAnnotation,
@@ -636,142 +647,100 @@ function commandsModule({ servicesManager, commandsManager }) {
 
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
-      storeContexts: [],
-      options: {},
     },
     setMeasurementLabel: {
       commandFn: actions.setMeasurementLabel,
-      storeContexts: [],
-      options: {},
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
-      storeContexts: [],
-      options: {},
     },
 
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
-      storeContexts: [],
-      options: {},
     },
     toolbarServiceRecordInteraction: {
       commandFn: actions.toolbarServiceRecordInteraction,
-      storeContexts: [],
-      options: {},
     },
     setToolActive: {
       commandFn: actions.setToolActive,
-      storeContexts: [],
-      options: {},
     },
     rotateViewportCW: {
       commandFn: actions.rotateViewport,
-      storeContexts: [],
       options: { rotation: 90 },
     },
     rotateViewportCCW: {
       commandFn: actions.rotateViewport,
-      storeContexts: [],
       options: { rotation: -90 },
     },
     incrementActiveViewport: {
       commandFn: actions.incrementActiveViewport,
-      storeContexts: [],
     },
     decrementActiveViewport: {
       commandFn: actions.decrementActiveViewport,
-      storeContexts: [],
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,
-      storeContexts: [],
-      options: {},
     },
     flipViewportVertical: {
       commandFn: actions.flipViewportVertical,
-      storeContexts: [],
-      options: {},
     },
     invertViewport: {
       commandFn: actions.invertViewport,
-      storeContexts: [],
-      options: {},
     },
     resetViewport: {
       commandFn: actions.resetViewport,
-      storeContexts: [],
-      options: {},
     },
     scaleUpViewport: {
       commandFn: actions.scaleViewport,
-      storeContexts: [],
       options: { direction: 1 },
     },
     scaleDownViewport: {
       commandFn: actions.scaleViewport,
-      storeContexts: [],
       options: { direction: -1 },
     },
     fitViewportToWindow: {
       commandFn: actions.scaleViewport,
-      storeContexts: [],
       options: { direction: 0 },
     },
     nextImage: {
       commandFn: actions.scroll,
-      storeContexts: [],
       options: { direction: 1 },
     },
     previousImage: {
       commandFn: actions.scroll,
-      storeContexts: [],
       options: { direction: -1 },
     },
     firstImage: {
-      commandFn: actions.firstImage,
-      storeContexts: [],
-      options: {},
+      commandFn: actions.jumpToImage,
+      options: { imageIndex: 0 },
     },
     lastImage: {
-      commandFn: actions.lastImage,
-      storeContexts: [],
-      options: {},
+      commandFn: actions.jumpToImage,
+      options: { imageIndex: -1 },
+    },
+    jumpToImage: {
+      commandFn: actions.jumpToImage,
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
-      storeContexts: [],
-      options: {},
     },
     toggleCine: {
       commandFn: actions.toggleCine,
-      storeContexts: [],
-      options: {},
     },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,
-      storeContexts: [],
-      options: {},
     },
     setViewportActive: {
       commandFn: actions.setViewportActive,
-      storeContexts: [],
-      options: {},
     },
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
-      storeContexts: [],
-      options: {},
     },
     toggleStackImageSync: {
       commandFn: actions.toggleStackImageSync,
-      storeContexts: [],
-      options: {},
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
-      storeContexts: [],
-      options: {},
     },
   };
 

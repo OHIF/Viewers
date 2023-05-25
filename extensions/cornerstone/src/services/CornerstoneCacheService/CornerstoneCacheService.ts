@@ -16,14 +16,14 @@ const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class CornerstoneCacheService {
   static REGISTRATION = {
-      name: 'cornerstoneCacheService',
-      altName: 'CornerstoneCacheService',
+    name: 'cornerstoneCacheService',
+    altName: 'CornerstoneCacheService',
     create: ({
       servicesManager,
     }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
       return new CornerstoneCacheService(servicesManager);
-      },
-    };
+    },
+  };
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
@@ -143,13 +143,18 @@ class CornerstoneCacheService {
       this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    const { displaySetInstanceUID, StudyInstanceUID } = displaySet;
+    const {
+      displaySetInstanceUID,
+      StudyInstanceUID,
+      isCompositeStack,
+    } = displaySet;
 
     const StackViewportData: StackViewportData = {
       viewportType,
       data: {
         StudyInstanceUID,
         displaySetInstanceUID,
+        isCompositeStack,
         imageIds: stackImageIds,
       },
     };

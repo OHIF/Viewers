@@ -68,7 +68,7 @@
     "config-point": "^0.4.8",
     "core-js": "^3.16.1",
     "cornerstone-math": "^0.1.9",
-    "@cornerstonejs/dicom-image-loader": "^0.4.0",
+    "@cornerstonejs/dicom-image-loader": "^0.6.8",
     "@cornerstonejs/codec-charls": "^1.2.3",
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
@@ -88,7 +88,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-dropzone": "^10.1.7",
-    "react-i18next": "^10.11.0",
+    "react-i18next": "^12.2.2",
     "react-resize-detector": "^6.7.6",
     "react-router": "^6.8.1",
     "react-router-dom": "^6.8.1"

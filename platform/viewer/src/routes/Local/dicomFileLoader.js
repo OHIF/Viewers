@@ -21,6 +21,10 @@ const DICOMFileLoader = new (class extends FileLoader {
       dicomData.meta
     );
 
+    dataset.AvailableTransferSyntaxUID =
+      dataset.AvailableTransferSyntaxUID ||
+      dataset._meta.TransferSyntaxUID?.Value?.[0];
+
     return dataset;
   }
 })();
