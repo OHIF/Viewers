@@ -7,13 +7,13 @@ async function checkAndLoadContourData(instance, datasource) {
     return Promise.reject('Invalid instance object or ROIContourSequence');
   }
 
-  const promises = [];
-  let counter = 0;
+  const promisesMap = new Map();
 
   for (const ROIContour of instance.ROIContourSequence) {
+    const referencedROINumber = ROIContour.ReferencedROINumber;
     if (!ROIContour || !ROIContour.ContourSequence) {
-      promises.push(Promise.resolve([]));
-      return
+      promisesMap.set(referencedROINumber, [Promise.resolve([])]);
+      continue;
     }
 
     for (const Contour of ROIContour.ContourSequence) {
@@ -22,9 +22,15 @@ async function checkAndLoadContourData(instance, datasource) {
       }
 
       const contourData = Contour.ContourData;
-      counter++;
+
       if (Array.isArray(contourData)) {
-        promises.push(Promise.resolve(contourData));
+        promisesMap.has(referencedROINumber)
+          ? promisesMap
+              .get(referencedROINumber)
+              .push(Promise.resolve(contourData))
+          : promisesMap.set(referencedROINumber, [
+              Promise.resolve(contourData),
+            ]);
       } else if (contourData && contourData.BulkDataURI) {
         const bulkDataURI = contourData.BulkDataURI;
 
@@ -45,62 +51,72 @@ async function checkAndLoadContourData(instance, datasource) {
           SOPInstanceUID: instance.SOPInstanceUID,
         });
 
-        promises.push(bulkDataPromise);
+        promisesMap.has(referencedROINumber)
+          ? promisesMap.get(referencedROINumber).push(bulkDataPromise)
+          : promisesMap.set(referencedROINumber, [bulkDataPromise]);
       } else {
         return Promise.reject(`Invalid ContourData: ${contourData}`);
       }
     }
   }
-  const flattenedPromises = promises.flat();
-  const resolvedPromises = await Promise.allSettled(flattenedPromises);
 
-  // Modify contourData and replace it in its corresponding ROIContourSequence's Contour's contourData
-  let index = 0;
+  const resolvedPromisesMap = new Map();
+  for (const [key, promiseArray] of promisesMap.entries()) {
+    resolvedPromisesMap.set(key, await Promise.allSettled(promiseArray));
+  }
+
   instance.ROIContourSequence.forEach(ROIContour => {
     try {
-      ROIContour.ContourSequence.forEach((Contour, contourIndex) => {
-        const promise = resolvedPromises[index++];
-        if (promise.status === 'fulfilled') {
-          if (
-            Array.isArray(promise.value) &&
-            promise.value.every(Number.isFinite)
-          ) {
-            // If promise.value is already an array of numbers, use it directly
-            Contour.ContourData = promise.value;
-          } else {
-            // Otherwise, proceed with existing logic
-            const uint8Array = new Uint8Array(promise.value);
-            const textDecoder = new TextDecoder();
-            const dataUint8Array = textDecoder.decode(uint8Array);
+      const referencedROINumber = ROIContour.ReferencedROINumber;
+      const resolvedPromises = resolvedPromisesMap.get(referencedROINumber);
+
+      if (ROIContour.ContourSequence) {
+        ROIContour.ContourSequence.forEach((Contour, index) => {
+          const promise = resolvedPromises[index];
+          if (promise.status === 'fulfilled') {
             if (
-              typeof dataUint8Array === 'string' &&
-              dataUint8Array.includes('\\')
+              Array.isArray(promise.value) &&
+              promise.value.every(Number.isFinite)
             ) {
-              const numSlashes = (dataUint8Array.match(/\\/g) || []).length;
-              let startIndex = 0;
-              let endIndex = dataUint8Array.indexOf('\\', startIndex);
-              let numbersParsed = 0;
-              const ContourData = [];
-
-              while (numbersParsed !== numSlashes + 1) {
-                const str = dataUint8Array.substring(startIndex, endIndex);
-                let value = parseFloat(str);
-
-                ContourData.push(value);
-                startIndex = endIndex + 1;
-                endIndex = dataUint8Array.indexOf('\\', startIndex);
-                endIndex === -1 ? (endIndex = dataUint8Array.length) : endIndex;
-                numbersParsed++;
-              }
-              Contour.ContourData = ContourData;
+              // If promise.value is already an array of numbers, use it directly
+              Contour.ContourData = promise.value;
             } else {
-              Contour.ContourData = [];
+              // If the resolved promise value is a byte array (Blob), it needs to be decoded
+              const uint8Array = new Uint8Array(promise.value);
+              const textDecoder = new TextDecoder();
+              const dataUint8Array = textDecoder.decode(uint8Array);
+              if (
+                typeof dataUint8Array === 'string' &&
+                dataUint8Array.includes('\\')
+              ) {
+                const numSlashes = (dataUint8Array.match(/\\/g) || []).length;
+                let startIndex = 0;
+                let endIndex = dataUint8Array.indexOf('\\', startIndex);
+                let numbersParsed = 0;
+                const ContourData = [];
+
+                while (numbersParsed !== numSlashes + 1) {
+                  const str = dataUint8Array.substring(startIndex, endIndex);
+                  let value = parseFloat(str);
+
+                  ContourData.push(value);
+                  startIndex = endIndex + 1;
+                  endIndex = dataUint8Array.indexOf('\\', startIndex);
+                  endIndex === -1
+                    ? (endIndex = dataUint8Array.length)
+                    : endIndex;
+                  numbersParsed++;
+                }
+                Contour.ContourData = ContourData;
+              } else {
+                Contour.ContourData = [];
+              }
             }
+          } else {
+            console.error(promise.reason);
           }
-        } else {
-          console.error(promise.reason);
-        }
-      });
+        });
+      }
     } catch (error) {
       console.error(error);
     }
