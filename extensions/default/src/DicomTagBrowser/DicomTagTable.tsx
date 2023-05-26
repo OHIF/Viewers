@@ -74,6 +74,9 @@ function DicomTagTable({ rows }) {
   const [keywordHeaderElem, setKeywordHeaderElem] = useState(null);
   const [valueHeaderElem, setValueHeaderElem] = useState(null);
 
+  // Here the refs are inturn stored in state to trigger a render of the table.
+  // This virtualized table does NOT render until the header is rendered because the header column widths are used to determine the row heights in the table.
+  // Therefore whenever the refs change (in particular the first time the refs are set), we want to trigger a render of the table.
   const tagRef = elem => {
     if (elem) {
       setTagHeaderElem(elem);

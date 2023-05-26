@@ -157,7 +157,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
         </div>
       </div>
       <div className="w-full h-1 bg-black"></div>
-      <div className="flex flex-row mt-2 mb-4 w-1/2">
+      <div className="flex flex-row my-3 w-1/2">
         {/* TODO - refactor the following into its own reusable component */}
         <label className="relative block w-full mr-8">
           <span className="absolute inset-y-0 left-0 flex items-center pl-2">
