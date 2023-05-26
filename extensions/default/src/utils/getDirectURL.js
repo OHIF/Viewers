@@ -1,10 +1,4 @@
-import {
-  DicomMetadataStore,
-  IWebApiDataSource,
-  utils,
-  errorHandler,
-  classes,
-} from '@ohif/core';
+import { utils } from '@ohif/core';
 
 /**
  * Generates a URL that can be used for direct retrieve of the bulkdata
@@ -67,22 +61,8 @@ const getDirectURL = (config, params) => {
     return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
   }
 
-  if (BulkDataURI.indexOf('http') === 0) {
-    return acceptUri;
-  }
-  if (BulkDataURI.indexOf('/') === 0) {
-    return wadoRoot + acceptUri;
-  }
-  if (BulkDataURI.indexOf('series/') === 0) {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
-  }
-  if (BulkDataURI.indexOf('instances/') === 0) {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${acceptUri}`;
-  }
-  if (BulkDataURI.indexOf('bulkdata/') === 0) {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
-  }
-
+  // since we fixed the bulkDataURI to be absolute (in case of the relative),
+  // we can just return it here
   return BulkDataURI;
 };
 

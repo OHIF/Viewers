@@ -179,6 +179,24 @@ See the [`singlepart`](#singlepart) data source configuration option.
 ### DICOM Video
 See the [`singlepart`](#singlepart) data source configuration option.
 
+### BulkDataURI
+
+The `bulkDataURI` configuration option allows the datasource to use the
+bulkdata end points for retrieving metadata if originally was not included in the
+response from the server. This is useful for the metadata information that
+are big and can/should be retrieved in a separate request. In case the bulkData URI
+is relative (instead of absolute) the `relativeResolution` option can be used to
+specify the resolution of the relative URI. The possible values are `studies`, `series` and `instances`.
+Certainly the knowledge of how the server is configured is required to use this option.
+
+```js
+bulkDataURI: {
+  enabled: true,
+  relativeResolution: 'series',
+},
+```
+
+
 ### Running DCM4CHEE
 
 dcm4che is a collection of open source applications for healthcare enterprise
