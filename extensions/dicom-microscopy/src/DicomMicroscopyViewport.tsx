@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
+import { LoadingIndicatorProgress } from '@ohif/ui';
 
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
@@ -23,6 +24,7 @@ function transformImageTypeUnnaturalized(entry) {
 class DicomMicroscopyViewport extends Component {
   state = {
     error: null as any,
+    isLoaded: false,
   };
 
   microscopyService: MicroscopyService;
@@ -253,7 +255,11 @@ class DicomMicroscopyViewport extends Component {
   componentDidMount() {
     const { displaySets, viewportIndex } = this.props;
     const displaySet = displaySets[viewportIndex];
-    this.installOpenLayersRenderer(this.container.current, displaySet);
+    this.installOpenLayersRenderer(this.container.current, displaySet).then(
+      () => {
+        this.setState({ isLoaded: true });
+      }
+    );
   }
 
   componentDidUpdate(
@@ -331,6 +337,9 @@ class DicomMicroscopyViewport extends Component {
           <h2>{JSON.stringify(this.state.error)}</h2>
         ) : (
           <div style={style} ref={this.container} />
+        )}
+        {this.state.isLoaded ? null : (
+          <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
         )}
       </div>
     );
