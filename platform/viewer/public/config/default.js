@@ -60,8 +60,8 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
-        useBulkDataURI: false,
+        singlepart: 'bulkdata,video',
+        useBulkDataURI: true,
       },
     },
     {

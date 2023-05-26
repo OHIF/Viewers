@@ -57,22 +57,23 @@ const getDirectURL = (config, params) => {
   const BulkDataURI =
     (value && value.BulkDataURI) ||
     `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
-  const hasQuery = BulkDataURI.indexOf('?') != -1;
-  const hasAccept = BulkDataURI.indexOf('accept=') != -1;
+  const hasQuery = BulkDataURI.indexOf('?') !== -1;
+  const hasAccept = BulkDataURI.indexOf('accept=') !== -1;
   const acceptUri =
     BulkDataURI +
     (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
+
+  if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
+    return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
+  }
+
   if (BulkDataURI.indexOf('http') === 0) {
-    if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
-      return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
-    } else {
-      return acceptUri;
-    }
+    return acceptUri;
   }
   if (BulkDataURI.indexOf('/') === 0) {
     return wadoRoot + acceptUri;
   }
-  if (BulkDataURI.indexOf('series/') == 0) {
+  if (BulkDataURI.indexOf('series/') === 0) {
     return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
   }
   if (BulkDataURI.indexOf('instances/') === 0) {
@@ -81,7 +82,8 @@ const getDirectURL = (config, params) => {
   if (BulkDataURI.indexOf('bulkdata/') === 0) {
     return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
   }
-  throw new Error('BulkDataURI in unknown format:' + BulkDataURI);
+
+  return BulkDataURI;
 };
 
 export default getDirectURL;

@@ -380,6 +380,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           if (value && value.BulkDataURI && !value.Value) {
             // Provide a method to fetch bulkdata
             value.retrieveBulkData = () => {
+              // fix the relative bulkDataURI to be absolute
+              if (
+                !value.BulkDataURI.startsWith('http') &&
+                !value.BulkDataURI.startsWith('/')
+              ) {
+                value.BulkDataURI = `${wadoDicomWebClient.baseURL}/studies/${naturalized.StudyInstanceUID}/${value.BulkDataURI}`;
+              }
               const options = {
                 // The bulkdata fetches work with either multipart or
                 // singlepart, so set multipart to false to let the server
