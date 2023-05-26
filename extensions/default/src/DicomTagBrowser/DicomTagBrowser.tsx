@@ -14,6 +14,12 @@ const { DicomMetaDictionary } = dcmjs.data;
 const { nameMap } = DicomMetaDictionary;
 
 const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
+  // The column indices that are to be excluded during a filter of the table.
+  // At present the column indices are:
+  // 0: DICOM tag
+  // 1: VR
+  // 2: Keyword
+  // 3: Value
   const excludedColumnIndicesForFilter: Set<number> = new Set([1]);
 
   const [
@@ -74,6 +80,10 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   }, [instanceNumber, selectedDisplaySetInstanceUID]);
 
   const filteredRows = useMemo(() => {
+    if (!filterValue) {
+      return rows;
+    }
+
     const filterValueLowerCase = filterValue.toLowerCase();
     return rows.filter(row => {
       return row.reduce((keepRow, col, colIndex) => {
@@ -140,7 +150,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
                 step={1}
                 inputClassName="w-full"
                 labelPosition="left"
-                solidTrackBackground={true}
+                trackColor={'#3a3f99'}
               />
             </div>
           )}
@@ -148,6 +158,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
       </div>
       <div className="w-full h-1 bg-black"></div>
       <div className="flex flex-row mt-2 mb-4 w-1/2">
+        {/* TODO - refactor the following into its own reusable component */}
         <label className="relative block w-full mr-8">
           <span className="absolute inset-y-0 left-0 flex items-center pl-2">
             <Icon name="icon-search"></Icon>
@@ -155,7 +166,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
           <input
             ref={searchInputRef}
             type="text"
-            className="block bg-black w-full shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded w-full py-2 px-9 text-lg leading-tight placeholder:text-inputfield-placeholder"
+            className="block bg-black w-full shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded w-full py-2 px-9 text-base leading-tight placeholder:text-inputfield-placeholder"
             placeholder="Search metadata..."
             onChange={event => debouncedSetFilterValue(event.target.value)}
             autoComplete="off"

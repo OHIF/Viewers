@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
+import debounce from 'lodash.debounce';
 
 const lineHeightPx = 20;
 const lineHeightClassName = `leading-[${lineHeightPx}px]`;
@@ -68,53 +69,6 @@ function DicomTagTable({ rows }) {
   const listRef = useRef();
   const canvasRef = useRef();
 
-  /**
-   * When new rows are set, scroll to the top and reset the virtualization.
-   */
-  useEffect(() => {
-    if (!listRef?.current) {
-      return;
-    }
-
-    listRef.current.scrollTo(0);
-    listRef.current.resetAfterIndex(0);
-  }, [rows]);
-
-  /**
-   * When the browser window resizes, update the row virtualization (i.e. row heights)
-   */
-  React.useEffect(() => {
-    function handleResize() {
-      listRef.current.resetAfterIndex(0);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  });
-
-  const Row = ({ index, style }) => {
-    const row = rows[index];
-
-    return (
-      <div
-        style={{ ...style, ...rowStyle }}
-        className={classNames(
-          'hover:bg-secondary-main transition duration-300 bg-black flex flex-row w-full border-secondary-light items-center text-base break-all',
-          lineHeightClassName
-        )}
-        key={`DICOMTagRow-${index}`}
-      >
-        <div className="px-3 w-4/24">{row[0]}</div>
-        <div className="px-3 w-2/24">{row[1]}</div>
-        <div className="px-3 w-6/24">{row[2]}</div>
-        <div className="px-3 w-5/24 grow">{row[3]}</div>
-      </div>
-    );
-  };
-
   const [tagHeaderElem, setTagHeaderElem] = useState(null);
   const [vrHeaderElem, setVrHeaderElem] = useState(null);
   const [keywordHeaderElem, setKeywordHeaderElem] = useState(null);
@@ -141,33 +95,97 @@ function DicomTagTable({ rows }) {
     }
   };
 
-  const isHeaderRendered = () => tagHeaderElem != null;
+  /**
+   * When new rows are set, scroll to the top and reset the virtualization.
+   */
+  useEffect(() => {
+    if (!listRef?.current) {
+      return;
+    }
+
+    listRef.current.scrollTo(0);
+    listRef.current.resetAfterIndex(0);
+  }, [rows]);
+
+  /**
+   * When the browser window resizes, update the row virtualization (i.e. row heights)
+   */
+  useEffect(() => {
+    const debouncedResize = debounce(
+      () => listRef.current.resetAfterIndex(0),
+      100
+    );
+
+    window.addEventListener('resize', debouncedResize);
+
+    return () => {
+      debouncedResize.cancel();
+      window.removeEventListener('resize', debouncedResize);
+    };
+  }, []);
+
+  const Row = useCallback(
+    ({ index, style }) => {
+      const row = rows[index];
+
+      return (
+        <div
+          style={{ ...style, ...rowStyle }}
+          className={classNames(
+            'hover:bg-secondary-main transition duration-300 bg-black flex flex-row w-full border-secondary-light items-center text-base break-all',
+            lineHeightClassName
+          )}
+          key={`DICOMTagRow-${index}`}
+        >
+          <div className="px-3 w-4/24">{row[0]}</div>
+          <div className="px-3 w-2/24">{row[1]}</div>
+          <div className="px-3 w-6/24">{row[2]}</div>
+          <div className="px-3 w-5/24 grow">{row[3]}</div>
+        </div>
+      );
+    },
+    [rows]
+  );
+
+  /**
+   * Whenever any one of the column headers is set, then the header is rendered.
+   * Here we chose the tag header.
+   */
+  const isHeaderRendered = useCallback(() => tagHeaderElem !== null, [
+    tagHeaderElem,
+  ]);
+
   /**
    * Get the item/row size. We use the header column widths to calculate the various row heights.
    * @param index the row index
    * @returns the row height
    */
-  const getItemSize = index => {
-    const headerWidths = [
-      tagHeaderElem.offsetWidth,
-      vrHeaderElem.offsetWidth,
-      keywordHeaderElem.offsetWidth,
-      valueHeaderElem.offsetWidth,
-    ];
+  const getItemSize = useCallback(
+    index => {
+      const headerWidths = [
+        tagHeaderElem.offsetWidth,
+        vrHeaderElem.offsetWidth,
+        keywordHeaderElem.offsetWidth,
+        valueHeaderElem.offsetWidth,
+      ];
 
-    const context = canvasRef.current.getContext('2d');
-    context.font = getComputedStyle(canvasRef.current).font;
+      const context = canvasRef.current.getContext('2d');
+      context.font = getComputedStyle(canvasRef.current).font;
 
-    return rows[index]
-      .map((colText, index) => {
-        const colOneLineWidth = context.measureText(colText).width;
-        const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
-        return (
-          numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx
-        );
-      })
-      .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight));
-  };
+      return rows[index]
+        .map((colText, index) => {
+          const colOneLineWidth = context.measureText(colText).width;
+          const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
+          return (
+            numLines * lineHeightPx +
+            2 * rowVerticalPaddingPx +
+            rowBottomBorderPx
+          );
+        })
+        .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight));
+    },
+    [rows, keywordHeaderElem, tagHeaderElem, valueHeaderElem, vrHeaderElem]
+  );
 
   return (
     <div>

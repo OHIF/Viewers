@@ -25,7 +25,7 @@ const InputRange: React.FC<{
   labelVariant?: string;
   showLabel?: boolean;
   labelPosition?: string;
-  solidTrackBackground?: boolean;
+  trackColor?: string;
 }> = ({
   value,
   onChange,
@@ -39,7 +39,7 @@ const InputRange: React.FC<{
   labelVariant,
   showLabel = true,
   labelPosition = '',
-  solidTrackBackground = false,
+  trackColor,
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
 
@@ -86,10 +86,10 @@ const InputRange: React.FC<{
           inputClassName ? inputClassName : ''
         }`}
         style={{
-          background: solidTrackBackground
-            ? '#3a3f99'
-            : `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
-                10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
+          background:
+            trackColor ||
+            `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
+              10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
         }}
         onChange={handleChange}
         id="myRange"
