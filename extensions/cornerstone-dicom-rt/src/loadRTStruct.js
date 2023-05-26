@@ -117,7 +117,7 @@ export default async function loadRTStruct(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const { useBulkDataURI } = dataSource.getConfig?.() || {};
+  const { bulkDataURI } = dataSource.getConfig?.() || {};
 
   const { dicomLoaderService } = utilityModule.exports;
   const imageIdSopInstanceUidPairs = _getImageIdSopInstanceUidPairsForDisplaySet(
@@ -129,7 +129,7 @@ export default async function loadRTStruct(
   rtStructDisplaySet.isLoaded = true;
   let instance = rtStructDisplaySet.instance;
 
-  if (!useBulkDataURI) {
+  if (!bulkDataURI || !bulkDataURI.enabled) {
     const segArrayBuffer = await dicomLoaderService.findDicomDataPromise(
       rtStructDisplaySet,
       null,

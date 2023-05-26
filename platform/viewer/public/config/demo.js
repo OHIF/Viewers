@@ -22,7 +22,9 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,
-        useBulkDataURI: false,
+        bulkDataURI: {
+          enabled: false,
+        },
       },
     },
   ],

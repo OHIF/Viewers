@@ -29,15 +29,11 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        useBulkDataURI: false,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
         dicomUploadEnabled: true,
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
         bulkDataURI: {
-          enabled: true,
+          enabled: false,
         },
       },
     },
