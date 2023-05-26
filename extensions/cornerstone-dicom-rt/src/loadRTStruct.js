@@ -89,25 +89,9 @@ async function checkAndLoadContourData(instance, datasource) {
                 typeof dataUint8Array === 'string' &&
                 dataUint8Array.includes('\\')
               ) {
-                const numSlashes = (dataUint8Array.match(/\\/g) || []).length;
-                let startIndex = 0;
-                let endIndex = dataUint8Array.indexOf('\\', startIndex);
-                let numbersParsed = 0;
-                const ContourData = [];
-
-                while (numbersParsed !== numSlashes + 1) {
-                  const str = dataUint8Array.substring(startIndex, endIndex);
-                  let value = parseFloat(str);
-
-                  ContourData.push(value);
-                  startIndex = endIndex + 1;
-                  endIndex = dataUint8Array.indexOf('\\', startIndex);
-                  endIndex === -1
-                    ? (endIndex = dataUint8Array.length)
-                    : endIndex;
-                  numbersParsed++;
-                }
-                Contour.ContourData = ContourData;
+                Contour.ContourData = dataUint8Array
+                  .split('\\')
+                  .map(parseFloat);
               } else {
                 Contour.ContourData = [];
               }
