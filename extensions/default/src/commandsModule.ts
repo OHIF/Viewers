@@ -3,14 +3,14 @@ import { ServicesManager, utils, Types } from '@ohif/core';
 import {
   ContextMenuController,
   defaultContextMenu,
-} from './CustomizeableContextMenu';
+} from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
 
-import { ContextMenuProps } from './CustomizeableContextMenu/types';
+import { ContextMenuProps } from './CustomizableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/viewer';
 
@@ -21,6 +21,11 @@ export type HangingProtocolParams = {
   stageIndex?: number;
   activeStudyUID?: string;
   stageId?: string;
+};
+
+export type UpdateViewportDisplaySetParams = {
+  direction: number;
+  excludeNonImageModalities?: boolean;
 };
 
 /**
@@ -541,6 +546,130 @@ const commandsModule = ({
         overlays.item(i).classList.toggle('hidden');
       }
     },
+
+    scrollActiveThumbnailIntoView: () => {
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+
+      if (
+        !viewports ||
+        activeViewportIndex < 0 ||
+        activeViewportIndex > viewports.length - 1
+      ) {
+        return;
+      }
+
+      const activeViewport = viewports[activeViewportIndex];
+      const activeDisplaySetInstanceUID =
+        activeViewport.displaySetInstanceUIDs[0];
+
+      const thumbnailList = document.querySelector('#ohif-thumbnail-list');
+
+      if (!thumbnailList) {
+        return;
+      }
+
+      const thumbnailListBounds = thumbnailList.getBoundingClientRect();
+
+      const thumbnail = document.querySelector(
+        `#thumbnail-${activeDisplaySetInstanceUID}`
+      );
+
+      if (!thumbnail) {
+        return;
+      }
+
+      const thumbnailBounds = thumbnail.getBoundingClientRect();
+
+      // This only handles a vertical thumbnail list.
+      if (
+        thumbnailBounds.top >= thumbnailListBounds.top &&
+        thumbnailBounds.top <= thumbnailListBounds.bottom
+      ) {
+        return;
+      }
+
+      thumbnail.scrollIntoView({ behavior: 'smooth' });
+    },
+
+    updateViewportDisplaySet: ({
+      direction,
+      excludeNonImageModalities,
+    }: UpdateViewportDisplaySetParams) => {
+      const nonImageModalities = [
+        'SR',
+        'SEG',
+        'SM',
+        'RTSTRUCT',
+        'RTPLAN',
+        'RTDOSE',
+      ];
+
+      // Sort the display sets as per the hanging protocol service viewport/display set scoring system.
+      // The thumbnail list uses the same sorting.
+      const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
+      const currentDisplaySets = [...displaySetService.activeDisplaySets];
+
+      currentDisplaySets.sort(dsSortFn);
+
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+
+      const { displaySetInstanceUIDs } = viewports[activeViewportIndex];
+
+      const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
+        displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
+      );
+
+      let displaySetIndexToShow: number;
+
+      for (
+        displaySetIndexToShow = activeDisplaySetIndex + direction;
+        displaySetIndexToShow > -1 &&
+        displaySetIndexToShow < currentDisplaySets.length;
+        displaySetIndexToShow += direction
+      ) {
+        if (
+          !excludeNonImageModalities ||
+          !nonImageModalities.includes(
+            currentDisplaySets[displaySetIndexToShow].Modality
+          )
+        ) {
+          break;
+        }
+      }
+
+      if (
+        displaySetIndexToShow < 0 ||
+        displaySetIndexToShow >= currentDisplaySets.length
+      ) {
+        return;
+      }
+
+      const { displaySetInstanceUID } = currentDisplaySets[
+        displaySetIndexToShow
+      ];
+
+      let updatedViewports = [];
+
+      try {
+        updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+          activeViewportIndex,
+          displaySetInstanceUID
+        );
+      } catch (error) {
+        console.warn(error);
+        uiNotificationService.show({
+          title: 'Navigate Viewport Display Set',
+          message:
+            'The requested display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          type: 'info',
+          duration: 3000,
+        });
+      }
+
+      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+      setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
+    },
   };
 
   const definitions = {
@@ -597,6 +726,11 @@ const commandsModule = ({
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
+    },
+    updateViewportDisplaySet: {
+      commandFn: actions.updateViewportDisplaySet,
+      storeContexts: [],
+      options: {},
     },
   };
 

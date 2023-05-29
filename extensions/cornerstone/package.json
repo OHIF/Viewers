@@ -34,7 +34,7 @@
   "peerDependencies": {
     "@ohif/core": "^3.0.0",
     "@ohif/ui": "^2.0.0",
-    "@cornerstonejs/dicom-image-loader": "^0.6.6",
+    "@cornerstonejs/dicom-image-loader": "^0.6.8",
     "@cornerstonejs/codec-charls": "^1.2.3",
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
@@ -52,10 +52,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^0.6.0",
-    "@cornerstonejs/core": "^0.47.1",
-    "@cornerstonejs/streaming-image-volume-loader": "^0.20.4",
-    "@cornerstonejs/tools": "^0.67.4",
+    "@cornerstonejs/adapters": "^1.1.0",
+    "@cornerstonejs/core": "^1.1.0",
+    "@cornerstonejs/streaming-image-volume-loader": "^1.1.0",
+    "@cornerstonejs/tools": "^1.1.0",
     "@kitware/vtk.js": "27.3.1",
     "html2canvas": "^1.4.1",
     "lodash.debounce": "4.0.8",

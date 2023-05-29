@@ -1302,7 +1302,7 @@
     core-js-pure "^3.25.1"
     regenerator-runtime "^0.13.11"
 
-"@babel/runtime@7.17.9", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.6", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.6", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.6", "@babel/runtime@^7.20.7", "@babel/runtime@^7.21.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@7.17.9", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.6", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.6", "@babel/runtime@^7.20.7", "@babel/runtime@^7.21.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
   version "7.21.0"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.21.0.tgz#5b55c9d394e5fcf304909a8b00c07dc217b56673"
   integrity sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==
@@ -1418,10 +1418,10 @@
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/@cornerstonejs/adapters/-/adapters-0.6.0.tgz#9b2efdabb0d596d53ae4854556956b668cca7535"
-  integrity sha512-bzOwtOX0EfJ/PufPq1mONPU+HmVQf+pA/78+mbHuV8bvznM1IkSzc2h0WYsLXTdVEkZrGwgWCwrOiYGfsNW1tQ==
+"@cornerstonejs/adapters@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/adapters/-/adapters-1.1.0.tgz#6476ff9075291a10204992cffbc178c67a785ed4"
+  integrity sha512-v2uj9uGd0mEuQfPvKBuohgNM+EDOAqOexnI0yHfAOIQkzA+FPdifr5vRoH6TKkSk403GZh8ASGeoyleavEifmQ==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     dcmjs "^0.29.5"
@@ -1469,43 +1469,43 @@
   resolved "https://registry.npmjs.org/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^0.47.1":
-  version "0.47.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-0.47.1.tgz#8bbb9d5d8a6cd8a4c0fbf0b20bc0f56808d4fa40"
-  integrity sha512-bA69qo2WkMd5lkFFegYQ1UWHbnOADF0TD6DHiOnabFxHMQYZLB9CkCy4lT/tPAYL2w9WKm6b52ScUPNLTirWeA==
+"@cornerstonejs/core@^0.47.3", "@cornerstonejs/core@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-1.1.0.tgz#bedac4d7583be931f289e5e645a1531b605cbb83"
+  integrity sha512-YLbb47rCrxf04XZ1+qR1ATnbKlV6WXOsEc4pAmty5WfTqL9zlmSx72IoXx034m39Nz9JvZB+VUN8MKvVrYv3bw==
   dependencies:
     "@kitware/vtk.js" "27.3.1"
     detect-gpu "^5.0.22"
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@^0.6.6":
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.6.6.tgz#086b14e93e67923ea999d7f80c42bf766db3918f"
-  integrity sha512-pdJ5f7/JEX4BAXR2keAAGf6RUfuyzB3vhEvk0T4yDv960TdpT4RZqRjs5acZMs9bkGqY8zAb+c9+Gdz5vypfvg==
+"@cornerstonejs/dicom-image-loader@^0.6.8":
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-0.6.8.tgz#e9d5c24959d74981b3ccca3641617b2c34106355"
+  integrity sha512-wYKPXprDYgHrsz2tNf2o0UL0Mr4YcUF4xalQqdLxfrgyUExQKHoDigXmEAwNVokSlS7rNz6NplLXeTbNJ2QSwg==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.2"
-    "@cornerstonejs/core" "^0.47.1"
+    "@cornerstonejs/core" "^0.47.3"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^0.20.4":
-  version "0.20.4"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-0.20.4.tgz#f8d727f2ae7dc0ae3c8975bad2a4f5365743127f"
-  integrity sha512-Zkf/HKatWGf3GPb+0yR7wNPqBHfKXQznpcKsqwFbbMu/SNp7dBcCuvqRVXO5BrJOfnyDeeDpB2+2XRocBnighg==
+"@cornerstonejs/streaming-image-volume-loader@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.1.0.tgz#bd2fa9cddc8088c6e6501be6c3bba0f722478078"
+  integrity sha512-HGHm3WHUxwzsTEkcGwscwFOuxZxeVvRZ1MkcSpkGVgiL15NE8L47FKBLP9Ph2kdv+5DC3IOQuZV502mhi2unag==
   dependencies:
-    "@cornerstonejs/core" "^0.47.1"
+    "@cornerstonejs/core" "^1.1.0"
 
-"@cornerstonejs/tools@^0.67.4":
-  version "0.67.4"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-0.67.4.tgz#5dfc2d3bacc2be600496cd4e230b1749de59b001"
-  integrity sha512-qeCCtK/xioEBv7l1zqicWQrHdzkFOX4fGNZ5D/TMkQMa+Ed5Zip8gDAcYTbmUvbYXdvkzhoOZeLcPVhoAkDykw==
+"@cornerstonejs/tools@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-1.1.0.tgz#8c59f50899127505fd1e7e775ccf264ebddb8ae5"
+  integrity sha512-1OhTAycShG5BoAH5x1XUN9TrSdL9hwB5jTBgm0t/nJGVj/DJ29RMXvakgX8HAv1K2acrKRl8JcJCV2VS9OAHtQ==
   dependencies:
-    "@cornerstonejs/core" "^0.47.1"
+    "@cornerstonejs/core" "^1.1.0"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -7460,14 +7460,6 @@ config-chain@^1.1.11:
   dependencies:
     ini "^1.3.4"
     proto-list "~1.2.1"
-
-config-point@^0.4.8:
-  version "0.4.9"
-  resolved "https://registry.npmjs.org/config-point/-/config-point-0.4.9.tgz#ec4594d04235438d5852e5ab33bde60aeffd18db"
-  integrity sha512-2QyqD2eb2iURURZNW6MAcNcT2e1Pr1VXwCaMgEQM0f/i+WaUCLZOdPjFtqF7oIT1rzPXNoMfl3KK2hbNcy5dXw==
-  dependencies:
-    "@babel/runtime" "^7.14.6"
-    json5 "^2.2.0"
 
 configstore@^5.0.1:
   version "5.0.1"
@@ -13975,7 +13967,7 @@ memfs@^3.1.2, memfs@^3.4.1, memfs@^3.4.3:
   dependencies:
     fs-monkey "^1.0.3"
 
-memoize-one@^5.0.0:
+"memoize-one@>=3.1.1 <6", memoize-one@^5.0.0:
   version "5.2.1"
   resolved "https://registry.npmjs.org/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
   integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
@@ -17517,6 +17509,14 @@ react-waypoint@^10.3.0:
     consolidated-events "^1.1.0 || ^2.0.0"
     prop-types "^15.0.0"
     react-is "^17.0.1 || ^18.0.0"
+
+react-window@^1.8.9:
+  version "1.8.9"
+  resolved "https://registry.yarnpkg.com/react-window/-/react-window-1.8.9.tgz#24bc346be73d0468cdf91998aac94e32bc7fa6a8"
+  integrity sha512-+Eqx/fj1Aa5WnhRfj9dJg4VYATGwIUP2ItwItiJ6zboKWA6EX3lYDAXfGF2hyNqplEprhbtjbipiADEcwQ823Q==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    memoize-one ">=3.1.1 <6"
 
 react-with-direction@^1.3.1:
   version "1.4.0"

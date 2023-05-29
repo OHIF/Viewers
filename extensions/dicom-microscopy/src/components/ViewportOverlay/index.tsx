@@ -1,6 +1,5 @@
 import React from 'react';
 import classnames from 'classnames';
-import ConfigPoint from 'config-point';
 
 import listComponentGenerator from './listComponentGenerator';
 import './ViewportOverlay.css';
@@ -11,7 +10,7 @@ import {
   formatPN,
 } from './utils';
 
-interface OverylayItem {
+interface OverlayItem {
   id: string;
   title: string;
   value?: (props: any) => string;
@@ -28,17 +27,17 @@ interface OverylayItem {
  * @returns
  */
 export const generateFromConfig = ({
-  topLeft,
-  topRight,
-  bottomLeft,
-  bottomRight,
-  itemGenerator,
+  topLeft = [],
+  topRight = [],
+  bottomLeft = [],
+  bottomRight = [],
+  itemGenerator = () => {},
 }: {
-  topLeft: OverylayItem[];
-  topRight: OverylayItem[];
-  bottomLeft: OverylayItem[];
-  bottomRight: OverylayItem[];
-  itemGenerator: (props: any) => any;
+  topLeft?: OverlayItem[];
+  topRight?: OverlayItem[];
+  bottomLeft?: OverlayItem[];
+  bottomRight?: OverlayItem[];
+  itemGenerator?: (props: any) => any;
 }) => {
   return (props: any) => {
     const topLeftClass = 'top-viewport left-viewport text-primary-light';
@@ -127,29 +126,4 @@ const itemGenerator = (props: any) => {
   );
 };
 
-const { MicroscopyViewportOverlay } = ConfigPoint.register({
-  MicroscopyViewportOverlay: {
-    configBase: {
-      topLeft: [
-        // {
-        //   id: 'sm-overlay-patient-name',
-        //   title: 'PatientName',
-        //   condition: ({ instance }) =>
-        //     instance && instance.PatientName && instance.PatientName.Alphabetic,
-        //   value: ({ instance }) =>
-        //     instance.PatientName && instance.PatientName.Alphabetic,
-        // } as OverylayItem,
-      ],
-      topRight: [] as OverylayItem[],
-      bottomLeft: [] as OverylayItem[],
-      bottomRight: [] as OverylayItem[],
-      itemGenerator,
-      generateFromConfig,
-    },
-    ...(window.config?.MicroscopyViewportOverlay || {}),
-  },
-});
-
-export default MicroscopyViewportOverlay.generateFromConfig(
-  MicroscopyViewportOverlay
-);
+export default generateFromConfig({});

@@ -343,6 +343,7 @@ function WorkList({
 
             const isValidMode = mode.isValidMode({
               modalities: modalitiesToCheck,
+              study,
             });
             // TODO: Modes need a default/target route? We mostly support a single one for now.
             // We should also be using the route path, but currently are not

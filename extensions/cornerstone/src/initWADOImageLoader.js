@@ -61,8 +61,8 @@ export default function initWADOImageLoader(
 
       const xhrRequestHeaders = {}
 
-      if (headers && headers.Authorization) {
-        xhrRequestHeaders.Authorization = headers.Authorization;
+      if (headers) {
+        Object.assign(xhrRequestHeaders, headers);
       }
 
       return xhrRequestHeaders;

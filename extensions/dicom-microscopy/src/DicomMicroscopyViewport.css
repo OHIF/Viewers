@@ -1,3 +1,10 @@
+.DicomMicroscopyViewer {
+  --ol-partial-background-color: rgba(127, 127, 127, 0.7);
+  --ol-foreground-color: #000000;
+  --ol-subtle-foreground-color: #000;
+  --ol-subtle-background-color: rgba(78, 78, 78, 0.5);
+}
+
 .DicomMicroscopyViewer .ol-box {
   box-sizing: border-box;
   border-radius: 2px;
@@ -332,7 +339,7 @@
 }
 
 .DicomMicroscopyViewer .ol-overviewmap-box {
-  border: 1.5px dotted var(--ol-subtle-foreground-color);
+  border: 0.5px dotted var(--ol-subtle-foreground-color);
 }
 
 .DicomMicroscopyViewer .ol-overviewmap .ol-overviewmap-box:hover {
