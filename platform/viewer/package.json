@@ -65,7 +65,6 @@
     "@ohif/ui": "^2.0.0",
     "@types/react": "^17.0.38",
     "classnames": "^2.3.2",
-    "config-point": "^0.4.8",
     "core-js": "^3.16.1",
     "cornerstone-math": "^0.1.9",
     "@cornerstonejs/dicom-image-loader": "^0.6.8",

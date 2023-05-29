@@ -1,3 +1,21 @@
+/**
+ * Modifies a bulkDataURI to ensure it is absolute based on the DICOMWeb configuration and
+ * instance data. The modification is in-place.
+ *
+ * If the bulkDataURI is relative to the series or study (according to the DICOM standard),
+ * it is made absolute by prepending the relevant paths.
+ *
+ * In scenarios where the bulkDataURI is a server-relative path (starting with '/'), the function
+ * handles two cases:
+ *
+ * 1. If the wado root is absolute (starts with 'http'), it prepends the wado root to the bulkDataURI.
+ * 2. If the wado root is relative, no changes are needed as the bulkDataURI is already correctly relative to the server root.
+ *
+ * @param value - The object containing BulkDataURI to be fixed.
+ * @param instance - The object (DICOM instance data) containing StudyInstanceUID and SeriesInstanceUID.
+ * @param dicomWebConfig - The DICOMWeb configuration object, containing wadoRoot and potentially bulkDataURI.relativeResolution.
+ * @returns The function modifies `value` in-place, it does not return a value.
+ */
 function fixBulkDataURI(value, instance, dicomWebConfig) {
   // in case of the relative path, make it absolute. The current DICOM standard says
   // the bulkdataURI is relative to the series. However, there are situations where

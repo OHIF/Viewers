@@ -61,9 +61,9 @@ const getDirectURL = (config, params) => {
     return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
   }
 
-  // since we fixed the bulkDataURI to be absolute (in case of the relative),
-  // we can just return it here
-  return BulkDataURI;
+  // The DICOMweb standard states that the default is multipart related, and then
+  // separately states that the accept parameter is the URL parameter equivalent of the accept header.
+  return acceptUri;
 };
 
 export default getDirectURL;

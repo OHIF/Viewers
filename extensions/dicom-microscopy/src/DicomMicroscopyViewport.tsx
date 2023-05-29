@@ -168,7 +168,11 @@ class DicomMicroscopyViewport extends Component {
 
         const inst = cleanDenaturalizedDataset(
           dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m),
-          { StudyInstanceUID: m.StudyInstanceUID, baseURL: client.baseURL }
+          {
+            StudyInstanceUID: m.StudyInstanceUID,
+            SeriesInstanceUID: m.SeriesInstanceUID,
+            dataSourceConfig: this.props.dataSource.getConfig(),
+          }
         );
         if (!inst['00480105']) {
           // Optical Path Sequence, no OpticalPathIdentifier?
