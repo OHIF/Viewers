@@ -48,9 +48,9 @@ window.config = {
         // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
 
         // new server
-        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
 
         qidoSupportsIncludeField: false,
         supportsReject: false,
@@ -60,8 +60,14 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
-        useBulkDataURI: false,
+        singlepart: 'bulkdata,video',
+        // whether the data source should use retrieveBulkData to grab metadata,
+        // and in case of relative path, what would it be relative to, options
+        // are in the series level or study level (some servers like series some study)
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
       },
     },
     {

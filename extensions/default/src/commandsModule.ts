@@ -3,14 +3,14 @@ import { ServicesManager, utils, Types } from '@ohif/core';
 import {
   ContextMenuController,
   defaultContextMenu,
-} from './CustomizeableContextMenu';
+} from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
 
-import { ContextMenuProps } from './CustomizeableContextMenu/types';
+import { ContextMenuProps } from './CustomizableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/viewer';
 

@@ -1,3 +1,5 @@
+import { dicomWebUtils } from '@ohif/extension-default';
+
 function isPrimitive(v: any) {
   return !(typeof v == 'object' || Array.isArray(v));
 }
@@ -24,10 +26,17 @@ const vrNumerics = [
  * @param obj
  * @returns
  */
-export default function cleanDenaturalizedDataset(obj: any): any {
+export default function cleanDenaturalizedDataset(
+  obj: any,
+  options: {
+    StudyInstanceUID: string;
+    SeriesInstanceUID: string;
+    dataSourceConfig: unknown;
+  }
+): any {
   if (Array.isArray(obj)) {
     const newAry = obj.map(o =>
-      isPrimitive(o) ? o : cleanDenaturalizedDataset(o)
+      isPrimitive(o) ? o : cleanDenaturalizedDataset(o, options)
     );
     return newAry;
   } else if (isPrimitive(obj)) {
@@ -38,7 +47,11 @@ export default function cleanDenaturalizedDataset(obj: any): any {
         delete obj[key].Value;
       } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
         if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
-          obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
+          obj[key].Value[0] = dicomWebUtils.fixBulkDataURI(
+            obj[key].Value[0],
+            options,
+            options.dataSourceConfig
+          );
 
           // prevent mixed-content blockage
           if (
@@ -54,7 +67,9 @@ export default function cleanDenaturalizedDataset(obj: any): any {
         } else if (vrNumerics.includes(obj[key].vr)) {
           obj[key].Value = obj[key].Value.map(v => +v);
         } else {
-          obj[key].Value = obj[key].Value.map(cleanDenaturalizedDataset);
+          obj[key].Value = obj[key].Value.map(entry =>
+            cleanDenaturalizedDataset(entry, options)
+          );
         }
       }
     });

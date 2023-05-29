@@ -490,7 +490,7 @@ are specific to the context used for where the menu is displayed.
 The default cornerstone context menu can be customized by setting the
 `cornerstoneContextMenu`.  For a full example, see `findingsContextMenu`.
 
-## Customizeable Cornerstone Viewport Click Behaviour
+## Customizable Cornerstone Viewport Click Behaviour
 
 The behaviour on clicking on the cornerstone viewport can be customized
 by setting the `cornerstoneViewportClickCommands`.  This is intended to
