@@ -59,15 +59,92 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     supportsReject,
     staticWado,
     singlepart,
+    requestTransferSyntaxUID,
+    omitQuotationForMultipartRequest
   } = dicomWebConfig;
 
   const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
+
+  const acceptHeader = ['multipart/related']
+
+  if (requestTransferSyntaxUID) {
+
+    // Request:
+    // JPEG-LS Lossless (1.2.840.10008.1.2.4.80) if available, otherwise accept
+    // whatever transfer-syntax the origin server provides.
+    // For now we use image/jls and image/x-jls because some servers still use the old type
+    // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
+    /*
+    taken from
+    https://hg.orthanc-server.com/orthanc-dicomweb/file/tip/Plugin/WadoRsRetrieveFrames.cpp
+    */
+
+    /*
+    Hard coding this prevents adding custom types here such as the single part, or adding priority.
+    Suggest dropping this table.
+    */
+
+    const typeForTS = {
+      "*": "application/octet-stream",
+      "1.2.840.10008.1.2.1": "application/octet-stream",
+      "1.2.840.10008.1.2": "application/octet-stream",
+      "1.2.840.10008.1.2.2": "application/octet-stream",
+      "1.2.840.10008.1.2.4.70": "image/jpeg",
+      "1.2.840.10008.1.2.4.50": "image/jpeg",
+      "1.2.840.10008.1.2.4.51": "image/dicom+jpeg",
+      "1.2.840.10008.1.2.4.57": "image/jpeg",
+      "1.2.840.10008.1.2.5": "image/dicom-rle",
+      "1.2.840.10008.1.2.4.80": "image/jls",
+      "1.2.840.10008.1.2.4.81": "image/jls",
+      "1.2.840.10008.1.2.4.90": "image/jp2",
+      "1.2.840.10008.1.2.4.91": "image/jp2",
+      "1.2.840.10008.1.2.4.92": "image/jpx",
+      "1.2.840.10008.1.2.4.93": "image/jpx",
+    }
+
+
+    /*
+    This should be the default TSUID,
+    but the actual request should be able to over-ride the requested TSUID.
+    Why not just allow configuring the default accept header - INCLUDING making it empty?
+    If it were set as an array of strings, then an empty array wouldn't set it, and would allow the default response to be sent.
+    Also, it is permissable to request single part types directly,
+    and it would be nice to allow that to be configured using the same mechanism -
+    for example: dataSource....defaultImageAccept: [] would not pass any accept header
+    (this is required to work on all DICOMweb servers)
+    dataSource...defaultImageAccept: ['multipart/related; type="image/jphc"', 'multipart/related; type="image/jpeg"]
+    would allow for either HTJ2K or JPEG responses - something that can be very important when fetching existing lossy encoded images.
+    Then, dataSource...defaultImageAccept: ['image/jpeg', 'image/jp2'] would return JPEG or JPEG2000 responses.
+    */
+    //Check TS is valid
+    if (!typeForTS[requestTransferSyntaxUID]) {
+      console.warn(requestTransferSyntaxUID + 'is unexpected')
+    } else {
+      //Fetch type header according to requesting TS
+      let type = typeForTS[requestTransferSyntaxUID]
+      acceptHeader.push('type=' + type)
+      acceptHeader.push('transfer-syntax=' + requestTransferSyntaxUID)
+    }
+
+  }
+
+  if (!omitQuotationForMultipartRequest) {
+    acceptHeader.forEach((header) => '"' + header + '"')
+  }
+
+  const authHeaders = userAuthenticationService.getAuthorizationHeader()
+
+  const xhrRequestHeaders = {}
+
+  if (authHeaders && authHeaders.Authorization) {
+    xhrRequestHeaders.Authorization = authHeaders.Authorization;
+  }
 
   const qidoConfig = {
     url: qidoRoot,
     staticWado,
     singlepart,
-    headers: userAuthenticationService.getAuthorizationHeader(),
+    headers: xhrRequestHeaders,
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
@@ -75,7 +152,11 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     url: wadoRoot,
     staticWado,
     singlepart,
-    headers: userAuthenticationService.getAuthorizationHeader(),
+    headers: {
+      ...xhrRequestHeaders,
+      //Serialize Accept header
+      Accept: acceptHeader.join('; ')
+    },
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
@@ -108,11 +189,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            qidoDicomWebClient.headers = headers;
-          }
+        search: async function (origParams) {
 
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
@@ -133,12 +210,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            qidoDicomWebClient.headers = headers;
-          }
-
+        search: async function (studyInstanceUid) {
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
@@ -150,11 +222,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            qidoDicomWebClient.headers = headers;
-          }
-
           qidoSearch.call(
             undefined,
             qidoDicomWebClient,
@@ -199,10 +266,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortFunction,
           madeInClient = false,
         } = {}) => {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            wadoDicomWebClient.headers = headers;
-          }
 
           if (!StudyInstanceUID) {
             throw new Error(
@@ -233,10 +296,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
     store: {
       dicom: async (dataset, request) => {
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        if (headers) {
-          wadoDicomWebClient.headers = headers;
-        }
 
         if (dataset instanceof ArrayBuffer) {
           const options = {

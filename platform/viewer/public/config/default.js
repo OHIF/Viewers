@@ -62,6 +62,7 @@ window.config = {
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
         useBulkDataURI: false,
+        requestTransferSyntaxUID: '1.2.840.10008.1.2.4.80'
       },
     },
     {
