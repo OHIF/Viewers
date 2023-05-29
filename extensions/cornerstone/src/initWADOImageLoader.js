@@ -54,20 +54,6 @@ export default function initWADOImageLoader(
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },
-    /*
-    TODO (Salim) : Seems to be implemented in createDicomWebApi, check if safe to remove
-    beforeSend: function (xhr) {
-      const headers = userAuthenticationService.getAuthorizationHeader();
-
-      const xhrRequestHeaders = {}
-
-      if (headers) {
-        Object.assign(xhrRequestHeaders, headers);
-      }
-
-      return xhrRequestHeaders;
-    },
-    */
     errorInterceptor: error => {
       errorHandler.getHTTPErrorHandler(error);
     },
