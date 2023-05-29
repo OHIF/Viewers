@@ -47,11 +47,13 @@ export default function cleanDenaturalizedDataset(
         delete obj[key].Value;
       } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
         if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
-          obj[key].Value[0] = dicomWebUtils.fixBulkDataURI(
+          dicomWebUtils.fixBulkDataURI(
             obj[key].Value[0],
             options,
             options.dataSourceConfig
           );
+
+          obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
 
           // prevent mixed-content blockage
           if (
