@@ -68,12 +68,12 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
   //If accept header is not specified, set as multipart
   let formattedAcceptHeader = acceptHeader ?? []
-  if (acceptHeader.length === 0) {
+  if (formattedAcceptHeader.length === 0) {
     formattedAcceptHeader = ['multipart/related']
   }
 
   if (!omitQuotationForMultipartRequest) {
-    acceptHeader.forEach((header) => '"' + header + '"')
+    formattedAcceptHeader.forEach((header) => '"' + header + '"')
   }
 
   const authHeaders = userAuthenticationService.getAuthorizationHeader()
@@ -99,7 +99,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     headers: {
       ...xhrRequestHeaders,
       //Serialize Accept header
-      Accept: acceptHeader.join('; ')
+      Accept: formattedAcceptHeader.join('; ')
     },
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
