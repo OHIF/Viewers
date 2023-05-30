@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
-//
+import { useQuery } from '@hooks';
+
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
 
@@ -16,6 +17,7 @@ import { useParams, useLocation } from 'react-router';
  */
 function DataSourceWrapper(props) {
   const { children: LayoutTemplate, ...rest } = props;
+  const query = useQuery();
   const params = useParams();
   const location = useLocation();
 
@@ -75,6 +77,7 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
+      await dataSource.initialize({ params, query });
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
