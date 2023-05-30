@@ -9,8 +9,9 @@ import { useTranslation } from 'react-i18next';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
-import { useDebounce, useSearchParams } from '@hooks';
+import { useDebounce, useSearchParams, useQuery } from '@hooks';
 import { utils, hotkeys, ServicesManager } from '@ohif/core';
+import { useParams } from 'react-router';
 
 import {
   Icon,
@@ -53,6 +54,8 @@ function WorkList({
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
+  const query = useQuery();
+  const params = useParams();
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
@@ -197,6 +200,7 @@ function WorkList({
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
       try {
+        await dataSource.initialize({ params, query });
         const series = await dataSource.query.series.search(studyInstanceUid);
         seriesInStudiesMap.set(studyInstanceUid, sortBySeriesDate(series));
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
@@ -340,6 +344,10 @@ function WorkList({
             const isFirst = i === 0;
 
             const modalitiesToCheck = modalities.replaceAll('/', '\\');
+
+            if (mode.noWorklistButton === true) {
+              return;
+            }
 
             const isValidMode = mode.isValidMode({
               modalities: modalitiesToCheck,
