@@ -30,6 +30,7 @@ const defaultProtocol = {
       {
         id: 'defaultDisplaySetId',
         matchedDisplaySetsIndex: -1,
+        options: { colormap: 'test' },
       },
     ],
   },
@@ -88,6 +89,7 @@ const defaultProtocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
+              options: { colormap: 'test' },
             },
           ],
         },

@@ -81,6 +81,9 @@ const ctCORONAL = {
   displaySets: [
     {
       id: 'ctDisplaySet',
+      options: {
+        colormap: 'test',
+      },
     },
   ],
 };
@@ -124,6 +127,7 @@ const ptAXIAL = {
           custom: 'getPTVOIRange',
         },
         voiInverted: true,
+        colormap: 'hsv',
       },
       id: 'ptDisplaySet',
     },
@@ -206,7 +210,7 @@ const ptCORONAL = {
           custom: 'getPTVOIRange',
         },
         voiInverted: true,
-        colormap:
+        colormap: 'test',
       },
       id: 'ptDisplaySet',
     },
@@ -421,6 +425,7 @@ const mipSAGITTAL = {
           custom: 'getPTVOIRange',
         },
         voiInverted: true,
+        colormap: 'test',
       },
       id: 'ptDisplaySet',
     },
