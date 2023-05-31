@@ -206,6 +206,7 @@ const ptCORONAL = {
           custom: 'getPTVOIRange',
         },
         voiInverted: true,
+        colormap:
       },
       id: 'ptDisplaySet',
     },
