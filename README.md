@@ -8,13 +8,16 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 
 
 <div align="center">
-  <a href="https://docs.ohif.org/"><strong>Read The Docs</strong></a> |
-  <a href="https://github.com/OHIF/Viewers/tree/master/docs/latest">Edit the docs</a>
+  <a href="https://docs.ohif.org/"><strong>Read The Docs</strong></a>
 </div>
 <div align="center">
   <a href="https://viewer.ohif.org/">Live Demo</a> |
-  <a href="https://react.ohif.org/">Component Library</a>
+  <a href="https://ui.ohif.org/">Component Library</a>
 </div>
+<div align="center">
+  📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
+</div>
+
 
 
 <hr />
@@ -23,13 +26,13 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 [![NPM downloads][npm-downloads-image]][npm-url]
 [![Pulls][docker-pulls-img]][docker-image-url]
 [![MIT License][license-image]][license-url]
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_shield)
-
-[![Netlify Status][netlify-image]][netlify-url]
-[![CircleCI][circleci-image]][circleci-url]
-[![codecov][codecov-image]][codecov-url]
 [![This project is using Percy.io for visual regression testing.][percy-image]](percy-url)
-[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
+<!-- [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_shield) -->
+
+<!-- [![Netlify Status][netlify-image]][netlify-url] -->
+<!-- [![CircleCI][circleci-image]][circleci-url] -->
+<!-- [![codecov][codecov-image]][codecov-url] -->
+<!-- [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors) -->
 <!-- prettier-ignore-end -->
 
 ## About
@@ -55,7 +58,7 @@ contributions of individuals, research groups, and commercial organizations.
 
 ### Built to Adapt
 
-After more than 5-years of integrating with many companies and organizations,
+After more than 8-years of integrating with many companies and organizations,
 The OHIF Viewer has been rebuilt from the ground up to better address the
 varying workflow and configuration needs of its many users. All of the Viewer's
 core features are built using it's own extension system. The same extensibility
@@ -66,6 +69,7 @@ that allows us to offer:
 - Maximum Intensity Project (MIP)
 - Whole slide microscopy viewing
 - PDF and Dicom Structured Report rendering
+- Segmentation rendering as labelmaps and contours
 - User Access Control (UAC)
 - Context specific toolbar and side panel content
 - and many others
@@ -79,63 +83,22 @@ forking).
 We offer support through
 [GitHub Issues](https://github.com/OHIF/Viewers/issues/new/choose). You can:
 
-- [Report a Bug 🐛](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Report+%3Abug%3A&template=---bug-report.md)
-- [Request a Feature 🚀](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Request+%3Ahand%3A&template=---feature-request.md)
-- [Ask a Question 🤗](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Question+%3Aquestion%3A&template=---support-question.md)
+- [Report a Bug 🐛](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Report+%3Abug%3A%2CAwaiting+Reproduction&projects=&template=bug-report.yml&title=%5BBug%5D+)
+- [Request a Feature 🚀](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Request+%3Ahand%3A&projects=&template=feature-request.yml&title=%5BFeature+Request%5D+)
+- [Ask a Question 🤗](community.ohif.org)
+- [Slack Channel](https://join.slack.com/t/cornerstonejs/shared_invite/zt-1r8xb2zau-dOxlD6jit3TN0Uwf928w9Q)
 
 For commercial support, academic collaborations, and answers to common
 questions; please read our
 [documented FAQ](https://docs.ohif.org/faq/index.html#does-ohif-offer-commercial-support).
 
-## Quick Start Deployment
-
-> This is only one of many ways to configure and deploy the OHIF Viewer. To
-> learn more about your options, and how to choose the best one for your
-> requirements, check out
-> [our deployment recipes and documentation](https://docs.ohif.org/deployment/).
-
-The fastest and easiest way to get started is to include the OHIF Viewer with a
-script tag. In practice, this is as simple as:
-
-- Including the following dependencies with script tags:
-  - [React](https://unpkg.com/react@16/umd/react.production.min.js)
-  - [React Dom](https://unpkg.com/react-dom@16/umd/react-dom.production.min.js)
-  - The [OHIF Viewer](https://unpkg.com/@ohif/viewer)
-- Have an element with an ID of `root` on the page
-- Configure the OHIF Viewer at `window.config`:
-
-```js
-window.config = {
-  routerBasename: '/',
-  servers: {
-    dicomWeb: [
-      {
-        name: 'DCM4CHEE',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-      },
-    ],
-  },
-};
-```
-
-- Install the viewer:
-  `window.OHIFStandaloneViewer.installViewer(window.config);`
-
-This exact setup is demonstrated in this
-[CodeSandbox](https://codesandbox.io/s/viewer-script-tag-tprch) and in our
-[Embedding The Viewer](https://docs.ohif.org/deployment/recipes/embedded-viewer.html)
-deployment recipe.
 
 ## Developing
 
 ### Requirements
 
 - [Yarn 1.17.3+](https://yarnpkg.com/en/docs/install)
-- [Node 10+](https://nodejs.org/en/)
+- [Node 16+](https://nodejs.org/en/)
 - Yarn Workspaces should be enabled on your machine:
   - `yarn config set workspaces-experimental true`
 
@@ -171,7 +134,6 @@ also supports a number of commands that can be found in their respective
 | ---------------------------- | ------------------------------------------------------------- |
 | **Develop**                  |                                                               |
 | `dev` or `start`             | Default development experience for Viewer                     |
-| `dev:project <package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
 | `test:unit`                  | Jest multi-project test runner; overall coverage              |
 | **Deploy**                   |                                                               |
 | `build`\*                    | Builds production output for our PWA Viewer                   |  |
@@ -179,7 +141,7 @@ also supports a number of commands that can be found in their respective
 \* - For more information on our different builds, check out our [Deploy
 Docs][deployment-docs]
 
-## Projects
+## Project
 
 The OHIF Medical Image Viewing Platform is maintained as a
 [`monorepo`][monorepo]. This means that this repository, instead of containing a
@@ -190,20 +152,32 @@ you'll see the following:
 .
 ├── extensions               #
 │   ├── _example             # Skeleton of example extension
-│   ├── default              #
-│   ├── cornerstone       # image rendering and tools w/ Cornerstone
-│   ├── cornerstone- dicom-sr #
-│   └── measurement-tracking #
+│   ├── default              # basic set of useful functionalities (datasources, panels, etc)
+│   ├── cornerstone       # image rendering and tools w/ Cornerstone3D
+│   ├── cornerstone-dicom-sr # DICOM Structured Report rendering and export
+│   ├── cornerstone-dicom-sr # DICOM Structured Report rendering and export
+│   ├── cornerstone-dicom-seg # DICOM Segmentation rendering and export
+│   ├── cornerstone-dicom-rt # DICOM RTSTRUCT rendering
+│   ├── cornerstone-microscopy # Whole Slide Microscopy rendering
+│   ├── dicom-pdf # PDF rendering
+│   ├── dicom-video # DICOM RESTful Services
+│   ├── measurement-tracking # Longitudinal measurement tracking
+│   ├── tmtv # Total Metabolic Tumor Volume (TMTV) calculation
+|
+
 │
 ├── modes                    #
 │   ├── _example             # Skeleton of example mode
 │   ├── basic-dev-mode       # Basic development mode
-│   └── longitudinal         # Longitudinal mode (measurement tracking)
+│   ├── longitudinal         # Longitudinal mode (measurement tracking)
+│   ├── tmtv       # Total Metabolic Tumor Volume (TMTV) calculation mode
+│   └── microscopy          # Whole Slide Microscopy mode
 │
 ├── platform                 #
 │   ├── core                 # Business Logic
 │   ├── i18n                 # Internationalization Support
 │   ├── ui                   # React component library
+│   ├── docs                 # Documentation
 │   └── viewer               # Connects platform and extension projects
 │
 ├── ...                      # misc. shared configuration
@@ -215,22 +189,7 @@ you'll see the following:
 Want to better understand why and how we've structured this repository? Read
 more about it in our [Architecture Documentation][ohif-architecture].
 
-### Platform
 
-These projects comprise the
-
-| Name                            | Description                                                                                          | Links             |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------- |
-| [@ohif/core][platform-core]     | Business logic and classes that model the data, services, and extensions that are framework agnostic | [NPM][core-npm]   |
-| [@ohif/i18n][platform-i18n]     | Language files and small API for wrapping component/ui text for translations                         | [NPM][i18n-npm]   |
-| [@ohif/viewer][platform-viewer] | The OHIF Viewer. Where we consume and configure all platform library's and extensions                | [NPM][viewer-npm] |
-| [@ohif/ui][platform-ui]         | Reusable React components we consume and compose to build our Viewer's UI                            | [NPM][ui-npm]     |
-
-### Extensions
-
-This is a list of Extensions maintained by the OHIF Core team. It is possible to
-customize and configure these extensions, and you can even create your own. You
-can [read more about extensions here][ohif-extensions].
 
 | Name                                                 | Description                                           | Links                  |
 | ---------------------------------------------------- | ----------------------------------------------------- | ---------------------- |
