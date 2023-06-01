@@ -66,15 +66,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
   const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
-  //If accept header is not specified, set as multipart
-  let formattedAcceptHeader = acceptHeader ?? []
-  if (formattedAcceptHeader.length === 0) {
-    formattedAcceptHeader = ['multipart/related']
-  }
-
-  if (!omitQuotationForMultipartRequest) {
-    formattedAcceptHeader.forEach((header) => '"' + header + '"')
-  }
+  //Generate accept header depending on config params
+  let formattedAcceptHeader = generateAcceptHeader(acceptHeader, omitQuotationForMultipartRequest)
 
   const authHeaders = userAuthenticationService.getAuthorizationHeader()
 
@@ -98,8 +91,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     singlepart,
     headers: {
       ...xhrRequestHeaders,
-      //Serialize Accept header
-      Accept: formattedAcceptHeader.join('; ')
+      Accept: formattedAcceptHeader
     },
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
@@ -524,6 +516,34 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   }
 
   return IWebApiDataSource.create(implementation);
+}
+
+const generateAcceptHeader = (configAcceptHeader = [], omitQuotationForMultipartRequest = false) => {
+  let acceptHeader = []
+  if (configAcceptHeader.length === 0) {
+    acceptHeader.push('multipart/related; type=application/octet-stream')
+  } else {
+    acceptHeader = configAcceptHeader
+  }
+
+  if (!omitQuotationForMultipartRequest) {
+    //need to add quotation for each mime type of each accept entry
+    acceptHeader = acceptHeader.map(accept => {
+      let mimes = accept.split("; ")
+      let newMimes = mimes.map(mime => {
+        if (mime.startsWith('type=')) {
+          const quotedParam = 'type=' + '"' + mime.substring(5, mime.length) + '"'
+          return quotedParam
+        } else {
+          return mime
+        }
+      })
+      return newMimes.join(';')
+    })
+  }
+
+  return acceptHeader
+
 }
 
 export { createDicomWebApi };

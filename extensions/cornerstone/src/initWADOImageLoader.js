@@ -35,7 +35,8 @@ function initWebWorkers(appConfig) {
 
 export default function initWADOImageLoader(
   userAuthenticationService,
-  appConfig
+  appConfig,
+  extensionManager
 ) {
   dicomImageLoader.external.cornerstone = cornerstone;
   dicomImageLoader.external.dicomParser = dicomParser;
@@ -54,12 +55,66 @@ export default function initWADOImageLoader(
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },
+    beforeSend: function (xhr) {
+      const headers = userAuthenticationService.getAuthorizationHeader();
+      const sourceConfig = extensionManager.getActiveDataSource()[0].getConfig()
+      const acceptHeader = generateAcceptHeader(sourceConfig.acceptHeader, sourceConfig.omitQuotationForMultipartRequest)
+
+      // Request:
+      // JPEG-LS Lossless (1.2.840.10008.1.2.4.80) if available, otherwise accept
+      // whatever transfer-syntax the origin server provides.
+      // For now we use image/jls and image/x-jls because some servers still use the old type
+      // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
+      const xhrRequestHeaders = {
+        Accept: acceptHeader
+        /*
+        appConfig.omitQuotationForMultipartRequest
+          ? 'multipart/related; type=application/octet-stream'
+          : 'multipart/related; type="application/octet-stream"',
+        // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
+      */
+      };
+
+      if (headers) {
+        Object.assign(xhrRequestHeaders, headers);
+      }
+
+      return xhrRequestHeaders;
+    },
     errorInterceptor: error => {
       errorHandler.getHTTPErrorHandler(error);
     },
   });
 
   initWebWorkers(appConfig);
+}
+
+const generateAcceptHeader = (configAcceptHeader = [], omitQuotationForMultipartRequest = false) => {
+  let acceptHeader = []
+  if (configAcceptHeader.length === 0) {
+    acceptHeader.push('multipart/related; type=application/octet-stream')
+  } else {
+    acceptHeader = configAcceptHeader
+  }
+
+  if (!omitQuotationForMultipartRequest) {
+    //need to add quotation for each mime type of each accept entry
+    acceptHeader = acceptHeader.map(accept => {
+      let mimes = accept.split("; ")
+      let newMimes = mimes.map(mime => {
+        if (mime.startsWith('type=')) {
+          const quotedParam = 'type=' + '"' + mime.substring(5, mime.length) + '"'
+          return quotedParam
+        } else {
+          return mime
+        }
+      })
+      return newMimes.join(';')
+    })
+  }
+
+  return acceptHeader
+
 }
 
 export function destroy() {
