@@ -389,9 +389,9 @@ workflows:
           filters:
             branches:
               only: master
-      - DEPLOY_TO_DEV:
-          requires:
-            - BUILD
+      # - DEPLOY_TO_DEV:
+      #     requires:
+      #       - BUILD
 
   # Our release branch deploys to viewer.ohif.org and is more stable and less
   # frequently updated after being tested in the staging environment.
@@ -401,23 +401,23 @@ workflows:
           filters:
             branches:
               only: release
-      - DEPLOY_TO_RELEASE_DEV:
-          requires:
-            - BUILD
-      - PROMOTE_TO_STAGING:
-          type: approval
-          requires:
-            - DEPLOY_TO_DEV
-      - DEPLOY_TO_STAGING:
-          requires:
-            - PROMOTE_TO_STAGING
-      - PROMOTE_TO_PRODUCTION:
-          type: approval
-          requires:
-            - DEPLOY_TO_STAGING
-      - DEPLOY_TO_PRODUCTION:
-          requires:
-            - PROMOTE_TO_PRODUCTION
+      # - DEPLOY_TO_RELEASE_DEV:
+      #     requires:
+      #       - BUILD
+      # - PROMOTE_TO_STAGING:
+      #     type: approval
+      #     requires:
+      #       - DEPLOY_TO_DEV
+      # - DEPLOY_TO_STAGING:
+      #     requires:
+      #       - PROMOTE_TO_STAGING
+      # - PROMOTE_TO_PRODUCTION:
+      #     type: approval
+      #     requires:
+      #       - DEPLOY_TO_STAGING
+      # - DEPLOY_TO_PRODUCTION:
+      #     requires:
+      #       - PROMOTE_TO_PRODUCTION
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
