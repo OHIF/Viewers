@@ -57,7 +57,7 @@ export default function initWADOImageLoader(
     },
     beforeSend: function (xhr) {
       const headers = userAuthenticationService.getAuthorizationHeader();
-      const sourceConfig = extensionManager.getActiveDataSource()[0].getConfig()
+      const sourceConfig = extensionManager.getActiveDataSource()?.[0].getConfig() ?? {}
       const acceptHeader = generateAcceptHeader(sourceConfig.acceptHeader, sourceConfig.omitQuotationForMultipartRequest)
 
       // Request:
