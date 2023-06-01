@@ -290,13 +290,13 @@ module.exports = {
           {
             to: 'https://ohif.org/get-started',
             label: 'Get Started',
-            target: '_self',
+            target: '_blank',
             position: 'left',
           },
           {
             to: 'https://ohif.org/examples',
             label: 'Examples',
-            target: '_self',
+            target: '_blank',
             position: 'left',
           },
           {
@@ -309,7 +309,7 @@ module.exports = {
           {
             to: 'https://ohif.org/community',
             label: 'Community',
-            target: '_self',
+            target: '_blank',
             position: 'left',
           },
           {
